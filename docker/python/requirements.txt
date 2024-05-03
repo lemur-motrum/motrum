@@ -1,0 +1,6 @@
+django
+django-debug-toolbar
+django-environ
+pymysql
+# celery
+# redis

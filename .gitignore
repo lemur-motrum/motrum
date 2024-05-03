@@ -1,0 +1,16 @@
+.devcontainer
+.idea/
+
+/media/
+/static/
+
+
+__pycache__/
+*.pyc
+*.env
+*.env1
+
+.DS_Store
+db.sqlite3
+
+checking_convertation.txt

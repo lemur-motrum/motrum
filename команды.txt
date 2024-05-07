@@ -1,0 +1,28 @@
+венв для пайтона
+
+ py -m venv venv    
+C:\project\motrum\docker\venv\Scripts\activate.bat
+
+
+
+старт пректа докер 
+
+docker-compose build
+docker-compose run --rm web sh -c "django-admin startproject project ./motrum " 
+docker-compose up
+
+
+
+создание аппов для джанго 
+создаем папку apps
+в ней создаем нудные покаки типо core 
+py manage.py startapp core ./apps/core
+
+
+запуск контенеров
+ 
+f1
+
+
+
+docker exec -t pgdb pg_dumpall -c -U postgres > dump_`dateY`.sql

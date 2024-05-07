@@ -10,4 +10,34 @@ services:
       - ./.env 
     ports:
       - 8000:8000
+
+    depends_on:
+      - pgdb
+
+  pgdb:
+    # Использование готового образа postgres
+    image: postgres
+    # Задание переменных окружения для контейнера с postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+     # Задание имени контейнера для сервиса pgdb
+    container_name: pgdb
+     # Связывание тома с директорией в контейнере для сохранения данных postgres
+    volumes:
+      - ../:/home/sites/${PROJECT}/pgdbdata:/var/lib/postgresql/data/
+      
+      # - pgdbdata:/var/lib/postgresql/data/
+
+
+  
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 89:8080
     
+volumes:
+  pgdbdata: null    

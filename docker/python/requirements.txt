@@ -2,6 +2,7 @@ django
 django-debug-toolbar
 django-environ
 pymysql
+psycopg2
 
 
 # celery

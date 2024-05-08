@@ -1,9 +1,9 @@
 django
 django-debug-toolbar
 django-environ
+requests
 pymysql
 psycopg2
-
-
+Pytils 
 # celery
 # redis

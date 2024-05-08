@@ -14,6 +14,37 @@ services:
     depends_on:
       - pgdb
 
+      
+  # celery:
+  #   container_name: celery
+  #   build: ./python/
+  #   command: >
+  #     sh -c "cd lemurproj/ && celery -A project worker -l info"
+  #   volumes:
+  #     - ../:/home/sites/lemurproj/
+  #   ports:
+  #     - "5566:5566"
+  #   depends_on:
+  #     - redis
+
+  # celery-beat:
+  #   container_name: celery-beat
+  #   build: ./python/
+  #   command: >
+  #     sh -c "cd lemurproj/ && celery -A project beat -l info"
+  #   volumes:
+  #     - ../:/home/sites/lemurproj/
+  #   depends_on:
+  #     - redis
+  #     - celery
+
+  # redis:
+  #   container_name: redis
+  #   image: redis
+  #   ports:
+  #       - "6379:6379"    
+
+
   pgdb:
     # Использование готового образа postgres
     image: postgres

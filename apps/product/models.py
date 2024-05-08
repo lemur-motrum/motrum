@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db import models
 
+from apps.core.models import Currency, Vat
 from apps.supplier.models import Supplier, Vendor
 
 # Create your models here.
@@ -78,11 +79,11 @@ class GroupProduct(models.Model):
 
 class Price(models.Model):
     currency = models.ForeignKey(
-        "Currency",
+        Currency,
         on_delete=models.PROTECT,
     )
     vat = models.ForeignKey(
-        "Vat",
+        Vat,
         on_delete=models.PROTECT,
     )
     price_supplier = models.PositiveIntegerField(
@@ -94,14 +95,7 @@ class Price(models.Model):
     price_motrum = models.PositiveIntegerField("Цена поставщика для Motrum в рублях")
 
 
-class Currency(models.Model):
-    name = models.CharField("Название валюты", max_length=30)
-    words_code = models.CharField("Букв. код", max_length=30)
-    code = models.SmallIntegerField("Цифр. код")
 
-
-class Vat(models.Model):
-    code = models.SmallIntegerField("процент ндс")
 
 
 class CurrencyRate(models.Model):

@@ -5,5 +5,7 @@ requests
 pymysql
 psycopg2
 Pytils 
+django-smart-selects
+Pillow
 # celery
 # redis

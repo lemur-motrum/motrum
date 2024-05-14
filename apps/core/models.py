@@ -11,7 +11,7 @@ class Currency(models.Model):
         verbose_name_plural = "Валюты"
 
     def __str__(self):
-        return self.words_code
+        return self.name
 
 
 class Vat(models.Model):
@@ -22,4 +22,4 @@ class Vat(models.Model):
         verbose_name_plural = "НДС"
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name )+ "%"

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     "debug_toolbar",
+    "smart_selects",
 
     
     
@@ -170,6 +171,9 @@ AUTH_USER_MODEL = "user.CustomUser"
 
 STATIC_URL = 'static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',

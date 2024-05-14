@@ -1,12 +1,13 @@
 from django.shortcuts import render
 
+from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.models import Supplier
 
 # Create your views here.
 def add_prompower(request):
     title = "Услуги"
-    responsets = Supplier.prompower_api()
-    
+    # responsets = Supplier.prompower_api()
+    responsets = prompower_api()
     context = {
         "title": title,
         "responsets": responsets,

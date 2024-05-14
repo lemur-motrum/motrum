@@ -1,8 +1,13 @@
 from django.utils import timezone
 from django.db import models
 
+from apps import core
 from apps.core.models import Currency, Vat
+
+# from apps.core.utils import get_image_path
 from apps.supplier.models import Supplier, Vendor
+from pytils import translit
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -20,37 +25,34 @@ class Product(models.Model):
         verbose_name="Поставщик",
         on_delete=models.PROTECT,
     )
+
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
     additional_article_supplier = models.CharField(
-        "Дополнительный артикул поставщика", max_length=50
+        "Дополнительный артикул поставщика", max_length=50, null=True
     )
     category = models.ForeignKey(
-        "CategoryProduct",
-        verbose_name="Поставщик",
-        on_delete=models.PROTECT,
+        "CategoryProduct", verbose_name="Поставщик", on_delete=models.PROTECT, null=True
     )
-    group = models.ForeignKey(
-        "GroupProduct",
-        on_delete=models.PROTECT,
-    )
-
+    group = models.ForeignKey("GroupProduct", on_delete=models.PROTECT, null=True)
+    description = models.CharField("Описание товара", max_length=350, null=True)
     name = models.CharField("Название товара", max_length=50)
-    price = models.ForeignKey("Price", on_delete=models.PROTECT)
-    stock = models.ForeignKey("Stock", on_delete=models.PROTECT)
-    check_image_upgrade = models.BinaryField("было изменено вручную")
-    check_document_upgrade = models.BinaryField("было изменено вручную")
-    check_property_upgrade = models.BinaryField("было изменено вручную")
+    price = models.ForeignKey("Price", on_delete=models.CASCADE, null=True)
+    stock = models.ForeignKey("Stock", on_delete=models.CASCADE, null=True)
+    check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
+    check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
+    check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
+    data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
 
-    def __str__(self):
-        return self.article
+    # def __str__(self):
+    #     return self.article
 
 
 class CategoryProduct(models.Model):
-    name = models.CharField("Название категории", max_length=30)
+    name = models.CharField("Название категории", max_length=50)
 
     class Meta:
         verbose_name = "Категория товара"
@@ -61,7 +63,7 @@ class CategoryProduct(models.Model):
 
 
 class GroupProduct(models.Model):
-    name = models.CharField("Название группы", max_length=30)
+    name = models.CharField("Название группы", max_length=50)
     article_name = models.CharField("Артикул группы", max_length=25)
     category = models.ForeignKey(
         CategoryProduct,
@@ -71,7 +73,7 @@ class GroupProduct(models.Model):
 
     class Meta:
         verbose_name = "Группа товара"
-        verbose_name_plural = "Группы"
+        verbose_name_plural = "Группы товаров"
 
     def __str__(self):
         return self.name
@@ -93,9 +95,6 @@ class Price(models.Model):
         "Цена в каталоге поставщика в рублях"
     )
     price_motrum = models.PositiveIntegerField("Цена поставщика для Motrum в рублях")
-
-
-
 
 
 class CurrencyRate(models.Model):
@@ -121,35 +120,60 @@ class Stock(models.Model):
 
 
 class Lot(models.Model):
-    name = models.CharField("Единица измерения поставщика", max_length=30)
+    name = models.CharField("Полное название", max_length=30)
+    name_shorts = models.CharField("Короткое название", max_length=6, null=True)
+    slug = models.SlugField(null=True)
+
+    class Meta:
+        verbose_name = "Единица измерения поставщика"
+        verbose_name_plural = "Единицы измерений поставщиков"
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        slug_text = self.name
+        slugish = translit.translify(slug_text)
+        self.slug = slugify(slugish)
+
+        super(Lot, self).save(*args, **kwargs)
 
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
         Product,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
+        # on_delete=models.PROTECT,
     )
-    file = models.CharField("фаил в системе", max_length=40)
+    photo = models.ImageField(
+        "Изображение", upload_to="core.utils.get_file_path", null=True
+    )
+    file = models.CharField("фаил в системе", max_length=40, null=True)
     link = models.CharField("ссылка у поставщика", max_length=40)
-    hide = models.BinaryField("скрыть")
+    hide = models.BooleanField("скрыть", default=False)
 
 
 class ProductDocument(models.Model):
     product = models.ForeignKey(
         Product,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
+        # on_delete=models.PROTECT,
     )
-    file = models.CharField("фаил в системе", max_length=40)
+    document = models.FileField(
+        "Документ", upload_to="core.utils.get_file_path", null=True
+    )
+    file = models.CharField("фаил в системе", max_length=40, null=True)
     link = models.CharField("ссылка у поставщика", max_length=40)
-    hide = models.BinaryField("скрыть")
+    hide = models.BooleanField("скрыть", default=False)
 
 
 class ProductProperty(models.Model):
     product = models.ForeignKey(
         Product,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
+        # on_delete=models.PROTECT,
     )
     name = models.CharField("название", max_length=40)
     value = models.CharField("значение", max_length=40)
-    unit_measure = models.CharField("значение", max_length=40)
-    hide = models.BinaryField("скрыть")
+    unit_measure = models.CharField("значение", max_length=40, null=True)
+    hide = models.BooleanField("скрыть", default=False)

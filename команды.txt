@@ -26,3 +26,6 @@ f1
 
 
 docker exec -t pgdb pg_dumpall -c -U postgres > dump_`dateY`.sql
+
+
+cat dump_date_08.05.sql | docker exec -i pgdb psql -U postgres -d postgres

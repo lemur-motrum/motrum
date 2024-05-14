@@ -6,14 +6,16 @@ from django.utils.text import slugify
 from pytils import translit
 
 
-from apps.core.models import Currency
+from apps.core.models import Currency, Vat
+
+# from apps.product.models import CategoryProduct, Product
 
 
 # Create your models here.
 
 
 class Supplier(models.Model):
-    name = models.CharField("Название поставщика", max_length=30)
+    name = models.CharField("Название поставщика", max_length=40)
     # integration_type (тип интеграции)
     slug = models.SlugField(null=True)
 
@@ -21,8 +23,8 @@ class Supplier(models.Model):
         verbose_name = "Поставщик"
         verbose_name_plural = "Поставщики"
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         slug_text = self.name
@@ -31,45 +33,9 @@ class Supplier(models.Model):
 
         super(Supplier, self).save(*args, **kwargs)
 
-    @staticmethod
-    def prompower_api():
-
-        url = "https://prompower.ru/api/prod/getProducts"
-        payload = json.dumps(
-            {
-                "email": os.environ.get("PROMPOWER_API_EMAIL"),
-                "key": os.environ.get("PROMPOWER_API_KEY"),
-            }
-        )
-        headers = {
-            "Content-type": "application/json",
-            "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
-        }
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-        data = response.json()
-        prompower = Supplier.objects.get(slug="prompower")
-        print(prompower.id)
-        category_all = []
-        for data_item in data:
-            category = {
-                "name": data_item["category"],
-                # "article_name": data_item["tnved"], тн вед это по таможенной жекларации номер где то есть где то нет где на одном товрае одинаковый
-                "supplier": prompower.id,
-            }
-            category_all.append(category)
-      
-        unique_category = [dict(t) for t in {frozenset(d.items()) for d in category_all}]
-        
-        # for category in unique_category:
-        #     SupplierCategoryProductTest.create(name=category['name'], article_name=0, supplier=category['supplier'])
-        
-
-        return unique_category
-
 
 class Vendor(models.Model):
-    name = models.CharField("Название производителя", max_length=30)
+    name = models.CharField("Название производителя", max_length=40)
     slug = models.SlugField(null=True)
     supplier = models.ForeignKey(
         Supplier,
@@ -81,13 +47,22 @@ class Vendor(models.Model):
         verbose_name="Валюта каталога",
         on_delete=models.PROTECT,
     )
+    vat_catalog = models.ForeignKey(
+        Vat,
+        verbose_name="Ндс в каталоге",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    # vat_catalog_check = models.BinaryField("входит ли в цену получаемую от поставщика" blank=True,
+    #     null=True,)
 
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         slug_text = self.name
@@ -150,24 +125,56 @@ class Discount(models.Model):
         on_delete=models.PROTECT,
     )
     category_catalog = models.ForeignKey(
-        SupplierCategoryProduct,
+        "product.CategoryProduct",
+        verbose_name="Категория каталога",
         on_delete=models.PROTECT,
+        blank=True, null=True
+        
     )
+    
     group_catalog = models.ForeignKey(
-        SupplierGroupProduct,
+        "product.GroupProduct",
+        verbose_name="Группа каталога",
         on_delete=models.PROTECT,
+        blank=True, null=True
     )
     percent = models.SmallIntegerField("процент скидки")
 
+    class Meta:
+        verbose_name = "Скидка"
+        verbose_name_plural = "Скидки"
 
-class SupplierCategoryProductTest(models.Model):
-    name = models.CharField("Название категории", max_length=30)
+    def __str__(self):
+        return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
+
+
+class SupplierCategoryProductAll(models.Model):
+    name = models.CharField("Название категории", max_length=50)
     article_name = models.CharField("Артикул категории", max_length=25)
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
         on_delete=models.PROTECT,
     )
+    category_catalog = models.ForeignKey(
+        "product.CategoryProduct",
+        verbose_name="Категория каталога",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    group_catalog = models.ForeignKey(
+        "product.GroupProduct",
+        verbose_name="Группа каталога",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Категории товара у поставщиков"
+        verbose_name_plural = "Категории товаров у поставщиков"
 
     def __str__(self):
         return self.name

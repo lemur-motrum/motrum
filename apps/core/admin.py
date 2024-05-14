@@ -10,3 +10,4 @@ from apps.core.models import Currency, Vat
 
 admin.site.register(Currency)
 admin.site.register(Vat)
+

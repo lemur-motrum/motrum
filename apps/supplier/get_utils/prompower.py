@@ -92,12 +92,11 @@ def prompower_api():
                 article = Product.objects.filter(
                     article_supplier=article_suppliers
                 ).exists()
-                print(
-                    Product.objects.filter(article_supplier=article_suppliers).exists()
-                )
+
                 category_lower = data_item["category"].lower()
                 item_category = get_category(prompower.id, category_lower)[0]
                 item_group = get_category(prompower.id, category_lower)[1]
+                print(category_lower)
                 # цены
                 price_supplier_novat = int(data_item["price"])
                 # для мотрум добавляем в цену ндс(приходят без ндс)
@@ -109,7 +108,6 @@ def prompower_api():
                 price_motrum = get_price_motrum(
                     item_category, item_group, vendor_id, rub_price_supplier
                 )
-
                 # остатки
                 lot_short = "base"
                 stock_supplier = data_item["instock"]
@@ -118,80 +116,100 @@ def prompower_api():
                 lot_complect = lots[1]
                 stock_supplier_unit = lots[2]
                 stock_motrum = 0
-                print(lot)
 
-                img_list = data_item["img"]
-                item_count = 0
-                for img_item in img_list:
-                    item_count += 1
-                    img = img_item
-                    type_file = "img"
-                    link = base_adress + img_item
-
-                    filename = create_name_file_downloading(
-                        article_suppliers, item_count
-                    )
-                    image_path = get_file_path(
-                        prompower.slug,
-                        vendor_name,
-                        type_file,
-                        article_suppliers,
-                        item_count,
-                        place="utils",
-                    )
-                    image_path_all = get_file_path(
-                        prompower.slug,
-                        vendor_name,
-                        type_file,
-                        article_suppliers,
-                        item_count,
-                        place="none",
-                    )
-
-                    save_file_product(link, image_path, filename)
-                doc_list = data_item["cad"]
-                item_count_doc = 0
-                for doc_item in doc_list:
-                    item_count_doc += 1
-                    doc = doc_item
-                    type_file = "document"
-                    link = base_adress + doc_item
-
-                    filename = create_name_file_downloading(
-                        article_suppliers, item_count
-                    )
-                    doc_path = get_file_path(
-                        prompower.slug,
-                        vendor_name,
-                        type_file,
-                        article_suppliers,
-                        item_count,
-                        place="utils",
-                    )
-                    doc_path = get_file_path(
-                        prompower.slug,
-                        vendor_name,
-                        type_file,
-                        article_suppliers,
-                        item_count,
-                        place="none",
-                    )
-
-                    save_file_product(link, image_path, filename)
                 name = data_item["title"]
                 description = data_item["description"]
-                # get_image_path(filename,supplier,vendor,type_file)
 
+                # сохранение изображений
+                def save_image(
+                    new_product,
+                ):
+                    img_list = data_item["img"]
+                    if len(img_list) > 0:
+                        item_count = 0
+                        for img_item in img_list:
+                            item_count += 1
+                            img = img_item
+                            type_file = "img"
+                            link = base_adress + img_item
+                            filetype = ".jpg"
+                            filename = create_name_file_downloading(
+                                article_suppliers, item_count
+                            )
+                            image_path = get_file_path(
+                                prompower.slug,
+                                vendor_name,
+                                type_file,
+                                article_suppliers,
+                                item_count,
+                                place="utils",
+                            )
+                            image_path_all = image_path + "/" + filename + filetype
+
+                            save_file_product(link, image_path, filename, filetype)
+                            image_product = ProductImage.objects.create(
+                                product=new_product,
+                                photo=image_path_all,
+                                file=image_path_all,
+                                link=img,
+                            )
+
+                # сохранение документов
+                def save_document(
+                    new_product,
+                ):
+                    doc_list = data_item["cad"]
+                    if len(doc_list) > 0:
+                        item_count_doc = 0
+                        for doc_item in doc_list:
+                            item_count_doc += 1
+                            doc = doc_item["filename"]
+                            type_file = "document"
+                            link = base_adress + "/CAD/" + doc
+                            filetype_list = doc.split(".")
+                            filetype = "." + filetype_list[1]
+                            filename = create_name_file_downloading(
+                                article_suppliers, item_count_doc
+                            )
+                            doc_path = get_file_path(
+                                prompower.slug,
+                                vendor_name,
+                                type_file,
+                                article_suppliers,
+                                item_count_doc,
+                                place="utils",
+                            )
+                            document_path_all = doc_path + "/" + filename + filetype
+
+                            save_file_product(link, doc_path, filename, filetype)
+
+                            document_product = ProductDocument.objects.create(
+                                product=new_product,
+                                document=document_path_all,
+                                file=document_path_all,
+                                link=doc,
+                            )
+
+                # обновление товара
                 if article:
+                    
                     article = Product.objects.get(article_supplier=article_suppliers)
-                    print(123123123)
-                    # обновление товара
-                    # Product.objects.filter(article_supplier=article).update(
-                    #     name=name,
-                    # )
+                    print(article.price)
+                    price_product = Price.objects.filter(id=article.price.id).update(
+                        price_supplier=price_supplier,
+                        rub_price_supplier=rub_price_supplier,
+                        price_motrum=price_motrum,
+                    )
+                    stock_product = Stock.objects.filter(id=article.stock.id).update(
+                        lot=lot,
+                        stock_supplier=stock_supplier,
+                        lot_complect=lot_complect,
+                        stock_supplier_unit=stock_supplier_unit,
+                        stock_motrum=stock_motrum,
+                    )
+                # созданеи товара
                 else:
-                    pass
-                    # созданеи товара
+
                     new_article = create_article_motrum(prompower.id, vendor_id)
 
                     new_product = Product.objects.create(
@@ -205,6 +223,7 @@ def prompower_api():
                         description=description,
                     )
                     price_product = Price.objects.create(
+                        prod =new_product,
                         currency=currency,
                         vat=vat_catalog_id,
                         price_supplier=price_supplier,
@@ -212,10 +231,9 @@ def prompower_api():
                         price_motrum=price_motrum,
                     )
 
-                    Product.objects.filter(id=new_product.id).update(
-                        price=price_product
-                    )
+                    Product.objects.filter(id=new_product.id).update(price=price_product)
                     stock_product = Stock.objects.create(
+                        prod =new_product,
                         lot=lot,
                         stock_supplier=stock_supplier,
                         lot_complect=lot_complect,
@@ -223,14 +241,9 @@ def prompower_api():
                         stock_motrum=stock_motrum,
                     )
 
-                    Product.objects.filter(id=new_product.id).update(
-                        stock=stock_product
-                    )
-                    image_product = ProductImage.objects.create(
-                        product=new_product,
-                        photo=get_file_path,
-                        link=img,
-                    )
+                    Product.objects.filter(id=new_product.id).update(stock=stock_product)
+                    save_image(new_product)
+                    save_document(new_product)
 
                     for prop in data_item["props"]:
                         property_product = ProductProperty.objects.create(
@@ -238,11 +251,6 @@ def prompower_api():
                             name=prop["name"],
                             value=prop["value"],
                         )
-                    document_product = ProductDocument.objects.create(
-                        product=new_product,
-                        document=get_file_path,
-                        link=doc,
-                    )
 
     add_category()
     add_products()

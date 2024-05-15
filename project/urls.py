@@ -19,11 +19,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('admin/', admin.site.urls),
-    
+   
+    # path('admin/', include('smart_selects.urls')),
+        
     path("", include("apps.core.urls", namespace="core")),
     path("client/", include("apps.client.urls", namespace="client")),
     path("logs/", include("apps.logs.urls", namespace="logs")),

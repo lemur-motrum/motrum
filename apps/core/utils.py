@@ -11,34 +11,51 @@ from project.settings import MEDIA_ROOT
 
 # расчет цены для мотрум
 def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
-    discount_group = Discount.objects.filter(group_catalog=item_group.id).values(
-        "percent"
-    )
-
-    discount_categ = Discount.objects.filter(
-        category_catalog=item_category.id,
-        group_catalog__isnull=True,
-    )
-    discount_all = Discount.objects.filter(
-        vendor=vendors, group_catalog__isnull=True, category_catalog__isnull=True
-    )
-
+    motrum_price = rub_price_supplier
+    percent = 0
+    # получение процента функция
     def get_percent(item):
         for i in item:
-            return i.percent
+            print(i)
+            return i.percent 
 
-    motrum_price = rub_price_supplier
-    if discount_group:
-        percent = get_percent(discount_group)
-
-    elif discount_categ:
-        percent = get_percent(discount_categ)
-
-    elif discount_all:
-        percent = get_percent(discount_all)
+    # скидка по группе
+    if item_group:
+        discount_group = Discount.objects.filter(group_catalog=item_group.id)
+        print(discount_group,"!!!!!!!!!!!!!!!")
+        if discount_group:
+            percent = get_percent(discount_group)
+    # скидка по категории
+    elif item_category:
+        discount_categ = Discount.objects.filter(
+            category_catalog=item_category.id,
+            group_catalog__isnull=True,
+        )
+        if discount_categ:
+            percent = get_percent(discount_categ)
+            
     else:
-        percent = 0
+        discount_all = Discount.objects.filter(
+            vendor=vendors, group_catalog__isnull=True, category_catalog__isnull=True
+        )
+        
+        # скидка по всем вендору
+        if discount_all:
+            percent = get_percent(discount_all)
+        # нет скидки
+        
 
+    # if discount_group:
+    #     percent = get_percent(discount_group)
+
+    # elif discount_categ:
+    #     percent = get_percent(discount_categ)
+
+    # elif discount_all:
+    #     percent = get_percent(discount_all)
+    # else:
+    #     percent = 0
+    print(percent)
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * int(percent))
     # TODO обрезать цены
 
@@ -79,8 +96,6 @@ def create_article_motrum(supplier, vendor):
     return name
 
 
-def get_price_all():
-    pass
 
 
 # категории дял товара
@@ -88,8 +103,12 @@ def get_category(supplier, category_name):
     item_category_all = SupplierCategoryProductAll.objects.get(
         supplier=supplier, name=category_name
     )
+
     item_category = item_category_all.category_catalog
     item_group = item_category_all.group_catalog
+    print(item_category, "item_category")
+    print(item_group, "item_group")
+    print("/////////")
     return (item_category, item_group)
 
 
@@ -114,9 +133,7 @@ def create_name_file_downloading(article_suppliers, item_count):
     return filename
 
 
-def get_file_path(
-    base_dir, supplier, vendor, type_file, article_suppliers, item_count, place
-):
+def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, place):
     base_dir = "products"
     base_dir_supplier = supplier
     base_dir_vendor = vendor
@@ -149,10 +166,10 @@ def get_file_path(
         )
 
 
-def save_file_product(link, image_path, filename):
+def save_file_product(link, image_path, filename, filetype):
     r = requests.get(link, stream=True)
-
-    with open(os.path.join(MEDIA_ROOT, image_path, filename + ".jpg"), "wb") as ofile:
+    print( filename + filetype)
+    with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
         ofile.write(r.content)
 
 

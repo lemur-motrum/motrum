@@ -59,6 +59,8 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "group_catalog"
     )
     readonly_fields = ('name', 'supplier',)
+    # search_fields = ('name', 'supplier',)
+    list_filter = ['supplier',]
     # inlines = [
     #     GroupProductInline,
     # ]

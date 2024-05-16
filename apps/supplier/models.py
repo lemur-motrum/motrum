@@ -27,10 +27,10 @@ class Supplier(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
+        slug_text = self
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
-
+    
         super(Supplier, self).save(*args, **kwargs)
 
 

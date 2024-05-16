@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 from django.utils import timezone
 from django.db import models
@@ -5,11 +6,19 @@ from django.db import models
 from apps import core
 from apps.core.models import Currency, Vat
 
-# from apps.core.utils import get_image_path
+
+from apps.core.utils import (
+    create_article_motrum,
+    get_file_path,
+    get_file_path_add,
+    get_lot,
+    get_price_motrum,
+    get_price_supplier_rub,
+)
 from apps.supplier.models import Supplier, Vendor
 from pytils import translit
 from django.utils.text import slugify
-from project.settings import BASE_DIR, MEDIA_ROOT
+from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
 from django.utils.safestring import mark_safe
 
 # Create your models here.
@@ -31,18 +40,26 @@ class Product(models.Model):
 
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
     additional_article_supplier = models.CharField(
-        "Дополнительный артикул поставщика", max_length=50, null=True
+        "Дополнительный артикул поставщика", max_length=50, blank=True, null=True
     )
     category = models.ForeignKey(
-        "CategoryProduct", verbose_name="Категория", on_delete=models.PROTECT, null=True
+        "CategoryProduct",
+        verbose_name="Категория",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     group = models.ForeignKey(
-        "GroupProduct", verbose_name="Группа", on_delete=models.PROTECT, null=True
+        "GroupProduct",
+        verbose_name="Группа",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     description = models.CharField("Описание товара", max_length=1000, null=True)
     name = models.CharField("Название товара", max_length=50)
-    price = models.ForeignKey("Price", on_delete=models.CASCADE, null=True)
-    stock = models.ForeignKey("Stock", on_delete=models.CASCADE, null=True)
+    # price = models.ForeignKey("Price", on_delete=models.CASCADE,blank=True, null=True)
+    # stock = models.ForeignKey("Stock", on_delete=models.CASCADE,blank=True, null=True)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
@@ -53,7 +70,15 @@ class Product(models.Model):
         verbose_name_plural = "Товары"
 
     def __str__(self):
-        return str(self.article)
+        return f"Артикул мотрум:{self.article} Название товара:{self.name}"
+
+    def save(self, *args, **kwargs):
+        if self.article == None:
+            article = create_article_motrum(self.supplier.id, self.vendor.id)
+            self.article = article
+            # price_supplier_rub = get_price_supplier_rub(self.currency.words_code,self.vat,self.price_supplier)
+            # print (self)
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class CategoryProduct(models.Model):
@@ -88,7 +113,9 @@ class Price(models.Model):
     prod = models.OneToOneField(
         Product,
         related_name="prod_price",
-        on_delete=models.PROTECT,null=True
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
     )
     currency = models.ForeignKey(
         Currency,
@@ -111,6 +138,19 @@ class Price(models.Model):
     def __str__(self):
         return f"{self.rub_price_supplier} {self.price_motrum}"
 
+    def save(self, *args, **kwargs):
+
+        rub_price_supplier = get_price_supplier_rub(
+            self.currency.words_code, self.vat.name, self.price_supplier
+        )
+        self.rub_price_supplier = rub_price_supplier
+        price_motrum = get_price_motrum(
+            self.prod.category, self.prod.group, self.prod.vendor, rub_price_supplier
+        )
+        self.price_motrum = price_motrum
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
 class CurrencyRate(models.Model):
     currency = models.ForeignKey(
@@ -126,13 +166,17 @@ class Stock(models.Model):
     prod = models.OneToOneField(
         Product,
         related_name="prod_stock",
-        on_delete=models.PROTECT,null=True
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
     )
-    lot = models.ForeignKey("Lot",verbose_name = "Единица измерения поставщика", on_delete=models.PROTECT)
+    lot = models.ForeignKey(
+        "Lot", verbose_name="Единица измерения поставщика", on_delete=models.PROTECT,
+    )
     stock_supplier = models.PositiveIntegerField(
         "Остаток на складе поставщика в единицах поставщика"
     )
-    lot_complect = models.PositiveIntegerField("Содержание набора (комплекта) в штуках")
+    lot_complect = models.PositiveIntegerField("Содержание набора (комплекта) в штуках", default=1)
     stock_supplier_unit = models.PositiveIntegerField(
         "Остаток на складе поставщика в штуках"
     )
@@ -144,6 +188,15 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.stock_supplier} {self.stock_supplier}"
+
+    def save(self, *args, **kwargs):
+
+        lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
+        
+        self.stock_supplier_unit = lots[1]
+        self.lot_complect = lots[2]
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class Lot(models.Model):
@@ -167,26 +220,36 @@ class Lot(models.Model):
 
 
 class ProductImage(models.Model):
+    
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
     photo = models.ImageField(
-        "Изображение", upload_to="core.utils.get_file_path", null=True
+        "Изображение", upload_to=get_file_path_add, null=True
     )
     file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("ссылка у поставщика", max_length=100)
     hide = models.BooleanField("скрыть", default=False)
-    
+
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
 
     def __str__(self):
-            return mark_safe(
-                '<img src="{}" height="100" />'.format(self.photo)
-            )
+        return mark_safe(
+            '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
+        )
+    def save(self, *args, **kwargs):
+        if self.id:
+            hide = self.hide = True
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+    
+    def delete(self, *args, **kwargs):
+        hide = self.hide = True
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+    
 
 class ProductDocument(models.Model):
     product = models.ForeignKey(
@@ -195,12 +258,12 @@ class ProductDocument(models.Model):
         # on_delete=models.PROTECT,
     )
     document = models.FileField(
-        "Документ", upload_to="core.utils.get_file_path", null=True
+        "Документ", upload_to=get_file_path_add, null=True
     )
     file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
-    
+
     class Meta:
         verbose_name = "Документация"
         verbose_name_plural = "Документации"

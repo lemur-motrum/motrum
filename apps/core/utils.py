@@ -3,26 +3,29 @@ import shutil
 import requests
 import hashlib
 import os
-from apps.product.models import Lot, Product, ProductImage
+
+
 from apps.supplier.models import Discount, SupplierCategoryProductAll
 from django.conf import settings
 from project.settings import MEDIA_ROOT
 
 
 # расчет цены для мотрум
+# TODO: переписать на трае ексепт
 def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
     motrum_price = rub_price_supplier
     percent = 0
+
     # получение процента функция
     def get_percent(item):
         for i in item:
-            print(i)
-            return i.percent 
+
+            return i.percent
 
     # скидка по группе
     if item_group:
         discount_group = Discount.objects.filter(group_catalog=item_group.id)
-        print(discount_group,"!!!!!!!!!!!!!!!")
+        print(discount_group, "!!!!!!!!!!!!!!!")
         if discount_group:
             percent = get_percent(discount_group)
     # скидка по категории
@@ -33,46 +36,48 @@ def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
         )
         if discount_categ:
             percent = get_percent(discount_categ)
-            
+
     else:
         discount_all = Discount.objects.filter(
             vendor=vendors, group_catalog__isnull=True, category_catalog__isnull=True
         )
-        
+
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
         # нет скидки
-        
 
-    # if discount_group:
-    #     percent = get_percent(discount_group)
-
-    # elif discount_categ:
-    #     percent = get_percent(discount_categ)
-
-    # elif discount_all:
-    #     percent = get_percent(discount_all)
-    # else:
-    #     percent = 0
-    print(percent)
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * int(percent))
     # TODO обрезать цены
 
     return motrum_price
 
 
-# получение комплектности и расчет штук
-def get_lot(lot, stock_supplier):
-
-    if lot == "base":
-        lots = Lot.objects.get(name_shorts="шт")
-        lot_complect = 1
-        lot_stock = stock_supplier
+def get_price_supplier_rub(currency, vat, price_supplier):
+    if currency == "RUB":
+        price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
+        return price_supplier_vat
     else:
-        pass
+        val = 1
+        price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
+        price_supplier_rub = price_supplier_vat * val * 1.03
+        
+        return price_supplier_rub
 
-    return (lots, lot_complect, lot_stock)
+
+# получение комплектности и расчет штук
+def get_lot(lot, stock_supplier, lot_complect):
+    from apps.product.models import Lot
+
+    if lot == "base" or lot == "штука":
+        lots = Lot.objects.get(name_shorts="шт")
+        lot_stock = stock_supplier
+        lot_complect = 1
+    else:
+        lots = Lot.objects.get(name=lot)
+        lot_stock = stock_supplier * lot_complect
+        lot_complect = lot_complect
+    return (lots, lot_stock, lot_complect)
 
 
 # остатки на складе мотрум
@@ -82,20 +87,16 @@ def get_lot_motrum():
 
 # артикул мотрум
 def create_article_motrum(supplier, vendor):
-    if Product.objects.filter(supplier=supplier).exists():
-        # если есть товары вендора
-        last_item = Product.objects.filter(supplier=supplier).latest("id")
+    from apps.product.models import Product
 
-        last_item_id = int(last_item.article) + 1
-
+    try:
+        prev_product = Product.objects.filter(supplier=supplier).latest("id")
+        last_item_id = int(prev_product.article) + 1
         name = str(last_item_id)
-    else:
-        # если нет товаров вендора
+    except Product.DoesNotExist:
+        prev_product = None
         name = f"{supplier}{vendor}1"
-
     return name
-
-
 
 
 # категории дял товара
@@ -128,9 +129,12 @@ def check_media_directory_exist(
 
 
 def create_name_file_downloading(article_suppliers, item_count):
-    count = f"{item_count:05}"
-    filename = "{0}_{1}".format(article_suppliers, count)
-    return filename
+    try:
+        count = f"{item_count:05}"
+        filename = "{0}_{1}".format(article_suppliers, count)
+        return filename
+    except item_count.DoesNotExist:
+        return filename
 
 
 def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, place):
@@ -168,11 +172,49 @@ def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, pl
 
 def save_file_product(link, image_path, filename, filetype):
     r = requests.get(link, stream=True)
-    print( filename + filetype)
+    print(filename + filetype)
     with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
         ofile.write(r.content)
 
+def get_file_path_add(instance, filename):
+   
+    from apps.product.models import ProductImage
 
-# def save_image(product_id):
-#     images = ProductImage.objects.filter(product=product_id).exists()
-#     if images:
+    base_dir = "products"
+    base_dir_supplier = instance.product.supplier.slug
+    base_dir_vendor = instance.product.vendor.slug
+    images_last_list = filename.split(".")
+    type_file = "." + images_last_list[-1]
+    if images_last_list[-1] == "jpg" or images_last_list[-1] == "png":
+        path_name = "img"
+    else:
+        path_name = "document"
+
+    try:
+        images_last = ProductImage.objects.filter(product=instance.product).latest("id")
+        item_count = ProductImage.objects.filter(product=instance.product).count()
+
+    except ProductImage.DoesNotExist:
+        item_count = 1
+
+  
+
+    filenames = create_name_file_downloading(
+        instance.product.article_supplier, item_count
+    )
+   
+    check_media_directory_exist(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        instance.product.article_supplier,
+        path_name,
+    )
+    return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        instance.product.article_supplier,
+        path_name,
+        filenames + type_file,
+    )

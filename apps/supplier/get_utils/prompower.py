@@ -26,6 +26,7 @@ from apps.product.models import (
     Stock,
 )
 from apps.supplier.models import Discount, Supplier, SupplierCategoryProductAll, Vendor
+from project.settings import MEDIA_ROOT
 
 
 def prompower_api():
@@ -86,7 +87,7 @@ def prompower_api():
         i = 0
         for data_item in data:
             i += 1
-            if i < 10:
+            if i < 20:
                 # основная инфа
                 article_suppliers = data_item["article"].lower()
                 article = Product.objects.filter(
@@ -111,10 +112,11 @@ def prompower_api():
                 # остатки
                 lot_short = "base"
                 stock_supplier = data_item["instock"]
-                lots = get_lot(lot_short, stock_supplier)
+                lot_complect = 1
+                lots = get_lot(lot_short, stock_supplier,lot_complect)
                 lot = lots[0]
-                lot_complect = lots[1]
-                stock_supplier_unit = lots[2]
+                
+                stock_supplier_unit = lots[1]
                 stock_motrum = 0
 
                 name = data_item["title"]
@@ -192,15 +194,14 @@ def prompower_api():
 
                 # обновление товара
                 if article:
-                    
+
                     article = Product.objects.get(article_supplier=article_suppliers)
-                    print(article.price)
-                    price_product = Price.objects.filter(id=article.price.id).update(
-                        price_supplier=price_supplier,
+                    print(article)
+                    price_product = Price.objects.filter(prod=article).update(
                         rub_price_supplier=rub_price_supplier,
                         price_motrum=price_motrum,
                     )
-                    stock_product = Stock.objects.filter(id=article.stock.id).update(
+                    stock_product = Stock.objects.filter(prod=article).update(
                         lot=lot,
                         stock_supplier=stock_supplier,
                         lot_complect=lot_complect,
@@ -223,7 +224,7 @@ def prompower_api():
                         description=description,
                     )
                     price_product = Price.objects.create(
-                        prod =new_product,
+                        prod=new_product,
                         currency=currency,
                         vat=vat_catalog_id,
                         price_supplier=price_supplier,
@@ -231,9 +232,9 @@ def prompower_api():
                         price_motrum=price_motrum,
                     )
 
-                    Product.objects.filter(id=new_product.id).update(price=price_product)
+                    # Product.objects.filter(id=new_product.id).update(price=price_product)
                     stock_product = Stock.objects.create(
-                        prod =new_product,
+                        prod=new_product,
                         lot=lot,
                         stock_supplier=stock_supplier,
                         lot_complect=lot_complect,
@@ -241,7 +242,7 @@ def prompower_api():
                         stock_motrum=stock_motrum,
                     )
 
-                    Product.objects.filter(id=new_product.id).update(stock=stock_product)
+                    # Product.objects.filter(id=new_product.id).update(stock=stock_product)
                     save_image(new_product)
                     save_document(new_product)
 

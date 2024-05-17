@@ -15,45 +15,51 @@ from project.settings import MEDIA_ROOT
 def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
     motrum_price = rub_price_supplier
     percent = 0
+    sale = None
 
     # получение процента функция
     def get_percent(item):
         for i in item:
-
             return i.percent
 
     # скидка по группе
     if item_group:
-        discount_group = Discount.objects.filter(group_catalog=item_group.id)
+        discount_group = Discount.objects.filter(group_supplier=item_group.id)
         print(discount_group, "!!!!!!!!!!!!!!!")
         if discount_group:
             percent = get_percent(discount_group)
+            sale = discount_group
     # скидка по категории
     elif item_category:
         discount_categ = Discount.objects.filter(
-            category_catalog=item_category.id,
-            group_catalog__isnull=True,
+            category_supplier=item_category.id,
+            group_supplier__isnull=True,
         )
         if discount_categ:
             percent = get_percent(discount_categ)
+            sale = discount_categ
 
     else:
         discount_all = Discount.objects.filter(
-            vendor=vendors, group_catalog__isnull=True, category_catalog__isnull=True
+            vendor=vendors, group_supplier__isnull=True, category_supplier__isnull=True
         )
 
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
+            sale = discount_all
         # нет скидки
 
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * int(percent))
     # TODO обрезать цены
 
-    return motrum_price
+    return motrum_price, sale
 
 
-def get_price_supplier_rub(currency, vat, price_supplier):
+def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
+    if vat_includ == True:
+        vat = 0
+
     if currency == "RUB":
         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
         return price_supplier_vat
@@ -61,7 +67,6 @@ def get_price_supplier_rub(currency, vat, price_supplier):
         val = 1
         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
         price_supplier_rub = price_supplier_vat * val * 1.03
-        
         return price_supplier_rub
 
 
@@ -100,13 +105,18 @@ def create_article_motrum(supplier, vendor):
 
 
 # категории дял товара
-def get_category(supplier, category_name):
-    item_category_all = SupplierCategoryProductAll.objects.get(
-        supplier=supplier, name=category_name
+def get_category(supplier, vendor, category_name):
+    try:
+        item_category_all = SupplierCategoryProductAll.objects.get(
+            supplier=supplier, name=category_name
     )
-
-    item_category = item_category_all.category_catalog
-    item_group = item_category_all.group_catalog
+        item_category = item_category_all.category_supplier
+        item_group = item_category_all.group_supplier
+    except SupplierCategoryProductAll.DoesNotExist:
+        item_category = None
+        item_group =None
+    
+    
     print(item_category, "item_category")
     print(item_group, "item_group")
     print("/////////")
@@ -176,8 +186,9 @@ def save_file_product(link, image_path, filename, filetype):
     with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
         ofile.write(r.content)
 
+
 def get_file_path_add(instance, filename):
-   
+
     from apps.product.models import ProductImage
 
     base_dir = "products"
@@ -197,12 +208,10 @@ def get_file_path_add(instance, filename):
     except ProductImage.DoesNotExist:
         item_count = 1
 
-  
-
     filenames = create_name_file_downloading(
         instance.product.article_supplier, item_count
     )
-   
+
     check_media_directory_exist(
         base_dir,
         base_dir_supplier,

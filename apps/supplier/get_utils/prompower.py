@@ -46,6 +46,12 @@ def prompower_api():
     response = requests.request("POST", url, headers=headers, data=payload)
     data = response.json()
     prompower = Supplier.objects.get(slug="prompower")
+    vendors = Vendor.objects.filter(supplier=prompower)
+    for vendors_item in vendors:
+        if vendors_item.slug == "prompower":
+            vendor_ids = vendors_item.id
+            vendor_names = vendors_item.slug
+            vendoris = vendors_item
 
     # получение всех категорий для каталога
     def add_category():
@@ -65,8 +71,16 @@ def prompower_api():
         for category in unique_category:
             category_lower = category["name"].lower()
 
+            # category_item = SupplierCategoryProductAll.objects.update_or_create(
+            #     name=category_lower, article_name=0, supplier=prompower, vendor=vendoris
+            # )
             category_item = SupplierCategoryProductAll.objects.update_or_create(
-                name=category_lower, article_name=0, supplier=prompower
+                name=category_lower,
+                article_name=0,
+                supplier = prompower,
+                vendor = vendoris,
+                defaults={category_lower: category_lower},
+                create_defaults={"name": category_lower,},
             )
 
     def add_products():
@@ -93,11 +107,12 @@ def prompower_api():
                 article = Product.objects.filter(
                     article_supplier=article_suppliers
                 ).exists()
-
+    
                 category_lower = data_item["category"].lower()
-                item_category = get_category(prompower.id, category_lower)[0]
-                item_group = get_category(prompower.id, category_lower)[1]
                 print(category_lower)
+                item_category = get_category(prompower.id, vendori, category_lower)[0]
+                item_group = get_category(prompower.id, vendori, category_lower)[1]
+
                 # цены
                 price_supplier_novat = int(data_item["price"])
                 # для мотрум добавляем в цену ндс(приходят без ндс)
@@ -106,16 +121,20 @@ def prompower_api():
                 )
                 rub_price_supplier = price_supplier
                 # скидки
-                price_motrum = get_price_motrum(
+                price_motrum_all = get_price_motrum(
                     item_category, item_group, vendor_id, rub_price_supplier
                 )
+                price_motrum = price_motrum_all[0]
+                for sales in price_motrum_all[1]:
+                    sale =sales
+                # sale_all = price_motrum_all[1]
                 # остатки
                 lot_short = "base"
                 stock_supplier = data_item["instock"]
                 lot_complect = 1
-                lots = get_lot(lot_short, stock_supplier,lot_complect)
+                lots = get_lot(lot_short, stock_supplier, lot_complect)
                 lot = lots[0]
-                
+
                 stock_supplier_unit = lots[1]
                 stock_motrum = 0
 
@@ -152,7 +171,7 @@ def prompower_api():
                             image_product = ProductImage.objects.create(
                                 product=new_product,
                                 photo=image_path_all,
-                                file=image_path_all,
+                                # file=image_path_all,
                                 link=img,
                             )
 
@@ -195,19 +214,19 @@ def prompower_api():
                 # обновление товара
                 if article:
 
-                    article = Product.objects.get(article_supplier=article_suppliers)
+                    # article = Product.objects.get(article_supplier=article_suppliers)
                     print(article)
-                    price_product = Price.objects.filter(prod=article).update(
-                        rub_price_supplier=rub_price_supplier,
-                        price_motrum=price_motrum,
-                    )
-                    stock_product = Stock.objects.filter(prod=article).update(
-                        lot=lot,
-                        stock_supplier=stock_supplier,
-                        lot_complect=lot_complect,
-                        stock_supplier_unit=stock_supplier_unit,
-                        stock_motrum=stock_motrum,
-                    )
+                    # price_product = Price.objects.filter(prod=article).update(
+                    #     rub_price_supplier=rub_price_supplier,
+                    #     price_motrum=price_motrum,sale=sale
+                    # )
+                    # stock_product = Stock.objects.filter(prod=article).update(
+                    #     lot=lot,
+                    #     stock_supplier=stock_supplier,
+                    #     lot_complect=lot_complect,
+                    #     stock_supplier_unit=stock_supplier_unit,
+                    #     stock_motrum=stock_motrum,
+                    # )
                 # созданеи товара
                 else:
 
@@ -227,9 +246,11 @@ def prompower_api():
                         prod=new_product,
                         currency=currency,
                         vat=vat_catalog_id,
+                        vat_include=False,
                         price_supplier=price_supplier,
                         rub_price_supplier=rub_price_supplier,
                         price_motrum=price_motrum,
+                        sale=sale
                     )
 
                     # Product.objects.filter(id=new_product.id).update(price=price_product)

@@ -1,5 +1,6 @@
 from email.policy import default
 import os
+from pyexpat import model
 from django.utils import timezone
 from django.db import models
 
@@ -15,7 +16,7 @@ from apps.core.utils import (
     get_price_motrum,
     get_price_supplier_rub,
 )
-from apps.supplier.models import Supplier, Vendor
+from apps.supplier.models import Discount, Supplier, Vendor
 from pytils import translit
 from django.utils.text import slugify
 from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
@@ -127,9 +128,18 @@ class Price(models.Model):
         verbose_name="НДС",
         on_delete=models.PROTECT,
     )
+    vat_include = models.BooleanField("Включен ли налог в цену",default=True)
+
     price_supplier = models.FloatField("Цена в каталоге поставщика в валюте каталога")
-    rub_price_supplier = models.FloatField("Цена в каталоге поставщика в рублях")
+    rub_price_supplier = models.FloatField("Цена в каталоге поставщика в рублях + НДС")
     price_motrum = models.FloatField("Цена поставщика для Motrum в рублях")
+    sale = models.ForeignKey(
+        Discount,
+        verbose_name="Примененная скидка",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Цена"
@@ -141,14 +151,19 @@ class Price(models.Model):
     def save(self, *args, **kwargs):
 
         rub_price_supplier = get_price_supplier_rub(
-            self.currency.words_code, self.vat.name, self.price_supplier
+            self.currency.words_code, self.vat.name,self.vat_include, self.price_supplier
         )
         self.rub_price_supplier = rub_price_supplier
-        price_motrum = get_price_motrum(
+        price_motrum_all = get_price_motrum(
             self.prod.category, self.prod.group, self.prod.vendor, rub_price_supplier
         )
-        self.price_motrum = price_motrum
 
+        price_motrum = price_motrum_all[0]
+        for sales in price_motrum_all[1]:
+            sale = sales
+        self.price_motrum = price_motrum
+        self.sale = sale
+        # self.vat_include = 
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
@@ -171,12 +186,16 @@ class Stock(models.Model):
         null=True,
     )
     lot = models.ForeignKey(
-        "Lot", verbose_name="Единица измерения поставщика", on_delete=models.PROTECT,
+        "Lot",
+        verbose_name="Единица измерения поставщика",
+        on_delete=models.PROTECT,
     )
     stock_supplier = models.PositiveIntegerField(
         "Остаток на складе поставщика в единицах поставщика"
     )
-    lot_complect = models.PositiveIntegerField("Содержание набора (комплекта) в штуках", default=1)
+    lot_complect = models.PositiveIntegerField(
+        "Содержание набора (комплекта) в штуках", default=1
+    )
     stock_supplier_unit = models.PositiveIntegerField(
         "Остаток на складе поставщика в штуках"
     )
@@ -192,7 +211,7 @@ class Stock(models.Model):
     def save(self, *args, **kwargs):
 
         lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
-        
+
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
 
@@ -220,16 +239,14 @@ class Lot(models.Model):
 
 
 class ProductImage(models.Model):
-    
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
-    photo = models.ImageField(
-        "Изображение", upload_to=get_file_path_add, null=True
-    )
-    file = models.CharField("фаил в системе", max_length=100, null=True)
+    photo = models.ImageField("Изображение", upload_to=get_file_path_add, null=True)
+    # file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("ссылка у поставщика", max_length=100)
     hide = models.BooleanField("скрыть", default=False)
 
@@ -241,15 +258,16 @@ class ProductImage(models.Model):
         return mark_safe(
             '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
         )
-    def save(self, *args, **kwargs):
-        if self.id:
-            hide = self.hide = True
-        super().save(*args, **kwargs)  # Call the "real" save() method.
-    
-    def delete(self, *args, **kwargs):
-        hide = self.hide = True
-        super().save(*args, **kwargs)  # Call the "real" save() method.
-    
+
+    # def save(self, *args, **kwargs):
+    #     if self.id:
+    #         self.hide = True
+    #     super().save(*args, **kwargs)  # Call the "real" save() method.
+
+    # def delete(self, *args, **kwargs):
+    #     self.hide = True
+    #     super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
 class ProductDocument(models.Model):
     product = models.ForeignKey(
@@ -257,9 +275,7 @@ class ProductDocument(models.Model):
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
-    document = models.FileField(
-        "Документ", upload_to=get_file_path_add, null=True
-    )
+    document = models.FileField("Документ", upload_to=get_file_path_add, null=True)
     file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)

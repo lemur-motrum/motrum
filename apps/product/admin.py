@@ -43,11 +43,13 @@ class PriceInline(admin.TabularInline):
     fields = (
         "currency",
         "vat",
+        "vat_include",
         "price_supplier",
         "rub_price_supplier",
         "price_motrum",
+        "sale"
     )
-    readonly_fields = ["rub_price_supplier","price_motrum"]
+    readonly_fields = ["rub_price_supplier","price_motrum","sale"]
 
 
 class StockInline(admin.TabularInline):
@@ -58,6 +60,7 @@ class StockInline(admin.TabularInline):
         "lot_complect",
         "stock_supplier_unit",
         "stock_motrum",
+         
     )
     
     readonly_fields = ["stock_supplier_unit"]

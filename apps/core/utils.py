@@ -12,10 +12,13 @@ from project.settings import MEDIA_ROOT
 
 # расчет цены для мотрум
 # TODO: переписать на трае ексепт
-def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
+def get_price_motrum(
+    item_category, item_group, vendors, rub_price_supplier, all_item_group
+):
     motrum_price = rub_price_supplier
     percent = 0
     sale = None
+    # print(item_category, item_group)
 
     # получение процента функция
     def get_percent(item):
@@ -25,34 +28,48 @@ def get_price_motrum(item_category, item_group, vendors, rub_price_supplier):
     # скидка по группе
     if item_group:
         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-        print(discount_group, "!!!!!!!!!!!!!!!")
+        # print(discount_group, "!!!!!!!!!!!!!!!")
         if discount_group:
             percent = get_percent(discount_group)
             sale = discount_group
     # скидка по категории
     elif item_category:
+        # print(item_category, "!!!!!!!!!!!!!!!")
         discount_categ = Discount.objects.filter(
             category_supplier=item_category.id,
             group_supplier__isnull=True,
         )
         if discount_categ:
             percent = get_percent(discount_categ)
-            sale = discount_categ
+            sales = discount_categ
+ 
+    elif all_item_group:
+        discount_all_group = Discount.objects.filter(
+            category_supplier_all=all_item_group.id,
+            vendor=vendors,
+            group_supplier__isnull=True,
+            category_supplier__isnull=True,
+        )
+        if discount_all_group:
+            percent = get_percent(discount_all_group)
+            sales = discount_all_group
+         
 
     else:
         discount_all = Discount.objects.filter(
             vendor=vendors, group_supplier__isnull=True, category_supplier__isnull=True
         )
-
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
-            sale = discount_all
+            sales = discount_all
+            
         # нет скидки
 
-    motrum_price = rub_price_supplier - (rub_price_supplier / 100 * int(percent))
+    motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # TODO обрезать цены
-
+    # for sal in sales:
+    #             sale = sal
     return motrum_price, sale
 
 
@@ -109,17 +126,12 @@ def get_category(supplier, vendor, category_name):
     try:
         item_category_all = SupplierCategoryProductAll.objects.get(
             supplier=supplier, name=category_name
-    )
+        )
         item_category = item_category_all.category_supplier
         item_group = item_category_all.group_supplier
     except SupplierCategoryProductAll.DoesNotExist:
         item_category = None
-        item_group =None
-    
-    
-    print(item_category, "item_category")
-    print(item_group, "item_group")
-    print("/////////")
+        item_group = None
     return (item_category, item_group)
 
 
@@ -139,7 +151,9 @@ def check_media_directory_exist(
 
 
 def create_name_file_downloading(article_suppliers, item_count):
+    
     try:
+        print(item_count)
         count = f"{item_count:05}"
         filename = "{0}_{1}".format(article_suppliers, count)
         return filename

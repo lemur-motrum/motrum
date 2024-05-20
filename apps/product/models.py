@@ -16,7 +16,7 @@ from apps.core.utils import (
     get_price_motrum,
     get_price_supplier_rub,
 )
-from apps.supplier.models import Discount, Supplier, Vendor
+from apps.supplier.models import Discount, Supplier, SupplierCategoryProductAll, Vendor
 from pytils import translit
 from django.utils.text import slugify
 from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
@@ -43,6 +43,13 @@ class Product(models.Model):
     additional_article_supplier = models.CharField(
         "Дополнительный артикул поставщика", max_length=50, blank=True, null=True
     )
+    category_supplier_all = models.ForeignKey(
+        SupplierCategoryProductAll,
+        verbose_name="Приходящая категории товара от поставщиков",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     category = models.ForeignKey(
         "CategoryProduct",
         verbose_name="Категория",
@@ -58,7 +65,7 @@ class Product(models.Model):
         null=True,
     )
     description = models.CharField("Описание товара", max_length=1000, null=True)
-    name = models.CharField("Название товара", max_length=50)
+    name = models.CharField("Название товара", max_length=150)
     # price = models.ForeignKey("Price", on_delete=models.CASCADE,blank=True, null=True)
     # stock = models.ForeignKey("Stock", on_delete=models.CASCADE,blank=True, null=True)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
@@ -128,7 +135,7 @@ class Price(models.Model):
         verbose_name="НДС",
         on_delete=models.PROTECT,
     )
-    vat_include = models.BooleanField("Включен ли налог в цену",default=True)
+    vat_include = models.BooleanField("Включен ли налог в цену", default=True)
 
     price_supplier = models.FloatField("Цена в каталоге поставщика в валюте каталога")
     rub_price_supplier = models.FloatField("Цена в каталоге поставщика в рублях + НДС")
@@ -151,19 +158,27 @@ class Price(models.Model):
     def save(self, *args, **kwargs):
 
         rub_price_supplier = get_price_supplier_rub(
-            self.currency.words_code, self.vat.name,self.vat_include, self.price_supplier
+            self.currency.words_code,
+            self.vat.name,
+            self.vat_include,
+            self.price_supplier,
         )
+        print(rub_price_supplier)
         self.rub_price_supplier = rub_price_supplier
         price_motrum_all = get_price_motrum(
-            self.prod.category, self.prod.group, self.prod.vendor, rub_price_supplier
+            self.prod.category,
+            self.prod.group,
+            self.prod.vendor,
+            rub_price_supplier,
+            self.prod.category_supplier_all,
         )
 
         price_motrum = price_motrum_all[0]
-        for sales in price_motrum_all[1]:
-            sale = sales
+        # for sales in price_motrum_all[1]:
+        sale = price_motrum_all[1]
         self.price_motrum = price_motrum
         self.sale = sale
-        # self.vat_include = 
+        # self.vat_include =
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
@@ -277,6 +292,7 @@ class ProductDocument(models.Model):
     )
     document = models.FileField("Документ", upload_to=get_file_path_add, null=True)
     file = models.CharField("фаил в системе", max_length=100, null=True)
+    type_doc = models.CharField("Тип документации", max_length=150, null=True)
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
 

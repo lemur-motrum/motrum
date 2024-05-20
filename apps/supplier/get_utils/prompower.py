@@ -103,13 +103,13 @@ def prompower_api():
             i += 1
             if i < 20:
                 # основная инфа
-                article_suppliers = data_item["article"].lower()
+                article_suppliers = data_item["article"]
                 article = Product.objects.filter(
                     article_supplier=article_suppliers
                 ).exists()
     
                 category_lower = data_item["category"].lower()
-                print(category_lower)
+            
                 item_category = get_category(prompower.id, vendori, category_lower)[0]
                 item_group = get_category(prompower.id, vendori, category_lower)[1]
 
@@ -121,13 +121,13 @@ def prompower_api():
                 )
                 rub_price_supplier = price_supplier
                 # скидки
+                all_item_group = None 
                 price_motrum_all = get_price_motrum(
-                    item_category, item_group, vendor_id, rub_price_supplier
+                    item_category, item_group, vendor_id, rub_price_supplier,all_item_group
                 )
                 price_motrum = price_motrum_all[0]
-                for sales in price_motrum_all[1]:
-                    sale =sales
-                # sale_all = price_motrum_all[1]
+                sale =  price_motrum_all[1]
+
                 # остатки
                 lot_short = "base"
                 stock_supplier = data_item["instock"]
@@ -209,6 +209,7 @@ def prompower_api():
                                 document=document_path_all,
                                 file=document_path_all,
                                 link=doc,
+                                type_doc="3D-модель"
                             )
 
                 # обновление товара

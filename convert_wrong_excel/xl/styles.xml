@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+	<numFmts count="1">
+		<numFmt numFmtId="50" formatCode=""/>
+	</numFmts>
+	<fonts count="6">
+		<font>
+			<name val="Arial"/>
+			<sz val="8"/>
+		</font>
+		<font>
+			<name val="Arial"/>
+			<charset val="0"/>
+			<family val="2"/>
+			<b val="false"/>
+			<i val="false"/>
+			<strike val="false"/>
+			<sz val="8"/>
+			<u val="none"/>
+		</font>
+		<font>
+			<name val="Arial"/>
+			<charset val="0"/>
+			<family val="2"/>
+			<b val="true"/>
+			<i val="false"/>
+			<strike val="false"/>
+			<sz val="12"/>
+			<u val="none"/>
+		</font>
+		<font>
+			<name val="Arial"/>
+			<charset val="0"/>
+			<family val="2"/>
+			<b val="true"/>
+			<i val="false"/>
+			<strike val="false"/>
+			<color rgb="594304"/>
+			<sz val="8"/>
+			<u val="none"/>
+		</font>
+		<font>
+			<name val="Arial"/>
+			<charset val="0"/>
+			<family val="2"/>
+			<b val="false"/>
+			<i val="false"/>
+			<strike val="false"/>
+			<color rgb="000000"/>
+			<sz val="8"/>
+			<u val="none"/>
+		</font>
+		<font>
+			<name val="Arial"/>
+			<charset val="0"/>
+			<family val="2"/>
+			<b val="true"/>
+			<i val="false"/>
+			<strike val="false"/>
+			<color rgb="000000"/>
+			<sz val="8"/>
+			<u val="none"/>
+		</font>
+	</fonts>
+	<fills count="6">
+		<fill>
+			<patternFill patternType="none"/>
+		</fill>
+		<fill>
+			<patternFill patternType="gray125"/>
+		</fill>
+		<fill>
+			<patternFill patternType="solid">
+				<fgColor rgb="F5F2DD"/>
+				<bgColor auto="true"/>
+			</patternFill>
+		</fill>
+		<fill>
+			<patternFill patternType="solid">
+				<fgColor rgb="FFFFFF"/>
+				<bgColor auto="true"/>
+			</patternFill>
+		</fill>
+		<fill>
+			<patternFill patternType="solid">
+				<fgColor rgb="00FF00"/>
+				<bgColor auto="true"/>
+			</patternFill>
+		</fill>
+		<fill>
+			<patternFill patternType="solid">
+				<fgColor rgb="FF8D8D"/>
+				<bgColor auto="true"/>
+			</patternFill>
+		</fill>
+	</fills>
+	<borders count="2">
+		<border>
+			<left/>
+			<right/>
+			<top/>
+			<bottom/>
+			<diagonal/>
+		</border>
+		<border>
+			<left style="thin">
+				<color rgb="B3AC86"/>
+			</left>
+			<right style="thin">
+				<color rgb="B3AC86"/>
+			</right>
+			<top style="thin">
+				<color rgb="B3AC86"/>
+			</top>
+			<bottom style="thin">
+				<color rgb="B3AC86"/>
+			</bottom>
+			<diagonal/>
+		</border>
+	</borders>
+	<cellStyleXfs count="1">
+		<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+	</cellStyleXfs>
+	<cellXfs count="24">
+		<xf/>
+		<xf applyAlignment="true">
+			<alignment horizontal="left"/>
+		</xf>
+		<xf fontId="2" applyFont="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top"/>
+		</xf>
+		<xf fontId="1" applyFont="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top"/>
+		</xf>
+		<xf fontId="1" applyFont="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1"/>
+		</xf>
+		<xf fontId="3" fillId="2" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1"/>
+		</xf>
+		<xf fontId="3" fillId="2" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="1"/>
+		</xf>
+		<xf fontId="3" fillId="2" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="2"/>
+		</xf>
+		<xf fontId="4" fillId="3" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+		<xf fontId="4" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+		<xf fontId="5" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="2"/>
+		</xf>
+		<xf fontId="4" fillId="5" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+		<xf fontId="3" fillId="2" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+		<xf fontId="4" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="4" fillId="3" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="4" fillId="5" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="5" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+		<xf fontId="5" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="4" fillId="4" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="5"/>
+		</xf>
+		<xf fontId="3" fillId="2" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="4" fillId="3" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="5"/>
+		</xf>
+		<xf fontId="4" fillId="5" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="5"/>
+		</xf>
+		<xf fontId="5" fillId="5" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="4"/>
+		</xf>
+		<xf fontId="5" fillId="5" borderId="1" applyFont="true" applyFill="true" applyBorder="true" applyAlignment="true">
+			<alignment horizontal="left" vertical="top" wrapText="1" indent="3"/>
+		</xf>
+	</cellXfs>
+	<cellStyles count="1">
+		<cellStyle name="Обычный" xfId="0" builtinId="0"/>
+	</cellStyles>
+	<dxfs count="0"/>
+	<tableStyles count="0" defaultTableStyle="TableStyleMedium9" defaultPivotStyle="PivotStyleLight16"/>
+</styleSheet>

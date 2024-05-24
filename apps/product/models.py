@@ -37,6 +37,8 @@ class Product(models.Model):
         Vendor,
         verbose_name="Производитель",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
 
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
@@ -64,7 +66,9 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-    description = models.CharField("Описание товара", max_length=1000, null=True)
+    description = models.CharField(
+        "Описание товара", max_length=1000, blank=True, null=True
+    )
     name = models.CharField("Название товара", max_length=150)
     # price = models.ForeignKey("Price", on_delete=models.CASCADE,blank=True, null=True)
     # stock = models.ForeignKey("Stock", on_delete=models.CASCADE,blank=True, null=True)
@@ -134,12 +138,26 @@ class Price(models.Model):
         Vat,
         verbose_name="НДС",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
 
-    price_supplier = models.FloatField("Цена в каталоге поставщика в валюте каталога")
-    rub_price_supplier = models.FloatField("Цена в каталоге поставщика в рублях + НДС")
-    price_motrum = models.FloatField("Цена поставщика для Motrum в рублях")
+    price_supplier = models.FloatField(
+        "Цена в каталоге поставщика в валюте каталога",
+        blank=True,
+        null=True,
+    )
+    rub_price_supplier = models.FloatField(
+        "Цена в каталоге поставщика в рублях + НДС",
+        blank=True,
+        null=True,
+    )
+    price_motrum = models.FloatField(
+        "Цена поставщика для Motrum в рублях",
+        blank=True,
+        null=True,
+    )
     sale = models.ForeignKey(
         Discount,
         verbose_name="Примененная скидка",
@@ -156,40 +174,43 @@ class Price(models.Model):
         return f"{self.rub_price_supplier} {self.price_motrum}"
 
     def save(self, *args, **kwargs):
-
-        rub_price_supplier = get_price_supplier_rub(
-            self.currency.words_code,
-            self.vat.name,
-            self.vat_include,
-            self.price_supplier,
-        )
-        print(rub_price_supplier)
-        self.rub_price_supplier = rub_price_supplier
-        price_motrum_all = get_price_motrum(
-            self.prod.category,
-            self.prod.group,
-            self.prod.vendor,
-            rub_price_supplier,
-            self.prod.category_supplier_all,
-        )
-
-        price_motrum = price_motrum_all[0]
-        # for sales in price_motrum_all[1]:
-        sale = price_motrum_all[1]
-        self.price_motrum = price_motrum
-        self.sale = sale
-        # self.vat_include =
+      
+        if self.price_supplier is not None:
+            rub_price_supplier = get_price_supplier_rub(
+                self.currency.words_code,
+                self.vat.name,
+                self.vat_include,
+                self.price_supplier,
+            )
+            print(rub_price_supplier)
+            self.rub_price_supplier = rub_price_supplier
+            price_motrum_all = get_price_motrum(
+                self.prod.category,
+                self.prod.group,
+                self.prod.vendor,
+                rub_price_supplier,
+                self.prod.category_supplier_all,
+            )
+            
+            price_motrum = price_motrum_all[0]
+            # for sales in price_motrum_all[1]:
+            sale = price_motrum_all[1]
+            self.price_motrum = price_motrum
+            self.sale = sale
+            # self.vat_include =
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class CurrencyRate(models.Model):
     currency = models.ForeignKey(
         Currency,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
 
     date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    rate = models.PositiveIntegerField("курс ЦБ")
+    value = models.FloatField("курс ЦБ", blank=True, null=True)
+    vunit_rate = models.FloatField("курс ЦБ за еденицу", blank=True, null=True)
+    count = models.PositiveIntegerField("Единиц", blank=True, null=True)
 
 
 class Stock(models.Model):
@@ -310,9 +331,9 @@ class ProductProperty(models.Model):
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
-    name = models.CharField("название", max_length=40)
-    value = models.CharField("значение", max_length=40)
-    unit_measure = models.CharField("значение", max_length=40, null=True)
+    name = models.CharField("название", max_length=100)
+    value = models.CharField("значение", max_length=100)
+    unit_measure = models.CharField("значение", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
 
     class Meta:

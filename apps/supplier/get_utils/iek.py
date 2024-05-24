@@ -1,6 +1,7 @@
 from html import entities
 import requests
 
+from apps import product
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -17,6 +18,7 @@ from apps.product.models import (
     Product,
     ProductDocument,
     ProductImage,
+    ProductProperty,
     Stock,
 )
 from apps.supplier.models import Supplier, SupplierCategoryProductAll, Vendor
@@ -92,7 +94,7 @@ def iek_api():
                 )
 
                 name = data_item["name"]
-                article
+                # article
                 # цены
 
                 vat = data_item["vat"]
@@ -273,9 +275,21 @@ def iek_api():
                 stock_motrum = 0
 
                 if article:
-                    pass
+                    article = Product.objects.get(article_supplier=article_suppliers)
+                    price_product = Price.objects.filter(
+                        prod=article,
+                    ).update(
+                        currency=currency,
+                        vat=vat_catalog,
+                        vat_include=vat_include,
+                        price_supplier=price_supplier,
+                        rub_price_supplier=rub_price_supplier,
+                        price_motrum=price_motrum,
+                        sale=sale,
+                    )
+                    get_iek_stock()
                 else:
-                    pass
+
                     new_article = create_article_motrum(supplier.id, vendor_id)
                     new_product = Product.objects.create(
                         article=new_article,
@@ -381,6 +395,7 @@ def iek_api():
                         stock_supplier_unit=stock_supplier_unit,
                         stock_motrum=stock_motrum,
                     )
+                    get_iek_stock()
 
         return data
 
@@ -389,7 +404,7 @@ def iek_api():
         prod_article = "sku="
         prod_items = ""
         for prod_item in products:
-            print(prod_item.article_supplier)
+
             str_item = str(prod_item.article_supplier)
             prod_article = prod_article + str_item + ","
             # prod_item = f"{prod_item}{str_item}"
@@ -409,12 +424,50 @@ def iek_api():
             product = data_item["sku"]
             for a in data_item["residues"].values():
                 stock += a
-            print(stock)
+
+            stocks = Stock.objects.filter(prod__article_supplier=product).update(
+                stock_supplier=stock, stock_supplier_unit=stock
+            )
 
         return data["shopItems"]
 
+    def get_iek_property(url_service, url_params):
+        url = "{0}{1}?{2}".format(base_url, url_service, url_params)
+        response = requests.request(
+            "GET", url, headers=headers, data=payload, allow_redirects=False
+        )
+        data = response.json()
+        for data_item in data:
+            prod_article = data_item["Code"]
+            # print(data_item)
+            for params in data_item["Features"]:
+                name = params["Attribute"]
+                value = params["value"]
+                pass_item = False
+                if "unit" in params:
+                    unit_measure = params["unit"]
+                else:
+                    names = name.split("_")
+                    print(names[0])
+                    name = names[0]
+                    if names[1] == "Code":
+                        pass_item = True
+
+                if pass_item == False:
+                    try:
+                        prod = Product.objects.get(article_supplier=prod_article)
+                        ProductProperty.objects.create(
+                            product=prod, name=name, value=value, unit_measure=unit_measure
+                        )
+                    except Product.DoesNotExist:
+                        pass
+
+        return data
+
     # get_iek_category("ddp", "TM=ONI")
 
-    get_iek_product("products", "TM=ONI")
-    iek = get_iek_stock()
+    # get_iek_product("products", "TM=ONI")
+    # get_iek_property("etim", "TM=ONI")
+    iek = get_iek_property("etim", "TM=ONI")
+    # get_iek_category("ddp",None)
     return iek

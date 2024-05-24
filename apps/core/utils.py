@@ -5,6 +5,8 @@ import hashlib
 import os
 
 
+from apps.core.models import Currency
+
 from apps.supplier.models import Discount, SupplierCategoryProductAll
 from django.conf import settings
 from project.settings import MEDIA_ROOT
@@ -42,7 +44,7 @@ def get_price_motrum(
         if discount_categ:
             percent = get_percent(discount_categ)
             sales = discount_categ
- 
+
     elif all_item_group:
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
@@ -53,7 +55,6 @@ def get_price_motrum(
         if discount_all_group:
             percent = get_percent(discount_all_group)
             sales = discount_all_group
-         
 
     else:
         discount_all = Discount.objects.filter(
@@ -63,7 +64,7 @@ def get_price_motrum(
         if discount_all:
             percent = get_percent(discount_all)
             sales = discount_all
-            
+
         # нет скидки
 
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
@@ -74,6 +75,8 @@ def get_price_motrum(
 
 
 def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
+    from apps.product.models import CurrencyRate
+
     if vat_includ == True:
         vat = 0
 
@@ -81,10 +84,140 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
         return price_supplier_vat
     else:
-        val = 1
+        currency_rate = CurrencyRate.objects.get(currency__words_code=currency)
+
         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-        price_supplier_rub = price_supplier_vat * val * 1.03
+        price_supplier_rub = price_supplier_vat * currency_rate * 1.03
         return price_supplier_rub
+
+
+# получение комплектности и расчет штук
+def get_lot(lot, stock_supplier, lot_complect):
+    from apps.product.models import Lot
+
+    if lot == "base" or lot == "штука":
+        lots = Lot.objects.get(name_shorts="шт")
+        lot_stock = stock_supplier
+        lot_complect = 1
+    else:
+        lots = Lot.objects.get(name=lot)
+        lot_stock = stock_supplier * lot_complect
+        lot_complect = lot_complect
+    return (lots, lot_stock, lot_complect)
+
+
+# остатки на складе мотрум
+def get_lot_motrum():
+    pass
+
+
+# артикул мотрум
+def create_article_motrum(supplier, vendor):
+    from apps.product.models import Product
+
+    try:
+        prev_product = Product.objects.filter(supplier=supplier).latest("id")
+        last_item_id = int(prev_product.article) + 1
+        name = str(last_item_id)
+    except Product.DoesNotExist:
+        prev_product = None
+        name = f"{supplier}{vendor}1"
+    return name
+
+
+# расчет цены
+import shutil
+import requests
+import hashlib
+import os
+
+
+from apps.core.models import Currency
+
+from apps.supplier.models import Discount, SupplierCategoryProductAll
+from django.conf import settings
+from project.settings import MEDIA_ROOT
+
+
+# расчет цены для мотрум
+# TODO: переписать на трае ексепт
+def get_price_motrum(
+    item_category, item_group, vendors, rub_price_supplier, all_item_group
+):
+    motrum_price = rub_price_supplier
+    percent = 0
+    sale = None
+    # print(item_category, item_group)
+
+    # получение процента функция
+    def get_percent(item):
+        for i in item:
+            return i.percent
+
+    # скидка по группе
+    if item_group:
+        discount_group = Discount.objects.filter(group_supplier=item_group.id)
+        # print(discount_group, "!!!!!!!!!!!!!!!")
+        if discount_group:
+            percent = get_percent(discount_group)
+            sale = discount_group
+    # скидка по категории
+    elif item_category:
+        # print(item_category, "!!!!!!!!!!!!!!!")
+        discount_categ = Discount.objects.filter(
+            category_supplier=item_category.id,
+            group_supplier__isnull=True,
+        )
+        if discount_categ:
+            percent = get_percent(discount_categ)
+            sale = discount_categ
+
+    elif all_item_group:
+        discount_all_group = Discount.objects.filter(
+            category_supplier_all=all_item_group.id,
+            vendor=vendors,
+            group_supplier__isnull=True,
+            category_supplier__isnull=True,
+        )
+        if discount_all_group:
+            percent = get_percent(discount_all_group)
+            sale = discount_all_group
+
+    else:
+        discount_all = Discount.objects.filter(
+            vendor=vendors, group_supplier__isnull=True, category_supplier__isnull=True
+        )
+        # скидка по всем вендору
+        if discount_all:
+            percent = get_percent(discount_all)
+            sale = discount_all
+
+        # нет скидки
+    
+    motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
+    # TODO обрезать цены
+    # for sal in sales:
+    #             sale = sal
+    return motrum_price, sale[0]
+
+
+def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
+    from apps.product.models import CurrencyRate
+
+    if vat_includ == True:
+        vat = 0
+    if price_supplier is not None: 
+        if currency == "RUB":
+            price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
+            return price_supplier_vat
+        else:
+            currency_rate = CurrencyRate.objects.get(currency__words_code=currency)
+
+            price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
+            price_supplier_rub = price_supplier_vat * currency_rate * 1.03
+            return price_supplier_rub
+    else:
+        return None    
 
 
 # получение комплектности и расчет штук
@@ -151,7 +284,7 @@ def check_media_directory_exist(
 
 
 def create_name_file_downloading(article_suppliers, item_count):
-    
+
     try:
         print(item_count)
         count = f"{item_count:05}"
@@ -241,3 +374,13 @@ def get_file_path_add(instance, filename):
         path_name,
         filenames + type_file,
     )
+
+def lot_chek(lot):
+    from apps.product.models import Lot
+
+    try:
+        lot_item = Lot.objects.get(name_shorts=lot)
+    except Lot.DoesNotExist:
+        lot_item = Lot.objects.create(name_shorts=lot, name=lot)
+
+    return lot_item

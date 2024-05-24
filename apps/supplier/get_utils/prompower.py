@@ -74,6 +74,14 @@ def prompower_api():
             # category_item = SupplierCategoryProductAll.objects.update_or_create(
             #     name=category_lower, article_name=0, supplier=prompower, vendor=vendoris
             # )
+            values = {
+                "article_name" : None,
+                "supplier": prompower,
+                "vendor" : vendoris,
+                
+                
+                
+            }
             category_item = SupplierCategoryProductAll.objects.update_or_create(
                 name=category_lower,
                 article_name=0,

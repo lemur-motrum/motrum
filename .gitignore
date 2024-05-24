@@ -3,6 +3,7 @@
 
 /media/
 /static/
+/tmp/
 
 
 __pycache__/

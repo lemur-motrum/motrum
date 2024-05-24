@@ -7,5 +7,7 @@ psycopg2
 Pytils 
 django-smart-selects
 Pillow
+openpyxl
+xlrd
 # celery
 # redis

@@ -78,12 +78,26 @@ class Vendor(models.Model):
 
 class SupplierCategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=150)
-    # article_name = models.CharField("Артикул категории", max_length=25)
-
-    # category_catalog = models.ForeignKey(
-    #     "product.CategoryProduct",
-    #     on_delete=models.PROTECT,
-    # )
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Вендор",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    article_name = models.CharField(
+        "Артикул категории",
+        max_length=25,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Категория товара у поставщика"
@@ -95,6 +109,21 @@ class SupplierCategoryProduct(models.Model):
 
 class SupplierGroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=150)
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        # !!!удалить нулы для вендоров
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Вендор",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
     article_name = models.CharField(
         "Артикул группы",
         max_length=25,
@@ -115,67 +144,15 @@ class SupplierGroupProduct(models.Model):
         return self.name
 
 
-class Discount(models.Model):
-    supplier = models.ForeignKey(
-        Supplier,
-        verbose_name="Поставщик",
-        on_delete=models.PROTECT,
-    )
-    vendor = models.ForeignKey(
-        Vendor,
-        verbose_name="Производитель",
-        on_delete=models.PROTECT,
-    )
-    # category_catalog = models.ForeignKey(
-    #     "product.CategoryProduct",
-    #     verbose_name="Категория каталога",
-    #     on_delete=models.PROTECT,
-    #     blank=True,
-    #     null=True,
-    # )
-
-    # group_catalog = models.ForeignKey(
-    #     "product.GroupProduct",
-    #     verbose_name="Группа каталога",
-    #     on_delete=models.PROTECT,
-    #     blank=True,
-    #     null=True,
-    # )
-    category_supplier = models.ForeignKey(
-        SupplierCategoryProduct,
-        verbose_name="Категория каталога поставщика",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
-
-    group_supplier = models.ForeignKey(
-        SupplierGroupProduct,
-        verbose_name="Группа каталога поставщика",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
-    category_supplier_all = models.ForeignKey(
-        "SupplierCategoryProductAll",
-        verbose_name="Приходящая категории товара от поставщиков",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
-    percent = models.FloatField("процент скидки")
-
-    class Meta:
-        verbose_name = "Скидка"
-        verbose_name_plural = "Скидки"
-
-    def __str__(self):
-        return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
-
 
 class SupplierCategoryProductAll(models.Model):
     name = models.CharField("Название категории", max_length=150)
-    article_name = models.CharField("Артикул категории", max_length=55)
+    article_name = models.CharField(
+        "Артикул категории",
+        max_length=55,
+        blank=True,
+        null=True,
+    )
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -226,3 +203,64 @@ class SupplierCategoryProductAll(models.Model):
 
     def __str__(self):
         return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+
+
+class Discount(models.Model):
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    # category_catalog = models.ForeignKey(
+    #     "product.CategoryProduct",
+    #     verbose_name="Категория каталога",
+    #     on_delete=models.PROTECT,
+    #     blank=True,
+    #     null=True,
+    # )
+
+    # group_catalog = models.ForeignKey(
+    #     "product.GroupProduct",
+    #     verbose_name="Группа каталога",
+    #     on_delete=models.PROTECT,
+    #     blank=True,
+    #     null=True,
+    # )
+    category_supplier = models.ForeignKey(
+        SupplierCategoryProduct,
+        verbose_name="Категория каталога поставщика",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
+    group_supplier = models.ForeignKey(
+        SupplierGroupProduct,
+        verbose_name="Группа каталога поставщика",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    category_supplier_all = models.ForeignKey(
+        "SupplierCategoryProductAll",
+        verbose_name="Приходящая категории товара от поставщиков",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    percent = models.FloatField("процент скидки")
+
+    class Meta:
+        verbose_name = "Скидка"
+        verbose_name_plural = "Скидки"
+
+    def __str__(self):
+        return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
+

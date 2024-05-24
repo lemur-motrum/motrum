@@ -1,5 +1,8 @@
 from django.shortcuts import render
 
+from apps.core.currency import del_currency, get_currency, pars, pars_optimums
+from apps.supplier.get_utils.avangard import get_avangard_file
+from apps.supplier.get_utils.emas import get_emas
 from apps.supplier.get_utils.iek import iek_api
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.models import Supplier
@@ -25,3 +28,23 @@ def add_iek(request):
     }
     return render(request, "supplier/supplier.html", context)
 
+
+def get_currency_api(request):
+    title = "Услуги"
+    # responsets = ['233','2131']
+    responsets = pars_optimums()
+    context = {
+        "title": title,
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)
+
+def get_currency_file(request):
+    title = "Услуги"
+    # responsets = ['233','2131']
+    responsets = get_avangard_file()
+    context = {
+        "title": title,
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)

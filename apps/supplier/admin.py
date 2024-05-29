@@ -62,6 +62,8 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
+        "category_supplier",
+        "group_supplier",
         "category_catalog",
         "group_catalog",
     )
@@ -129,7 +131,6 @@ class DiscountAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_supplier_all",
         "percent",
-      
     )
     fields = (
         "supplier",
@@ -138,8 +139,8 @@ class DiscountAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_supplier_all",
         "percent",
-       
     )
+
 
 
 admin.site.register(Supplier, SupplierAdmin)

@@ -7,6 +7,8 @@ from pytils import translit
 
 
 from apps.core.models import Currency, Vat
+# from apps.core.utils import get_file_path_add
+
 
 # from apps.product.models import CategoryProduct, Product
 
@@ -35,6 +37,7 @@ class Supplier(models.Model):
 
 
 class Vendor(models.Model):
+    
     name = models.CharField("Название производителя", max_length=40)
     slug = models.SlugField(null=True)
     supplier = models.ForeignKey(
@@ -56,7 +59,7 @@ class Vendor(models.Model):
     )
     # vat_catalog_check = models.BinaryField("входит ли в цену получаемую от поставщика" blank=True,
     #     null=True,)
-
+    # last_catalog = document = models.FileField("Последний каталог", upload_to="get_file_path_add", null=True)
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"
@@ -106,6 +109,7 @@ class SupplierCategoryProduct(models.Model):
     def __str__(self):
         return self.name
 
+    
 
 class SupplierGroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=150)
@@ -142,7 +146,6 @@ class SupplierGroupProduct(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class SupplierCategoryProductAll(models.Model):
@@ -204,6 +207,21 @@ class SupplierCategoryProductAll(models.Model):
     def __str__(self):
         return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)         
+        from apps.product.models import Price
+        from apps.product.models import Product
+        from apps.core.utils import get_category
+        # обновление цен товаров связанной группы
+        price = Price.objects.filter(prod__category_supplier_all=self.id)
+        for price_one in price:
+            price_one.price_supplier = price_one.price_supplier
+            price_one.save()
+           
+            
+       
+       
+
 
 class Discount(models.Model):
     supplier = models.ForeignKey(
@@ -263,4 +281,3 @@ class Discount(models.Model):
 
     def __str__(self):
         return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
-

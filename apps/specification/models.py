@@ -1,8 +1,11 @@
+import datetime
 from multiprocessing.connection import Client
 from django.db import models
 from django.utils import timezone
 
-from apps.product.models import Product
+from apps.core.models import Currency
+from apps.core.utils import create_time
+from apps.product.models import Price, Product
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser
 
@@ -12,22 +15,27 @@ class Specification(models.Model):
     id_bitrix = models.PositiveIntegerField(
         "номер сделки битрикс"
     )
-    date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    date_stop = models.DateField(default=timezone.now, verbose_name="Дата окончания")
+    date = models.DateField(default=datetime.datetime.now, verbose_name="Дата добавления")
+    date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
     currency_product = models.BinaryField("валютные товары в спецификации")
-    tag_stop = models.BinaryField("недействительно")
+    tag_stop = models.BinaryField("недействительно",default=False)
     wholesale = models.ForeignKey(
         Discount,
         verbose_name="Скидка оптовая",
         on_delete=models.PROTECT,
     )
+    
     total_amount = models.IntegerField("процент скидки")
     admin_creator = models.ForeignKey(
         AdminUser,
         on_delete=models.PROTECT,
     )
     file = models.CharField("фаил в системе", max_length=40)
-    
+    tag_currency = models.ForeignKey(
+        Currency,
+        on_delete=models.PROTECT,
+    )   
+    #  tag_currency = models.BinaryField("Валютная отметка",default=False)
     # client = models.ForeignKey(
     #     Client,
     #     on_delete=models.PROTECT,
@@ -53,4 +61,21 @@ class ProductSpecification(models.Model):
     quantity = models.IntegerField("количество товара")
     price_one = models.IntegerField("цена одного на момент формирования")
     price_all = models.IntegerField("цена всего товара на момент формирования")
+    
+    class Meta:
+        verbose_name = "Спецификация продукт"
+        verbose_name_plural = "Спецификации Продукты"
+
+    def __str__(self):
+        return self.id
+    
+    def save(self, *args, **kwargs):
+        spec =  Specification.objects.get(id=self.specification.id)
+        price = Price.objects.get(prod=self.product)
+        price_current = price.currency__words_code
+        if price_current != "RUB":
+            spec.tag_currency = True
+            spec.save()
+
+        super().save(*args, **kwargs)
         

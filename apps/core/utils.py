@@ -1,12 +1,15 @@
 # расчет цены
+import datetime
 import shutil
 import requests
 import hashlib
 import os
 
 
-from apps.core.models import Currency
+from apps.core.models import Currency, CurrencyPercent
 
+
+from apps.logs.utils import error_alert
 from apps.supplier.models import Discount, SupplierCategoryProductAll
 from django.conf import settings
 from project.settings import MEDIA_ROOT
@@ -146,8 +149,9 @@ def get_price_motrum(
 ):
     motrum_price = rub_price_supplier
     percent = 0
-    sale = None
-    # print(item_category, item_group)
+    sale = [None]
+    print(item_group)
+    print(item_category, item_group,"12314451514141")
 
     # получение процента функция
     def get_percent(item):
@@ -163,22 +167,25 @@ def get_price_motrum(
             sale = discount_group
     # скидка по категории
     elif item_category:
-        # print(item_category, "!!!!!!!!!!!!!!!")
+        print(item_category.id, "!!!!!!!!!!!!!!!")
         discount_categ = Discount.objects.filter(
-            category_supplier=item_category.id,
+            category_supplier_id=item_category.id,
             group_supplier__isnull=True,
         )
+        print(discount_categ)
         if discount_categ:
             percent = get_percent(discount_categ)
             sale = discount_categ
 
     elif all_item_group:
+        print(1212211)
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
             vendor=vendors,
             group_supplier__isnull=True,
             category_supplier__isnull=True,
         )
+        print(discount_all_group)
         if discount_all_group:
             percent = get_percent(discount_all_group)
             sale = discount_all_group
@@ -211,10 +218,13 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
             return price_supplier_vat
         else:
-            currency_rate = CurrencyRate.objects.get(currency__words_code=currency)
+            currency_rate_query = CurrencyRate.objects.filter(currency__words_code=currency).latest("date")
+            currency_rate = currency_rate_query.vunit_rate
+            current_percent = CurrencyPercent.objects.filter().latest("id")
 
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-            price_supplier_rub = price_supplier_vat * currency_rate * 1.03
+            price_supplier_rub = price_supplier_vat * currency_rate * current_percent.percent
+            
             return price_supplier_rub
     else:
         return None    
@@ -265,7 +275,9 @@ def get_category(supplier, vendor, category_name):
     except SupplierCategoryProductAll.DoesNotExist:
         item_category = None
         item_group = None
-    return (item_category, item_group)
+        item_category_all = None
+        
+    return (item_category, item_group,item_category_all)
 
 
 def check_media_directory_exist(
@@ -286,7 +298,7 @@ def check_media_directory_exist(
 def create_name_file_downloading(article_suppliers, item_count):
 
     try:
-        print(item_count)
+    
         count = f"{item_count:05}"
         filename = "{0}_{1}".format(article_suppliers, count)
         return filename
@@ -329,7 +341,7 @@ def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, pl
 
 def save_file_product(link, image_path, filename, filetype):
     r = requests.get(link, stream=True)
-    print(filename + filetype)
+    # print(filename + filetype)
     with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
         ofile.write(r.content)
 
@@ -384,3 +396,20 @@ def lot_chek(lot):
         lot_item = Lot.objects.create(name_shorts=lot, name=lot)
 
     return lot_item
+
+def response_request(response,location):
+    if response >= 200 and response <= 399:
+        return True
+    else:
+        error = "file api"
+        error_alert(error, location, response)
+        return False
+    
+def create_time():
+    now = datetime.datetime.now()
+    three_days = datetime.timedelta(3)
+    in_three_days = now - three_days
+    data = in_three_days.strftime("%Y-%m-%d")
+
+   
+    return(data)

@@ -47,9 +47,9 @@ class PriceInline(admin.TabularInline):
         "price_supplier",
         "rub_price_supplier",
         "price_motrum",
-        "sale"
+        "sale",
     )
-    readonly_fields = ["rub_price_supplier","price_motrum","sale"]
+    readonly_fields = ["rub_price_supplier", "price_motrum", "sale"]
 
 
 class StockInline(admin.TabularInline):
@@ -60,10 +60,10 @@ class StockInline(admin.TabularInline):
         "lot_complect",
         "stock_supplier_unit",
         "stock_motrum",
-         
     )
-    
+
     readonly_fields = ["stock_supplier_unit"]
+
 
 class ProductImageAdmin(admin.ModelAdmin):
     fields = (
@@ -71,6 +71,8 @@ class ProductImageAdmin(admin.ModelAdmin):
         "file",
         "link",
     )
+
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     fields = ("photo",)
@@ -96,13 +98,14 @@ class ProductPropertyInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
-    search_fields = ["article","article_supplier","additional_article_supplier","name"]
-    search_help_text ="Поиск может осуществляться по: Артикулу Motrum, Артикулу поставщика,Дополнительному артикулу, Названию товара"
-    list_filter = [
-        "supplier",
-        "category",
-        "group"
+    search_fields = [
+        "article",
+        "article_supplier",
+        "additional_article_supplier",
+        "name",
     ]
+    search_help_text = "Поиск может осуществляться по: Артикулу Motrum, Артикулу поставщика,Дополнительному артикулу, Названию товара"
+    list_filter = ["supplier", "category", "group"]
     list_display = [
         "article",
         "article_supplier",
@@ -110,18 +113,14 @@ class ProductAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "name",
-        
-        
-        
-        
     ]
 
     inlines = [
         PriceInline,
         StockInline,
         ProductPropertyInline,
-       
-        ProductImageInline, ProductDocumentInline,
+        ProductImageInline,
+        ProductDocumentInline,
     ]
 
     fieldsets = [
@@ -142,41 +141,46 @@ class ProductAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ["article_supplier",]
-        return ["",]
-    
+            return [
+                "article_supplier",
+                "supplier"
+            ]
+        return [
+            "",
+        ]
+
     def get_fieldsets(self, request, obj):
         fields = super(ProductAdmin, self).get_fieldsets(request, obj)
         fields_add = [
-       (
-            "Основные параметры",
-            {
-                "fields": [
-                    ("supplier", "vendor"),
-                    "article_supplier",
-                    "additional_article_supplier",
-                    ("category", "group"),
-                    "name",
-                    "description",
-                ],
-            },
-        ),
-    ]
+            (
+                "Основные параметры",
+                {
+                    "fields": [
+                        ("supplier", "vendor"),
+                        "article_supplier",
+                        "additional_article_supplier",
+                        ("category", "group"),
+                        "name",
+                        "description",
+                    ],
+                },
+            ),
+        ]
         if obj and obj.pk:
             return fields
-        else :
+        else:
             return fields_add
-    
+
     # def save_model(self, request, obj, form, change):
     #     print(obj)
     #     print(self)
-      
+
     #     print(change)
     #     obj.user = request.user
-    #     super().save_model(request, obj, form, change)    
+    #     super().save_model(request, obj, form, change)
+
 
 admin.site.register(CategoryProduct, SupplierAdmin)
 admin.site.register(GroupProduct, GroupProductAdmin)
 admin.site.register(Lot, LotAdmin)
 admin.site.register(Product, ProductAdmin)
-

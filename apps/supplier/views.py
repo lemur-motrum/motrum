@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from apps.core.currency import del_currency, get_currency, pars, pars_optimums
+from apps.core.currency import del_currency, get_currency, pars, pars_optimums, update_currency_price
 from apps.supplier.get_utils.avangard import get_avangard_file
 from apps.supplier.get_utils.emas import get_emas
 from apps.supplier.get_utils.iek import iek_api
@@ -32,7 +32,7 @@ def add_iek(request):
 def get_currency_api(request):
     title = "Услуги"
     # responsets = ['233','2131']
-    responsets = pars_optimums()
+    responsets = get_currency()
     context = {
         "title": title,
         "responsets": responsets,
@@ -42,7 +42,7 @@ def get_currency_api(request):
 def get_currency_file(request):
     title = "Услуги"
     # responsets = ['233','2131']
-    responsets = get_avangard_file()
+    responsets = get_emas()
     context = {
         "title": title,
         "responsets": responsets,

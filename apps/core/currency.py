@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from math import prod
 import os
 from struct import pack_into
 import xml.etree.ElementTree as ET
@@ -9,16 +10,19 @@ import shutil
 from zipfile import ZipFile
 
 from apps.core.models import Currency
-from apps.product.models import CurrencyRate
+from apps.core.utils import get_price_supplier_rub
+from apps.product.models import CurrencyRate, Price, Product
 import datetime
 from openpyxl import Workbook
 from openpyxl import load_workbook
 import openpyxl as op
 
+from apps.specification.models import Specification
 from project.settings import BASE_DIR, MEDIA_ROOT
 
 
 def get_currency():
+    del_currency()
     currency_list = Currency.objects.exclude(words_code="RUB")
 
     for current in currency_list:
@@ -31,36 +35,63 @@ def get_currency():
             ElementInclude.include(root)
 
             date = root.attrib["Date"]
+            # print(item)
             value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
             vunit_rate = item.findtext(
                 f".//Valute[CharCode='{current_world_code}']/VunitRate"
             )
             count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
             my_date = datetime.datetime.strptime(date, "%d.%m.%Y")
-            print(my_date)
+
             v = float(value.replace(",", "."))
             vi = float(vunit_rate.replace(",", "."))
-            # v = float(va)
-            print(value)
-            CurrencyRate.objects.create(
+            print(v)
+            now_rate = CurrencyRate.objects.get_or_create(
                 currency=current,
                 date=my_date,
-                value=v,
-                vunit_rate=vi,
-                count=int(count),
+                defaults={"value": v, "vunit_rate": vi, "count": int(count)},
             )
 
-            return value
+        update_currency_price(current, current_world_code)
+        currency_chek(current, now_rate[0])
 
 
+# удаление старых курсов
 def del_currency():
     now = datetime.datetime.now()
     three_days = timedelta(3)
     in_three_days = now - three_days
     data = in_three_days.strftime("%Y-%m-%d")
-
     CurrencyRate.objects.filter(date__lt=data).delete()
-    print(date)
+
+
+# обновление валютных цен у всех продуктов
+def update_currency_price(currency, current_world_code):
+    products = Price.objects.filter(currency=currency)
+    for product in products:
+        p = Price.objects.get(id=product.id)
+        p.save()
+
+
+# проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны
+def currency_chek(current, now_rate):
+    old_rate = CurrencyRate.objects.filter(
+        currency=current,
+    ).earliest("date")
+    old_rate_count = old_rate.vunit_rate
+    new_rate_count = now_rate.vunit_rate
+    print(new_rate_count)
+    difference_count = old_rate_count - new_rate_count
+
+    count_percent = old_rate_count / 100 * 3
+    print(difference_count)
+    print(count_percent)
+    if difference_count > count_percent:
+        # вписать обработку спецификаций
+        specification = Specification.objects.filter(
+            tag_stop=False, tag_currency_id=now_rate.currency.id
+        )
+        print(specification)
 
 
 def pars():
@@ -116,44 +147,43 @@ def pars():
 
     return xml_file
 
+
 def pars_optimums():
     file_path = os.path.join(BASE_DIR, "docker/optimus.xlsx")
     file_path_name = os.path.join(BASE_DIR, "docker/optimus")
     file_path_name_zip = os.path.join(BASE_DIR, "docker/optimus.zip")
     print(file_path)
     # Создаем временную папку
-    tmp_folder = os.path.join(BASE_DIR,"convert_wrong_excel")
+    tmp_folder = os.path.join(BASE_DIR, "convert_wrong_excel")
     print(tmp_folder)
     os.makedirs(tmp_folder, exist_ok=True)
-    
 
     # # Распаковываем excel как zip в нашу временную папку
     with ZipFile(file_path) as excel_container:
         excel_container.extractall(tmp_folder)
 
     # Переименовываем файл с неверным названием
-    wrong_file_path = os.path.join( tmp_folder, 'xl', 'SharedStrings.xml')
-    correct_file_path = os.path.join( tmp_folder, 'xl', 'sharedStrings.xml')
-    os.rename(wrong_file_path, correct_file_path) 
+    wrong_file_path = os.path.join(tmp_folder, "xl", "SharedStrings.xml")
+    correct_file_path = os.path.join(tmp_folder, "xl", "sharedStrings.xml")
+    os.rename(wrong_file_path, correct_file_path)
 
     # Запаковываем excel обратно в zip и переименовываем в исходный файл
-    shutil.make_archive(file_path_name, 'zip', tmp_folder)
+    shutil.make_archive(file_path_name, "zip", tmp_folder)
     os.rename(file_path_name_zip, file_path)
-    
+
     excel_doc = op.open(filename=file_path, data_only=True)
-    
-    
-    sheetnames = excel_doc.sheetnames #Получение списка листов книги
+
+    sheetnames = excel_doc.sheetnames  # Получение списка листов книги
     sheet = excel_doc[sheetnames[0]]
     # a1 = sheet.cell(row = 11, column = 2).value
-    #Считываем значения с ячейки A1
+    # Считываем значения с ячейки A1
     wb = op.load_workbook(filename=file_path)
     sh = wb.worksheets[0]
     vendor = []
     all = []
     # sh.max_row
     for index in range(10, 100):
-     
+
         row_level = sh.row_dimensions[index].outline_level + 1
         # ferst_level = sh.row_dimensions[index - 1].outline_level + 1
         # row_levels = sh.iter_rows(min_col=1, max_col=2, max_row=2):
@@ -161,60 +191,57 @@ def pars_optimums():
         if item_value == None:
             pass
         else:
-            print(row_level,item_value)
-            
+            print(row_level, item_value)
+
         # if item_value == None and ferst_level != row_level:
         #     item_value_name = sh.cell(row=index-1, column=2).value
         #     print(item_value_name)
-        
+
         # for col in sh[index]:
         #     vavl = col.value
-            
-            
+
         #     print("ТоЭвары", vavl)
         # i += 1
-      
+
         # print(rgwert3erow_levels)
-        
-        
+
+
 # def pars_optimums():
 #     file_path = os.path.join(BASE_DIR, "docker/Odot.xlsx")
- 
+
 
 #     excel_doc = op.open(filename=file_path, data_only=True)
-    
-    
+
+
 #     sheetnames = excel_doc.sheetnames #Получение списка листов книги
 #     sheet = excel_doc[sheetnames[0]]
 #     a1 = sheet.cell(row = 5, column = 2).value
-#     i = 1  
-#     # while sheet[f'A{i}'].value is not None: 
-        
-#     #     a = sheet[f'A{i}'].value #Первый способ чтения, обращаемся к имени ячейки
-#     #     b = sheet[f'B{i}'].value
-#     #     c = sheet[f'C{i}'].value
-#     #     i += 1
-#     #     print(f"{a} | {b} | {c}")
-        
-#     i = 1  
-#     # while sheet[f'A{i}'].value is not None: 
-        
+#     i = 1
+#     # while sheet[f'A{i}'].value is not None:
+
 #     #     a = sheet[f'A{i}'].value #Первый способ чтения, обращаемся к имени ячейки
 #     #     b = sheet[f'B{i}'].value
 #     #     c = sheet[f'C{i}'].value
 #     #     i += 1
 #     #     print(f"{a} | {b} | {c}")
 
-        
-    
+#     i = 1
+#     # while sheet[f'A{i}'].value is not None:
+
+#     #     a = sheet[f'A{i}'].value #Первый способ чтения, обращаемся к имени ячейки
+#     #     b = sheet[f'B{i}'].value
+#     #     c = sheet[f'C{i}'].value
+#     #     i += 1
+#     #     print(f"{a} | {b} | {c}")
+
+
 #     #Считываем значения с ячейки A1
-    
+
 #     # wb = op.load_workbook(filename=file_path)
 #     # sh = wb.worksheets[0]
 
 #     # for index in range(sh.min_row, sh.max_row):
 #     #     row_level = sh.row_dimensions[index].outline_level + 1
 #     #     row_levels = sh.rows.value
-        
-#     #     print(row_levels)        
-    
+
+#     #     print(row_levels)

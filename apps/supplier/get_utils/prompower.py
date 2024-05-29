@@ -71,24 +71,20 @@ def prompower_api():
         for category in unique_category:
             category_lower = category["name"].lower()
 
-            # category_item = SupplierCategoryProductAll.objects.update_or_create(
-            #     name=category_lower, article_name=0, supplier=prompower, vendor=vendoris
-            # )
             values = {
-                "article_name" : None,
+                "article_name": None,
                 "supplier": prompower,
-                "vendor" : vendoris,
-                
-                
-                
+                "vendor": vendoris,
             }
             category_item = SupplierCategoryProductAll.objects.update_or_create(
                 name=category_lower,
                 article_name=0,
-                supplier = prompower,
-                vendor = vendoris,
+                supplier=prompower,
+                vendor=vendoris,
                 defaults={category_lower: category_lower},
-                create_defaults={"name": category_lower,},
+                create_defaults={
+                    "name": category_lower,
+                },
             )
 
     def add_products():
@@ -115,11 +111,13 @@ def prompower_api():
                 article = Product.objects.filter(
                     article_supplier=article_suppliers
                 ).exists()
-    
+
                 category_lower = data_item["category"].lower()
-            
-                item_category = get_category(prompower.id, vendori, category_lower)[0]
-                item_group = get_category(prompower.id, vendori, category_lower)[1]
+                # all_categ = SupplierCategoryProductAll.objects.filter(name=category_lower,supplier=prompower.id,vendor=vendori)
+
+                # item_category = get_category(prompower.id, vendori, category_lower)[0]
+                # item_group = get_category(prompower.id, vendori, category_lower)[1]
+                all_categ = get_category(prompower.id, vendori, category_lower)[2]
 
                 # цены
                 price_supplier_novat = int(data_item["price"])
@@ -127,23 +125,29 @@ def prompower_api():
                 price_supplier = price_supplier_novat + (
                     price_supplier_novat / 100 * vat_catalog
                 )
-                rub_price_supplier = price_supplier
+                # rub_price_supplier = price_supplier
                 # скидки
-                all_item_group = None 
-                price_motrum_all = get_price_motrum(
-                    item_category, item_group, vendor_id, rub_price_supplier,all_item_group
-                )
-                price_motrum = price_motrum_all[0]
-                sale =  price_motrum_all[1]
+              
+                # price_motrum_all = get_price_motrum(
+                #     item_category,
+                #     item_group,
+                #     vendor_id,
+                #     rub_price_supplier,
+                #     all_categ,
+                # )
+                # price_motrum = price_motrum_all[0]
+                # sale = price_motrum_all[1]
 
                 # остатки
-                lot_short = "base"
+                lot = Lot.objects.get(name="штука")
+                # lot_short = "base"
                 stock_supplier = data_item["instock"]
                 lot_complect = 1
-                lots = get_lot(lot_short, stock_supplier, lot_complect)
-                lot = lots[0]
+                # lots = get_lot(lot_short, stock_supplier, lot_complect)
+                # lot = lots[0]
+                
 
-                stock_supplier_unit = lots[1]
+                # stock_supplier_unit = lots[1]
                 stock_motrum = 0
 
                 name = data_item["title"]
@@ -217,18 +221,26 @@ def prompower_api():
                                 document=document_path_all,
                                 file=document_path_all,
                                 link=doc,
-                                type_doc="3D-модель"
+                                type_doc="3D-модель",
                             )
 
                 # обновление товара
                 if article:
-
-                    # article = Product.objects.get(article_supplier=article_suppliers)
-                    print(article)
-                    # price_product = Price.objects.filter(prod=article).update(
-                    #     rub_price_supplier=rub_price_supplier,
-                    #     price_motrum=price_motrum,sale=sale
-                    # )
+                    article = Product.objects.get(article_supplier=article_suppliers)
+                    print(article.id)
+                    article.category_supplier_all = all_categ
+                    article.save()
+             
+                   
+                    price_product = Price.objects.get(prod=article.id)
+                    price_product.price_supplier = price_supplier
+                    price_product.save()
+                    
+                    stock_prod=Stock.objects.get(prod=article.id)
+                    stock_prod.stock_supplier=stock_supplier
+                    stock_prod.save()
+                 
+                        
                     # stock_product = Stock.objects.filter(prod=article).update(
                     #     lot=lot,
                     #     stock_supplier=stock_supplier,
@@ -238,41 +250,45 @@ def prompower_api():
                     # )
                 # созданеи товара
                 else:
-
                     new_article = create_article_motrum(prompower.id, vendor_id)
-
                     new_product = Product.objects.create(
                         article=new_article,
                         supplier=prompower,
                         vendor_id=vendor_id,
                         article_supplier=article_suppliers,
-                        category=item_category,
-                        group=item_group,
+                        category_supplier_all=all_categ,
+                        # category=item_category,
+                        # group=item_group,
                         name=name,
                         description=description,
                     )
-                    price_product = Price.objects.create(
-                        prod=new_product,
-                        currency=currency,
-                        vat=vat_catalog_id,
-                        vat_include=False,
-                        price_supplier=price_supplier,
-                        rub_price_supplier=rub_price_supplier,
-                        price_motrum=price_motrum,
-                        sale=sale
-                    )
+                    price_product = Price(prod=new_product,price_supplier=price_supplier, currency=currency, vat=vat_catalog_id)
+                    price_product.save()
+                    
+                    # price_product = Price.objects.create(
+                    #     prod=new_product,
+                    #     currency=currency,
+                    #     vat=vat_catalog_id,
+                    #     vat_include=False,
+                    #     price_supplier=price_supplier,
+                    #     rub_price_supplier=rub_price_supplier,
+                    #     price_motrum=price_motrum,
+                    #     sale=sale,
+                    # )
 
-                    # Product.objects.filter(id=new_product.id).update(price=price_product)
-                    stock_product = Stock.objects.create(
-                        prod=new_product,
-                        lot=lot,
+                    # stock_product = Stock.objects.create(
+                    #     prod=new_product,
+                    #     lot=lot,
+                    #     stock_supplier=stock_supplier,
+                    #     lot_complect=lot_complect,
+                    #     stock_supplier_unit=stock_supplier_unit,
+                    #     stock_motrum=stock_motrum,
+                    # )
+                    stock_prod=Stock(prod=new_product, lot=lot,
                         stock_supplier=stock_supplier,
-                        lot_complect=lot_complect,
-                        stock_supplier_unit=stock_supplier_unit,
-                        stock_motrum=stock_motrum,
-                    )
+                        lot_complect=lot_complect,stock_motrum=stock_motrum)
+                    stock_prod.save()
 
-                    # Product.objects.filter(id=new_product.id).update(stock=stock_product)
                     save_image(new_product)
                     save_document(new_product)
 

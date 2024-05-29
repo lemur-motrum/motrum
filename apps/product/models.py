@@ -40,7 +40,6 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
     additional_article_supplier = models.CharField(
         "Дополнительный артикул поставщика", max_length=50, blank=True, null=True
@@ -69,9 +68,7 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=1000, blank=True, null=True
     )
-    name = models.CharField("Название товара", max_length=150)
-    # price = models.ForeignKey("Price", on_delete=models.CASCADE,blank=True, null=True)
-    # stock = models.ForeignKey("Stock", on_delete=models.CASCADE,blank=True, null=True)
+    name = models.CharField("Название товара", max_length=350)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
@@ -88,9 +85,12 @@ class Product(models.Model):
         if self.article == None:
             article = create_article_motrum(self.supplier.id, self.vendor.id)
             self.article = article
-            # price_supplier_rub = get_price_supplier_rub(self.currency.words_code,self.vat,self.price_supplier)
-            # print (self)
-        super().save(*args, **kwargs)  # Call the "real" save() method.
+        super().save(*args, **kwargs)
+        # обновление цен товаров
+        price = Price.objects.filter(prod=self.id)
+        for price_one in price:
+            price_one.price_supplier = price_one.price_supplier
+            price_one.save()
 
 
 class CategoryProduct(models.Model):
@@ -134,6 +134,7 @@ class Price(models.Model):
         verbose_name="Валюта",
         on_delete=models.PROTECT,
     )
+
     vat = models.ForeignKey(
         Vat,
         verbose_name="НДС",
@@ -148,6 +149,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+
     rub_price_supplier = models.FloatField(
         "Цена в каталоге поставщика в рублях + НДС",
         blank=True,
@@ -158,6 +160,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+
     sale = models.ForeignKey(
         Discount,
         verbose_name="Примененная скидка",
@@ -174,7 +177,7 @@ class Price(models.Model):
         return f"{self.rub_price_supplier} {self.price_motrum}"
 
     def save(self, *args, **kwargs):
-      
+        print(self.prod.category_supplier_all)
         if self.price_supplier is not None:
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
@@ -182,23 +185,21 @@ class Price(models.Model):
                 self.vat_include,
                 self.price_supplier,
             )
-            print(rub_price_supplier)
+
             self.rub_price_supplier = rub_price_supplier
             price_motrum_all = get_price_motrum(
-                self.prod.category,
-                self.prod.group,
+                self.prod.category_supplier_all.category_supplier,
+                self.prod.category_supplier_all.group_supplier,
                 self.prod.vendor,
                 rub_price_supplier,
                 self.prod.category_supplier_all,
             )
-            
             price_motrum = price_motrum_all[0]
-            # for sales in price_motrum_all[1]:
             sale = price_motrum_all[1]
             self.price_motrum = price_motrum
             self.sale = sale
-            # self.vat_include =
-        super().save(*args, **kwargs)  # Call the "real" save() method.
+
+        super().save(*args, **kwargs)
 
 
 class CurrencyRate(models.Model):
@@ -251,7 +252,7 @@ class Stock(models.Model):
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
 
-        super().save(*args, **kwargs)  # Call the "real" save() method.
+        super().save(*args, **kwargs)
 
 
 class Lot(models.Model):
@@ -295,10 +296,10 @@ class ProductImage(models.Model):
             '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
         )
 
-    # def save(self, *args, **kwargs):
-    #     if self.id:
-    #         self.hide = True
-    #     super().save(*args, **kwargs)  # Call the "real" save() method.
+    def save(self, *args, **kwargs):
+        # if self.id:
+        #     self.hide = True
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
     # def delete(self, *args, **kwargs):
     #     self.hide = True

@@ -6,6 +6,7 @@ from django.db import models
 
 from apps import core
 from apps.core.models import Currency, Vat
+from smart_selects.db_fields import ChainedForeignKey
 
 
 from apps.core.utils import (
@@ -21,7 +22,16 @@ from pytils import translit
 from django.utils.text import slugify
 from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
 from django.utils.safestring import mark_safe
-
+TYPE_DOCUMENT = (
+    ("InstallationProduct", "Руководство по монтажу и эксплуатации"),
+    ("DimensionDrawing", "Габаритные чертежи"),
+    ("Passport", "Паспорт"),
+    ("WiringDiagram", "Схема подключения"),
+    ("Models3d", "3D модели"),
+    ("Brochure", "Брошюра"),
+    ("Certificates", "Сертификат"),
+    ("Other", "Другое"),
+)
 # Create your models here.
 
 
@@ -30,11 +40,13 @@ class Product(models.Model):
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
-        related_name="products",
+        # related_name="products",
         on_delete=models.PROTECT,
     )
-    vendor = models.ForeignKey(
+    vendor = ChainedForeignKey(
         Vendor,
+        chained_field="supplier",
+        chained_model_field="supplier",
         verbose_name="Производитель",
         on_delete=models.PROTECT,
         blank=True,
@@ -177,7 +189,7 @@ class Price(models.Model):
         return f"{self.rub_price_supplier} {self.price_motrum}"
 
     def save(self, *args, **kwargs):
-        print(self.prod.category_supplier_all)
+        print(self.price_supplier)
         if self.price_supplier is not None:
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
@@ -296,11 +308,6 @@ class ProductImage(models.Model):
             '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
         )
 
-    def save(self, *args, **kwargs):
-        # if self.id:
-        #     self.hide = True
-        super().save(*args, **kwargs)  # Call the "real" save() method.
-
     # def delete(self, *args, **kwargs):
     #     self.hide = True
     #     super().save(*args, **kwargs)  # Call the "real" save() method.
@@ -310,11 +317,13 @@ class ProductDocument(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        # on_delete=models.PROTECT,
     )
     document = models.FileField("Документ", upload_to=get_file_path_add, null=True)
-    file = models.CharField("фаил в системе", max_length=100, null=True)
-    type_doc = models.CharField("Тип документации", max_length=150, null=True)
+    # file = models.CharField("фаил в системе", max_length=100, null=True)
+    # type_doc = models.CharField("Тип документации", max_length=150, null=True)
+    type_doc = models.CharField("Тип документации",
+        max_length=40, choices=TYPE_DOCUMENT, default="Other"
+    )
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
 
@@ -330,7 +339,7 @@ class ProductProperty(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        # on_delete=models.PROTECT,
+       
     )
     name = models.CharField("название", max_length=100)
     value = models.CharField("значение", max_length=100)

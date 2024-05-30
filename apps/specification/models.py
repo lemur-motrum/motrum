@@ -17,23 +17,25 @@ class Specification(models.Model):
     )
     date = models.DateField(default=datetime.datetime.now, verbose_name="Дата добавления")
     date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
-    currency_product = models.BinaryField("валютные товары в спецификации")
-    tag_stop = models.BinaryField("недействительно",default=False)
+    currency_product = models.BooleanField("валютные товары в спецификации", default=False)
+    tag_stop = models.BooleanField("недействительно",default=False)
     wholesale = models.ForeignKey(
         Discount,
         verbose_name="Скидка оптовая",
         on_delete=models.PROTECT,
+        null=True,default=None
     )
     
-    total_amount = models.IntegerField("процент скидки")
+    total_amount = models.IntegerField("процент скидки", null=True,default=None)
     admin_creator = models.ForeignKey(
         AdminUser,
         on_delete=models.PROTECT,
+         null=True,default=None
     )
-    file = models.CharField("фаил в системе", max_length=40)
+    file = models.CharField("фаил в системе", max_length=40, null=True,default=None)
     tag_currency = models.ForeignKey(
         Currency,
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT,null=True,default=None
     )   
     #  tag_currency = models.BinaryField("Валютная отметка",default=False)
     # client = models.ForeignKey(
@@ -47,7 +49,7 @@ class Specification(models.Model):
         verbose_name_plural = "Спецификации"
 
     def __str__(self):
-        return self.id
+        return f"{self.id_bitrix}"
 
 class ProductSpecification(models.Model):
     specification = models.ForeignKey(

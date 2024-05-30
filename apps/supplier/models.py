@@ -4,6 +4,7 @@ import requests
 import json
 from django.utils.text import slugify
 from pytils import translit
+from smart_selects.db_fields import ChainedForeignKey
 
 
 from apps.core.models import Currency, Vat

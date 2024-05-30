@@ -8,6 +8,7 @@ from apps.core.utils import (
     create_name_file_downloading,
     get_category,
     get_file_path,
+    get_file_path_add,
     get_lot,
     get_price_motrum,
     response_request,
@@ -56,8 +57,8 @@ def iek_api():
         response = requests.request(
             "GET", url, headers=headers, data=payload, allow_redirects=False
         )
-        
-        responset = response_request(response.status_code,"IEK получение групп")
+
+        responset = response_request(response.status_code, "IEK получение групп")
         if responset:
             data = response.json()
 
@@ -86,7 +87,6 @@ def iek_api():
                         "article_name": article_name_re[0],
                     },
                 )
-        
 
                 groupe_supplier_item = SupplierGroupProduct.objects.get_or_create(
                     category_supplier=category_supplier_item[0],
@@ -118,7 +118,7 @@ def iek_api():
         response = requests.request(
             "GET", url, headers=headers, data=payload, allow_redirects=False
         )
-        responset = response_request(response.status_code,"IEK получение товаров")
+        responset = response_request(response.status_code, "IEK получение товаров")
         if responset:
             data = response.json()
             i = 0
@@ -128,30 +128,26 @@ def iek_api():
                     # основная инфа
                     # получение или добавление вендора
                     vendor_add = Vendor.objects.get_or_create(
-                    supplier=supplier,
-                    name=data_item["TM"],
-                    defaults={
-                        "vat_catalog": None,
-                        "currency_catalog": currency,
-                    }, )
-                    
-                    print(vendor_add[0].name)
-                
-                    article_suppliers = data_item["art"]
-                    article = Product.objects.filter(
-                        article_supplier=article_suppliers
-                    ).exists()
+                        supplier=supplier,
+                        name=data_item["TM"],
+                        defaults={
+                            "vat_catalog": None,
+                            "currency_catalog": currency,
+                        },
+                    )
 
+                    article_suppliers = data_item["art"]
                     category = data_item["groupId"]
-                    categ_names = SupplierCategoryProductAll.objects.get(supplier=supplier,vendor=vendor_add[0],article_name=category)
-                    
-                    item_category_all = get_category(supplier, vendor_add[0], categ_names.name)
+                    categ_names = SupplierCategoryProductAll.objects.get(
+                        supplier=supplier, vendor=vendor_add[0], article_name=category
+                    )
+
+                    item_category_all = get_category(
+                        supplier, vendor_add[0], categ_names.name
+                    )
                     item_category = item_category_all[0]
                     item_group = item_category_all[1]
                     item_group_vendor = item_category_all[2]
-        
-                    # categ_names = SupplierCategoryProductAll.objects.get(supplier=supplier,vendor=vendor_add[0],article_name=category)
-                    # all_categ = get_category(supplier, vendor_add[0], categ_names.name)[2]
                     name = data_item["name"]
                     # цены
                     vat = data_item["vat"]
@@ -163,20 +159,9 @@ def iek_api():
                     price = data_item["price"]
                     if saleprice:
                         price_supplier = saleprice
-                        # rub_price_supplier = saleprice
+
                     else:
                         price_supplier = price
-                        # rub_price_supplier = price
-                    
-                    # price_motrum_all = get_price_motrum(
-                    #     item_category,
-                    #     item_group,
-                    #     vendor_id,
-                    #     rub_price_supplier,
-                    #     item_group_vendor,
-                    # )
-                    # price_motrum = price_motrum_all[0]
-                    # sale = None
 
                     description_arr = data_item["Description"]
                     for desc in description_arr:
@@ -187,135 +172,89 @@ def iek_api():
                     ):
                         if "ImgJpeg" in data_item:
                             img_list = data_item["ImgJpeg"]
-
                             for item_image in img_list:
-
-                                item_count = 0
+                                # item_count = 0
                                 if len(item_image) > 0:
-                                    item_count += 1
-
+                                    # item_count += 1
                                     img = item_image["file_ref"]["uri"]
 
-                                    type_file = "img"
-                                    filetype = ".jpg"
-                                    filename = create_name_file_downloading(
-                                        article_suppliers, item_count
-                                    )
-                                    image_path = get_file_path(
-                                        supplier.slug,
-                                        vendor_add[0].name,
-                                        type_file,
-                                        article_suppliers,
-                                        item_count,
-                                        place="utils",
-                                    )
-                                    image_path_all = image_path + "/" + filename + filetype
-                                    save_file_product(img, image_path, filename, filetype)
-                                    image_product = ProductImage.objects.create(
-                                        product=new_product,
-                                        photo=image_path_all,
-                                        # file=image_path_all,
-                                        link=img,
-                                    )
+                                    image = ProductImage.objects.create(product=article)
+
+                                    image_path = get_file_path_add(image, img)
+                                    p = save_file_product(img, image_path)
+                                    image.photo = image_path
+                                    image.link = img
+                                    image.save()
+
                         else:
                             pass
 
                     def saves_doc(
                         item,
-                        article_suppliers,
-                        supplier,
-                        vendor_name,
-                        new_product,
-                        name_item,
+                        article,
                     ):
                         try:
-
-                            item_count_doc = 0
                             for sertif in item:
-                                item_count_doc += 1
-
-                                # name_item = "_sertificates"
-                                type_name = sertif["type"]
                                 doc = sertif["file_ref"]["uri"]
-                                type_file = "document"
-                                filetype = "." + str(sertif["filetype"])
-
-                                type_file = "document"
-
-                                article_name_doc = article_suppliers + name_item
-                                filename = create_name_file_downloading(
-                                    article_name_doc, item_count_doc
+                                document = ProductDocument.objects.create(
+                                    product=article, type_doc="Certificates"
                                 )
 
-                                doc_path = get_file_path(
-                                    supplier,
-                                    vendor_name,
-                                    type_file,
-                                    article_suppliers,
-                                    item_count_doc,
-                                    place="utils",
-                                )
-
-                                document_path_all = doc_path + "/" + filename + filetype
-                                save_file_product(doc, doc_path, filename, filetype)
-                                document_product = ProductDocument.objects.create(
-                                    product=new_product,
-                                    document=document_path_all,
-                                    file=document_path_all,
-                                    link=doc,
-                                    type_doc=type_name,
-                                )
-
+                                document_path = get_file_path_add(document, doc)
+                                p = save_file_product(doc, document_path)
+                                document.document = document_path
+                                document.link = doc
+                                document.save()
                         except item.DoesNotExist:
                             pass
 
-                    def save_doc_img(
-                        item,
-                        article_suppliers,
-                        supplier,
-                        vendor_name,
-                        new_product,
-                        name_item,
-                        type_name,
-                    ):
+                    # def save_doc_img(
+                    #     item,
+                    #     article_suppliers,
+                    #     supplier,
+                    #     vendor_name,
+                    #     new_product,
+                    #     name_item,
+                    #     type_name,
+                    # ):
 
-                        item_count_doc = 0
+                    #     item_count_doc = 0
 
-                        for sertif in item:
+                    #     for sertif in item:
 
-                            item_count_doc += 1
+                    #         item_count_doc += 1
 
-                            # type_name = sertif["type"]
-                            doc = sertif["file_ref"]["uri"]
-                            type_file = "document"
-                            # filetype = "." + str(sertif["filetype"])
-                            images_last_list = doc.split(".")
-                            filetype = "." + images_last_list[-1]
-                            type_file = "document"
+                    #         # type_name = sertif["type"]
+                    #         doc = sertif["file_ref"]["uri"]
+                    #         type_file = "document"
+                    #         # filetype = "." + str(sertif["filetype"])
+                    #         images_last_list = doc.split(".")
+                    #         filetype = "." + images_last_list[-1]
+                    #         type_file = "document"
 
-                            article_name_doc = article_suppliers + name_item
-                            filename = create_name_file_downloading(
-                                article_name_doc, item_count_doc
-                            )
+                    #         article_name_doc = article_suppliers + name_item
+                    #         filename = create_name_file_downloading(
+                    #             article_name_doc, item_count_doc
+                    #         )
 
-                            doc_path = get_file_path(
-                                supplier,
-                                vendor_name,
-                                type_file,
-                                article_suppliers,
-                                item_count_doc,
-                                place="utils",
-                            )
+                    #         doc_path = get_file_path(
+                    #             supplier,
+                    #             vendor_name,
+                    #             type_file,
+                    #             article_suppliers,
+                    #             item_count_doc,
+                    #             place="utils",
+                    #         )
 
-                            document_path_all = doc_path + "/" + filename + filetype
-                            save_file_product(doc, doc_path, filename, filetype)
-                            document_product = ProductDocument.objects.create(
-                                product=new_product,
-                                document=document_path_all,
-                                file=document_path_all,
-                                link=doc,
-                                type_doc=type_name,
-                            )
+                    #         document_path_all = doc_path + "/" + filename + filetype
+                    #         save_file_product(doc, doc_path, filename, filetype)
+                    #         document_product = ProductDocument.objects.create(
+                    #             product=new_product,
+                    #             document=document_path_all,
+                    #             file=document_path_all,
+                    #             link=doc,
+                    #             type_doc=type_name,
+                    #         )
 
                     # остатки
                     if data_item["min_ship"] > 1:
@@ -330,150 +269,87 @@ def iek_api():
                     stock_supplier_unit = lots[1]
 
                     stock_motrum = 0
+                    # основной товар
+                    try:
+                        article = Product.objects.get(
+                            supplier=supplier, article_supplier=article_suppliers
+                        )
+                    except Product.DoesNotExist:
+                        new_article = create_article_motrum(supplier.id, vendor_id)
+                        article = Product.objects.create(
+                            article=new_article,
+                            supplier=supplier,
+                            vendor=vendor_add[0],
+                            article_supplier=article_suppliers,
+                            name=name,
+                            description=description,
+                            category_supplier_all_id=item_group_vendor.id,
+                            # category=item_category,
+                            # group_id=item_group.id,
+                        )
+                    # цены товара
+                    try:
+                        price_product = Price.objects.get(prod=article)
 
-                    if article:
-                     
-                        article = Product.objects.get(article_supplier=article_suppliers)
-                        
-                        price_product = Price.objects.get(prod=article.id)
+                    except Price.DoesNotExist:
+                        price_product = Price(prod=article)
+
+                    finally:
+                        price_product.currency = currency
                         price_product.price_supplier = price_supplier
                         price_product.vat = vat_catalog
                         price_product.vat_include = vat_include
                         price_product.save()
-                        
-                        stock_supplier = get_iek_stock_one(article)
-                        stock_prod=Stock.objects.get(prod=article.id)
-                        stock_prod.stock_supplier=stock_supplier
-                        stock_prod.stock_motrum=stock_motrum
+
+                    # остатки
+                    stock_supplier = get_iek_stock_one(article)
+                    try:
+                        stock_prod = Stock.objects.get(prod=article)
+                    except Stock.DoesNotExist:
+                        stock_prod = Stock(
+                            prod=article,
+                            lot=lot,
+                        )
+                    finally:
+                        stock_prod.stock_supplier = stock_supplier
+                        stock_prod.stock_motrum = stock_motrum
                         stock_prod.save()
-                        # price_product = Price.objects.filter(
-                        #     prod=article,
-                        # ).update(
-                        #     currency=currency,
-                        #     vat=vat_catalog,
-                        #     vat_include=vat_include,
-                        #     price_supplier=price_supplier,
-                        #     rub_price_supplier=rub_price_supplier,
-                        #     price_motrum=price_motrum,
-                        #     sale=sale,
-                        # )
-                        # get_iek_stock()
-                    else:
 
-                        new_article = create_article_motrum(supplier.id, vendor_id)
-            
-                        new_product = Product.objects.create(
-                            article=new_article,
-                            supplier=supplier,
-                            vendor=vendor_add[0],
-                            # vendor_id=vendor_id,
-                            article_supplier=article_suppliers,
-                            # category_id=item_category.id,
-                            # group_id=item_group.id,
-                            name=name,
-                            description=description,
-                            category_supplier_all_id=item_group_vendor.id,
-                        )
-                        
-                        price_product = Price(prod=new_product,price_supplier=price_supplier, currency=currency, vat=vat_catalog,vat_include=vat_include)
-                        price_product.save()
-                        
-                    #     price_product = Price.objects.create(
-                    #         prod=new_product,
-                    #         currency=currency,
-                    #         vat=vat_catalog,
-                    #         vat_include=vat_include,
-                    #         price_supplier=price_supplier,
-                    #         rub_price_supplier=rub_price_supplier,
-                    #         price_motrum=price_motrum,
-                    #         sale=sale,
+                    save_image(article)
+                    saves_doc(
+                        data_item["Certificates"],
+                        article,
+                    )
+                    # if "InstallationProduct" in data_item:
+                    #     saves_doc(
+                    #         data_item["InstallationProduct"],
+                    #         article,
                     #     )
-                        save_image(new_product)
-                        saves_doc(
-                            data_item["Certificates"],
-                            article_suppliers,
-                            supplier,
-                            vendor_add[0].name,
-                            new_product,
-                            "_sertificates",
-                        )
-                        if "InstallationProduct" in data_item:
-                            save_doc_img(
-                                data_item["InstallationProduct"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_InstallationProduct",
-                                "Руководство по монтажу и эксплуатации",
-                            )
-                        if "DimensionDrawing" in data_item:
-
-                            save_doc_img(
-                                data_item["DimensionDrawing"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_DimensionDrawing",
-                                "Габаритные чертежи",
-                            )
-                        if "Passport" in data_item:
-
-                            save_doc_img(
-                                data_item["Passport"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_Passport",
-                                "Паспорт",
-                            )
-                        if "WiringDiagram" in data_item:
-
-                            save_doc_img(
-                                data_item["WiringDiagram"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_WiringDiagram",
-                                "Схема подключения",
-                            )
-                        if "Models3d" in data_item:
-
-                            save_doc_img(
-                                data_item["Models3d"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_Models3d",
-                                "3D модели",
-                            )
-                        if "Brochure" in data_item:
-
-                            save_doc_img(
-                                data_item["Brochure"],
-                                article_suppliers,
-                                supplier,
-                                vendor_add[0].name,
-                                new_product,
-                                "_Brochure",
-                                "Брошюра",
-                            )
-                        stock_supplier = get_iek_stock_one(new_product)
-                        stock_product = Stock(prod=new_product, lot=lot, stock_supplier=stock_supplier,stock_motrum=stock_motrum,)
-                        stock_product.save()
-                    #     stock_product = Stock.objects.create(
-                    #         prod=new_product,
-                    #         lot=lot,
-                    #         stock_supplier=stock_supplier,
-                    #         lot_complect=lot_complect,
-                    #         stock_supplier_unit=stock_supplier_unit,
-                    #         stock_motrum=stock_motrum,
+                    # if "DimensionDrawing" in data_item:
+                    #     saves_doc(
+                    #         data_item["DimensionDrawing"],
+                    #         article,
                     #     )
-                    #     
+                    # if "Passport" in data_item:
+                    #     saves_doc(
+                    #         data_item["Passport"],
+                    #         article,
+                    #     )
+                    # if "WiringDiagram" in data_item:
+                    #     saves_doc(
+                    #         data_item["WiringDiagram"],
+                    #         article,
+                    #     )
+                    # if "Models3d" in data_item:
+                    #     saves_doc(
+                    #         data_item["Models3d"],
+                    #         article,
+                    #     )
+                    # if "Brochure" in data_item:
+                    #     saves_doc(
+                    #         data_item["Brochure"],
+                    #         article,
+                    #     )
 
             return data
 
@@ -510,7 +386,7 @@ def iek_api():
         return data["shopItems"]
 
     def get_iek_stock_one(prod):
-       
+
         url_params = f"sku={prod.article_supplier}"
 
         url_service = "/residues"
@@ -526,10 +402,9 @@ def iek_api():
             product = data_item["sku"]
             for a in data_item["residues"].values():
                 stock += a
-                
+
         return stock
 
-    
     def get_iek_property(url_service, url_params):
         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
         response = requests.request(
@@ -538,7 +413,7 @@ def iek_api():
         data = response.json()
         for data_item in data:
             prod_article = data_item["Code"]
-   
+
             for params in data_item["Features"]:
                 name = params["Attribute"]
                 value = params["value"]
@@ -547,7 +422,7 @@ def iek_api():
                     unit_measure = params["unit"]
                 else:
                     names = name.split("_")
-              
+
                     name = names[0]
                     if names[1] == "Code":
                         pass_item = True
@@ -570,5 +445,5 @@ def iek_api():
     get_iek_product("products", "TM=ONI")
     # # get_iek_property("etim", "TM=ONI")
     # iek = get_iek_property("etim", "TM=ONI")
-    
+
     return [0]

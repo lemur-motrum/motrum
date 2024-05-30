@@ -10,6 +10,7 @@ from apps.core.models import Currency, CurrencyPercent
 
 
 from apps.logs.utils import error_alert
+
 from apps.supplier.models import Discount, SupplierCategoryProductAll
 from django.conf import settings
 from project.settings import MEDIA_ROOT
@@ -151,7 +152,7 @@ def get_price_motrum(
     percent = 0
     sale = [None]
     print(item_group)
-    print(item_category, item_group,"12314451514141")
+    print(item_category, item_group, "12314451514141")
 
     # получение процента функция
     def get_percent(item):
@@ -200,7 +201,7 @@ def get_price_motrum(
             sale = discount_all
 
         # нет скидки
-    
+
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # TODO обрезать цены
     # for sal in sales:
@@ -213,21 +214,25 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
 
     if vat_includ == True:
         vat = 0
-    if price_supplier is not None: 
+    if price_supplier is not None:
         if currency == "RUB":
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
             return price_supplier_vat
         else:
-            currency_rate_query = CurrencyRate.objects.filter(currency__words_code=currency).latest("date")
+            currency_rate_query = CurrencyRate.objects.filter(
+                currency__words_code=currency
+            ).latest("date")
             currency_rate = currency_rate_query.vunit_rate
             current_percent = CurrencyPercent.objects.filter().latest("id")
 
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-            price_supplier_rub = price_supplier_vat * currency_rate * current_percent.percent
-            
+            price_supplier_rub = (
+                price_supplier_vat * currency_rate * current_percent.percent
+            )
+
             return price_supplier_rub
     else:
-        return None    
+        return None
 
 
 # получение комплектности и расчет штук
@@ -276,8 +281,8 @@ def get_category(supplier, vendor, category_name):
         item_category = None
         item_group = None
         item_category_all = None
-        
-    return (item_category, item_group,item_category_all)
+
+    return (item_category, item_group, item_category_all)
 
 
 def check_media_directory_exist(
@@ -298,7 +303,7 @@ def check_media_directory_exist(
 def create_name_file_downloading(article_suppliers, item_count):
 
     try:
-    
+
         count = f"{item_count:05}"
         filename = "{0}_{1}".format(article_suppliers, count)
         return filename
@@ -346,8 +351,15 @@ def save_file_product(link, image_path, filename, filetype):
         ofile.write(r.content)
 
 
-def get_file_path_add(instance, filename):
+def save_file_product(link, image_path):
+    r = requests.get(link, stream=True)
+    # print(filename + filetype)
+    with open(os.path.join(MEDIA_ROOT, image_path), "wb") as ofile:
+        ofile.write(r.content)
 
+
+def get_file_path_add(instance, filename):
+    from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
 
     base_dir = "products"
@@ -355,21 +367,55 @@ def get_file_path_add(instance, filename):
     base_dir_vendor = instance.product.vendor.slug
     images_last_list = filename.split(".")
     type_file = "." + images_last_list[-1]
-    if images_last_list[-1] == "jpg" or images_last_list[-1] == "png":
-        path_name = "img"
-    else:
+    # if images_last_list[-1] == "jpg" or images_last_list[-1] == "png":
+    #     path_name = "img"
+    # else:
+    #     path_name = "document"
+
+    # try:
+    #     images_last = ProductImage.objects.filter(product=instance.product).latest("id")
+    #     item_count = ProductImage.objects.filter(product=instance.product).count()
+
+    # except ProductImage.DoesNotExist:
+    #     item_count = 1
+
+    # filenames = create_name_file_downloading(
+    #     instance.product.article_supplier, item_count
+    # )
+
+    if isinstance(instance, ProductDocument):
         path_name = "document"
+        try:
+            images_last = ProductDocument.objects.filter(
+                product=instance.product
+            ).latest("id")
+            item_count = ProductDocument.objects.filter(
+                product=instance.product
+            ).count()
+        except ProductDocument.DoesNotExist:
+            item_count = 1
+        print(instance.type_doc)
+        print(item_count)
+        filenames = create_name_file_downloading(
+            instance.product.article_supplier, item_count
+        )
+        filename = f"{filenames}_{instance.type_doc}{type_file}"
 
-    try:
-        images_last = ProductImage.objects.filter(product=instance.product).latest("id")
-        item_count = ProductImage.objects.filter(product=instance.product).count()
+    elif isinstance(instance, ProductImage):
+        path_name = "img"
+        try:
+            images_last = ProductImage.objects.filter(product=instance.product).latest(
+                "id"
+            )
+            item_count = ProductImage.objects.filter(product=instance.product).count()
+        except ProductImage.DoesNotExist:
+            item_count = 1
+        print(item_count)
+        filenames = create_name_file_downloading(
+            instance.product.article_supplier, item_count
+        )
 
-    except ProductImage.DoesNotExist:
-        item_count = 1
-
-    filenames = create_name_file_downloading(
-        instance.product.article_supplier, item_count
-    )
+        filename = filenames + type_file
 
     check_media_directory_exist(
         base_dir,
@@ -384,8 +430,9 @@ def get_file_path_add(instance, filename):
         base_dir_vendor,
         instance.product.article_supplier,
         path_name,
-        filenames + type_file,
+        filename,
     )
+
 
 def lot_chek(lot):
     from apps.product.models import Lot
@@ -397,19 +444,20 @@ def lot_chek(lot):
 
     return lot_item
 
-def response_request(response,location):
+
+def response_request(response, location):
     if response >= 200 and response <= 399:
         return True
     else:
         error = "file api"
         error_alert(error, location, response)
         return False
-    
+
+
 def create_time():
     now = datetime.datetime.now()
     three_days = datetime.timedelta(3)
     in_three_days = now - three_days
     data = in_three_days.strftime("%Y-%m-%d")
 
-   
-    return(data)
+    return data

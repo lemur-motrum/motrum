@@ -76,15 +76,15 @@ class ProductImageAdmin(admin.ModelAdmin):
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     fields = ("photo",)
-    extra = 1
+    extra = 0
     # def has_delete_permission(self, request, obj=None):
     #     return True
 
 
 class ProductDocumentInline(admin.TabularInline):
     model = ProductDocument
-    fields = ("document",)
-    extra = 1
+    fields = ("document","type_doc")
+    extra = 0
 
 
 class ProductPropertyInline(admin.TabularInline):
@@ -93,7 +93,7 @@ class ProductPropertyInline(admin.TabularInline):
         "name",
         "value",
     )
-    extra = 1
+    extra = 0
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -143,7 +143,7 @@ class ProductAdmin(admin.ModelAdmin):
         if obj:
             return [
                 "article_supplier",
-                "supplier"
+                # "supplier"
             ]
         return [
             "",

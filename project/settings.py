@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "apps.specification.apps.SpecificationConfig",
     "apps.supplier.apps.SupplierConfig",
     "apps.user.apps.UserConfig",
+    "dal",
+    "dal_select2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

@@ -35,6 +35,8 @@ TYPE_DOCUMENT = (
 # Create your models here.
 
 
+
+
 class Product(models.Model):
     article = models.PositiveIntegerField("Артикул мотрум", blank=False)
     supplier = models.ForeignKey(
@@ -43,10 +45,8 @@ class Product(models.Model):
         # related_name="products",
         on_delete=models.PROTECT,
     )
-    vendor = ChainedForeignKey(
+    vendor = models.ForeignKey(
         Vendor,
-        chained_field="supplier",
-        chained_model_field="supplier",
         verbose_name="Производитель",
         on_delete=models.PROTECT,
         blank=True,
@@ -80,6 +80,7 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=1000, blank=True, null=True
     )
+    
     name = models.CharField("Название товара", max_length=350)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_document_upgrade = models.BooleanField("было изменено вручную", default=False)

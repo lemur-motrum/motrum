@@ -9,5 +9,7 @@ django-smart-selects
 Pillow
 openpyxl
 xlrd
+django-autocomplete-light
+djhacker
 # celery
 # redis

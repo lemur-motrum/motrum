@@ -1,50 +1,38 @@
+from django import forms
 from django.contrib import admin
 
 from apps.product.models import Product
+from apps.specification.forms import PersonForm
 from apps.specification.models import ProductSpecification, Specification
 
-# Register your models here.
-# class ProductInline(admin.TabularInline):
-#     model = Product
-#     fields = (
-#         "supplier",
-#         "vendor",
-#     )
+
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
-  
-    fields = (
-        "product",
-        "quantity",
-    )
+    form = PersonForm
     extra = 1
-# class ProductSpecificationAdmin(admin.ModelAdmin):
-#     # inlines = [
-#     #     ProductInline
-#     # ]
-#     # list_display = ("name",)
-
+    fields = ["supplier","vendor","product", "quantity",]
     
+
 class SpecificationAdmin(admin.ModelAdmin):
     search_fields = [
-        'id_bitrix',
+        "id_bitrix",
     ]
-    inlines = [
-        ProductSpecificationInline
-    ]
+    inlines = [ProductSpecificationInline]
     fieldsets = [
         (
             "Основные параметры",
             {
                 "fields": [
                     ("id_bitrix",),
-                   
                 ],
             },
         ),
     ]
-    # list_display = ("name",)
+    
+class ProductSpecificationAdmin(admin.ModelAdmin):
+    form = PersonForm
+
 
 
 admin.site.register(Specification, SpecificationAdmin)
-admin.site.register(ProductSpecification)
+admin.site.register(ProductSpecification,ProductSpecificationAdmin)

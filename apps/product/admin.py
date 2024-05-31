@@ -1,5 +1,8 @@
 from django.contrib import admin
 
+# from myapp.models import MyModel
+# from myapp.widgets import RichTextEditorWidget
+from apps.product.forms import ProductForm
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -98,6 +101,7 @@ class ProductPropertyInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
+    form = ProductForm
     search_fields = [
         "article",
         "article_supplier",
@@ -122,7 +126,9 @@ class ProductAdmin(admin.ModelAdmin):
         ProductImageInline,
         ProductDocumentInline,
     ]
-
+    # formfield_overrides = {
+    #     models.TextField: {"widget": RichTextEditorWidget},
+    # }
     fieldsets = [
         (
             "Основные параметры",
@@ -143,7 +149,7 @@ class ProductAdmin(admin.ModelAdmin):
         if obj:
             return [
                 "article_supplier",
-                # "supplier"
+                "supplier"
             ]
         return [
             "",

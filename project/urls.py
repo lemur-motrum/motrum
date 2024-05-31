@@ -18,6 +18,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.urls import re_path as url
+from apps.specification.views import CountryAutocomplete
 
 
 urlpatterns = [
@@ -25,8 +27,8 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
    
-    re_path(r'^chaining/', include('smart_selects.urls')),
-        
+    url(r'^chaining/', include('smart_selects.urls')),
+      
     path("", include("apps.core.urls", namespace="core")),
     path("client/", include("apps.client.urls", namespace="client")),
     path("logs/", include("apps.logs.urls", namespace="logs")),

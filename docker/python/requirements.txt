@@ -10,6 +10,8 @@ Pillow
 openpyxl
 xlrd
 django-autocomplete-light
-djhacker
+reportlab
+pypdf 
+# djhacker
 # celery
 # redis

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # from myapp.models import MyModel
 # from myapp.widgets import RichTextEditorWidget
-from apps.product.forms import ProductForm
+# from apps.product.forms import ProductForm
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -101,7 +101,7 @@ class ProductPropertyInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
-    form = ProductForm
+    # form = ProductForm
     search_fields = [
         "article",
         "article_supplier",
@@ -134,7 +134,7 @@ class ProductAdmin(admin.ModelAdmin):
             "Основные параметры",
             {
                 "fields": [
-                    ("supplier", "vendor"),
+                   
                     "article_supplier",
                     "additional_article_supplier",
                     ("category", "group"),

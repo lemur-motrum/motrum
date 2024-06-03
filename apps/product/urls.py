@@ -11,10 +11,10 @@ app_name = 'product'
 
 urlpatterns = [
     # path("", views.index, name="home"),
-    url(
-        r"^vendor-autocomplete/$",
-        VendorAutocomplete.as_view(),
-        name="vendor-autocomplete",
-    ),
+    # url(
+    #     r"^vendor-autocomplete/$",
+    #     VendorAutocomplete.as_view(),
+    #     name="vendor-autocomplete",
+    # ),
 
 ]

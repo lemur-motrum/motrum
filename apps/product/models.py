@@ -92,7 +92,7 @@ class Product(models.Model):
         verbose_name_plural = "Товары"
 
     def __str__(self):
-        return f"Артикул мотрум:{self.article} Название товара:{self.name}"
+        return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
 
     def save(self, *args, **kwargs):
         if self.article == None:

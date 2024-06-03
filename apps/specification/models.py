@@ -1,4 +1,5 @@
 import datetime
+from mimetypes import init
 from multiprocessing.connection import Client
 from django.db import models
 from django.utils import timezone
@@ -8,6 +9,7 @@ from apps.core.utils import create_time
 from apps.product.models import Price, Product
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser
+from django.db.models import Count, Sum
 
 # Create your models here.
 
@@ -29,10 +31,11 @@ class Specification(models.Model):
         null=True,
         default=None,
     )
+    
 
-    total_amount = models.IntegerField("процент скидки", null=True, default=None)
+    total_amount = models.FloatField("Сумма спецификации", null=True, default=None)
     admin_creator = models.ForeignKey(
-        AdminUser, on_delete=models.PROTECT, null=True, default=None
+        AdminUser, on_delete=models.PROTECT,verbose_name="Администратор", null=True, default=None
     )
     file = models.CharField("фаил в системе", max_length=40, null=True, default=None)
     tag_currency = models.ForeignKey(
@@ -50,39 +53,58 @@ class Specification(models.Model):
 
     def __str__(self):
         return f"{self.id_bitrix}"
+    
+    # def save(self, *args, **kwargs):
+    #     # total_sum = ProductSpecification.objects.filter(specification=self.id)
+    #     # # .aggregate(total_sum=Sum('price_all'))
+    #     # print(total_sum)
+    #     # # self.total_amount = total_sum
+
+    #     super().save(*args, **kwargs)
+
 
 
 class ProductSpecification(models.Model):
     specification = models.ForeignKey(
         Specification,
         on_delete=models.PROTECT,
+        verbose_name="Товар",
     )
     product = models.ForeignKey(
         Product,
+        verbose_name = "Продукты",
         on_delete=models.PROTECT,
     )
 
 
     quantity = models.IntegerField("количество товара")
-    price_one = models.IntegerField("цена одного на момент формирования")
-    price_all = models.IntegerField("цена всего товара на момент формирования")
+    price_one = models.FloatField("цена одного на момент формирования")
+    price_all = models.FloatField("цена всего товара на момент формирования")
 
     class Meta:
         verbose_name = "Спецификация продукт"
         verbose_name_plural = "Спецификации Продукты"
 
-    # def __str__(self):
-    #     return self.id
+
+    def __str__(self):
+        return f"{self.product}"
 
     def save(self, *args, **kwargs):
         spec = Specification.objects.get(id=self.specification.id)
         price = Price.objects.get(prod=self.product)
-        print()
+       
         price_current = price.currency.words_code
         self.price_one = price.price_motrum
         self.price_all =  self.price_one * self.quantity
+        # отметка о валютности + добавление общец суммы
         if price_current != "RUB":
             spec.tag_currency = True
-            spec.save()
-
+        if spec.total_amount is None:
+            total_init = 0  
+        else:
+            total_init = spec.total_amount      
+        total = total_init + self.price_all
+        spec.total_amount = total
+        spec.save()
+        
         super().save(*args, **kwargs)

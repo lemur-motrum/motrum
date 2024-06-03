@@ -90,7 +90,8 @@ def currency_chek(current, now_rate):
         # вписать обработку спецификаций
         specification = Specification.objects.filter(
             tag_stop=False, tag_currency_id=now_rate.currency.id
-        )
+        ).update(tag_stop=True)
+        
         print(specification)
 
 

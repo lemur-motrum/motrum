@@ -4,11 +4,11 @@ from django.utils import timezone
 from apps.product.models import Product
 from apps.user.models import AdminUser
 
+
 # Create your models here.
 TYPE_LOGS_ERROR = (
     ("file_structure_error", "фаил не соответствует нужной структуре"),
     ("file_api_error", "фаил не соответствует нужной структуре"),
-    
     ("error", "Ошибка"),
 )
 

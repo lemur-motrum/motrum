@@ -9,6 +9,7 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 
 
 admin.site.register(Currency)
-admin.site.register(Vat)
 admin.site.register(CurrencyPercent)
+admin.site.register(Vat)
+
 

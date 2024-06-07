@@ -1,144 +1,161 @@
+import copy
 import datetime
+from enum import auto
 import itertools
 import os
 from re import T
-from apps.specification.models import ProductSpecification, Specification
-from pypdf import PdfReader, PdfWriter
-from pypdf.annotations import Link, Rectangle
+from apps.core.utils import check_spesc_directory_exist
+
+
+import reportlab
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from django.conf import settings
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.styles import getSampleStyleSheet
 
 from project.settings import MEDIA_ROOT
 
 
-def specification_date_stop():
-    specification = Specification.objects.filter(tag_stop=False)
-    for specification_item in specification:
-        now = datetime.datetime.now()
-        date = specification_item.date_stop
-        if now == date:
-            specification_item.tag_stop = True
-            specification_item.save()
+# def specification_date_stop():
+#     from apps.specification.models import  Specification
+#     specification = Specification.objects.filter(tag_stop=False)
+#     for specification_item in specification:
+#         now = datetime.datetime.now()
+#         date = specification_item.date_stop
+#         if now == date:
+#             specification_item.tag_stop = True
+#             specification_item.save()
 
 
-# def crete_pdf_specification():
-
-#     pdf_writer = PdfWriter()
-
-#     pdf_page = pdf_writer.add_blank_page (612, 792) 
-#     p = {"/T11": "/V2", "/T22": "/V4",}
-  
-#     pdf_writer.update_page_form_field_values(pdf_page, p, None)
-#     print(pdf_page)
-#     # Сохраняем созданный PDF-файл
-
-#     with open(os.path.join(MEDIA_ROOT,'new_example1.pdf'), "wb") as pdf_file:
-#         pdf_writer.write(pdf_file)
 def crete_pdf_specification(specification):
-    import reportlab
-    from reportlab.pdfgen import canvas
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib import colors
-    from reportlab.platypus import Table, TableStyle, SimpleDocTemplate
-    from reportlab.pdfbase import pdfmetrics
-    from reportlab.pdfbase.ttfonts import TTFont
-    from django.conf import settings
-    from reportlab.lib.styles import ParagraphStyle
-    from reportlab.lib.styles import getSampleStyleSheet
-
-    
-    # pdfmetrics.registerFont(TTFont('Roboto-Regular', os.path.join(MEDIA_ROOT, "fonts/Roboto-Regular.ttf")))
-    
-    # reportlab.rl_config.TTFSearchPath.append(str(settings.BASE_DIR) + '/fonts')
-    # pdfmetrics.registerFont(TTFont('Roboto-Regular', 'Roboto-Regular.ttf'))
-    
-    
-    
-    # w, h = A4
-    # c = canvas.Canvas(os.path.join(MEDIA_ROOT, "report.pdf"), pagesize=A4)
-    # text = c.beginText(50, h - 50)
-    # text.setFont("Times-Roman", 12)
-    # text.textLine("Hello world!")
-    # text.textLine("From ReportLab and Python!")
-    
-    # text.textLines("Hello world!\nFrom ReportLab and Python!")
-    # c.drawText(text)
-    
-    product_specification = ProductSpecification.objects.filter(specification=specification)
-    
-    # def grouper(iterable, n):
-    #     args = [iter(iterable)] * n
-    #     return itertools.zip_longest(*args)
-    
+    from apps.specification.models import ProductSpecification, Specification
+    directory = check_spesc_directory_exist(
+        "specification",
+    )
    
-    # def export_to_pdf(data):
-    #     c = canvas.Canvas(os.path.join(MEDIA_ROOT, "report2.pdf"), pagesize=A4)
-       
-    #     w, h = A4
-    #     max_rows_per_page = 45
-    #     # Margin.
-    #     x_offset = 50
-    #     y_offset = 50
-    #     # Space between rows.
-    #     padding = 15
 
-    #     xlist = [x + x_offset for x in [0, 200, 250, 300, 350, 400, 480]]
-    #     ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)]
+    specifications = Specification.objects.get(id=specification)
+    product_specification = ProductSpecification.objects.filter(
+        specification=specification
+    )
+    result = [(f"Итого{specifications.total_amount} руб")]
 
-    #     for rows in grouper(data, max_rows_per_page):
-    #         rows = tuple(filter(bool, rows))
-    #         c.grid(xlist, ylist[:len(rows) + 1])
-    #         for y, row in zip(ylist[:-1], rows):
-    #             for x, cell in zip(xlist, row):
-    #                 c.drawString(x + 2, y - padding + 3, str(cell))
-    #         c.showPage()
+    data = [
+        (
+            "Товар",
+            "Цена за единицу",
+            "Количество",
+            "Цена за все",
+        )
+    ]
 
-    #     c.save()
+    name_specification = f"specification_{specification}.pdf"
+    fileName = os.path.join(directory, name_specification)
+
+    pdfmetrics.registerFont(TTFont("Times", "Roboto-Regular.ttf", "UTF-8"))
+    pdfmetrics.registerFont(TTFont("Times-Bold", "Roboto-Regular.ttf", "UTF-8"))
+    pdfmetrics.registerFont(TTFont("Times-Italic", "Roboto-Regular.ttf", "UTF-8"))
+    pdfmetrics.registerFont(TTFont("Times-BoldItalic", "Roboto-Regular.ttf", "UTF-8"))
+    from reportlab.lib.fonts import addMapping
+
+    addMapping("Times", 0, 0, "Times")  # normal
+    addMapping("Times", 0, 1, "Times-Italic")  # italic
+    addMapping("Times", 1, 0, "Times-Bold")  # bold
+    addMapping("Times", 1, 1, "Times-BoldItalic")  # italic and bold
+
+    doc = SimpleDocTemplate(
+        fileName,
+        pagesize=A4,
+        rightMargin=10,
+        leftMargin=10,
+        topMargin=10,
+        bottomMargin=10,
+        title="Спецификация",
+    )
+    story = []
     styles = getSampleStyleSheet()
-    styles["Normal"].fontName = 'DejaVuSans'
-    styleN = styles["Normal"]
-    pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(MEDIA_ROOT, "fonts/DejaVuSans.ttf")))
-    data = [("TEXT", ParagraphStyle("Цена за единицу", styleN), "Количество", "Цена за все", )]
-    
-    
+
+    styles.add(ParagraphStyle(name="Justify", fontName="Times", fontSize=11))
+    styles.add(ParagraphStyle(name="Justify-Bold", fontName="Times-Bold"))
+    bold_style = styles["Justify-Bold"]
+    normal_style = styles["Justify"]
+    doc_title = copy.copy(styles["Heading1"])
+    doc_title.fontName = "Times-Bold"
+    doc_title.fontSize = 16
+    title = f"Спецификация {specification}"
+    story.append(Paragraph(title, doc_title))
+
+    result_table_style = TableStyle(
+        [
+            ("FONT", (0, 0), (-1, -1), "Times-Bold", 10),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
+            ("BACKGROUND", (0, 0), (15, -2), colors.lightgrey),
+        ]
+    )
+
+    normal_table_style = TableStyle(
+        [
+            ("FONT", (0, 0), (-1, -1), "Times", 10),
+            ("ALIGN", (0, 0), (0, -1), "CENTRE"),
+            ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ]
+    )
     for product in product_specification:
         product_price = product.price_one
         product_price_all = product.price_all
         product_quantity = product.quantity
-        data.append(( ParagraphStyle(product, styleN), product_price, product_price_all, product_quantity))
-        
-    def myTable(data):
-        # pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(MEDIA_ROOT, "fonts/DejaVuSans.ttf")))
-        fileName = os.path.join(MEDIA_ROOT, "4.pdf")
-        doc = SimpleDocTemplate(fileName, pagesize=A4)
-        
-    
-        colwidths = (60, 320, 60, 60)
-        t = Table(data, colwidths)
-        t.hAlign = 'RIGHT'
-        GRID_STYLE = TableStyle(
+        data.append(
+            (
+                Paragraph(str(product), normal_style),
+                product_price,
+                product_quantity,
+                product_price_all,
+            )
+        )
+    data.append(
+        (
+            None,
+            "Итого",
+            f"штук",
+            f"{specifications.total_amount}рублей",
+        )
+    )
+    table = Table(data)
+    table.setStyle(
+        TableStyle(
             [
-                ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-                ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
-                ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.white),
-
+                ("FONT", (0, 0), (-1, -1), "Times", 10),
+                ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
             ]
         )
-        
-        t.setStyle(GRID_STYLE)
-        elements = []
-        elements.append(t)
+    )
+    story.append(table)
 
-        
-        pdf = SimpleDocTemplate(fileName)
+    # story.append(Spacer(1, 10))
+    # doc_title.fontSize = 12
 
-        pdf.build(elements)
-        # width = 150
-        # height = 150
-        # # t.wrapOn(c, width, height)
-        # # t.drawOn(c, 65, (0 - height) - 240)
-        # c.save()
-        
-    myTable(data)  
-    # export_to_pdf(data)
-  
+    pdf = SimpleDocTemplate(fileName)
+    pdf.build(story)
+   
+    file_path = "{0}/{1}".format(
+        "specification",
+        name_specification,
+    )
+    
+    return file_path
 
-  
+def get_document_path(instance, filename):
+    directory = check_spesc_directory_exist(
+        "specification",
+    )
+    name_specification = f"спецификация_{instance.id}.pdf"
+    file_last_list = filename.split(".")
+    type_file = "." + file_last_list[-1]

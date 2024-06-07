@@ -3,6 +3,7 @@ from django.contrib import admin
 
 from apps.product.admin import GroupProductInline
 from apps.product.models import CategoryProduct, GroupProduct
+from apps.supplier.forms import DiscountForm
 
 # Register your models here.
 from .models import (
@@ -123,7 +124,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
 
 
 class DiscountAdmin(admin.ModelAdmin):
-
+    form = DiscountForm
     list_display = (
         "supplier",
         "vendor",
@@ -140,7 +141,7 @@ class DiscountAdmin(admin.ModelAdmin):
         "category_supplier_all",
         "percent",
     )
-
+  
 
 
 admin.site.register(Supplier, SupplierAdmin)

@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0041_alter_product_vendor'),
+        # ('product', '0041_alter_product_vendor'),
         ('specification', '0008_specification_currency_product_and_more'),
         ('user', '0002_alter_adminuser_options'),
     ]

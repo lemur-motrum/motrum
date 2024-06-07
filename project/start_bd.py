@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.product.models import Lot
 from apps.supplier.models import Supplier
@@ -22,3 +23,8 @@ def start_project_in_server():
     # Supplier.objects.create(name="",slug="")
     # Supplier.objects.create(name="",slug="")
     # Supplier.objects.create(name="",slug="")
+    
+    group = Group.objects.create(name="Базовый доступ")
+    group = Group.objects.create(name="Доступ администрирования товаров")
+    group = Group.objects.create(name="Доступ для загрузки каталогов поставщиков")
+    group = Group.objects.create(name="Полный доступ")

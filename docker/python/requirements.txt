@@ -2,16 +2,16 @@ django
 django-debug-toolbar
 django-environ
 requests
-pymysql
+# pymysql
 psycopg2
 Pytils 
-django-smart-selects
 Pillow
 openpyxl
-xlrd
+# xlrd
 django-autocomplete-light
 reportlab
 pypdf 
-# djhacker
-# celery
-# redis
+celery
+redis
+flower
+django-simple-history 

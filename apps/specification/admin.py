@@ -10,15 +10,7 @@ from apps.specification.utils import crete_pdf_specification
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     form = PersonForm
-    # extra = 1
     can_delete = False
-
-    # fields = [
-    #     "supplier",
-    #     "vendor",
-    #     "product",
-    #     "quantity",
-    # ]
     fieldsets = [
         (
             None,
@@ -67,37 +59,26 @@ class ProductSpecificationInline(admin.TabularInline):
         if obj:
             return False
         return True
+
     def save_related(self, request, form, formsets, change):
         obj = form.instance
-        print(obj.id)
-        print(obj.total_amount)
-        # make changes to model instance
         obj.save()
-        super(SpecificationAdmin, self).save_related(request, form, formsets, change)   
-
-    # def response_add(self, request, obj, post_url_continue=None):
-    #     print(234234234)
-    #     print(obj.id)
-    #     return super(ProductSpecificationInline, self).response_add(request, obj)
+        super(SpecificationAdmin, self).save_related(request, form, formsets, change)
 
 
 class SpecificationAdmin(admin.ModelAdmin):
     search_fields = [
         "id_bitrix",
     ]
-    list_display = [
-        "id_bitrix",
-        "date",
-        "admin_creator",
-        "total_amount",
-    ]
+    list_display = ["id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"]
     inlines = [ProductSpecificationInline]
     fieldsets = [
         (
             "Основные параметры",
             {
                 "fields": [
-                    ("id_bitrix", "date", "admin_creator", "total_amount"),
+                    ("id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"),
+                    "file",
                 ],
             },
         ),
@@ -105,10 +86,8 @@ class SpecificationAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ["id_bitrix", "date"]
-        return [
-            "date",
-        ]
+            return ["id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"]
+        return ["date", "admin_creator", "total_amount", "tag_stop"]
 
     def get_fieldsets(self, request, obj):
         fields = super(SpecificationAdmin, self).get_fieldsets(request, obj)
@@ -127,25 +106,23 @@ class SpecificationAdmin(admin.ModelAdmin):
         else:
             return fields_add
 
-    # def save_related(self, request, form, formsets, change):
-    #     obj = form.instance
-    #     print(obj.id)
-    #     print(obj.total_amount)
-    #     # make changes to model instance
-    #     obj.save()
-    #     super(SpecificationAdmin, self).save_related(request, form, formsets, change)   
     def save_related(self, request, form, formsets, change):
-        super(SpecificationAdmin, self).save_related( request, form, formsets, change)
-        id_sec =form.instance.id
-        crete_pdf_specification(id_sec)
-        # print(ProductSpecification.objects.filter(specification=id_sec))
-        # form in formsets()
-        # form_object = form.instance.save()
-        
-       
-      
+        super(SpecificationAdmin, self).save_related(request, form, formsets, change)
+        id_sec = form.instance.id
+        pdf = crete_pdf_specification(id_sec)
+        print(pdf)
+        Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
+    def save_model(self, request, obj, form, change):
+        obj.admin_creator = request.user
+        super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(admin_creator=request.user)
 
 
 admin.site.register(Specification, SpecificationAdmin)
-# admin.site.register(ProductSpecification, ProductSpecificationAdmin)
+

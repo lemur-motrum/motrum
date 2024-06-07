@@ -7,7 +7,7 @@ RUN apt-get update \
     && apt-get install -y git \
     && pip install psycopg2 
 
-RUN pip install git+https://github.com/jazzband/django-smart-selects.git
+# RUN pip install git+https://github.com/jazzband/django-smart-selects.git
 
 
 # RUN pip install --git+https://github.com/jazzband/django-smart-selects.git

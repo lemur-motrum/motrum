@@ -27,7 +27,7 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
    
-    url(r'^chaining/', include('smart_selects.urls')),
+    # url(r'^chaining/', include('smart_selects.urls')),
       
     path("", include("apps.core.urls", namespace="core")),
     path("client/", include("apps.client.urls", namespace="client")),

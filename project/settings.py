@@ -44,15 +44,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "apps.product.apps.ProductConfig",
     "apps.core.apps.CoreConfig",
     "apps.client.apps.ClientConfig",
     "apps.logs.apps.LogsConfig",
-    "apps.product.apps.ProductConfig",
     "apps.specification.apps.SpecificationConfig",
     "apps.supplier.apps.SupplierConfig",
     "apps.user.apps.UserConfig",
     "dal",
     "dal_select2",
+    # "project.apps.WebsiteAdminConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -61,7 +62,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "debug_toolbar",
-    "smart_selects",
+    "simple_history",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -159,7 +161,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-AUTH_USER_MODEL = "user.CustomUser"
+AUTH_USER_MODEL = "user.AdminUser"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -170,7 +172,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
 USE_DJANGO_JQUERY = True
+
+SIMPLE_HISTORY_REVERT_DISABLED = True
+
 # JQUERY_URL = True
+# AUTH_USER_MODEL = "user.CustomAdminUser"
 
 CACHES = {
     "default": {
@@ -198,3 +204,7 @@ if DEBUG:
 # USE_THOUSAND_SEPARATOR = True
 # THOUSAND_SEPARATOR = ' '
 # NUMBER_GROUPING = 3
+
+CELERY_BROKER_URL = "redis://redis:6379"
+
+CELERY_RESULT_BACKEND = "redis://redis:6379"

@@ -4,7 +4,6 @@ import requests
 import json
 from django.utils.text import slugify
 from pytils import translit
-from smart_selects.db_fields import ChainedForeignKey
 
 
 from apps.core.models import Currency, Vat
@@ -48,6 +47,7 @@ class Vendor(models.Model):
         verbose_name="Поставщик",
         on_delete=models.PROTECT,
     )
+    
     currency_catalog = models.ForeignKey(
         Currency,
         verbose_name="Валюта каталога",
@@ -208,8 +208,9 @@ class SupplierCategoryProductAll(models.Model):
         verbose_name_plural = "Приходящие категории товаров от поставщиков"
 
     def __str__(self):
+     
         return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
-
+# {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)         
         from apps.product.models import Price
@@ -284,3 +285,14 @@ class Discount(models.Model):
 
     def __str__(self):
         return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)         
+        from apps.product.models import Price
+        from apps.product.models import Product
+        from apps.core.utils import get_category
+        # обновление цен товаров связанной группы
+        price = Price.objects.all()
+        for price_one in price:
+            # price_one.price_supplier = price_one.price_supplier
+            price_one.save()

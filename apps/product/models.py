@@ -3,11 +3,12 @@ import os
 from pyexpat import model
 from django.utils import timezone
 from django.db import models
+from simple_history import register
 
 from apps import core
 from apps.core.models import Currency, Vat
-from smart_selects.db_fields import ChainedForeignKey
 
+from simple_history.models import HistoricalRecords, HistoricForeignKey
 
 from apps.core.utils import (
     create_article_motrum,
@@ -22,6 +23,7 @@ from pytils import translit
 from django.utils.text import slugify
 from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
 from django.utils.safestring import mark_safe
+
 TYPE_DOCUMENT = (
     ("InstallationProduct", "Руководство по монтажу и эксплуатации"),
     ("DimensionDrawing", "Габаритные чертежи"),
@@ -34,9 +36,12 @@ TYPE_DOCUMENT = (
 )
 # Create your models here.
 
+class RoutableModel(models.Model):
 
-
-
+    
+    class Meta:
+        abstract = True
+        
 class Product(models.Model):
     article = models.PositiveIntegerField("Артикул мотрум", blank=False)
     supplier = models.ForeignKey(
@@ -80,13 +85,14 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=1000, blank=True, null=True
     )
-    
+
     name = models.CharField("Название товара", max_length=350)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
 
+    history = HistoricalRecords(bases=[RoutableModel])
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
@@ -96,15 +102,14 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if self.article == None:
-            article = create_article_motrum(self.supplier.id, self.vendor.id)
+            article = create_article_motrum(self.supplier, self.vendor)
             self.article = article
         super().save(*args, **kwargs)
         # обновление цен товаров
-        price = Price.objects.filter(prod=self.id)
-        for price_one in price:
-            price_one.price_supplier = price_one.price_supplier
-            price_one.save()
-
+        # price = Price.objects.filter(prod=self.id)
+        # for price_one in price:
+        #     price_one.price_supplier = price_one.price_supplier
+        #     price_one.save()
 
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=50)
@@ -119,7 +124,7 @@ class CategoryProduct(models.Model):
 
 class GroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=50)
-    article_name = models.CharField("Артикул группы", max_length=25)
+    article_name = models.CharField("Артикул группы", max_length=25, blank=True, null=True)
     category = models.ForeignKey(
         CategoryProduct,
         verbose_name="категория",
@@ -133,7 +138,33 @@ class GroupProduct(models.Model):
     def __str__(self):
         return self.name
 
+class TestOrganizationWithHistory(models.Model):
+    name = models.CharField(max_length=15, unique=True)
+    history = HistoricalRecords()
+    
+class TestHistoricParticipanToHistoricOrganization(models.Model):
+    """
+    Historic table foreign key to historic table.
 
+    In this case as_of queries on the origin model (this one)
+    or on the target model (the other one) will traverse the
+    foreign key relationship honoring the timepoint of the
+    original query.  This only happens when both tables involved
+    are historic.
+
+    NOTE: related_name has to be different than the one used in
+          TestParticipantToHistoricOrganization as they are
+          sharing the same target table.
+    """
+
+    name = models.CharField(max_length=15, unique=True)
+    organization = Price(
+        TestOrganizationWithHistory,
+        on_delete=CASCADE,
+        related_name="historic_participants",
+    )
+    history = HistoricalRecords()
+    
 class Price(models.Model):
     prod = models.OneToOneField(
         Product,
@@ -181,7 +212,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
-
+    history = HistoricalRecords(bases=[RoutableModel])
     class Meta:
         verbose_name = "Цена"
         verbose_name_plural = "Цены"
@@ -190,7 +221,7 @@ class Price(models.Model):
         return f"{self.rub_price_supplier} {self.price_motrum}"
 
     def save(self, *args, **kwargs):
-        print(self.price_supplier)
+    
         if self.price_supplier is not None:
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
@@ -213,6 +244,95 @@ class Price(models.Model):
             self.sale = sale
 
         super().save(*args, **kwargs)
+
+    def test_historic_to_historic(self):
+        """
+        Historic table foreign key to historic table.
+
+        In this case as_of queries on the origin model (this one)
+        or on the target model (the other one) will traverse the
+        foreign key relationship honoring the timepoint of the
+        original query.  This only happens when both tables involved
+        are historic.
+
+        At t1 we have one org, one participant.
+        At t2 we have one org, two participants, however the org's name has changed.
+        At t3 we have one org, and one participant has left.
+        """
+        org = Product.objects.create(name="original")
+        p1 = TestHistoricParticipanToHistoricOrganization.objects.create(
+            name="p1", organization=org
+        )
+        t1_one_participant = timezone.now()
+        p2 = TestHistoricParticipanToHistoricOrganization.objects.create(
+            name="p2", organization=org
+        )
+        org.name = "modified"
+        org.save()
+        t2_two_participants = timezone.now()
+        p1.delete()
+        t3_one_participant = timezone.now()
+
+        # forward relationships - see how natural chasing timepoint relations is
+        p1t1 = TestHistoricParticipanToHistoricOrganization.history.as_of(
+            t1_one_participant
+        ).get(name="p1")
+        self.assertEqual(p1t1.organization, org)
+        self.assertEqual(p1t1.organization.name, "original")
+        p1t2 = TestHistoricParticipanToHistoricOrganization.history.as_of(
+            t2_two_participants
+        ).get(name="p1")
+        self.assertEqual(p1t2.organization, org)
+        self.assertEqual(p1t2.organization.name, "modified")
+        p2t2 = TestHistoricParticipanToHistoricOrganization.history.as_of(
+            t2_two_participants
+        ).get(name="p2")
+        self.assertEqual(p2t2.organization, org)
+        self.assertEqual(p2t2.organization.name, "modified")
+        p2t3 = TestHistoricParticipanToHistoricOrganization.history.as_of(
+            t3_one_participant
+        ).get(name="p2")
+        self.assertEqual(p2t3.organization, org)
+        self.assertEqual(p2t3.organization.name, "modified")
+
+        # reverse relationships
+        # at t1
+        ot1 = TestOrganizationWithHistory.history.as_of(t1_one_participant).all()[0]
+        self.assertEqual(ot1.historic_participants.count(), 1)
+        self.assertEqual(ot1.historic_participants.all()[0].name, p1.name)
+        # at t2
+        ot2 = TestOrganizationWithHistory.history.as_of(t2_two_participants).all()[0]
+        self.assertEqual(ot2.historic_participants.count(), 2)
+        self.assertIn(p1.name, [item.name for item in ot2.historic_participants.all()])
+        self.assertIn(p2.name, [item.name for item in ot2.historic_participants.all()])
+        # at t3
+        ot3 = TestOrganizationWithHistory.history.as_of(t3_one_participant).all()[0]
+        self.assertEqual(ot3.historic_participants.count(), 1)
+        self.assertEqual(ot3.historic_participants.all()[0].name, p2.name)
+        # current
+        self.assertEqual(org.historic_participants.count(), 1)
+        self.assertEqual(org.historic_participants.all()[0].name, p2.name)
+
+        self.assertTrue(is_historic(ot1))
+        self.assertFalse(is_historic(org))
+
+        self.assertIsInstance(
+            to_historic(ot1), TestOrganizationWithHistory.history.model
+        )
+        self.assertIsNone(to_historic(org))
+
+        # test querying directly from the history table and converting
+        # to an instance, it should chase the foreign key properly
+        # in this case if _as_of is not present we use the history_date
+        # https://github.com/jazzband/django-simple-history/issues/983
+        pt1h = TestHistoricParticipanToHistoricOrganization.history.all()[0]
+        pt1i = pt1h.instance
+        self.assertEqual(pt1i.organization.name, "modified")
+        pt1h = TestHistoricParticipanToHistoricOrganization.history.all().order_by(
+            "history_date"
+        )[0]
+        pt1i = pt1h.instance
+        self.assertEqual(pt1i.organization.name, "original")
 
 
 class CurrencyRate(models.Model):
@@ -250,7 +370,7 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках"
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
-
+    history = HistoricalRecords()
     class Meta:
         verbose_name = "Остаток"
         verbose_name_plural = "Остатки"
@@ -322,8 +442,8 @@ class ProductDocument(models.Model):
     document = models.FileField("Документ", upload_to=get_file_path_add, null=True)
     # file = models.CharField("фаил в системе", max_length=100, null=True)
     # type_doc = models.CharField("Тип документации", max_length=150, null=True)
-    type_doc = models.CharField("Тип документации",
-        max_length=40, choices=TYPE_DOCUMENT, default="Other"
+    type_doc = models.CharField(
+        "Тип документации", max_length=40, choices=TYPE_DOCUMENT, default="Other"
     )
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
@@ -340,7 +460,6 @@ class ProductProperty(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-       
     )
     name = models.CharField("название", max_length=100)
     value = models.CharField("значение", max_length=100)

@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "debug_toolbar",
     "simple_history",
+    'reversion'
 ]
 
 MIDDLEWARE = [
@@ -174,6 +175,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
 USE_DJANGO_JQUERY = True
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
+SIMPLE_HISTORY_ENFORCE_HISTORY_MODEL_PERMISSIONS = True
 
 # JQUERY_URL = True
 # AUTH_USER_MODEL = "user.CustomAdminUser"

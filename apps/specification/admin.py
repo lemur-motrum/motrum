@@ -11,6 +11,7 @@ class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     form = PersonForm
     can_delete = False
+    
     fieldsets = [
         (
             None,
@@ -39,7 +40,7 @@ class ProductSpecificationInline(admin.TabularInline):
             (
                 None,
                 {
-                    "fields": ["product", "quantity"],
+                    "fields": ["product", "quantity","price_one"],
                 },
             ),
         ]

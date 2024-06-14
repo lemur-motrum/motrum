@@ -92,7 +92,7 @@ class ProductSpecification(models.Model):
         price = Price.objects.get(prod=self.product)
 
         price_current = price.currency.words_code
-        self.price_one = price.price_motrum
+        self.price_one = price.rub_price_supplier
         self.price_all = self.price_one * self.quantity
         # отметка о валютности + добавление общец суммы
         if price_current != "RUB":
@@ -104,5 +104,5 @@ class ProductSpecification(models.Model):
         total = total_init + self.price_all
         spec.total_amount = total
         spec.save()
-
+        
         super().save(*args, **kwargs)

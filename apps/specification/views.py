@@ -2,7 +2,7 @@ from django.shortcuts import render
 from dal import autocomplete
 
 from apps import supplier
-from apps.product.models import Product
+from apps.product.models import Price, Product
 from apps.supplier.models import Vendor
 from django.db.models import Q
 
@@ -49,3 +49,25 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name=self.q)
 
         return qs
+
+
+
+
+
+
+class PriceOneAutocomplete(autocomplete.Select2QuerySetView ):
+    def get_queryset  (self):
+        qs = Price.objects.all()
+
+        product = self.forwarded.get("product", None)
+
+        if product:
+            qs = qs.filter(prod=product)
+        return qs
+    
+    def get_result_label(self, item):
+        if item.extra_price == True:
+            return ["Цена по запросу. Введите свое значение"]
+        else:    
+            return item.price_supplier
+  

@@ -26,4 +26,5 @@ urlpatterns = [
         CategSupAutocomplete.as_view(),
         name="catesup-autocomplete",
     ),
+     
 ]

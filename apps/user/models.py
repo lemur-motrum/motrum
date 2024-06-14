@@ -5,6 +5,13 @@ from django.contrib.auth.models import Group, User, Permission
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import signals, Sum, Q
+from django.dispatch import receiver
+from simple_history.signals import (
+    pre_create_historical_record,
+    post_create_historical_record,
+    pre_create_historical_m2m_records,
+    post_create_historical_m2m_records,
+)
 
 from apps.user.signals import update_group
 
@@ -50,11 +57,12 @@ class AdminUser(CustomUser):
 
         # if self.password is not None:
         #     self.set_password(self.password)
-
+        
         super().save(*args, **kwargs)
+        
+    
 
 
-signals.post_save.connect(update_group, sender=AdminUser)
 
 
 class Roles(Group):

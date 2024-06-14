@@ -5,10 +5,12 @@ from pyexpat import model
 from django.utils import timezone
 from django.db import models
 from simple_history import register
-
+from simple_history.utils import update_change_reason
 from apps import core
 from apps.core.models import Currency, Vat
 from django.db.models.deletion import CASCADE
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from simple_history.models import HistoricalRecords, HistoricForeignKey
 from simple_history.models import (
     SIMPLE_HISTORY_REVERSE_ATTR_NAME,
@@ -20,6 +22,9 @@ from simple_history.models import (
     to_historic,
 )
 
+from django.dispatch import receiver
+from django.db.models import signals, Sum, Q
+
 from apps.core.utils import (
     create_article_motrum,
     get_file_path,
@@ -27,6 +32,12 @@ from apps.core.utils import (
     get_lot,
     get_price_motrum,
     get_price_supplier_rub,
+)
+from simple_history.signals import (
+    pre_create_historical_record,
+    post_create_historical_record,
+    pre_create_historical_m2m_records,
+    post_create_historical_m2m_records,
 )
 from apps.supplier.models import Discount, Supplier, SupplierCategoryProductAll, Vendor
 from pytils import translit
@@ -97,7 +108,7 @@ class Product(models.Model):
     check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
 
-    history = HistoricalRecords()
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
@@ -109,13 +120,40 @@ class Product(models.Model):
         if self.article == None:
             article = create_article_motrum(self.supplier, self.vendor)
             self.article = article
+            
+         
         super().save(*args, **kwargs)
-        
         # обновление цен товаров
-        # price = Price.objects.filter(prod=self.id)
-        # for price_one in price:
-        #     price_one.price_supplier = price_one.price_supplier
-        #     price_one.save()
+        price = Price.objects.filter(prod=self.id)
+        for price_one in price:
+            price_one.price_supplier = price_one.price_supplier
+            price_one.save()
+            
+        # if obj._change_reason == None:
+        #     obj._change_reason = 'Автоматическое'   
+
+          
+        
+    # @receiver(pre_create_historical_record)
+    # def pre_create_historical_record_callback(sender, instance, history_instance, **kwargs):
+    #     if history_instance._change_reason == None:
+    #         history_instance._change_reason = 'Автоматическое'
+                
+    @receiver(post_create_historical_record)
+    def post_create_historical_record_callback(sender,instance, history_instance, **kwargs):
+        if history_instance.history_type == "~":
+            delta = history_instance.diff_against(history_instance.prev_record)
+            if delta.changed_fields == []:
+                history_instance.delete()
+                
+# @receiver(post_save, sender=Product)
+# def update_change_reason(sender, instance, **kwargs):
+#     print(instance)
+#     # if instance._change_reason == None:
+#     update_change_reason(instance, 'Автоматическое')        
+      
+        
+        
 
 
 class CategoryProduct(models.Model):
@@ -173,6 +211,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+    
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
 
     price_supplier = models.FloatField(
@@ -191,6 +230,8 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+    
+    extra_price = models.BooleanField("Цена по запросу", default=False)
 
     sale = models.ForeignKey(
         Discount,
@@ -199,17 +240,25 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
-    history = HistoricalRecords()
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Цена"
         verbose_name_plural = "Цены"
 
     def __str__(self):
-        return f"{self.rub_price_supplier} {self.price_motrum}"
+        return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
-    
-        if self.price_supplier is not None:
+        if self.price_supplier == 0 or self.extra_price == True:
+            self.extra_price = True
+            self.price_supplier = 0
+            self.rub_price_supplier = 0
+            self.price_motrum = 0
+        # elif self.price_supplier is not None:    
+        elif self.price_supplier != 0:
+            
+            self.extra_price == False
+            
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -218,9 +267,7 @@ class Price(models.Model):
             )
 
             self.rub_price_supplier = rub_price_supplier
-            print(self.prod.category_supplier_all)
-            print(self.prod.category_supplier_all.category_supplier)
-            print(self.prod.category_supplier_all.group_supplier)
+
 
             price_motrum_all = get_price_motrum(
                 self.prod.category_supplier_all.category_supplier,
@@ -273,7 +320,7 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках"
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
-    history = HistoricalRecords()
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Остаток"
         verbose_name_plural = "Остатки"
@@ -290,11 +337,6 @@ class Stock(models.Model):
        
         name1 = super().save(*args, **kwargs)
    
-        
-       
-        # self.assertEqual(p1t1.prod.name, "original")
-      
-
 
 
 class Lot(models.Model):
@@ -332,7 +374,7 @@ class ProductImage(models.Model):
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
-
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def __str__(self):
         return mark_safe(
             '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
@@ -356,7 +398,7 @@ class ProductDocument(models.Model):
     )
     link = models.CharField("ссылка у поставщика", max_length=100, null=True)
     hide = models.BooleanField("скрыть", default=False)
-
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Документация"
         verbose_name_plural = "Документации"
@@ -374,8 +416,8 @@ class ProductProperty(models.Model):
     name = models.CharField("название", max_length=100)
     value = models.CharField("значение", max_length=100)
     unit_measure = models.CharField("значение", max_length=100, null=True)
-    hide = models.BooleanField("скрыть", default=False)
-
+    hide = models.BooleanField("Удалить", default=False)
+    history = HistoricalRecords()
     class Meta:
         verbose_name = "Характеристика \свойства"
         verbose_name_plural = "Характеристики\свойства"
@@ -383,7 +425,4 @@ class ProductProperty(models.Model):
     def __str__(self):
         return f"{self.name}:{self.value}"
     
-    def  save(self, *args, **kwargs):
-        
-        super().save(*args, **kwargs)
         

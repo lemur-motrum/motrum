@@ -5,7 +5,11 @@ from apps.product.models import Product
 from . import views
 
 from django.urls import re_path as url
-from apps.specification.views import ProductAutocomplete, VendorAutocomplete
+from apps.specification.views import (
+    ProductAutocomplete,
+    PriceOneAutocomplete,
+    VendorAutocomplete,
+)
 
 app_name = "specification"
 
@@ -19,5 +23,10 @@ urlpatterns = [
         r"^vendor-autocomplete/$",
         VendorAutocomplete.as_view(),
         name="vendor-autocomplete",
+    ),
+    url(
+        r"^price-one-autocomplete/$",
+        PriceOneAutocomplete.as_view(),
+        name="price-one-autocomplete",
     ),
 ]

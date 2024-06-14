@@ -211,6 +211,7 @@ def get_price_motrum(
     print(sale)
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # TODO обрезать цены
+    motrum_price = round(motrum_price, 2)
     # for sal in sales:
     #             sale = sal
     return motrum_price, sale[0]
@@ -237,7 +238,7 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
                 price_supplier_vat * currency_rate * current_percent.percent
             )
 
-            return price_supplier_rub
+            return round(price_supplier_rub, 2)
     else:
         return None
 

@@ -76,3 +76,4 @@ class CategSupAutocomplete(autocomplete.Select2QuerySetView):
             )
 
         return qs
+

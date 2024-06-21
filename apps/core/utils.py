@@ -12,7 +12,7 @@ from apps.core.models import Currency, CurrencyPercent
 
 from apps.logs.utils import error_alert
 
-from apps.supplier.models import Discount, SupplierCategoryProductAll
+from apps.supplier.models import Discount, SupplierCategoryProduct, SupplierCategoryProductAll, SupplierGroupProduct
 from django.conf import settings
 from project.settings import MEDIA_ROOT
 
@@ -152,63 +152,64 @@ def get_price_motrum(
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
-  
 
     # получение процента функция
     def get_percent(item):
         for i in item:
             return i.percent
+
     if all_item_group and percent == 0:
-        print(all_item_group)
+   
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
             vendor=vendors,
             group_supplier__isnull=True,
             category_supplier__isnull=True,
         )
-      
+
         if discount_all_group:
             percent = get_percent(discount_all_group)
             sale = discount_all_group
-            print(percent)
+        
     # скидка по группе
     elif item_group and percent == 0:
-        print(item_group)
+   
         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-    
+
         if discount_group:
             percent = get_percent(discount_group)
             sale = discount_group
             # if percent != 0
-            print(percent)
+       
     # скидка по категории
     elif item_category and percent == 0:
-        print(item_category)
+  
         discount_categ = Discount.objects.filter(
             category_supplier_id=item_category.id,
             group_supplier__isnull=True,
         )
-   
-        if discount_categ :
+
+        if discount_categ:
             percent = get_percent(discount_categ)
             sale = discount_categ
-            print(percent)
-   
+      
+
     if percent == 0:
-        print(12312312323123)
-        print(vendors)
+     
         discount_all = Discount.objects.filter(
-            vendor=vendors, group_supplier__isnull=True, category_supplier__isnull=True, category_supplier_all__isnull=True,
+            vendor=vendors,
+            group_supplier__isnull=True,
+            category_supplier__isnull=True,
+            category_supplier_all__isnull=True,
         )
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
             sale = discount_all
-            print(percent)
+        
 
         # нет скидки
-    print(percent)
-    print(sale)
+  
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # TODO обрезать цены
     motrum_price = round(motrum_price, 2)
@@ -264,16 +265,20 @@ def get_lot_motrum():
 
 
 # артикул мотрум
-def create_article_motrum(supplier, vendor):
+def create_article_motrum(supplier):
     from apps.product.models import Product
-
+    supplier_int = str(supplier).zfill(3)
+  
     try:
         prev_product = Product.objects.filter(supplier=supplier).latest("id")
-        last_item_id = int(prev_product.article) + 1
-        name = str(last_item_id)
+        last_item_id = str(prev_product.article)[3:]
+        last_item_id_int = int(last_item_id) + 1
+        name = f"{supplier_int}{last_item_id_int}"
     except Product.DoesNotExist:
         prev_product = None
-        name = f"{supplier}{vendor}1"
+   
+        name = f"{supplier_int}1"
+  
     return name
 
 
@@ -293,6 +298,38 @@ def get_category(supplier, vendor, category_name):
     return (item_category, item_group, item_category_all)
 
 
+def get_category_prompower(supplier, vendor, category_name):
+
+    try:
+        category_all = SupplierCategoryProductAll.objects.get(
+            supplier=supplier, vendor=vendor, article_name=category_name
+        )
+        groupe = category_all.group_supplier
+        categ = category_all.category_supplier
+    except SupplierCategoryProductAll.DoesNotExist:
+        try:
+            groupe = SupplierGroupProduct.objects.get(
+                supplier=supplier, vendor=vendor, article_name=category_name
+            )
+            category_all = None
+           
+            categ = groupe.category_supplier
+        except SupplierGroupProduct.DoesNotExist:
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                supplier=supplier, vendor=vendor, article_name=category_name
+            )
+                category_all = None
+                groupe = None
+                
+            except SupplierGroupProduct.DoesNotExist:
+                category_all = None
+                groupe = None
+                categ = None
+                
+    return(category_all,groupe,categ)
+
+
 def check_media_directory_exist(
     base_dir, base_dir_supplier, base_dir_vendor, base_dir_type_file, article_suppliers
 ):
@@ -307,6 +344,7 @@ def check_media_directory_exist(
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
+
 def check_spesc_directory_exist(
     base_dir,
 ):
@@ -314,10 +352,10 @@ def check_spesc_directory_exist(
         MEDIA_ROOT,
         base_dir,
     )
-    
+
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
-    return  new_dir   
+    return new_dir
 
 
 def create_name_file_downloading(article_suppliers, item_count):
@@ -364,11 +402,11 @@ def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, pl
         )
 
 
-def save_file_product(link, image_path, filename, filetype):
-    r = requests.get(link, stream=True)
-    # print(filename + filetype)
-    with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
-        ofile.write(r.content)
+# def save_file_product(link, image_path, filename, filetype):
+#     r = requests.get(link, stream=True)
+#     # print(filename + filetype)
+#     with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
+#         ofile.write(r.content)
 
 
 def save_file_product(link, image_path):
@@ -481,3 +519,33 @@ def create_time():
     data = in_three_days.strftime("%Y-%m-%d")
 
     return data
+
+# def add_category_supplier():
+
+def send_email_error():
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    import smtplib
+ 
+    smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
+    smtp_server.starttls()
+    smtp_server.login("steisysi@gmail.com", "")
+
+    
+    # Создание объекта сообщения
+    msg = MIMEMultipart()
+    
+    # Настройка параметров сообщения
+    msg["From"] = "steisysi@gmail.com"
+    msg["To"] = "steisysi@gmail.com"
+    msg["Subject"] = "Тестовое письмо 📧"
+    
+    # Добавление текста в сообщение
+    text = "Привет! Это тестовое письмо, отправленное с помощью Python 😊"
+    msg.attach(MIMEText(text, "plain"))
+    
+    # Отправка письма
+    smtp_server.sendmail("steisysi@gmail.com", "steisysi@gmail.com", msg.as_string())
+    
+    # Закрытие соединения
+    smtp_server.quit()    

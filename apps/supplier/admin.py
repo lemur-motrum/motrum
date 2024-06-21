@@ -90,37 +90,38 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
 
 
 # class SupplierCategoryProduct(admin.ModelAdmin):
-#     list_display = (
-#         "name",
-#         "supplier",
-#         "vendor",
-#         "article_name",
-#         "category_catalog",
-#     )
-#     fields = (
-#         "name",
-#         "supplier",
-#          "vendor",
-#         "article_name",
-#         "category_catalog",
-#         "group_catalog"
-#     )
-#     list_editable = (
+    # list_display = (
+    #     "name",
+    #     "supplier",
+    #     "vendor",
+    #     "article_name",
+    #     "category_catalog",
+    # )
+    # fields = (
+    #     "name",
+    #     "supplier",
+    #      "vendor",
+    #     "article_name",
+    #     "category_catalog",
+    #     "group_catalog"
+    # )
+    # list_editable = (
 
-#         "category_catalog",
-#         "group_catalog"
-#     )
-#     readonly_fields = ('name', 'supplier', "vendor", "article_name",)
-#     # search_fields = ('name', 'supplier',)
-#     list_filter = ['supplier',]
-#     # inlines = [
-#     #     GroupProductInline,
-#     # ]
+    #     "category_catalog",
+    #     "group_catalog"
+    # )
+    # readonly_fields = ('name', 'supplier', "vendor", "article_name",)
+    # # search_fields = ('name', 'supplier',)
+    # list_filter = ['supplier',]
+    # inlines = [
+    #     GroupProductInline,
+    # ]
 
-#     # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-#     #     if db_field.name == "group_catalog":
-#     #         kwargs["queryset"] = GroupProduct.objects.filter(category=request.)
-#     #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "group_catalog":
+    #         kwargs["queryset"] = GroupProduct.objects.filter(category=request.)
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class DiscountAdmin(admin.ModelAdmin):

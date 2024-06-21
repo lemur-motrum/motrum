@@ -8,7 +8,7 @@ from apps.user.models import AdminUser
 # Create your models here.
 TYPE_LOGS_ERROR = (
     ("file_structure_error", "фаил не соответствует нужной структуре"),
-    ("file_api_error", "фаил не соответствует нужной структуре"),
+    ("file_api_error", "ошибка при загрузке с api"),
     ("error", "Ошибка"),
 )
 
@@ -60,7 +60,7 @@ class LogsError(models.Model):
     )
     info = models.CharField(
         "инфо о ошибкe",
-        max_length=200,
+        max_length=400,
         blank=True,
         null=True,
     )

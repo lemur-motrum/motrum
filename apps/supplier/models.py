@@ -110,12 +110,14 @@ class SupplierCategoryProduct(models.Model):
         verbose_name_plural = "Категории товаров у поставщика"
 
     def __str__(self):
-        return self.name
+        return f"{self.article_name}{self.name}"
 
     
 
 class SupplierGroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=150)
+    slug = models.CharField("слаг", max_length=150,blank=True,
+        null=True,)
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -153,6 +155,8 @@ class SupplierGroupProduct(models.Model):
 
 class SupplierCategoryProductAll(models.Model):
     name = models.CharField("Название категории", max_length=150)
+    slug = models.CharField("слаг", max_length=150,blank=True,
+        null=True,)
     article_name = models.CharField(
         "Артикул категории",
         max_length=55,
@@ -255,6 +259,7 @@ class Discount(models.Model):
     #     blank=True,
     #     null=True,
     # )
+    
     category_supplier = models.ForeignKey(
         SupplierCategoryProduct,
         verbose_name="Категория каталога поставщика",

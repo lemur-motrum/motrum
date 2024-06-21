@@ -1,17 +1,23 @@
+import datetime
+from django.utils import timezone
+from os import path
 from django import forms
 from django.contrib import admin
-
-from apps.product.models import Product
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from apps.core.utils import send_email_error
+from apps.product.models import Price, Product
 from apps.specification.forms import PersonForm
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
+from django.utils.html import format_html
 
 
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     form = PersonForm
-    can_delete = False
-    
+
     fieldsets = [
         (
             None,
@@ -22,12 +28,23 @@ class ProductSpecificationInline(admin.TabularInline):
     ]
 
     def get_readonly_fields(self, request, obj=None):
+        # если спецификация недействительна пресчет
+
         if obj:
-            return ["product", "quantity", "price_one", "price_all"]
+            for id_table in request.resolver_match.captured_kwargs.values():
+                parent_id = id_table
+
+            spec = Specification.objects.get(id=parent_id)
+            if spec.tag_stop == False:
+
+                return ["quantity", "price_all"]
+            else:
+                return ["product", "quantity", "price_one", "price_all"]
         return []
 
     def get_fieldsets(self, request, obj):
         fields = super(ProductSpecificationInline, self).get_fieldsets(request, obj)
+
         fields_add = [
             (
                 None,
@@ -40,14 +57,51 @@ class ProductSpecificationInline(admin.TabularInline):
             (
                 None,
                 {
-                    "fields": ["product", "quantity","price_one"],
+                    "fields": [
+                        "product",
+                        "quantity",
+                        "price_one",
+                    ],
+                },
+            ),
+        ]
+        fields_change = [
+            (
+                None,
+                {
+                    "fields": [
+                        "product",
+                        "quantity",
+                        "price_one",
+                    ],
                 },
             ),
         ]
         if obj and obj.pk:
-            return fields
+            for id_table in request.resolver_match.captured_kwargs.values():
+                parent_id = id_table
+                spec = Specification.objects.get(id=parent_id)
+            if spec.tag_stop == False:
+
+                return fields_change
+            else:
+                return fields
         else:
             return fields_add
+
+        # def get_formset(self, request, obj, **kwargs):
+        #     # for id_table in request.resolver_match.captured_kwargs.values():
+        #     #     parent_id = id_table
+
+        #     # spec = Specification.objects.get(id=parent_id)
+
+        #     if obj == None:
+        #         kwargs["form"] = PersonForm
+        #     # else:
+        #     #     if spec.tag_stop == False:
+        #     #         kwargs["form"] = ProductSpecFalseForm
+
+        return super().get_form(request, obj, **kwargs)
 
     def get_extra(self, request, obj=None, **kwargs):
         extra = 1
@@ -61,24 +115,32 @@ class ProductSpecificationInline(admin.TabularInline):
             return False
         return True
 
-    def save_related(self, request, form, formsets, change):
-        obj = form.instance
-        obj.save()
-        super(SpecificationAdmin, self).save_related(request, form, formsets, change)
-
 
 class SpecificationAdmin(admin.ModelAdmin):
+
     search_fields = [
         "id_bitrix",
     ]
-    list_display = ["id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"]
+    list_display = [
+        "id_bitrix",
+        "date",
+        "admin_creator",
+        "total_amount",
+        "tag_stop",
+    ]
     inlines = [ProductSpecificationInline]
     fieldsets = [
         (
             "Основные параметры",
             {
                 "fields": [
-                    ("id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"),
+                    (
+                        "id_bitrix",
+                        "date",
+                        "admin_creator",
+                        "total_amount",
+                        "tag_stop",
+                    ),
                     "file",
                 ],
             },
@@ -87,7 +149,19 @@ class SpecificationAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ["id_bitrix", "date", "admin_creator", "total_amount", "tag_stop"]
+            if obj.tag_stop == False:
+                return [
+                    "id_bitrix",
+                ]
+            else:
+                return [
+                    "id_bitrix",
+                    "date",
+                    "admin_creator",
+                    "total_amount",
+                    "tag_stop",
+                ]
+
         return ["date", "admin_creator", "total_amount", "tag_stop"]
 
     def get_fieldsets(self, request, obj):
@@ -102,8 +176,25 @@ class SpecificationAdmin(admin.ModelAdmin):
                 },
             ),
         ]
+
         if obj and obj.pk:
-            return fields
+            if obj.tag_stop == False:
+                fields_change = [
+                    (
+                        "Основные параметры",
+                        {
+                            "fields": [
+                                (
+                                    "id_bitrix",
+                                    "date",
+                                ),
+                            ],
+                        },
+                    ),
+                ]
+                return fields_change
+            else:
+                return fields
         else:
             return fields_add
 
@@ -115,7 +206,13 @@ class SpecificationAdmin(admin.ModelAdmin):
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):
+      
         obj.admin_creator = request.user
+        if change:
+            obj.tag_stop = True
+            obj.total_amount = 0
+            date = timezone.now()
+            obj.date = date
         super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
@@ -126,4 +223,3 @@ class SpecificationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Specification, SpecificationAdmin)
-

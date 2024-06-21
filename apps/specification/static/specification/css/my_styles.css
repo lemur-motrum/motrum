@@ -1,0 +1,19 @@
+select[data-readonly="1"]  .select2-selection__arrow,
+  .select2-selection__clear {
+    display: none;
+  }
+  
+.select2-hidden-accessible[data-readonly="1"]  + .select2-container {
+    pointer-events: none;
+    touch-action: none;
+  
+    .select2-selection {
+      background: #eee;
+      box-shadow: none;
+    }
+  
+    .select2-selection__arrow,
+    .select2-selection__clear {
+      display: none;
+    }
+  }

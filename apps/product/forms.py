@@ -43,7 +43,21 @@ class ProductForm(forms.ModelForm):
     )
 
     class Meta:
-        model = ProductSpecification
+        model = Product
+        fields = "__all__"
+        widgets = {
+            "description": forms.Textarea(
+                attrs={
+                    "cols": 150,
+                    "rows": 7,
+                }
+            ),
+        }
+class ProductChangeForm(forms.ModelForm):
+    
+
+    class Meta:
+        model = Product
         fields = "__all__"
         widgets = {
             "description": forms.Textarea(

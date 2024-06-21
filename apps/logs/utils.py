@@ -18,3 +18,4 @@ def error_alert(error, location, info):
         error_alert = LogsError.objects.create(
             type_error="type_error", location=location, info=info
         )
+        

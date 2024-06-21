@@ -16,6 +16,9 @@ from simple_history.utils import (
 )
 from simple_history.utils import update_change_reason
 
+from apps.core.utils import create_article_motrum
+from project.settings import MEDIA_URL
+
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 # from myapp.models import MyModel
@@ -23,7 +26,7 @@ SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 # from apps.product.forms import ProductForm
 from simple_history.manager import HistoricalQuerySet, HistoryManager
 from . import models
-from apps.product.forms import ProductForm
+from apps.product.forms import ProductChangeForm, ProductForm
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -57,7 +60,6 @@ class SupplierCategoryProductAllInline(admin.TabularInline):
 
 class GroupProductInline(admin.TabularInline):
     model = GroupProduct
-    fields = ("name",)
 
 
 class StockAdmin(SimpleHistoryAdmin):
@@ -359,15 +361,6 @@ class PriceInline(admin.TabularInline):
         super(PriceInline, self).__init__(*args, **kwargs)
         self.can_delete = False
 
-    def save_model(self, request, obj, form, change):
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)
-        
-    def save_model(self, request, obj, form, change):
-
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)    
-
 
 class StockInline(admin.TabularInline):
     model = Stock
@@ -386,15 +379,19 @@ class StockInline(admin.TabularInline):
         super(StockInline, self).__init__(*args, **kwargs)
         self.can_delete = False
 
-    def save_model(self, request, obj, form, change):
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)
-
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    fields = ("photo", "hide")
+
     extra = 0
+    fields = (
+        "preview",
+        "photo",
+        "hide",
+    )
+
+    def preview(self, obj):
+        return obj
 
     def __init__(self, *args, **kwargs):
         super(ProductImageInline, self).__init__(*args, **kwargs)
@@ -402,14 +399,26 @@ class ProductImageInline(admin.TabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        print(qs)
 
         return qs.filter(hide=False)
 
-    def save_model(self, request, obj, form, change):
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["preview", "photo"]
+        return [
+            "preview",
+        ]
 
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)
+    def get_fields(self, request, obj=None):
+        if obj:
+            return [
+                "preview",
+                "photo",
+                "hide",
+            ]
+        return [
+            "photo",
+        ]
 
 
 class ProductDocumentInline(admin.TabularInline):
@@ -423,14 +432,8 @@ class ProductDocumentInline(admin.TabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        print(qs)
 
         return qs.filter(hide=False)
-
-    def save_model(self, request, obj, form, change):
-
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)
 
 
 class ProductPropertyInline(admin.TabularInline):
@@ -444,19 +447,13 @@ class ProductPropertyInline(admin.TabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        print(qs)
 
         return qs.filter(hide=False)
-
-    def save_model(self, request, obj, form, change):
-
-        obj._change_reason = "Ручное"
-        super().save_model(request, obj, form, change)
 
 
 class ProductAdmin(SimpleHistoryAdmin):
     show_facets = admin.ShowFacets.ALWAYS
-    # form = ProductForm
+    form = ProductChangeForm
     object_history_list_template = "product/templates_history.html"
     history_list_display = []
     search_fields = [
@@ -470,7 +467,6 @@ class ProductAdmin(SimpleHistoryAdmin):
     list_display = [
         "article",
         "article_supplier",
-        "additional_article_supplier",
         "supplier",
         "vendor",
         "name",
@@ -489,27 +485,28 @@ class ProductAdmin(SimpleHistoryAdmin):
             "Основные параметры",
             {
                 "fields": [
-                    "article_supplier",
-                    "additional_article_supplier",
-                    ("supplier", "vendor"),
-                    "category_supplier_all",
-                    ("category", "group"),
+                    (
+                        "article_supplier",
+                        "additional_article_supplier",
+                    ),
                     "name",
                     "description",
+                    ("supplier", "vendor"),
+                    ("category_supplier", "group_supplier", "category_supplier_all"),
+                    ("category", "group"),
                 ],
             },
         ),
     ]
 
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if request.user.username[0].upper() != "J":
-            if "delete_selected" in actions:
-                del actions["delete_selected"]
-        return actions
+    # def get_actions(self, request):
+    #     actions = super().get_actions(request)
+    #     if request.user.username[0].upper() != "J":
+    #         if "delete_selected" in actions:
+    #             del actions["delete_selected"]
+    #     return actions
 
     def delete_queryset(self, request, queryset):
-        print(111111111111111111)
         for obj in queryset.all():
             obj.delete()
 
@@ -527,13 +524,19 @@ class ProductAdmin(SimpleHistoryAdmin):
                 "Основные параметры",
                 {
                     "fields": [
-                        ("supplier", "vendor"),
-                        "article_supplier",
-                        "additional_article_supplier",
-                        "category_supplier_all",
-                        ("category", "group"),
+                        (
+                            "article_supplier",
+                            "additional_article_supplier",
+                        ),
                         "name",
                         "description",
+                        ("supplier", "vendor"),
+                        (
+                            "category_supplier",
+                            "group_supplier",
+                            "category_supplier_all",
+                        ),
+                        ("category", "group"),
                     ],
                 },
             ),
@@ -573,25 +576,14 @@ class ProductAdmin(SimpleHistoryAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
-
         obj._change_reason = "Ручное"
         super().save_model(request, obj, form, change)
-        
+
     def save_formset(self, request, form, formset, change):
-        # instances = formset.save()
-        formset._change_reason = "Ручное"
         instances = formset.save()
-        print()
-        
-        for obj in formset:
-            # obj._change_reason = "Ручное"
-            print(obj)
-            
-            # update_change_reason(obj, 'Ручное')
-        # for instance in instances:
-            
-        #     instance.save()
-        # formset.save_m2m()    
+        for instance in instances:
+            update_change_reason(instance, "Ручное")
+            instance.save()
 
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
@@ -608,7 +600,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         price_id = Price.objects.get(prod=object_id)
         property_id = ProductProperty.objects.filter(product=object_id)
-        print(property_id)
+
         image_id = ProductImage.objects.filter(product=object_id)
         doc_id = ProductDocument.objects.filter(product=object_id)
 

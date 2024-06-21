@@ -36,7 +36,7 @@ from apps.supplier.models import (
 def iek_api():
     supplier = Supplier.objects.get(slug="iek")
     vendors = Vendor.objects.filter(supplier=supplier)
-    currency = Currency.objects.get(code=643)
+    currency = Currency.objects.get(words_code="RUB")
     for vendor_items in vendors:
         if vendor_items.slug == "oni":
             vendor_id = vendor_items.id

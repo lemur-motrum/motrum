@@ -1,15 +1,23 @@
-from django.shortcuts import render
+from django import http
+from django.shortcuts import redirect, render
 from dal import autocomplete
 
 from apps import supplier
 from apps.product.models import Price, Product
+from apps.specification.forms import PersonForm
+from apps.specification.models import ProductSpecification
 from apps.supplier.models import Vendor
 from django.db.models import Q
 
 
-# Create your views here.
 class ProductAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_value(self, result):
+        print(123123)
+        """Return the value of a result."""
+        return str(result.pk)
+
     def get_queryset(self):
+
         qs = Product.objects.all()
 
         supplier = self.forwarded.get("supplier", None)
@@ -32,7 +40,6 @@ class ProductAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-
 class CountryAutocomplete(autocomplete.Select2QuerySetView):
     pass
 
@@ -51,23 +58,43 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
+class PriceOneAutocomplete(autocomplete.Select2QuerySetView):
 
+    def get_queryset(self):
 
-
-
-class PriceOneAutocomplete(autocomplete.Select2QuerySetView ):
-    def get_queryset  (self):
-        qs = Price.objects.all()
+        qs = []
 
         product = self.forwarded.get("product", None)
-
+        print(product)
         if product:
+            qs = Price.objects.all()
             qs = qs.filter(prod=product)
+
         return qs
-    
-    def get_result_label(self, item):
-        if item.extra_price == True:
-            return ["Цена по запросу. Введите свое значение"]
-        else:    
-            return item.price_supplier
-  
+
+    def create_object(self, text):
+        product = self.forwarded.get("product", None)
+        prod = ProductSpecification(
+            product_id=product, price_one=text, price_exclusive=True
+        )
+        prod.save()
+
+        return prod
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create an object given a text after checking permissions.
+
+        Runs self.validate() if self.validate_create is True.
+        """
+
+        text = request.POST.get("text", None)
+
+        if text is None:
+            return http.HttpResponseBadRequest()
+
+        return http.JsonResponse(
+            {
+                "text": text,
+            }
+        )

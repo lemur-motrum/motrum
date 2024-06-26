@@ -27,18 +27,25 @@ environ.Env.read_env(os.path.join(BASE_DIR, "docker/.env"))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-h4ukmjtsu6g4ulu9mlw=(&!&&nhm$m1+l75=j3y_pr9ey#8tkj"
 
-DJANGO_ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] dyugaev.beget.tech"
+# DJANGO_ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] dyugaev.beget.tech"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "dyugaev.beget.tech"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "dyugaev.beget.tech",
+    "213.139.208.116",
+    "testserver",
+    # "karathon.yuriyzhidkov.ru",
+]
 
 INTERNAL_IPS = [
-    "127.0.0.1",
+    "127.0.0.1","localhost"
 ]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -112,10 +119,10 @@ WSGI_APPLICATION = "project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "pgdb",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
         "PORT": "5432",
         # 'CONN_MAX_AGE': 60,
     }

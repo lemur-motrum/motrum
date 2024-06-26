@@ -1,5 +1,5 @@
 венв для пайтона
-ntrcn ntrcn
+!!!!!!!!!!!!!!!!!
  py -m venv venv    
 C:\project\motrum\docker\venv\Scripts\activate.bat
 

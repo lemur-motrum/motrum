@@ -185,6 +185,8 @@ class CategoryProduct(models.Model):
         return self.name
 
 
+
+
 class GroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=50)
     article_name = models.CharField(

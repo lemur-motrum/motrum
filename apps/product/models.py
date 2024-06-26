@@ -251,7 +251,7 @@ class Price(models.Model):
     sale = models.ForeignKey(
         Discount,
         verbose_name="Примененная скидка",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
@@ -265,6 +265,7 @@ class Price(models.Model):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
+   
         if self.price_supplier == 0 or self.extra_price == True:
             self.extra_price = True
             self.price_supplier = 0
@@ -272,7 +273,7 @@ class Price(models.Model):
             self.price_motrum = 0
         # elif self.price_supplier is not None:
         elif self.price_supplier != 0:
-
+         
             self.extra_price == False
 
             rub_price_supplier = get_price_supplier_rub(
@@ -283,7 +284,10 @@ class Price(models.Model):
             )
 
             self.rub_price_supplier = rub_price_supplier
-
+            print(self.prod.category_supplier_all)
+            print(self.prod.group_supplier)
+           
+      
             price_motrum_all = get_price_motrum(
                 self.prod.category_supplier,
                 self.prod.group_supplier,
@@ -295,6 +299,7 @@ class Price(models.Model):
             )
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
+    
             self.price_motrum = price_motrum
             self.sale = sale
 
@@ -394,10 +399,11 @@ class ProductImage(models.Model):
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
-    def __str__(self):
-        return mark_safe(
-            '<img src="{}{}" height="100" width="100" />'.format(MEDIA_URL, self.photo)
-        )
+    # def __str__(self):
+    #     return None
+        # return mark_safe(
+        #     '<img src="{}{}" height="200" width="200" />'.format(MEDIA_URL, self.photo)
+        # )
 
     # def delete(self, *args, **kwargs):
     #     self.hide = True
@@ -433,7 +439,7 @@ class ProductDocument(models.Model):
 class ProductProperty(models.Model):
     product = models.ForeignKey(
         Product,
-        related_name="historic_property",
+        # related_name="historic_property",
         on_delete=CASCADE,
     )
     name = models.CharField("название", max_length=200)

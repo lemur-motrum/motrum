@@ -18,4 +18,10 @@ def error_alert(error, location, info):
         error_alert = LogsError.objects.create(
             type_error="type_error", location=location, info=info
         )
+    elif error == "file_api_error":
+        type_error = t[1]
+        print(type_error)
+        error_alert = LogsError.objects.create(
+            type_error="type_error", location=location, info=info
+        )    
         

@@ -6,6 +6,7 @@ from apps.supplier.get_utils.avangard import get_avangard_file
 from apps.supplier.get_utils.emas import get_emas
 from apps.supplier.get_utils.iek import iek_api
 from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import Supplier, SupplierCategoryProduct, SupplierGroupProduct
 from apps.user.utils import upgrade_permission
 
@@ -33,6 +34,7 @@ def add_iek(request):
 
 def get_currency_api(request):
     title = "Услуги"
+
     # responsets = ['233','2131']
     responsets 
     context = {

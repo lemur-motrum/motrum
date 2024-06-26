@@ -189,7 +189,6 @@ def prompower_api():
                     article_suppliers = data_item["article"]
                     name = data_item["title"]
                     description = data_item["description"]
-
                   
                     if "categoryId" in data_item:
                         category_all = data_item["categoryId"]
@@ -197,7 +196,6 @@ def prompower_api():
                     else:
                         categ = None
                     print(categ)    
-               
 
                     # цены
                     price_supplier = int(data_item["price"])
@@ -207,8 +205,9 @@ def prompower_api():
                     stock_supplier = data_item["instock"]
                     lot_complect = 1
                     stock_motrum = 0
+                    
                     img_list = data_item["img"]
-
+                    
                     def save_image(
                         article,
                     ):

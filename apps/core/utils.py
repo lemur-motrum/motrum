@@ -143,12 +143,84 @@ from apps.supplier.models import Discount, SupplierCategoryProductAll
 from django.conf import settings
 from project.settings import MEDIA_ROOT
 
+# def get_price_motrum(
+#     item_category, item_group, vendors, rub_price_supplier, all_item_group
+# ):
+#     print(item_group)
+#     motrum_price = rub_price_supplier
+#     percent = 0
+#     sale = [None]
 
+#     # получение процента функция
+#     def get_percent(item):
+#         for i in item:
+#             return i.percent
+
+#     if all_item_group and percent == 0:
+#         print(1111,all_item_group)
+#         discount_all_group = Discount.objects.filter(
+#             category_supplier_all=all_item_group.id,
+#             # vendor=vendors,
+#             # group_supplier__isnull=True,
+#             # category_supplier__isnull=True,
+#         )
+#         print(discount_all_group)
+#         if discount_all_group:
+#             print(4444444444)
+#             percent = get_percent(discount_all_group)
+#             sale = discount_all_group
+        
+#     # скидка по группе
+#     elif item_group and percent == 0:
+#         print(222)
+#         discount_group = Discount.objects.filter(group_supplier=item_group.id)
+#         print(discount_group)
+#         if discount_group:
+#             percent = get_percent(discount_group)
+#             sale = discount_group
+#             # if percent != 0
+       
+#     # скидка по категории
+#     elif item_category and percent == 0:
+  
+#         discount_categ = Discount.objects.filter(
+#             category_supplier_id=item_category.id,
+#             # group_supplier__isnull=True,
+#         )
+
+#         if discount_categ:
+#             percent = get_percent(discount_categ)
+#             sale = discount_categ
+      
+
+#     if percent == 0:
+     
+#         discount_all = Discount.objects.filter(
+#             vendor=vendors,
+#             group_supplier__isnull=True,
+#             category_supplier__isnull=True,
+#             category_supplier_all__isnull=True,
+#         )
+#         # скидка по всем вендору
+#         if discount_all:
+#             percent = get_percent(discount_all)
+#             sale = discount_all
+        
+
+#         # нет скидки
+  
+#     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
+#     # TODO обрезать цены
+#     motrum_price = round(motrum_price, 2)
+#     # for sal in sales:
+#     #             sale = sal
+#     return motrum_price, sale[0]
 # расчет цены для мотрум
 # TODO: переписать на трае ексепт
 def get_price_motrum(
     item_category, item_group, vendors, rub_price_supplier, all_item_group
 ):
+    print(item_group)
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -159,34 +231,36 @@ def get_price_motrum(
             return i.percent
 
     if all_item_group and percent == 0:
-   
+        print(1111,all_item_group)
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
-            vendor=vendors,
-            group_supplier__isnull=True,
-            category_supplier__isnull=True,
+            # vendor=vendors,
+            # group_supplier__isnull=True,
+            # category_supplier__isnull=True,
         )
-
+        print(discount_all_group)
         if discount_all_group:
+            print(4444444444)
             percent = get_percent(discount_all_group)
             sale = discount_all_group
         
     # скидка по группе
-    elif item_group and percent == 0:
-   
+        print(percent)
+    if item_group and percent == 0:
+        print(222)
         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-
+        print(discount_group)
         if discount_group:
             percent = get_percent(discount_group)
             sale = discount_group
             # if percent != 0
        
     # скидка по категории
-    elif item_category and percent == 0:
+    if item_category and percent == 0:
   
         discount_categ = Discount.objects.filter(
             category_supplier_id=item_category.id,
-            group_supplier__isnull=True,
+            # group_supplier__isnull=True,
         )
 
         if discount_categ:
@@ -454,6 +528,8 @@ def get_file_path_add(instance, filename):
             item_count = 1
         # print(instance.type_doc)
         # print(item_count)
+        print(instance)
+        print(instance.type_doc)
         filenames = create_name_file_downloading(
             instance.product.article_supplier, item_count
         )

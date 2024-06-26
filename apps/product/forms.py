@@ -66,4 +66,11 @@ class ProductChangeForm(forms.ModelForm):
                     "rows": 7,
                 }
             ),
+            "name": forms.Textarea(
+                attrs={
+                    "cols": 150,
+                    "rows": 2,
+                }
+            ),
+           
         }

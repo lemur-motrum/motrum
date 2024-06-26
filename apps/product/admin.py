@@ -14,6 +14,7 @@ from simple_history.utils import (
     get_history_manager_for_model,
     get_history_model_for_model,
 )
+from django.forms import TextInput, Textarea
 from simple_history.utils import update_change_reason
 
 from apps.core.utils import create_article_motrum
@@ -53,13 +54,9 @@ from django.utils.text import capfirst
 from django.utils.encoding import force_str
 
 
-class SupplierCategoryProductAllInline(admin.TabularInline):
-    model = SupplierCategoryProductAll
-    fields = ("name",)
 
 
-class GroupProductInline(admin.TabularInline):
-    model = GroupProduct
+
 
 
 class StockAdmin(SimpleHistoryAdmin):
@@ -335,12 +332,6 @@ class GroupProductAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
-class LotAdmin(admin.ModelAdmin):
-    fields = (
-        "name",
-        "name_shorts",
-    )
-
 
 class PriceInline(admin.TabularInline):
     model = Price
@@ -348,7 +339,7 @@ class PriceInline(admin.TabularInline):
     fields = (
         "currency",
         "vat",
-        "vat_include",
+        # "vat_include",
         "extra_price",
         "price_supplier",
         "rub_price_supplier",
@@ -391,7 +382,11 @@ class ProductImageInline(admin.TabularInline):
     )
 
     def preview(self, obj):
-        return obj
+        print(obj.photo.url)
+        img = mark_safe(
+            '<img src="{}" height="100"  />'.format(obj.photo.url)
+        )
+        return img
 
     def __init__(self, *args, **kwargs):
         super(ProductImageInline, self).__init__(*args, **kwargs)
@@ -404,12 +399,13 @@ class ProductImageInline(admin.TabularInline):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ["preview", "photo"]
+            return ["preview",]
         return [
             "preview",
         ]
 
     def get_fields(self, request, obj=None):
+        print(request)
         if obj:
             return [
                 "preview",
@@ -499,6 +495,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         ),
     ]
 
+
     # def get_actions(self, request):
     #     actions = super().get_actions(request)
     #     if request.user.username[0].upper() != "J":
@@ -584,7 +581,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         for instance in instances:
             update_change_reason(instance, "Ручное")
             instance.save()
-
+    # история изменений
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
         request.current_app = self.admin_site.name
@@ -727,8 +724,38 @@ class ProductAdmin(SimpleHistoryAdmin):
             request, self.object_history_template, context, **extra_kwargs
         )
 
+class LotAdmin(admin.ModelAdmin):
+    fields = (
+        "name",
+        "name_shorts",
+    )
 
-admin.site.register(CategoryProduct, GroupProductAdmin)
-admin.site.register(GroupProduct, GroupProductAdmin)
-admin.site.register(Lot, LotAdmin)
+class GroupProductInline(admin.TabularInline):
+    model = GroupProduct
+    fields = (
+        "name",
+    )
+    
+    
+
+
+class CategoryProductAdmin(admin.ModelAdmin):
+    fields = ("name","get_name")
+    list_display = ['name', 'get_name', ]
+    inlines = [
+        GroupProductInline,
+    ]
+    
+    def get_name(self, obj):
+        group = GroupProduct.objects.filter(category=obj)
+        print(12313)
+        return group
+    # get_name.admin_order_field  = 'author'  #Allows column order sorting
+    # get_name.short_description = 'Author Name'  #Renames column head
+
+
+admin.site.register(CategoryProduct,CategoryProductAdmin)
+admin.site.register(GroupProduct)
+
 admin.site.register(Product, ProductAdmin)
+# admin.site.register(Lot)

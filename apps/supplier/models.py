@@ -1,3 +1,4 @@
+from math import prod
 import os
 from django.db import models
 import requests
@@ -36,6 +37,7 @@ class Supplier(models.Model):
         self.slug = slugify(slugish)
 
         super().save(*args, **kwargs)
+
 
 
 class Vendor(models.Model):
@@ -80,6 +82,7 @@ class Vendor(models.Model):
 
 # class ListApiUploadIek(models.Model):
 #     name = models.CharField("товары необходимые для загрузки апи иек", max_length=30)
+
 
 
 class SupplierCategoryProduct(models.Model):
@@ -207,9 +210,10 @@ class SupplierCategoryProductAll(models.Model):
         null=True,
     )
 
+
     class Meta:
-        verbose_name = "Приходящая категории товара от поставщиков"
-        verbose_name_plural = "Приходящие категории товаров от поставщиков"
+        verbose_name = "Подгруппы поставщиков"
+        verbose_name_plural = "Подгруппы поставщиков"
 
     def __str__(self):
      
@@ -287,17 +291,29 @@ class Discount(models.Model):
     class Meta:
         verbose_name = "Скидка"
         verbose_name_plural = "Скидки"
-
+        
     def __str__(self):
-        return "Скидка" + str(self.vendor) + str(self.vendor) + str(self.percent) + "%"
+        return f"Скидка {self.vendor}|{self.vendor}:{self.percent}%"
+
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)         
         from apps.product.models import Price
-        from apps.product.models import Product
-        from apps.core.utils import get_category
         # обновление цен товаров связанной группы
-        price = Price.objects.all()
+        if self.category_supplier_all:
+            print(11111)
+            price = Price.objects.filter(prod__category_supplier_all=self.category_supplier_all)
+        elif  self.group_supplier:
+            price = Price.objects.filter(prod__group_supplier=self.group_supplier)
+        elif  self.category_supplier:
+            price = Price.objects.filter(prod__category_supplier=self.category_supplier) 
+        elif  self.vendor:
+            price = Price.objects.filter(prod__vendor=self.vendor)
+        elif  self.supplier:
+            price = Price.objects.filter(prod__supplier=self.supplier)              
+        
+        print(price)  
         for price_one in price:
             # price_one.price_supplier = price_one.price_supplier
             price_one.save()
+            

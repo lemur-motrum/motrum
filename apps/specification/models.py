@@ -2,7 +2,9 @@ import datetime
 from mimetypes import init
 from multiprocessing.connection import Client
 from django.db import models
+from django.dispatch import receiver
 from django.utils import timezone
+from django.db.models.signals import post_save
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import create_time
@@ -63,7 +65,15 @@ class Specification(models.Model):
     def __str__(self):
         return f"{self.id_bitrix}"
 
-
+# @receiver(post_save)
+# def my_callback(sender, instance, *args, **kwargs):
+#     sums = ProductSpecification.objects.filter(specification=instance.id).aggregate(Sum("price_all"))
+#     spes = Specification.objects.get(id = instance.id)
+#     spes.total_amount = sums['price_all__sum']
+#     spes.save()
+#     print(sender)
+#     print(instance.id)
+    
 class ProductSpecification(models.Model):
     specification = models.ForeignKey(
         Specification,
@@ -72,24 +82,26 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
-    
+
     product = models.ForeignKey(
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
     )
 
-
-
-    quantity = models.IntegerField("количество товара",blank=True,
-        null=True,)
+    quantity = models.IntegerField(
+        "количество товара",
+        blank=True,
+        null=True,
+    )
     price_one = models.FloatField("цена одного на момент формирования")
-    price_all = models.FloatField("цена всего товара на момент формирования",blank=True,
-        null=True,)
+    price_all = models.FloatField(
+        "цена всего товара на момент формирования",
+        blank=True,
+        null=True,
+    )
     price_exclusive = models.BooleanField("Цена по запросу", default=False)
-   
 
-    
     class Meta:
         verbose_name = "Спецификация продукт"
         verbose_name_plural = "Спецификации Продукты"
@@ -97,30 +109,29 @@ class ProductSpecification(models.Model):
     def __str__(self):
         return f"{self.product}"
 
-
-
-    def save(self, *args, **kwargs):
     
-  
+    def save(self, *args, **kwargs):
+
         spec = Specification.objects.get(id=self.specification.id)
         price = Price.objects.get(prod=self.product)
-        # self.price_one = self.price_one
+     
         if self.price_one != price.price_supplier:
             self.price_exclusive = True
         price_current = price.currency.words_code
-        
         self.price_all = self.price_one * self.quantity
+
         # отметка о валютности + добавление общец суммы
         if price_current != "RUB":
             spec.tag_currency = True
+
         if spec.total_amount is None:
             total_init = 0
         else:
-            
             total_init = spec.total_amount
+   
         total = total_init + self.price_all
         spec.total_amount = total
         spec.save()
 
-        
         super().save(*args, **kwargs)
+

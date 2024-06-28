@@ -32,33 +32,34 @@ class CustomUser(AbstractUser):
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
   
-    admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="BASE")
+    admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
 
     class Meta:
 
         verbose_name = "Администратор"
         verbose_name_plural = "Администраторы"
 
-    def save(self, *args, **kwargs):
-        if self.id:
-            user = AdminUser.objects.get(id=self.id)
-            password_old = user.password
-            if  password_old == self.password:
-                pass
-            else:
-                self.set_password(self.password)
+    # def save(self, *args, **kwargs):
+    #     if self.id:
+    #         user = AdminUser.objects.get(id=self.id)
+    #         password_old = user.password
+    #         if  password_old == self.password:
+    #             pass
+    #         else:
+    #             self.set_password(self.password)
                 
-        else:
-            self.set_password(self.password)
-        if self.admin_type == "ALL":
-            self.is_superuser = True
-
-        self.is_staff = True
-
-        # if self.password is not None:
-        #     self.set_password(self.password)
+    #     else:
+    #         self.set_password(self.password)
         
-        super().save(*args, **kwargs)
+    #     if self.admin_type == "ALL":
+    #         self.is_superuser = True
+
+    #     self.is_staff = True
+
+    #     # if self.password is not None:
+    #     #     self.set_password(self.password)
+        
+    #     super().save(*args, **kwargs)
         
     
 

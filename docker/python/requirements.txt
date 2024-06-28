@@ -8,7 +8,7 @@ Pytils
 Pillow
 openpyxl
 # xlrd
-# django-autocomplete-light
+django-autocomplete-light
 reportlab
 pypdf 
 celery

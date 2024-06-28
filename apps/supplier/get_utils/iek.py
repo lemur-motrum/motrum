@@ -36,6 +36,7 @@ from apps.supplier.models import (
 
 
 def iek_api():
+    print(21344444444)
     supplier = Supplier.objects.get(slug="iek")
     vendors = Vendor.objects.filter(supplier=supplier)
     currency = Currency.objects.get(words_code="RUB")
@@ -54,74 +55,81 @@ def iek_api():
     base_url = "https://lk.iek.ru/api/"
 
     def get_iek_category(url_service, url_params):
-     
+            print(8888)
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
                 "GET", url, headers=headers, data=payload, allow_redirects=False
             )
 
             responset = response_request(response.status_code, "IEK получение групп")
+            print(responset)
             if responset:
+                print(1231)
                 data = response.json()
+                if data == []:
+                    error = "file_api_error"
+                    location = "Загрузка фаилов IEK"
+                    info = f"Пустой каталог"
+                    e = error_alert(error, location, info)
+                else:
+                    for data_item in data:
+                        try:
+                            print(8333)
+                            category_supplier = data_item["kind"]
+                            group_supplier = data_item["section"]
+                            category_lower = data_item["group"]
+                            article_name = data_item["groupId"]
+                            vendor_item = data_item["TM"]
+                            
+                            vendor_add = Vendor.objects.get_or_create(
+                                supplier=supplier,
+                                name=vendor_item,
+                                defaults={
+                                    "vat_catalog": vat,
+                                    "currency_catalog": currency,
+                                },
+                            )
+                            article_name_re = article_name.split(".")
 
-                for data_item in data:
-                    try:
-                   
-                        category_supplier = data_item["kind"]
-                        group_supplier = data_item["section"]
-                        category_lower = data_item["group"]
-                        article_name = data_item["groupId"]
-                        vendor_item = data_item["TM"]
-                        
-                        vendor_add = Vendor.objects.get_or_create(
-                            supplier=supplier,
-                            name=vendor_item,
-                            defaults={
-                                "vat_catalog": vat,
-                                "currency_catalog": currency,
-                            },
-                        )
-                        article_name_re = article_name.split(".")
+                            category_supplier_item = SupplierCategoryProduct.objects.get_or_create(
+                                supplier=supplier,
+                                name=category_supplier,
+                                defaults={
+                                    "vendor": None,
+                                    "name": category_supplier,
+                                    "article_name": article_name_re[0],
+                                },
+                            )
 
-                        category_supplier_item = SupplierCategoryProduct.objects.get_or_create(
-                            supplier=supplier,
-                            name=category_supplier,
-                            defaults={
-                                "vendor": None,
-                                "name": category_supplier,
-                                "article_name": article_name_re[0],
-                            },
-                        )
+                            groupe_supplier_item = SupplierGroupProduct.objects.get_or_create(
+                                category_supplier=category_supplier_item[0],
+                                supplier=supplier,
+                                name=group_supplier,
+                                defaults={
+                                    "vendor": None,
+                                    "article_name": f"{article_name_re[0]}.{article_name_re[1]}",
+                                },
+                            )
 
-                        groupe_supplier_item = SupplierGroupProduct.objects.get_or_create(
-                            category_supplier=category_supplier_item[0],
-                            supplier=supplier,
-                            name=group_supplier,
-                            defaults={
-                                "vendor": None,
-                                "article_name": f"{article_name_re[0]}.{article_name_re[1]}",
-                            },
-                        )
-
-                        category_item = SupplierCategoryProductAll.objects.update_or_create(
-                            name=category_lower,
-                            supplier=supplier,
-                            vendor=vendor_add[0],
-                            defaults={
-                                "article_name": article_name,
-                                "vendor": vendor_add[0],
-                                "category_supplier": category_supplier_item[0],
-                                "group_supplier": groupe_supplier_item[0],
-                            },
-                        )
-                    except Exception as e: 
-                        print(e)
-                        error = "file_api_error"
-                        location = "Загрузка фаилов IEK"
-                        info = f"ошибка при чтении групп: {data_item["article_name"]}. Тип ошибки:{e}"
-                        e = error_alert(error, location, info)
-                    finally:    
-                        continue        
+                            category_item = SupplierCategoryProductAll.objects.update_or_create(
+                                name=category_lower,
+                                supplier=supplier,
+                                vendor=vendor_add[0],
+                                defaults={
+                                    "article_name": article_name,
+                                    "vendor": vendor_add[0],
+                                    "category_supplier": category_supplier_item[0],
+                                    "group_supplier": groupe_supplier_item[0],
+                                },
+                            )
+                        except Exception as e: 
+                            print(e)
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка при чтении групп: {data_item["article_name"]}. Тип ошибки:{e}"
+                            e = error_alert(error, location, info)
+                        finally:    
+                            continue        
 
                 # return data
          
@@ -135,11 +143,16 @@ def iek_api():
       
         data = response.json()
         i = 0
-        for data_item in data:
-       
-            try:
-                i += 1
-                if i < 300:
+        if data == []:
+                    error = "file_api_error"
+                    location = "Загрузка фаилов IEK"
+                    info = f"Пустой каталог"
+                    e = error_alert(error, location, info)
+        else:
+            for data_item in data:
+        
+                try:
+                
                     # основная инфа
                     # получение или добавление вендора
                     vendor_add = Vendor.objects.get_or_create(
@@ -160,11 +173,11 @@ def iek_api():
                     item_category_all = get_category(
                         supplier, vendor_add[0], categ_names.name
                     )
-                   
+                
                     item_category = item_category_all[0]
                     item_group = item_category_all[1]
                     item_group_all = item_category_all[2]
-                 
+                
                     name = data_item["name"]
                     # цены
                     vat = data_item["vat"]
@@ -220,7 +233,7 @@ def iek_api():
                             doc = sertif["file_ref"]["uri"]
                             print(doc)
                             print(111111111111111111)
-                          
+                        
                             document = ProductDocument.objects.create(
                                 product=article, type_doc=type_doc
                             )
@@ -318,7 +331,7 @@ def iek_api():
                         documents =  ProductDocument.objects.filter(product=article).exists()   
                         if documents == False:
                             save_all_doc(data_item,article)
-                               
+                            
                     except Product.DoesNotExist:
                         new_article = create_article_motrum(supplier.id)
                         article = Product(
@@ -367,17 +380,17 @@ def iek_api():
                         stock_prod.save()
                         update_change_reason(stock_prod, "Автоматическое")
 
-                    
-                    
-            except Exception as e: 
-                print(e)
-                error = "file_api_error"
-                location = "Загрузка фаилов IEK"
-                info = f"ошибка при чтении товара артикул: {article_suppliers}. Тип ошибки:{e}"
-                e = error_alert(error, location, info)
-            finally:    
-                continue      
-    
+                        
+                        
+                except Exception as e: 
+                    print(e)
+                    error = "file_api_error"
+                    location = "Загрузка фаилов IEK"
+                    info = f"ошибка при чтении товара артикул: {article_suppliers}. Тип ошибки:{e}"
+                    e = error_alert(error, location, info)
+                finally:    
+                    continue      
+        
     def get_iek_stock():
         products = Product.objects.filter(supplier=supplier, vendor=vendor_items)
         print(123123)
@@ -404,7 +417,7 @@ def iek_api():
             product = data_item["sku"]
             for a in data_item["residues"].values():
                 stock += a
-
+            
             stocks = Stock.objects.filter(prod__article_supplier=product).update(
                 stock_supplier=stock, stock_supplier_unit=stock
             )
@@ -494,7 +507,7 @@ def iek_api():
                 continue 
      
 
-    # get_iek_category("ddp", None)
+    get_iek_category("ddp", None)
     get_iek_product("products", "TM=ONI")
     get_iek_property("etim", "TM=ONI")
   

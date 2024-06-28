@@ -758,4 +758,4 @@ admin.site.register(CategoryProduct,CategoryProductAdmin)
 admin.site.register(GroupProduct)
 
 admin.site.register(Product, ProductAdmin)
-# admin.site.register(Lot)
+admin.site.register(Lot)

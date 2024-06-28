@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='groupproduct',
-            name='article_name',
-            field=models.CharField(blank=True, max_length=25, null=True, verbose_name='Артикул группы'),
-        ),
+        # migrations.AddField(
+        #     model_name='groupproduct',
+        #     name='article_name',
+        #     field=models.CharField(blank=True, max_length=25, null=True, verbose_name='Артикул группы'),
+        # ),
     ]

@@ -14,6 +14,7 @@ from project.celery import app
     max_retries=10,
 )
 def get_currency(self):
+  
     try:
         del_currency()
         currency_list = Currency.objects.exclude(words_code="RUB")

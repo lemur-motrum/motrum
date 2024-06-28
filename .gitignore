@@ -4,6 +4,7 @@
 /media/
 /static/
 /tmp/
+/documentation/
 
 
 __pycache__/

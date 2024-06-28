@@ -7,7 +7,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from itertools import chain
 from simple_history.template_utils import HistoricalRecordContextHelper
 from django.contrib import admin
-from reversion.admin import VersionAdmin
+
 from django.utils.translation import gettext as _
 from django.conf import settings
 from simple_history.utils import (

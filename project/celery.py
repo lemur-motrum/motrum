@@ -26,7 +26,7 @@ app.conf.beat_schedule = {
     },
     'add_veda': {
         'task': 'apps.supplier.tasks.add_veda',
-        'schedule': crontab(hour="1", minute="0" ),
+        'schedule': crontab(hour=1, minute=0 ),
     },
     'add_prompower': {
         'task': 'apps.supplier.tasks.add_prompower',

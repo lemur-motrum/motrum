@@ -14,7 +14,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'current_rate': {
         'task': 'apps.core.tasks.get_currency',
-        'schedule': crontab(minute="*/30"),
+        'schedule': crontab(minute="*/3"),
     },
     'specification_stop': {
         'task': 'apps.specification.tasks.specification_date_stop',
@@ -30,6 +30,6 @@ app.conf.beat_schedule = {
     },
     'add_prompower': {
         'task': 'apps.supplier.tasks.add_prompower',
-        'schedule': crontab(hour=2, minute=0 ),
+        'schedule': crontab(hour=14, minute=0 ),
     },
 }

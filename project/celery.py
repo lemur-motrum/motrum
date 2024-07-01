@@ -12,10 +12,10 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    # 'current_rate': {
-    #     'task': 'apps.core.tasks.get_currency',
-    #     'schedule': crontab(minute="*/3"),
-    # },
+    'current_rate': {
+        'task': 'apps.core.tasks.get_currency',
+        'schedule': crontab(minute='*/2'),
+    },
     # 'specification_stop': {
     #     'task': 'apps.specification.tasks.specification_date_stop',
     #     'schedule': crontab(hour=0 , minute=15 ),

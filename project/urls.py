@@ -37,6 +37,7 @@ urlpatterns = [
     path("specification/", include("apps.specification.urls", namespace="specification")),
     path("supplier/", include("apps.supplier.urls", namespace="supplier")),
     path("user/", include("apps.user.urls", namespace="user")),
+    path("admin_specification/", include("apps.admin_specification.urls", namespace="admin_specification")),
     
     
 ]

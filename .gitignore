@@ -5,6 +5,7 @@
 /static/
 /tmp/
 /documentation/
+/motrumvenv/
 
 
 __pycache__/

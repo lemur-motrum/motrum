@@ -5,9 +5,12 @@ import requests
 import json
 from django.utils.text import slugify
 from pytils import translit
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 from apps.core.models import Currency, Vat
+
 # from apps.core.utils import get_file_path_add
 
 
@@ -107,6 +110,23 @@ class SupplierCategoryProduct(models.Model):
         blank=True,
         null=True,
     )
+    category_catalog = models.ForeignKey(
+        "product.CategoryProduct",
+        verbose_name="Категория каталога мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
+    group_catalog = models.ForeignKey(
+        "product.GroupProduct",
+        verbose_name="Группа каталога мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
+
 
     class Meta:
         verbose_name = "Категория товара у поставщика"
@@ -147,13 +167,41 @@ class SupplierGroupProduct(models.Model):
         verbose_name="категория",
         on_delete=models.PROTECT,
     )
+    category_catalog = models.ForeignKey(
+        "product.CategoryProduct",
+        verbose_name="Категория каталога мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    
+    group_catalog = models.ForeignKey(
+        "product.GroupProduct",
+        verbose_name="Группа каталога мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
 
+    autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
     class Meta:
         verbose_name = "Группа товара у поставщика"
         verbose_name_plural = "Группы товаров у поставщика"
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from apps.product.models import Product
+        
+        product = Product.objects.filter(group_supplier=self.id)
+        for product_one in product:
+            product_one.category = self.category_catalog
+            if self.group_catalog:
+                product_one.group = self.group_catalog
+                
+            product_one.save()
 
 
 class SupplierCategoryProductAll(models.Model):
@@ -209,6 +257,7 @@ class SupplierCategoryProductAll(models.Model):
         blank=True,
         null=True,
     )
+    autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
 
 
     class Meta:
@@ -220,17 +269,31 @@ class SupplierCategoryProductAll(models.Model):
         return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
 # {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)         
-        from apps.product.models import Price
+        super().save(*args, **kwargs)
         from apps.product.models import Product
-        from apps.core.utils import get_category
-        # обновление цен товаров связанной группы
-        price = Price.objects.filter(prod__category_supplier_all=self.id)
-        for price_one in price:
-            price_one.price_supplier = price_one.price_supplier
-            price_one.save()
-           
+        
+        product = Product.objects.filter(category_supplier_all=self.id)
+        for product_one in product:
+            product_one.category = self.category_catalog
+            if self.group_catalog:
+                product_one.group = self.group_catalog
+                
+            product_one.save()
             
+        # from apps.product.models import Price
+        # from apps.product.models import Product
+        # from apps.core.utils import get_category
+        # обновление цен товаров связанной группы
+        # price = Price.objects.filter(prod__category_supplier_all=self.id)
+        # for price_one in price:
+        #     price_one.price_supplier = price_one.price_supplier
+        #     price_one.save()
+           
+# @receiver(post_save, sender=Product)
+# def update_change_reason(sender, instance, **kwargs):
+#     print(instance)
+#     # if instance._change_reason == None:
+#     update_change_reason(instance, 'Автоматическое')            
        
        
 

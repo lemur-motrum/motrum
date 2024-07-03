@@ -111,9 +111,11 @@ class ProductSpecification(models.Model):
 
     
     def save(self, *args, **kwargs):
+        
 
         spec = Specification.objects.get(id=self.specification.id)
         price = Price.objects.get(prod=self.product)
+      
      
         if self.price_one != price.price_supplier:
             self.price_exclusive = True
@@ -122,7 +124,7 @@ class ProductSpecification(models.Model):
 
         # отметка о валютности + добавление общец суммы
         if price_current != "RUB":
-            spec.tag_currency = True
+            spec.tag_currency = price.currency
 
         if spec.total_amount is None:
             total_init = 0

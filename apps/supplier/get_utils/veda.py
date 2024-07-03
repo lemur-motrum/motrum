@@ -93,7 +93,7 @@ def veda_api():
                 finally:
                     stock_prod.stock_supplier = stock_supplier
                     stock_prod.save()
-                    update_change_reason(price_product, "Автоматическое")
+                    update_change_reason(stock_prod, "Автоматическое")
                                 
                 
             except Exception as e: 

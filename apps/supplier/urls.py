@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import  SupplierCategoryAutocomplete, SupplierGroupAutocomplete, VendorAutocomplete,SupplierCategoryProductAllAutocomplete
+from .views import  SupplierCategoryAutocomplete, SupplierGroupAutocomplete, VendorAutocomplete,SupplierCategoryProductAllAutocomplete,GroupProductAutocomplete
 
 from django.urls import re_path as url
 from . import views
@@ -35,5 +35,10 @@ urlpatterns = [
         r"^category-all-autocomplete/$",
         SupplierCategoryProductAllAutocomplete.as_view(),
         name="category-all-autocomplete",
+    ),
+    url(
+        r"^group_catalog-autocomplete/$",
+        GroupProductAutocomplete.as_view(),
+        name="group_catalog-autocomplete",
     ),
 ]

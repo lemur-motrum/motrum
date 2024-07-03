@@ -509,6 +509,24 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
+            print(obj.autosave_tag)
+            if obj.category_supplier != None and obj.group_supplier == None and obj.category_supplier_all == None:
+                if obj.autosave_tag == True:
+                    return ["article_supplier", "supplier","category_supplier"]
+                else:
+                    pass
+            
+            elif  obj.category_supplier != None and obj.group_supplier != None and obj.category_supplier_all == None:
+                if obj.autosave_tag == True:
+                    return ["article_supplier", "supplier", "category_supplier","group_supplier"]
+                else: 
+                    pass
+            
+            elif obj.category_supplier != None and obj.group_supplier != None and obj.category_supplier_all != None:
+                if obj.autosave_tag == True:
+                    return ["article_supplier", "supplier","category_supplier","group_supplier","category_supplier_all"]
+                else:
+                    pass
             return ["article_supplier", "supplier"]
         return [
             "",
@@ -516,6 +534,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def get_fieldsets(self, request, obj):
         fields = super(ProductAdmin, self).get_fieldsets(request, obj)
+     
         fields_add = [
             (
                 "Основные параметры",
@@ -533,12 +552,36 @@ class ProductAdmin(SimpleHistoryAdmin):
                             "group_supplier",
                             "category_supplier_all",
                         ),
-                        ("category", "group"),
+                        # ("category", "group"),
                     ],
                 },
             ),
         ]
         if obj and obj.pk:
+            if obj.autosave_tag == False:
+                fields = [
+            (
+                "Основные параметры",
+                {
+                    "fields": [
+                        (
+                            "article_supplier",
+                            "additional_article_supplier",
+                        ),
+                        "name",
+                        "description",
+                        ("supplier", "vendor"),
+                        (
+                            "category_supplier",
+                            "group_supplier",
+                            "category_supplier_all",
+                        ),
+                        # ("category", "group"),
+                    ],
+                },
+            ),
+        ]
+            
             return fields
         else:
             return fields_add
@@ -565,15 +608,31 @@ class ProductAdmin(SimpleHistoryAdmin):
 
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
-            if db_field.name == "category_supplier_all":
-                kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
+            # if db_field.name == "category_supplier_all":
+            #     kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
+            #         supplier_id=item.supplier.id, vendor_id=item.vendor.id
+            #     )
+        elif "/add/" in request.path:
+
+            for id_table in request.resolver_match.captured_kwargs.values():
+                parent_id = id_table
+
+            item = Product.objects.get(id=parent_id)
+
+            if db_field.name == "category":
+                kwargs["queryset"] = CategoryProduct.objects.filter(
                     supplier_id=item.supplier.id, vendor_id=item.vendor.id
-                )
+                )        
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         obj._change_reason = "Ручное"
+        print(obj.pk)
+        if obj.pk:
+            pass
+        else:
+            obj.autosave_tag = False
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
@@ -740,16 +799,24 @@ class GroupProductInline(admin.TabularInline):
 
 
 class CategoryProductAdmin(admin.ModelAdmin):
-    fields = ("name","get_name")
+    fields = ("name",)
     list_display = ['name', 'get_name', ]
+    # exclude = ["get_name"]
+    
     inlines = [
         GroupProductInline,
     ]
     
     def get_name(self, obj):
         group = GroupProduct.objects.filter(category=obj)
-        print(12313)
-        return group
+        item =''
+        for gr in group:
+            item_one =  f"<li>{gr.name}</li>"
+            item = f"{item}{item_one}"
+            
+        return mark_safe(
+            '<ul>{}</ul>'.format( item)
+        )
     # get_name.admin_order_field  = 'author'  #Allows column order sorting
     # get_name.short_description = 'Author Name'  #Renames column head
 

@@ -2,6 +2,7 @@ import os
 import requests
 import json
 from simple_history.utils import update_change_reason
+from apps import supplier
 from project.settings import MEDIA_ROOT
 
 from apps.core.models import Currency, Vat
@@ -329,7 +330,7 @@ def prompower_api():
                             update_change_reason(image, "Автоматическое")
                             
                 # если товар без категории и 0 цена не сохранять
-                if price_supplier != "0" and categ != None:
+                if price_supplier != "0" and categ != None and categ != 35:
                     try:
                         # если товар есть в бд
                         article = Product.objects.get(
@@ -412,7 +413,7 @@ def prompower_api():
                     finally:
                         stock_prod.stock_supplier = stock_supplier
                         stock_prod.save()
-                        update_change_reason(price_product, "Автоматическое")
+                        update_change_reason(stock_prod, "Автоматическое")
                 
             except Exception as e: 
                 print(e)

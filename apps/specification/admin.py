@@ -90,7 +90,6 @@ class ProductSpecificationInline(admin.TabularInline):
         else:
             return fields_add
 
-
         return super().get_form(request, obj, **kwargs)
 
     def get_extra(self, request, obj=None, **kwargs):
@@ -189,29 +188,31 @@ class SpecificationAdmin(admin.ModelAdmin):
             return fields_add
 
     def save_related(self, request, form, formsets, change):
-     
+
         super(SpecificationAdmin, self).save_related(request, form, formsets, change)
         id_sec = form.instance.id
-       
-        sums = ProductSpecification.objects.filter(specification=id_sec).aggregate(Sum("price_all"))
-        spes = Specification.objects.get(id = id_sec)
-        spes.total_amount = sums['price_all__sum']
+
+        sums = ProductSpecification.objects.filter(specification=id_sec).aggregate(
+            Sum("price_all")
+        )
+        spes = Specification.objects.get(id=id_sec)
+        spes.total_amount = sums["price_all__sum"]
         spes.save()
-        
+
         pdf = crete_pdf_specification(id_sec)
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):
-      
+
         obj.admin_creator = request.user
         if change:
             obj.tag_stop = True
             obj.total_amount = 0
             date = timezone.now()
             date_stop = create_time()
-            
+
             obj.date = date
-            obj.date_stop=date_stop
+            obj.date_stop = date_stop
         super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):

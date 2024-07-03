@@ -179,3 +179,16 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
        
 
         return qs
+
+class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = GroupProduct.objects.all()
+
+        category_catalog = self.forwarded.get("category_catalog", None)
+
+        if category_catalog:
+            qs = qs.filter(category=category_catalog)
+
+        
+        return qs

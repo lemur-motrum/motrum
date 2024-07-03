@@ -30,6 +30,7 @@ from apps.core.utils import (
     get_file_path,
     get_file_path_add,
     get_lot,
+    get_motrum_category,
     get_price_motrum,
     get_price_supplier_rub,
 )
@@ -134,7 +135,7 @@ class Product(models.Model):
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-
+    autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
@@ -148,7 +149,7 @@ class Product(models.Model):
             article = create_article_motrum(self.supplier.id)
 
             self.article = article
-
+        get_motrum_category(self)
         super().save(*args, **kwargs)
         # обновление цен товаров
         price = Price.objects.filter(prod=self.id)

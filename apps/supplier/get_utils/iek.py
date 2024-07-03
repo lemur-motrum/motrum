@@ -33,9 +33,207 @@ from apps.supplier.models import (
     SupplierGroupProduct,
     Vendor,
 )
-
+iek_save_categ = [
+"20.01.70",
+"01.01.01",
+"02.01.01",
+"03.01.01",
+"04.01.01",
+"07.01.01",
+"08.01.01",
+"20.01.01",
+"30.01.01",
+"01.02.01",
+"02.02.01",
+"03.02.01",
+"04.02.01",
+"05.02.01",
+"07.02.01",
+"08.02.01",
+"01.03.01",
+"02.03.01",
+"04.03.01",
+"05.03.01",
+"06.03.01",
+"07.03.01",
+"30.03.01",
+"02.04.01",
+"04.04.01",
+"05.04.01",
+"06.04.01",
+"07.04.01",
+"30.04.01",
+"02.05.01",
+"05.05.01",
+"06.05.01",
+"30.05.01",
+"20.06.01",
+"30.06.01",
+"20.07.01",
+"30.07.01",
+"04.10.01",
+"01.01.02",
+"02.01.02",
+"03.01.02",
+"04.01.02",
+"07.01.02",
+"08.01.02",
+"20.01.02",
+"30.01.02",
+"01.02.02",
+"02.02.02",
+"04.02.02",
+"05.02.02",
+"07.02.02",
+"08.02.02",
+"01.03.02",
+"02.03.02",
+"04.03.02",
+"05.03.02",
+"06.03.02",
+"07.03.02",
+"30.03.02",
+"02.04.02",
+"04.04.02",
+"05.04.02",
+"06.04.02",
+"07.04.02",
+"30.04.02",
+"30.05.02",
+"20.06.02",
+"30.06.02",
+"20.07.02",
+"30.07.02",
+"04.10.02",
+"01.01.03",
+"02.01.03",
+"03.01.03",
+"04.01.03",
+"07.01.03",
+"08.01.03",
+"20.01.03",
+"30.01.03",
+"01.02.03",
+"02.02.03",
+"04.02.03",
+"05.02.03",
+"07.02.03",
+"08.02.03",
+"01.03.03",
+"02.03.03",
+"03.03.03",
+"04.03.03",
+"07.03.03",
+"30.03.03",
+"02.04.03",
+"04.04.03",
+"05.04.03",
+# "30.04.03",
+"06.05.03",
+"20.06.03",
+"30.06.03",
+"20.07.03",
+"30.07.03",
+"04.10.03",
+"01.01.04",
+"02.01.04",
+"04.01.04",
+"07.01.04",
+"20.01.04",
+"30.01.04",
+"04.02.04",
+"07.02.04",
+"08.02.04",
+"01.03.04",
+"02.03.04",
+"04.03.04",
+"07.03.04",
+"04.04.04",
+"05.04.04",
+"30.04.04",
+"20.06.04",
+"30.07.04",
+"04.10.04",
+"01.01.05",
+"02.01.05",
+"04.01.05",
+"07.01.05",
+"20.01.05",
+"30.01.05",
+"04.02.05",
+"02.03.05",
+"05.04.05",
+"20.05.05",
+"20.06.05",
+"30.07.05",
+"04.10.05",
+"02.01.06",
+"04.01.06",
+"07.01.06",
+"20.01.06",
+"30.01.06",
+"05.04.06",
+"20.05.06",
+"30.07.06",
+"04.10.06",
+"04.01.07",
+"20.01.07",
+"20.05.07",
+"30.07.07",
+"04.10.07",
+"20.01.08",
+"20.05.08",
+"30.07.08",
+"04.10.08",
+"20.01.09",
+"20.05.09",
+"30.07.09",
+"04.10.09",
+"20.01.10",
+"30.07.10",
+"04.10.10",
+"30.07.11",
+"04.01.12",
+"30.02.01",
+"30.02.02",
+"30.02.03",
+"30.02.04",
+"30.02.05",
+"30.02.06",
+"30.02.07",
+"50.01.01",
+"50.01.02",
+"50.01.03",
+"50.01.04",
+"50.01.05",
+"50.02.01",
+"50.02.02",
+"50.02.03",
+"50.02.04",
+"50.03.01",
+"50.03.02",
+"50.04.01",
+"50.05.01",
+"50.05.02",
+"50.06.01",
+"50.07.01",
+"50.07.02",
+"50.08.01",
+"50.09.01",
+"50.09.02",
+"50.10.01",
+"50.10.02",
+"50.11.01",
+"50.12.01",
+"50.13.01",
+"50.14.01",
+"30.04.03",
+]
 
 def iek_api():
+    print(len(iek_save_categ))
+    # r = SupplierCategoryProductAll.objects.get(article_name= "01.01.01",)
+    # print(r)
     print(21344444444)
     supplier = Supplier.objects.get(slug="iek")
     vendors = Vendor.objects.filter(supplier=supplier)
@@ -55,16 +253,16 @@ def iek_api():
     base_url = "https://lk.iek.ru/api/"
 
     def get_iek_category(url_service, url_params):
-            print(8888)
+         
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
                 "GET", url, headers=headers, data=payload, allow_redirects=False
             )
 
             responset = response_request(response.status_code, "IEK получение групп")
-            print(responset)
+          
             if responset:
-                print(1231)
+          
                 data = response.json()
                 if data == []:
                     error = "file_api_error"
@@ -74,54 +272,62 @@ def iek_api():
                 else:
                     for data_item in data:
                         try:
-                            print(8333)
-                            category_supplier = data_item["kind"]
-                            group_supplier = data_item["section"]
-                            category_lower = data_item["group"]
                             article_name = data_item["groupId"]
-                            vendor_item = data_item["TM"]
-                            
-                            vendor_add = Vendor.objects.get_or_create(
-                                supplier=supplier,
-                                name=vendor_item,
-                                defaults={
-                                    "vat_catalog": vat,
-                                    "currency_catalog": currency,
-                                },
-                            )
-                            article_name_re = article_name.split(".")
+                            if article_name in iek_save_categ:
+                                
+                                category_supplier = data_item["kind"]
+                                group_supplier = data_item["section"]
+                                category_lower = data_item["group"]
+                                article_name = data_item["groupId"]
+                                vendor_item = data_item["TM"]
+                                
+                                vendor_add = Vendor.objects.get_or_create(
+                                    supplier=supplier,
+                                    name=vendor_item,
+                                    defaults={
+                                        "vat_catalog": vat,
+                                        "currency_catalog": currency,
+                                    },
+                                )
+                                
+                                article_name_re = article_name.split(".")
 
-                            category_supplier_item = SupplierCategoryProduct.objects.get_or_create(
-                                supplier=supplier,
-                                name=category_supplier,
-                                defaults={
-                                    "vendor": None,
-                                    "name": category_supplier,
-                                    "article_name": article_name_re[0],
-                                },
-                            )
+                                category_supplier_item = SupplierCategoryProduct.objects.get_or_create(
+                                    supplier=supplier,
+                                    name=category_supplier,
+                                    defaults={
+                                        "vendor": None,
+                                        "name": category_supplier,
+                                        "article_name": article_name_re[0],
+                                    },
+                                )
+                               
 
-                            groupe_supplier_item = SupplierGroupProduct.objects.get_or_create(
-                                category_supplier=category_supplier_item[0],
-                                supplier=supplier,
-                                name=group_supplier,
-                                defaults={
-                                    "vendor": None,
-                                    "article_name": f"{article_name_re[0]}.{article_name_re[1]}",
-                                },
-                            )
-
-                            category_item = SupplierCategoryProductAll.objects.update_or_create(
-                                name=category_lower,
-                                supplier=supplier,
-                                vendor=vendor_add[0],
-                                defaults={
-                                    "article_name": article_name,
-                                    "vendor": vendor_add[0],
-                                    "category_supplier": category_supplier_item[0],
-                                    "group_supplier": groupe_supplier_item[0],
-                                },
-                            )
+                                groupe_supplier_item = SupplierGroupProduct.objects.get_or_create(
+                                    category_supplier=category_supplier_item[0],
+                                    supplier=supplier,
+                                    name=group_supplier,
+                                    defaults={
+                                        "vendor": None,
+                                        "article_name": f"{article_name_re[0]}.{article_name_re[1]}",
+                                    },
+                                )
+                                
+                                category_item = SupplierCategoryProductAll.objects.update_or_create(
+                                    name=category_lower,
+                                    article_name=article_name,
+                                    supplier=supplier,
+                                    vendor=vendor_add[0],
+                                    defaults={
+                                        # "article_name": article_name,
+                                        "vendor": vendor_add[0],
+                                        "category_supplier": category_supplier_item[0],
+                                        "group_supplier": groupe_supplier_item[0],
+                                    },
+                                )
+                               
+                            else:
+                               pass                     
                         except Exception as e: 
                             print(e)
                             error = "file_api_error"
@@ -146,11 +352,10 @@ def iek_api():
         if data == []:
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"Пустой каталог"
+                    info = f"Пустая категория"
                     e = error_alert(error, location, info)
         else:
             for data_item in data:
-        
                 try:
                 
                     # основная инфа
@@ -185,7 +390,8 @@ def iek_api():
 
                     vat_include = data_item["vat_included"]
                     saleprice = data_item["saleprice"]
-                    extra = data_item["extra"]
+                    
+                    
                     price = data_item["price"]
                     if saleprice:
                         price_supplier = saleprice
@@ -193,6 +399,13 @@ def iek_api():
                     else:
                         price_supplier = price
 
+                    extra = data_item["extra"]
+                    if extra == "Цена по запросу":
+                        extra= True
+                        price_supplier = 0
+                    else:
+                        extra= False   
+                    
                     description_arr = data_item["Description"]
                     
                     for desc in description_arr:
@@ -361,6 +574,7 @@ def iek_api():
                         price_product.price_supplier = price_supplier
                         price_product.vat = vat_catalog
                         price_product.vat_include = vat_include
+                        price_product.extra_price = extra
                         price_product.save()
                         update_change_reason(price_product, "Автоматическое")
 
@@ -508,8 +722,12 @@ def iek_api():
      
 
     get_iek_category("ddp", None)
-    get_iek_product("products", "TM=ONI")
-    get_iek_property("etim", "TM=ONI")
+    # запись продуктов по категориям 
+    for item_iek_save_categ in iek_save_categ:
+        get_iek_product("products", f"groupId={item_iek_save_categ}")
+        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    #   
+    # get_iek_property("etim", None)
   
 
     return [0]

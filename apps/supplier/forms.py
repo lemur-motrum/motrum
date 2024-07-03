@@ -62,3 +62,68 @@ class DiscountForm(forms.ModelForm):
         #         url="supplier:category-autocomplete", forward=["supplier", "vendor"]
         #     )
         # }
+        
+        
+class SupplierCategoryProductAllAdminForm(forms.ModelForm):
+    
+    category_catalog = forms.ModelChoiceField(
+    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+)
+
+    group_catalog = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        required=False,
+        label="Группа Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:group_catalog-autocomplete",
+            forward=["category_catalog",],
+        ),
+    )
+    
+
+    class Meta:
+        model = SupplierCategoryProductAll
+        fields = "__all__"
+
+class SupplierGroupProductAdminForm(forms.ModelForm):
+    
+    category_catalog = forms.ModelChoiceField(
+    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+)
+
+    group_catalog = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        required=False,
+        label="Группа Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:group_catalog-autocomplete",
+            forward=["category_catalog",],
+        ),
+    )
+    
+
+    class Meta:
+        model = SupplierGroupProduct
+        fields = "__all__"     
+ 
+class SupplierCategoryProductAdminForm(forms.ModelForm):
+    
+    category_catalog = forms.ModelChoiceField(
+    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+)
+
+    group_catalog = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        required=False,
+        label="Группа Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:group_catalog-autocomplete",
+            forward=["category_catalog",],
+        ),
+    )
+    
+
+    class Meta:
+        model = SupplierCategoryProduct
+        fields = "__all__"     
+                        

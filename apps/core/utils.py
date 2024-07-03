@@ -306,12 +306,16 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
                 currency__words_code=currency
             ).latest("date")
             currency_rate = currency_rate_query.vunit_rate
+            print(currency_rate)
             current_percent = CurrencyPercent.objects.filter().latest("id")
-
+            print(current_percent)
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
+            print(price_supplier_vat)
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
+            print(price_supplier_rub)
+            
 
             return round(price_supplier_rub, 2)
     else:
@@ -625,3 +629,20 @@ def send_email_error():
     
     # Закрытие соединения
     smtp_server.quit()    
+
+def get_motrum_category(self):
+   
+    
+    if self.category_supplier_all != None:
+        category_catalog = self.category_supplier_all.category_catalog
+        group_catalog = self.category_supplier_all.group_catalog
+        
+    if self.group_supplier != None:
+        category_catalog = self.group_supplier.category_catalog
+        group_catalog = self.group_supplier.group_catalog 
+        
+    if self.category_supplier != None:
+        category_catalog = self.category_supplier.category_catalog
+        group_catalog = self.category_supplier.group_catalog
+    
+    # print(category_catalog,group_catalog)               

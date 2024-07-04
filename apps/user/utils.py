@@ -6,6 +6,7 @@ def upgrade_permission():
     s = Permission.objects.filter(
         content_type__app_label="product",
     )
+    print("TESTTEST")
     print(s)
     # codenames = ['view_blogpost', 'change_blogpost', 'add_blogpost', 	"delete_logentry"]
     from apps.user.models import ADMIN_TYPE
@@ -15,23 +16,26 @@ def upgrade_permission():
         if group.name == "Базовый доступ":
             codenames = [
                 "view_product",
-                # "view_categoryproduct",
-                # "view_groupproduct",
+                
                 "view_price",
                 "view_stock",
-                # "view_lot",
+             
                 "view_productimage",
                 "view_productdocument",
-                # "view_supplier",
-                # "view_vendor",
+               
+                "change_price",
+                "add_price",
+                
                 "add_specification",
                 "view_specification",
                 "add_productspecification",
                 "view_productspecification",
             ]
             permissions = Permission.objects.filter(codename__in=codenames)
+            print(permissions)
 
             for permission in permissions.all():
+                # group.permissions.clear()
                 group.permissions.add(permission)
 
         elif group.name == "Доступ администрирования товаров":
@@ -51,6 +55,11 @@ def upgrade_permission():
                 "add_stock",
                 "delete_stock",
                 
+                "view_productproperty",
+                "change_productproperty",
+                "add_productproperty",
+                "delete_productproperty",
+                
                 "view_productimage",
                 "change_productimage",
                 "add_productimage",
@@ -63,8 +72,9 @@ def upgrade_permission():
               
             ]
             permissions = Permission.objects.filter(codename__in=codenames)
-
+            print(permissions)
             for permission in permissions.all():
+                # group.permissions.clear()
                 group.permissions.add(permission)
 
         elif group.name == "Доступ для загрузки каталогов поставщиков":

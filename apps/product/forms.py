@@ -28,20 +28,20 @@ class ProductForm(forms.ModelForm):
     )
 
     category = forms.ModelChoiceField(
-        queryset=CategoryProduct.objects.all(), label="Категория",required=False,
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum",required=False,
     )
 
     group = forms.ModelChoiceField(
         queryset=GroupProduct.objects.all(),
         required=False,
-        label="Группа",
+        label="Группа Motrum",
         widget=autocomplete.ModelSelect2(
             url="product:group-autocomplete", forward=["category"]
         ),
     )
     category_supplier = forms.ModelChoiceField(
         required=False,
-        queryset=SupplierCategoryProduct.objects.all(), label="Категория",
+        queryset=SupplierCategoryProduct.objects.all(), label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier-autocomplete", forward=["supplier"]
         ),
@@ -50,7 +50,7 @@ class ProductForm(forms.ModelForm):
     group_supplier = forms.ModelChoiceField(
         queryset=SupplierGroupProduct.objects.all(),
         required=False,
-        label="Группа",
+        label="Группа поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:group_supplier-autocomplete", forward=["category_supplier"]
         ),
@@ -59,7 +59,7 @@ class ProductForm(forms.ModelForm):
     category_supplier_all = forms.ModelChoiceField(
         queryset=SupplierCategoryProductAll.objects.all(),
         required=False,
-        label="Категория поставщика",
+        label="Подгруппа поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier_all-autocomplete",
             forward=["supplier", "vendor","category_supplier","group_supplier"],

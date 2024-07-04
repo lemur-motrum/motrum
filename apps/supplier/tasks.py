@@ -12,7 +12,7 @@ def add_iek(self):
         
         iek_api()
     except Exception as exc:
-            self.retry(exc=exc, countdown=5) 
+            self.retry(exc=exc, countdown=600) 
             
 @app.task(
     bind=True,
@@ -22,7 +22,7 @@ def add_veda(self):
     try:
         veda_api()
     except Exception as exc:
-            self.retry(exc=exc, countdown=5) 
+            self.retry(exc=exc, countdown=600) 
 
 
 
@@ -34,6 +34,6 @@ def add_prompower(self):
     try:
         prompower_api()
     except Exception as exc:
-            self.retry(exc=exc, countdown=5)                                  
+            self.retry(exc=exc, countdown=600)                                  
             
       

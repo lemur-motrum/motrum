@@ -24,7 +24,7 @@ def add_prompower(request):
 def add_iek(request):
     title = "Услуги"
     # responsets = ['233','2131']
-    responsets = iek_api()
+    responsets = veda_api()
     context = {
         "title": title,
         "responsets": responsets,

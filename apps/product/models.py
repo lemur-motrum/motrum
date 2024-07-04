@@ -125,7 +125,7 @@ class Product(models.Model):
         null=True,
     )
     description = models.CharField(
-        "Описание товара", max_length=1000, blank=True, null=True
+        "Описание товара", max_length=2000, blank=True, null=True
     )
 
     name = models.CharField("Название товара", max_length=350)
@@ -149,7 +149,9 @@ class Product(models.Model):
             article = create_article_motrum(self.supplier.id)
 
             self.article = article
-        get_motrum_category(self)
+        filter_catalog = get_motrum_category(self)
+        self.category = filter_catalog[0]
+        self.group = filter_catalog[1]
         super().save(*args, **kwargs)
         # обновление цен товаров
         price = Price.objects.filter(prod=self.id)
@@ -226,7 +228,7 @@ class Price(models.Model):
         Vat,
         verbose_name="НДС",
         on_delete=models.PROTECT,
-        blank=True,
+        # blank=True,
         null=True,
     )
 
@@ -234,7 +236,7 @@ class Price(models.Model):
 
     price_supplier = models.FloatField(
         "Цена в каталоге поставщика в валюте каталога",
-        blank=True,
+        # blank=True,
         null=True,
     )
 
@@ -345,6 +347,8 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках"
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
+    
+    to_order =models.BooleanField("Товар под заказ", default=False) 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -360,7 +364,7 @@ class Stock(models.Model):
 
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
-
+        print(lots)
         name1 = super().save(*args, **kwargs)
 
 

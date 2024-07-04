@@ -2,6 +2,7 @@ import datetime
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
+from simple_history.utils import update_change_reason
 
 from apps.core.models import Currency
 from apps.product.models import CurrencyRate, Price
@@ -44,12 +45,12 @@ def get_currency(self):
             currency_chek(current, now_rate[0])
 
     except Exception as exc:
-        self.retry(exc=exc, countdown=5)
+        self.retry(exc=exc, countdown=160)
 
 
 # удаление старых курсов
 def del_currency():
-    print(1231231)
+   
     now = datetime.datetime.now()
     three_days = datetime.timedelta(3)
     in_three_days = now - three_days
@@ -61,8 +62,9 @@ def del_currency():
 def update_currency_price(currency, current_world_code):
     products = Price.objects.filter(currency=currency)
     for product in products:
-        p = Price.objects.get(id=product.id)
-        p.save()
+        price = Price.objects.get(id=product.id)
+        price.save()
+        update_change_reason(price, "Автоматическое")        
 
 
 # проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны
@@ -81,4 +83,7 @@ def currency_chek(current, now_rate):
     if difference_count > count_percent:
         specification = Specification.objects.filter(
             tag_stop=True, tag_currency_id=now_rate.currency.id
-        ).update(tag_stop=False)
+        )
+        specification.tag_stop = False
+        specification.save()
+        update_change_reason(specification, "Автоматическое")     

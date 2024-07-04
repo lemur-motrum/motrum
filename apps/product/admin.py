@@ -362,6 +362,7 @@ class StockInline(admin.TabularInline):
         "lot_complect",
         "stock_supplier_unit",
         "stock_motrum",
+        "to_order"
     )
 
     readonly_fields = ["stock_supplier_unit"]
@@ -558,39 +559,42 @@ class ProductAdmin(SimpleHistoryAdmin):
             ),
         ]
         if obj and obj.pk:
-            if obj.autosave_tag == False:
-                fields = [
-            (
-                "Основные параметры",
-                {
-                    "fields": [
-                        (
-                            "article_supplier",
-                            "additional_article_supplier",
-                        ),
-                        "name",
-                        "description",
-                        ("supplier", "vendor"),
-                        (
-                            "category_supplier",
-                            "group_supplier",
-                            "category_supplier_all",
-                        ),
-                        # ("category", "group"),
-                    ],
-                },
-            ),
-        ]
+        #     if obj.autosave_tag == False:
+        #         fields = [
+        #     (
+        #         "Основные параметры",
+        #         {
+        #             "fields": [
+        #                 (
+        #                     "article_supplier",
+        #                     "additional_article_supplier",
+        #                 ),
+        #                 "name",
+        #                 "description",
+        #                 ("supplier", "vendor"),
+        #                 (
+        #                     "category_supplier",
+        #                     "group_supplier",
+        #                     "category_supplier_all",
+        #                 ),
+        #                 # ("category", "group"),
+        #             ],
+        #         },
+        #     ),
+        # ]
             
             return fields
         else:
             return fields_add
 
     def has_add_permission(self, request):
+       
         if request.path == "/admin/specification/specification/add/":
             return False
+        if request.user.has_perm("product.change_product") == False:
+             return False
         else:
-            return True
+            return True    
 
     def get_form(self, request, obj, **kwargs):
         if obj == None:

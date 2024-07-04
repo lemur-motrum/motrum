@@ -7,6 +7,8 @@ from django.utils.text import slugify
 from pytils import translit
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import threading
+from simple_history.utils import update_change_reason
 
 
 from apps.core.models import Currency, Vat
@@ -134,7 +136,26 @@ class SupplierCategoryProduct(models.Model):
 
     def __str__(self):
         return f"{self.article_name}{self.name}"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from apps.product.models import Product
+        # обноыление категорий связанных продуктоы
+        product = Product.objects.filter(group_supplier=self.id)
+        
+        def background_task():
+            # Долгосрочная фоновая задача
+            for product_one in product:
+                product_one.category = self.category_catalog
+                if self.group_catalog:
+                    product_one.group = self.group_catalog
+                    
+                product_one.save()
+                update_change_reason(product_one, "Автоматическое")
 
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
     
 
 class SupplierGroupProduct(models.Model):
@@ -194,14 +215,29 @@ class SupplierGroupProduct(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
-        
+        # обноыление категорий связанных продуктоы
         product = Product.objects.filter(group_supplier=self.id)
-        for product_one in product:
-            product_one.category = self.category_catalog
-            if self.group_catalog:
-                product_one.group = self.group_catalog
+        
+        def background_task():
+            # Долгосрочная фоновая задача
+            for product_one in product:
+                product_one.category = self.category_catalog
+                if self.group_catalog:
+                    product_one.group = self.group_catalog
+                    update_change_reason(product_one, "Автоматическое")
+                product_one.save()
+            
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
+        
+        # for product_one in product:
+        #     product_one.category = self.category_catalog
+        #     if self.group_catalog:
+        #         product_one.group = self.group_catalog
                 
-            product_one.save()
+        #     product_one.save()
 
 
 class SupplierCategoryProductAll(models.Model):
@@ -271,30 +307,30 @@ class SupplierCategoryProductAll(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
-        
+        # обоновление категорйи связанных продуктов
         product = Product.objects.filter(category_supplier_all=self.id)
-        for product_one in product:
-            product_one.category = self.category_catalog
-            if self.group_catalog:
-                product_one.group = self.group_catalog
-                
-            product_one.save()
+        def background_task():
+            # Долгосрочная фоновая задача
+            for product_one in product:
+                product_one.category = self.category_catalog
+                if self.group_catalog:
+                    product_one.group = self.group_catalog
+                    update_change_reason(product_one, "Автоматическое")
+                product_one.save()
             
-        # from apps.product.models import Price
-        # from apps.product.models import Product
-        # from apps.core.utils import get_category
-        # обновление цен товаров связанной группы
-        # price = Price.objects.filter(prod__category_supplier_all=self.id)
-        # for price_one in price:
-        #     price_one.price_supplier = price_one.price_supplier
-        #     price_one.save()
-           
-# @receiver(post_save, sender=Product)
-# def update_change_reason(sender, instance, **kwargs):
-#     print(instance)
-#     # if instance._change_reason == None:
-#     update_change_reason(instance, 'Автоматическое')            
-       
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
+        
+        # for product_one in product:
+        #     product_one.category = self.category_catalog
+        #     if self.group_catalog:
+        #         product_one.group = self.group_catalog
+                
+        #     product_one.save()
+            
+ 
        
 
 
@@ -375,8 +411,14 @@ class Discount(models.Model):
         elif  self.supplier:
             price = Price.objects.filter(prod__supplier=self.supplier)              
         
-        print(price)  
-        for price_one in price:
-            # price_one.price_supplier = price_one.price_supplier
-            price_one.save()
+       
+        def background_task():
+            # Долгосрочная фоновая задача
+            for price_one in price:
+                price_one.save()
+                update_change_reason(price_one, "Автоматическое")
             
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()

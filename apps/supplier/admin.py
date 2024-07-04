@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.forms import TextInput, Textarea
 from django.db import models
 from simple_history.utils import update_change_reason
-
+import threading
 from apps.product.admin import GroupProductInline
 from apps.product.models import CategoryProduct, GroupProduct, Price
 from apps.supplier.forms import (
@@ -266,16 +266,30 @@ class DiscountAdmin(admin.ModelAdmin):
         id_sec = obj.id
         obj.delete()
         price = Price.objects.filter(sale__isnull=True)
-        for price_one in price:
-            price_one.save()
-            update_change_reason(price_one, "Автоматическое")
+        def background_task():
+            # Долгосрочная фоновая задача
+            for price_one in price:
+                price_one.save()
+                update_change_reason(price_one, "Автоматическое")
+            
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
 
     def delete_queryset(self, request, queryset):
         queryset.delete()
         price = Price.objects.filter(sale__isnull=True)
-        for price_one in price:
-            price_one.save()
-            update_change_reason(price_one, "Автоматическое")
+        def background_task():
+            # Долгосрочная фоновая задача
+            for price_one in price:
+                price_one.save()
+                update_change_reason(price_one, "Автоматическое")
+            
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
 
 
 admin.site.register(Supplier, SupplierAdmin)

@@ -39,28 +39,29 @@ class AdminUser(CustomUser):
         verbose_name = "Администратор"
         verbose_name_plural = "Администраторы"
 
-    # def save(self, *args, **kwargs):
-    #     if self.id:
-    #         user = AdminUser.objects.get(id=self.id)
-    #         password_old = user.password
-    #         if  password_old == self.password:
-    #             pass
-    #         else:
-    #             self.set_password(self.password)
+    def save(self, *args, **kwargs):
+        if self.id:
+            user = AdminUser.objects.get(id=self.id)
+            password_old = user.password
+            if  password_old == self.password:
+                pass
+            else:
+                self.set_password(self.password)
                 
-    #     else:
-    #         self.set_password(self.password)
+        else:
+            self.set_password(self.password)
         
-    #     if self.admin_type == "ALL":
-    #         self.is_superuser = True
+        if self.admin_type == "ALL":
+            self.is_superuser = True
 
-    #     self.is_staff = True
+        self.is_staff = True
 
-    #     # if self.password is not None:
-    #     #     self.set_password(self.password)
+        # if self.password is not None:
+        #     self.set_password(self.password)
         
-    #     super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
         
+signals.post_save.connect(update_group, sender=AdminUser)        
     
 
 

@@ -631,7 +631,8 @@ def send_email_error():
     smtp_server.quit()    
 
 def get_motrum_category(self):
-   
+    category_catalog = None
+    group_catalog = None
     
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
@@ -645,4 +646,5 @@ def get_motrum_category(self):
         category_catalog = self.category_supplier.category_catalog
         group_catalog = self.category_supplier.group_catalog
     
-    # print(category_catalog,group_catalog)               
+  
+    return (category_catalog,group_catalog)               

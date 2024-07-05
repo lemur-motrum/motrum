@@ -141,6 +141,12 @@ def test(request):
     }
     return render(request, "supplier/supplier.html", context)
 
+def add_permission(request):
+    upgrade_permission()
+    context = { 
+    }
+    return render(request, "supplier/supplier.html", context)
+
 
 from unicodedata import category
 from django.shortcuts import render

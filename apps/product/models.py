@@ -128,7 +128,7 @@ class Product(models.Model):
         "Описание товара", max_length=2000, blank=True, null=True
     )
 
-    name = models.CharField("Название товара", max_length=350)
+    name = models.CharField("Название товара", max_length=600)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
     check_property_upgrade = models.BooleanField("было изменено вручную", default=False)

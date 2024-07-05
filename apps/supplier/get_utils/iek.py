@@ -371,7 +371,7 @@ def iek_api():
                     article_suppliers = data_item["art"]
                     category = data_item["groupId"]
                     categ_names = SupplierCategoryProductAll.objects.get(
-                        supplier=supplier, vendor=vendor_add[0], article_name=category
+                        supplier=supplier, article_name=category
                     )
 
                     item_category_all = get_category(
@@ -418,7 +418,8 @@ def iek_api():
                         description_arr = data_item["Description"]
                         for desc in description_arr:
                             description = desc["desc_ru"]
-
+                    else:
+                        description = None
                     def save_image(
                         new_product,
                     ):

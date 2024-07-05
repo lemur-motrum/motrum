@@ -530,25 +530,25 @@ class ProductAdmin(SimpleHistoryAdmin):
             item_one = f"<li>Остаток</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        try:
-            props = ProductProperty.objects.get(product=obj.id)
-        except ProductProperty.DoesNotExist:
+  
+        props = ProductProperty.objects.filter(product=obj.id).exists()
+        if props == False:
             item_one = f"<li>Характеристики</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        try:
-            img = ProductImage.objects.get(product=obj.id)
-        except ProductImage.DoesNotExist:
+
+        img = ProductImage.objects.filter(product=obj.id).exists()
+        if img == False:
             item_one = f"<li>Изображения</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        try:
-            doc = ProductDocument.objects.get(product=obj.id)
-        except ProductDocument.DoesNotExist:
-
+      
+        doc = ProductDocument.objects.filter(product=obj.id).exists()
+        if doc == False:
             item_one = f"<li>Документы</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
-
+        
+       
         return mark_safe("<ul    >{}</ul>".format(product_blank_new))
 
     def delete_queryset(self, request, queryset):

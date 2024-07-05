@@ -46,7 +46,7 @@ class PersonForm(forms.ModelForm):
 
     class Media:
         css = {
-            "all": ("specification/css/my_styles.css",),
+            "all": ("specification/css/admin_price_exclusive.css",),
         }
 
     def __init__(self, *args, **kwargs):

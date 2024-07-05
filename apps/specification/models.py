@@ -49,14 +49,10 @@ class Specification(models.Model):
     file = models.FileField(
         "фаил", upload_to=get_document_path, null=True, default=None
     )
-    tag_currency = models.ForeignKey(
-        Currency, on_delete=models.PROTECT, null=True, default=None
-    )
-    #  tag_currency = models.BinaryField("Валютная отметка",default=False)
-    # client = models.ForeignKey(
-    #     Client,
-    #     on_delete=models.PROTECT,
+    # tag_currency = models.ForeignKey(
+    #     Currency, on_delete=models.PROTECT, null=True, default=None
     # )
+    
 
     class Meta:
         verbose_name = "Спецификация"
@@ -125,7 +121,7 @@ class ProductSpecification(models.Model):
         price = Price.objects.get(prod=self.product)
         
       
-     
+        print("test test")
         if self.price_one != price.price_supplier:
             self.price_exclusive = True
         price_current = price.currency.words_code
@@ -133,9 +129,11 @@ class ProductSpecification(models.Model):
         self.price_all = self.price_one * self.quantity
 
         # отметка о валютности + добавление общец суммы
+        print(price_current)
         if price_current != "RUB":
-            spec.tag_currency = price.currency
-
+            # spec.tag_currency = price.currency
+            spec.currency_product = True
+        print(spec.total_amount)
         if spec.total_amount is None:
             total_init = 0
         else:

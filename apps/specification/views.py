@@ -10,14 +10,9 @@ from apps.supplier.models import Vendor
 from django.db.models import Q
 
 
+
 class ProductAutocomplete(autocomplete.Select2QuerySetView):
-    # def save_specification_view_admin():
-    #     id_bitrix
-    #     admin_creator
-    #     specification = Specification(
-    #         id_bitrix = id_bitrix
-    #         admin_creator = admin_creator
-    #     )
+    
     
     
     def get_result_value(self, result):

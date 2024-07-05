@@ -103,7 +103,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-            "all": ("supplier/css/my_styles.css",),
+            "all": ("supplier/css/admin_price.css",),
         }
 
     def get_readonly_fields(self, request, obj=None):

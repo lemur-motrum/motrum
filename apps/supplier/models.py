@@ -392,7 +392,17 @@ class Discount(models.Model):
         verbose_name_plural = "Скидки"
         
     def __str__(self):
-        return f"Скидка {self.vendor}|{self.vendor}:{self.percent}%"
+        name = ""
+        if self.category_supplier_all:
+            name = self.category_supplier_all.name
+        elif  self.group_supplier:
+            name = self.group_supplier.name
+        elif  self.category_supplier:
+            name = self.category_supplier.name
+        elif  self.vendor:
+            name = self.vendor.name
+       
+        return f"Скидка {self.supplier}|{name}:{self.percent}%"
 
     
     def save(self, *args, **kwargs):
@@ -400,7 +410,6 @@ class Discount(models.Model):
         from apps.product.models import Price
         # обновление цен товаров связанной группы
         if self.category_supplier_all:
-            print(11111)
             price = Price.objects.filter(prod__category_supplier_all=self.category_supplier_all)
         elif  self.group_supplier:
             price = Price.objects.filter(prod__group_supplier=self.group_supplier)

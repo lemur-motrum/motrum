@@ -175,7 +175,11 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
         if category_supplier:
             qs = qs.filter(group_supplier=group_supplier)    
    
-
+        if self.q:
+            # name__icontains=self.q
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
        
 
         return qs

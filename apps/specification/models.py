@@ -64,7 +64,8 @@ class Specification(models.Model):
 
     def __str__(self):
         return f"{self.id_bitrix}"
-
+    # def save_specification_view_admin(self):
+    #     pass
 # @receiver(post_save)
 # def my_callback(sender, instance, *args, **kwargs):
 #     sums = ProductSpecification.objects.filter(specification=instance.id).aggregate(Sum("price_all"))
@@ -87,6 +88,13 @@ class ProductSpecification(models.Model):
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
+    )
+    product_currency = models.ForeignKey(
+        Currency,
+        verbose_name="Валюта",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
 
     quantity = models.IntegerField(
@@ -115,11 +123,13 @@ class ProductSpecification(models.Model):
 
         spec = Specification.objects.get(id=self.specification.id)
         price = Price.objects.get(prod=self.product)
+        
       
      
         if self.price_one != price.price_supplier:
             self.price_exclusive = True
         price_current = price.currency.words_code
+        self.product_currency = price.currency
         self.price_all = self.price_one * self.quantity
 
         # отметка о валютности + добавление общец суммы

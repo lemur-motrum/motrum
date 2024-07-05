@@ -6,7 +6,7 @@ from simple_history.utils import update_change_reason
 
 from apps.core.models import Currency
 from apps.product.models import CurrencyRate, Price
-from apps.specification.models import Specification
+from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
 
 
@@ -81,9 +81,18 @@ def currency_chek(current, now_rate):
     # print(difference_count)
     # print(count_percent)
     if difference_count > count_percent:
-        specification = Specification.objects.filter(
-            tag_stop=True, tag_currency_id=now_rate.currency.id
+        product_specification = ProductSpecification.object.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
+        for prod in product_specification:
+            specification = Specification.objects.filter(
+            tag_stop=True, id=product_specification
         )
-        specification.tag_stop = False
-        specification.save()
+            specification.tag_stop = False
+            specification.save()
+            update_change_reason(specification, "Автоматическое") 
+                
+        # specification = Specification.objects.filter(
+        #     tag_stop=True, tag_currency_id=now_rate.currency.id
+        # )
+        # specification.tag_stop = False
+        # specification.save()
         update_change_reason(specification, "Автоматическое")     

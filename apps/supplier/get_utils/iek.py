@@ -381,34 +381,43 @@ def iek_api():
                     item_category = item_category_all[0]
                     item_group = item_category_all[1]
                     item_group_all = item_category_all[2]
-                
+
                     name = data_item["name"]
+                    
                     # цены
-                    vat = data_item["vat"]
-                    vat_catalog = Vat.objects.get(name=vat)
+                    if  "price" in  data_item:
+                        saleprice = data_item["saleprice"]
+                        price = data_item["price"]
+                        if saleprice:
+                            price_supplier = saleprice
+                        else:
+                            price_supplier = price
 
-                    vat_include = data_item["vat_included"]
-                    saleprice = data_item["saleprice"]
-                    
-                    
-                    price = data_item["price"]
-                    if saleprice:
-                        price_supplier = saleprice
-
+                        extra = data_item["extra"]
+                        if extra == "Цена по запросу":
+                            extra= True
+                            price_supplier = 0
+                        else:
+                            extra= False   
                     else:
-                        price_supplier = price
-
-                    extra = data_item["extra"]
-                    if extra == "Цена по запросу":
                         extra= True
                         price_supplier = 0
+                    
+                    # ндс    
+                    if "vat" in data_item:
+                        vat = data_item["vat"]
+                        vat_catalog = Vat.objects.get(name=vat)
+
+                        vat_include = data_item["vat_included"]    
                     else:
-                        extra= False   
+                        vat_catalog = Vat.objects.get(name=20)
+                        vat_include = True
                     
-                    description_arr = data_item["Description"]
-                    
-                    for desc in description_arr:
-                        description = desc["desc_ru"]
+                    # описание
+                    if "Description" in data_item:
+                        description_arr = data_item["Description"]
+                        for desc in description_arr:
+                            description = desc["desc_ru"]
 
                     def save_image(
                         new_product,
@@ -433,95 +442,98 @@ def iek_api():
                         else:
                             pass
 
-                    def saves_doc(
-                        item,
-                        article,
-                        name_str,
-                        type_doc
-                    ):
-                        # try:
-                        for sertif in item:
+                    # def saves_doc(
+                    #     item,
+                    #     article,
+                    #     name_str,
+                    #     type_doc
+                    # ):
+                    #     # try:
+                    #     for sertif in item:
                            
-                            doc = sertif["file_ref"]["uri"]
+                    #         doc = sertif["file_ref"]["uri"]
                             
                         
-                            document = ProductDocument.objects.create(
-                                product=article, type_doc=type_doc
-                            )
-                            update_change_reason(document, "Автоматическое")
+                    #         document = ProductDocument.objects.create(
+                    #             product=article, type_doc=type_doc
+                    #         )
+                    #         update_change_reason(document, "Автоматическое")
 
-                            document_path = get_file_path_add(document, doc)
-                            p = save_file_product(doc, document_path)
-                            document.document = document_path
-                            document.link = doc
-                            document.name = sertif[name_str]
-                            document.save()
-                            update_change_reason(document, "Автоматическое")
-                        # except item.DoesNotExist:
-                        #     pass
-                    def save_all_doc(data_item,article):
-                        # saves_doc(
-                        #     data_item["Certificates"],
-                        #     article,
-                        #     "name"
-                        # )
+                    #         document_path = get_file_path_add(document, doc)
+                    #         p = save_file_product(doc, document_path)
+                    #         document.document = document_path
+                    #         document.link = doc
+                    #         document.name = sertif[name_str]
+                    #         document.save()
+                    #         update_change_reason(document, "Автоматическое")
+                    #     # except item.DoesNotExist:
+                    #     #     pass
+                    # def save_all_doc(data_item,article):
+                    #     # saves_doc(
+                    #     #     data_item["Certificates"],
+                    #     #     article,
+                    #     #     "name"
+                    #     # )
                         
-                        if "Certificates" in data_item:
-                            saves_doc(
-                                data_item["Certificates"],
-                                article,
-                                "name",
-                                "Certificates"
-                            )
-                        if "InstallationProduct" in data_item:
-                            saves_doc(
-                                data_item["InstallationProduct"],
-                                article,
-                                "name",
-                                "InstallationProduct"
-                            )
-                        if "DimensionDrawing" in data_item:
-                            saves_doc(
-                                data_item["DimensionDrawing"],
-                                article,
-                                "name",
-                                "DimensionDrawing"
-                            )
-                        if "Passport" in data_item:
-                            saves_doc(
-                                data_item["Passport"],
-                                article,
-                                "pubName",
-                                "Passport"
-                            )
-                        if "WiringDiagram" in data_item:
-                            saves_doc(
-                                data_item["WiringDiagram"],
-                                article,
-                                "name",
-                                "WiringDiagram"
-                            )
-                        if "Models3d" in data_item:
-                            saves_doc(
-                                data_item["Models3d"],
-                                article,
-                                "pubName",
-                                "Models3d"
-                            )
-                        if "Brochure" in data_item:
-                            saves_doc(
-                                data_item["Brochure"],
-                                article,
-                                "pubName",
-                                "Brochure"
-                            )
+                    #     if "Certificates" in data_item:
+                    #         saves_doc(
+                    #             data_item["Certificates"],
+                    #             article,
+                    #             "name",
+                    #             "Certificates"
+                    #         )
+                    #     if "InstallationProduct" in data_item:
+                    #         saves_doc(
+                    #             data_item["InstallationProduct"],
+                    #             article,
+                    #             "name",
+                    #             "InstallationProduct"
+                    #         )
+                    #     if "DimensionDrawing" in data_item:
+                    #         saves_doc(
+                    #             data_item["DimensionDrawing"],
+                    #             article,
+                    #             "name",
+                    #             "DimensionDrawing"
+                    #         )
+                    #     if "Passport" in data_item:
+                    #         saves_doc(
+                    #             data_item["Passport"],
+                    #             article,
+                    #             "pubName",
+                    #             "Passport"
+                    #         )
+                    #     if "WiringDiagram" in data_item:
+                    #         saves_doc(
+                    #             data_item["WiringDiagram"],
+                    #             article,
+                    #             "name",
+                    #             "WiringDiagram"
+                    #         )
+                    #     if "Models3d" in data_item:
+                    #         saves_doc(
+                    #             data_item["Models3d"],
+                    #             article,
+                    #             "pubName",
+                    #             "Models3d"
+                    #         )
+                    #     if "Brochure" in data_item:
+                    #         saves_doc(
+                    #             data_item["Brochure"],
+                    #             article,
+                    #             "pubName",
+                    #             "Brochure"
+                    #         )
 
 
                     # остатки
-                    if data_item["min_ship"] > 1:
-                        lot_short = "набор"
-                    else:
-                        lot_short = "штука"
+                    if "min_ship" in data_item:
+                        if data_item["min_ship"] > 1:
+                            lot_short = "набор"
+                        else:
+                            lot_short = "штука"
+                    else: 
+                        lot_short = "штука"       
 
                     stock_supplier = 0
                     lot_complect = 1
@@ -539,9 +551,9 @@ def iek_api():
                         image =  ProductImage.objects.filter(product=article).exists()   
                         if image == False:
                             save_image(article)
-                        documents =  ProductDocument.objects.filter(product=article).exists()   
-                        if documents == False:
-                            save_all_doc(data_item,article)
+                        # documents =  ProductDocument.objects.filter(product=article).exists()   
+                        # if documents == False:
+                        #     save_all_doc(data_item,article)
                             
                     except Product.DoesNotExist:
                         new_article = create_article_motrum(supplier.id)
@@ -559,7 +571,7 @@ def iek_api():
                         article.save()
                         update_change_reason(article, "Автоматическое")        
                         save_image(article)
-                        save_all_doc(data_item,article)
+                        # save_all_doc(data_item,article)
                     # цены товара
                     try:
                         price_product = Price.objects.get(prod=article)
@@ -578,7 +590,7 @@ def iek_api():
 
                     # остатки
                     stock_supplier = get_iek_stock_one(article)
-                    print("**********************")
+             
                     print(stock_supplier[0])
                     
                     try:
@@ -658,6 +670,9 @@ def iek_api():
                 for data_item in data["shopItems"]:
                     if data_item["zakaz"] == 1:
                         to_order = True
+                    else:
+                        to_order = False
+                            
                     stock = 0
                     product = data_item["sku"]
                     for a in data_item["residues"].values():
@@ -732,7 +747,7 @@ def iek_api():
      
 
     get_iek_category("ddp", None)
-   
+  
     # запись продуктов по категориям 
     for item_iek_save_categ in iek_save_categ:
         get_iek_product("products", f"groupId={item_iek_save_categ}")

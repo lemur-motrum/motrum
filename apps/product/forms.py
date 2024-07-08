@@ -97,4 +97,36 @@ class ProductChangeForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
+            "additional_article_supplier": forms.Textarea(
+                attrs={
+                    "cols": 50,
+                    "rows": 2,
+                }
+            ),
+            "group": forms.Select(
+                attrs={
+                }
+            ),
         }
+        
+        
+    def __init__(self, *args, **kwargs):
+        super(ProductChangeForm, self).__init__(*args, **kwargs)
+        print(self.instance.pk)
+        prod = Product.objects.filter(id=self.instance.pk).values()
+        
+        for product_item in prod:
+                product_blank_dict = {
+                    k: v for k, v in product_item.items() if v == None
+                }
+
+                for item_dict in product_blank_dict:
+                    verbose_name = Product._meta.get_field(item_dict).name
+                    item_one = f"<li >{verbose_name}</li>"
+                   
+                    print(item_one)
+                    self.fields[verbose_name].widget.attrs = {'class': 'special_item_none' ,'placeholder': 'username',}
+                    self.fields[verbose_name].label = {'class': 'special_item_none',}
+                    
+        
+  

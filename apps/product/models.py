@@ -130,6 +130,7 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=2000, blank=True, null=True
     )
+    
 
 
     name = models.CharField("Название товара", max_length=600)
@@ -148,20 +149,28 @@ class Product(models.Model):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
 
     def save(self, *args, **kwargs):
+        print(1231231)
         if self.article == "":
 
             article = create_article_motrum(self.supplier.id)
 
             self.article = article
+            
         filter_catalog = get_motrum_category(self)
-        self.category = filter_catalog[0]
-        self.group = filter_catalog[1]
+        if self.category == None:
+            self.category = filter_catalog[0]
+        if self.category == None:
+            self.group = filter_catalog[1]
+            
         super().save(*args, **kwargs)
         # обновление цен товаров
         price = Price.objects.filter(prod=self.id)
         for price_one in price:
             price_one.price_supplier = price_one.price_supplier
             price_one.save()
+
+
+
 
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)

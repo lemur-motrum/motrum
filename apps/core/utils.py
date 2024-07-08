@@ -363,17 +363,17 @@ def create_article_motrum(supplier):
 # категории дял товара
 def get_category(supplier, vendor, category_name):
     try:
-        item_category_all = SupplierCategoryProductAll.objects.get(
+        item_category_all = SupplierCategoryProductAll.objects.filter(
             supplier=supplier, name=category_name
         )
-        item_category = item_category_all.category_supplier
-        item_group = item_category_all.group_supplier
+        item_category = item_category_all[0].category_supplier
+        item_group = item_category_all[0].group_supplier
     except SupplierCategoryProductAll.DoesNotExist:
         item_category = None
         item_group = None
         item_category_all = None
 
-    return (item_category, item_group, item_category_all)
+    return (item_category, item_group, item_category_all[0])
 
 
 def get_category_prompower(supplier, vendor, category_name):

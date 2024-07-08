@@ -231,6 +231,7 @@ iek_save_categ = [
 ]
 
 def iek_api():
+    
     print(len(iek_save_categ))
     # r = SupplierCategoryProductAll.objects.get(article_name= "01.01.01",)
     # print(r)
@@ -370,13 +371,18 @@ def iek_api():
 
                     article_suppliers = data_item["art"]
                     category = data_item["groupId"]
-                    categ_names = SupplierCategoryProductAll.objects.get(
+               
+                    categ_names = SupplierCategoryProductAll.objects.filter(
                         supplier=supplier, article_name=category
                     )
-
+                    
+                    
+                    print(categ_names[0])
                     item_category_all = get_category(
-                        supplier, vendor_add[0], categ_names.name
+                        supplier, vendor_add[0], categ_names[0].name
                     )
+                    print(item_category_all)
+                
                 
                     item_category = item_category_all[0]
                     item_group = item_category_all[1]
@@ -688,10 +694,11 @@ def iek_api():
                 print(e)
                 error = "file_api_error"
                 location = "Загрузка фаилов IEK"
+          
                 info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
                 e = error_alert(error, location, info)
          
-
+   
     def get_iek_property(url_service, url_params):
         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
         response = requests.request(

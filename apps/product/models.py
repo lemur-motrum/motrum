@@ -117,6 +117,8 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
+    
+    
     group = models.ForeignKey(
         "GroupProduct",
         verbose_name="Группа Мотрум",
@@ -124,9 +126,11 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
+    
     description = models.CharField(
         "Описание товара", max_length=2000, blank=True, null=True
     )
+
 
     name = models.CharField("Название товара", max_length=600)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)

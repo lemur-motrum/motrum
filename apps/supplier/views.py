@@ -28,7 +28,7 @@ def add_prompower(request):
 def add_iek(request):
     title = "Услуги"
     # responsets = ['233','2131']
-    responsets = get_currency()
+    responsets = iek_api()
     context = {
         "title": title,
         "responsets": responsets,

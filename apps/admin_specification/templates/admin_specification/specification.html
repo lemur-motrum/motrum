@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="specification-container">
+        <h1 class="title">{{ title }}</h1>
+        {% if specification_items %}
+            <div class="spetification_table">
+                <div class="spetification_titles">
+                    <div class="title_item">Название:</div>
+                    <div class="title_item">Артикул Motrum:</div>
+                    <div class="title_item">Артикул Поставщика:</div>
+                    <div class="title_item">Количество:</div>
+                    <div class="title_item">Цена за шт:</div>
+                    <div class="title_item">Стоимость:</div>
+                </div>
+                {% for item in specification_items %}
+                    <div class="item_container" data-id={{ item.id }}  {% if item.price == "0" %} data-price-exclusive="1" {% else %} data-price-exclusive="0" {% endif %}>
+                        <div class="item_value">{{ item.name }}</div>
+                        <div class="item_value">{{ item.idMotrum }}</div>
+                        <div class="item_value">{{ item.idSaler }}</div>
+                        {% if item.price == "0" %}
+                            <div class="item_value input_quantity quantity">{{ item.quantity }}</div>
+                            <div class="item_value">
+                                <input type="text"
+                                       onkeypress='validate(event)'
+                                       placeholder="Введите цену по запросу"
+                                       maxlength="10" />
+                            </div>
+                            <div class="item_value input_totla-cost total_cost price">0</div>
+                        {% else %}
+                            <div class="item_value quantity">{{ item.quantity }}</div>
+                            <div class="item_value price price_once">{{ item.price }}</div>
+                            <div class="item_value total_cost price">{{ item.totalCost }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="submit-container">
+                    <div class="price_description">
+                        Итого: <span class="price">0</span>
+                    </div>
+                    <button class="save_button">Сохранить спецификацию</button>
+                </div>
+            </div>
+        {% else %}
+            <div class="no_content-container">
+                <div>Товаров пока нет</div>
+                <a href="{% url 'admin_specification:specifications' %}">Вернуться</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

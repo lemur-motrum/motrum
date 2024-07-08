@@ -1,0 +1,347 @@
+.specification-content {
+  padding: 1rem 0.938rem;
+  .head-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .container {
+      width: 15%;
+      .specification-link-container {
+        font-size: 1.5rem;
+        a {
+          cursor: pointer;
+          color: brown;
+          text-decoration: none;
+          transition: 0.6s;
+          &:hover {
+            color: rgb(61, 17, 17);
+          }
+        }
+      }
+      .head-title {
+        font-size: 2rem;
+        margin: 0;
+        padding: 0;
+      }
+      .specification-title {
+        color: brown;
+        font-size: 1.5rem;
+        margin-top: 1rem;
+      }
+      .search-form-container {
+        margin: 1rem 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        .input-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+          .form-label {
+            font-size: 1rem;
+            cursor: pointer;
+            color: lightgray;
+          }
+          .form-input {
+            height: 1.5rem;
+            border: 1px solid black;
+            border-radius: 5px;
+            box-sizing: border-box;
+            padding: 0.4rem;
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+        button {
+          width: 100%;
+          height: 1.5rem;
+          font-size: 1rem;
+          margin-top: 0.3rem;
+          cursor: pointer;
+          border-radius: 5px;
+          border: 1px solid black;
+          transition: 0.6s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          &:hover {
+            background-color: lightgray;
+            border-color: lightgray;
+          }
+        }
+      }
+    }
+  }
+  .spetification-product-catalog {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    gap: 0.5rem;
+    .catalog-item {
+      background-color: lightgray;
+      border-radius: 5px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .descripton {
+        display: flex;
+        flex-direction: column;
+        .article-motrum {
+          font-size: 0.875rem;
+          color: gray;
+        }
+        .article-saler {
+          font-size: 0.875rem;
+          color: gray;
+        }
+        .name {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+        .price {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-top: 0.7rem;
+          span {
+            font-size: 1.3rem;
+          }
+        }
+      }
+      .item-buttons_container {
+        display: flex;
+        flex-direction: column;
+        width: 10%;
+        gap: 1rem;
+        .quantity-buttons {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          position: relative;
+          button {
+            border-radius: 5px;
+            border: 0.125rem solid black;
+            font-size: 1.125rem;
+            width: 3rem;
+            cursor: pointer;
+            &:disabled,
+            &[disabled] {
+              cursor: auto;
+            }
+            &.minus-button {
+              margin-right: 2rem;
+            }
+            &.plus-button {
+              margin-left: 2rem;
+            }
+          }
+          span {
+            font-size: 2rem;
+            font-weight: bold;
+            position: absolute;
+            top: -19%;
+            left: 44.5%;
+          }
+        }
+        .add-specification-button {
+          font-size: 0.8rem;
+          border-radius: 5px;
+          border: 1px solid black;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 1.5rem;
+        }
+      }
+    }
+    .none-products {
+      font-size: 2rem;
+    }
+    .pagintion {
+      display: flex;
+      margin: 0 auto;
+      margin-top: 1rem;
+      gap: 1.2rem;
+      list-style: none;
+      div {
+        width: 3rem;
+        height: 3rem;
+        position: relative;
+        border-radius: 100%;
+        border: 1px solid black;
+        &.page-num-selected {
+          border: none;
+          background-color: lightgray;
+          width: 3.063rem;
+          height: 3.063rem;
+          position: relative;
+          span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+          }
+        }
+      }
+      a {
+        width: 3rem;
+        height: 3rem;
+        position: relative;
+        border-radius: 100%;
+        border: 1px solid black;
+        text-decoration: none;
+        color: black;
+        transition: 0.6s;
+        &.first-elem {
+          margin-right: 1rem;
+        }
+        &.last-elem {
+          margin-left: 1rem;
+        }
+        span {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 1.5rem;
+        }
+        &:hover {
+          background-color: lightgray;
+          border-color: lightgray;
+        }
+      }
+    }
+    .return-button {
+      width: 15%;
+      height: 1.5rem;
+      position: relative;
+      border-radius: 5px;
+      border: 1px solid black;
+      text-decoration: none;
+      background-color: buttonface;
+      transition: 0.6s;
+      span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1rem;
+        color: black;
+      }
+      &:hover {
+        background-color: lightgray;
+        border-color: lightgray;
+      }
+    }
+  }
+}
+.specification-container {
+  padding: 1rem 0.938rem;
+  .title {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+  }
+  .no_content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    div {
+      font-size: 1.7rem;
+    }
+    a {
+      border: 1px solid black;
+      border-radius: 5px;
+      padding: 0.7rem;
+      height: 1.2rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      background-color: buttonface;
+      transition: 0.6s;
+      &:hover {
+        background-color: lightgray;
+        border-color: lightgray;
+      }
+    }
+  }
+  .spetification_table {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    .spetification_titles {
+      display: flex;
+      padding: 0.5rem;
+      background-color: gray;
+      gap: 0.7rem;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      .title_item {
+        font-size: 1.2rem;
+        width: 16.6666%;
+        font-weight: bold;
+      }
+    }
+    .item_container {
+      display: flex;
+      padding: 0.5rem;
+      gap: 0.7rem;
+      .item_value {
+        font-size: 1rem;
+        width: 16.6666%;
+        input {
+          border-radius: 5px;
+          border: 1px solid black;
+          padding: 0.5rem;
+          height: auto;
+          font-size: 0.9rem;
+          width: 80%;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+      &:nth-of-type(odd) {
+        background-color: lightgray;
+      }
+      &:last-of-type {
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+    }
+    .submit-container {
+      margin-top: 1rem;
+      .price_description {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      .save_button {
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.7rem;
+        border-radius: 5px;
+        border: none;
+        background-color: brown;
+        color: white;
+        height: 2.5rem;
+        cursor: pointer;
+        transition: 0.6s;
+        &:hover {
+          background-color: rgb(88, 22, 22);
+        }
+      }
+    }
+  }
+}

@@ -70,8 +70,14 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "debug_toolbar",
     "simple_history",
+    "sass_processor"
    
     # 'reversion'
+]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "sass_processor.finders.CssFinder",
 ]
 
 MIDDLEWARE = [
@@ -91,7 +97,9 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "apps/core/templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -160,6 +168,7 @@ AUTH_USER_MODEL = "user.AdminUser"
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"

@@ -16,6 +16,13 @@ celery
 redis
 flower
 django-simple-history
+djlint
+libsass 
+django-compressor 
+django-sass-processor
+
+
+
 # django-reversion 
 
 # amqp==5.2.0

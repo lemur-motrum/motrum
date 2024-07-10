@@ -2,7 +2,7 @@ from dal import autocomplete
 from django import forms
 
 
-from apps.product.models import CategoryProduct, GroupProduct, Product
+from apps.product.models import CategoryProduct, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
 from apps.specification.models import ProductSpecification
 from apps.supplier.models import (
     Supplier,
@@ -28,7 +28,9 @@ class ProductForm(forms.ModelForm):
     )
 
     category = forms.ModelChoiceField(
-        queryset=CategoryProduct.objects.all(), label="Категория Motrum",required=False,
+        queryset=CategoryProduct.objects.all(),
+        label="Категория Motrum",
+        required=False,
     )
 
     group = forms.ModelChoiceField(
@@ -41,7 +43,8 @@ class ProductForm(forms.ModelForm):
     )
     category_supplier = forms.ModelChoiceField(
         required=False,
-        queryset=SupplierCategoryProduct.objects.all(), label="Категория поставщика",
+        queryset=SupplierCategoryProduct.objects.all(),
+        label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier-autocomplete", forward=["supplier"]
         ),
@@ -62,7 +65,7 @@ class ProductForm(forms.ModelForm):
         label="Подгруппа поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier_all-autocomplete",
-            forward=["supplier", "vendor","category_supplier","group_supplier"],
+            forward=["supplier", "vendor", "category_supplier", "group_supplier"],
         ),
     )
 
@@ -80,6 +83,37 @@ class ProductForm(forms.ModelForm):
 
 
 class ProductChangeForm(forms.ModelForm):
+    group = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        label="Группа Мотрум",
+        widget=forms.Select(attrs={"class": "form-control"})
+        
+    )
+    category = forms.ModelChoiceField(
+        queryset=CategoryProduct.objects.all(),
+        label="Категория Мотрум",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    category_supplier = forms.ModelChoiceField(
+        queryset=SupplierGroupProduct.objects.all(),
+        label="Категории товара от поставщиков",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    group_supplier = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        label="Группа товара от поставщиков",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    category_supplier_all = forms.ModelChoiceField(
+        queryset=SupplierCategoryProductAll.objects.all(),
+        label="Подгруппа категории товара от поставщиков",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    vendor = forms.ModelChoiceField(
+        queryset=Vendor.objects.all(),
+        label="Производитель",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
 
     class Meta:
         model = Product
@@ -103,30 +137,37 @@ class ProductChangeForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
-            "group": forms.Select(
-                attrs={
-                }
-            ),
         }
-        
-        
+
     def __init__(self, *args, **kwargs):
         super(ProductChangeForm, self).__init__(*args, **kwargs)
-        print(self.instance.pk)
+       
         prod = Product.objects.filter(id=self.instance.pk).values()
-        
-        for product_item in prod:
-                product_blank_dict = {
-                    k: v for k, v in product_item.items() if v == None
-                }
 
-                for item_dict in product_blank_dict:
-                    verbose_name = Product._meta.get_field(item_dict).name
-                    item_one = f"<li >{verbose_name}</li>"
-                   
-                    print(item_one)
-                    self.fields[verbose_name].widget.attrs = {'class': 'special_item_none' ,'placeholder': 'username',}
-                    self.fields[verbose_name].label = {'class': 'special_item_none',}
-                    
+        for product_item in prod:
+            product_blank_dict = {k: v for k, v in product_item.items() if v == None}
+
+            for item_dict in product_blank_dict:
+                verbose_name = Product._meta.get_field(item_dict).name
+                self.fields[verbose_name].widget.attrs = {
+                    "style": "border: 1px solid red;",
+                }
+class ProductDocumentAdminForm(forms.ModelForm):
+    document = forms.ClearableFileInput(
+    )
+    class Meta:
+        model = Product
+        fields = "__all__"
+        
+
+    def __init__(self, *args, **kwargs):
+        
+        super(ProductDocumentAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.pk == None:
+            self.fields['document'].widget.attrs['class'] = 'my_class'
+            self.fields['document'].widget.attrs = {
+                    "style": "color:red;",
+                }
+        
         
   

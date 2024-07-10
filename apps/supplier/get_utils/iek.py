@@ -1,4 +1,5 @@
 from html import entities
+import traceback
 import requests
 from simple_history.utils import update_change_reason
 
@@ -615,14 +616,12 @@ def iek_api():
                         stock_prod.stock_motrum = stock_motrum
                         stock_prod.save()
                         update_change_reason(stock_prod, "Автоматическое")
-
-                        
-                        
+  
                 except Exception as e: 
                     print(e)
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении товара артикул: {article_suppliers}. Тип ошибки:{e}"
+                    info = f"ошибка при чтении товара артикул: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
                     e = error_alert(error, location, info)
                 finally:    
                     continue      
@@ -665,7 +664,7 @@ def iek_api():
 
             url_params = f"sku={prod.article_supplier}"
 
-            url_service = "/residues"
+            url_service = "/residues/json/"
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(

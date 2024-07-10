@@ -22,6 +22,7 @@ from simple_history.models import (
     to_historic,
 )
 
+
 from django.dispatch import receiver
 from django.db.models import signals, Sum, Q
 
@@ -157,6 +158,7 @@ class Product(models.Model):
             self.article = article
             
         filter_catalog = get_motrum_category(self)
+        print(filter_catalog)
         if self.category == None:
             self.category = filter_catalog[0]
         if self.category == None:
@@ -220,7 +222,8 @@ class GroupProduct(models.Model):
 
     def __str__(self):
         return self.name
-
+    
+   
 
 class Price(models.Model):
     prod = models.OneToOneField(
@@ -320,6 +323,7 @@ class Price(models.Model):
     
             self.price_motrum = price_motrum
             self.sale = sale
+            print(sale)
 
         super().save(*args, **kwargs)
 

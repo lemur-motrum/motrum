@@ -11,7 +11,11 @@ import threading
 from simple_history.utils import update_change_reason
 
 
+
 from apps.core.models import Currency, Vat
+from apps.core.utils import get_file_price_path_add
+
+
 
 # from apps.core.utils import get_file_path_add
 
@@ -23,9 +27,13 @@ from apps.core.models import Currency, Vat
 
 
 class Supplier(models.Model):
+    
     name = models.CharField("Название поставщика", max_length=40)
-    # integration_type (тип интеграции)
     slug = models.SlugField(null=True)
+    file = models.FileField(
+        "Архив с прайсами", upload_to=get_file_price_path_add, max_length=255, null=True
+    )
+    
 
     class Meta:
         verbose_name = "Поставщик"
@@ -40,8 +48,9 @@ class Supplier(models.Model):
         slug_text = self.name
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
-
+        print(self.file)
         super().save(*args, **kwargs)
+
 
 
 
@@ -92,6 +101,8 @@ class Vendor(models.Model):
 
 class SupplierCategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=150)
+    slug = models.CharField("слаг", max_length=150,blank=True,
+        null=True,)
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -151,7 +162,7 @@ class SupplierCategoryProduct(models.Model):
                     product_one.group = self.group_catalog
                     
                 product_one.save()
-                # update_change_reason(product_one, "Автоматическое")
+                update_change_reason(product_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -224,8 +235,10 @@ class SupplierGroupProduct(models.Model):
                 product_one.category = self.category_catalog
                 if self.group_catalog:
                     product_one.group = self.group_catalog
-                    update_change_reason(product_one, "Автоматическое")
+                    print(product_one)
+                   
                 product_one.save()
+                update_change_reason(product_one, "Автоматическое")
             
 
         daemon_thread = threading.Thread(target=background_task)
@@ -315,8 +328,9 @@ class SupplierCategoryProductAll(models.Model):
                 product_one.category = self.category_catalog
                 if self.group_catalog:
                     product_one.group = self.group_catalog
-                    update_change_reason(product_one, "Автоматическое")
+                    # update_change_reason(product_one, "Автоматическое")
                 product_one.save()
+                update_change_reason(product_one, "Автоматическое")
             
 
         daemon_thread = threading.Thread(target=background_task)

@@ -1,225 +1,38 @@
 # расчет цены
 import datetime
+import random
 import shutil
 import requests
 import hashlib
 import os
+import traceback
 
 
-from apps import supplier
+# from apps import supplier
 from apps.core.models import Currency, CurrencyPercent
 
 
 from apps.logs.utils import error_alert
 
-from apps.supplier.models import Discount, SupplierCategoryProduct, SupplierCategoryProductAll, SupplierGroupProduct
+# from apps.supplier.models import (
+#     Discount,
+#     SupplierCategoryProduct,
+#     SupplierCategoryProductAll,
+#     SupplierGroupProduct,
+# )
 from django.conf import settings
+
+from apps.supplier.get_utils.delta import add_file_delta
 from project.settings import MEDIA_ROOT
 
 
-# # расчет цены для мотрум
-# # TODO: переписать на трае ексепт
-# def get_price_motrum(
-#     item_category, item_group, vendors, rub_price_supplier, all_item_group
-# ):
-#     motrum_price = rub_price_supplier
-#     percent = 0
-#     sale = None
-#     print("Скидки",item_category, item_group,all_item_group)
-
-#     # получение процента функция
-#     def get_percent(item):
-#         for i in item:
-#             return i.percent
-
-#     # скидка по группе
-#     if item_group:
-#         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-#         # print(discount_group, "!!!!!!!!!!!!!!!")
-#         if discount_group:
-#             percent = get_percent(discount_group)
-#             sale = discount_group
-#     # скидка по категории
-#     elif item_category:
-#         # print(item_category, "!!!!!!!!!!!!!!!")
-#         discount_categ = Discount.objects.filter(
-#             category_supplier=item_category.id,
-#             group_supplier__isnull=True,
-#         )
-#         if discount_categ:
-#             percent = get_percent(discount_categ)
-#             sales = discount_categ
-
-#     elif all_item_group:
-#         discount_all_group = Discount.objects.filter(
-#             category_supplier_all=all_item_group.id,
-#             vendor=vendors,
-#             group_supplier__isnull=True,
-#             category_supplier__isnull=True,
-#         )
-#         if discount_all_group:
-#             percent = get_percent(discount_all_group)
-#             sales = discount_all_group
-
-#     else:
-#         discount_all = Discount.objects.filter(
-#             vendor=vendors, group_supplier__isnull=True, category_supplier__isnull=True
-#         )
-#         # скидка по всем вендору
-#         if discount_all:
-#             percent = get_percent(discount_all)
-#             sales = discount_all
-
-#         # нет скидки
-
-#     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
-#     # TODO обрезать цены
-#     # for sal in sales:
-#     #             sale = sal
-#     return motrum_price, sale
-
-
-# def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
-#     from apps.product.models import CurrencyRate
-
-#     if vat_includ == True:
-#         vat = 0
-
-#     if currency == "RUB":
-#         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-#         return price_supplier_vat
-#     else:
-#         currency_rate = CurrencyRate.objects.get(currency__words_code=currency)
-
-#         price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-#         price_supplier_rub = price_supplier_vat * currency_rate * 1.03
-#         return price_supplier_rub
-
-
-# # получение комплектности и расчет штук
-# def get_lot(lot, stock_supplier, lot_complect):
-#     from apps.product.models import Lot
-
-#     if lot == "base" or lot == "штука":
-#         lots = Lot.objects.get(name_shorts="шт")
-#         lot_stock = stock_supplier
-#         lot_complect = 1
-#     else:
-#         lots = Lot.objects.get(name=lot)
-#         lot_stock = stock_supplier * lot_complect
-#         lot_complect = lot_complect
-#     return (lots, lot_stock, lot_complect)
-
-
-# # остатки на складе мотрум
-# def get_lot_motrum():
-#     pass
-
-
-# # артикул мотрум
-# def create_article_motrum(supplier, vendor):
-#     from apps.product.models import Product
-
-#     try:
-#         prev_product = Product.objects.filter(supplier=supplier).latest("id")
-#         last_item_id = int(prev_product.article) + 1
-#         name = str(last_item_id)
-#     except Product.DoesNotExist:
-#         prev_product = None
-#         name = f"{supplier}{vendor}1"
-#     return name
-
-
-# расчет цены
-import shutil
-import requests
-import hashlib
-import os
-
-
-from apps.core.models import Currency
-
-from apps.supplier.models import Discount, SupplierCategoryProductAll
-from django.conf import settings
-from project.settings import MEDIA_ROOT
-
-# def get_price_motrum(
-#     item_category, item_group, vendors, rub_price_supplier, all_item_group
-# ):
-#     print(item_group)
-#     motrum_price = rub_price_supplier
-#     percent = 0
-#     sale = [None]
-
-#     # получение процента функция
-#     def get_percent(item):
-#         for i in item:
-#             return i.percent
-
-#     if all_item_group and percent == 0:
-#         print(1111,all_item_group)
-#         discount_all_group = Discount.objects.filter(
-#             category_supplier_all=all_item_group.id,
-#             # vendor=vendors,
-#             # group_supplier__isnull=True,
-#             # category_supplier__isnull=True,
-#         )
-#         print(discount_all_group)
-#         if discount_all_group:
-#             print(4444444444)
-#             percent = get_percent(discount_all_group)
-#             sale = discount_all_group
-        
-#     # скидка по группе
-#     elif item_group and percent == 0:
-#         print(222)
-#         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-#         print(discount_group)
-#         if discount_group:
-#             percent = get_percent(discount_group)
-#             sale = discount_group
-#             # if percent != 0
-       
-#     # скидка по категории
-#     elif item_category and percent == 0:
-  
-#         discount_categ = Discount.objects.filter(
-#             category_supplier_id=item_category.id,
-#             # group_supplier__isnull=True,
-#         )
-
-#         if discount_categ:
-#             percent = get_percent(discount_categ)
-#             sale = discount_categ
-      
-
-#     if percent == 0:
-     
-#         discount_all = Discount.objects.filter(
-#             vendor=vendors,
-#             group_supplier__isnull=True,
-#             category_supplier__isnull=True,
-#             category_supplier_all__isnull=True,
-#         )
-#         # скидка по всем вендору
-#         if discount_all:
-#             percent = get_percent(discount_all)
-#             sale = discount_all
-        
-
-#         # нет скидки
-  
-#     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
-#     # TODO обрезать цены
-#     motrum_price = round(motrum_price, 2)
-#     # for sal in sales:
-#     #             sale = sal
-#     return motrum_price, sale[0]
-# расчет цены для мотрум
-# TODO: переписать на трае ексепт
 def get_price_motrum(
     item_category, item_group, vendors, rub_price_supplier, all_item_group
 ):
+    from apps.supplier.models import (
+        Discount,
+    )
+
     print(item_group)
     motrum_price = rub_price_supplier
     percent = 0
@@ -231,7 +44,7 @@ def get_price_motrum(
             return i.percent
 
     if all_item_group and percent == 0:
-        print(1111,all_item_group)
+        print(1111, all_item_group)
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
             # vendor=vendors,
@@ -243,8 +56,8 @@ def get_price_motrum(
             print(4444444444)
             percent = get_percent(discount_all_group)
             sale = discount_all_group
-        
-    # скидка по группе
+
+        # скидка по группе
         print(percent)
     if item_group and percent == 0:
         print(222)
@@ -254,10 +67,10 @@ def get_price_motrum(
             percent = get_percent(discount_group)
             sale = discount_group
             # if percent != 0
-       
+
     # скидка по категории
     if item_category and percent == 0:
-  
+
         discount_categ = Discount.objects.filter(
             category_supplier_id=item_category.id,
             # group_supplier__isnull=True,
@@ -266,10 +79,9 @@ def get_price_motrum(
         if discount_categ:
             percent = get_percent(discount_categ)
             sale = discount_categ
-      
 
     if percent == 0:
-     
+
         discount_all = Discount.objects.filter(
             vendor=vendors,
             group_supplier__isnull=True,
@@ -280,10 +92,9 @@ def get_price_motrum(
         if discount_all:
             percent = get_percent(discount_all)
             sale = discount_all
-        
 
         # нет скидки
-  
+
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # TODO обрезать цены
     motrum_price = round(motrum_price, 2)
@@ -315,7 +126,6 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
                 price_supplier_vat * currency_rate * current_percent.percent
             )
             print(price_supplier_rub)
-            
 
             return round(price_supplier_rub, 2)
     else:
@@ -345,8 +155,9 @@ def get_lot_motrum():
 # артикул мотрум
 def create_article_motrum(supplier):
     from apps.product.models import Product
+
     supplier_int = str(supplier).zfill(3)
-  
+
     try:
         prev_product = Product.objects.filter(supplier=supplier).latest("id")
         last_item_id = str(prev_product.article)[3:]
@@ -354,14 +165,20 @@ def create_article_motrum(supplier):
         name = f"{supplier_int}{last_item_id_int}"
     except Product.DoesNotExist:
         prev_product = None
-   
+
         name = f"{supplier_int}1"
-  
+
     return name
 
 
 # категории дял товара
 def get_category(supplier, vendor, category_name):
+    from apps.supplier.models import (
+        SupplierCategoryProduct,
+        SupplierCategoryProductAll,
+        SupplierGroupProduct,
+    )
+
     try:
         item_category_all = SupplierCategoryProductAll.objects.filter(
             supplier=supplier, name=category_name
@@ -377,6 +194,11 @@ def get_category(supplier, vendor, category_name):
 
 
 def get_category_prompower(supplier, vendor, category_name):
+    from apps.supplier.models import (
+        SupplierCategoryProduct,
+        SupplierCategoryProductAll,
+        SupplierGroupProduct,
+    )
 
     try:
         category_all = SupplierCategoryProductAll.objects.get(
@@ -390,22 +212,22 @@ def get_category_prompower(supplier, vendor, category_name):
                 supplier=supplier, vendor=vendor, article_name=category_name
             )
             category_all = None
-           
+
             categ = groupe.category_supplier
         except SupplierGroupProduct.DoesNotExist:
             try:
                 categ = SupplierCategoryProduct.objects.get(
-                supplier=supplier, vendor=vendor, article_name=category_name
-            )
+                    supplier=supplier, vendor=vendor, article_name=category_name
+                )
                 category_all = None
                 groupe = None
-                
+
             except SupplierGroupProduct.DoesNotExist:
                 category_all = None
                 groupe = None
                 categ = None
-                
-    return(category_all,groupe,categ)
+
+    return (category_all, groupe, categ)
 
 
 def check_media_directory_exist(
@@ -433,6 +255,19 @@ def check_spesc_directory_exist(
 
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
+    return new_dir
+
+
+def check_file_price_directory_exist(base_dir, base_dir_supplier):
+    import shutil
+
+    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT, base_dir, base_dir_supplier)
+
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+    else:
+        shutil.rmtree(new_dir)
+
     return new_dir
 
 
@@ -600,51 +435,82 @@ def create_time():
 
     return data
 
+
 # def add_category_supplier():
+
 
 def send_email_error():
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     import smtplib
- 
+
     smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
     smtp_server.starttls()
     smtp_server.login("steisysi@gmail.com", "")
 
-    
     # Создание объекта сообщения
     msg = MIMEMultipart()
-    
+
     # Настройка параметров сообщения
     msg["From"] = "steisysi@gmail.com"
     msg["To"] = "steisysi@gmail.com"
     msg["Subject"] = "Тестовое письмо 📧"
-    
+
     # Добавление текста в сообщение
     text = "Привет! Это тестовое письмо, отправленное с помощью Python 😊"
     msg.attach(MIMEText(text, "plain"))
-    
+
     # Отправка письма
     smtp_server.sendmail("steisysi@gmail.com", "steisysi@gmail.com", msg.as_string())
-    
+
     # Закрытие соединения
-    smtp_server.quit()    
+    smtp_server.quit()
+
 
 def get_motrum_category(self):
     category_catalog = None
     group_catalog = None
-    
+
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-        
+
     if self.group_supplier != None:
         category_catalog = self.group_supplier.category_catalog
-        group_catalog = self.group_supplier.group_catalog 
-        
+        group_catalog = self.group_supplier.group_catalog
+
     if self.category_supplier != None:
         category_catalog = self.category_supplier.category_catalog
         group_catalog = self.category_supplier.group_catalog
+
+    return (category_catalog, group_catalog)
+
+
+def get_file_price_path_add(instance, filename):
+    if instance.slug == "delta":
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+        
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        # print(filename + filetype)
+        
+        return file
+
+    elif instance.slug == "Optimus drive":
+        pass
+
     
-  
-    return (category_catalog,group_catalog)               

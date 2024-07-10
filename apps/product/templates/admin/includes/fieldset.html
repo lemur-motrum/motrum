@@ -14,7 +14,11 @@
             {% for field in line %}
                 <div>
                     {% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
-                        <div class="flex-container{% if not line.fields|length == 1 %} fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}{% endif %}{% if field.is_checkbox %} checkbox-row{% endif %} {% if field.contents == "-" or field.contents == "" %}none-item-fealds{% endif %} ">
+                        <div class="flex-container{% if not line.fields|length == 1 %} fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}{% endif %}{% if field.is_checkbox %} checkbox-row{% endif %}
+                         {% comment %} {% if field.contents == "-" or field.contents == "" %}
+                         none-item-fealds{% endif %} {% endcomment %}
+
+                         ">
                             {% if field.is_checkbox %}
                                 {{ field.field }}{{ field.label_tag }} {{fieldset}}
                             {% else %}

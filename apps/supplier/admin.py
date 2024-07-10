@@ -12,6 +12,7 @@ from apps.supplier.forms import (
     SupplierCategoryProductAllAdminForm,
     SupplierGroupProductAdminForm,
 )
+from apps.supplier.get_utils.delta import add_file_delta
 
 # Register your models here.
 from .models import (
@@ -30,16 +31,27 @@ class VendorInline(admin.TabularInline):
         "name",
         "currency_catalog",
         "vat_catalog",
+        
     )
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    fields = ("name",)
+    fields = ("name","file")
 
     inlines = [
         VendorInline,
     ]
-
+    
+    def save_model(self, request, obj, form, change):
+        old_supplier = Supplier.objects.get(id = obj.id)
+        old_file = old_supplier.file
+        new_file = obj.file
+        
+        super().save_model(request, obj, form, change)
+        if new_file != old_file:
+            if old_supplier.slug == "delta":
+                
+                add_file_delta(new_file,obj)
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]

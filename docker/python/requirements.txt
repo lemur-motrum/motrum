@@ -16,6 +16,8 @@ celery
 redis
 flower
 django-simple-history
+beautifulsoup4
+
 djlint
 libsass 
 django-compressor 

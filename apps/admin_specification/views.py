@@ -113,10 +113,14 @@ def save_specification_view_admin(request):
             price_exclusive=product_item["price_exclusive"],
         )
         product_new.save()
+        
 
     # обновить спецификацию пдф
     pdf = crete_pdf_specification(specification.id)
     Specification.objects.filter(id=specification.id).update(file=pdf)
-
+    print(specification.id)
     out = {"status": "ok", "data": received_data}
     return JsonResponse(out)
+
+
+

@@ -345,7 +345,7 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
-                            # если у товара не было совсем дококв изо пропсов
+                            # если у товара не было совсем дококв из пропсов
                             props =  ProductProperty.objects.filter(product=article).exists
                             if props == False:
                                 for prop in data_item["props"]:

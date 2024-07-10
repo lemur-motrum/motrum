@@ -27,7 +27,7 @@ SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 # from apps.product.forms import ProductForm
 from simple_history.manager import HistoricalQuerySet, HistoryManager
 from . import models
-from apps.product.forms import ProductChangeForm, ProductForm
+from apps.product.forms import ProductChangeForm, ProductDocumentAdminForm, ProductForm
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -416,6 +416,7 @@ class ProductDocumentInline(admin.TabularInline):
     model = ProductDocument
     fields = ("document", "type_doc", "hide")
     extra = 0
+    form = ProductDocumentAdminForm
 
     def __init__(self, *args, **kwargs):
         super(ProductDocumentInline, self).__init__(*args, **kwargs)

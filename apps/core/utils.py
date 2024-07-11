@@ -10,22 +10,13 @@ import traceback
 
 # from apps import supplier
 from apps.core.models import Currency, CurrencyPercent
-
-
 from apps.logs.utils import error_alert
-
-# from apps.supplier.models import (
-#     Discount,
-#     SupplierCategoryProduct,
-#     SupplierCategoryProductAll,
-#     SupplierGroupProduct,
-# )
 from django.conf import settings
-
 from apps.supplier.get_utils.delta import add_file_delta
 from project.settings import MEDIA_ROOT
 
 
+# цена мотрум со скидкой
 def get_price_motrum(
     item_category, item_group, vendors, rub_price_supplier, all_item_group
 ):
@@ -33,7 +24,6 @@ def get_price_motrum(
         Discount,
     )
 
-    print(item_group)
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -44,25 +34,23 @@ def get_price_motrum(
             return i.percent
 
     if all_item_group and percent == 0:
-        print(1111, all_item_group)
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
             # vendor=vendors,
             # group_supplier__isnull=True,
             # category_supplier__isnull=True,
         )
-        print(discount_all_group)
+
         if discount_all_group:
-            print(4444444444)
             percent = get_percent(discount_all_group)
             sale = discount_all_group
 
         # скидка по группе
-        print(percent)
+
     if item_group and percent == 0:
-        print(222)
+
         discount_group = Discount.objects.filter(group_supplier=item_group.id)
-        print(discount_group)
+
         if discount_group:
             percent = get_percent(discount_group)
             sale = discount_group
@@ -103,6 +91,7 @@ def get_price_motrum(
     return motrum_price, sale[0]
 
 
+# перевод валютной цены в рубли
 def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
     from apps.product.models import CurrencyRate
 
@@ -117,15 +106,13 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
                 currency__words_code=currency
             ).latest("date")
             currency_rate = currency_rate_query.vunit_rate
-            print(currency_rate)
             current_percent = CurrencyPercent.objects.filter().latest("id")
-            print(current_percent)
+
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-            print(price_supplier_vat)
+
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
-            print(price_supplier_rub)
 
             return round(price_supplier_rub, 2)
     else:
@@ -171,7 +158,7 @@ def create_article_motrum(supplier):
     return name
 
 
-# категории дял товара
+# категории поставщика для товара
 def get_category(supplier, vendor, category_name):
     from apps.supplier.models import (
         SupplierCategoryProduct,
@@ -192,7 +179,7 @@ def get_category(supplier, vendor, category_name):
 
     return (item_category, item_group, item_category_all[0])
 
-
+# категории поставщика промповер для товара
 def get_category_prompower(supplier, vendor, category_name):
     from apps.supplier.models import (
         SupplierCategoryProduct,
@@ -229,7 +216,7 @@ def get_category_prompower(supplier, vendor, category_name):
 
     return (category_all, groupe, categ)
 
-
+# проверка есть ли путь и папка
 def check_media_directory_exist(
     base_dir, base_dir_supplier, base_dir_vendor, base_dir_type_file, article_suppliers
 ):
@@ -244,7 +231,7 @@ def check_media_directory_exist(
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
-
+# проверка директории для спецификаций 
 def check_spesc_directory_exist(
     base_dir,
 ):
@@ -257,7 +244,7 @@ def check_spesc_directory_exist(
         os.makedirs(new_dir)
     return new_dir
 
-
+# проверка директории для загрузки прайса из админки
 def check_file_price_directory_exist(base_dir, base_dir_supplier):
     import shutil
 
@@ -270,7 +257,7 @@ def check_file_price_directory_exist(base_dir, base_dir_supplier):
 
     return new_dir
 
-
+# переименовывание изображений и документов по очереди 
 def create_name_file_downloading(article_suppliers, item_count):
 
     try:
@@ -315,44 +302,27 @@ def get_file_path(supplier, vendor, type_file, article_suppliers, item_count, pl
         )
 
 
-# def save_file_product(link, image_path, filename, filetype):
-#     r = requests.get(link, stream=True)
-#     # print(filename + filetype)
-#     with open(os.path.join(MEDIA_ROOT, image_path, filename + filetype), "wb") as ofile:
-#         ofile.write(r.content)
-
-
 def save_file_product(link, image_path):
     r = requests.get(link, stream=True)
-    # print(filename + filetype)
     with open(os.path.join(MEDIA_ROOT, image_path), "wb") as ofile:
         ofile.write(r.content)
 
 
+# сохранение изображений и докуметов из админки и общее
 def get_file_path_add(instance, filename):
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
 
     base_dir = "products"
     base_dir_supplier = instance.product.supplier.slug
-    base_dir_vendor = instance.product.vendor.slug
+
+    if instance.product.vendor:
+        base_dir_vendor = instance.product.vendor.slug
+    else:
+        base_dir_vendor = ""
+
     images_last_list = filename.split(".")
     type_file = "." + images_last_list[-1]
-    # if images_last_list[-1] == "jpg" or images_last_list[-1] == "png":
-    #     path_name = "img"
-    # else:
-    #     path_name = "document"
-
-    # try:
-    #     images_last = ProductImage.objects.filter(product=instance.product).latest("id")
-    #     item_count = ProductImage.objects.filter(product=instance.product).count()
-
-    # except ProductImage.DoesNotExist:
-    #     item_count = 1
-
-    # filenames = create_name_file_downloading(
-    #     instance.product.article_supplier, item_count
-    # )
 
     if isinstance(instance, ProductDocument):
         path_name = "document"
@@ -407,6 +377,7 @@ def get_file_path_add(instance, filename):
     )
 
 
+# проверка есть ли такой тип лота шт комп
 def lot_chek(lot):
     from apps.product.models import Lot
 
@@ -427,6 +398,7 @@ def response_request(response, location):
         return False
 
 
+# создание времени окончания спецификации
 def create_time():
     now = datetime.datetime.now()
     three_days = datetime.timedelta(3)
@@ -436,9 +408,7 @@ def create_time():
     return data
 
 
-# def add_category_supplier():
-
-
+# емеил
 def send_email_error():
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
@@ -467,6 +437,7 @@ def send_email_error():
     smtp_server.quit()
 
 
+# получение категорий мотрум из категорий поставщика
 def get_motrum_category(self):
     category_catalog = None
     group_catalog = None
@@ -474,23 +445,27 @@ def get_motrum_category(self):
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
+        return (category_catalog, group_catalog)
 
     if self.group_supplier != None:
         category_catalog = self.group_supplier.category_catalog
         group_catalog = self.group_supplier.group_catalog
+        return (category_catalog, group_catalog)
 
     if self.category_supplier != None:
         category_catalog = self.category_supplier.category_catalog
         group_catalog = self.category_supplier.group_catalog
+        return (category_catalog, group_catalog)
 
     return (category_catalog, group_catalog)
 
 
+# сохранение фаилов прайсовы из админки
 def get_file_price_path_add(instance, filename):
     if instance.slug == "delta":
         base_dir = "price"
         base_dir_supplier = instance.slug
-        
+
         current_date = datetime.date.today().isoformat()
 
         new_dir = check_file_price_directory_exist(
@@ -499,7 +474,6 @@ def get_file_price_path_add(instance, filename):
         )
         random_number = random.randint(1000, 9999)
 
-
         file = "{0}/{1}/{2}_{3}".format(
             base_dir,
             base_dir_supplier,
@@ -507,10 +481,8 @@ def get_file_price_path_add(instance, filename):
             instance.file,
         )
         # print(filename + filetype)
-        
+
         return file
 
     elif instance.slug == "Optimus drive":
         pass
-
-    

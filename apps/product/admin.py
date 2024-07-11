@@ -531,25 +531,21 @@ class ProductAdmin(SimpleHistoryAdmin):
             item_one = f"<li>Остаток</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-  
         props = ProductProperty.objects.filter(product=obj.id).exists()
         if props == False:
             item_one = f"<li>Характеристики</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
-
 
         img = ProductImage.objects.filter(product=obj.id).exists()
         if img == False:
             item_one = f"<li>Изображения</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-      
         doc = ProductDocument.objects.filter(product=obj.id).exists()
         if doc == False:
             item_one = f"<li>Документы</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
-        
-       
+
         return mark_safe("<ul    >{}</ul>".format(product_blank_new))
 
     def delete_queryset(self, request, queryset):
@@ -558,6 +554,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
+            
             print(obj.autosave_tag)
             if (
                 obj.category_supplier != None
@@ -630,30 +627,6 @@ class ProductAdmin(SimpleHistoryAdmin):
             ),
         ]
         if obj and obj.pk:
-            #     if obj.autosave_tag == False:
-            #         fields = [
-            #     (
-            #         "Основные параметры",
-            #         {
-            #             "fields": [
-            #                 (
-            #                     "article_supplier",
-            #                     "additional_article_supplier",
-            #                 ),
-            #                 "name",
-            #                 "description",
-            #                 ("supplier", "vendor"),
-            #                 (
-            #                     "category_supplier",
-            #                     "group_supplier",
-            #                     "category_supplier_all",
-            #                 ),
-            #                 # ("category", "group"),
-            #             ],
-            #         },
-            #     ),
-            # ]
-
             return fields
         else:
             return fields_add

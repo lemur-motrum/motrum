@@ -7,12 +7,15 @@
 
  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}
     {{ request.current_app }}
+ {{request.resolver_match.url_name}}
  
- " {{ request..current_app}}
- {% for inline_admin_form in inline_admin_formset %}
-        {{inline_admin_form.original}}
-        {% if forloop.first %} {% if  inline_admin_form.original == None %} style="border: 1px solid red" {% endif %}{% endif %} {% endfor %}
-
+  {% if request.resolver_match.url_name == "product_product_change" %} {% endif %}
+ " 
+ {% if request.resolver_match.url_name == "product_product_change" %} 
+  {% for inline_admin_form in inline_admin_formset %}
+          {{inline_admin_form.original}}
+          {% if forloop.first %} {% if  inline_admin_form.original == None %} style="border: 1px solid red" {% endif %}{% endif %} {% endfor %}
+{% endif %}
  >
 
 {{ inline_admin_formset.formset.management_form }}

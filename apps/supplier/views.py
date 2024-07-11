@@ -27,8 +27,12 @@ def add_prompower(request):
 
 def add_iek(request):
     title = "Услуги"
+    
+    # product_list = [product for product.group in product_list  ]
+    
+  
     # responsets = ['233','2131']
-    responsets = iek_api()
+    responsets = 0
     context = {
         "title": title,
         "responsets": responsets,

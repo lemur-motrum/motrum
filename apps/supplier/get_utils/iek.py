@@ -556,6 +556,8 @@ def iek_api():
                         article = Product.objects.get(
                             supplier=supplier, article_supplier=article_suppliers
                         )
+                        article.description = description
+                        article.save()
                         image =  ProductImage.objects.filter(product=article).exists()   
                         if image == False:
                             save_image(article)

@@ -84,32 +84,38 @@ class ProductForm(forms.ModelForm):
 
 class ProductChangeForm(forms.ModelForm):
     group = forms.ModelChoiceField(
+        required=False,
         queryset=GroupProduct.objects.all(),
         label="Группа Мотрум",
         widget=forms.Select(attrs={"class": "form-control"})
         
     )
     category = forms.ModelChoiceField(
+        required=False,
         queryset=CategoryProduct.objects.all(),
         label="Категория Мотрум",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     category_supplier = forms.ModelChoiceField(
+        required=False,
         queryset=SupplierGroupProduct.objects.all(),
         label="Категории товара от поставщиков",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     group_supplier = forms.ModelChoiceField(
+        required=False,
         queryset=GroupProduct.objects.all(),
         label="Группа товара от поставщиков",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     category_supplier_all = forms.ModelChoiceField(
+        required=False,
         queryset=SupplierCategoryProductAll.objects.all(),
         label="Подгруппа категории товара от поставщиков",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     vendor = forms.ModelChoiceField(
+        required=False,
         queryset=Vendor.objects.all(),
         label="Производитель",
         widget=forms.Select(attrs={"class": "form-control"}),
@@ -152,6 +158,7 @@ class ProductChangeForm(forms.ModelForm):
                 self.fields[verbose_name].widget.attrs = {
                     "style": "border: 1px solid red;",
                 }
+                
 class ProductDocumentAdminForm(forms.ModelForm):
     document = forms.ClearableFileInput(
     )

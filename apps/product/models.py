@@ -118,8 +118,7 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-    
-    
+
     group = models.ForeignKey(
         "GroupProduct",
         verbose_name="Группа Мотрум",
@@ -127,12 +126,10 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-    
-    description = models.CharField(
-        "Описание товара", max_length=2000, blank=True, null=True
-    )
-    
 
+    description = models.CharField(
+        "Описание товара", max_length=4000, blank=True, null=True
+    )
 
     name = models.CharField("Название товара", max_length=600)
     check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
@@ -142,6 +139,7 @@ class Product(models.Model):
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
+
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
@@ -150,29 +148,24 @@ class Product(models.Model):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
 
     def save(self, *args, **kwargs):
-        print(1231231)
+        # если товара нет бд сделать артикул
         if self.article == "":
-
             article = create_article_motrum(self.supplier.id)
-
             self.article = article
-            
+        # прлучение категорий мотрум из категорий поставщика
         filter_catalog = get_motrum_category(self)
-        print(filter_catalog)
         if self.category == None:
             self.category = filter_catalog[0]
-        if self.category == None:
+        if self.group == None:
             self.group = filter_catalog[1]
-            
+
         super().save(*args, **kwargs)
-        # обновление цен товаров
+
+        # обновление цен товаро потому что могли змеиться группы для скидки
         price = Price.objects.filter(prod=self.id)
         for price_one in price:
             price_one.price_supplier = price_one.price_supplier
             price_one.save()
-
-
-
 
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)
@@ -194,22 +187,24 @@ class Product(models.Model):
 
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=50)
-
+    slug = models.SlugField(null=True)
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"
 
     def __str__(self):
         return self.name
-
-
+    
+    def save(self, *args, **kwargs):
+        slug_text = self.name
+        slugish = translit.translify(slug_text)
+        self.slug = slugify(slugish)
+        super().save(*args, **kwargs)
 
 
 class GroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=50)
-    article_name = models.CharField(
-        "Артикул группы", max_length=25, blank=True, null=True
-    )
+    slug = models.SlugField(null=True)
     category = models.ForeignKey(
         CategoryProduct,
         verbose_name="категория",
@@ -223,7 +218,12 @@ class GroupProduct(models.Model):
     def __str__(self):
         return self.name
     
-   
+    def save(self, *args, **kwargs):
+        slug_text = self.name
+        slugish = translit.translify(slug_text)
+        self.slug = slugify(slugish)
+        super().save(*args, **kwargs)
+
 
 class Price(models.Model):
     prod = models.OneToOneField(
@@ -286,15 +286,15 @@ class Price(models.Model):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
-   
+        # если 0 цена или экстра прайс проставить нули и теги
         if self.price_supplier == 0 or self.extra_price == True:
             self.extra_price = True
             self.price_supplier = 0
             self.rub_price_supplier = 0
             self.price_motrum = 0
-        # elif self.price_supplier is not None:
+       
+        #  если цена есть
         elif self.price_supplier != 0:
-         
             self.extra_price == False
 
             rub_price_supplier = get_price_supplier_rub(
@@ -303,27 +303,20 @@ class Price(models.Model):
                 self.vat_include,
                 self.price_supplier,
             )
-
             self.rub_price_supplier = rub_price_supplier
-            print(self.prod.category_supplier_all)
-            print(self.prod.group_supplier)
-           
-      
+
             price_motrum_all = get_price_motrum(
                 self.prod.category_supplier,
                 self.prod.group_supplier,
-                # self.prod.category_supplier_all.category_supplier,
-                # self.prod.category_supplier_all.group_supplier,
                 self.prod.vendor,
                 rub_price_supplier,
                 self.prod.category_supplier_all,
             )
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
-    
             self.price_motrum = price_motrum
             self.sale = sale
-            print(sale)
+            
 
         super().save(*args, **kwargs)
 
@@ -364,8 +357,8 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках"
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
-    
-    to_order =models.BooleanField("Товар под заказ", default=False) 
+
+    to_order = models.BooleanField("Товар под заказ", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -381,7 +374,7 @@ class Stock(models.Model):
 
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
-        print(lots)
+        
         name1 = super().save(*args, **kwargs)
 
 
@@ -425,9 +418,9 @@ class ProductImage(models.Model):
 
     # def __str__(self):
     #     return None
-        # return mark_safe(
-        #     '<img src="{}{}" height="200" width="200" />'.format(MEDIA_URL, self.photo)
-        # )
+    # return mark_safe(
+    #     '<img src="{}{}" height="200" width="200" />'.format(MEDIA_URL, self.photo)
+    # )
 
     # def delete(self, *args, **kwargs):
     #     self.hide = True

@@ -71,6 +71,8 @@ TYPE_DOCUMENT = (
 # Create your models here.
 
 
+
+
 class Product(models.Model):
     article = models.CharField("Артикул мотрум", max_length=50, blank=False)
     supplier = models.ForeignKey(
@@ -86,6 +88,7 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
+    
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
     additional_article_supplier = models.CharField(
         "Дополнительный артикул поставщика", max_length=50, blank=True, null=True

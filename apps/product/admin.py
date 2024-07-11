@@ -1,3 +1,4 @@
+from re import I
 from django.utils import timezone
 from django.contrib import admin
 from django.contrib.admin import helpers
@@ -27,7 +28,7 @@ SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 # from apps.product.forms import ProductForm
 from simple_history.manager import HistoricalQuerySet, HistoryManager
 from . import models
-from apps.product.forms import ProductChangeForm, ProductDocumentAdminForm, ProductForm
+from apps.product.forms import ProductChangeForm, ProductChangeNotAutosaveForm, ProductDocumentAdminForm, ProductForm
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -445,7 +446,7 @@ class ProductPropertyInline(admin.TabularInline):
 
 class ProductAdmin(SimpleHistoryAdmin):
     show_facets = admin.ShowFacets.ALWAYS
-    form = ProductChangeForm
+    # form = ProductChangeForm
     object_history_list_template = "product/templates_history.html"
     history_list_display = []
     search_fields = [
@@ -554,39 +555,31 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            
-            print(obj.autosave_tag)
-            if (
-                obj.category_supplier != None
-                and obj.group_supplier == None
-                and obj.category_supplier_all == None
-            ):
-                if obj.autosave_tag == True:
+            if obj.autosave_tag == True:
+                if (
+                    obj.category_supplier != None
+                    and obj.group_supplier == None
+                    and obj.category_supplier_all == None
+                ):
                     return ["article_supplier", "supplier", "category_supplier"]
-                else:
-                    pass
 
-            elif (
-                obj.category_supplier != None
-                and obj.group_supplier != None
-                and obj.category_supplier_all == None
-            ):
-                if obj.autosave_tag == True:
+                elif (
+                    obj.category_supplier != None
+                    and obj.group_supplier != None
+                    and obj.category_supplier_all == None
+                ):
                     return [
                         "article_supplier",
                         "supplier",
                         "category_supplier",
                         "group_supplier",
                     ]
-                else:
-                    pass
 
-            elif (
-                obj.category_supplier != None
-                and obj.group_supplier != None
-                and obj.category_supplier_all != None
-            ):
-                if obj.autosave_tag == True:
+                elif (
+                    obj.category_supplier != None
+                    and obj.group_supplier != None
+                    and obj.category_supplier_all != None
+                ):
                     return [
                         "article_supplier",
                         "supplier",
@@ -594,9 +587,8 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "group_supplier",
                         "category_supplier_all",
                     ]
-                else:
-                    pass
-            return ["article_supplier", "supplier"]
+            else:
+                return ["article_supplier", "supplier"]
         return [
             "",
         ]
@@ -642,20 +634,34 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def get_form(self, request, obj, **kwargs):
         if obj == None:
-            kwargs["form"] = ProductForm
+                kwargs["form"] = ProductForm            
+        else:
+            if obj.autosave_tag == True:
+                kwargs["form"] = ProductChangeForm
+            else: 
+                kwargs["form"] = ProductChangeNotAutosaveForm      
+        print(kwargs["form"] )
         return super().get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
+        print(123123123)
         if "/change/" in request.path:
 
             for id_table in request.resolver_match.captured_kwargs.values():
                 parent_id = id_table
 
             item = Product.objects.get(id=parent_id)
-
+            print(item)
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
+            if item.autosave_tag == False:
+                print(123123123)
+                if db_field.name == "category_supplier":
+                    kwargs["queryset"] = SupplierCategoryProduct.objects.filter(supplier_id=item.supplier.id)
+                if db_field.name == "group_supplier":
+                    kwargs["queryset"] = SupplierGroupProduct.objects.filter(supplier_id=item.supplier.id)
+                if db_field.name == "category_supplier_all":
+                    kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(supplier_id=item.supplier.id)    
             # if db_field.name == "category_supplier_all":
             #     kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
             #         supplier_id=item.supplier.id, vendor_id=item.vendor.id

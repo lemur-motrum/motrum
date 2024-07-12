@@ -22,7 +22,7 @@ app.conf.beat_schedule = {
     },
     'add_iek': {
         'task': 'apps.supplier.tasks.add_iek',
-        'schedule': crontab(minute=00, hour=13),
+        'schedule': crontab(minute=00, hour=14),
     },
     'add_veda': {
         'task': 'apps.supplier.tasks.add_veda',

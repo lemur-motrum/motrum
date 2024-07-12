@@ -371,8 +371,7 @@ window.addEventListener("DOMContentLoaded", () => {
               localStorage.removeItem("specificationValues");
               deleteCookie();
               window.location.href =
-                window.location.hostname +
-                "/admin_specification/all_specifications";
+                "/admin_specification/all_specifications/";
             }
           })
           .catch((error) => console.error(error));

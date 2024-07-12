@@ -1,3 +1,4 @@
+from requests import JSONDecodeError
 from apps.logs.utils import error_alert
 from apps.supplier.get_utils.iek import iek_api
 from apps.supplier.get_utils.prompower import prompower_api
@@ -14,7 +15,7 @@ def add_iek(self):
         
         iek_api()
     except Exception as exc:
-            if Exception == MaxRetriesExceededError:
+            if exc == MaxRetriesExceededError :
                 error = "file_api_error"
                 location = "Связь с сервером ИЕК"
           

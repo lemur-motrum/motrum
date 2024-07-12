@@ -31,7 +31,7 @@ class Supplier(models.Model):
     name = models.CharField("Название поставщика", max_length=40)
     slug = models.SlugField(null=True)
     file = models.FileField(
-        "Архив с прайсами", upload_to=get_file_price_path_add, max_length=255, null=True
+        "Архив с прайсами", upload_to=get_file_price_path_add, max_length=255, null=True,blank=True,
     )
     
 

@@ -155,8 +155,9 @@ class Product(models.Model):
         if self.article == "":
             article = create_article_motrum(self.supplier.id)
             self.article = article
-        # прлучение категорий мотрум из категорий поставщика
+        # получение категорий мотрум из категорий поставщика
         filter_catalog = get_motrum_category(self)
+        print(filter_catalog)
         if self.category == None:
             self.category = filter_catalog[0]
         if self.group == None:

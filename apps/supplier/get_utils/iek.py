@@ -232,10 +232,6 @@ iek_save_categ = [
 ]
 
 def iek_api():
-    
-    print(len(iek_save_categ))
-    # r = SupplierCategoryProductAll.objects.get(article_name= "01.01.01",)
-    # print(r)
 
     supplier = Supplier.objects.get(slug="iek")
     vendors = Vendor.objects.filter(supplier=supplier)
@@ -754,10 +750,10 @@ def iek_api():
             finally:    
                 continue 
      
-
+    # категории 
     get_iek_category("ddp", None)
   
-    # запись продуктов по категориям 
+    # запись продуктов и пропсовдля каждого по категориям 
     for item_iek_save_categ in iek_save_categ:
         get_iek_product("products", f"groupId={item_iek_save_categ}")
         get_iek_property("etim",  f"groupId={item_iek_save_categ}")

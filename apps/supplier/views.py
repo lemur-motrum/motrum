@@ -1,8 +1,9 @@
 from django.shortcuts import render
 
 
-from apps.core.tasks import get_currency
+from apps.core.tasks import del_currency, get_currency
 
+from apps.core.utils import create_time
 from apps.specification.utils import crete_pdf_specification
 from apps.supplier.get_utils.avangard import get_avangard_file
 from apps.supplier.get_utils.emas import get_emas
@@ -11,6 +12,7 @@ from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import Supplier, SupplierCategoryProduct, SupplierGroupProduct
 from apps.user.utils import upgrade_permission
+from project.settings import BASE_DIR
 
 
 # Create your views here.
@@ -29,10 +31,10 @@ def add_iek(request):
     title = "Услуги"
     
     # product_list = [product for product.group in product_list  ]
-    
-  
-    # responsets = ['233','2131']
-    responsets = 0
+    create_time()
+    print(request)
+    responsets = ['233','2131']
+    # responsets = 0
     context = {
         "title": title,
         "responsets": responsets,
@@ -42,7 +44,7 @@ def add_iek(request):
 
 def get_currency_api(request):
     title = "Услуги"
-
+    
     # responsets = ['233','2131']
     responsets
     context = {

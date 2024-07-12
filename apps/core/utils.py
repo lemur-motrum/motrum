@@ -1,6 +1,7 @@
 # расчет цены
 import datetime
 import random
+import re
 import shutil
 import requests
 import hashlib
@@ -312,7 +313,8 @@ def save_file_product(link, image_path):
 def get_file_path_add(instance, filename):
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
-
+    s = str(instance.product.article_supplier)
+    item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
     base_dir = "products"
     base_dir_supplier = instance.product.supplier.slug
 
@@ -340,7 +342,7 @@ def get_file_path_add(instance, filename):
         print(instance)
         print(instance.type_doc)
         filenames = create_name_file_downloading(
-            instance.product.article_supplier, item_count
+            item_instanse_name, item_count
         )
         filename = f"{filenames}_{instance.type_doc}{type_file}"
 
@@ -355,23 +357,24 @@ def get_file_path_add(instance, filename):
             item_count = 1
         # print(item_count)
         filenames = create_name_file_downloading(
-            instance.product.article_supplier, item_count
+            item_instanse_name, item_count
         )
 
         filename = filenames + type_file
-
+    
+    print(item_instanse_name)
     check_media_directory_exist(
         base_dir,
         base_dir_supplier,
         base_dir_vendor,
-        instance.product.article_supplier,
+        item_instanse_name,
         path_name,
     )
     return "{0}/{1}/{2}/{3}/{4}/{5}".format(
         base_dir,
         base_dir_supplier,
         base_dir_vendor,
-        instance.product.article_supplier,
+        item_instanse_name,
         path_name,
         filename,
     )
@@ -394,15 +397,21 @@ def response_request(response, location):
         return True
     else:
         error = "file api"
-        error_alert(error, location, response)
+        if response == 502:
+           pass
+        else: 
+            error_alert(error, location, response)
         return False
 
 
 # создание времени окончания спецификации
 def create_time():
     now = datetime.datetime.now()
+    print(now)
     three_days = datetime.timedelta(3)
+    print(three_days)
     in_three_days = now + three_days
+    print(in_three_days)
     data = in_three_days.strftime("%Y-%m-%d")
 
     return data
@@ -441,22 +450,30 @@ def send_email_error():
 def get_motrum_category(self):
     category_catalog = None
     group_catalog = None
-
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-        return (category_catalog, group_catalog)
+        print(category_catalog, group_catalog)
 
+       
     if self.group_supplier != None:
-        category_catalog = self.group_supplier.category_catalog
-        group_catalog = self.group_supplier.group_catalog
-        return (category_catalog, group_catalog)
+
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.group_supplier.category_catalog
+            group_catalog = self.group_supplier.group_catalog
+         
+            print( self.group_supplier.category_catalog, self.group_supplier.group_catalog)
+       
+        
 
     if self.category_supplier != None:
-        category_catalog = self.category_supplier.category_catalog
-        group_catalog = self.category_supplier.group_catalog
-        return (category_catalog, group_catalog)
-
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.category_supplier.category_catalog
+            group_catalog = self.category_supplier.group_catalog
+            print(category_catalog, group_catalog)
+       
+        
+    print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
 

@@ -43,15 +43,20 @@ class SupplierAdmin(admin.ModelAdmin):
     ]
     
     def save_model(self, request, obj, form, change):
-        old_supplier = Supplier.objects.get(id = obj.id)
-        old_file = old_supplier.file
+        if obj:
+            old_supplier = Supplier.objects.get(id = obj.id)
+            old_file = old_supplier.file
+       
+        
+        super().save_model(request, obj, form, change) 
+       
         new_file = obj.file
         
-        super().save_model(request, obj, form, change)
         if new_file != old_file:
             if old_supplier.slug == "delta":
-                
+                print(12313)
                 add_file_delta(new_file,obj)
+                
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]

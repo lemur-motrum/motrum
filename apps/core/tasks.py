@@ -52,9 +52,14 @@ def get_currency(self):
 def del_currency():
    
     now = datetime.datetime.now()
+  
+    
     three_days = datetime.timedelta(3)
+
     in_three_days = now - three_days
+  
     data = in_three_days.strftime("%Y-%m-%d")
+    
     CurrencyRate.objects.filter(date__lt=data).delete()
 
 

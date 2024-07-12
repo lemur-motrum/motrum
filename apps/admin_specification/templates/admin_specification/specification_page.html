@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="specification-content">
+        <div class="bread-crumbs">
+            <a href="#">Главная</a>
+            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            {% if group %}
+                <a href="{% url "admin_specification:groups" group.category.pk %}">{{ group.category.name }}</a>
+            {% endif %}
+        </div>
         <div class="head-content">
             <div class="container">
-                <h1 class="head-title">{{ title }}</h1>
-                <div class="specification-title">Страница товаров</div>
-                <form class="search-form-container" action="" method="get">
+                <form class="search-form-container"
+                      category="{{ category.pk }}"
+                      group="{% if group %}{{ group.pk }}{% endif %}"
+                      action=""
+                      method="get">
                     {% csrf_token %}
                     <div class="form-error">{{ form.non_field_errors }}</div>
                     {% for form_elem in form %}
@@ -13,82 +22,129 @@
                             <label class="form-label" for="{{ form_elem.id_for_label }}">{{ form_elem.label }}</label>
                             {{ form_elem }}
                         </div>
-                    {% endfor %}
-                    <button type="submit">Найти</button>
-                </form>
-            </div>
-            <div class="container">
+                        <div class="search-elems-field">
+                        </div>
+                            {% endfor %}
+                            <button type="submit">Найти</button>
+                        </form>
+                        {% if group %}
+                            <h1 class="head-title">{{ group.name }}</h1>
+                        {% else %}
+                            <h1 class="head-title">{{ title }}</h1>
+                        {% endif %}
+                    </div>
+                    <div class="container"></div>
+                </div>
                 <div class="specification-link-container">
-                    Товаров в <a href="{% url 'admin_specification:create_specification' %}">спецификации</a>: <span>0</span>
+                    <a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span>0</span>
+                </div>
+                <div class="group-slider">
+                    <div class="swiper-wrapper">
+                        {% if another_groups %}
+                            {% for group in another_groups %}
+                                <a class="swiper-slide group-link"
+                                   href="{% url "admin_specification:specifications" group.category.pk group.pk %}">{{ group.name }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="product-catalog-articles">
+                    <div class="article">Фильтр</div>
+                    <div class="article">Товар</div>
+                    <div class="article">Артикул</div>
+                    <div class="article">Характеристики</div>
+                    <div class="article">Упак.</div>
+                    <div class="article">Цена</div>
+                </div>
+                <div class="spetification-product-catalog">
+                    {% for product in products %}
+                        <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }}>
+                            <div class="descripton">
+                                <div class="name">{{ product.name }}</div>
+                                <div class="article-motrum">{{ product.article }}</div>
+                                <div class="charactiristics">
+                                    {% for char in product.productproperty_set.all %}
+                                        {{ char.value }}
+                                    {% empty %}
+                                        характеристика
+                                    {% endfor %}
+                                </div>
+                                <div class="lot">
+                                    1
+                                    {% if product.historic_stock.lot %}
+                                        {{ product.historic_stock.lot.name_shorts }}
+                                    {% else %}
+                                        шт
+                                    {% endif %}
+                                </div>
+                                <div class="price">
+                                    {% if product.price.rub_price_supplier %}
+                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
+                                    {% else %}
+                                        <span>По запросу</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="item-buttons_container">
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button">-</button>
+                                    <input type="number"
+                                           value="0"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="3"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                                <button disabled class="add-specification-button">В корзину</button>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="none-products">
+                            Товаров в группе "
+                            {% if group %}
+                                {{ group }}
+                            {% else %}
+                                {{ title }}
+                            {% endif %}
+                            " пока нет
+                        </div>
+                    {% endfor %}
+                    {% if products %}
+                        <div class="pagintion">
+                            {% if products.number == 1 or products.number == 2 or products.number == 3 %}
+                            {% else %}
+                                {% if search_input %}
+                                    <a class="first-elem" href="?page=1&search_input={{ search_input }}"><span>1</span></a>
+                                {% else %}
+                                    <a class="first-elem" href="?page=1"><span>1</span></a>
+                                {% endif %}
+                            {% endif %}
+                            {% for p in products.paginator.page_range %}
+                                {% if products.number == p %}
+                                    <div class="page-num-selected">
+                                        <span>{{ p }}</span>
+                                    </div>
+                                {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
+                                    {% if search_input %}
+                                        <a href="?page={{ p }}&search_input={{ search_input }}"><span>{{ p }}</span></a>
+                                    {% else %}
+                                        <a href="?page={{ p }}"><span>{{ p }}</span></a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if products.number == num_of_pages or products.number == num_of_pages|add:"-1" or products.number == num_of_pages|add:"-2" %}
+                            {% else %}
+                                {% if search_input %}
+                                    <a class="last-elem"
+                                       href="?page={{ num_of_pages }}&search_input={{ search_input }}"><span>{{ num_of_pages }}</span></a>
+                                {% else %}
+                                    <a class="last-elem" href="?page={{ num_of_pages }}"><span>{{ num_of_pages }}</span></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {% comment %} <a href="?page=1" class="return-button"><span>Вернуться</span></a> {% endcomment %}
+                    {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="spetification-product-catalog">
-            {% for product in products %}
-                <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }}>
-                    <div class="descripton">
-                        <div class="name">{{ product.name }}</div>
-                        <div class="article-motrum">Артикул Motrum: {{ product.article }}</div>
-                        <div class="article-saler">Артикул Поставщика: {{ product.article_supplier }}</div>
-                        {% if additional_article_supplier %}
-                            <div class="article-add">Дополнительный Артикул: {{ product.additional_article_supplier }}</div>
-                        {% endif %}
-                        <div class="price">
-                            {% if product.price.rub_price_supplier %}
-                                Цена: <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
-                            {% else %}
-                                Цена: <span>По запросу</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="item-buttons_container">
-                        <div class="quantity-buttons">
-                            <button disabled class="minus-button">-</button>
-                            <span>0</span>
-                            <button class="plus-button">+</button>
-                        </div>
-                        <button disabled class="add-specification-button">Добавить к спецификации</button>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="none-products">Товаров со значением "{{ search_input }}" не существует</div>
-            {% endfor %}
-            {% if products %}
-                <div class="pagintion">
-                    {% if products.number == 1 or products.number == 2 or products.number == 3 %}
-                    {% else %}
-                        {% if search_input %}
-                            <a class="first-elem" href="?page=1&search_input={{ search_input }}"><span>1</span></a>
-                        {% else %}
-                            <a class="first-elem" href="?page=1"><span>1</span></a>
-                        {% endif %}
-                    {% endif %}
-                    {% for p in products.paginator.page_range %}
-                        {% if products.number == p %}
-                            <div class="page-num-selected">
-                                <span>{{ p }}</span>
-                            </div>
-                        {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
-                            {% if search_input %}
-                                <a href="?page={{ p }}&search_input={{ search_input }}"><span>{{ p }}</span></a>
-                            {% else %}
-                                <a href="?page={{ p }}"><span>{{ p }}</span></a>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    {% if products.number == num_of_pages or products.number == num_of_pages|add:"-1" or products.number == num_of_pages|add:"-2" %}
-                    {% else %}
-                        {% if search_input %}
-                            <a class="last-elem"
-                               href="?page={{ num_of_pages }}&search_input={{ search_input }}"><span>{{ num_of_pages }}</span></a>
-                        {% else %}
-                            <a class="last-elem" href="?page={{ num_of_pages }}"><span>{{ num_of_pages }}</span></a>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            {% else %}
-                <a href="?page=1" class="return-button"><span>Вернуться</span></a>
-            {% endif %}
-        </div>
-    </div>
-{% endblock content %}
+        {% endblock content %}

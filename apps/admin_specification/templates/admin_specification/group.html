@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="all_groups-container">
+        <div class="bread-crumbs">
+            <a href="#">Главная</a>
+            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+        </div>
+        <h1 class="title">{{ title }}</h1>
+        <div class="categories_container">
+            <div class="swiper-wrapper">
+                {% for category in categories %}
+                    <a href="{% url "admin_specification:groups" category.pk %}"
+                       class="swiper-slide category">
+                        <span>{{ category.name }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="group-container">
+            {% for group in groups %}
+                <a href="{% url "admin_specification:specifications" group.category.pk group.pk %}"
+                   class="group">
+                    <span>{{ group.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

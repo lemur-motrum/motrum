@@ -1,3 +1,5 @@
+import "/static/core/js/slider.js";
+
 class NumberParser {
   constructor(locale) {
     const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
@@ -39,6 +41,49 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
+function setCookie(name, value, options = {}) {
+  options = {
+    ...options,
+  };
+
+  if (options.expires instanceof Date) {
+    options.expires = options.expires.toUTCString();
+  }
+
+  let updatedCookie = name + "=" + value;
+
+  for (let optionKey in options) {
+    updatedCookie += "; " + optionKey;
+    let optionValue = options[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
+function deleteCookie() {
+  var cookies = document.cookie.split("; ");
+  for (var c = 0; c < cookies.length; c++) {
+    var d = window.location.hostname.split(".");
+    while (d.length > 0) {
+      var cookieBase =
+        encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) +
+        "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" +
+        d.join(".") +
+        " ;path=";
+      var p = location.pathname.split("/");
+      document.cookie = cookieBase + "/";
+      while (p.length > 0) {
+        document.cookie = cookieBase + p.join("/");
+        p.pop();
+      }
+      d.shift();
+    }
+  }
+}
+
 function getCurrentPrice(p) {
   const price = p.replace(",", ".");
   return price;
@@ -58,13 +103,15 @@ const saveProduct = (product) => {
       "specificationValues",
       JSON.stringify(localStorageSpecification)
     );
-    document.cookie = `key=${JSON.stringify(localStorageSpecification)}`;
+    document.cookie = `key=${JSON.stringify(
+      localStorageSpecification
+    )}; path=/`;
   } else {
     localStorage.setItem(
       "specificationValues",
       JSON.stringify(productsSpecificationList)
     );
-    document.cookie = `key=${JSON.stringify(productsSpecificationList)}`;
+    document.cookie = `key=${JSON.stringify(productsSpecificationList)};path=/`;
   }
 };
 
@@ -83,6 +130,9 @@ const setProduct = (product) => {
 const getDigitsNumber = (container, value) => {
   container.textContent = new Intl.NumberFormat("ru").format(+value);
 };
+
+const csrfToken = getCookie("csrftoken");
+
 window.addEventListener("DOMContentLoaded", () => {
   const specificationContent = document.querySelector(".specification-content");
   if (specificationContent) {
@@ -115,19 +165,11 @@ window.addEventListener("DOMContentLoaded", () => {
         const addSpecificationButton = catalogItem.querySelector(
           ".add-specification-button"
         );
-        const countQuantityZone = buttonContainer.querySelector("span");
+        const countQuantityZone = buttonContainer.querySelector("input");
 
-        let countQuantity = +countQuantityZone.textContent;
+        let countQuantity = +countQuantityZone.value;
 
-        plusButton.onclick = () => {
-          countQuantity++;
-          countQuantityZone.textContent = countQuantity;
-          minusButton.disabled = false;
-          addSpecificationButton.disabled = false;
-
-          if (countQuantityZone.textContent.length > 1) {
-            countQuantityZone.style.left = "40.5%";
-          }
+        function addProductInSpecification() {
           if (addSpecificationButton.disabled == false) {
             addSpecificationButton.style.cursor = "pointer";
           } else {
@@ -156,11 +198,39 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             };
           }
+        }
+
+        countQuantityZone.onkeyup = () => {
+          countQuantity = +countQuantityZone.value;
+          if (countQuantity > 0) {
+            addSpecificationButton.disabled = false;
+            addProductInSpecification();
+          }
+        };
+
+        plusButton.onclick = () => {
+          countQuantity++;
+          countQuantityZone.value = countQuantity;
+          minusButton.disabled = false;
+          addSpecificationButton.disabled = false;
+
+          if (countQuantity >= 999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          }
+          addProductInSpecification();
         };
 
         minusButton.onclick = () => {
           countQuantity--;
-          countQuantityZone.textContent = countQuantity;
+          countQuantityZone.value = countQuantity;
+
+          if (countQuantity >= 999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          } else {
+            plusButton.disabled = false;
+          }
 
           if (countQuantity <= 0) {
             minusButton.disabled = true;
@@ -169,37 +239,7 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = false;
             addSpecificationButton.disabled = false;
           }
-          if (countQuantityZone.textContent.length <= 1) {
-            countQuantityZone.style.left = "45.5%";
-          }
-          if (addSpecificationButton.disabled == false) {
-            addSpecificationButton.style.cursor = "pointer";
-          } else {
-            addSpecificationButton.style.cursor = "default";
-          }
-          if (addSpecificationButton.disabled == false) {
-            const product = {
-              id: +productId,
-              name: productName,
-              price: getCurrentPrice(productPrice),
-              idMotrum: productMotrumId,
-              idSaler: productSalerId,
-              quantity: countQuantity,
-              totalCost: (
-                getCurrentPrice(productPrice) * countQuantity
-              ).toFixed(2),
-            };
-            addSpecificationButton.onclick = () => {
-              setProduct(product);
-              if (localStorageSpecification) {
-                specificationLinkContainerProductValue.textContent =
-                  localStorageSpecification.length;
-              } else {
-                specificationLinkContainerProductValue.textContent =
-                  productsSpecificationList.length;
-              }
-            };
-          }
+          addProductInSpecification();
         };
 
         const priceContainer = catalogItem.querySelector(".price");
@@ -224,9 +264,9 @@ window.addEventListener("DOMContentLoaded", () => {
     if (spetificationTable) {
       const productItems =
         spetificationTable.querySelectorAll(".item_container");
-      const totalPraiceValueContainer =
+      const totalPriceValueContainer =
         spetificationTable.querySelector(".price_description");
-      const valueContainer = totalPraiceValueContainer.querySelector(".price");
+      const valueContainer = totalPriceValueContainer.querySelector(".price");
 
       function getResult() {
         let sum = 0;
@@ -234,9 +274,10 @@ window.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
-        valueContainer.textContent = new Intl.NumberFormat("ru").format(+sum);
+        getDigitsNumber(valueContainer, +sum);
       }
-      productItems.forEach((item) => {
+      productItems.forEach((item, i) => {
+        const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const itemPrices = item.querySelectorAll(".price");
         const inputPrice = item.querySelector("input");
         if (inputPrice) {
@@ -259,6 +300,24 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(itemPrice, itemPrice.textContent);
           });
         }
+
+        deleteItemBtn.onclick = () => {
+          const specificationArray = JSON.parse(
+            localStorage.getItem("specificationValues")
+          );
+          specificationArray.splice(i, 1);
+
+          const result = JSON.stringify(specificationArray);
+
+          localStorage.setItem("specificationValues", result);
+
+          setCookie("key", result, {
+            path: "/",
+            domain: window.location.hostname,
+          });
+
+          window.location.reload();
+        };
       });
 
       const saveButton = spetificationTable.querySelector(".save_button");
@@ -289,12 +348,11 @@ window.addEventListener("DOMContentLoaded", () => {
           products.push(product);
         });
 
-        const csrfToken = getCookie("csrftoken");
         const endpoint = "/admin_specification/save_specification_view_admin/";
 
         const dataObj = {
           id_bitrix: 22,
-          admin_creator_id: 1,
+          admin_creator_id: 2,
           products: products,
         };
 
@@ -310,11 +368,99 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((response) => response.json())
           .then((response) => {
             if (response.status == "ok") {
-              console.log(data);
+              localStorage.removeItem("specificationValues");
+              deleteCookie();
+              window.location.href =
+                window.location.hostname +
+                "/admin_specification/all_specifications";
             }
           })
           .catch((error) => console.error(error));
       };
     }
   }
+  const categorySwiper = new Swiper(".categories_container", {
+    slidesPerView: "auto",
+  });
+
+  const groupSwiper = new Swiper(".group-slider", {
+    slidesPerView: "auto",
+  });
+
+  const allSpecifications = document.querySelector(".all_specifications_table");
+  if (allSpecifications) {
+    const prices = allSpecifications.querySelectorAll(".price");
+    prices.forEach((price) => {
+      const priceValue = getCurrentPrice(price.textContent);
+      getDigitsNumber(price, priceValue);
+    });
+  }
+
+  //выпадающий поиск
+  const searhForm = document.querySelector(".search-form-container");
+  if (searhForm) {
+    const searchInput = searhForm.querySelector(['[name="search_input"]']);
+    const searchEndpoint = "/admin_specification/search_product/";
+    let searchValue;
+    const category = searhForm.getAttribute("category");
+    const group = searhForm.getAttribute("group");
+    const searchDescriptionField = searhForm.querySelector(
+      ".search-elems-field"
+    );
+    searchInput.onkeyup = () => {
+      if (searchInput.value.length >= 3) {
+        searchValue = searchInput.value;
+        const objData = {
+          category: category,
+          group: group,
+          value: searchValue,
+        };
+        const data = JSON.stringify(objData);
+        fetch(searchEndpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        }).then((response) =>
+          response.json().then((response) => {
+            if (response.status == "ok") {
+              const products = JSON.parse(response.products);
+              searchDescriptionField.style.display = "block";
+              // searchDescriptionField.style.heigth = "7rem";
+              setTimeout(() => {
+                searchDescriptionField.style.opacity = 1;
+              }, 600);
+              searchDescriptionField.innerHTML = "";
+              products.forEach((product) => {
+                searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+              });
+              if (products.length == 0) {
+                searchDescriptionField.innerHTML =
+                  "<div>Таких товаров нет</div>";
+              }
+            }
+          })
+        );
+      } else {
+        searchDescriptionField.style.heigth = "1rem";
+        searchDescriptionField.style.opacity = 0;
+        setTimeout(() => {
+          searchDescriptionField.style.display = "none";
+        }, 600);
+        searchDescriptionField.innerHTML = "";
+      }
+
+      searchDescriptionField.onmouseleave = () => {
+        searchDescriptionField.style.opacity = 0;
+        setTimeout(() => {
+          searchDescriptionField.style.display = "none";
+        }, 600);
+        searchDescriptionField.innerHTML = "";
+      };
+    };
+  }
+
+  //
 });

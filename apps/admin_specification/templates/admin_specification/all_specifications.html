@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="all_specifications_container">
+        <div class="bread-crumbs">
+            <a href="#">Главная</a>
+            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+        </div>
+        <h1 class="title">{{ title }}</h1>
+        <div class="all_specifications_content">
+            <div class="table-titles">
+                <div class="table-title">№Документа</div>
+                <div class="table-title">Дата создания</div>
+                <div class="table-title">Сумма</div>
+                <div class="table-title">Статус</div>
+                <div class="table-title">Договор</div>
+            </div>
+            <div class="all_specifications_table">
+                {% for specification in specifications %}
+                    <a href="/media/{{ specification.file }}"
+                       target="_blank"
+                       class="table_item">
+                        <div class="table_item_value">{{ specification.pk }}</div>
+                        <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
+                        <div class="table_item_value ">
+                            <span class="price">{{ specification.total_amount }}</span> ₽
+                        </div>
+                        <div class="table_item_value">Статус</div>
+                        <div class="table_item_value">Договор</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -12,7 +12,7 @@ from apps.supplier.forms import (
     SupplierCategoryProductAllAdminForm,
     SupplierGroupProductAdminForm,
 )
-from apps.supplier.get_utils.delta import add_file_delta
+from apps.supplier.get_utils.delta import add_delta_product, add_file_delta
 
 # Register your models here.
 from .models import (
@@ -36,12 +36,41 @@ class VendorInline(admin.TabularInline):
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    fields = ("name","file")
+    fieldsets = [
+            (
+                "Основные параметры",
+                {
+                    "fields": [
+                        ("name")
+                    ],
+                },
+            ),
+        ]
 
     inlines = [
         VendorInline,
     ]
-    
+    def get_fieldsets(self, request, obj):
+        fields = super(SupplierAdmin, self).get_fieldsets(request, obj)
+
+        fields_add = [
+            (
+                "Основные параметры",
+                {
+                    "fields": [
+                        ("name","file")
+                    ],
+                },
+            ),
+        ]
+        if obj and obj.pk:
+            if obj.slug == "delta":
+                return fields_add
+            else:
+                return fields
+        else:
+            return fields
+        
     def save_model(self, request, obj, form, change):
         if obj:
             old_supplier = Supplier.objects.get(id = obj.id)
@@ -55,8 +84,11 @@ class SupplierAdmin(admin.ModelAdmin):
         if new_file != old_file:
             if old_supplier.slug == "delta":
                 print(12313)
-                add_file_delta(new_file,obj)
-                
+                new_dir = add_file_delta(new_file,obj)
+                daemon_thread = threading.Thread(target=add_delta_product)
+                daemon_thread.setDaemon(True)
+                daemon_thread.start()
+             
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]

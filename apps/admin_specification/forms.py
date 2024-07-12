@@ -12,6 +12,7 @@ class SearchForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "form-input",
+                "autocomplete": "off",
             }
         ),
         required=False,

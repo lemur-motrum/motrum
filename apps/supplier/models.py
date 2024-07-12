@@ -50,6 +50,8 @@ class Supplier(models.Model):
         self.slug = slugify(slugish)
         print(self.file)
         super().save(*args, **kwargs)
+        
+        
 
 
 

@@ -1,6 +1,7 @@
 from fileinput import filename
 import os
 import re
+import threading
 import zipfile
 import csv
 from simple_history.utils import update_change_reason
@@ -10,6 +11,7 @@ from apps.core.models import Currency, Vat
 
 
 from apps.logs.utils import error_alert
+
 from project.settings import MEDIA_ROOT
 
 items_name = [
@@ -39,63 +41,79 @@ items_name = [
 
 def add_file_delta(new_file, obj):
 
-    from apps.supplier.models import SupplierCategoryProduct
     try:
         # распаковка архива
+
         path = os.path.join(MEDIA_ROOT, str(new_file))
         new_dir = "{0}/{1}/{2}/{3}".format(MEDIA_ROOT, "price", "delta", "files")
         if not os.path.exists(new_dir):
             os.makedirs(new_dir)
-        extension = str(new_file).split('.')[-1]    
-        if extension == ".zip":
+        extension = str(new_file).split(".")[-1]
+
+        if extension == "zip":
             with zipfile.ZipFile(path, "r") as zip_ref:
                 item = zip_ref.extractall(path=new_dir)
-                print(item)
+                return new_dir
 
-            # первое сохранение категорий
-            category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj).exists()
-
-            if category_supplier == False:
-                for item_name_categ in items_name:
-                    name = list(item_name_categ.values())[0]
-                    slug = list(item_name_categ.keys())[0]
-                    categ = SupplierCategoryProduct(
-                        name=name, slug=slug, supplier=obj, autosave_tag=True
-                    )
-                    categ.save()
-
-            file_names = []
-
-            for entry in os.scandir(new_dir):
-                if entry.is_file():
-                    file_names.append(entry.name)
-            i = 0
-        
-            for file_name in file_names:
-                try:
-                    delta_written_file(file_name, obj, new_dir)
-                except Exception as e: 
-                    print(e)
-                    error = "file_error"
-                    location = "Загрузка фаилов Delta"
-          
-                    info = f"ошибка при чтении фаила{file_name}"
-                    e = error_alert(error, location, info)
-                finally:    
-                    continue 
         else:
+
             error = "file_error"
             location = "Загрузка фаилов Delta"
             info = f"фаил такого формата нельзя считать"
             e = error_alert(error, location, info)
-    except Exception as e: 
-            print(e)
-            error = "file_error"
-            location = "Загрузка фаилов Delta"
-          
-            info = f"ошибка при чтении фаила"
-            e = error_alert(error, location, info)
-             
+    except Exception as e:
+        print(e)
+        error = "file_error"
+        location = "Загрузка фаилов Delta"
+
+        info = f"ошибка при чтении фаила"
+        e = error_alert(error, location, info)
+
+
+def add_delta_product():
+    from apps.supplier.models import SupplierCategoryProduct
+    from apps.supplier.models import Supplier
+        
+    obj = Supplier.objects.get( slug="delta")
+    
+    new_dir = "{0}/{1}/{2}/{3}".format(MEDIA_ROOT, "price", "delta", "files")
+    # первое сохранение категорий
+    category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj).exists()
+    if category_supplier == False:
+        for item_name_categ in items_name:
+            name = list(item_name_categ.values())[0]
+            slug = list(item_name_categ.keys())[0]
+            categ = SupplierCategoryProduct(
+                name=name, slug=slug, supplier=obj, autosave_tag=True
+            )
+            categ.save()
+
+    # перебор фаилов и считывание
+    file_names = []
+    
+    for entry in os.scandir(new_dir):
+        if entry.is_file():
+            file_names.append(entry.name)
+    i = 0  
+    for file_name in file_names:
+        
+        i += 1
+        if i > 0 and i < 2 :
+            # try:
+            delta_written_file(file_name, obj, new_dir)
+        
+            
+            # except Exception as e:
+            #     print(e)
+            #     error = "file_error"
+            #     location = "Загрузка фаилов Delta"
+
+            #     info = f"ошибка при чтении фаила{file_name}"
+            #     e = error_alert(error, location, info)
+            # finally:
+            #     continue
+
+
 
 def delta_written_file(file_name, obj, new_dir):
     from apps.core.utils import (
@@ -105,7 +123,7 @@ def delta_written_file(file_name, obj, new_dir):
     )
     from bs4 import BeautifulSoup
     from apps.supplier.models import SupplierGroupProduct, SupplierCategoryProduct
-    from apps.product.models import Price, Product, Stock, ProductImage ,ProductProperty
+    from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
 
     path = f"{new_dir}/{file_name}"
     # получение названий столюцов
@@ -116,7 +134,7 @@ def delta_written_file(file_name, obj, new_dir):
             for r in row:
                 if type(r) == str:
                     fieldnames = r.split(";")
-    # считывание столбцов по названиям 
+    # считывание столбцов по названиям
     with open(
         path,
         "r",
@@ -137,9 +155,8 @@ def delta_written_file(file_name, obj, new_dir):
                 category_supplier=category_supplier,
             )
 
-            
             description_item = row2["Содержимое(контент)"]
-          
+
             if description_item != "":
                 description_arr = description_item.split('<div class="container">')
                 if len(description_arr) > 1:
@@ -151,9 +168,9 @@ def delta_written_file(file_name, obj, new_dir):
                     description_arr2 = description_arr[1].split("</tr>")
                 else:
                     res_description_replace = re.sub(
-                    r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
-                )
-                    description = res_description_replace    
+                        r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
+                    )
+                    description = res_description_replace
 
             else:
                 res_description_replace = re.sub(
@@ -168,8 +185,7 @@ def delta_written_file(file_name, obj, new_dir):
                 #     for row in rows :
                 #         r = row.findAll('td')
                 #         tds.append(row.findAll('td'))
-           
-            
+
             name = row2["Расширенный заголовок"]
             if name == "":
                 name = description
@@ -178,7 +194,7 @@ def delta_written_file(file_name, obj, new_dir):
                 price = row2["Банер на странице"]
             else:
                 price = row2["Цена"]
-                
+
             if price == "" or price == "n":
                 extra = True
                 price_supplier = 0
@@ -188,7 +204,6 @@ def delta_written_file(file_name, obj, new_dir):
                 price_supplier_float = float(price)
                 percent_convert = price_supplier_float / 100 * 1
                 price_supplier = price_supplier_float + percent_convert
-              
 
             vat_catalog = Vat.objects.get(name=20)
             currency = Currency.objects.get(words_code="USD")
@@ -196,20 +211,19 @@ def delta_written_file(file_name, obj, new_dir):
             def save_image(
                 article,
             ):
-                image_link = ''
+                image_link = ""
                 img_big = row2["Изображение"]
                 img_small = row2["Изображение при увеличении"]
-                print(img_big,img_small)
+                print(img_big, img_small)
                 if img_big != "" and img_big != "https://deltronics.ru/":
                     image_link = img_big
                     print(1111111111111111)
                 elif img_small != "" and img_small != "https://deltronics.ru/":
                     image_link = img_small
                     print(222222222222)
-                
-                
+
                 if image_link != "":
-                    
+
                     image = ProductImage.objects.create(product=article)
                     update_change_reason(image, "Автоматическое")
                     image_path = get_file_path_add(image, image_link)
@@ -220,7 +234,7 @@ def delta_written_file(file_name, obj, new_dir):
                     image.link = image_link
                     image.save()
                     update_change_reason(image, "Автоматическое")
-           
+
             # основной товар
             try:
                 article = Product.objects.get(
@@ -244,10 +258,10 @@ def delta_written_file(file_name, obj, new_dir):
                     category_supplier=category_supplier,
                 )
                 article.save()
-                
+
                 update_change_reason(article, "Автоматическое")
                 save_image(article)
-            save_delta_props(row2,article)
+            save_delta_props(row2, article)
             print(article)
             # цены товара
             try:
@@ -265,20 +279,34 @@ def delta_written_file(file_name, obj, new_dir):
                 price_product.save()
                 update_change_reason(price_product, "Автоматическое")
 
-def save_delta_props(row2,article):
+
+def save_delta_props(row2, article):
     from apps.product.models import ProductProperty
-    
+
     row_list = list(row2)
-    remove_list = {"Модель",'Серия', 'Расширенный заголовок', 'Описание', 'Краткое описание', 'Аннотация (введение)', 'Содержимое(контент)', 'Позиция в меню', 'Цена', 'Банер на странице', 'Изображение', 'Изображение при увеличении'}
+    remove_list = {
+        "Модель",
+        "Серия",
+        "Расширенный заголовок",
+        "Описание",
+        "Краткое описание",
+        "Аннотация (введение)",
+        "Содержимое(контент)",
+        "Позиция в меню",
+        "Цена",
+        "Банер на странице",
+        "Изображение",
+        "Изображение при увеличении",
+    }
     for remove_item in remove_list:
         row_list.remove(remove_item)
- 
+
     for row_row_list in row_list:
         name_props = row_row_list
         if row_row_list != None:
             if "<br>" in name_props:
-                name_props = name_props.replace("<br>", " ,") 
-                
+                name_props = name_props.replace("<br>", " ,")
+
             value_props = row2[row_row_list]
             if value_props != "":
                 try:
@@ -287,15 +315,7 @@ def save_delta_props(row2,article):
                 except ProductProperty.DoesNotExist:
                     props_product = ProductProperty(product=article)
                     props_product.name = name_props
-                    
+
                     props_product.value = value_props
                     props_product.save()
                     update_change_reason(props_product, "Автоматическое")
-
-    
-           
-            
-        
-            
-        
-    

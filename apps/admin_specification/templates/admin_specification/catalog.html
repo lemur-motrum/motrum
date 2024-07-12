@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="specification-container">
+        <div class="nav_contaner">
+            <div class="bread-crumbs">
+                <a href="#">Главная</a>
+                <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            </div>
+            <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
+        </div>
         <h1 class="title">{{ title }}</h1>
         {% if specification_items %}
             <div class="spetification_table">
@@ -14,6 +21,7 @@
                 </div>
                 {% for item in specification_items %}
                     <div class="item_container" data-id={{ item.id }}  {% if item.price == "0" %} data-price-exclusive="1" {% else %} data-price-exclusive="0" {% endif %}>
+                        <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.idMotrum }}</div>
                         <div class="item_value">{{ item.idSaler }}</div>
@@ -35,7 +43,7 @@
                 {% endfor %}
                 <div class="submit-container">
                     <div class="price_description">
-                        Итого: <span class="price">0</span>
+                        Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
                     </div>
                     <button class="save_button">Сохранить спецификацию</button>
                 </div>
@@ -43,7 +51,7 @@
         {% else %}
             <div class="no_content-container">
                 <div>Товаров пока нет</div>
-                <a href="{% url 'admin_specification:specifications' %}">Вернуться</a>
+                <a href="{% url 'admin_specification:categories' %}">Вернуться</a>
             </div>
         {% endif %}
     </div>

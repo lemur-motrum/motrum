@@ -38,9 +38,6 @@ items_name = [
     {"vyigruzka-tz-d": "Техзрение"},
     {"vyigruzka-upp-d": "Устройства плавного пуска"},
 ]
-spisok = [
-    
-]
 
 
 
@@ -76,6 +73,7 @@ def add_file_delta(new_file, obj):
 
 
 def add_delta_product():
+    
     from apps.supplier.models import SupplierCategoryProduct
     from apps.supplier.models import Supplier
         
@@ -101,12 +99,16 @@ def add_delta_product():
             file_names.append(entry.name)
     i = 0  
     for file_name in file_names:
+        file_name_no_attr = file_name.split(".")
+        print(file_name_no_attr)
         category_supplier = SupplierCategoryProduct.objects.filter(
-                    supplier=obj, slug=file_name
+                    supplier=obj, slug=file_name_no_attr[0]
                 ).exists()
+        print(category_supplier)
         if category_supplier == True:
             i += 1
             if i > 0 :
+                
                 try:
                     delta_written_file(file_name, obj, new_dir)
             
@@ -140,14 +142,14 @@ def delta_written_file(file_name, obj, new_dir):
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
   
   
-    if file_name ==  "vyigruzka-upp-d.svc":
-        vendor = Vendor.objects.get(slug='aucom')
-    elif file_name == "vyigruzka-tormoznyie-moduli-i-rezistoryi-d.svc":
-        vendor = None
-    elif file_name == "vyigruzka-kip-d.svc":
-        vendor = None 
-    else:
-        vendor = Vendor.objects.get(slug='delta-electronics') 
+    # if file_name ==  "vyigruzka-upp-d.svc":
+    #     vendor = Vendor.objects.get(slug='aucom')
+    # elif file_name == "vyigruzka-tormoznyie-moduli-i-rezistoryi-d.svc":
+    #     vendor = None
+    # elif file_name == "vyigruzka-kip-d.svc":
+    #     vendor = None 
+    # else:
+    #     vendor = Vendor.objects.get(slug='delta-electronics') 
         
     path = f"{new_dir}/{file_name}"
     # получение названий столюцов
@@ -179,11 +181,13 @@ def delta_written_file(file_name, obj, new_dir):
                     name=row2["Серия"],
                     category_supplier=category_supplier,
                 )
-
+                # описание
                 description_item = row2["Содержимое(контент)"]
-
+                tds = []
+                # если колонка с содержимым не пустая
                 if description_item != "":
                     description_arr = description_item.split('<div class="container">')
+                    # если описание делится на два блока с информаций и свойствами
                     if len(description_arr) > 1:
                         description_arr_replace = description_arr[0].replace("</li>", ". ")
                         res_description_arr_replace = re.sub(
@@ -191,31 +195,45 @@ def delta_written_file(file_name, obj, new_dir):
                         )
                         description = res_description_arr_replace
                         description_arr2 = description_arr[1].split("</tr>")
+                        # свойства из общей колонки
+                        soup = BeautifulSoup(description_arr[1])
+                        quotes = soup.find_all('table', class_='table-custom-primary')
+                        for div in quotes:
+                            rows = div.findAll('tr')
+                            for row in rows :
+                                r = row.findAll('td')
+                               
+                                if len(r) == 0:
+                                    pass
+                                elif len(r) == 1:
+                                    ro = row.findAll('td')
+                                    item_tds = tds[-1].copy()
+                                    item_tds[1] = row.findAll('td')[0]
+                                    tds.append(item_tds)
+                                else:    
+                                    tds.append(row.findAll('td'))
+                    # если описание не делиться на два блока только описание
                     else:
                         # res_description_replace = re.sub(
                         #     r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
                         # )
                         res_description_replace = row2["Краткое описание"].rpartition('<')[0]  
                         description = res_description_replace
-
+                        
+                # если колонка содержимое пустая берем описание
                 else:
                     res_description_replace = re.sub(
                         r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
                     )
                     description = res_description_replace
-                    # tds = []
-                    # soup = BeautifulSoup(description_arr[1])
-                    # quotes = soup.find_all('table', class_='table-custom-primary')
-                    # for div in quotes:
-                    #     rows = div.findAll('tr')
-                    #     for row in rows :
-                    #         r = row.findAll('td')
-                    #         tds.append(row.findAll('td'))
-
+                    
+               
+                
                 name = row2["Расширенный заголовок"]
                 if name == "":
                     name = description
-                # прайс
+                    
+                # прайс + проверка на сдвиг колонки К ЦЕНЕ ДОБАВЛЯЕМ 1% ЗА КОНВЕРТАЦИЮ
                 if row2["Позиция в меню"] == "":
                     price = row2["Банер на странице"]
                 else:
@@ -233,7 +251,7 @@ def delta_written_file(file_name, obj, new_dir):
 
                 vat_catalog = Vat.objects.get(name=20)
                 currency = Currency.objects.get(words_code="USD")
-
+                # сохранение изображений
                 def save_image(
                     article,
                 ):
@@ -275,7 +293,7 @@ def delta_written_file(file_name, obj, new_dir):
                     article = Product(
                         article=new_article,
                         supplier=obj,
-                        vendor=vendor,
+                        vendor=None,
                         article_supplier=article_supplier,
                         name=name,
                         description=description,
@@ -283,13 +301,12 @@ def delta_written_file(file_name, obj, new_dir):
                         group_supplier=group_supplier[0],
                         category_supplier=category_supplier,
                     )
+                   
                     article.save()
 
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
-                    
-                save_delta_props(row2, article)
-                print(article)
+                
                 # цены товара
                 try:
                     price_product = Price.objects.get(prod=article)
@@ -305,6 +322,37 @@ def delta_written_file(file_name, obj, new_dir):
                     price_product.extra_price = extra
                     price_product.save()
                     update_change_reason(price_product, "Автоматическое")
+                    
+                # свойства из отдельных колонок
+                save_delta_props(row2, article)    
+                # свойства из из общей колонки    
+                props_product = ProductProperty.objects.filter(product=article).exists()
+                if props_product == False:
+                    if tds != []:
+                        i = 0
+                        for td in tds:
+                            i += 1
+                            if i > 1:
+                                if td != []:
+                                    value_props_no_br = td[1].replace("<br>", " ,")
+                                    
+                                    name_props = re.sub(
+                                        r"<[^>]+>", "", str(td[0]), flags=re.S
+                                    )
+                                    value_props = re.sub(
+                                        r"<[^>]+>", "", str(value_props_no_br), flags=re.S
+                                    )
+                                
+                                    props_product = ProductProperty(product=article)
+                                    props_product.name = name_props
+
+                                    props_product.value = value_props
+                                    props_product.save()
+                                    update_change_reason(
+                                        props_product, "Автоматическое"
+                                    )   
+                 
+                print (article)                    
             except Exception as e:
                 print(e)
                 error = "file_error"
@@ -314,10 +362,10 @@ def delta_written_file(file_name, obj, new_dir):
                 e = error_alert(error, location, info)
             finally:
                 continue
-
+# свойсва если есть колонки со свойствами
 def save_delta_props(row2, article):
     from apps.product.models import ProductProperty
-
+    # колонки кроме основных
     row_list = list(row2)
     remove_list = {
         "Модель",
@@ -349,7 +397,7 @@ def save_delta_props(row2, article):
                 if "<br>" in name_props:
                     name_props = name_props.replace("<br>", " ,")
 
-                if value_props != "" or value_props !=  " ":
+                if value_props != "" or value_props !=  " "  and value_props != "-":
                         props_product = ProductProperty(product=article)
                         props_product.name = name_props
 

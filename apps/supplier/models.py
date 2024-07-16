@@ -11,10 +11,8 @@ import threading
 from simple_history.utils import update_change_reason
 
 
-
 from apps.core.models import Currency, Vat
 from apps.core.utils import get_file_price_path_add
-
 
 
 # from apps.core.utils import get_file_path_add
@@ -50,10 +48,6 @@ class Supplier(models.Model):
         self.slug = slugify(slugish)
         print(self.file)
         super().save(*args, **kwargs)
-        
-        
-
-
 
 
 class Vendor(models.Model):
@@ -98,7 +92,6 @@ class Vendor(models.Model):
 
 # class ListApiUploadIek(models.Model):
 #     name = models.CharField("товары необходимые для загрузки апи иек", max_length=30)
-
 
 
 class SupplierCategoryProduct(models.Model):
@@ -171,7 +164,7 @@ class SupplierCategoryProduct(models.Model):
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
         daemon_thread.start()
-    
+
 
 class SupplierGroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=150)
@@ -210,7 +203,7 @@ class SupplierGroupProduct(models.Model):
         blank=True,
         null=True,
     )
-    
+
     group_catalog = models.ForeignKey(
         "product.GroupProduct",
         verbose_name="Группа каталога мотрум",
@@ -226,13 +219,13 @@ class SupplierGroupProduct(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
         # обноыление категорий связанных продуктоы
         product = Product.objects.filter(group_supplier=self.id)
-        
+
         def background_task():
             # Долгосрочная фоновая задача
             for product_one in product:
@@ -240,20 +233,25 @@ class SupplierGroupProduct(models.Model):
                 if self.group_catalog:
                     product_one.group = self.group_catalog
                     print(product_one)
-                   
+                # добавление производителя из групп вендора если нет своего
+
+                if product_one.group_supplier is not None:
+                    if product_one.group_supplier.vendor is not None:
+                        product_one.vendor = product_one.group_supplier.vendor
+                    print(product_one.vendor)
+
                 product_one.save()
-                update_change_reason(product_one, "Автоматическое")
-            
+                update_change_reason(product_one, "Автоматически из групп поставщика")
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
         daemon_thread.start()
-        
+
         # for product_one in product:
         #     product_one.category = self.category_catalog
         #     if self.group_catalog:
         #         product_one.group = self.group_catalog
-                
+
         #     product_one.save()
 
 
@@ -333,6 +331,7 @@ class SupplierCategoryProductAll(models.Model):
                 if self.group_catalog:
                     product_one.group = self.group_catalog
                     # update_change_reason(product_one, "Автоматическое")
+                    
                 product_one.save()
                 update_change_reason(product_one, "Автоматическое")
             
@@ -347,9 +346,6 @@ class SupplierCategoryProductAll(models.Model):
         #         product_one.group = self.group_catalog
                 
         #     product_one.save()
-            
- 
-       
 
 
 class Discount(models.Model):

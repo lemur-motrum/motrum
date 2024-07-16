@@ -71,8 +71,6 @@ TYPE_DOCUMENT = (
 # Create your models here.
 
 
-
-
 class Product(models.Model):
     article = models.CharField("Артикул мотрум", max_length=50, blank=False)
     supplier = models.ForeignKey(
@@ -88,7 +86,7 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-    
+
     article_supplier = models.CharField("Артикул поставщика", max_length=50)
     additional_article_supplier = models.CharField(
         "Дополнительный артикул поставщика", max_length=50, blank=True, null=True
@@ -157,16 +155,22 @@ class Product(models.Model):
             self.article = article
         # получение категорий мотрум из категорий поставщика
         filter_catalog = get_motrum_category(self)
-        
+
         if self.category == None:
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-        # добавление производителя из групп вендора если нет своего
-        if self.vendor == None:
-            if self.group_supplier.vendor != None:
-                vendor = self.group_supplier.vendor
-                
+        # # добавление производителя из групп вендора если нет своего
+        # if self.vendor == None:
+        #     if self.category_supplier_all is not None:
+        #         if self.category_supplier_all.vendor is not None:
+        #             self.vendor = self.category_supplier_all.vendor
+
+        #     elif self.group_supplier is not None:
+        #         if self.group_supplier.vendor is not None:
+        #             self.vendor = self.group_supplier.vendor
+        #     print(self.vendor)
+
         super().save(*args, **kwargs)
 
         # обновление цен товаро потому что могли змеиться группы для скидки
@@ -202,13 +206,14 @@ class CategoryProduct(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"
 
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         slug_text = self.name
         slugish = translit.translify(slug_text)
@@ -237,7 +242,7 @@ class GroupProduct(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         slug_text = self.name
         slugish = translit.translify(slug_text)
@@ -312,7 +317,7 @@ class Price(models.Model):
             self.price_supplier = 0
             self.rub_price_supplier = 0
             self.price_motrum = 0
-       
+
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
@@ -336,7 +341,6 @@ class Price(models.Model):
             sale = price_motrum_all[1]
             self.price_motrum = price_motrum
             self.sale = sale
-            
 
         super().save(*args, **kwargs)
 
@@ -394,7 +398,7 @@ class Stock(models.Model):
 
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
-        
+
         name1 = super().save(*args, **kwargs)
 
 
@@ -479,7 +483,7 @@ class ProductProperty(models.Model):
         # related_name="historic_property",
         on_delete=CASCADE,
     )
-    
+
     name = models.CharField("название", max_length=600)
     value = models.CharField("значение", max_length=600)
     unit_measure = models.CharField("значение", max_length=600, null=True)

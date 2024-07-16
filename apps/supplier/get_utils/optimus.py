@@ -119,33 +119,6 @@ def add_optimus_product():
             )
             categ.save()
 
-    # group_supplier = SupplierGroupProduct.objects.filter(supplier=obj).exists()
-    # if group_supplier == False:
-    #     for item_name_group in items_group:
-    #         name = list(item_name_group.values())[0]
-    #         slug = list(item_name_group.keys())[0]
-    #         if (
-    #             slug == "servodvigateli-od"
-    #             or slug == "servodvigateli-sch-od"
-    #             or slug == "servousiliteli-od"
-    #         ):
-    #             group = SupplierGroupProduct(
-    #                 name=name,
-    #                 slug=slug,
-    #                 supplier=obj,
-    #                 autosave_tag=True,
-    #                 category_supplier__slug="servodvigateli",
-    #             )
-    #         else:
-    #             group = SupplierGroupProduct(
-    #                 name=name,
-    #                 slug=slug,
-    #                 supplier=obj,
-    #                 autosave_tag=True,
-    #                 category_supplier__slug="texnicheskoe-zrenie",
-    #             )
-
-    #         group.save()
 
     # перебор фаилов и считывание
     file_names = []
@@ -155,19 +128,13 @@ def add_optimus_product():
             file_names.append(entry.name)
     i = 0
     for file_name in file_names:
+        file_name_no_attr = file_name.split(".")
+  
         category_supplier = SupplierCategoryProduct.objects.filter(
-                    supplier=obj, slug=file_name
+                    supplier=obj, slug=file_name_no_attr[0]
                 ).exists()
         
         if category_supplier == True:
-        
-        # if items_categ.values().get(f) is not None:
-        #     error = "file_error"
-        #     location = "Загрузка фаилов Delta"
-        #     info = f"Новый фаил{file_name}"
-        #     e = error_alert(error, location, info)
-        #     return
-        # else:
             i += 1
             if i > 0:
                 try:
@@ -203,36 +170,7 @@ def optimus_written_file(file_name, obj, new_dir):
     )
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
 
-    if (
-        file_name == "texnicheskoe-zrenie-2-od.svc"
-        or file_name == "texnicheskoe-zrenie-3d-od.svc"
-        or file_name == "texnicheskoe-zrenie-4-kontrolleryi-od.svc"
-        or file_name == "texnicheskoe-zrenie-5-obektivyi-od.svc"
-        or file_name == "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od.svc"
-    ):
-        vendor = Vendor.objects.get(slug="hikrobot")
-    elif (
-        file_name == "ustrojstva-plavnogo-puska-od.svc"
-        or file_name == "kommutatoryi-razvetviteli-od.svc"
-        or file_name == "paneli-operatora-od.svc"
-        or file_name == "promyishlennyie-kontrolleryi-od"
-        or file_name == "temperaturnyie-kontrolleryi-od"
-        or file_name == "kommutatoryi-razvetviteli-od.svc"
-    ):
-        vendor = Vendor.objects.get(slug="optimus-drive")
-    elif (
-        file_name == "servodvigateli-od"
-    ):
-        vendor = Vendor.objects.get(slug="veichi")
 
-    elif (
-        file_name == "servousiliteli-od.svc"
-        or file_name == "preobrazovateli-chastotyi-od.svc"
-        or file_name == "servodvigateli-sch-od.svc"
-    ):
-        vendor = None
-    else:
-        vendor = None
 
     path = f"{new_dir}/{file_name}"
 
@@ -313,14 +251,8 @@ def optimus_written_file(file_name, obj, new_dir):
                             r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
                         )
                         description = res_description_replace
-                        # tds = []
-                        # soup = BeautifulSoup(description_arr[1])
-                        # quotes = soup.find_all('table', class_='table-custom-primary')
-                        # for div in quotes:
-                        #     rows = div.findAll('tr')
-                        #     for row in rows :
-                        #         r = row.findAll('td')
-                        #         tds.append(row.findAll('td'))
+                       
+            # если колонка содержимое пустая берем описание
                 else:
                     if "Описание" in row2:
                         description_arr_replace = row2["Описание"].replace(
@@ -332,15 +264,13 @@ def optimus_written_file(file_name, obj, new_dir):
                         description = res_description_arr_replace
                     else:
                         description = None
+                        
                 name = row2["Краткое описание"]
                 if name == "":
                     name = description
-                # прайс
-
+               
+                # прайс  К ЦЕНЕ ДОБАВЛЯЕМ 1% ЗА КОНВЕРТАЦИЮ
                 price = row2["Цена"].replace(" ", "")
-
-                print(row2["Цена"])
-                print(price)
                 if price == "" or price == "n":
                     extra = True
                     price_supplier = 0
@@ -353,7 +283,7 @@ def optimus_written_file(file_name, obj, new_dir):
 
                 vat_catalog = Vat.objects.get(name=20)
                 currency = Currency.objects.get(words_code="USD")
-
+# сохранение изображений
                 def save_image(
                     article,
                 ):
@@ -361,11 +291,11 @@ def optimus_written_file(file_name, obj, new_dir):
                     if "Изображение" in row2:
                         img_big = row2["Изображение"].replace(" ", "")
                         img_small = row2["Изображение при увеличении"].replace(" ", "")
-
-                        if img_big != "" and img_big != "https://optimusdrive.ru/":
+ 
+                        if img_big != "" and img_big != "https://optimusdrive.ru/" and img_big != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg":
                             image_link = img_big
                         elif (
-                            img_small != "" and img_small != "https://optimusdrive.ru/"
+                            img_small != "" and img_small != "https://optimusdrive.ru/" and img_big != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg"
                         ):
                             image_link = img_small
                         print(image_link)
@@ -375,8 +305,7 @@ def optimus_written_file(file_name, obj, new_dir):
                             image = ProductImage.objects.create(product=article)
                             update_change_reason(image, "Автоматическое")
                             image_path = get_file_path_add(image, image_link)
-                            print(image_path)
-                            print(image_path)
+                          
                             p = save_file_product(image_link, image_path)
                             image.photo = image_path
                             image.link = image_link
@@ -397,7 +326,7 @@ def optimus_written_file(file_name, obj, new_dir):
                     article = Product(
                         article=new_article,
                         supplier=obj,
-                        vendor=vendor,
+                        vendor=None,
                         article_supplier=article_supplier,
                         name=name,
                         description=description,
@@ -409,7 +338,8 @@ def optimus_written_file(file_name, obj, new_dir):
 
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
-
+                    
+                # свойства из из общей колонки    
                 props_product = ProductProperty.objects.filter(product=article).exists()
                 if props_product == False:
 
@@ -434,7 +364,7 @@ def optimus_written_file(file_name, obj, new_dir):
                                     update_change_reason(
                                         props_product, "Автоматическое"
                                     )
-
+                # свойства из отдельных колонок
                 save_optimus_props(row2, article)
 
                 # цены товара
@@ -461,10 +391,10 @@ def optimus_written_file(file_name, obj, new_dir):
                 e = error_alert(error, location, info)
             finally:
                 continue
-            
+# свойсва если есть колонки со свойствами            
 def save_optimus_props(row2, article):
     from apps.product.models import ProductProperty
-
+# колонки кроме основных
     row_list = list(row2)
     remove_list = {
         "Модель",
@@ -480,15 +410,15 @@ def save_optimus_props(row2, article):
 
     props_product = ProductProperty.objects.filter(product=article).exists()
     if props_product == False:
-        print(row_list)
+
         for remove_item in remove_list:
             if remove_item in row_list:
                 row_list.remove(remove_item)
-        print(row_list)
+       
         for row_row_list in row_list:
             name_props = row_row_list
             value_props = row2[row_row_list]
-            print(type(value_props))
+       
             if row_row_list != None and name_props != "":
                 if "<br>" in name_props:
                     name_props = name_props.replace("<br>", " ,")

@@ -105,6 +105,7 @@ class SupplierCategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=150)
     slug = models.CharField("слаг", max_length=150,blank=True,
         null=True,)
+    
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -119,6 +120,7 @@ class SupplierCategoryProduct(models.Model):
         blank=True,
         null=True,
     )
+    
     article_name = models.CharField(
         "Артикул категории",
         max_length=25,

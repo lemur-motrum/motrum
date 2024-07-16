@@ -1,0 +1,508 @@
+from fileinput import filename
+import os
+import re
+import threading
+import zipfile
+import csv
+from simple_history.utils import update_change_reason
+
+
+from apps.core.models import Currency, Vat
+
+
+from apps.logs.utils import error_alert
+
+
+from apps.supplier.models import SupplierGroupProduct
+from project.settings import MEDIA_ROOT
+
+items_name = [
+    {"ustrojstva-plavnogo-puska-od": "Устройства плавного пуска"},  # OPTIMUS DRIVE
+    {"enkoderyi-od": "Энкодеры"},  # OPTIMUS DRIVE
+    {
+        "kommutatoryi-razvetviteli-od": "Промышленные коммутаторы и разветвители"
+    },  # OPTIMUS DRIVE
+    {"paneli-operatora-od": "Панели оператора"},  # OPTIMUS DRIVE
+    {"preobrazovateli-chastotyi-od": "Преобразователи частоты"},  # OPTIMUS DRIVE \ SINE
+    {"promyishlennyie-kontrolleryi-od": "Программируемые контроллеры"},  # OPTIMUS DRIVE
+    {"servodvigateli-od": " Серводвигатели"},  # VEICHI
+    {"servodvigateli-sch-od": "Серводвигатели серии SCH SAVCH (архив)"},  # SAVCH архив
+    {"servousiliteli-od": "Сервоусилители"},  # VEICHI SAVCHархив
+    {"temperaturnyie-kontrolleryi-od": "Температурные контроллеры"},  # OPTIMUS DRIVE
+    {"texnicheskoe-zrenie-2-od": "Считыватели кодов"},  # HIKROBOT
+    {"texnicheskoe-zrenie-3d-od": "3D Камеры"},  # HIKROBOT
+    {
+        "texnicheskoe-zrenie-4-kontrolleryi-od": " Контроллеры машинного зрения"
+    },  # HIKROBOT
+    {"texnicheskoe-zrenie-5-obektivyi-od": "Объективы"},  # HIKROBOT
+    {
+        "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od": "Телецентрические объективы"
+    },  # HIKROBOT
+]
+
+items_categ = [
+    {"ustrojstva-plavnogo-puska-od": "Устройства плавного пуска"},  # OPTIMUS DRIVE
+    # {"enkoderyi-od": "Энкодеры"},  # OPTIMUS DRIVE
+    {
+        "kommutatoryi-razvetviteli-od": "Промышленные коммутаторы и разветвители"
+    },  # OPTIMUS DRIVE
+    {"paneli-operatora-od": "Панели оператора"},  # OPTIMUS DRIVE
+    {"preobrazovateli-chastotyi-od": "Преобразователи частоты"},  # OPTIMUS DRIVE \ SINE
+    {"promyishlennyie-kontrolleryi-od": "Программируемые контроллеры"},  # OPTIMUS DRIVE
+    {"temperaturnyie-kontrolleryi-od": "Температурные контроллеры"},  # OPTIMUS DRIVE
+    # {"servodvigateli": "Сервоприводы и редукторы"},
+    # {"texnicheskoe-zrenie": "Техническое зрение"},  # общая группа{
+    {"servodvigateli-od": "Сервоприводы и редукторы"},  # VEICHI
+    {"servodvigateli-sch-od": "Серводвигатели серии SCH SAVCH (архив)"},  # SAVCH архив
+    {"servousiliteli-od": "Сервоусилители"},  # VEICHI SAVCHархив
+    {"texnicheskoe-zrenie-2-od": "Техническое зрение: Считыватели кодов"},  # HIKROBOT
+    {"texnicheskoe-zrenie-3d-od": "Техническое зрение : 3D Камеры"},  # HIKROBOT
+    {
+        "texnicheskoe-zrenie-4-kontrolleryi-od": "Техническое зрение: Контроллеры машинного зрения"
+    },  # HIKROBOT
+    {
+        "texnicheskoe-zrenie-5-obektivyi-od": "Техническое зрение : Объективы"
+    },  # HIKROBOT
+    {
+        "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od": "Техническое зрение : Телецентрические объективы"
+    },  # HIKROBOT
+]
+
+def add_file_optimus(new_file, obj):
+
+    try:
+        # распаковка архива
+
+        path = os.path.join(MEDIA_ROOT, str(new_file))
+        new_dir = "{0}/{1}/{2}/{3}".format(
+            MEDIA_ROOT, "price", "optimus-drive", "files"
+        )
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+        extension = str(new_file).split(".")[-1]
+
+        if extension == "zip":
+            with zipfile.ZipFile(path, "r") as zip_ref:
+                item = zip_ref.extractall(path=new_dir)
+                return new_dir
+
+        else:
+
+            error = "file_error"
+            location = "Загрузка фаилов optimus"
+            info = f"фаил такого формата нельзя считать"
+            e = error_alert(error, location, info)
+    except Exception as e:
+        print(e)
+        error = "file_error"
+        location = "Загрузка фаилов optimus"
+
+        info = f"ошибка при чтении фаила"
+        e = error_alert(error, location, info)
+
+
+def add_optimus_product():
+    from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
+    from apps.supplier.models import Supplier
+
+    obj = Supplier.objects.get(slug="optimus-drive")
+
+    new_dir = "{0}/{1}/{2}/{3}".format(MEDIA_ROOT, "price", "optimus-drive", "files")
+    # первое сохранение категорий
+    category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj).exists()
+    if category_supplier == False:
+        for item_name_categ in items_categ:
+            name = list(item_name_categ.values())[0]
+            slug = list(item_name_categ.keys())[0]
+            categ = SupplierCategoryProduct(
+                name=name, slug=slug, supplier=obj, autosave_tag=True
+            )
+            categ.save()
+
+    # group_supplier = SupplierGroupProduct.objects.filter(supplier=obj).exists()
+    # if group_supplier == False:
+    #     for item_name_group in items_group:
+    #         name = list(item_name_group.values())[0]
+    #         slug = list(item_name_group.keys())[0]
+    #         if (
+    #             slug == "servodvigateli-od"
+    #             or slug == "servodvigateli-sch-od"
+    #             or slug == "servousiliteli-od"
+    #         ):
+    #             group = SupplierGroupProduct(
+    #                 name=name,
+    #                 slug=slug,
+    #                 supplier=obj,
+    #                 autosave_tag=True,
+    #                 category_supplier__slug="servodvigateli",
+    #             )
+    #         else:
+    #             group = SupplierGroupProduct(
+    #                 name=name,
+    #                 slug=slug,
+    #                 supplier=obj,
+    #                 autosave_tag=True,
+    #                 category_supplier__slug="texnicheskoe-zrenie",
+    #             )
+
+    #         group.save()
+
+    # перебор фаилов и считывание
+    file_names = []
+
+    for entry in os.scandir(new_dir):
+        if entry.is_file():
+            file_names.append(entry.name)
+    i = 0
+    for file_name in file_names:
+        category_supplier = SupplierCategoryProduct.objects.filter(
+                    supplier=obj, slug=file_name
+                ).exists()
+        
+        if category_supplier == True:
+        
+        # if items_categ.values().get(f) is not None:
+        #     error = "file_error"
+        #     location = "Загрузка фаилов Delta"
+        #     info = f"Новый фаил{file_name}"
+        #     e = error_alert(error, location, info)
+        #     return
+        # else:
+            i += 1
+            if i > 0:
+                try:
+                    optimus_written_file(file_name, obj, new_dir)
+
+                except Exception as e:
+                    print(e)
+                    error = "file_error"
+                    location = "Загрузка фаилов Delta"
+
+                    info = f"ошибка при чтении фаила{file_name}"
+                    e = error_alert(error, location, info)
+                finally:
+                    continue
+        else:  
+            error = "file_error"
+            location = "Загрузка фаилов Delta"
+
+            info = f"Новый фаил {file_name}"
+            e = error_alert(error, location, info)
+
+def optimus_written_file(file_name, obj, new_dir):
+    from apps.core.utils import (
+        create_article_motrum,
+        get_file_path_add,
+        save_file_product,
+    )
+    from bs4 import BeautifulSoup
+    from apps.supplier.models import (
+        SupplierGroupProduct,
+        SupplierCategoryProduct,
+        Vendor,
+    )
+    from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
+
+    if (
+        file_name == "texnicheskoe-zrenie-2-od.svc"
+        or file_name == "texnicheskoe-zrenie-3d-od.svc"
+        or file_name == "texnicheskoe-zrenie-4-kontrolleryi-od.svc"
+        or file_name == "texnicheskoe-zrenie-5-obektivyi-od.svc"
+        or file_name == "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od.svc"
+    ):
+        vendor = Vendor.objects.get(slug="hikrobot")
+    elif (
+        file_name == "ustrojstva-plavnogo-puska-od.svc"
+        or file_name == "kommutatoryi-razvetviteli-od.svc"
+        or file_name == "paneli-operatora-od.svc"
+        or file_name == "promyishlennyie-kontrolleryi-od"
+        or file_name == "temperaturnyie-kontrolleryi-od"
+        or file_name == "kommutatoryi-razvetviteli-od.svc"
+    ):
+        vendor = Vendor.objects.get(slug="optimus-drive")
+    elif (
+        file_name == "servodvigateli-od"
+    ):
+        vendor = Vendor.objects.get(slug="veichi")
+
+    elif (
+        file_name == "servousiliteli-od.svc"
+        or file_name == "preobrazovateli-chastotyi-od.svc"
+        or file_name == "servodvigateli-sch-od.svc"
+    ):
+        vendor = None
+    else:
+        vendor = None
+
+    path = f"{new_dir}/{file_name}"
+
+    # получение названий столюцов
+    fieldnames = []
+    with open(path, "r", newline="", encoding="windows-1251") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            for r in row:
+                if type(r) == str:
+                    fieldnames = r.split(";")
+    # считывание столбцов по названиям
+    with open(
+        path,
+        "r",
+        newline="",
+        encoding="windows-1251",
+    ) as csvfile2:
+        reader2 = csv.DictReader(csvfile2, delimiter=";")
+        it = 0
+        for row2 in reader2:
+            it += 1
+            try:
+                article_supplier = row2["Модель"]
+
+                categ = file_name.split(".")
+
+                category_supplier = SupplierCategoryProduct.objects.get(
+                    supplier=obj, slug=categ[0]
+                )
+
+                print(category_supplier)
+                group_supplier = SupplierGroupProduct.objects.get_or_create(
+                    supplier=obj,
+                    name=row2["Серия"],
+                    category_supplier=category_supplier,
+                )
+                tds = []
+                if "Полное описание" in row2:
+                    description_item = row2["Полное описание"]
+
+                    if description_item != "":
+                        description_arr = description_item.split(
+                            '<table class="table-cart">'
+                        )
+
+                        if len(description_arr) > 1:
+                            description_arr_replace = description_arr[0].replace(
+                                "</li>", ". "
+                            )
+                            res_description_arr_replace = re.sub(
+                                r"<[^>]+>", "", description_arr_replace, flags=re.S
+                            )
+                            description = res_description_arr_replace
+
+                            # description_arr_split = description_arr[1].split('<div class="container">')
+
+                            # description_arr2 = description_arr_split[0]
+                            # print(description_arr2)
+
+                            soup = BeautifulSoup(description_item, "html.parser")
+                            quotes = soup.find_all("table", class_="table-cart")
+
+                            for div in quotes:
+                                rows = div.findAll("tr")
+                                for row in rows:
+                                    r = row.findAll("td")
+                                    tds.append(row.findAll("td"))
+
+                        else:
+                            res_description_replace = re.sub(
+                                r"<[^>]+>", "", row2["Полное описание"], flags=re.S
+                            )
+                            description = res_description_replace
+
+                    else:
+                        res_description_replace = re.sub(
+                            r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
+                        )
+                        description = res_description_replace
+                        # tds = []
+                        # soup = BeautifulSoup(description_arr[1])
+                        # quotes = soup.find_all('table', class_='table-custom-primary')
+                        # for div in quotes:
+                        #     rows = div.findAll('tr')
+                        #     for row in rows :
+                        #         r = row.findAll('td')
+                        #         tds.append(row.findAll('td'))
+                else:
+                    if "Описание" in row2:
+                        description_arr_replace = row2["Описание"].replace(
+                            "</li>", ". "
+                        )
+                        res_description_arr_replace = re.sub(
+                            r"<[^>]+>", "", description_arr_replace, flags=re.S
+                        )
+                        description = res_description_arr_replace
+                    else:
+                        description = None
+                name = row2["Краткое описание"]
+                if name == "":
+                    name = description
+                # прайс
+
+                price = row2["Цена"].replace(" ", "")
+
+                print(row2["Цена"])
+                print(price)
+                if price == "" or price == "n":
+                    extra = True
+                    price_supplier = 0
+
+                else:
+                    extra = False
+                    price_supplier_float = float(price)
+                    percent_convert = price_supplier_float / 100 * 1
+                    price_supplier = price_supplier_float + percent_convert
+
+                vat_catalog = Vat.objects.get(name=20)
+                currency = Currency.objects.get(words_code="USD")
+
+                def save_image(
+                    article,
+                ):
+                    image_link = ""
+                    if "Изображение" in row2:
+                        img_big = row2["Изображение"].replace(" ", "")
+                        img_small = row2["Изображение при увеличении"].replace(" ", "")
+
+                        if img_big != "" and img_big != "https://optimusdrive.ru/":
+                            image_link = img_big
+                        elif (
+                            img_small != "" and img_small != "https://optimusdrive.ru/"
+                        ):
+                            image_link = img_small
+                        print(image_link)
+
+                        if image_link != "":
+
+                            image = ProductImage.objects.create(product=article)
+                            update_change_reason(image, "Автоматическое")
+                            image_path = get_file_path_add(image, image_link)
+                            print(image_path)
+                            print(image_path)
+                            p = save_file_product(image_link, image_path)
+                            image.photo = image_path
+                            image.link = image_link
+                            image.save()
+                            update_change_reason(image, "Автоматическое")
+
+                # основной товар
+                try:
+                    article = Product.objects.get(
+                        supplier=obj, article_supplier=article_supplier
+                    )
+                    image = ProductImage.objects.filter(product=article).exists
+                    if image == False:
+                        save_image(article)
+
+                except Product.DoesNotExist:
+                    new_article = create_article_motrum(obj.id)
+                    article = Product(
+                        article=new_article,
+                        supplier=obj,
+                        vendor=vendor,
+                        article_supplier=article_supplier,
+                        name=name,
+                        description=description,
+                        category_supplier_all=None,
+                        group_supplier=group_supplier[0],
+                        category_supplier=category_supplier,
+                    )
+                    article.save()
+
+                    update_change_reason(article, "Автоматическое")
+                    save_image(article)
+
+                props_product = ProductProperty.objects.filter(product=article).exists()
+                if props_product == False:
+
+                    if tds != []:
+                        i = 0
+                        for td in tds:
+                            i += 1
+                            if i > 1:
+                                if td != []:
+                                    print(td)
+                                    name_props = re.sub(
+                                        r"<[^>]+>", "", str(td[0]), flags=re.S
+                                    )
+                                    value_props = re.sub(
+                                        r"<[^>]+>", "", str(td[1]), flags=re.S
+                                    )
+                                    props_product = ProductProperty(product=article)
+                                    props_product.name = name_props
+
+                                    props_product.value = value_props
+                                    props_product.save()
+                                    update_change_reason(
+                                        props_product, "Автоматическое"
+                                    )
+
+                save_optimus_props(row2, article)
+
+                # цены товара
+                try:
+                    price_product = Price.objects.get(prod=article)
+
+                except Price.DoesNotExist:
+                    price_product = Price(prod=article)
+
+                finally:
+                    price_product.currency = currency
+                    price_product.price_supplier = price_supplier
+                    price_product.vat = vat_catalog
+                    price_product.vat_include = True
+                    price_product.extra_price = extra
+                    price_product.save()
+                    update_change_reason(price_product, "Автоматическое")
+            except Exception as e:
+                print(e)
+                error = "file_error"
+                location = "Загрузка фаилов Delta"
+
+                info = f"ошибка при чтении строки артикул {row2["Модель"]}"
+                e = error_alert(error, location, info)
+            finally:
+                continue
+            
+def save_optimus_props(row2, article):
+    from apps.product.models import ProductProperty
+
+    row_list = list(row2)
+    remove_list = {
+        "Модель",
+        "Серия",
+        "Краткое описание",
+        "Описание",
+        "Полное описание",
+        "Позиция в меню",
+        "Цена",
+        "Изображение",
+        "Изображение при увеличении",
+    }
+
+    props_product = ProductProperty.objects.filter(product=article).exists()
+    if props_product == False:
+        print(row_list)
+        for remove_item in remove_list:
+            if remove_item in row_list:
+                row_list.remove(remove_item)
+        print(row_list)
+        for row_row_list in row_list:
+            name_props = row_row_list
+            value_props = row2[row_row_list]
+            print(type(value_props))
+            if row_row_list != None and name_props != "":
+                if "<br>" in name_props:
+                    name_props = name_props.replace("<br>", " ,")
+
+                if "</sup>" in name_props:
+                    name_props = name_props.replace("</sup>", "*")
+                    name_props = name_props.replace("<sup>", "")
+                if '<span class="icon mdi mdi-check"></span>' in value_props:
+                    value_props = "Да"
+
+                if value_props != "" and value_props != " ":
+                    props_product = ProductProperty(product=article)
+                    props_product.name = name_props
+
+                    props_product.value = value_props
+                    props_product.save()
+                    update_change_reason(props_product, "Автоматическое")

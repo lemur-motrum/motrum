@@ -157,12 +157,16 @@ class Product(models.Model):
             self.article = article
         # получение категорий мотрум из категорий поставщика
         filter_catalog = get_motrum_category(self)
-        print(filter_catalog)
+        
         if self.category == None:
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-
+        # добавление производителя из групп вендора если нет своего
+        if self.vendor == None:
+            if self.group_supplier.vendor != None:
+                vendor = self.group_supplier.vendor
+                
         super().save(*args, **kwargs)
 
         # обновление цен товаро потому что могли змеиться группы для скидки
@@ -192,6 +196,12 @@ class Product(models.Model):
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=50)
     slug = models.SlugField(null=True)
+    article_name = models.CharField(
+        "Артикул категории",
+        max_length=25,
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"
@@ -213,6 +223,12 @@ class GroupProduct(models.Model):
         CategoryProduct,
         verbose_name="категория",
         on_delete=models.PROTECT,
+    )
+    article_name = models.CharField(
+        "Артикул категории",
+        max_length=25,
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -463,9 +479,10 @@ class ProductProperty(models.Model):
         # related_name="historic_property",
         on_delete=CASCADE,
     )
-    name = models.CharField("название", max_length=200)
-    value = models.CharField("значение", max_length=200)
-    unit_measure = models.CharField("значение", max_length=200, null=True)
+    
+    name = models.CharField("название", max_length=600)
+    value = models.CharField("значение", max_length=600)
+    unit_measure = models.CharField("значение", max_length=600, null=True)
     hide = models.BooleanField("Удалить", default=False)
     history = HistoricalRecords()
 

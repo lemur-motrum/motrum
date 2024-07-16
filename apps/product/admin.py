@@ -848,13 +848,14 @@ class LotAdmin(admin.ModelAdmin):
 
 class GroupProductInline(admin.TabularInline):
     model = GroupProduct
-    fields = ("name",)
+    fields = ("name","article_name")
 
 
 class CategoryProductAdmin(admin.ModelAdmin):
-    fields = ("name",)
+    fields = ("name","article_name")
     list_display = [
         "name",
+        "article_name",
         "get_name",
     ]
     # exclude = ["get_name"]
@@ -877,7 +878,7 @@ class CategoryProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CategoryProduct, CategoryProductAdmin)
-admin.site.register(GroupProduct)
+# admin.site.register(GroupProduct)
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Lot)

@@ -12,6 +12,7 @@ from apps.core.models import Currency, Vat
 
 from apps.logs.utils import error_alert
 
+
 from project.settings import MEDIA_ROOT
 
 items_name = [
@@ -37,6 +38,10 @@ items_name = [
     {"vyigruzka-tz-d": "Техзрение"},
     {"vyigruzka-upp-d": "Устройства плавного пуска"},
 ]
+spisok = [
+    
+]
+
 
 
 def add_file_delta(new_file, obj):
@@ -96,22 +101,31 @@ def add_delta_product():
             file_names.append(entry.name)
     i = 0  
     for file_name in file_names:
-        
-        i += 1
-        if i > 0 and i < 2 :
-            # try:
-            delta_written_file(file_name, obj, new_dir)
-        
+        category_supplier = SupplierCategoryProduct.objects.filter(
+                    supplier=obj, slug=file_name
+                ).exists()
+        if category_supplier == True:
+            i += 1
+            if i > 0 :
+                try:
+                    delta_written_file(file_name, obj, new_dir)
             
-            # except Exception as e:
-            #     print(e)
-            #     error = "file_error"
-            #     location = "Загрузка фаилов Delta"
+                
+                except Exception as e:
+                    print(e)
+                    error = "file_error"
+                    location = "Загрузка фаилов Delta"
 
-            #     info = f"ошибка при чтении фаила{file_name}"
-            #     e = error_alert(error, location, info)
-            # finally:
-            #     continue
+                    info = f"ошибка при чтении фаила{file_name}"
+                    e = error_alert(error, location, info)
+                finally:
+                    continue
+        else:  
+            error = "file_error"
+            location = "Загрузка фаилов Delta"
+
+            info = f"Новый фаил {file_name}"
+            e = error_alert(error, location, info)
 
 
 
@@ -122,9 +136,19 @@ def delta_written_file(file_name, obj, new_dir):
         save_file_product,
     )
     from bs4 import BeautifulSoup
-    from apps.supplier.models import SupplierGroupProduct, SupplierCategoryProduct
+    from apps.supplier.models import SupplierGroupProduct, SupplierCategoryProduct, Vendor
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
-
+  
+  
+    if file_name ==  "vyigruzka-upp-d.svc":
+        vendor = Vendor.objects.get(slug='aucom')
+    elif file_name == "vyigruzka-tormoznyie-moduli-i-rezistoryi-d.svc":
+        vendor = None
+    elif file_name == "vyigruzka-kip-d.svc":
+        vendor = None 
+    else:
+        vendor = Vendor.objects.get(slug='delta-electronics') 
+        
     path = f"{new_dir}/{file_name}"
     # получение названий столюцов
     fieldnames = []
@@ -143,142 +167,153 @@ def delta_written_file(file_name, obj, new_dir):
     ) as csvfile2:
         reader2 = csv.DictReader(csvfile2, delimiter=";")
         for row2 in reader2:
-            article_supplier = row2["Модель"]
+            try:
+                article_supplier = row2["Модель"]
 
-            categ = file_name.split(".")
-            category_supplier = SupplierCategoryProduct.objects.get(
-                supplier=obj, slug=categ[0]
-            )
-            group_supplier = SupplierGroupProduct.objects.get_or_create(
-                supplier=obj,
-                name=row2["Серия"],
-                category_supplier=category_supplier,
-            )
+                categ = file_name.split(".")
+                category_supplier = SupplierCategoryProduct.objects.get(
+                    supplier=obj, slug=categ[0]
+                )
+                group_supplier = SupplierGroupProduct.objects.get_or_create(
+                    supplier=obj,
+                    name=row2["Серия"],
+                    category_supplier=category_supplier,
+                )
 
-            description_item = row2["Содержимое(контент)"]
+                description_item = row2["Содержимое(контент)"]
 
-            if description_item != "":
-                description_arr = description_item.split('<div class="container">')
-                if len(description_arr) > 1:
-                    description_arr_replace = description_arr[0].replace("</li>", ". ")
-                    res_description_arr_replace = re.sub(
-                        r"<[^>]+>", "", description_arr_replace, flags=re.S
-                    )
-                    description = res_description_arr_replace
-                    description_arr2 = description_arr[1].split("</tr>")
+                if description_item != "":
+                    description_arr = description_item.split('<div class="container">')
+                    if len(description_arr) > 1:
+                        description_arr_replace = description_arr[0].replace("</li>", ". ")
+                        res_description_arr_replace = re.sub(
+                            r"<[^>]+>", "", description_arr_replace, flags=re.S
+                        )
+                        description = res_description_arr_replace
+                        description_arr2 = description_arr[1].split("</tr>")
+                    else:
+                        # res_description_replace = re.sub(
+                        #     r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
+                        # )
+                        res_description_replace = row2["Краткое описание"].rpartition('<')[0]  
+                        description = res_description_replace
+
                 else:
                     res_description_replace = re.sub(
                         r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
                     )
                     description = res_description_replace
+                    # tds = []
+                    # soup = BeautifulSoup(description_arr[1])
+                    # quotes = soup.find_all('table', class_='table-custom-primary')
+                    # for div in quotes:
+                    #     rows = div.findAll('tr')
+                    #     for row in rows :
+                    #         r = row.findAll('td')
+                    #         tds.append(row.findAll('td'))
 
-            else:
-                res_description_replace = re.sub(
-                    r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
-                )
-                description = res_description_replace
-                # tds = []
-                # soup = BeautifulSoup(description_arr[1])
-                # quotes = soup.find_all('table', class_='table-custom-primary')
-                # for div in quotes:
-                #     rows = div.findAll('tr')
-                #     for row in rows :
-                #         r = row.findAll('td')
-                #         tds.append(row.findAll('td'))
+                name = row2["Расширенный заголовок"]
+                if name == "":
+                    name = description
+                # прайс
+                if row2["Позиция в меню"] == "":
+                    price = row2["Банер на странице"]
+                else:
+                    price = row2["Цена"]
 
-            name = row2["Расширенный заголовок"]
-            if name == "":
-                name = description
-            # прайс
-            if row2["Позиция в меню"] == "":
-                price = row2["Банер на странице"]
-            else:
-                price = row2["Цена"]
+                if price == "" or price == "n":
+                    extra = True
+                    price_supplier = 0
 
-            if price == "" or price == "n":
-                extra = True
-                price_supplier = 0
+                else:
+                    extra = False
+                    price_supplier_float = float(price)
+                    percent_convert = price_supplier_float / 100 * 1
+                    price_supplier = price_supplier_float + percent_convert
 
-            else:
-                extra = False
-                price_supplier_float = float(price)
-                percent_convert = price_supplier_float / 100 * 1
-                price_supplier = price_supplier_float + percent_convert
+                vat_catalog = Vat.objects.get(name=20)
+                currency = Currency.objects.get(words_code="USD")
 
-            vat_catalog = Vat.objects.get(name=20)
-            currency = Currency.objects.get(words_code="USD")
+                def save_image(
+                    article,
+                ):
+                    image_link = ""
+                    img_big = row2["Изображение"]
+                    img_small = row2["Изображение при увеличении"]
+                    print(img_big, img_small)
+                    if img_big != "" and img_big != "https://deltronics.ru/":
+                        image_link = img_big
+                
+                    elif img_small != "" and img_small != "https://deltronics.ru/":
+                        image_link = img_small
+                
 
-            def save_image(
-                article,
-            ):
-                image_link = ""
-                img_big = row2["Изображение"]
-                img_small = row2["Изображение при увеличении"]
-                print(img_big, img_small)
-                if img_big != "" and img_big != "https://deltronics.ru/":
-                    image_link = img_big
-                    print(1111111111111111)
-                elif img_small != "" and img_small != "https://deltronics.ru/":
-                    image_link = img_small
-                    print(222222222222)
+                    if image_link != "":
 
-                if image_link != "":
+                        image = ProductImage.objects.create(product=article)
+                        update_change_reason(image, "Автоматическое")
+                        image_path = get_file_path_add(image, image_link)
+                        print(image_link)
+                        print(image_path)
+                        p = save_file_product(image_link, image_path)
+                        image.photo = image_path
+                        image.link = image_link
+                        image.save()
+                        update_change_reason(image, "Автоматическое")
 
-                    image = ProductImage.objects.create(product=article)
-                    update_change_reason(image, "Автоматическое")
-                    image_path = get_file_path_add(image, image_link)
-                    print(image_link)
-                    print(image_path)
-                    p = save_file_product(image_link, image_path)
-                    image.photo = image_path
-                    image.link = image_link
-                    image.save()
-                    update_change_reason(image, "Автоматическое")
+                # основной товар
+                try:
+                    article = Product.objects.get(
+                        supplier=obj, article_supplier=article_supplier
+                    )
+                    image = ProductImage.objects.filter(product=article).exists
+                    if image == False:
+                        save_image(article)
 
-            # основной товар
-            try:
-                article = Product.objects.get(
-                    supplier=obj, article_supplier=article_supplier
-                )
-                image = ProductImage.objects.filter(product=article).exists
-                if image == False:
+                except Product.DoesNotExist:
+                    new_article = create_article_motrum(obj.id)
+                    article = Product(
+                        article=new_article,
+                        supplier=obj,
+                        vendor=vendor,
+                        article_supplier=article_supplier,
+                        name=name,
+                        description=description,
+                        category_supplier_all=None,
+                        group_supplier=group_supplier[0],
+                        category_supplier=category_supplier,
+                    )
+                    article.save()
+
+                    update_change_reason(article, "Автоматическое")
                     save_image(article)
+                    
+                save_delta_props(row2, article)
+                print(article)
+                # цены товара
+                try:
+                    price_product = Price.objects.get(prod=article)
 
-            except Product.DoesNotExist:
-                new_article = create_article_motrum(obj.id)
-                article = Product(
-                    article=new_article,
-                    supplier=obj,
-                    vendor=None,
-                    article_supplier=article_supplier,
-                    name=name,
-                    description=description,
-                    category_supplier_all=None,
-                    group_supplier=group_supplier[0],
-                    category_supplier=category_supplier,
-                )
-                article.save()
+                except Price.DoesNotExist:
+                    price_product = Price(prod=article)
 
-                update_change_reason(article, "Автоматическое")
-                save_image(article)
-            save_delta_props(row2, article)
-            print(article)
-            # цены товара
-            try:
-                price_product = Price.objects.get(prod=article)
+                finally:
+                    price_product.currency = currency
+                    price_product.price_supplier = price_supplier
+                    price_product.vat = vat_catalog
+                    price_product.vat_include = True
+                    price_product.extra_price = extra
+                    price_product.save()
+                    update_change_reason(price_product, "Автоматическое")
+            except Exception as e:
+                print(e)
+                error = "file_error"
+                location = "Загрузка фаилов Delta"
 
-            except Price.DoesNotExist:
-                price_product = Price(prod=article)
-
+                info = f"ошибка при чтении строки артикул {row2["Модель"]}"
+                e = error_alert(error, location, info)
             finally:
-                price_product.currency = currency
-                price_product.price_supplier = price_supplier
-                price_product.vat = vat_catalog
-                price_product.vat_include = True
-                price_product.extra_price = extra
-                price_product.save()
-                update_change_reason(price_product, "Автоматическое")
-
+                continue
 
 def save_delta_props(row2, article):
     from apps.product.models import ProductProperty
@@ -298,24 +333,48 @@ def save_delta_props(row2, article):
         "Изображение",
         "Изображение при увеличении",
     }
-    for remove_item in remove_list:
-        row_list.remove(remove_item)
+    props_product = ProductProperty.objects.filter(product=article).exists()
 
-    for row_row_list in row_list:
-        name_props = row_row_list
-        if row_row_list != None:
-            if "<br>" in name_props:
-                name_props = name_props.replace("<br>", " ,")
+    if props_product == False:
 
+        for remove_item in remove_list:
+            if remove_item in row_list:
+                row_list.remove(remove_item)
+   
+        for row_row_list in row_list:
+            name_props = row_row_list
             value_props = row2[row_row_list]
-            if value_props != "":
-                try:
-                    props_product = ProductProperty.objects.get(product=article)
+          
+            if row_row_list != None and name_props != '':
+                if "<br>" in name_props:
+                    name_props = name_props.replace("<br>", " ,")
 
-                except ProductProperty.DoesNotExist:
-                    props_product = ProductProperty(product=article)
-                    props_product.name = name_props
+                if value_props != "" or value_props !=  " ":
+                        props_product = ProductProperty(product=article)
+                        props_product.name = name_props
 
-                    props_product.value = value_props
-                    props_product.save()
-                    update_change_reason(props_product, "Автоматическое")
+                        props_product.value = value_props
+                        props_product.save()
+                        update_change_reason(props_product, "Автоматическое")
+
+    # for remove_item in remove_list:
+    #     row_list.remove(remove_item)
+
+    # for row_row_list in row_list:
+    #     name_props = row_row_list
+    #     if row_row_list != None:
+    #         if "<br>" in name_props:
+    #             name_props = name_props.replace("<br>", " ,")
+
+    #         value_props = row2[row_row_list]
+    #         if value_props != "":
+    #             try:
+    #                 props_product = ProductProperty.objects.get(product=article)
+
+    #             except ProductProperty.DoesNotExist:
+    #                 props_product = ProductProperty(product=article)
+    #                 props_product.name = name_props
+
+    #                 props_product.value = value_props
+    #                 props_product.save()
+    #                 update_change_reason(props_product, "Автоматическое")

@@ -17,6 +17,7 @@ urlpatterns = [
     path("test", views.test, name="test"),
 
     path("add_permission", views.add_permission, name="add_permission"),# права админа
+    
     # url для автозаполнения
     url(
         r"^vendor-autocomplete/$",

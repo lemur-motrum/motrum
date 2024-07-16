@@ -315,6 +315,8 @@ def get_file_path_add(instance, filename):
     from apps.product.models import ProductImage
     s = str(instance.product.article_supplier)
     item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
+    print(999999999999999999999)
+    print(item_instanse_name)
     base_dir = "products"
     base_dir_supplier = instance.product.supplier.slug
 
@@ -361,7 +363,7 @@ def get_file_path_add(instance, filename):
         )
 
         filename = filenames + type_file
-    
+    print(11111111111111111111111111111111111111)
     print(item_instanse_name)
     check_media_directory_exist(
         base_dir,
@@ -501,5 +503,24 @@ def get_file_price_path_add(instance, filename):
 
         return file
 
-    elif instance.slug == "Optimus drive":
-        pass
+    elif instance.slug == "optimus-drive":
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        # print(filename + filetype)
+
+        return file

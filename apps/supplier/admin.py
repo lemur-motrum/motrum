@@ -13,6 +13,7 @@ from apps.supplier.forms import (
     SupplierGroupProductAdminForm,
 )
 from apps.supplier.get_utils.delta import add_delta_product, add_file_delta
+from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
 
 # Register your models here.
 from .models import (
@@ -31,25 +32,23 @@ class VendorInline(admin.TabularInline):
         "name",
         "currency_catalog",
         "vat_catalog",
-        
     )
 
 
 class SupplierAdmin(admin.ModelAdmin):
     fieldsets = [
-            (
-                "Основные параметры",
-                {
-                    "fields": [
-                        ("name")
-                    ],
-                },
-            ),
-        ]
+        (
+            "Основные параметры",
+            {
+                "fields": [("name")],
+            },
+        ),
+    ]
 
     inlines = [
         VendorInline,
     ]
+
     def get_fieldsets(self, request, obj):
         fields = super(SupplierAdmin, self).get_fieldsets(request, obj)
 
@@ -57,38 +56,43 @@ class SupplierAdmin(admin.ModelAdmin):
             (
                 "Основные параметры",
                 {
-                    "fields": [
-                        ("name","file")
-                    ],
+                    "fields": [("name", "file")],
                 },
             ),
         ]
         if obj and obj.pk:
-            if obj.slug == "delta":
+            if obj.slug == "delta" or obj.slug == "optimus-drive":
                 return fields_add
             else:
                 return fields
         else:
             return fields
-        
+
     def save_model(self, request, obj, form, change):
-        if obj:
-            old_supplier = Supplier.objects.get(id = obj.id)
+
+        if obj.id != None:
+            old_supplier = Supplier.objects.get(id=obj.id)
             old_file = old_supplier.file
-       
-        
-        super().save_model(request, obj, form, change) 
-       
-        new_file = obj.file
-        
-        if new_file != old_file:
-            if old_supplier.slug == "delta":
-                print(12313)
-                new_dir = add_file_delta(new_file,obj)
-                daemon_thread = threading.Thread(target=add_delta_product)
-                daemon_thread.setDaemon(True)
-                daemon_thread.start()
-             
+     
+        super().save_model(request, obj, form, change)
+
+        if obj.file:
+            new_file = obj.file
+          
+            if new_file != old_file:
+                if old_supplier.slug == "delta":
+                    new_dir = add_file_delta(new_file, obj)
+                    daemon_thread = threading.Thread(target=add_delta_product)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                if old_supplier.slug == "optimus-drive":
+                    
+                    new_dir = add_file_optimus(new_file, obj)
+                    daemon_thread = threading.Thread(target=add_optimus_product)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                    # add_optimus_product()
+
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
@@ -315,12 +319,12 @@ class DiscountAdmin(admin.ModelAdmin):
         id_sec = obj.id
         obj.delete()
         price = Price.objects.filter(sale__isnull=True)
+
         def background_task():
             # Долгосрочная фоновая задача
             for price_one in price:
                 price_one.save()
                 update_change_reason(price_one, "Автоматическое")
-            
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -329,12 +333,12 @@ class DiscountAdmin(admin.ModelAdmin):
     def delete_queryset(self, request, queryset):
         queryset.delete()
         price = Price.objects.filter(sale__isnull=True)
+
         def background_task():
             # Долгосрочная фоновая задача
             for price_one in price:
                 price_one.save()
                 update_change_reason(price_one, "Автоматическое")
-            
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)

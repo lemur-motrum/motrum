@@ -15,7 +15,7 @@ def add_iek(self):
         
         iek_api()
     except Exception as exc:
-            if exc == MaxRetriesExceededError :
+            if exc == MaxRetriesExceededError or exc == JSONDecodeError:
                 error = "file_api_error"
                 location = "Связь с сервером ИЕК"
           

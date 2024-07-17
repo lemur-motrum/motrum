@@ -217,6 +217,43 @@ def get_category_prompower(supplier, vendor, category_name):
 
     return (category_all, groupe, categ)
 
+# ктегории поставщика для еиас
+def get_category_emas(supplier, category_name):
+    from apps.supplier.models import (
+        SupplierCategoryProduct,
+        SupplierCategoryProductAll,
+        SupplierGroupProduct,
+    )
+    
+    try:
+        category_all = SupplierCategoryProductAll.objects.get(
+            supplier=supplier, article_name=category_name
+        )
+        groupe = category_all.group_supplier
+        categ = category_all.category_supplier
+    except SupplierCategoryProductAll.DoesNotExist:
+        try:
+            groupe = SupplierGroupProduct.objects.get(
+                supplier=supplier,  article_name=category_name
+            )
+            category_all = None
+
+            categ = groupe.category_supplier
+        except SupplierGroupProduct.DoesNotExist:
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    supplier=supplier,  article_name=category_name
+                )
+                category_all = None
+                groupe = None
+
+            except SupplierGroupProduct.DoesNotExist:
+                category_all = None
+                groupe = None
+                categ = None
+    return (category_all, groupe, categ)
+
+
 # проверка есть ли путь и папка
 def check_media_directory_exist(
     base_dir, base_dir_supplier, base_dir_vendor, base_dir_type_file, article_suppliers
@@ -232,7 +269,7 @@ def check_media_directory_exist(
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
-# проверка директории для спецификаций 
+# проверка директории для спецификаций
 def check_spesc_directory_exist(
     base_dir,
 ):
@@ -258,7 +295,7 @@ def check_file_price_directory_exist(base_dir, base_dir_supplier):
 
     return new_dir
 
-# переименовывание изображений и документов по очереди 
+# переименовывание изображений и документов по очереди
 def create_name_file_downloading(article_suppliers, item_count):
 
     try:
@@ -504,6 +541,28 @@ def get_file_price_path_add(instance, filename):
         return file
 
     elif instance.slug == "optimus-drive":
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        # print(filename + filetype)
+
+        return file
+    
+    elif instance.slug == "emas":
         base_dir = "price"
         base_dir_supplier = instance.slug
 

@@ -29,10 +29,10 @@ def add_prompower(request):
 
 def add_iek(request):
     title = "Услуги"
-    
+   
+
     # product_list = [product for product.group in product_list  ]
-    create_time()
-    print(request)
+    iek_api()
     responsets = ['233','2131']
     # responsets = 0
     context = {

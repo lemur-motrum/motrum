@@ -9,6 +9,7 @@ Pytils
 Pillow
 openpyxl
 # xlrd
+lxml
 django-autocomplete-light
 reportlab
 pypdf 

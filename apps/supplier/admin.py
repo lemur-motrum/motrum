@@ -13,6 +13,7 @@ from apps.supplier.forms import (
     SupplierGroupProductAdminForm,
 )
 from apps.supplier.get_utils.delta import add_delta_product, add_file_delta
+from apps.supplier.get_utils.emas import add_file_emas, add_group_emas, add_props_emas_product
 from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
 
 # Register your models here.
@@ -24,7 +25,7 @@ from .models import (
     SupplierGroupProduct,
     Vendor,
 )
-
+from django.utils.html import mark_safe
 
 class VendorInline(admin.TabularInline):
     model = Vendor
@@ -36,14 +37,14 @@ class VendorInline(admin.TabularInline):
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (
-            "Основные параметры",
-            {
-                "fields": [("name")],
-            },
-        ),
-    ]
+    # fieldsets = [
+    #     (
+    #         "Основные параметры",
+    #         {
+    #             "fields": [("name", "structure",)],
+    #         },
+    #     ),
+    # ]
 
     inlines = [
         VendorInline,
@@ -61,8 +62,28 @@ class SupplierAdmin(admin.ModelAdmin):
             ),
         ]
         if obj and obj.pk:
-            if obj.slug == "delta" or obj.slug == "optimus-drive":
+            if (
+                obj.slug == "delta"
+                or obj.slug == "optimus-drive"
+                or obj.slug == "emas"
+            ):
                 return fields_add
+            # elif obj.slug == "emas":
+            #     fields_add_emas = [
+            #         (
+            #             "Основные параметры",
+            #             {
+            #                 "fields": [
+            #                     (
+            #                         "name",
+            #                         "file",
+            #                     )
+
+            #                 ],
+            #             },
+            #         ),
+            #     ]
+            #     return fields_add_emas
             else:
                 return fields
         else:
@@ -73,12 +94,12 @@ class SupplierAdmin(admin.ModelAdmin):
         if obj.id != None:
             old_supplier = Supplier.objects.get(id=obj.id)
             old_file = old_supplier.file
-     
+
         super().save_model(request, obj, form, change)
 
         if obj.file:
             new_file = obj.file
-          
+
             if new_file != old_file:
                 if old_supplier.slug == "delta":
                     new_dir = add_file_delta(new_file, obj)
@@ -86,12 +107,16 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
                 if old_supplier.slug == "optimus-drive":
-                    
+
                     new_dir = add_file_optimus(new_file, obj)
                     daemon_thread = threading.Thread(target=add_optimus_product)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
-                    # add_optimus_product()
+                if old_supplier.slug == "emas":
+
+                    # add_file_emas(new_file, obj)
+                    # add_group_emas(new_file)
+                    add_props_emas_product()
 
 
 class SupplierVendor(admin.ModelAdmin):

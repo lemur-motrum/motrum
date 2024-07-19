@@ -12,7 +12,9 @@
             {% else %}
                 <a href={% url "admin_specification:categories" %}>Назад</a>
             {% endif %}
+            <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
         </div>
+        
         {% include "admin_specification/include/search_form.html" %}
         <div class="group-slider">
             <div class="swiper-wrapper">

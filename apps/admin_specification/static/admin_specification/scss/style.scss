@@ -24,14 +24,18 @@
 }
 .bread-crumbs {
   display: flex;
-  gap: 3.063rem;
+  // gap: 3.063rem;
   margin-bottom: 0.5rem;
+  justify-content: space-between;
   a {
     text-decoration: none;
     color: #000;
     font-size: 0.813rem;
     text-decoration: none;
     text-transform: lowercase;
+    &.all-specification-link {
+      margin-left: auto !important;
+    }
   }
 }
 h1 {

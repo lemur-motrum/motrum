@@ -417,6 +417,116 @@ window.addEventListener("DOMContentLoaded", () => {
                 allProducts.querySelectorAll(".catalog-item");
               catalogItems.forEach((catalogItem) => {
                 showInformation(catalogItem);
+                const specificationLinkContainer = document.querySelector(
+                  ".specification-link-container"
+                );
+                const specificationLinkContainerProductValue =
+                  specificationLinkContainer.querySelector("span");
+                if (localStorageSpecification) {
+                  specificationLinkContainerProductValue.textContent =
+                    localStorageSpecification.length;
+                } else {
+                  specificationLinkContainerProductValue.textContent = 0;
+                }
+
+                const catalog = catalogContainer.querySelector(
+                  ".spetification-product-catalog"
+                );
+
+                const productId = catalogItem.getAttribute("data-id");
+                const productName =
+                  catalogItem.querySelector(".name").textContent;
+                const productPrice = catalogItem.getAttribute("data-price");
+                const productMotrumId =
+                  catalogItem.getAttribute("data-motrum-id");
+                const productSalerId =
+                  catalogItem.getAttribute("data-saler-id");
+                const buttonContainer =
+                  catalogItem.querySelector(".quantity-buttons");
+                const plusButton =
+                  buttonContainer.querySelector(".plus-button");
+                const minusButton =
+                  buttonContainer.querySelector(".minus-button");
+                const addSpecificationButton = catalogItem.querySelector(
+                  ".add-specification-button"
+                );
+                const countQuantityZone =
+                  buttonContainer.querySelector("input");
+
+                let countQuantity = +countQuantityZone.value;
+
+                function addProductInSpecification() {
+                  if (addSpecificationButton.disabled == false) {
+                    addSpecificationButton.style.cursor = "pointer";
+                  } else {
+                    addSpecificationButton.style.cursor = "default";
+                  }
+                  if (addSpecificationButton.disabled == false) {
+                    const product = {
+                      id: +productId,
+                      name: productName,
+                      price: getCurrentPrice(productPrice),
+                      idMotrum: productMotrumId,
+                      idSaler: productSalerId,
+                      quantity: countQuantity,
+                      totalCost: (
+                        getCurrentPrice(productPrice) * countQuantity
+                      ).toFixed(2),
+                    };
+                    addSpecificationButton.onclick = () => {
+                      setProduct(product);
+                      if (localStorageSpecification) {
+                        specificationLinkContainerProductValue.textContent =
+                          localStorageSpecification.length;
+                      } else {
+                        specificationLinkContainerProductValue.textContent =
+                          productsSpecificationList.length;
+                      }
+                    };
+                  }
+                }
+
+                countQuantityZone.onkeyup = () => {
+                  countQuantity = +countQuantityZone.value;
+                  if (countQuantity > 0) {
+                    addSpecificationButton.disabled = false;
+                    addProductInSpecification();
+                  }
+                };
+
+                plusButton.onclick = () => {
+                  countQuantity++;
+                  countQuantityZone.value = countQuantity;
+                  minusButton.disabled = false;
+                  addSpecificationButton.disabled = false;
+
+                  if (countQuantity >= 999) {
+                    minusButton.disabled = false;
+                    plusButton.disabled = true;
+                  }
+                  addProductInSpecification();
+                };
+
+                minusButton.onclick = () => {
+                  countQuantity--;
+                  countQuantityZone.value = countQuantity;
+
+                  if (countQuantity >= 999) {
+                    minusButton.disabled = false;
+                    plusButton.disabled = true;
+                  } else {
+                    plusButton.disabled = false;
+                  }
+
+                  if (countQuantity <= 0) {
+                    minusButton.disabled = true;
+                    addSpecificationButton.disabled = true;
+                  } else {
+                    minusButton.disabled = false;
+                    addSpecificationButton.disabled = false;
+                  }
+                  addProductInSpecification();
+                };
               });
             }
           });

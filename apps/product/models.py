@@ -72,7 +72,7 @@ TYPE_DOCUMENT = (
 
 
 class Product(models.Model):
-    article = models.CharField("Артикул мотрум", max_length=50, blank=False)
+    article = models.CharField("Артикул мотрум", max_length=100, blank=False)
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -87,9 +87,9 @@ class Product(models.Model):
         null=True,
     )
 
-    article_supplier = models.CharField("Артикул поставщика", max_length=50)
+    article_supplier = models.CharField("Артикул поставщика", max_length=100)
     additional_article_supplier = models.CharField(
-        "Дополнительный артикул поставщика", max_length=50, blank=True, null=True
+        "Дополнительный артикул поставщика", max_length=100, blank=True, null=True
     )
     category_supplier_all = models.ForeignKey(
         SupplierCategoryProductAll,

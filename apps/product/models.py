@@ -204,7 +204,7 @@ class Product(models.Model):
 
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=100)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField(null=True, max_length=100)
     article_name = models.CharField(
         "Артикул категории",
         max_length=25,
@@ -228,7 +228,7 @@ class CategoryProduct(models.Model):
 
 class GroupProduct(models.Model):
     name = models.CharField("Название группы", max_length=100)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField(null=True, max_length=100)
     category = models.ForeignKey(
         CategoryProduct,
         verbose_name="категория",

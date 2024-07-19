@@ -28,12 +28,10 @@ def add_prompower(request):
 
 
 def add_iek(request):
+    from django.db.models import Prefetch
     title = "Услуги"
-   
-
-    # product_list = [product for product.group in product_list  ]
-    iek_api()
-    responsets = ['233','2131']
+    veda_api()
+    responsets = ["233", "2131"]
     # responsets = 0
     context = {
         "title": title,
@@ -44,7 +42,7 @@ def add_iek(request):
 
 def get_currency_api(request):
     title = "Услуги"
-    
+
     # responsets = ['233','2131']
     responsets
     context = {
@@ -147,10 +145,10 @@ def test(request):
     }
     return render(request, "supplier/supplier.html", context)
 
+
 def add_permission(request):
     upgrade_permission()
-    context = { 
-    }
+    context = {}
     return render(request, "supplier/supplier.html", context)
 
 

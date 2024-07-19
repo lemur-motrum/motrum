@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from typing import Final
 import environ
 import os
 
@@ -177,7 +178,8 @@ USE_DJANGO_JQUERY = True
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
 SIMPLE_HISTORY_ENFORCE_HISTORY_MODEL_PERMISSIONS = True
-SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD=True
+SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD = True
+DEFAULT_MAX_DISPLAYED_DELTA_CHANGE_CHARS = 1000
 # JQUERY_URL = True
 # AUTH_USER_MODEL = "user.CustomAdminUser"
 

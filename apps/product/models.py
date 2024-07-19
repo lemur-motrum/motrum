@@ -170,7 +170,12 @@ class Product(models.Model):
         #         if self.group_supplier.vendor is not None:
         #             self.vendor = self.group_supplier.vendor
         #     print(self.vendor)
-
+        
+        
+        # удалить лишние пробклы
+        if self.description != None:
+            self.description = self.description.strip()
+            self.description = ' '.join(self.description.split())
         super().save(*args, **kwargs)
 
         # обновление цен товаро потому что могли змеиться группы для скидки
@@ -341,7 +346,7 @@ class Price(models.Model):
             sale = price_motrum_all[1]
             self.price_motrum = price_motrum
             self.sale = sale
-
+            
         super().save(*args, **kwargs)
 
 

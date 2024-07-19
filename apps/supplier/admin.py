@@ -12,6 +12,7 @@ from apps.supplier.forms import (
     SupplierCategoryProductAllAdminForm,
     SupplierGroupProductAdminForm,
 )
+from apps.supplier.get_utils.avangard import get_avangard_file
 from apps.supplier.get_utils.delta import add_delta_product, add_file_delta
 from apps.supplier.get_utils.emas import add_file_emas, add_group_emas, add_props_emas_product
 from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
@@ -66,6 +67,7 @@ class SupplierAdmin(admin.ModelAdmin):
                 obj.slug == "delta"
                 or obj.slug == "optimus-drive"
                 or obj.slug == "emas"
+                or obj.slug == "avangard"
             ):
                 return fields_add
             # elif obj.slug == "emas":
@@ -113,11 +115,22 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
                 if old_supplier.slug == "emas":
-
-                    # add_file_emas(new_file, obj)
-                    # add_group_emas(new_file)
-                    add_props_emas_product()
-
+                    def new_task():
+                        add_file_emas(new_file, obj)
+                    daemon_thread = threading.Thread(target=new_task)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                    # add_file_emas(new_file, obj) # добавление прайса
+                    # add_group_emas(new_file) # добавление групп
+                    # add_props_emas_product() # добавленеи пропсов
+                    
+                if old_supplier.slug == "avangard":
+                    def new_task():
+                        get_avangard_file(new_file, obj)
+                    daemon_thread = threading.Thread(target=new_task)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                    
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]

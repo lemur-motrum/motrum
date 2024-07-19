@@ -30,6 +30,25 @@ class NumberParser {
   }
 }
 
+const setURLParams = (url, updates, defaults) => {
+  let searchParams = new URL(url).searchParams;
+
+  // Устанавливаем значения по умолчанию
+  for (let [key, value] of Object.entries(defaults || {})) {
+    if (!searchParams.has(key)) {
+      searchParams.set(key, value);
+    }
+  }
+
+  // Обновляем остальные параметры
+  for (let [key, value] of Object.entries(updates)) {
+    searchParams.set(key, value);
+  }
+
+  // Обновляем URL в адресной строке без перезагрузки страницы
+  window.history.replaceState(null, "", "?" + searchParams);
+};
+
 function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
@@ -133,10 +152,20 @@ const getDigitsNumber = (container, value) => {
 
 const csrfToken = getCookie("csrftoken");
 
+function showInformation(elem) {
+  elem.onmouseover = () => {
+    elem.classList.add("show");
+  };
+  elem.onmouseout = () => {
+    elem.classList.remove("show");
+  };
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-  const specificationContent = document.querySelector(".specification-content");
-  if (specificationContent) {
-    const specificationLinkContainer = specificationContent.querySelector(
+  //Каталог
+  const catalogContainer = document.querySelector(".catalog_container");
+  if (catalogContainer) {
+    const specificationLinkContainer = document.querySelector(
       ".specification-link-container"
     );
     const specificationLinkContainerProductValue =
@@ -148,7 +177,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationLinkContainerProductValue.textContent = 0;
     }
 
-    const catalog = specificationContent.querySelector(
+    const catalog = catalogContainer.querySelector(
       ".spetification-product-catalog"
     );
     if (catalog) {
@@ -249,9 +278,153 @@ window.addEventListener("DOMContentLoaded", () => {
           const priceNumberValue = getCurrentPrice(price.textContent);
           getDigitsNumber(price, priceNumberValue);
         }
+        showInformation(catalogItem);
       });
     }
+    // //Фильтры
+    // const filtersContainer = specificationContent.querySelector(".filters");
+    // const filters = filtersContainer.querySelectorAll(".filter-elem");
+    // filters.forEach((filter) => {
+    //   const tilte = filter.querySelector(".title-container");
+    //   const arrow = tilte.querySelector("span");
+    //   const content = filter.querySelector(".filter-content");
+
+    //   tilte.onclick = () => {
+    //     content.classList.toggle("show");
+    //     arrow.classList.toggle("rotate");
+
+    //     const checkboxes = content.querySelectorAll(".suppler-chekbox");
+    //     checkboxes.forEach((checkboxElem) => {
+    //       const checkBoxTitle = checkboxElem.querySelector("span").textContent;
+    //       const square = filter.querySelectorAll(".chekbox");
+
+    //       checkboxElem.addEventListener("click", function () {
+    //         const currentSquare = this.querySelector(".chekbox");
+    //         if (currentSquare.classList.contains("checked")) {
+    //           currentSquare.classList.remove("checked");
+    //         } else {
+    //           square.forEach((el) => el.classList.remove("checked"));
+    //           currentSquare.classList.toggle("checked");
+    //         }
+    //         const squareChecked = checkboxElem.querySelector(".checked");
+    //         if (squareChecked) {
+    //           setURLParams(location.href, { suppler: checkBoxTitle });
+    //         } else {
+    //           setURLParams(location.href, { suppler: "" });
+    //         }
+    //       });
+    //     });
+    //   };
+    // });
+    // //
+
+    //Пагинация и аякс загрузка
+    const endContent = catalog.querySelector(".products-end-content");
+    if (endContent) {
+      const loadMoreBtn = endContent.querySelector(".load-more-btn");
+      const searhForm = document.querySelector(".search-form-container");
+      const category = searhForm.getAttribute("category");
+      const group = searhForm.getAttribute("group");
+      const allProducts = catalog.querySelector(".all-products");
+      const loader = catalog.querySelector(".loader");
+
+      const params = new URLSearchParams(window.location.search);
+      let pageNum = params.get("page");
+      if (pageNum == 1 || !pageNum) {
+        pageNum = "";
+      }
+      const endpoint = "/admin_specification/load_products/";
+
+      const objData = {
+        group: group,
+        category: category,
+
+        pageNum: pageNum,
+      };
+      let data = JSON.stringify(objData);
+
+      loadMoreBtn.onclick = () => {
+        loader.classList.add("show");
+        fetch(endpoint, {
+          method: "Post",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status == "ok") {
+              loader.classList.remove("show");
+              if (!pageNum) {
+                pageNum = 2;
+              } else {
+                pageNum = +pageNum + 1;
+              }
+              objData.pageNum = pageNum;
+              data = JSON.stringify(objData);
+              const products = JSON.parse(response.products);
+              products.forEach((product) => {
+                allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                  product.pk
+                }  data-price=${
+                  !product.price ? 0 : product.price
+                }  data-motrum-id=${product.article} data-saler-id=${
+                  product.saler_article
+                }>
+                        <div class="hidden-description">
+                            <div class="descripton">
+                                <div class="name">${product.name}</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
+                                <div class="charactiristics">
+                                    ${
+                                      product.chars.length == 0
+                                        ? "Характеристика"
+                                        : product.chars.join(" ")
+                                    }
+                                </div>
+                                <div class="lot">
+                                    1 ${!product.lot ? "шт" : product.lot}
+                                </div>
+                                <div class="price">
+                                    ${
+                                      !product.price
+                                        ? "<span>По запросу</span>"
+                                        : `<span class="price-count">${product.price}</span> ₽`
+                                    }
+                                  
+                                </div>
+                            </div>
+                            <div class="item-buttons_container">
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button">-</button>
+                                    <input type="number"
+                                           value="0"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="3"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                                <button disabled class="add-specification-button">В корзину</button>
+                            </div>
+                        </div>
+                    </div>`;
+              });
+              const catalogItems =
+                allProducts.querySelectorAll(".catalog-item");
+              catalogItems.forEach((catalogItem) => {
+                showInformation(catalogItem);
+              });
+            }
+          });
+      };
+    }
+    //
   }
+  //
 
   const specificationContainer = document.querySelector(
     ".specification-container"
@@ -306,7 +479,6 @@ window.addEventListener("DOMContentLoaded", () => {
             localStorage.getItem("specificationValues")
           );
           specificationArray.splice(i, 1);
-
           const result = JSON.stringify(specificationArray);
 
           localStorage.setItem("specificationValues", result);
@@ -315,7 +487,6 @@ window.addEventListener("DOMContentLoaded", () => {
             path: "/",
             domain: window.location.hostname,
           });
-
           window.location.reload();
         };
       });
@@ -324,7 +495,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       saveButton.onclick = (e) => {
         e.preventDefault();
-
         const products = [];
         productItems.forEach((item) => {
           let price;
@@ -370,21 +540,27 @@ window.addEventListener("DOMContentLoaded", () => {
             if (response.status == "ok") {
               localStorage.removeItem("specificationValues");
               deleteCookie();
-              window.location.href =
-                "/admin_specification/all_specifications/";
+              window.location.href = "/admin_specification/all_specifications/";
             }
           })
           .catch((error) => console.error(error));
       };
     }
   }
+
+  //Слайдеры
+
   const categorySwiper = new Swiper(".categories_container", {
     slidesPerView: "auto",
+    navigation: {
+      nextEl: ".slider-arrow",
+    },
   });
 
   const groupSwiper = new Swiper(".group-slider", {
     slidesPerView: "auto",
   });
+  //
 
   const allSpecifications = document.querySelector(".all_specifications_table");
   if (allSpecifications) {
@@ -404,16 +580,55 @@ window.addEventListener("DOMContentLoaded", () => {
     const category = searhForm.getAttribute("category");
     const group = searhForm.getAttribute("group");
     const searchDescriptionField = searhForm.querySelector(
-      ".search-elems-field"
+      ".search-elem-fields"
     );
-    searchInput.onkeyup = () => {
-      if (searchInput.value.length >= 3) {
-        searchValue = searchInput.value;
-        const objData = {
-          category: category,
-          group: group,
-          value: searchValue,
+    const closebtn = searhForm.querySelector(".close-sreach-field-button");
+    const loader = searhForm.querySelector(".loader");
+
+    function searchProduct(arr) {
+      arr.forEach((el) => {
+        el.onclick = () => {
+          searchInput.value = el.textContent;
+          closeSearchWindow();
         };
+      });
+    }
+    function openSearchWindow() {
+      searchDescriptionField.style.display = "flex";
+      searchDescriptionField.style.opacity = "1";
+    }
+    function closeSearchWindow() {
+      searchDescriptionField.style.opacity = 0;
+      setTimeout(() => {
+        searchDescriptionField.style.display = "none";
+      }, 600);
+      searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
+    }
+
+    let start = 0;
+    let counter = 10;
+    const objData = {
+      category: category,
+      group: group,
+      value: searchValue,
+      start: start,
+      counter: counter,
+    };
+
+    function getNewSearchValues() {
+      start += 10;
+      counter += 10;
+      objData.start = start;
+      objData.counter = counter;
+    }
+    searchInput.onkeyup = () => {
+      searchValue = searchInput.value;
+      objData.value = searchValue;
+      objData.start = start;
+      objData.counter = counter;
+      if (searchInput.value.length > 2) {
+        openSearchWindow();
+        closebtn.classList.add("show");
         const data = JSON.stringify(objData);
         fetch(searchEndpoint, {
           method: "POST",
@@ -425,41 +640,71 @@ window.addEventListener("DOMContentLoaded", () => {
         }).then((response) =>
           response.json().then((response) => {
             if (response.status == "ok") {
+              loader.classList.add("remove");
+              start = 0;
+              counter = 10;
+              objData.start = start;
+              objData.counter = counter;
               const products = JSON.parse(response.products);
-              searchDescriptionField.style.display = "block";
-              // searchDescriptionField.style.heigth = "7rem";
-              setTimeout(() => {
-                searchDescriptionField.style.opacity = 1;
-              }, 600);
               searchDescriptionField.innerHTML = "";
               products.forEach((product) => {
                 searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
               });
-              if (products.length == 0) {
-                searchDescriptionField.innerHTML =
-                  "<div>Таких товаров нет</div>";
+              const searchProducts =
+                searchDescriptionField.querySelectorAll(".product");
+              if (searchProducts) {
+                searchProduct(searchProducts);
+                searchDescriptionField.onscroll = () => {
+                  if (
+                    searchDescriptionField.scrollHeight -
+                      searchDescriptionField.scrollTop <=
+                    searchDescriptionField.offsetHeight
+                  ) {
+                    const data = JSON.stringify(objData);
+                    fetch(searchEndpoint, {
+                      method: "POST",
+                      body: data,
+                      headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                      },
+                    }).then((response) =>
+                      response.json().then((response) => {
+                        if (response.status == "ok") {
+                          getNewSearchValues();
+                          const products = JSON.parse(response.products);
+                          products.forEach((product) => {
+                            searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+                          });
+                          const searchProducts =
+                            searchDescriptionField.querySelectorAll(".product");
+                          if (searchProducts) {
+                            searchProduct(searchProducts);
+                          }
+                        }
+                      })
+                    );
+                  }
+                };
+                if (products.length == 0) {
+                  searchDescriptionField.innerHTML =
+                    "<div>Таких товаров нет</div>";
+                }
               }
             }
           })
         );
-      } else {
-        searchDescriptionField.style.heigth = "1rem";
-        searchDescriptionField.style.opacity = 0;
-        setTimeout(() => {
-          searchDescriptionField.style.display = "none";
-        }, 600);
-        searchDescriptionField.innerHTML = "";
       }
-
-      searchDescriptionField.onmouseleave = () => {
-        searchDescriptionField.style.opacity = 0;
-        setTimeout(() => {
-          searchDescriptionField.style.display = "none";
-        }, 600);
-        searchDescriptionField.innerHTML = "";
+      closebtn.onclick = () => {
+        closeSearchWindow();
+        closebtn.classList.remove("show");
+        searchInput.value = "";
+        start = 0;
+        counter = 10;
+        objData.start = start;
+        objData.counter = counter;
       };
     };
   }
-
   //
 });

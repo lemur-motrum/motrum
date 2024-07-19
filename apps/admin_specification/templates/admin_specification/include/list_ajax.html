@@ -1,0 +1,44 @@
+{% for product in products_ajax %}
+    <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }}>
+        <div class="hidden-description">
+            <div class="descripton">
+                <div class="name">{{ product.name }}</div>
+                <div class="article-motrum">{{ product.article }}</div>
+                <div class="charactiristics">
+                    {% for char in product.productproperty_set.all %}
+                        {{ char.value }}
+                    {% empty %}
+                        характеристика
+                    {% endfor %}
+                </div>
+                <div class="lot">
+                    1
+                    {% if product.historic_stock.lot %}
+                        {{ product.historic_stock.lot.name_shorts }}
+                    {% else %}
+                        шт
+                    {% endif %}
+                </div>
+                <div class="price">
+                    {% if product.price.rub_price_supplier %}
+                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
+                    {% else %}
+                        <span>По запросу</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="item-buttons_container">
+                <div class="quantity-buttons">
+                    <button disabled class="minus-button">-</button>
+                    <input type="number"
+                           value="0"
+                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                           maxlength="3"
+                           onkeypress='validate(event)'>
+                    <button class="plus-button">+</button>
+                </div>
+                <button disabled class="add-specification-button">В корзину</button>
+            </div>
+        </div>
+    </div>
+{% endfor %}

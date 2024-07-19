@@ -2,10 +2,11 @@
 {% block content %}
     <div class="all_groups-container">
         <div class="bread-crumbs">
-            <a href="#">Главная</a>
-            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            {% comment %} <a href="#">Главная</a>
+            <a href="{% url "admin_specification:categories" %}">Каталог</a> {% endcomment %}
+            <a href={% url "admin_specification:categories" %}>Назад</a>
         </div>
-        <h1 class="title">{{ title }}</h1>
+        {% include "admin_specification/include/search_form.html" %}
         <div class="categories_container">
             <div class="swiper-wrapper">
                 {% for category in categories %}
@@ -15,7 +16,9 @@
                     </a>
                 {% endfor %}
             </div>
+            <div class="slider-arrow">></div>
         </div>
+        <h1 class="title">{{ title }}</h1>
         <div class="group-container">
             {% for group in groups %}
                 <a href="{% url "admin_specification:specifications" group.category.pk group.pk %}"
@@ -24,5 +27,6 @@
                 </a>
             {% endfor %}
         </div>
+        {% include "admin_specification/include/catalog_items.html" %}
     </div>
 {% endblock content %}

@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from genericpath import exists
 from mimetypes import init
 import os
+import re
 from tokenize import group
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
@@ -14,9 +15,9 @@ from simple_history.utils import update_change_reason
 
 from apps import product, supplier
 from apps.core.models import Currency
-from apps.core.utils import create_article_motrum, get_category, get_category_emas, get_file_path_add, lot_chek, save_file_product
+from apps.core.utils import create_article_motrum, get_category, get_category_emas, get_file_path_add, lot_chek, save_file_emas_product, save_file_product
 from apps.logs.utils import error_alert
-from apps.product.models import Lot, Price, Product, ProductImage, Stock
+from apps.product.models import Lot, Price, Product, ProductImage, ProductProperty, Stock
 from apps.supplier.models import (
     Supplier,
     SupplierCategoryProduct,
@@ -346,6 +347,7 @@ def add_file_emas(new_file, obj):
                             stock_prod.stock_supplier = count
 
                             stock_prod.save()
+                            print(stock_prod)
                             update_change_reason(stock_prod, "Автоматическое")
                     except Exception as e:
                         print(e)
@@ -487,72 +489,191 @@ def add_group_emas(new_file):
 
 def add_props_emas_product():
     from bs4 import BeautifulSoup
-    
-    supplier = Supplier.objects.get(slug="emas")
-    product = Product.objects.filter(supplier=supplier).last()
-    
-    
-    path = f"{MEDIA_ROOT}/price/emas_site/emas.xml"
+    try:
+        
+        supplier = Supplier.objects.get(slug="emas")
+        vendor = Vendor.objects.get(slug="emas")
+        product = Product.objects.filter(supplier=supplier)
+        
+        
+        path = f"{MEDIA_ROOT}/price/emas_site/emas.xml"
 
-    with open(f"{MEDIA_ROOT}/price/emas_site/emas.xml", "r") as f:
-        file = f.read()
+        with open(f"{MEDIA_ROOT}/price/emas_site/emas.xml", "r") as f:
+            file = f.read()
 
-    soup = BeautifulSoup(file, "xml") 
-    props = []
-    class_props = soup.Классификатор.Свойства.find_all("Группа", recursive=False)
-    def finder_props(id,name):
-        for class_item in class_props:
-            prop_id = class_item.find("Ид", recursive=False)
-            prop_id_text = prop_id.get_text()
+        soup = BeautifulSoup(file, "xml") 
+        # props = []
+        # class_props = soup.Классификатор.Свойства.find_all("Группа", recursive=False)
+        # def finder_props(id,name):
+        #     for class_item in class_props:
+        #         prop_id = class_item.find("Ид", recursive=False)
+        #         prop_id_text = prop_id.get_text()
+                
+        #         if prop_id == prop_id_text:
+                    
+        #             prop_name = class_item.find("Наименование", recursive=False)
+        #             prop_name_text = prop_name.get_text()
+                    
+        #             # f_var = 
+        #             variable = class_item.ВариантыЗначений.Значение.find_all("Значение", recursive=False)
+        
+        # перебор товаров 
+        non_props = 0
+        yes_props = 0
+        for product_item in product:
             
-            if prop_id == prop_id_text:
+            name_art = product_item.article_supplier
+            product_soup = soup.Товары.find_all("Значение", string=name_art)
+            if  product_soup == []:
                 
-                prop_name = class_item.find("Наименование", recursive=False)
-                prop_name_text = prop_name.get_text()
+                non_props += 1
+            else:
+                yes_props += 1
+                print(product_soup)
+                for product_soup_items in product_soup:
+                    parent_product_soup = product_soup_items.parent.parent.parent
+                    if parent_product_soup.Группы is not None:
+                        parent_product_soup_group = parent_product_soup.Группы.Ид
+                        if parent_product_soup_group is not None:
+                            text = parent_product_soup.ЗначенияСвойств.find("Ид", string="CML2_PREVIEW_TEXT")
+                            description_bs_parent = text.parent.Значение.get_text()
+                            if description_bs_parent != "":
+                                item_product_bs = parent_product_soup
+                                                  
+                groupe_bs = item_product_bs.Группы.Ид.get_text()
+                groupe_items = get_category_emas(supplier, groupe_bs)
                 
-                # f_var = 
-                variable = class_item.ВариантыЗначений.Значение.find_all("Значение", recursive=False)
+                image_old =  ProductImage.objects.filter(product=product_item).exists()
+                if image_old == False:
+                    # сохранение картинок
+                    image_bs = item_product_bs.Картинка.get_text()
+                    print(image_bs)
+                    if image_bs != "":
+                        image = ProductImage.objects.create(product=product_item)
+                        update_change_reason(image, "Автоматическое")
+                        image_path = get_file_path_add(image, image_bs)
+                    
+                        
+                        p = save_file_emas_product(image_bs, image_path)
+                        image.photo = image_path
+                        image.link = image_bs
+                        image.save()
+                        update_change_reason(image, "Автоматическое")
+                
+                # сохранение пропсов и описаний из текста
+                description_bs = item_product_bs.ЗначенияСвойств.find("Ид", string="CML2_PREVIEW_TEXT") 
+                description_bs_parent = description_bs.parent.Значение.get_text()
+                
+                tds = []
+                soup_desc = BeautifulSoup(description_bs_parent, 'html.parser')
+                
+                
+                quotes = soup_desc.find_all('tbody',)
+                if len(quotes) == 1:
+                    print(quotes)
+               
+                    for div in quotes:
+                        rows = div.findAll('tr')
+                        for row in rows :
+                            r = row.findAll('td')
+                            if len(r) == 2:
+                                tds.append(r)
+                   
+             
+                text_desc = ''      
+                # текст из р  
+                quotes_text = soup_desc.find_all('p')
+                for p_text in quotes_text:
+                    
+                    text = re.sub(r"<[^>]+>", "", str(p_text), flags=re.S)
+                    text =' '.join(text.split())
+                    text = text.replace("<br>", ". ")
+                    text = text.replace("</li>", ". ")
+                    text = text.replace("<li>", "")
+                    
+                    if text != "":
+                        if text_desc == "":
+                            text_desc = text
+                        else:
+                            text_desc = f"{text_desc}{text}" 
+                            
+                quotes_li = soup_desc.find_all('li')
+                for li_text in quotes_li:
+                    text_li = re.sub(r"<[^>]+>", "", str(li_text), flags=re.S)
+                    text_li =' '.join(text_li.split())
+                    print(text_li)
+                    text_li = text_li.replace("<br>", ". ")
+                    text_li = text_li.replace("</li>", ". ")
+                    text_li = text_li.replace("<li>", "")
+                    
+                    if text_li != "":
+                        if text_desc == "":
+                            text_desc = text_li
+                        else:
+                            text_desc = f"{text_desc}{text_li}"                
+                
+                if text_desc == "":
+                    text_desc = str(soup_desc)
+
+                if text_desc == "":
+                    text_desc = None
+
+                
+                if product_item.description == None:
+                    product_item.description = text_desc
+                if  product_item.category_supplier   == None: 
+                    product_item.category_supplier_all=groupe_items[0]
+                    product_item.group_supplier=groupe_items[1]
+                    product_item.category_supplier=groupe_items[2]
+                if  product_item.vendor == None:
+                    product_item.vendor = vendor
+             
+                # product_item.description = text_desc
     
-    # перебор товаров 
-    # for product_item in product:
-    #     article = product_item.article_supplier
-        
-    #     product_soup = soup.Товары.Товар.find_all("Значение",  string="article")
-        
-        # for cproduct_soup_item in product_soup:
-        #     if cproduct_soup_item.Ид.
+                # product_item.category_supplier_all=groupe_items[0]
+                # product_item.group_supplier=groupe_items[1]
+                # product_item.category_supplier=groupe_items[2]
+             
+                # product_item.vendor = vendor
+                product_item.save()
+                update_change_reason(
+                                product_item, "Автоматическое"
+                            )
+                
+                
+                props_old =  ProductProperty.objects.filter(product=product_item).exists()
+                if props_old == False :
+                # if props_old == False:
+                        
+                    if tds != []:
+                        for td in tds:
+                            if td != []:
+                                name_props = re.sub(
+                                    r"<[^>]+>", "", str(td[0]), flags=re.S
+                                )
+                                name_props = ' '.join(name_props.split())
+                                value_props = re.sub(
+                                    r"<[^>]+>", "", str(td[1]), flags=re.S
+                                )
+                                value_props = ' '.join(value_props.split())
+                                if name_props == "Характеристики":
+                                    pass
+                                else:
+                                    props_product = ProductProperty(product=product_item)
+                                    props_product.name = name_props
+
+                                    props_product.value = value_props
+                                    props_product.save()
+                                    update_change_reason(
+                                        props_product, "Автоматическое"
+                                    )
     
-    print(33333333333333)
-    product_soup = soup.Товары.find_all("Значение", string="PVK6E") 
+    except Exception as e:
+        print(e)
+        error = "file_error"
+        location = "Загрузка фаилов Delta"
+
+        info = f"ошибка при чтении строки артикул"
+        e = error_alert(error, location, info)    
+        
   
-    for product_soup_items in product_soup:
-        parent_product_soup = product_soup_items.parent.parent.parent
-        if parent_product_soup.Группы is not None:
-            parent_product_soup_group = parent_product_soup.Группы.Ид
-            if parent_product_soup_group is not None:
-                print(parent_product_soup_group)
-                item_product_bs = parent_product_soup
-                
-    print(item_product_bs)        
-    groupe_bs = item_product_bs.Группы.Ид.get_text()
-    
-    
-    print(groupe_bs) 
-    groupe_items = get_category_emas(supplier, groupe_bs)
-    print(groupe_items)   
-    
-    image_bs = item_product_bs.Картинка.get_text()
-    if image_bs is not None:
-        image = ProductImage.objects.create(product=product)
-        update_change_reason(image, "Автоматическое")
-        image_path = get_file_path_add(image, image_bs)
-        print(image_path)
-        
-        p = save_file_product(image_link, image_path)
-        image.photo = image_path
-        image.link = image_link
-        image.save()
-        update_change_reason(image, "Автоматическое")
-    
-    
-    print(stop)

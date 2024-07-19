@@ -2,10 +2,6 @@
 {% block content %}
     <div class="specification-container">
         <div class="nav_contaner">
-            <div class="bread-crumbs">
-                <a href="#">Главная</a>
-                <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            </div>
             <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
         </div>
         <h1 class="title">{{ title }}</h1>

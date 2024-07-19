@@ -511,8 +511,14 @@ class ProductAdmin(SimpleHistoryAdmin):
 
                 for item_dict in product_blank_dict:
                     verbose_name = Model._meta.get_field(item_dict).verbose_name
-                    item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
-                    product_blank_local = f"{product_blank_local}{item_one}"
+                    if verbose_name != "Подгруппа категории товара от поставщиков" and verbose_name != "Группа товара от поставщиков" and verbose_name != "Группа Мотрум" and verbose_name != "Дополнительный артикул поставщика":
+                        if verbose_name == 'Категория Мотрум':
+                            item_one = f"<li font-size: 0.6rem>Группировка Motrum</li>"
+                        elif  verbose_name == 'Категории товара от поставщиков':
+                            item_one = f"<li font-size: 0.6rem>Группировка поставщика</li>" 
+                        else:     
+                            item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
+                        product_blank_local = f"{product_blank_local}{item_one}"
 
             product_blank = f"{product_blank}{product_blank_local}"
             return product_blank

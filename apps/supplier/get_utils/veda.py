@@ -1,6 +1,6 @@
 import os
 from apps.core.models import Currency, Vat
-from apps.core.utils import create_article_motrum
+from apps.core.utils import create_article_motrum, save_update_product_attr
 from apps.logs.utils import error_alert
 from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import Supplier, Vendor
@@ -23,17 +23,18 @@ def veda_api():
 
     headers = {
     'Authorization': f"{os.environ.get("VEDA_API_TOKEN")}",
-    'Cookie': 'csrftoken=SGCeKpFZXtWm7YnZm9Bmf5ThpnuJpHFxCGXIbqv5SWD0w1rT7NCI7WoGsDD7rLMA'
+    # 'Cookie': 'csrftoken=SGCeKpFZXtWm7YnZm9Bmf5ThpnuJpHFxCGXIbqv5SWD0w1rT7NCI7WoGsDD7rLMA'
     }
 
     response = requests.request("GET", url, headers=headers,)
     data = response.json()
-
+    print(response)
     i = 0
     for data_item in data['prices']:
      
                 
         try:
+            print(data_item)
             article_suppliers = data_item["materialCode"]
             name = data_item["description"]
                 # цены
@@ -58,6 +59,10 @@ def veda_api():
                     vendor=vendor,
                     article_supplier=article_suppliers,
                 )
+                
+                save_update_product_attr(article, supplier, vendor,None,None,None,None,None, name)
+                            
+                            
             except Product.DoesNotExist:
                     # если товара нет в бд 
                     new_article = create_article_motrum(supplier.id)

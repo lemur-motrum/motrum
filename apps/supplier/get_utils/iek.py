@@ -1,4 +1,5 @@
 from html import entities
+import os
 import traceback
 import requests
 from simple_history.utils import update_change_reason
@@ -15,6 +16,7 @@ from apps.core.utils import (
     get_price_motrum,
     response_request,
     save_file_product,
+    save_update_product_attr,
 )
 from apps.logs.utils import error_alert
 from apps.product.models import (
@@ -246,7 +248,8 @@ def iek_api():
    
     payload = {}
     headers = {
-        "Authorization": "Basic NjAwLTIwMjMwNjI2LTE2Mjg0MS0yMTc6Zk4sNUtfaDFrMVk9bTdDLQ=="
+        'Authorization': f"{os.environ.get("IEK_API_TOKEN")}",
+        # "Authorization": "Basic NjAwLTIwMjMwNjI2LTE2Mjg0MS0yMTc6Zk4sNUtfaDFrMVk9bTdDLQ=="
     }
     base_url = "https://lk.iek.ru/api/"
 
@@ -558,8 +561,9 @@ def iek_api():
                             article = Product.objects.get(
                                 supplier=supplier, article_supplier=article_suppliers
                             )
-                            article.description = description
-                            article.save()
+                            save_update_product_attr(article, supplier, vendor_add[0],None,item_category_all[2],item_category_all[1],item_category_all[0],description, name)
+                            
+                            
                             image =  ProductImage.objects.filter(product=article).exists()   
                             if image == False:
                                 save_image(article)
@@ -757,12 +761,12 @@ def iek_api():
                 continue 
      
     # категории 
-    get_iek_category("ddp", None)
-    
+    # get_iek_category("ddp", None)
+    get_iek_product("products", f"art=AR-M10N-4-K006")
     # запись продуктов и пропсовдля каждого по категориям 
-    for item_iek_save_categ in iek_save_categ:
-        get_iek_product("products", f"groupId={item_iek_save_categ}")
-        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    # for item_iek_save_categ in iek_save_categ:
+    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
+    #     get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
     # get_iek_property("etim", None)
   

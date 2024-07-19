@@ -1,0 +1,25 @@
+<div class="search-container">
+    <form class="search-form-container"
+          category="{% if category %}{{ category.pk }}{% endif %}"
+          group="{% if group %}{{ group.pk }}{% endif %}"
+          action=""
+          method="get">
+        {% csrf_token %}
+        <div class="form-error">{{ form.non_field_errors }}</div>
+        <div class="form-flex-container">
+            {% for form_elem in form %}
+                <div class="input-container">
+                    <div class="close-sreach-field-button">+</div>
+                    {{ form_elem }}
+                </div>
+            {% endfor %}
+            <div class="search-elem-fields">
+                <div class="loader">loading</div>
+            </div>
+            <button type="submit">Найти</button>
+        </div>
+    </form>
+    <div class="specification-link-container">
+        <a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span>0</span>
+    </div>
+</div>

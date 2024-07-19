@@ -14,22 +14,22 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'current_rate': {
         'task': 'apps.core.tasks.get_currency',
-        'schedule': crontab(minute=20, hour=12),
+        'schedule': crontab(minute=10, hour=0),
     },
     'specification_stop': {
         'task': 'apps.specification.tasks.specification_date_stop',
-        'schedule': crontab(minute=30, hour=12),
+        'schedule': crontab(minute=20, hour=0),
     },
     'add_iek': {
         'task': 'apps.supplier.tasks.add_iek',
-        'schedule': crontab(minute=00, hour=14),
+        'schedule': crontab(minute=00, hour=3),
     },
     'add_veda': {
         'task': 'apps.supplier.tasks.add_veda',
-        'schedule': crontab(minute=00, hour=12),
+        'schedule': crontab(minute=00, hour=2),
     },
     'add_prompower': {
         'task': 'apps.supplier.tasks.add_prompower',
-        'schedule': crontab(minute=00, hour=11),
+        'schedule': crontab(minute=00, hour=1),
     },
 }

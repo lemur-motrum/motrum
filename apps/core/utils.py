@@ -15,7 +15,7 @@ from apps.logs.utils import error_alert
 from django.conf import settings
 from apps.supplier.get_utils.delta import add_file_delta
 from project.settings import MEDIA_ROOT
-
+from simple_history.utils import update_change_reason
 
 # цена мотрум со скидкой
 def get_price_motrum(
@@ -180,6 +180,7 @@ def get_category(supplier, vendor, category_name):
 
     return (item_category, item_group, item_category_all[0])
 
+
 # категории поставщика промповер для товара
 def get_category_prompower(supplier, vendor, category_name):
     from apps.supplier.models import (
@@ -217,6 +218,7 @@ def get_category_prompower(supplier, vendor, category_name):
 
     return (category_all, groupe, categ)
 
+
 # ктегории поставщика для еиас
 def get_category_emas(supplier, category_name):
     from apps.supplier.models import (
@@ -224,7 +226,7 @@ def get_category_emas(supplier, category_name):
         SupplierCategoryProductAll,
         SupplierGroupProduct,
     )
-    
+
     try:
         category_all = SupplierCategoryProductAll.objects.get(
             supplier=supplier, article_name=category_name
@@ -234,7 +236,7 @@ def get_category_emas(supplier, category_name):
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
-                supplier=supplier,  article_name=category_name
+                supplier=supplier, article_name=category_name
             )
             category_all = None
 
@@ -242,7 +244,7 @@ def get_category_emas(supplier, category_name):
         except SupplierGroupProduct.DoesNotExist:
             try:
                 categ = SupplierCategoryProduct.objects.get(
-                    supplier=supplier,  article_name=category_name
+                    supplier=supplier, article_name=category_name
                 )
                 category_all = None
                 groupe = None
@@ -269,6 +271,7 @@ def check_media_directory_exist(
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
+
 # проверка директории для спецификаций
 def check_spesc_directory_exist(
     base_dir,
@@ -282,6 +285,7 @@ def check_spesc_directory_exist(
         os.makedirs(new_dir)
     return new_dir
 
+
 # проверка директории для загрузки прайса из админки
 def check_file_price_directory_exist(base_dir, base_dir_supplier):
     import shutil
@@ -294,6 +298,7 @@ def check_file_price_directory_exist(base_dir, base_dir_supplier):
         shutil.rmtree(new_dir)
 
     return new_dir
+
 
 # переименовывание изображений и документов по очереди
 def create_name_file_downloading(article_suppliers, item_count):
@@ -346,10 +351,18 @@ def save_file_product(link, image_path):
         ofile.write(r.content)
 
 
+def save_file_emas_product(link, image_path):
+
+    out = f"{MEDIA_ROOT}/price/emas_site/{link}"
+    in_out = f"{MEDIA_ROOT}/{image_path}"
+    shutil.copy2(out, in_out)
+
+
 # сохранение изображений и докуметов из админки и общее
 def get_file_path_add(instance, filename):
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
+
     s = str(instance.product.article_supplier)
     item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
     print(999999999999999999999)
@@ -380,9 +393,7 @@ def get_file_path_add(instance, filename):
         # print(item_count)
         print(instance)
         print(instance.type_doc)
-        filenames = create_name_file_downloading(
-            item_instanse_name, item_count
-        )
+        filenames = create_name_file_downloading(item_instanse_name, item_count)
         filename = f"{filenames}_{instance.type_doc}{type_file}"
 
     elif isinstance(instance, ProductImage):
@@ -395,13 +406,10 @@ def get_file_path_add(instance, filename):
         except ProductImage.DoesNotExist:
             item_count = 1
         # print(item_count)
-        filenames = create_name_file_downloading(
-            item_instanse_name, item_count
-        )
+        filenames = create_name_file_downloading(item_instanse_name, item_count)
 
         filename = filenames + type_file
-    print(11111111111111111111111111111111111111)
-    print(item_instanse_name)
+
     check_media_directory_exist(
         base_dir,
         base_dir_supplier,
@@ -437,8 +445,8 @@ def response_request(response, location):
     else:
         error = "file api"
         if response == 502:
-           pass
-        else: 
+            pass
+        else:
             error_alert(error, location, response)
         return False
 
@@ -494,24 +502,22 @@ def get_motrum_category(self):
         group_catalog = self.category_supplier_all.group_catalog
         print(category_catalog, group_catalog)
 
-       
     if self.group_supplier != None:
 
         if category_catalog == None and group_catalog == None:
             category_catalog = self.group_supplier.category_catalog
             group_catalog = self.group_supplier.group_catalog
-         
-            print( self.group_supplier.category_catalog, self.group_supplier.group_catalog)
-       
-        
+
+            print(
+                self.group_supplier.category_catalog, self.group_supplier.group_catalog
+            )
 
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
             print(category_catalog, group_catalog)
-       
-        
+
     print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
@@ -561,7 +567,7 @@ def get_file_price_path_add(instance, filename):
         # print(filename + filetype)
 
         return file
-    
+
     elif instance.slug == "emas":
         base_dir = "price"
         base_dir_supplier = instance.slug
@@ -583,3 +589,56 @@ def get_file_price_path_add(instance, filename):
         # print(filename + filetype)
 
         return file
+    
+    elif instance.slug == "avangard":
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        # print(filename + filetype)
+
+        return file
+
+
+def save_update_product_attr(product, supplier, vendor,additional_article_supplier,category_supplier_all,group_supplier,category_supplier,description, name):
+    if product.supplier == None:
+        product.supplier = supplier
+
+    if product.vendor == None:
+        product.vendor = vendor
+
+    if product.additional_article_supplier == None:
+        product.additional_article_supplier = additional_article_supplier
+
+    if product.category_supplier_all == None:
+        product.category_supplier_all = category_supplier_all
+        
+    if product.group_supplier == None:
+        product.group_supplier = group_supplier
+    
+    if product.category_supplier == None:
+        product.category_supplier = category_supplier
+        
+    if product.description == None:
+        product.description = description
+        
+    if product.name == None:
+        product.name = name  
+        
+    product.save()
+    update_change_reason(
+        product, "Автоматическое"
+    )             

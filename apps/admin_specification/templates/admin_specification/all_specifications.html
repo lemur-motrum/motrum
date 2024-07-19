@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="all_specifications_container">
-        <div class="bread-crumbs">
+        {% comment %} <div class="bread-crumbs">
             <a href="#">Главная</a>
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
-        </div>
+        </div> {% endcomment %}
         <h1 class="title">{{ title }}</h1>
         <div class="all_specifications_content">
             <div class="table-titles">

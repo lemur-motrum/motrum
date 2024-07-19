@@ -1,14 +1,18 @@
 import json
 import os
 from django.core import serializers
+from django.db.models import Prefetch
 
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.shortcuts import render
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
+    Lot,
     Price,
     Product,
+    ProductProperty,
+    Stock,
 )
 from django.core.paginator import Paginator
 
@@ -23,7 +27,44 @@ def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all()
 
-    context = {"title": title, "categories": categories}
+    product_list = Product.objects.select_related(
+        "supplier",
+        "vendor",
+        "category_supplier_all",
+        "group_supplier",
+        "category_supplier",
+        "category",
+        "group",
+        "price",
+        "historic_stock",
+    ).all()
+
+    if request.method == "GET":
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            search_input = request.GET.get("search_input")
+            if request.GET.get("search_input") != None:
+                product_list = product_list.filter(
+                    Q(name__icontains=search_input)
+                    | Q(article__icontains=search_input)
+                    | Q(article_supplier__icontains=search_input)
+                    | Q(additional_article_supplier__icontains=search_input)
+                )
+    else:
+        form = SearchForm()
+
+    paginator = Paginator(product_list, 9)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    num_of_pages = paginator.num_pages
+
+    context = {
+        "title": title,
+        "categories": categories,
+        "products": page_obj,
+        "num_of_pages": num_of_pages,
+        "form": form,
+    }
 
     return render(request, "admin_specification/categories.html", context)
 
@@ -31,6 +72,36 @@ def all_categories(request):
 def group_product(request, cat):
     categoryes = CategoryProduct.objects.all()
     groups = GroupProduct.objects.select_related("category").filter(category=cat)
+    product_list = Product.objects.select_related(
+        "supplier",
+        "vendor",
+        "category_supplier_all",
+        "group_supplier",
+        "category_supplier",
+        "category",
+        "group",
+        "price",
+        "historic_stock",
+    ).filter(category=cat)
+
+    if request.method == "GET":
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            search_input = request.GET.get("search_input")
+            if request.GET.get("search_input") != None:
+                product_list = product_list.filter(
+                    Q(name__icontains=search_input)
+                    | Q(article__icontains=search_input)
+                    | Q(article_supplier__icontains=search_input)
+                    | Q(additional_article_supplier__icontains=search_input)
+                )
+    else:
+        form = SearchForm()
+
+    paginator = Paginator(product_list, 9)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    num_of_pages = paginator.num_pages
 
     def get_category_name():
         current_cats = [category for category in categoryes if category.pk == cat]
@@ -41,10 +112,19 @@ def group_product(request, cat):
         current_cats = [category for category in categoryes if category.pk != cat]
         return current_cats
 
+    def get_category():
+        current_cats = [category for category in categoryes if category.pk == cat]
+        category = current_cats[0]
+        return category
+
     context = {
         "title": get_category_name(),
         "categories": get_another_category(),
         "groups": groups,
+        "products": page_obj,
+        "num_of_pages": num_of_pages,
+        "form": form,
+        "category": get_category(),
     }
 
     return render(request, "admin_specification/group.html", context)
@@ -65,6 +145,20 @@ def specifications(request, cat, gr):
     ).filter(category=cat, group=gr)
 
     groups = GroupProduct.objects.select_related("category").all()
+
+    supplers = []
+
+    for product in product_list:
+        supplers.append(product.supplier)
+
+    def get_unique_supplers():
+        list_of_unique_supplers = []
+        unique_supplers = set(supplers)
+
+        for suppler in unique_supplers:
+            list_of_unique_supplers.append(suppler)
+
+        return list_of_unique_supplers
 
     def get_category():
         current_cats = [category for category in categoryes if category.pk == cat]
@@ -110,6 +204,7 @@ def specifications(request, cat, gr):
         "group": get_current_group(),
         "another_groups": get_another_groups(),
         "category": get_category(),
+        "supplers": get_unique_supplers(),
     }
     return render(request, "admin_specification/specification_page.html", context)
 
@@ -206,6 +301,7 @@ def get_all_specifications(request):
 
 
 def instruments(request, cat):
+
     category = CategoryProduct.objects.filter(pk=cat)
     product_list = Product.objects.select_related(
         "supplier",
@@ -236,7 +332,25 @@ def instruments(request, cat):
     else:
         form = SearchForm()
 
-    paginator = Paginator(product_list, 9)
+    supplers = []
+
+    for product in product_list:
+        supplers.append(product.supplier)
+
+    def get_unique_supplers():
+        list_of_unique_supplers = []
+        unique_supplers = set(supplers)
+
+        for suppler in unique_supplers:
+            list_of_unique_supplers.append(suppler)
+
+        return list_of_unique_supplers
+
+    if request.POST.get("numpage"):
+        paginator = 312
+    else:
+        paginator = Paginator(product_list, 9)
+
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     num_of_pages = paginator.num_pages
@@ -247,6 +361,7 @@ def instruments(request, cat):
         "form": form,
         "search_input": search_input,
         "category": category,
+        "supplers": get_unique_supplers(),
     }
 
     return render(request, "admin_specification/specification_page.html", context)
@@ -257,30 +372,29 @@ def search_product(request):
     cat = data["category"]
     gr = data["group"]
     value = data["value"]
+    start = data["start"]
+    counter = data["counter"]
 
-    if gr == "":
+    if gr == "" and cat == "":
         product_list = Product.objects.select_related(
             "supplier",
             "vendor",
-            "category_supplier_all",
-            "group_supplier",
-            "category_supplier",
             "category",
             "group",
-            "price",
-            "historic_stock",
+        ).all()
+    elif gr == "":
+        product_list = Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category",
+            "group",
         ).filter(category=cat)
     else:
         product_list = Product.objects.select_related(
             "supplier",
             "vendor",
-            "category_supplier_all",
-            "group_supplier",
-            "category_supplier",
             "category",
             "group",
-            "price",
-            "historic_stock",
         ).filter(category=cat, group=gr)
 
     product_list = product_list.filter(
@@ -289,7 +403,99 @@ def search_product(request):
         | Q(article_supplier__icontains=value)
         | Q(additional_article_supplier__icontains=value)
     )
+    items = product_list[start:counter]
 
-    products = serializers.serialize("json", product_list)
+    products = serializers.serialize("json", items)
     out = {"status": "ok", "products": products}
     return JsonResponse(out)
+
+
+def load_products(request):
+    data = json.loads(request.body)
+    cat = data["category"]
+    gr = data["group"]
+    page_num = data["pageNum"]
+
+    if page_num == "":
+        start_point = 9
+    else:
+        start_point = int(page_num) * 9
+
+    endpoint_product = start_point + 9
+
+    if gr == "" and cat == "":
+        product_list = (
+            Product.objects.prefetch_related(
+                "supplier",
+                "vendor",
+                "category_supplier_all",
+                "group_supplier",
+                "category_supplier",
+                "category",
+                "group",
+                "price",
+                "historic_stock",
+            )
+            .all()
+            .order_by("pk")
+        )
+    elif gr == "":
+        product_list = (
+            Product.objects.prefetch_related(
+                "supplier",
+                "vendor",
+                "category_supplier_all",
+                "group_supplier",
+                "category_supplier",
+                "category",
+                "group",
+                "price",
+                "historic_stock",
+            )
+            .filter(category=cat)
+            .order_by("pk")
+        )
+    else:
+        product_list = (
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+            )
+            .filter(category=cat, group=gr)
+            .order_by("pk")
+        )
+
+    items = product_list[start_point:endpoint_product]
+
+    products = []
+
+    for product_elem in items:
+        price = Price.objects.filter(prod=product_elem.pk)[0].rub_price_supplier
+        chars = ProductProperty.objects.filter(product=product_elem.pk)
+        lot = Stock.objects.filter(prod=product_elem.pk)[0]
+
+        name = product_elem.name
+        lotname = lot.lot.name_shorts
+        pk = product_elem.pk
+        article = product_elem.article
+        saler_article = product_elem.article_supplier
+        characteristics = []
+        for char in chars:
+            characteristics.append(char.value)
+
+        product = {
+            "name": name,
+            "lot": lotname,
+            "pk": pk,
+            "article": article,
+            "saler_article": saler_article,
+            "price": price,
+            "chars": characteristics,
+        }
+        products.append(product)
+
+    current_products = json.dumps(products)
+    out = {"status": "ok", "products": current_products}
+    return JsonResponse(out, safe=False)

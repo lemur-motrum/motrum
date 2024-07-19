@@ -1,0 +1,125 @@
+<div class="catalog_container">
+    <div class="product-catalog-articles">
+        {% comment %} <div class="article">Фильтр</div> {% endcomment %}
+        <div class="article">Товар</div>
+        <div class="article">Артикул</div>
+        <div class="article">Характеристики</div>
+        <div class="article">Упак.</div>
+        <div class="article">Цена</div>
+    </div>
+    <div class="content-container">
+        {% comment %} <div class="filters">
+            <div class="filter-elem">
+                <div class="title-container">
+                    <span>^</span>
+                    <div class="title">Производитель</div>
+                </div>
+                <div class="filter-content">
+                    {% for suppler in supplers %}
+                        <div class="suppler-chekbox">
+                            <div class="chekbox"></div>
+                            <span>{{ suppler }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div> {% endcomment %}
+        <div class="spetification-product-catalog">
+            <div class="all-products">
+                {% for product in products %}
+                    <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }}>
+                        <div class="hidden-description">
+                            <div class="descripton">
+                                <div class="name">{{ product.name }}</div>
+                                <div class="article-motrum">{{ product.article }}</div>
+                                <div class="charactiristics">
+                                    {% for char in product.productproperty_set.all %}
+                                        {{ char.value }}
+                                    {% empty %}
+                                        характеристика
+                                    {% endfor %}
+                                </div>
+                                <div class="lot">
+                                    1
+                                    {% if product.historic_stock.lot %}
+                                        {{ product.historic_stock.lot.name_shorts }}
+                                    {% else %}
+                                        шт
+                                    {% endif %}
+                                </div>
+                                <div class="price">
+                                    {% if product.price.rub_price_supplier %}
+                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
+                                    {% else %}
+                                        <span>По запросу</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="item-buttons_container">
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button">-</button>
+                                    <input type="number"
+                                           value="0"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="3"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                                <button disabled class="add-specification-button">В корзину</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% include "admin_specification/include/list_ajax.html" %}
+                {% empty %}
+                    <div class="none-products">
+                        Товаров в группе "
+                        {% if group %}
+                            {{ group }}
+                        {% else %}
+                            {{ title }}
+                        {% endif %}
+                        " пока нет
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="loader">loading</div>
+            {% if products %}
+                <div class="products-end-content">
+                    <div class="load-more-btn">Загрузить еще</div>
+                    <div class="pagintion">
+                        {% if products.number == 1 or products.number == 2 or products.number == 3 %}
+                        {% else %}
+                            {% if search_input %}
+                                <a class="first-elem" href="?page=1&search_input={{ search_input }}"><span>1</span></a>
+                            {% else %}
+                                <a class="first-elem" href="?page=1"><span>1</span></a>
+                            {% endif %}
+                        {% endif %}
+                        {% for p in products.paginator.page_range %}
+                            {% if products.number == p %}
+                                <div class="page-num-selected">
+                                    <span>{{ p }}</span>
+                                </div>
+                            {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
+                                {% if search_input %}
+                                    <a href="?page={{ p }}&search_input={{ search_input }}"><span>{{ p }}</span></a>
+                                {% else %}
+                                    <a href="?page={{ p }}"><span>{{ p }}</span></a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if products.number == num_of_pages or products.number == num_of_pages|add:"-1" or products.number == num_of_pages|add:"-2" %}
+                        {% else %}
+                            {% if search_input %}
+                                <a class="last-elem"
+                                   href="?page={{ num_of_pages }}&search_input={{ search_input }}"><span>{{ num_of_pages }}</span></a>
+                            {% else %}
+                                <a class="last-elem" href="?page={{ num_of_pages }}"><span>{{ num_of_pages }}</span></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

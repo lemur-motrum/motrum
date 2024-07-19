@@ -13,6 +13,7 @@ class SearchForm(forms.Form):
             attrs={
                 "class": "form-input",
                 "autocomplete": "off",
+                "placeholder": "Ведеите наименование или артикул",
             }
         ),
         required=False,

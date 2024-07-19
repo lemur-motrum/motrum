@@ -26,4 +26,5 @@ urlpatterns = [
         name="save_specification_view_admin",
     ),
     path("search_product/", views.search_product, name="search_product"),
+    path("load_products/", views.load_products, name="load_products"),
 ]

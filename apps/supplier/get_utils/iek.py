@@ -542,7 +542,8 @@ def iek_api():
                         # остатки
                         if "min_ship" in data_item:
                             if data_item["min_ship"] > 1:
-                                lot_short = "набор"
+                                # lot_short = "набор"
+                                lot_short = "штука"
                             else:
                                 lot_short = "штука"
                         else: 

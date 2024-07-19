@@ -203,7 +203,7 @@ class Product(models.Model):
 
 
 class CategoryProduct(models.Model):
-    name = models.CharField("Название категории", max_length=50)
+    name = models.CharField("Название категории", max_length=100)
     slug = models.SlugField(null=True)
     article_name = models.CharField(
         "Артикул категории",
@@ -227,7 +227,7 @@ class CategoryProduct(models.Model):
 
 
 class GroupProduct(models.Model):
-    name = models.CharField("Название группы", max_length=50)
+    name = models.CharField("Название группы", max_length=100)
     slug = models.SlugField(null=True)
     category = models.ForeignKey(
         CategoryProduct,
@@ -346,7 +346,7 @@ class Price(models.Model):
             sale = price_motrum_all[1]
             self.price_motrum = price_motrum
             self.sale = sale
-            
+
         super().save(*args, **kwargs)
 
 
@@ -400,7 +400,7 @@ class Stock(models.Model):
     def save(self, *args, **kwargs):
 
         lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
-
+       
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
 

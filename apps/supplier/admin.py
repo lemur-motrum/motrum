@@ -38,14 +38,14 @@ class VendorInline(admin.TabularInline):
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    # fieldsets = [
-    #     (
-    #         "Основные параметры",
-    #         {
-    #             "fields": [("name", "structure",)],
-    #         },
-    #     ),
-    # ]
+    fieldsets = [
+        (
+            "Основные параметры",
+            {
+                "fields": [("name",)],
+            },
+        ),
+    ]
 
     inlines = [
         VendorInline,
@@ -70,22 +70,7 @@ class SupplierAdmin(admin.ModelAdmin):
                 or obj.slug == "avangard"
             ):
                 return fields_add
-            # elif obj.slug == "emas":
-            #     fields_add_emas = [
-            #         (
-            #             "Основные параметры",
-            #             {
-            #                 "fields": [
-            #                     (
-            #                         "name",
-            #                         "file",
-            #                     )
-
-            #                 ],
-            #             },
-            #         ),
-            #     ]
-            #     return fields_add_emas
+          
             else:
                 return fields
         else:

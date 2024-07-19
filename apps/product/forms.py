@@ -155,9 +155,9 @@ class ProductChangeForm(forms.ModelForm):
 
             for item_dict in product_blank_dict:
                 verbose_name = Product._meta.get_field(item_dict).name
-                self.fields[verbose_name].widget.attrs = {
-                    "style": "border: 1px solid red;",
-                }
+                # self.fields[verbose_name].widget.attrs = {
+                #     "style": "border: 1px solid red;",
+                # }
        
 class ProductChangeNotAutosaveForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(
@@ -237,9 +237,9 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
 
             for item_dict in product_blank_dict:
                 verbose_name = Product._meta.get_field(item_dict).name
-                self.fields[verbose_name].widget.attrs = {
-                    "style": "border: 1px solid red;",
-                }    
+                # self.fields[verbose_name].widget.attrs = {
+                #     "style": "border: 1px solid red;",
+                # }    
 
        
                 
@@ -256,9 +256,9 @@ class ProductDocumentAdminForm(forms.ModelForm):
         super(ProductDocumentAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk == None:
             self.fields['document'].widget.attrs['class'] = 'my_class'
-            self.fields['document'].widget.attrs = {
-                    "style": "color:red;",
-                }
+            # self.fields['document'].widget.attrs = {
+            #         "style": "color:red;",
+            #     }
         
         
   

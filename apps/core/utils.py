@@ -453,6 +453,13 @@ def response_request(response, location):
 
 # создание времени окончания спецификации
 def create_time():
+    import holidays
+    
+    ru_holidays = holidays.US()  # this is a dict-like object
+# the below is the same, but takes a string:
+    ru_holidays = holidays.country_holidays('RU')
+    print(1111111111111)
+    print(ru_holidays)
     now = datetime.datetime.now()
     print(now)
     three_days = datetime.timedelta(3)
@@ -460,7 +467,7 @@ def create_time():
     in_three_days = now + three_days
     print(in_three_days)
     data = in_three_days.strftime("%Y-%m-%d")
-
+    
     return data
 
 

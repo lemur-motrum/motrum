@@ -49,10 +49,7 @@ class Specification(models.Model):
     file = models.FileField(
         "фаил", upload_to=get_document_path, null=True, default=None
     )
-    # tag_currency = models.ForeignKey(
-    #     Currency, on_delete=models.PROTECT, null=True, default=None
-    # )
-    
+  
 
     class Meta:
         verbose_name = "Спецификация"
@@ -60,6 +57,40 @@ class Specification(models.Model):
 
     def __str__(self):
         return f"{self.id_bitrix}"
+    
+    def save(self, *args, **kwargs):
+#         import holidays
+#         from datetime import date
+#         ru_holidays = holidays.RU()  # this is a dict-like object
+# # the below is the same, but takes a string:
+#         ru_holidays = holidays.country_holidays('RU')
+#         print(1111111111111)
+#         print(ru_holidays)
+#         print(date(2024, 4, 27) in ru_holidays)
+#         print(date(2015, 4, 28) in ru_holidays)
+#         print(date(2015, 4, 29) in ru_holidays)
+#         print(ru_holidays.get('2024-05-01'))
+        import json
+        import requests
+
+        year = "2024"
+        url = 'https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant' + year + '.json'
+        r = requests.get(url)
+        cal = json.loads(r.text)
+        print(cal["holidays"].count("2024-06-27"))
+        print(cal["holidays"].count("2024-06-28"))
+        print(cal["holidays"].count("2024-06-29"))
+                
+        
+        now = datetime.datetime.now()
+        print(now)
+        three_days = datetime.timedelta(3)
+        print(three_days)
+        in_three_days = now + three_days
+        print(in_three_days)
+        data = in_three_days.strftime("%Y-%m-%d")
+        
+        print(stop)
     # def save_specification_view_admin(self):
     #     pass
 # @receiver(post_save)

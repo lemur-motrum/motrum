@@ -12,7 +12,6 @@ from apps.supplier.models import SupplierCategoryProduct, SupplierCategoryProduc
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        
         qs = Vendor.objects.all()
         supplier = self.forwarded.get("supplier", None)
       

@@ -123,22 +123,26 @@ class SupplierCategoryProduct(models.Model):
         verbose_name_plural = "Категории товаров у поставщика"
 
     def __str__(self):
-        return f"{self.article_name}{self.name}"
+        if self.article_name:
+            return f"{self.article_name}{self.name}"
+        else:
+            return f"{self.name}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
 
         # обновление категорий связанных продукты
-        product = Product.objects.filter(group_supplier=self.id)
-
+        product = Product.objects.filter(category_supplier=self.id)
+        print(product)
         def background_task():
             # Долгосрочная фоновая задача
             for product_one in product:
                 product_one.category = self.category_catalog
                 if self.group_catalog:
                     product_one.group = self.group_catalog
-
+                print(product_one)
+              
                 product_one.save()
                 update_change_reason(product_one, "Автоматическое")
 

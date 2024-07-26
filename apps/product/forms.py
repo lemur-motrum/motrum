@@ -114,7 +114,7 @@ class ProductChangeForm(forms.ModelForm):
     )
     group_supplier = forms.ModelChoiceField(
         required=False,
-        queryset=GroupProduct.objects.all(),
+        queryset=SupplierGroupProduct.objects.all(),
         label="Группа товара от поставщиков",
         widget=forms.Select(attrs={"class": "form-control"}),
     )

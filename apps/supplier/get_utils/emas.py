@@ -457,6 +457,8 @@ def add_group_emas():
                             name=group_name_text,
                             article_name=group_id_text,
                         )
+                        print(00000000000)
+                        print(all_groupe)
 
                     except SupplierCategoryProductAll.DoesNotExist:
                         all_groupe = SupplierCategoryProductAll(
@@ -468,6 +470,8 @@ def add_group_emas():
                             category_supplier=categ,
                             group_supplier=groupe,
                         )
+                        print(1212121)
+                        print(all_groupe)
                         all_groupe.save()
 
     except Exception as e:
@@ -489,7 +493,7 @@ def add_props_emas_product():
         product = Product.objects.filter(supplier=supplier)
 
         path = f"{MEDIA_ROOT}/price/emas_site/emas.xml"
-
+        print(path)
         with open(f"{MEDIA_ROOT}/price/emas_site/emas.xml", "r") as f:
             file = f.read()
 
@@ -629,8 +633,11 @@ def add_props_emas_product():
                 # product_item.category_supplier=groupe_items[2]
 
                 # product_item.vendor = vendor
+                product_item._change_reason = 'Автоматическое'
                 product_item.save()
-                update_change_reason(product_item, "Автоматическое")
+                print(product_item)
+                # update_change_reason(product_item, "Автоматическое")
+                print(11111111111)
 
                 props_old = ProductProperty.objects.filter(
                     product=product_item
@@ -662,6 +669,7 @@ def add_props_emas_product():
                                     update_change_reason(
                                         props_product, "Автоматическое"
                                     )
+                                    print(11111111111)
 
     except Exception as e:
         print(e)

@@ -24,6 +24,7 @@ from apps.supplier.models import (
 
 # форма добавления нового продукта
 class ProductForm(forms.ModelForm):
+    
     supplier = forms.ModelChoiceField(
         queryset=Supplier.objects.all(), label="Поставщик"
     )

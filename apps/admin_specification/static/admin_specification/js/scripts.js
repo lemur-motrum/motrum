@@ -1,5 +1,6 @@
 import "/static/core/js/slider.js";
 
+//Класс для разделения чила на разряды
 class NumberParser {
   constructor(locale) {
     const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
@@ -30,25 +31,26 @@ class NumberParser {
   }
 }
 
-const setURLParams = (url, updates, defaults) => {
-  let searchParams = new URL(url).searchParams;
+// const setURLParams = (url, updates, defaults) => {
+//   let searchParams = new URL(url).searchParams;
 
-  // Устанавливаем значения по умолчанию
-  for (let [key, value] of Object.entries(defaults || {})) {
-    if (!searchParams.has(key)) {
-      searchParams.set(key, value);
-    }
-  }
+//   // Устанавливаем значения по умолчанию
+//   for (let [key, value] of Object.entries(defaults || {})) {
+//     if (!searchParams.has(key)) {
+//       searchParams.set(key, value);
+//     }
+//   }
 
-  // Обновляем остальные параметры
-  for (let [key, value] of Object.entries(updates)) {
-    searchParams.set(key, value);
-  }
+//   // Обновляем остальные параметры
+//   for (let [key, value] of Object.entries(updates)) {
+//     searchParams.set(key, value);
+//   }
 
-  // Обновляем URL в адресной строке без перезагрузки страницы
-  window.history.replaceState(null, "", "?" + searchParams);
-};
+//   // Обновляем URL в адресной строке без перезагрузки страницы
+//   window.history.replaceState(null, "", "?" + searchParams);
+// };
 
+//функция получения куки
 function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
@@ -60,6 +62,7 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
+//функция создания куки
 function setCookie(name, value, options = {}) {
   options = {
     ...options,
@@ -81,34 +84,14 @@ function setCookie(name, value, options = {}) {
   document.cookie = updatedCookie;
 }
 
-// function deleteCookie() {
-//   var cookies = document.cookie.split("; ");
-//   for (var c = 0; c < cookies.length; c++) {
-//     var d = window.location.hostname.split(".");
-//     while (d.length > 0) {
-//       var cookieBase =
-//         encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) +
-//         "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" +
-//         d.join(".") +
-//         " ;path=";
-//       var p = location.pathname.split("/");
-//       document.cookie = cookieBase + "/";
-//       while (p.length > 0) {
-//         document.cookie = cookieBase + p.join("/");
-//         p.pop();
-//       }
-//       d.shift();
-//     }
-//   }
-// }
-
+// функция удаления куки
 function deleteCookie(name, path, domain) {
   if (getCookie(name)) {
     document.cookie =
       name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
 }
-
+// функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {
   const price = p.replace(",", ".");
   return price;
@@ -118,6 +101,8 @@ let productsSpecificationList = [];
 let localStorageSpecification = JSON.parse(
   localStorage.getItem("specificationValues")
 );
+
+// функция сохранения продукта в localstorage
 const saveProduct = (product) => {
   if (localStorageSpecification) {
     localStorageSpecification = localStorageSpecification.filter(
@@ -140,6 +125,7 @@ const saveProduct = (product) => {
   }
 };
 
+// Проверка есть ли продукт в корзине, если есть, то продукт перезаписывается, если нет, то добавляется новый продукт в корзину
 const setProduct = (product) => {
   if (productsSpecificationList.length <= 0) {
     productsSpecificationList.push(product);
@@ -152,12 +138,15 @@ const setProduct = (product) => {
   saveProduct(product);
 };
 
+// форматирования числового значения с разрядом, для отображения
 const getDigitsNumber = (container, value) => {
   container.textContent = new Intl.NumberFormat("ru").format(+value);
 };
 
+// получение токена из куки
 const csrfToken = getCookie("csrftoken");
 
+// получение полной информации о товаре при наведении мыши
 function showInformation(elem) {
   elem.onmouseover = () => {
     elem.classList.add("show");
@@ -167,6 +156,7 @@ function showInformation(elem) {
   };
 }
 
+// добавление продукта в корзину
 function addProductInSpecification(
   btn,
   id,
@@ -207,7 +197,7 @@ function addProductInSpecification(
     };
   }
 }
-
+// Изменить значение товаров на фронте
 function showQuantityCart(value) {
   if (localStorageSpecification) {
     value.textContent = localStorageSpecification.length;
@@ -215,11 +205,11 @@ function showQuantityCart(value) {
     value.textContent = 0;
   }
 }
+//рендеринг цен
 function setCurrentPriceCataloItem(elems) {
   elems.forEach((el) => {
     const priceContainer = el.querySelector(".price");
     const price = priceContainer.querySelector(".price-count");
-
     const supplerPriceContainer = el.querySelector(".suppler-price");
     const supplerPrice = supplerPriceContainer.querySelector(
       ".price-suppler-count"
@@ -227,17 +217,15 @@ function setCurrentPriceCataloItem(elems) {
 
     if (price) {
       const priceValue = new NumberParser("ru").parse(price.textContent);
-
       getDigitsNumber(price, priceValue);
     }
     if (supplerPrice) {
       const priceValue = new NumberParser("ru").parse(supplerPrice.textContent);
-
       getDigitsNumber(supplerPrice, priceValue);
     }
   });
 }
-
+//логика страницы каталога
 function catalogLogic(elems, val) {
   elems.forEach((catalogItem) => {
     showInformation(catalogItem);
@@ -363,7 +351,7 @@ function catalogLogic(elems, val) {
     };
   });
 }
-
+//логика пояаления кнопок "Актуализировать" и "Редактирорвать" на странице всех спецификаций
 function showButton(container, button) {
   container.onmouseover = () => {
     button.classList.add("show");

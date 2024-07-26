@@ -1,4 +1,5 @@
 import datetime
+import threading
 from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
@@ -42,10 +43,16 @@ def test(request):
 
 
 def save_emas_props(request):
+    def background_task():
+            # Долгосрочная фоновая задача
+            add_group_emas()
+            add_props_emas_product()
 
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
     title = "Услуги"
-    add_group_emas()
-    add_props_emas_product()
+    
 
     responsets = ["233", "2131"]
 

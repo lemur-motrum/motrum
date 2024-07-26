@@ -38,9 +38,7 @@ ALLOWED_HOSTS = [
 ]
 
 
-INTERNAL_IPS = [
-    "127.0.0.1","localhost"
-]
+INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -71,10 +69,9 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "debug_toolbar",
     "simple_history",
-    "sass_processor"
-   
-    # 'reversion'
+    "sass_processor",
 ]
+
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -108,6 +105,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.media'
             ],
         },
     },
@@ -168,7 +166,7 @@ AUTH_USER_MODEL = "user.AdminUser"
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -211,5 +209,5 @@ if DEBUG:
 # NUMBER_GROUPING = 3
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND =os.environ.get("CELERY_RESULT_BACKEND")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

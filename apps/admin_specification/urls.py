@@ -1,6 +1,5 @@
-from django.urls import include, path
+from django.urls import path
 
-from django.urls import re_path as url
 from . import views
 
 
@@ -27,4 +26,7 @@ urlpatterns = [
     ),
     path("search_product/", views.search_product, name="search_product"),
     path("load_products/", views.load_products, name="load_products"),
+    path(
+        "update_specification/", views.update_specification, name="update_specification"
+    ),
 ]

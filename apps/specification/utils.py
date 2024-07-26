@@ -18,7 +18,7 @@ from django.conf import settings
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, MEDIA_URL
 
 
 # def specification_date_stop():
@@ -145,7 +145,8 @@ def crete_pdf_specification(specification):
     pdf = SimpleDocTemplate(fileName)
     pdf.build(story)
    
-    file_path = "{0}/{1}".format(
+    file_path = "{0}{1}/{2}".format(
+        MEDIA_URL,
         "specification",
         name_specification,
     )

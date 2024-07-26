@@ -78,28 +78,34 @@ function setCookie(name, value, options = {}) {
       updatedCookie += "=" + optionValue;
     }
   }
-
   document.cookie = updatedCookie;
 }
 
-function deleteCookie() {
-  var cookies = document.cookie.split("; ");
-  for (var c = 0; c < cookies.length; c++) {
-    var d = window.location.hostname.split(".");
-    while (d.length > 0) {
-      var cookieBase =
-        encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) +
-        "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" +
-        d.join(".") +
-        " ;path=";
-      var p = location.pathname.split("/");
-      document.cookie = cookieBase + "/";
-      while (p.length > 0) {
-        document.cookie = cookieBase + p.join("/");
-        p.pop();
-      }
-      d.shift();
-    }
+// function deleteCookie() {
+//   var cookies = document.cookie.split("; ");
+//   for (var c = 0; c < cookies.length; c++) {
+//     var d = window.location.hostname.split(".");
+//     while (d.length > 0) {
+//       var cookieBase =
+//         encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) +
+//         "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" +
+//         d.join(".") +
+//         " ;path=";
+//       var p = location.pathname.split("/");
+//       document.cookie = cookieBase + "/";
+//       while (p.length > 0) {
+//         document.cookie = cookieBase + p.join("/");
+//         p.pop();
+//       }
+//       d.shift();
+//     }
+//   }
+// }
+
+function deleteCookie(name, path, domain) {
+  if (getCookie(name)) {
+    document.cookie =
+      name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
 }
 
@@ -161,8 +167,213 @@ function showInformation(elem) {
   };
 }
 
+function addProductInSpecification(
+  btn,
+  id,
+  name,
+  price,
+  motrumId,
+  salerId,
+  quantity,
+  discount,
+  valueContainer,
+  multiplicity
+) {
+  if (btn.disabled == false) {
+    btn.style.cursor = "pointer";
+  } else {
+    btn.style.cursor = "default";
+  }
+  if (btn.disabled == false) {
+    const product = {
+      id: +id,
+      name: name,
+      price: getCurrentPrice(price),
+      idMotrum: motrumId,
+      idSaler: salerId,
+      quantity: quantity,
+      totalCost: (getCurrentPrice(price) * quantity).toFixed(2),
+      discount: discount,
+      productSpecificationId: null,
+      multiplicity: multiplicity,
+    };
+    btn.onclick = () => {
+      setProduct(product);
+      if (localStorageSpecification) {
+        valueContainer.textContent = localStorageSpecification.length;
+      } else {
+        valueContainer.textContent = productsSpecificationList.length;
+      }
+    };
+  }
+}
+
+function showQuantityCart(value) {
+  if (localStorageSpecification) {
+    value.textContent = localStorageSpecification.length;
+  } else {
+    value.textContent = 0;
+  }
+}
+function setCurrentPriceCataloItem(elems) {
+  elems.forEach((el) => {
+    const priceContainer = el.querySelector(".price");
+    const price = priceContainer.querySelector(".price-count");
+
+    const supplerPriceContainer = el.querySelector(".suppler-price");
+    const supplerPrice = supplerPriceContainer.querySelector(
+      ".price-suppler-count"
+    );
+
+    if (price) {
+      const priceValue = new NumberParser("ru").parse(price.textContent);
+
+      getDigitsNumber(price, priceValue);
+    }
+    if (supplerPrice) {
+      const priceValue = new NumberParser("ru").parse(supplerPrice.textContent);
+
+      getDigitsNumber(supplerPrice, priceValue);
+    }
+  });
+}
+
+function catalogLogic(elems, val) {
+  elems.forEach((catalogItem) => {
+    showInformation(catalogItem);
+    showQuantityCart(val);
+
+    const productId = catalogItem.getAttribute("data-id");
+    const productName = catalogItem.querySelector(".name").textContent;
+    const productPrice = catalogItem.getAttribute("data-price");
+    const productMotrumId = catalogItem.getAttribute("data-motrum-id");
+    const productSalerId = catalogItem.getAttribute("data-saler-id");
+    const buttonContainer = catalogItem.querySelector(".quantity-buttons");
+    const productDiscount = getCurrentPrice(
+      catalogItem.getAttribute("data-discoutnt")
+    );
+    const plusButton = buttonContainer.querySelector(".plus-button");
+    const minusButton = buttonContainer.querySelector(".minus-button");
+    const addSpecificationButton = catalogItem.querySelector(
+      ".add-specification-button"
+    );
+    const countQuantityZone = buttonContainer.querySelector("input");
+    const productMultiplicityQuantity = catalogItem.getAttribute(
+      "data-order-multiplicity"
+    );
+
+    let countQuantity = +countQuantityZone.value;
+
+    countQuantityZone.addEventListener("keyup", function () {
+      if (productMultiplicityQuantity) {
+        let val = parseInt(this.value) || 0;
+        while (val % +productMultiplicityQuantity) {
+          val++;
+          if (val % +productMultiplicityQuantity == 0) {
+            break;
+          }
+        }
+        this.value = val;
+        countQuantity = val;
+      } else {
+        countQuantity = +countQuantityZone.value;
+      }
+      if (countQuantity > 0) {
+        addSpecificationButton.disabled = false;
+        addProductInSpecification(
+          addSpecificationButton,
+          productId,
+          productName,
+          productPrice,
+          productMotrumId,
+          productSalerId,
+          countQuantity,
+          productDiscount,
+          val,
+          productMultiplicityQuantity
+        );
+      }
+    });
+
+    plusButton.onclick = () => {
+      if (productMultiplicityQuantity) {
+        countQuantity += +productMultiplicityQuantity;
+      } else {
+        countQuantity++;
+      }
+      countQuantityZone.value = countQuantity;
+      minusButton.disabled = false;
+      addSpecificationButton.disabled = false;
+
+      if (countQuantity >= 999) {
+        minusButton.disabled = false;
+        plusButton.disabled = true;
+      }
+      addProductInSpecification(
+        addSpecificationButton,
+        productId,
+        productName,
+        productPrice,
+        productMotrumId,
+        productSalerId,
+        countQuantity,
+        productDiscount,
+        val,
+        productMultiplicityQuantity
+      );
+    };
+
+    minusButton.onclick = () => {
+      if (productMultiplicityQuantity) {
+        countQuantity -= +productMultiplicityQuantity;
+      } else {
+        countQuantity--;
+      }
+      countQuantityZone.value = countQuantity;
+      if (countQuantityZone.value <= 0) {
+        countQuantityZone.value = 0;
+      }
+
+      if (countQuantity >= 999) {
+        minusButton.disabled = false;
+        plusButton.disabled = true;
+      } else {
+        plusButton.disabled = false;
+      }
+
+      if (countQuantity <= 0) {
+        minusButton.disabled = true;
+        addSpecificationButton.disabled = true;
+      } else {
+        minusButton.disabled = false;
+        addSpecificationButton.disabled = false;
+      }
+      addProductInSpecification(
+        addSpecificationButton,
+        productId,
+        productName,
+        productPrice,
+        productMotrumId,
+        productSalerId,
+        countQuantity,
+        productDiscount,
+        val,
+        productMultiplicityQuantity
+      );
+    };
+  });
+}
+
+function showButton(container, button) {
+  container.onmouseover = () => {
+    button.classList.add("show");
+  };
+  container.onmouseout = () => {
+    button.classList.remove("show");
+  };
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-  //Каталог
   const catalogContainer = document.querySelector(".catalog_container");
   if (catalogContainer) {
     const specificationLinkContainer = document.querySelector(
@@ -170,116 +381,130 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     const specificationLinkContainerProductValue =
       specificationLinkContainer.querySelector("span");
-    if (localStorageSpecification) {
-      specificationLinkContainerProductValue.textContent =
-        localStorageSpecification.length;
-    } else {
-      specificationLinkContainerProductValue.textContent = 0;
-    }
-
+    showQuantityCart(specificationLinkContainerProductValue);
     const catalog = catalogContainer.querySelector(
       ".spetification-product-catalog"
     );
     if (catalog) {
       const catalogItems = catalog.querySelectorAll(".catalog-item");
-      catalogItems.forEach((catalogItem) => {
-        const productId = catalogItem.getAttribute("data-id");
-        const productName = catalogItem.querySelector(".name").textContent;
-        const productPrice = catalogItem.getAttribute("data-price");
-        const productMotrumId = catalogItem.getAttribute("data-motrum-id");
-        const productSalerId = catalogItem.getAttribute("data-saler-id");
-        const buttonContainer = catalogItem.querySelector(".quantity-buttons");
-        const plusButton = buttonContainer.querySelector(".plus-button");
-        const minusButton = buttonContainer.querySelector(".minus-button");
-        const addSpecificationButton = catalogItem.querySelector(
-          ".add-specification-button"
-        );
-        const countQuantityZone = buttonContainer.querySelector("input");
+      catalogLogic(catalogItems, specificationLinkContainerProductValue);
 
-        let countQuantity = +countQuantityZone.value;
+      const endContent = catalog.querySelector(".products-end-content");
+      //Пагинация и аякс загрузка
+      if (endContent) {
+        const loadMoreBtn = endContent.querySelector(".load-more-btn");
+        const searhForm = document.querySelector(".search-form-container");
+        const category = searhForm.getAttribute("category");
+        const group = searhForm.getAttribute("group");
+        const allProducts = catalog.querySelector(".all-products");
+        const loader = catalog.querySelector(".loader");
 
-        function addProductInSpecification() {
-          if (addSpecificationButton.disabled == false) {
-            addSpecificationButton.style.cursor = "pointer";
-          } else {
-            addSpecificationButton.style.cursor = "default";
-          }
-          if (addSpecificationButton.disabled == false) {
-            const product = {
-              id: +productId,
-              name: productName,
-              price: getCurrentPrice(productPrice),
-              idMotrum: productMotrumId,
-              idSaler: productSalerId,
-              quantity: countQuantity,
-              totalCost: (
-                getCurrentPrice(productPrice) * countQuantity
-              ).toFixed(2),
-            };
-            addSpecificationButton.onclick = () => {
-              setProduct(product);
-              if (localStorageSpecification) {
-                specificationLinkContainerProductValue.textContent =
-                  localStorageSpecification.length;
-              } else {
-                specificationLinkContainerProductValue.textContent =
-                  productsSpecificationList.length;
+        const params = new URLSearchParams(window.location.search);
+        let pageNum = params.get("page");
+        if (pageNum == 1 || !pageNum) {
+          pageNum = "";
+        }
+        const endpoint = "/admin_specification/load_products/";
+
+        const objData = {
+          group: group,
+          category: category,
+
+          pageNum: pageNum,
+        };
+        let data = JSON.stringify(objData);
+
+        loadMoreBtn.onclick = () => {
+          loader.classList.add("show");
+          fetch(endpoint, {
+            method: "Post",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => response.json())
+            .then((response) => {
+              if (response.status == "ok") {
+                loader.classList.remove("show");
+                if (!pageNum) {
+                  pageNum = 2;
+                } else {
+                  pageNum = +pageNum + 1;
+                }
+                objData.pageNum = pageNum;
+                data = JSON.stringify(objData);
+                const products = JSON.parse(response.products);
+                products.forEach((product) => {
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                    product.pk
+                  }  data-price=${
+                    !product.price ? 0 : product.price
+                  }  data-motrum-id=${product.article} data-saler-id=${
+                    product.saler_article
+                  } data-discoutnt=${
+                    product.discount
+                  } data-order-multiplicity=${product.multiplicity}> 
+                        <div class="hidden-description">
+                            <div class="descripton">
+                                <div class="name">${product.name}</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
+                                <div class="charactiristics">
+                                    ${
+                                      product.chars.length == 0
+                                        ? "Характеристика"
+                                        : product.chars.join(" ")
+                                    }
+                                </div>
+                                <div class="lot">
+                                    1 ${!product.lot ? "шт" : product.lot}
+                                </div>
+                                <div class="suppler-price">
+                                    <span class="price-suppler-count">${
+                                      product.price_suppler
+                                    }</span> ₽
+                                </div>
+                                <div class="price">
+                                    ${
+                                      !product.price
+                                        ? "<span>По запросу</span>"
+                                        : `<span class="price-count">${product.price}</span> ₽`
+                                    }
+                                  
+                                </div>
+                            </div>
+                            <div class="item-buttons_container">
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button">-</button>
+                                    <input type="number"
+                                           value="0"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="3"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                                <button disabled class="add-specification-button">В корзину</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                const catalogItems =
+                  allProducts.querySelectorAll(".catalog-item");
+                catalogLogic(
+                  catalogItems,
+                  specificationLinkContainerProductValue
+                );
+                setCurrentPriceCataloItem(catalogItems);
               }
-            };
-          }
-        }
-
-        countQuantityZone.onkeyup = () => {
-          countQuantity = +countQuantityZone.value;
-          if (countQuantity > 0) {
-            addSpecificationButton.disabled = false;
-            addProductInSpecification();
-          }
+            });
+          // .catch((error) => console.error(error));
         };
-
-        plusButton.onclick = () => {
-          countQuantity++;
-          countQuantityZone.value = countQuantity;
-          minusButton.disabled = false;
-          addSpecificationButton.disabled = false;
-
-          if (countQuantity >= 999) {
-            minusButton.disabled = false;
-            plusButton.disabled = true;
-          }
-          addProductInSpecification();
-        };
-
-        minusButton.onclick = () => {
-          countQuantity--;
-          countQuantityZone.value = countQuantity;
-
-          if (countQuantity >= 999) {
-            minusButton.disabled = false;
-            plusButton.disabled = true;
-          } else {
-            plusButton.disabled = false;
-          }
-
-          if (countQuantity <= 0) {
-            minusButton.disabled = true;
-            addSpecificationButton.disabled = true;
-          } else {
-            minusButton.disabled = false;
-            addSpecificationButton.disabled = false;
-          }
-          addProductInSpecification();
-        };
-
-        const priceContainer = catalogItem.querySelector(".price");
-        const price = priceContainer.querySelector(".price-count");
-
-        if (price) {
-          const priceNumberValue = getCurrentPrice(price.textContent);
-          getDigitsNumber(price, priceNumberValue);
-        }
-        showInformation(catalogItem);
-      });
+      }
+      //
+      setCurrentPriceCataloItem(catalogItems);
     }
     // //Фильтры
     // const filtersContainer = specificationContent.querySelector(".filters");
@@ -317,224 +542,7 @@ window.addEventListener("DOMContentLoaded", () => {
     //   };
     // });
     // //
-
-    //Пагинация и аякс загрузка
-    const endContent = catalog.querySelector(".products-end-content");
-    if (endContent) {
-      const loadMoreBtn = endContent.querySelector(".load-more-btn");
-      const searhForm = document.querySelector(".search-form-container");
-      const category = searhForm.getAttribute("category");
-      const group = searhForm.getAttribute("group");
-      const allProducts = catalog.querySelector(".all-products");
-      const loader = catalog.querySelector(".loader");
-
-      const params = new URLSearchParams(window.location.search);
-      let pageNum = params.get("page");
-      if (pageNum == 1 || !pageNum) {
-        pageNum = "";
-      }
-      const endpoint = "/admin_specification/load_products/";
-
-      const objData = {
-        group: group,
-        category: category,
-
-        pageNum: pageNum,
-      };
-      let data = JSON.stringify(objData);
-
-      loadMoreBtn.onclick = () => {
-        loader.classList.add("show");
-        fetch(endpoint, {
-          method: "Post",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.status == "ok") {
-              loader.classList.remove("show");
-              if (!pageNum) {
-                pageNum = 2;
-              } else {
-                pageNum = +pageNum + 1;
-              }
-              objData.pageNum = pageNum;
-              data = JSON.stringify(objData);
-              const products = JSON.parse(response.products);
-              products.forEach((product) => {
-                allProducts.innerHTML += `<div class="catalog-item" data-id=${
-                  product.pk
-                }  data-price=${
-                  !product.price ? 0 : product.price
-                }  data-motrum-id=${product.article} data-saler-id=${
-                  product.saler_article
-                }>
-                        <div class="hidden-description">
-                            <div class="descripton">
-                                <div class="name">${product.name}</div>
-                                <div class="article-motrum">${
-                                  product.article
-                                }</div>
-                                <div class="charactiristics">
-                                    ${
-                                      product.chars.length == 0
-                                        ? "Характеристика"
-                                        : product.chars.join(" ")
-                                    }
-                                </div>
-                                <div class="lot">
-                                    1 ${!product.lot ? "шт" : product.lot}
-                                </div>
-                                <div class="price">
-                                    ${
-                                      !product.price
-                                        ? "<span>По запросу</span>"
-                                        : `<span class="price-count">${product.price}</span> ₽`
-                                    }
-                                  
-                                </div>
-                            </div>
-                            <div class="item-buttons_container">
-                                <div class="quantity-buttons">
-                                    <button disabled class="minus-button">-</button>
-                                    <input type="number"
-                                           value="0"
-                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                           maxlength="3"
-                                           onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
-                                </div>
-                                <button disabled class="add-specification-button">В корзину</button>
-                            </div>
-                        </div>
-                    </div>`;
-              });
-              const catalogItems =
-                allProducts.querySelectorAll(".catalog-item");
-              catalogItems.forEach((catalogItem) => {
-                showInformation(catalogItem);
-                const specificationLinkContainer = document.querySelector(
-                  ".specification-link-container"
-                );
-                const specificationLinkContainerProductValue =
-                  specificationLinkContainer.querySelector("span");
-                if (localStorageSpecification) {
-                  specificationLinkContainerProductValue.textContent =
-                    localStorageSpecification.length;
-                } else {
-                  specificationLinkContainerProductValue.textContent = 0;
-                }
-
-                const catalog = catalogContainer.querySelector(
-                  ".spetification-product-catalog"
-                );
-
-                const productId = catalogItem.getAttribute("data-id");
-                const productName =
-                  catalogItem.querySelector(".name").textContent;
-                const productPrice = catalogItem.getAttribute("data-price");
-                const productMotrumId =
-                  catalogItem.getAttribute("data-motrum-id");
-                const productSalerId =
-                  catalogItem.getAttribute("data-saler-id");
-                const buttonContainer =
-                  catalogItem.querySelector(".quantity-buttons");
-                const plusButton =
-                  buttonContainer.querySelector(".plus-button");
-                const minusButton =
-                  buttonContainer.querySelector(".minus-button");
-                const addSpecificationButton = catalogItem.querySelector(
-                  ".add-specification-button"
-                );
-                const countQuantityZone =
-                  buttonContainer.querySelector("input");
-
-                let countQuantity = +countQuantityZone.value;
-
-                function addProductInSpecification() {
-                  if (addSpecificationButton.disabled == false) {
-                    addSpecificationButton.style.cursor = "pointer";
-                  } else {
-                    addSpecificationButton.style.cursor = "default";
-                  }
-                  if (addSpecificationButton.disabled == false) {
-                    const product = {
-                      id: +productId,
-                      name: productName,
-                      price: getCurrentPrice(productPrice),
-                      idMotrum: productMotrumId,
-                      idSaler: productSalerId,
-                      quantity: countQuantity,
-                      totalCost: (
-                        getCurrentPrice(productPrice) * countQuantity
-                      ).toFixed(2),
-                    };
-                    addSpecificationButton.onclick = () => {
-                      setProduct(product);
-                      if (localStorageSpecification) {
-                        specificationLinkContainerProductValue.textContent =
-                          localStorageSpecification.length;
-                      } else {
-                        specificationLinkContainerProductValue.textContent =
-                          productsSpecificationList.length;
-                      }
-                    };
-                  }
-                }
-
-                countQuantityZone.onkeyup = () => {
-                  countQuantity = +countQuantityZone.value;
-                  if (countQuantity > 0) {
-                    addSpecificationButton.disabled = false;
-                    addProductInSpecification();
-                  }
-                };
-
-                plusButton.onclick = () => {
-                  countQuantity++;
-                  countQuantityZone.value = countQuantity;
-                  minusButton.disabled = false;
-                  addSpecificationButton.disabled = false;
-
-                  if (countQuantity >= 999) {
-                    minusButton.disabled = false;
-                    plusButton.disabled = true;
-                  }
-                  addProductInSpecification();
-                };
-
-                minusButton.onclick = () => {
-                  countQuantity--;
-                  countQuantityZone.value = countQuantity;
-
-                  if (countQuantity >= 999) {
-                    minusButton.disabled = false;
-                    plusButton.disabled = true;
-                  } else {
-                    plusButton.disabled = false;
-                  }
-
-                  if (countQuantity <= 0) {
-                    minusButton.disabled = true;
-                    addSpecificationButton.disabled = true;
-                  } else {
-                    minusButton.disabled = false;
-                    addSpecificationButton.disabled = false;
-                  }
-                  addProductInSpecification();
-                };
-              });
-            }
-          });
-      };
-    }
-    //
   }
-  //
 
   const specificationContainer = document.querySelector(
     ".specification-container"
@@ -550,6 +558,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const totalPriceValueContainer =
         spetificationTable.querySelector(".price_description");
       const valueContainer = totalPriceValueContainer.querySelector(".price");
+      const saveButton = spetificationTable.querySelector(".save_button");
 
       function getResult() {
         let sum = 0;
@@ -559,16 +568,213 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         getDigitsNumber(valueContainer, +sum);
       }
+
+      function saveSpecification(elems) {
+        const products = [];
+        const checkbox = document.querySelector("#prepayment-checkbox");
+        const specificationId = getCookie("specificationId");
+
+        elems.forEach((item, i) => {
+          const itemQuantity = item.querySelector(".input-quantity").value;
+          const itemID = item.getAttribute("data-id");
+          const itemPriceStatus = item.getAttribute("data-price-exclusive");
+          const itemPrice = item.querySelector(".price_once");
+          const extraDiscount = item.querySelector(".discount-input");
+          const productSpecificationId = item.getAttribute(
+            "data-product-specification-id"
+          );
+
+          const inputPrice = item.querySelector(".price-input");
+
+          const product = {
+            product_id: +itemID,
+            quantity: +itemQuantity,
+            price_exclusive: +itemPriceStatus,
+            price_one: !itemPrice
+              ? +inputPrice.value
+              : new NumberParser("ru").parse(
+                  JSON.parse(getCookie("key"))[i].price
+                ),
+            product_specif_id: productSpecificationId
+              ? productSpecificationId
+              : null,
+            extra_discount: extraDiscount.value,
+          };
+          products.push(product);
+        });
+
+        const endpoint = "/admin_specification/save_specification_view_admin/";
+
+        const dataObj = {
+          id_bitrix: 22,
+          admin_creator_id: 2,
+          products: products,
+          is_pre_sale: checkbox.checked ? true : false,
+          id_specification: specificationId ? specificationId : null,
+        };
+
+        const data = JSON.stringify(dataObj);
+        fetch(endpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status == "ok") {
+              localStorage.removeItem("specificationValues");
+              deleteCookie("key", "/", window.location.hostname);
+              deleteCookie("specificationId", "/", window.location.hostname);
+              window.location.href = "/admin_specification/all_specifications/";
+            }
+          })
+          .catch((error) => console.error(error));
+      }
+
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const itemPrices = item.querySelectorAll(".price");
-        const inputPrice = item.querySelector("input");
+        const inputPrice = item.querySelector(".price-input");
+        const discountInput = item.querySelector(".discount-input");
+        const productPrice = item.getAttribute("data-price");
+        const productPriceContainer = item.querySelector(".price_once");
+        const productTotalPrice = item.querySelector(".total_cost");
+        const itemPriceOnce = item.querySelector(".price_once");
+        const plusButton = item.querySelector(".plus-button");
+        const minusButton = item.querySelector(".minus-button");
+        const quantity = item.querySelector(".input-quantity");
+        let countQuantity = +quantity.value;
+
+        const multiplicity = item.getAttribute("data-multiplicity");
+
+        quantity.addEventListener("keyup", function () {
+          if (multiplicity) {
+            let val = parseInt(this.value) || 0;
+            while (val % +multiplicity) {
+              val++;
+              if (val % +multiplicity == 0) {
+                break;
+              }
+            }
+            this.value = val;
+            countQuantity = val;
+          } else {
+            countQuantity = +quantity.value;
+          }
+          const currentPrice =
+            new NumberParser("ru").parse(itemPriceOnce.textContent) *
+            +quantity.value;
+          getDigitsNumber(productTotalPrice, currentPrice);
+          getResult();
+        });
+
+        plusButton.onclick = () => {
+          if (multiplicity) {
+            countQuantity += +multiplicity;
+          } else {
+            countQuantity++;
+          }
+
+          quantity.value = countQuantity;
+          const currentPrice =
+            new NumberParser("ru").parse(itemPriceOnce.textContent) *
+            +quantity.value;
+          getDigitsNumber(productTotalPrice, currentPrice);
+          getResult();
+          if (countQuantity >= 999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          }
+          if (countQuantity > 0) {
+            minusButton.disabled = false;
+          } else {
+            minusButton.disabled = true;
+          }
+        };
+
+        minusButton.onclick = () => {
+          if (multiplicity) {
+            countQuantity -= +multiplicity;
+          } else {
+            countQuantity--;
+          }
+
+          quantity.value = countQuantity;
+          if (quantity.value <= 0) {
+            quantity.value = 0;
+          }
+          const currentPrice =
+            new NumberParser("ru").parse(itemPriceOnce.textContent) *
+            +quantity.value;
+          getDigitsNumber(productTotalPrice, currentPrice);
+          getResult();
+          if (countQuantity >= 999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          } else {
+            plusButton.disabled = false;
+          }
+          if (countQuantity <= 0) {
+            minusButton.disabled = true;
+          } else {
+            minusButton.disabled = false;
+          }
+        };
+
         if (inputPrice) {
           const totalPrice = item.querySelector(".input_totla-cost");
-          const quantity = +item.querySelector(".input_quantity").textContent;
+          const quantity = item.querySelector(".input-quantity");
+
+          quantity.onkeyup = () => {
+            countQuantity = quantity.value;
+            const currentPrice =
+              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+
+            getDigitsNumber(productTotalPrice, currentPrice);
+            getResult();
+          };
+
+          plusButton.onclick = () => {
+            countQuantity++;
+            quantity.value = countQuantity;
+            const currentPrice =
+              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+            getDigitsNumber(productTotalPrice, currentPrice);
+            getResult();
+            if (countQuantity >= 999) {
+              minusButton.disabled = false;
+              plusButton.disabled = true;
+            }
+          };
+
+          minusButton.onclick = () => {
+            countQuantity--;
+            quantity.value = countQuantity;
+            const currentPrice =
+              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+            getDigitsNumber(productTotalPrice, currentPrice);
+            getResult();
+            if (countQuantity >= 999) {
+              minusButton.disabled = false;
+              plusButton.disabled = true;
+            } else {
+              plusButton.disabled = false;
+            }
+
+            if (countQuantity <= 0) {
+              minusButton.disabled = true;
+            } else {
+              minusButton.disabled = false;
+            }
+          };
+
           inputPrice.onkeyup = () => {
-            let price = +inputPrice.value * quantity;
+            let price = +inputPrice.value * quantity.value;
             totalPrice.textContent = price.toFixed(2);
+            item.setAttribute("data-price", inputPrice.value);
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
             }
@@ -577,11 +783,32 @@ window.addEventListener("DOMContentLoaded", () => {
               getDigitsNumber(itemPrice, itemPrice.textContent);
             });
           };
+          discountInput.onkeyup = () => {
+            const curentPrice =
+              (+item.getAttribute("data-price") *
+                (100 - +discountInput.value)) /
+              100;
+            inputPrice.value = curentPrice.toFixed(2);
+            const allPrice = curentPrice * countQuantity;
+            getDigitsNumber(productTotalPrice, allPrice);
+            getResult();
+          };
+          saveButton.onclick = () => saveSpecification();
         } else {
           getResult();
           itemPrices.forEach((itemPrice) => {
             getDigitsNumber(itemPrice, itemPrice.textContent);
           });
+          discountInput.onkeyup = () => {
+            const curentPrice =
+              (+productPrice * (100 - +discountInput.value)) / 100;
+            getDigitsNumber(productPriceContainer, curentPrice);
+
+            const allPrice = curentPrice * countQuantity;
+            getDigitsNumber(productTotalPrice, allPrice);
+            getResult();
+          };
+          saveButton.onclick = () => saveSpecification(productItems);
         }
 
         deleteItemBtn.onclick = () => {
@@ -601,60 +828,58 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       });
 
-      const saveButton = spetificationTable.querySelector(".save_button");
+      saveButton.onclick = () => saveSpecification(productItems);
+      // saveButton.onclick = (e) => {
+      //   e.preventDefault();
+      //   const products = [];
+      //   productItems.forEach((item) => {
+      //     let price;
+      //     if (!itemPrice) {
+      //       const inputPrice = item.querySelector("input");
+      //       price = +inputPrice.value;
+      //     } else {
+      //       price = new NumberParser("ru").parse(itemPrice.textContent);
+      //     }
+      //     const itemQuantity = item.querySelector(".quantity").textContent;
+      //     const itemID = item.getAttribute("data-id");
+      //     const itemPriceStatus = item.getAttribute("data-price-exclusive");
 
-      saveButton.onclick = (e) => {
-        e.preventDefault();
-        const products = [];
-        productItems.forEach((item) => {
-          let price;
-          const itemPrice = item.querySelector(".price_once");
-          if (itemPrice) {
-            price = new NumberParser("ru").parse(itemPrice.textContent);
-          } else {
-            const inputPrice = item.querySelector("input");
-            price = +inputPrice.value;
-          }
-          const itemQuantity = item.querySelector(".quantity").textContent;
-          const itemID = item.getAttribute("data-id");
-          const itemPriceStatus = item.getAttribute("data-price-exclusive");
+      //     const product = {
+      //       product_id: +itemID,
+      //       quantity: +itemQuantity,
+      //       price_exclusive: +itemPriceStatus,
+      //       price_one: itemPrice,
+      //     };
+      //     products.push(product);
+      //   });
 
-          const product = {
-            product_id: +itemID,
-            quantity: +itemQuantity,
-            price_exclusive: +itemPriceStatus,
-            price_one: price,
-          };
-          products.push(product);
-        });
+      //   const endpoint = "/admin_specification/save_specification_view_admin/";
 
-        const endpoint = "/admin_specification/save_specification_view_admin/";
+      //   const dataObj = {
+      //     id_bitrix: 22,
+      //     admin_creator_id: 2,
+      //     products: products,
+      //   };
 
-        const dataObj = {
-          id_bitrix: 22,
-          admin_creator_id: 2,
-          products: products,
-        };
-
-        const data = JSON.stringify(dataObj);
-        fetch(endpoint, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.status == "ok") {
-              localStorage.removeItem("specificationValues");
-              deleteCookie();
-              window.location.href = "/admin_specification/all_specifications/";
-            }
-          })
-          .catch((error) => console.error(error));
-      };
+      //   const data = JSON.stringify(dataObj);
+      //   fetch(endpoint, {
+      //     method: "POST",
+      //     body: data,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "X-CSRFToken": csrfToken,
+      //     },
+      //   })
+      //     .then((response) => response.json())
+      //     .then((response) => {
+      //       if (response.status == "ok") {
+      //         localStorage.removeItem("specificationValues");
+      //         deleteCookie();
+      //         window.location.href = "/admin_specification/all_specifications/";
+      //       }
+      //     })
+      //     .catch((error) => console.error(error));
+      // };
     }
   }
 
@@ -671,15 +896,6 @@ window.addEventListener("DOMContentLoaded", () => {
     slidesPerView: "auto",
   });
   //
-
-  const allSpecifications = document.querySelector(".all_specifications_table");
-  if (allSpecifications) {
-    const prices = allSpecifications.querySelectorAll(".price");
-    prices.forEach((price) => {
-      const priceValue = getCurrentPrice(price.textContent);
-      getDigitsNumber(price, priceValue);
-    });
-  }
 
   //выпадающий поиск
   const searhForm = document.querySelector(".search-form-container");
@@ -817,4 +1033,101 @@ window.addEventListener("DOMContentLoaded", () => {
     };
   }
   //
+  const allSpecifications = document.querySelector(".all_specifications_table");
+  if (allSpecifications) {
+    const prices = allSpecifications.querySelectorAll(".price");
+    prices.forEach((price) => {
+      const priceValue = getCurrentPrice(price.textContent);
+      getDigitsNumber(price, priceValue);
+    });
+
+    //редактирование спецификации
+    const currentSpecificatons = allSpecifications.querySelectorAll(
+      "div[data-status='True']"
+    );
+    currentSpecificatons.forEach((item) => {
+      const changeButton = item.querySelector(".change-specification-button");
+      showButton(item, changeButton);
+      const specificationId = +item.querySelector("a").textContent;
+
+      changeButton.onclick = () => {
+        const objData = {
+          specification_id: specificationId,
+        };
+        const data = JSON.stringify(objData);
+        fetch("/admin_specification/update_specification/", {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status == "ok") {
+              const products = JSON.parse(response.products);
+              localStorage.setItem(
+                "specificationValues",
+                JSON.stringify(products)
+              );
+              document.cookie = `key=${JSON.stringify(products)};path=/`;
+
+              products.forEach((product) => {
+                document.cookie = `specificationId=${JSON.stringify(
+                  product.specificationId
+                )}; path=/`;
+              });
+            }
+            window.location.href =
+              "/admin_specification/current_specification/";
+          });
+      };
+    });
+    //
+
+    //актуализация спецификации
+    const overdueSpecifications = allSpecifications.querySelectorAll(
+      "div[data-status='False']"
+    );
+    overdueSpecifications.forEach((item) => {
+      const updatingBtn = item.querySelector(".uptate-specification-button");
+      showButton(item, updatingBtn);
+      const specificationId =
+        +item.querySelectorAll(".table_item_value")[0].textContent;
+      updatingBtn.onclick = () => {
+        const objData = {
+          specification_id: specificationId,
+        };
+        const data = JSON.stringify(objData);
+        fetch("/admin_specification/update_specification/", {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status == "ok") {
+              const products = JSON.parse(response.products);
+              localStorage.setItem(
+                "specificationValues",
+                JSON.stringify(products)
+              );
+              document.cookie = `key=${JSON.stringify(products)};path=/`;
+              products.forEach((product) => {
+                document.cookie = `specificationId=${JSON.stringify(
+                  product.specificationId
+                )}; path=/`;
+              });
+            }
+            window.location.href =
+              "/admin_specification/current_specification/";
+          });
+      };
+    });
+    //
+  }
 });

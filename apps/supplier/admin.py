@@ -328,6 +328,7 @@ class DiscountAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_supplier_all",
         "percent",
+        "is_tag_pre_sale",
     )
     fields = (
         "supplier",
@@ -336,6 +337,8 @@ class DiscountAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_supplier_all",
         "percent",
+        "is_tag_pre_sale",
+        
     )
 
     def delete_model(self, request, obj):

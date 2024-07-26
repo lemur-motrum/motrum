@@ -18,7 +18,7 @@ redis
 flower
 django-simple-history
 beautifulsoup4
-holidays 
+
 
 djlint
 libsass 

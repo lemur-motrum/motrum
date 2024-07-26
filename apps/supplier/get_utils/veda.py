@@ -1,3 +1,4 @@
+import datetime
 import os
 from apps.core.models import Currency, Vat
 from apps.core.utils import create_article_motrum, save_update_product_attr
@@ -42,6 +43,8 @@ def veda_api():
             vat_catalog = Vat.objects.get(name="20")
             
             price_supplier = float(data_item["salesPrice"])
+            if price_supplier == 0:
+                pass
             sale_persent = float(data_item["discountPercent"])
             # остатки
             lot = Lot.objects.get(name="штука")
@@ -49,10 +52,35 @@ def veda_api():
             lot_complect = 1
             stock_motrum = 0
             
-           
             
+            # транзитная инфа
+            data_transit = None
+            transit_count = None
+            transit = data_item["transit"] 
+            if transit != []:
+                for transit_item in transit:
+                    
+                    fromisoformat_data_transit_new = datetime.datetime.fromisoformat(transit_item["deliveryDate "])
+                    
+                   
+                    if data_transit != None :
+                        fromisoformat_data_transit = datetime.datetime.fromisoformat(data_transit)
+                        if fromisoformat_data_transit_new < fromisoformat_data_transit:
+                            data_transit = transit_item["deliveryDate "]
+                            transit_count = transit_item["count"]
+                    else:
+                        data_transit = transit_item["deliveryDate "]
+                        transit_count = transit_item["count"]
+                        
+                if data_transit != None:
+                    data_transit = datetime.datetime.fromisoformat(data_transit)
+                    data_transit = data_transit.date()
+                    # print(data_transit.date())
+                    # print(type(data_transit))
+                    # data_transit = datetime.datetime.strftime(data_transit.date(), '%d.%m.%Y')
+                    # print(data_transit)e
             try:
-                # если товар есть в бд
+                # если товар есть в бдd
                 
                 article = Product.objects.get(
                     supplier=supplier,
@@ -101,6 +129,9 @@ def veda_api():
                     prod=article, lot=lot, stock_motrum=stock_motrum
                 )
             finally:
+                print(transit_count,data_transit)
+                stock_prod.transit_count = transit_count
+                stock_prod.data_transit = data_transit
                 stock_prod.stock_supplier = stock_supplier
                 stock_prod.save()
                 update_change_reason(stock_prod, "Автоматическое")
@@ -115,6 +146,7 @@ def veda_api():
         finally:    
             continue      
         
+        уу
                
     return [1]
         

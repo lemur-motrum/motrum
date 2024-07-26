@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="all-categories-content">
-         <div class="bread-crumbs">
-            <a class="all-specification-link" href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
-        </div> 
+        <div class="bread-crumbs">
+            <a class="all-specification-link"
+               href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
+        </div>
         {% include "admin_specification/include/search_form.html" %}
         {% comment %} <h1 class="title">{{ title }}</h1> {% endcomment %}
         <div class="categories-container">

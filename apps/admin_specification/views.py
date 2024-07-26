@@ -5,6 +5,7 @@ from django.db.models import Prefetch
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from apps.core.utils import get_price_motrum
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -16,8 +17,9 @@ from apps.product.models import (
 )
 from django.core.paginator import Paginator
 
-from apps.specification.models import Specification
+from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
+from apps.supplier.models import Discount
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
 from django.db.models import Q
@@ -36,7 +38,7 @@ def all_categories(request):
         "category",
         "group",
         "price",
-        "historic_stock",
+        "stock",
     ).all()
 
     if request.method == "GET":
@@ -81,7 +83,7 @@ def group_product(request, cat):
         "category",
         "group",
         "price",
-        "historic_stock",
+        "stock",
     ).filter(category=cat)
 
     if request.method == "GET":
@@ -141,7 +143,7 @@ def specifications(request, cat, gr):
         "category",
         "group",
         "price",
-        "historic_stock",
+        "stock",
     ).filter(category=cat, group=gr)
 
     groups = GroupProduct.objects.select_related("category").all()
@@ -257,7 +259,7 @@ def save_specification_view_admin(request):
         else:
             price_one = price.rub_price_supplier
 
-        price_all = int(price_one) * int(product_item["quantity"])
+        price_all = float(price_one) * int(product_item["quantity"])
 
         product_new = ProductSpecification(
             specification=specification,
@@ -281,7 +283,6 @@ def save_specification_view_admin(request):
 def get_all_specifications(request):
     all_specifications = (
         Specification.objects.select_related(
-            "wholesale",
             "admin_creator",
         )
         .all()
@@ -312,7 +313,7 @@ def instruments(request, cat):
         "category",
         "group",
         "price",
-        "historic_stock",
+        "stock",
     ).filter(
         category=cat,
     )
@@ -434,7 +435,7 @@ def load_products(request):
                 "category",
                 "group",
                 "price",
-                "historic_stock",
+                "stock",
             )
             .all()
             .order_by("pk")
@@ -450,7 +451,7 @@ def load_products(request):
                 "category",
                 "group",
                 "price",
-                "historic_stock",
+                "stock",
             )
             .filter(category=cat)
             .order_by("pk")
@@ -472,18 +473,54 @@ def load_products(request):
     products = []
 
     for product_elem in items:
-        price = Price.objects.filter(prod=product_elem.pk)[0].rub_price_supplier
+        
+        
+        try:
+            price_all = Price.objects.get(prod=product_elem.pk)
+            price = price_all.rub_price_supplier
+            price_suppler = price_all.price_motrum
+            
+            discount = get_price_motrum(
+            product_elem.category_supplier,
+            product_elem.group_supplier,
+            product_elem.vendor,
+            price,
+            product_elem.category_supplier_all,
+        )[1].percent
+        except Price.DoesNotExist:
+            price_all = None
+            price = None
+            price_suppler = 0
+            discount = None
+ 
         chars = ProductProperty.objects.filter(product=product_elem.pk)
-        lot = Stock.objects.filter(prod=product_elem.pk)[0]
+        try:
+            stock_item =  Stock.objects.get(prod=product_elem.pk)
+            lotname = stock_item.lot.name_shorts
+            
+            if stock_item.is_one_sale == True:
+                product_multiplicity = 1
+            else:
+                product_multiplicity = Stock.objects.get(
+                    prod=product_elem.pk
+                ).order_multiplicity
 
+        except:
+            stock_item =  None
+            lotname = None
+            product_multiplicity = 1
+
+        
         name = product_elem.name
-        lotname = lot.lot.name_shorts
         pk = product_elem.pk
         article = product_elem.article
         saler_article = product_elem.article_supplier
+        
+        
         characteristics = []
         for char in chars:
             characteristics.append(char.value)
+        
 
         product = {
             "name": name,
@@ -493,9 +530,82 @@ def load_products(request):
             "saler_article": saler_article,
             "price": price,
             "chars": characteristics,
+            "price_suppler": price_suppler,
+            "discount": discount,
+            "multiplicity": product_multiplicity,
         }
         products.append(product)
 
     current_products = json.dumps(products)
     out = {"status": "ok", "products": current_products}
     return JsonResponse(out, safe=False)
+
+
+def update_specification(request):
+    if request.method == "POST":
+        id_specification = json.loads(request.body)
+        current_id = id_specification["specification_id"]
+
+        products = []
+
+        current_specification = Specification.objects.filter(pk=current_id)[0]
+
+        get_products = ProductSpecification.objects.filter(
+            specification=current_specification.pk
+        )
+
+        for product in get_products:
+            product_id = product.product.pk
+            product_pk = product.pk
+            product_name = product.product.name
+            product_prices = Price.objects.get(prod=product_id)
+            product_price = product_prices.rub_price_supplier
+            product_quantity = product.quantity
+            product_totla_cost = int(product_quantity) * float(product_price)
+            product_id_motrum = product.product.article
+            product_id_suppler = product.product.article_supplier
+
+            # suppelier = Product.objects.filter(pk=product_id)[0].supplier
+            # discount = Discount.objects.filter(supplier=suppelier)[0].percent
+            specification_id = current_specification.pk
+
+            product_price = str(product_price).replace(",", ".")
+            product_totla_cost = str(product_totla_cost).replace(",", ".")
+            product_multiplicity_item = Stock.objects.get(prod=product_id)
+            if product_multiplicity_item.is_one_sale == True:
+                product_multiplicity = 1
+            else:
+                product_multiplicity = Stock.objects.get(
+                    prod=product_id
+                ).order_multiplicity
+            discount = get_price_motrum(
+                product.product.category_supplier,
+                product.product.group_supplier,
+                product.product.vendor,
+                product_prices.rub_price_supplier,
+                product.product.category_supplier_all,
+            )[1].percent
+
+            product_item = {
+                "discount": discount,
+                "id": product_id,
+                "idMotrum": product_id_motrum,
+                "idSaler": product_id_suppler,
+                "name": product_name,
+                "price": product_price,
+                "quantity": product_quantity,
+                "totalCost": product_totla_cost,
+                "productSpecificationId": product_pk,
+                "specificationId": specification_id,
+                "multiplicity": product_multiplicity,
+            }
+
+            products.append(product_item)
+
+    current_products = json.dumps(products)
+
+    out = {
+        "status": "ok",
+        "products": current_products,
+    }
+    return JsonResponse(out)

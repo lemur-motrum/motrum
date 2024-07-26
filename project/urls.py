@@ -20,16 +20,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.urls import re_path as url
-from apps.specification.views import CountryAutocomplete
+
 
 
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('admin/', admin.site.urls),
-    
-    # url(r'^chaining/', include('smart_selects.urls')),
-      
+   
     path("", include("apps.core.urls", namespace="core")),
     path("client/", include("apps.client.urls", namespace="client")),
     path("logs/", include("apps.logs.urls", namespace="logs")),
@@ -45,3 +43,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# else:
+#     urlpatterns += staticfiles_urlpatterns()

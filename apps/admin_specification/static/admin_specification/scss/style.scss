@@ -22,6 +22,9 @@
     transform: rotate(360deg);
   }
 }
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 .bread-crumbs {
   display: flex;
   // gap: 3.063rem;
@@ -321,6 +324,59 @@ h1 {
         font-size: 0.813rem;
         width: 16.6666%;
         position: relative;
+        .input-container {
+          width: 60%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 2.125rem;
+          border: 1px solid black;
+          position: relative;
+          border-radius: 10px;
+          background-color: #fff;
+          .input-quantity {
+            height: 100%;
+            text-align: center;
+            border: none;
+            background-color: transparent;
+            font-size: 1.125rem;
+            font-weight: bold;
+            position: relative;
+            left: 0;
+            &:focus {
+              outline: none;
+            }
+            &::-webkit-inner-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+          }
+          button {
+            border: none;
+            background-color: transparent;
+            color: #a4a4a4;
+            height: -webkit-max-content;
+            height: -moz-max-content;
+            height: max-content;
+            cursor: pointer;
+            &:disabled,
+            &[disabled] {
+              cursor: auto;
+            }
+            &.minus-button {
+              font-size: 2rem;
+              position: relative;
+              top: 50%;
+              transform: translateY(-50%);
+            }
+            &.plus-button {
+              font-size: 1.8rem;
+              position: relative;
+              top: 50%;
+              transform: translateY(-50%);
+            }
+          }
+        }
         input {
           position: relative;
           left: -0.5rem;
@@ -330,6 +386,9 @@ h1 {
           font-size: 0.813rem;
           width: 80%;
           box-sizing: border-box;
+          &.discount-input {
+            width: 40%;
+          }
           &:focus {
             outline: none;
           }
@@ -360,8 +419,19 @@ h1 {
     }
     .submit-container {
       margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
       .price_description {
         font-size: 0.938rem;
+      }
+      .prepayment {
+        display: flex;
+        gap: 0.5rem;
+        label {
+          font-size: 0.938rem;
+          cursor: pointer;
+        }
       }
       .save_button {
         font-size: 0.938rem;
@@ -369,13 +439,13 @@ h1 {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 0.7rem;
         border-radius: 10px;
         border: none;
         background-color: #a4a4a4;
         color: #000;
         cursor: pointer;
         padding: 0.5rem 0.875rem;
+        width: 20%;
       }
     }
   }
@@ -420,6 +490,10 @@ h1 {
         box-sizing: border-box;
         text-decoration: none;
         color: #000;
+        position: relative;
+        &.disabled {
+          color: lightgray;
+        }
         .table_item_value {
           font-size: 0.813rem;
           &:nth-of-type(1) {
@@ -440,6 +514,28 @@ h1 {
           }
           &:nth-of-type(5) {
             margin-left: 8.563rem;
+          }
+        }
+        .uptate-specification-button {
+          opacity: 0;
+          transition: 0.6s;
+          position: absolute;
+          z-index: 20;
+          right: 2rem;
+          cursor: pointer;
+          &.show {
+            opacity: 1;
+          }
+        }
+        .change-specification-button {
+          opacity: 0;
+          transition: 0.6s;
+          position: absolute;
+          z-index: 20;
+          right: 2rem;
+          cursor: pointer;
+          &.show {
+            opacity: 1;
           }
         }
       }
@@ -467,10 +563,13 @@ h1 {
         margin-left: 6.6rem;
       }
       &:nth-of-type(4) {
-        margin-left: 18.2rem;
+        margin-left: 10.4rem;
       }
       &:nth-of-type(5) {
-        margin-left: 3.4rem;
+        margin-left: 1.4rem;
+      }
+      &:nth-of-type(6) {
+        margin-left: 2.8rem;
       }
     }
   }
@@ -577,16 +676,20 @@ h1 {
                   margin-left: 2.438rem;
                 }
                 &.charactiristics {
-                  width: 23.25rem;
+                  width: 18.25rem;
                   text-align: left;
                   margin-left: 5.35rem;
                 }
                 &.lot {
                   width: 3.063rem;
-                  margin-left: 4.75rem;
+                  margin-left: 1.75rem;
+                }
+                &.suppler-price {
+                  margin-left: 1.313rem;
+                  width: 6.375rem;
                 }
                 &.price {
-                  margin-left: 3.313rem;
+                  margin-left: 3.513rem;
                   width: 6.375rem;
                 }
               }

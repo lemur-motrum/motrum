@@ -5,6 +5,7 @@
         <div class="article">Артикул</div>
         <div class="article">Характеристики</div>
         <div class="article">Упак.</div>
+        <div class="article">Цена закуп.</div>
         <div class="article">Цена</div>
     </div>
     <div class="content-container">
@@ -27,7 +28,11 @@
         <div class="spetification-product-catalog">
             <div class="all-products">
                 {% for product in products %}
-                    <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }}>
+                {{product.stock.is_one_sale}}
+
+                    <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }} data-discoutnt={{ product.price.sale.percent }} 
+                    
+                    data-order-multiplicity={% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}>
                         <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">{{ product.name }}</div>
@@ -40,12 +45,26 @@
                                     {% endfor %}
                                 </div>
                                 <div class="lot">
-                                    1
-                                    {% if product.historic_stock.lot %}
-                                        {{ product.historic_stock.lot.name_shorts }}
+                                    {% if product.stock %}
+                                        {{ product.stock.lot_complect }}
+                                        {{ product.stock.lot.name_shorts }}
+                                    
+                                        {% if product.stock.order_multiplicity != 1 %}
+                                        <sup>Минимальный заказ {{product.stock.order_multiplicity}}
+                                             {{ product.stock.lot.name_shorts }}</sup>
+                                        {% endif %}
                                     {% else %}
-                                        шт
+                                        Неизвестно
                                     {% endif %}
+                                </div>
+
+                                <div class="suppler-price">
+                                    {% if product.price.price_motrum %}
+                                        <span class="price-suppler-count">{{ product.price.price_motrum }}</span> ₽
+                                    {% else %}
+                                        <span>По запросу</span>
+                                    {% endif %}
+                                   
                                 </div>
                                 <div class="price">
                                     {% if product.price.rub_price_supplier %}
@@ -69,7 +88,6 @@
                             </div>
                         </div>
                     </div>
-                    {% include "admin_specification/include/list_ajax.html" %}
                 {% empty %}
                     <div class="none-products">
                         Товаров в группе "

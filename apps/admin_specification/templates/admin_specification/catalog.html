@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="specification-container">
-        <div class="nav_contaner">
-            <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
+        <div class="bread-crumbs">
+            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
         </div>
         <h1 class="title">{{ title }}</h1>
         {% if specification_items %}
@@ -10,36 +11,73 @@
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
                     <div class="title_item">Артикул Motrum:</div>
-                    <div class="title_item">Артикул Поставщика:</div>
+                    <div class="title_item">
+                        Ар.
+                        Поставщика:
+                    </div>
                     <div class="title_item">Количество:</div>
                     <div class="title_item">Цена за шт:</div>
                     <div class="title_item">Стоимость:</div>
+                    <div class="title_item">Скидка мортрум</div>
+                    <div class="title_item">Скидка %:</div>
                 </div>
                 {% for item in specification_items %}
-                    <div class="item_container" data-id={{ item.id }}  {% if item.price == "0" %} data-price-exclusive="1" {% else %} data-price-exclusive="0" {% endif %}>
+                    <div class="item_container" data-id={{ item.id }} data-price={{ item.price }}  {% if item.price == "0" %} data-price-exclusive="1" {% else %} data-price-exclusive="0" {% endif %} data-product-specification-id="{{ item.product_specif_id }}" data-multiplicity={{ item.multiplicity }}>
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.idMotrum }}</div>
                         <div class="item_value">{{ item.idSaler }}</div>
-                        {% if item.price == "0" %}
-                            <div class="item_value input_quantity quantity">{{ item.quantity }}</div>
+                        {% if item.price == "0" or item.price == 0 %}
+                            <div class="item_value input_quantity quantity">
+                                <div class="input-container">
+                                    <button class="minus-button">-</button>
+                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                            </div>
                             <div class="item_value">
-                                <input type="text"
+                                <input class="price-input"
+                                       type="text"
                                        onkeypress='validate(event)'
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
-                            <div class="item_value quantity">{{ item.quantity }}</div>
+                            <div class="item_value quantity">
+                                <div class="input-container">
+                                    <button class="minus-button">-</button>
+                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                            </div>
                             <div class="item_value price price_once">{{ item.price }}</div>
                             <div class="item_value total_cost price">{{ item.totalCost }}</div>
                         {% endif %}
+                        <div class="item_value">
+                            {% if item.discount == "" %}
+                                Нет
+                            {% else %}
+                                {{ item.discount }} %
+                            {% endif %}
+                        </div>
+                        <div class="item_value">
+                            <input class="discount-input"
+                                   type="text"
+                                   onkeypress='validate(event)'
+                                   placeholder="% скидки"
+                                   maxlength="2"
+                                   value="0" />
+                        </div>
                     </div>
                 {% endfor %}
                 <div class="submit-container">
                     <div class="price_description">
                         Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
+                    </div>
+                    <div class="prepayment">
+                        <input type="checkbox" id="prepayment-checkbox" />
+                        <label for="prepayment-checkbox">Предоплата</label>
                     </div>
                     <button class="save_button">Сохранить спецификацию</button>
                 </div>

@@ -12,6 +12,10 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    'year_holidays': {
+        'task': 'apps.core.tasks.get_year_holiday',
+        'schedule': crontab(minute=3, hour=0, day_of_month=1),
+    },
     'current_rate': {
         'task': 'apps.core.tasks.get_currency',
         'schedule': crontab(minute=10, hour=0),

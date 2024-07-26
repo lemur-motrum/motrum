@@ -1,37 +1,31 @@
-from fileinput import filename
 import os
 import re
-import threading
 import zipfile
 import csv
 from simple_history.utils import update_change_reason
 
-
 from apps.core.models import Currency, Vat
-
-
 from apps.logs.utils import error_alert
-
 
 from project.settings import MEDIA_ROOT
 
 items_name = [
     {"vyigruzka-chpu-d": "ЧПУ"},
-    {"vyigruzka-datchiki-d": " датчики"},
-    {"vyigruzka-drosseli-d": "тормозные дроссели"},
-    {"vyigruzka-enkoderyi-d": "энкодеры"},
-    {"vyigruzka-istochniki-pitaniya-d": "источники питания"},
+    {"vyigruzka-datchiki-d": "Датчики"},
+    {"vyigruzka-drosseli-d": "Tормозные дроссели"},
+    {"vyigruzka-enkoderyi-d": "Энкодеры"},
+    {"vyigruzka-istochniki-pitaniya-d": "Источники питания"},
     {"vyigruzka-kip-d": "Приборы КИПиА"},
-    {"vyigruzka-kommunikaczionnyie-moduli-d": "коммуникационные модули"},
-    {"vyigruzka-kommutatoryi-ethernet-d": "коммутаторы ethernet"},
-    {"vyigruzka-moduli-rekuperaczii-d": "модули рекуперации"},
+    {"vyigruzka-kommunikaczionnyie-moduli-d": "Коммуникационные модули"},
+    {"vyigruzka-kommutatoryi-ethernet-d": "Коммутаторы ethernet"},
+    {"vyigruzka-moduli-rekuperaczii-d": "Модули рекуперации"},
     {"vyigruzka-pch-d": "Преобразователь частоты"},
     {"vyigruzka-plk-d": "ПЛК"},
     {"vyigruzka-po-d": "Панели оператора"},
     {"vyigruzka-robotyi-d": "Роботы"},
     {"vyigruzka-servo-d": "Сервоприводы"},
     {"vyigruzka-shkafyi-upravleniya-d": "Шкафы управления"},
-    {"vyigruzka-temperaturnyie-kontrolleryi-d": " Температурные контроллеры"},
+    {"vyigruzka-temperaturnyie-kontrolleryi-d": "Tемпературные контроллеры"},
     {
         "vyigruzka-tormoznyie-moduli-i-rezistoryi-d": "Тормозные резисторы и тормозные модули"
     },
@@ -40,9 +34,7 @@ items_name = [
 ]
 
 
-
 def add_file_delta(new_file, obj):
-
     try:
         # распаковка архива
 
@@ -67,7 +59,6 @@ def add_file_delta(new_file, obj):
         print(e)
         error = "file_error"
         location = "Загрузка фаилов Delta"
-
         info = f"ошибка при чтении фаила"
         e = error_alert(error, location, info)
 
@@ -128,7 +119,6 @@ def add_delta_product():
 
             info = f"Новый фаил {file_name}"
             e = error_alert(error, location, info)
-
 
 
 def delta_written_file(file_name, obj, new_dir):
@@ -233,7 +223,7 @@ def delta_written_file(file_name, obj, new_dir):
                 if name == "":
                     name = description
                     
-                # прайс + проверка на сдвиг колонки К ЦЕНЕ ДОБАВЛЯЕМ 1% ЗА КОНВЕРТАЦИЮ
+                # прайс + проверка на сдвиг колонки 
                 if row2["Позиция в меню"] == "":
                     price = row2["Банер на странице"]
                 else:
@@ -246,8 +236,9 @@ def delta_written_file(file_name, obj, new_dir):
                 else:
                     extra = False
                     price_supplier_float = float(price)
-                    percent_convert = price_supplier_float / 100 * 1
-                    price_supplier = price_supplier_float + percent_convert
+                    price_supplier = price_supplier_float
+                    # percent_convert = price_supplier_float / 100 * 1
+                    # price_supplier = price_supplier_float + percent_convert
 
                 vat_catalog = Vat.objects.get(name=20)
                 currency = Currency.objects.get(words_code="USD")
@@ -362,6 +353,8 @@ def delta_written_file(file_name, obj, new_dir):
                 e = error_alert(error, location, info)
             finally:
                 continue
+
+
 # свойсва если есть колонки со свойствами
 def save_delta_props(row2, article):
     from apps.product.models import ProductProperty

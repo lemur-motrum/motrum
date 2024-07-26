@@ -1,34 +1,31 @@
-from re import I
-from django.utils import timezone
+import datetime
 from django.contrib import admin
-from django.contrib.admin import helpers
-from django.urls import re_path, reverse
+from django.forms import BaseInlineFormSet
 from django.utils.html import mark_safe
+from regex import D
 from simple_history.admin import SimpleHistoryAdmin
 from itertools import chain
-from simple_history.template_utils import HistoricalRecordContextHelper
 from django.contrib import admin
-
 from django.utils.translation import gettext as _
 from django.conf import settings
-from simple_history.utils import (
-    get_history_manager_for_model,
-    get_history_model_for_model,
-)
-from django.forms import TextInput, Textarea
 from simple_history.utils import update_change_reason
-
-from apps.core.utils import create_article_motrum
-from project.settings import MEDIA_URL
-
+from django.contrib.admin.utils import unquote
+from django.core.exceptions import PermissionDenied
+from django import http
+from django.contrib.auth import get_user_model
+from django.utils.text import capfirst
+from django.utils.encoding import force_str
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
-# from myapp.models import MyModel
-# from myapp.widgets import RichTextEditorWidget
-# from apps.product.forms import ProductForm
+
 from simple_history.manager import HistoricalQuerySet, HistoryManager
-from . import models
-from apps.product.forms import ProductChangeForm, ProductChangeNotAutosaveForm, ProductDocumentAdminForm, ProductForm
+
+from apps.product.forms import (
+    ProductChangeForm,
+    ProductChangeNotAutosaveForm,
+    ProductDocumentAdminForm,
+    ProductForm,
+)
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -40,21 +37,16 @@ from apps.product.models import (
     ProductProperty,
     Stock,
 )
-from django.shortcuts import get_object_or_404, render
+
 from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
     Vendor,
 )
-from django.contrib.admin.utils import unquote
-from django.core.exceptions import PermissionDenied
-from django import http
-from django.contrib.auth import get_permission_codename, get_user_model
-from django.utils.text import capfirst
-from django.utils.encoding import force_str
 
 
+# для вывода остатков в историю изменений
 class StockAdmin(SimpleHistoryAdmin):
     model = Stock
 
@@ -106,6 +98,7 @@ class StockAdmin(SimpleHistoryAdmin):
             previous = current
 
 
+# для вывода  цен в историю изменений
 class PriceAdmin(SimpleHistoryAdmin):
     model = Price
 
@@ -159,6 +152,7 @@ class PriceAdmin(SimpleHistoryAdmin):
             previous = current
 
 
+# для вывода  свойств в историю изменений
 class ProductPropertyAdmin(SimpleHistoryAdmin):
     model = ProductProperty
 
@@ -214,6 +208,7 @@ class ProductPropertyAdmin(SimpleHistoryAdmin):
             previous = current
 
 
+# для вывода изображений в историю изменений
 class ProductImageAdmin(SimpleHistoryAdmin):
     model = ProductImage
 
@@ -268,6 +263,7 @@ class ProductImageAdmin(SimpleHistoryAdmin):
             previous = current
 
 
+# для вывода документов в историю изменений
 class ProductDocumentAdmin(SimpleHistoryAdmin):
     model = ProductDocument
 
@@ -328,43 +324,174 @@ class GroupProductAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
+# class PriceInlineInlineFormSet(BaseInlineFormSet):
+#     def clean(self):
+       
+#         super().clean()
+#         for form in self.fields_formset:
+#             if not form.is_valid():
+#                 form.cleaned_data = {'field':'id', 'DELETE': True}
+                
+        # data = self.cleaned_data
+        # print(self.cleaned_data)
+       
+        
+        # do whatever validation on data here
+
+
 class PriceInline(admin.TabularInline):
     model = Price
+    # formset = PriceInlineInlineFormSet
     min_num = 1
-    fields = (
-        "currency",
-        "vat",
-        # "vat_include",
-        "extra_price",
-        "price_supplier",
-        "rub_price_supplier",
-        "price_motrum",
-        "sale",
-    )
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    "currency",
+                    "vat",
+                    "extra_price",
+                    "price_supplier",
+                    "rub_price_supplier",
+                    "price_motrum",
+                    "sale",
+                ]
+            },
+        )
+    ]
     readonly_fields = ["rub_price_supplier", "price_motrum", "sale"]
 
     def __init__(self, *args, **kwargs):
         super(PriceInline, self).__init__(*args, **kwargs)
         self.can_delete = False
 
+    def get_fieldsets(self, request, obj):
+        fields = super(PriceInline, self).get_fieldsets(request, obj)
+        price = Price.objects.filter(prod=obj).exists()
+        fieldsets_none_obj = [
+            (
+                None,
+                {
+                    "fields": [
+                        "currency",
+                        "vat",
+                        "extra_price",
+                        "price_supplier",
+                    ]
+                },
+            )
+        ]
+        if price:
+            return fields
+        else:
+            return fieldsets_none_obj
+
+    def formfield_for_dbfield(self, *args, **kwargs):
+        formfield = super().formfield_for_dbfield(*args, **kwargs)
+        if formfield:
+            formfield.widget.can_delete_related = False
+            formfield.widget.can_change_related = False
+            formfield.widget.can_add_related = False
+            formfield.widget.can_view_related = False
+
+        return formfield
+
+       
+
 
 class StockInline(admin.TabularInline):
     model = Stock
     min_num = 1
-    fields = (
-        "lot",
-        "stock_supplier",
-        "lot_complect",
-        "stock_supplier_unit",
-        "stock_motrum",
-        "to_order",
-    )
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    "lot",
+                    "lot_complect",
+                    "stock_supplier",
+                    "stock_supplier_unit",
+                    "stock_motrum",
+                    "to_order",
+                    "is_one_sale",
+                    "order_multiplicity",
+                    "transit_count",
+                    "data_transit",
+                ]
+            },
+        )
+    ]
 
-    readonly_fields = ["stock_supplier_unit"]
+    readonly_fields = ["stock_supplier_unit", "transit_count", "data_transit"]
 
     def __init__(self, *args, **kwargs):
         super(StockInline, self).__init__(*args, **kwargs)
         self.can_delete = False
+
+    def get_fieldsets(self, request, obj):
+        fieldsets = super(StockInline, self).get_fieldsets(request, obj)
+
+        try:
+            stock = Stock.objects.get(prod=obj)
+        except Stock.DoesNotExist:
+            stock = None
+
+        fieldsets_none_obj = [
+            (
+                None,
+                {
+                    "fields": [
+                        "lot",
+                        "lot_complect",
+                        "stock_supplier",
+                        "stock_motrum",
+                        "to_order",
+                        "is_one_sale",
+                        "order_multiplicity",
+                    ]
+                },
+            )
+        ]
+        fieldsets_obj_no_transit = [
+            (
+                None,
+                {
+                    "fields": [
+                        "lot",
+                        "lot_complect",
+                        "stock_supplier",
+                        "stock_supplier_unit",
+                        "stock_motrum",
+                        "to_order",
+                        "is_one_sale",
+                        "order_multiplicity",
+                    ]
+                },
+            )
+        ]
+        if stock:
+
+            if stock.data_transit < datetime.date.today():
+                return fieldsets_obj_no_transit
+            else:
+
+                return fieldsets
+        else:
+            return fieldsets_none_obj
+        # if obj and obj.pk:
+        #     return fieldsets
+        # else:
+        #     return fieldsets_none_obj
+
+    def formfield_for_dbfield(self, *args, **kwargs):
+        formfield = super().formfield_for_dbfield(*args, **kwargs)
+        if formfield:
+            formfield.widget.can_delete_related = False
+            formfield.widget.can_change_related = False
+            formfield.widget.can_add_related = False
+            formfield.widget.can_view_related = False
+
+        return formfield
 
 
 class ProductImageInline(admin.TabularInline):
@@ -482,7 +609,9 @@ class ProductAdmin(SimpleHistoryAdmin):
                     (
                         "article_supplier",
                         "additional_article_supplier",
+                        "check_to_order",
                     ),
+                    # "check_to_order",
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -511,12 +640,19 @@ class ProductAdmin(SimpleHistoryAdmin):
 
                 for item_dict in product_blank_dict:
                     verbose_name = Model._meta.get_field(item_dict).verbose_name
-                    if verbose_name != "Подгруппа категории товара от поставщиков" and verbose_name != "Группа товара от поставщиков" and verbose_name != "Группа Мотрум" and verbose_name != "Дополнительный артикул поставщика":
-                        if verbose_name == 'Категория Мотрум':
+                    if (
+                        verbose_name != "Подгруппа категории товара от поставщиков"
+                        and verbose_name != "Группа товара от поставщиков"
+                        and verbose_name != "Группа Мотрум"
+                        and verbose_name != "Дополнительный артикул поставщика"
+                    ):
+                        if verbose_name == "Категория Мотрум":
                             item_one = f"<li font-size: 0.6rem>Группировка Motrum</li>"
-                        elif  verbose_name == 'Категории товара от поставщиков':
-                            item_one = f"<li font-size: 0.6rem>Группировка поставщика</li>" 
-                        else:     
+                        elif verbose_name == "Категории товара от поставщиков":
+                            item_one = (
+                                f"<li font-size: 0.6rem>Группировка поставщика</li>"
+                            )
+                        else:
                             item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
                         product_blank_local = f"{product_blank_local}{item_one}"
 
@@ -607,6 +743,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 "Основные параметры",
                 {
                     "fields": [
+                        ("check_to_order",),
                         (
                             "article_supplier",
                             "additional_article_supplier",
@@ -629,24 +766,16 @@ class ProductAdmin(SimpleHistoryAdmin):
         else:
             return fields_add
 
-    def has_add_permission(self, request):
-
-        if request.path == "/admin/specification/specification/add/":
-            return False
-        if request.user.has_perm("product.change_product") == False:
-            return False
-        else:
-            return True
-
     def get_form(self, request, obj, **kwargs):
         if obj == None:
-                kwargs["form"] = ProductForm            
+            kwargs["form"] = ProductForm
+
         else:
             if obj.autosave_tag == True:
                 kwargs["form"] = ProductChangeForm
-            else: 
-                kwargs["form"] = ProductChangeNotAutosaveForm      
-        print(kwargs["form"] )
+            else:
+                kwargs["form"] = ProductChangeNotAutosaveForm
+
         return super().get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -663,11 +792,17 @@ class ProductAdmin(SimpleHistoryAdmin):
             if item.autosave_tag == False:
                 print(123123123)
                 if db_field.name == "category_supplier":
-                    kwargs["queryset"] = SupplierCategoryProduct.objects.filter(supplier_id=item.supplier.id)
+                    kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
+                        supplier_id=item.supplier.id
+                    )
                 if db_field.name == "group_supplier":
-                    kwargs["queryset"] = SupplierGroupProduct.objects.filter(supplier_id=item.supplier.id)
+                    kwargs["queryset"] = SupplierGroupProduct.objects.filter(
+                        supplier_id=item.supplier.id
+                    )
                 if db_field.name == "category_supplier_all":
-                    kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(supplier_id=item.supplier.id)    
+                    kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
+                        supplier_id=item.supplier.id
+                    )
             # if db_field.name == "category_supplier_all":
             #     kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
             #         supplier_id=item.supplier.id, vendor_id=item.vendor.id
@@ -696,10 +831,21 @@ class ProductAdmin(SimpleHistoryAdmin):
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
+        print(formset)
         instances = formset.save()
         for instance in instances:
             update_change_reason(instance, "Ручное")
             instance.save()
+
+    # def get_formset(self, request, obj=None, **kwargs):
+    #     formset = super().get_formset(request, obj, **kwargs)
+    #     print(111111111111)
+    #     print(formset)
+    #     field = formset.form.base_fields["Price"]
+    #     field.widget.can_add_related = False
+    #     field.widget.can_change_related = False
+    #     field.widget.can_delete_related = False
+    #     return formset
 
     # история изменений
     def history_view(self, request, object_id, extra_context=None):
@@ -713,68 +859,100 @@ class ProductAdmin(SimpleHistoryAdmin):
         history = getattr(model, model._meta.simple_history_manager_attribute)
 
         object_id = unquote(object_id)
-        stock_id = Stock.objects.get(prod=object_id)
+        try:
+            stock_id = Stock.objects.get(prod=object_id)
+        except Stock.DoesNotExist:
+            stock_id = None
 
-        price_id = Price.objects.get(prod=object_id)
-        property_id = ProductProperty.objects.filter(product=object_id)
+        try:
+            price_id = Price.objects.get(prod=object_id)
+        except Price.DoesNotExist:
+            price_id = None
 
-        image_id = ProductImage.objects.filter(product=object_id)
-        doc_id = ProductDocument.objects.filter(product=object_id)
+        try:
+            property_id_ex = ProductProperty.objects.filter(product=object_id).last()
+            property_id = ProductProperty.objects.filter(product=object_id)
+        except ProductProperty.DoesNotExist:
+            property_id = None
+
+        # image_id = ProductImage.objects.filter(product=object_id)
+        try:
+            image_id_ex = ProductImage.objects.filter(product=object_id).last()
+            image_id = ProductImage.objects.filter(product=object_id)
+        except ProductImage.DoesNotExist:
+            image_id = None
+
+        try:
+            doc_id_ex = ProductDocument.objects.filter(product=object_id).last()
+            doc_id = ProductDocument.objects.filter(product=object_id)
+        except ProductDocument.DoesNotExist:
+            doc_id = None
+
+        # doc_id = ProductDocument.objects.filter(product=object_id)
 
         historical_records_property = []
-        for property_item in property_id:
-            property_list = ProductPropertyAdmin.history_view(
-                ProductPropertyAdmin, request, property_item.id, extra_context=None
-            )
-            if historical_records_property == []:
-                historical_records_property = property_list
-            else:
-                historical_records_property = list(
-                    chain(
-                        historical_records_property,
-                        property_list,
-                    )
+        if property_id != None:
+            for property_item in property_id:
+                property_list = ProductPropertyAdmin.history_view(
+                    ProductPropertyAdmin, request, property_item.id, extra_context=None
                 )
+                if historical_records_property == []:
+                    historical_records_property = property_list
+                else:
+                    historical_records_property = list(
+                        chain(
+                            historical_records_property,
+                            property_list,
+                        )
+                    )
 
         historical_records_image = []
-        for item in image_id:
-            item_list = ProductImageAdmin.history_view(
-                ProductImageAdmin, request, item.id, extra_context=None
-            )
-            if historical_records_image == []:
-                historical_records_image = item_list
-            else:
-                historical_records_image = list(
-                    chain(
-                        historical_records_image,
-                        item_list,
-                    )
+        if image_id != None:
+            for item in image_id:
+                item_list = ProductImageAdmin.history_view(
+                    ProductImageAdmin, request, item.id, extra_context=None
                 )
+                if historical_records_image == []:
+                    historical_records_image = item_list
+                else:
+                    historical_records_image = list(
+                        chain(
+                            historical_records_image,
+                            item_list,
+                        )
+                    )
 
         historical_records_doc = []
-        for item in doc_id:
-            item_list = ProductDocumentAdmin.history_view(
-                ProductDocumentAdmin, request, item.id, extra_context=None
-            )
-            if historical_records_doc == []:
-                historical_records_doc = item_list
-            else:
-                historical_records_doc = list(
-                    chain(
-                        historical_records_doc,
-                        item_list,
-                    )
+        if doc_id != None:
+            for item in doc_id:
+                item_list = ProductDocumentAdmin.history_view(
+                    ProductDocumentAdmin, request, item.id, extra_context=None
                 )
+                if historical_records_doc == []:
+                    historical_records_doc = item_list
+                else:
+                    historical_records_doc = list(
+                        chain(
+                            historical_records_doc,
+                            item_list,
+                        )
+                    )
 
         historical_records = self.get_history_queryset(
             request, history, pk_name, object_id
         )
-        historical_records_stock = StockAdmin.history_view(
-            StockAdmin, request, stock_id.id, extra_context=None
-        )
-        historical_records_price = PriceAdmin.history_view(
-            PriceAdmin, request, price_id.id, extra_context=None
-        )
+        if stock_id != None:
+            historical_records_stock = StockAdmin.history_view(
+                StockAdmin, request, stock_id.id, extra_context=None
+            )
+        else:
+            historical_records_stock = []
+        if price_id != None:
+            historical_records_price = PriceAdmin.history_view(
+                PriceAdmin, request, price_id.id, extra_context=None
+            )
+        else:
+            historical_records_price = []
 
         history_list_display = self.get_history_list_display(request)
 
@@ -844,6 +1022,15 @@ class ProductAdmin(SimpleHistoryAdmin):
             request, self.object_history_template, context, **extra_kwargs
         )
 
+    def has_add_permission(self, request):
+
+        if request.path == "/admin/specification/specification/add/":
+            return False
+        if request.user.has_perm("product.change_product") == False:
+            return False
+        else:
+            return True
+
 
 class LotAdmin(admin.ModelAdmin):
     fields = (
@@ -854,11 +1041,11 @@ class LotAdmin(admin.ModelAdmin):
 
 class GroupProductInline(admin.TabularInline):
     model = GroupProduct
-    fields = ("name","article_name")
+    fields = ("name", "article_name")
 
 
 class CategoryProductAdmin(admin.ModelAdmin):
-    fields = ("name","article_name")
+    fields = ("name", "article_name")
     list_display = [
         "name",
         "article_name",

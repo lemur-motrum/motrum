@@ -1,34 +1,14 @@
-from email.policy import default
-
-import os
-from pyexpat import model
+from django.forms import ValidationError
 from django.utils import timezone
 from django.db import models
-from simple_history import register
-from simple_history.utils import update_change_reason
-from apps import core
-from apps.core.models import Currency, Vat
 from django.db.models.deletion import CASCADE
-from django.db.models.signals import post_save
 from django.dispatch import receiver
-from simple_history.models import HistoricalRecords, HistoricForeignKey
-from simple_history.models import (
-    SIMPLE_HISTORY_REVERSE_ATTR_NAME,
-    DeletedObject,
-    HistoricalRecords,
-    ModelChange,
-    ModelDelta,
-    is_historic,
-    to_historic,
-)
-
-
+from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
-from django.db.models import signals, Sum, Q
 
+from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
-    get_file_path,
     get_file_path_add,
     get_lot,
     get_motrum_category,
@@ -36,10 +16,7 @@ from apps.core.utils import (
     get_price_supplier_rub,
 )
 from simple_history.signals import (
-    pre_create_historical_record,
     post_create_historical_record,
-    pre_create_historical_m2m_records,
-    post_create_historical_m2m_records,
 )
 from apps.supplier.models import (
     Discount,
@@ -51,8 +28,6 @@ from apps.supplier.models import (
 )
 from pytils import translit
 from django.utils.text import slugify
-from project.settings import BASE_DIR, MEDIA_ROOT, MEDIA_URL
-from django.utils.safestring import mark_safe
 
 
 TYPE_DOCUMENT = (
@@ -76,7 +51,6 @@ class Product(models.Model):
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
-        # related_name="products",
         on_delete=models.PROTECT,
     )
     vendor = models.ForeignKey(
@@ -133,13 +107,16 @@ class Product(models.Model):
     )
 
     name = models.CharField("Название товара", max_length=600)
-    check_image_upgrade = models.BooleanField("было изменено вручную", default=False)
-    check_document_upgrade = models.BooleanField("было изменено вручную", default=False)
-    check_property_upgrade = models.BooleanField("было изменено вручную", default=False)
+
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    check_to_order = models.BooleanField("Доступность к заказу", default=True)
+   
+
+    autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-    autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
 
     class Meta:
         verbose_name = "Товар"
@@ -153,9 +130,9 @@ class Product(models.Model):
         if self.article == "":
             article = create_article_motrum(self.supplier.id)
             self.article = article
+
         # получение категорий мотрум из категорий поставщика
         filter_catalog = get_motrum_category(self)
-
         if self.category == None:
             self.category = filter_catalog[0]
         if self.group == None:
@@ -170,15 +147,14 @@ class Product(models.Model):
         #         if self.group_supplier.vendor is not None:
         #             self.vendor = self.group_supplier.vendor
         #     print(self.vendor)
-        
-        
-        # удалить лишние пробклы
+
+        # удалить лишние пробелы
         if self.description != None:
             self.description = self.description.strip()
-            self.description = ' '.join(self.description.split())
+            self.description = " ".join(self.description.split())
         super().save(*args, **kwargs)
 
-        # обновление цен товаро потому что могли змеиться группы для скидки
+        # обновление цен товаров потому что могли заменить группы для скидки
         price = Price.objects.filter(prod=self.id)
         for price_one in price:
             price_one.price_supplier = price_one.price_supplier
@@ -231,7 +207,7 @@ class GroupProduct(models.Model):
     slug = models.SlugField(null=True, max_length=100)
     category = models.ForeignKey(
         CategoryProduct,
-        verbose_name="категория",
+        verbose_name="Категория Мотрум",
         on_delete=models.PROTECT,
     )
     article_name = models.CharField(
@@ -259,17 +235,16 @@ class Price(models.Model):
     prod = models.OneToOneField(
         Product,
         related_name="price",
+        verbose_name="Продукт",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
-
     currency = models.ForeignKey(
         Currency,
         verbose_name="Валюта",
         on_delete=models.PROTECT,
     )
-
     vat = models.ForeignKey(
         Vat,
         verbose_name="НДС",
@@ -277,15 +252,13 @@ class Price(models.Model):
         # blank=True,
         null=True,
     )
-
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
-
     price_supplier = models.FloatField(
         "Цена в каталоге поставщика в валюте каталога",
         # blank=True,
         null=True,
+        default=0
     )
-
     rub_price_supplier = models.FloatField(
         "Цена в каталоге поставщика в рублях + НДС",
         blank=True,
@@ -296,9 +269,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
-
     extra_price = models.BooleanField("Цена по запросу", default=False)
-
     sale = models.ForeignKey(
         Discount,
         verbose_name="Примененная скидка",
@@ -306,6 +277,9 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -316,6 +290,7 @@ class Price(models.Model):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
+
         # если 0 цена или экстра прайс проставить нули и теги
         if self.price_supplier == 0 or self.extra_price == True:
             self.extra_price = True
@@ -326,7 +301,7 @@ class Price(models.Model):
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
-
+            # получить рублевую цену
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -335,21 +310,26 @@ class Price(models.Model):
             )
             self.rub_price_supplier = rub_price_supplier
 
-            price_motrum_all = get_price_motrum(
-                self.prod.category_supplier,
-                self.prod.group_supplier,
-                self.prod.vendor,
-                rub_price_supplier,
-                self.prod.category_supplier_all,
-            )
-            price_motrum = price_motrum_all[0]
-            sale = price_motrum_all[1]
-            self.price_motrum = price_motrum
-            self.sale = sale
+        # получить скидки
+        price_motrum_all = get_price_motrum(
+            self.prod.category_supplier,
+            self.prod.group_supplier,
+            self.prod.vendor,
+            self.rub_price_supplier,
+            self.prod.category_supplier_all,
+        )
+        price_motrum = price_motrum_all[0]
+        sale = price_motrum_all[1]
+        self.price_motrum = price_motrum
+        self.sale = sale
 
         super().save(*args, **kwargs)
-
-
+    
+    # def clean(self):
+    #     super().clean()
+    #     if self.extra_price:
+    #        self.price_supplier = None
+# курсы валют
 class CurrencyRate(models.Model):
     currency = models.ForeignKey(
         Currency,
@@ -357,20 +337,19 @@ class CurrencyRate(models.Model):
     )
 
     date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    value = models.FloatField("курс ЦБ", blank=True, null=True)
-    vunit_rate = models.FloatField("курс ЦБ за еденицу", blank=True, null=True)
+    value = models.FloatField("Курс ЦБ", blank=True, null=True)
+    vunit_rate = models.FloatField("Курс ЦБ за единицу", blank=True, null=True)
     count = models.PositiveIntegerField("Единиц", blank=True, null=True)
 
 
 class Stock(models.Model):
     prod = models.OneToOneField(
         Product,
-        related_name="historic_stock",
+        # related_name="historic_stock",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
-
     lot = models.ForeignKey(
         "Lot",
         verbose_name="Единица измерения поставщика",
@@ -386,8 +365,20 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках"
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
-
     to_order = models.BooleanField("Товар под заказ", default=False)
+    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+    transit_count = models.PositiveIntegerField(
+        "Ближайшая поставка количество", blank=True, null=True
+    )
+    data_transit = models.DateField(
+        verbose_name="Ближайшая поставка дата", blank=True, null=True
+    )
+    order_multiplicity = models.PositiveIntegerField(
+        "Коэффициент кратности заказа", default=1
+    )
+    is_one_sale = models.BooleanField("Разрешение продавать поштучно", default=True)
+
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -398,19 +389,21 @@ class Stock(models.Model):
         return f"{self.stock_supplier} {self.stock_supplier}"
 
     def save(self, *args, **kwargs):
-
+        # посчитать комплекты лотов
         lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
-       
         self.stock_supplier_unit = lots[1]
         self.lot_complect = lots[2]
 
-        name1 = super().save(*args, **kwargs)
+        # if self.stock_supplier != 0:
+        #     self.to_order = False
+
+        super().save(*args, **kwargs)
 
 
 class Lot(models.Model):
     name = models.CharField("Полное название", max_length=30)
     name_shorts = models.CharField("Короткое название", max_length=6, null=True)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField(null=True, max_length=30)
 
     class Meta:
         verbose_name = "Единица измерения поставщика"
@@ -424,11 +417,10 @@ class Lot(models.Model):
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
 
-        super(Lot, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class ProductImage(models.Model):
-
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -436,8 +428,8 @@ class ProductImage(models.Model):
     )
     photo = models.ImageField("Изображение", upload_to=get_file_path_add, null=True)
     # file = models.CharField("фаил в системе", max_length=100, null=True)
-    link = models.CharField("ссылка у поставщика", max_length=150)
-    hide = models.BooleanField("скрыть", default=False)
+    link = models.CharField("Ссылка у поставщика", max_length=150)
+    hide = models.BooleanField("Скрыть", default=False)
 
     class Meta:
         verbose_name = "Изображение"
@@ -445,15 +437,10 @@ class ProductImage(models.Model):
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
-    # def __str__(self):
-    #     return None
-    # return mark_safe(
-    #     '<img src="{}{}" height="200" width="200" />'.format(MEDIA_URL, self.photo)
-    # )
-
-    # def delete(self, *args, **kwargs):
-    #     self.hide = True
-    #     super().save(*args, **kwargs)  # Call the "real" save() method.
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     product = self.product
+    #     product.save
 
 
 class ProductDocument(models.Model):
@@ -464,14 +451,13 @@ class ProductDocument(models.Model):
     document = models.FileField(
         "Документ", upload_to=get_file_path_add, max_length=255, null=True
     )
-    # file = models.CharField("фаил в системе", max_length=100, null=True)
-    # type_doc = models.CharField("Тип документации", max_length=150, null=True)
     type_doc = models.CharField(
         "Тип документации", max_length=100, choices=TYPE_DOCUMENT, default="Other"
     )
     name = models.CharField("Название документа", max_length=255, null=True)
-    link = models.CharField("ссылка у поставщика", max_length=255, null=True)
-    hide = models.BooleanField("скрыть", default=False)
+    link = models.CharField("Ссылка у поставщика", max_length=255, null=True)
+    hide = models.BooleanField("Скрыть", default=False)
+    
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -481,6 +467,12 @@ class ProductDocument(models.Model):
     def __str__(self):
         return f"{self.document}"
 
+    # def save(self, *args, **kwargs):
+
+    #     super().save(*args, **kwargs)
+    #     product = self.product
+    #     product.save
+
 
 class ProductProperty(models.Model):
     product = models.ForeignKey(
@@ -489,15 +481,21 @@ class ProductProperty(models.Model):
         on_delete=CASCADE,
     )
 
-    name = models.CharField("название", max_length=600)
-    value = models.CharField("значение", max_length=600)
-    unit_measure = models.CharField("значение", max_length=600, null=True)
+    name = models.CharField("Название", max_length=600)
+    value = models.CharField("Значение", max_length=600)
+    unit_measure = models.CharField("Короткое имя значения", max_length=600, null=True)
     hide = models.BooleanField("Удалить", default=False)
+    
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = "Характеристика \свойства"
+        verbose_name = "Характеристика\свойства"
         verbose_name_plural = "Характеристики\свойства"
 
     def __str__(self):
         return f"{self.name}:{self.value}"
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     product = self.product
+    #     product.save

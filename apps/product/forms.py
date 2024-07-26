@@ -2,7 +2,16 @@ from dal import autocomplete
 from django import forms
 
 
-from apps.product.models import CategoryProduct, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
+from apps.product.models import (
+    CategoryProduct,
+    GroupProduct,
+    Price,
+    Product,
+    ProductDocument,
+    ProductImage,
+    ProductProperty,
+    Stock,
+)
 from apps.specification.models import ProductSpecification
 from apps.supplier.models import (
     Supplier,
@@ -13,6 +22,7 @@ from apps.supplier.models import (
 )
 
 
+# форма добавления нового продукта
 class ProductForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(
         queryset=Supplier.objects.all(), label="Поставщик"
@@ -42,7 +52,7 @@ class ProductForm(forms.ModelForm):
         ),
     )
     category_supplier = forms.ModelChoiceField(
-        required=False,
+        required=True,
         queryset=SupplierCategoryProduct.objects.all(),
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
@@ -82,13 +92,13 @@ class ProductForm(forms.ModelForm):
         }
 
 
+# форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
     group = forms.ModelChoiceField(
         required=False,
         queryset=GroupProduct.objects.all(),
         label="Группа Мотрум",
-        widget=forms.Select(attrs={"class": "form-control"})
-        
+        widget=forms.Select(attrs={"class": "form-control"}),
     )
     category = forms.ModelChoiceField(
         required=False,
@@ -147,7 +157,7 @@ class ProductChangeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProductChangeForm, self).__init__(*args, **kwargs)
-       
+
         prod = Product.objects.filter(id=self.instance.pk).values()
 
         for product_item in prod:
@@ -158,10 +168,14 @@ class ProductChangeForm(forms.ModelForm):
                 # self.fields[verbose_name].widget.attrs = {
                 #     "style": "border: 1px solid red;",
                 # }
-       
+
+
+# форма обновления продукта добавленного вручную
 class ProductChangeNotAutosaveForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(
-        queryset=Supplier.objects.all(), label="Поставщик",required=False,
+        queryset=Supplier.objects.all(),
+        label="Поставщик",
+        required=False,
     )
 
     vendor = forms.ModelChoiceField(
@@ -169,7 +183,9 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         required=False,
         label="Производитель",
         widget=autocomplete.ModelSelect2(
-            url="product:vendor-autocomplete", forward=["supplier"],attrs={"class": "form-control"}
+            url="product:vendor-autocomplete",
+            forward=["supplier"],
+            attrs={"class": "form-control"},
         ),
     )
 
@@ -177,7 +193,6 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         queryset=CategoryProduct.objects.all(),
         label="Категория Motrum",
         required=False,
-       
     )
 
     group = forms.ModelChoiceField(
@@ -185,7 +200,9 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         required=False,
         label="Группа Motrum",
         widget=autocomplete.ModelSelect2(
-            url="product:group-autocomplete", forward=["category"],attrs={"class": "form-control"}
+            url="product:group-autocomplete",
+            forward=["category"],
+            attrs={"class": "form-control"},
         ),
     )
     category_supplier = forms.ModelChoiceField(
@@ -193,7 +210,9 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         queryset=SupplierCategoryProduct.objects.all(),
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
-            url="product:category_supplier-autocomplete", forward=["supplier"],attrs={"class": "form-control"}
+            url="product:category_supplier-autocomplete",
+            forward=["supplier"],
+            attrs={"class": "form-control"},
         ),
     )
 
@@ -202,8 +221,10 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         required=False,
         label="Группа поставщика",
         widget=autocomplete.ModelSelect2(
-            url="product:group_supplier-autocomplete", forward=["category_supplier"],attrs={"class": "form-control"}
-    )
+            url="product:group_supplier-autocomplete",
+            forward=["category_supplier"],
+            attrs={"class": "form-control"},
+        ),
     )
 
     category_supplier_all = forms.ModelChoiceField(
@@ -212,7 +233,8 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         label="Подгруппа поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier_all-autocomplete",
-            forward=["supplier", "vendor", "category_supplier", "group_supplier"],attrs={"class": "form-control"}
+            forward=["supplier", "vendor", "category_supplier", "group_supplier"],
+            attrs={"class": "form-control"},
         ),
     )
 
@@ -227,9 +249,10 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
                 }
             ),
         }
+
     def __init__(self, *args, **kwargs):
         super(ProductChangeNotAutosaveForm, self).__init__(*args, **kwargs)
-       
+
         prod = Product.objects.filter(id=self.instance.pk).values()
 
         for product_item in prod:
@@ -239,26 +262,21 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
                 verbose_name = Product._meta.get_field(item_dict).name
                 # self.fields[verbose_name].widget.attrs = {
                 #     "style": "border: 1px solid red;",
-                # }    
+                # }
 
-       
-                
+
 class ProductDocumentAdminForm(forms.ModelForm):
-    document = forms.ClearableFileInput(
-    )
+    document = forms.ClearableFileInput()
+
     class Meta:
         model = Product
         fields = "__all__"
-        
 
     def __init__(self, *args, **kwargs):
-        
+
         super(ProductDocumentAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk == None:
-            self.fields['document'].widget.attrs['class'] = 'my_class'
+            self.fields["document"].widget.attrs["class"] = "my_class"
             # self.fields['document'].widget.attrs = {
             #         "style": "color:red;",
             #     }
-        
-        
-  

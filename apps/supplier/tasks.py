@@ -15,20 +15,15 @@ def add_iek(self):
     try:
         iek_api()
     except Exception as exc:
-        if exc == MaxRetriesExceededError or exc == JSONDecodeError:
-            error = "file_api_error"
-            location = "Связь с сервером ИЕК"
-
-            info = f"Нет связи с сервером ИЕК {exc}"
-            e = error_alert(error, location, info)
-
-        self.retry(exc=exc, countdown=600)
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
             location = "Связь с сервером ИЕК"
 
-            info = f"Нет связи с сервером ИЕК {exc}"
+            info = f"Нет связи с сервером ИЕК "
             e = error_alert(error, location, info)
+
+        self.retry(exc=exc, countdown=600)
+
 
 
 @app.task(
@@ -39,6 +34,12 @@ def add_veda(self):
     try:
         veda_api()
     except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Связь с сервером VEDA"
+
+            info = f"Нет связи с сервером VEDA "
+            e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=600)
 
 
@@ -50,4 +51,10 @@ def add_prompower(self):
     try:
         prompower_api()
     except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Связь с сервером Prompower"
+
+            info = f"Нет связи с сервером Prompower "
+            e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=600)

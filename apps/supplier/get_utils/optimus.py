@@ -16,33 +16,11 @@ from apps.logs.utils import error_alert
 from apps.supplier.models import SupplierGroupProduct
 from project.settings import MEDIA_ROOT
 
-items_name = [
-    {"ustrojstva-plavnogo-puska-od": "Устройства плавного пуска"},  # OPTIMUS DRIVE
-    {"enkoderyi-od": "Энкодеры"},  # OPTIMUS DRIVE
-    {
-        "kommutatoryi-razvetviteli-od": "Промышленные коммутаторы и разветвители"
-    },  # OPTIMUS DRIVE
-    {"paneli-operatora-od": "Панели оператора"},  # OPTIMUS DRIVE
-    {"preobrazovateli-chastotyi-od": "Преобразователи частоты"},  # OPTIMUS DRIVE \ SINE
-    {"promyishlennyie-kontrolleryi-od": "Программируемые контроллеры"},  # OPTIMUS DRIVE
-    {"servodvigateli-od": " Серводвигатели"},  # VEICHI
-    {"servodvigateli-sch-od": "Серводвигатели серии SCH SAVCH (архив)"},  # SAVCH архив
-    {"servousiliteli-od": "Сервоусилители"},  # VEICHI SAVCHархив
-    {"temperaturnyie-kontrolleryi-od": "Температурные контроллеры"},  # OPTIMUS DRIVE
-    {"texnicheskoe-zrenie-2-od": "Считыватели кодов"},  # HIKROBOT
-    {"texnicheskoe-zrenie-3d-od": "3D Камеры"},  # HIKROBOT
-    {
-        "texnicheskoe-zrenie-4-kontrolleryi-od": " Контроллеры машинного зрения"
-    },  # HIKROBOT
-    {"texnicheskoe-zrenie-5-obektivyi-od": "Объективы"},  # HIKROBOT
-    {
-        "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od": "Телецентрические объективы"
-    },  # HIKROBOT
-]
+
 
 items_categ = [
     {"ustrojstva-plavnogo-puska-od": "Устройства плавного пуска"},  # OPTIMUS DRIVE
-    # {"enkoderyi-od": "Энкодеры"},  # OPTIMUS DRIVE
+    {"enkoderyi-od": "Энкодеры"},  # OPTIMUS DRIVE
     {
         "kommutatoryi-razvetviteli-od": "Промышленные коммутаторы и разветвители"
     },  # OPTIMUS DRIVE
@@ -269,7 +247,7 @@ def optimus_written_file(file_name, obj, new_dir):
                 if name == "":
                     name = description
                
-                # прайс  К ЦЕНЕ ДОБАВЛЯЕМ 1% ЗА КОНВЕРТАЦИЮ
+                # прайс  
                 price = row2["Цена"].replace(" ", "")
                 if price == "" or price == "n":
                     extra = True
@@ -278,8 +256,9 @@ def optimus_written_file(file_name, obj, new_dir):
                 else:
                     extra = False
                     price_supplier_float = float(price)
-                    percent_convert = price_supplier_float / 100 * 1
-                    price_supplier = price_supplier_float + percent_convert
+                    price_supplier = price_supplier_float
+                    # percent_convert = price_supplier_float / 100 * 1
+                    # price_supplier = price_supplier_float + percent_convert
 
                 vat_catalog = Vat.objects.get(name=20)
                 currency = Currency.objects.get(words_code="USD")

@@ -11,76 +11,72 @@ services:
     ports:
       - 8000:8000
 
-    depends_on:
-      - pgdb
+    # depends_on:
+    #   - pgdb
 
       
-  celery:
-    container_name: celery
-    build: ./python/
-    command: >
-      sh -c "cd ${PROJECT}/ && celery -A project worker -l info"
-    volumes:
-      - ../:/home/sites/${PROJECT}/
-    env_file:
-      - ./.env
-    ports:
-      - "5566:5566"
-    depends_on:
-      - redis
+  # celery:
+  #   container_name: celery
+  #   build: ./python/
+  #   command: >
+  #     sh -c "cd ${PROJECT}/ && celery -A project worker -l info"
+  #   volumes:
+  #     - ../:/home/sites/${PROJECT}/
+  #   env_file:
+  #     - ./.env
+  #   ports:
+  #     - "5566:5566"
+  #   depends_on:
+  #     - redis
 
-  celery-beat:
-    container_name: celery-beat
-    build: ./python/
-    command: >
-      sh -c "cd ${PROJECT}/ && celery -A project beat -l info"
-    volumes:
-      - ../:/home/sites/${PROJECT}/
-    depends_on:
-      - redis
-      - celery
+  # celery-beat:
+  #   container_name: celery-beat
+  #   build: ./python/
+  #   command: >
+  #     sh -c "cd ${PROJECT}/ && celery -A project beat -l info"
+  #   volumes:
+  #     - ../:/home/sites/${PROJECT}/
+  #   depends_on:
+  #     - redis
+  #     - celery
 
-  dashboard:
-    container_name: flower
-    build: ./python/
-    command: celery flower --port=5555
-    ports:
-      - 5555:5555
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
-    depends_on:
-      - web
-      - redis
-      - celery
+  # dashboard:
+  #   container_name: flower
+  #   build: ./python/
+  #   command: celery flower --port=5555
+  #   ports:
+  #     - 5555:5555
+  #   environment:
+  #     - DEBUG=1
+  #     - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
+  #     - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+  #     - CELERY_BROKER=redis://redis:6379/0
+  #     - CELERY_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - web
+  #     - redis
+  #     - celery
 
-  redis:
-    container_name: redis
-    image: redis
-    ports:
-        - "6379:6379"    
-
-
-  pgdb:
-    # Использование готового образа postgres
-    image: postgres
-    # Задание переменных окружения для контейнера с postgres
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-     # Задание имени контейнера для сервиса pgdb
-    container_name: pgdb
-     # Связывание тома с директорией в контейнере для сохранения данных postgres
-    volumes:
-      - ../:/home/sites/${PROJECT}/pgdbdata:/var/lib/postgresql/data/
-      
-      # - pgdbdata:/var/lib/postgresql/data/
+  # redis:
+  #   container_name: redis
+  #   image: redis
+  #   ports:
+  #       - "6379:6379"    
 
 
+  # pgdb:
+  #   # Использование готового образа postgres
+  #   image: postgres
+  #   # Задание переменных окружения для контейнера с postgres
+  #   environment:
+  #     - POSTGRES_DB=${DB_NAME}
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #    # Задание имени контейнера для сервиса pgdb
+  #   container_name: pgdb
+  #    # Связывание тома с директорией в контейнере для сохранения данных postgres
+  #   volumes:
+  #     - ../:/home/sites/${PROJECT}/pgdbdata:/var/lib/postgresql/data/
   
   adminer:
     container_name: adminer

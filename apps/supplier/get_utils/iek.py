@@ -3,6 +3,7 @@ import os
 import traceback
 import requests
 from simple_history.utils import update_change_reason
+import base64
 
 from apps import product
 from apps.core.models import Currency, Vat
@@ -246,19 +247,28 @@ def iek_api():
             vendor_item = vendor_items
 
    
+   
+   
     payload = {}
+    encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
+    decoded = encoded.decode()
+
     headers = {
-        'Authorization': f"{os.environ.get("IEK_API_TOKEN")}",
-        # "Authorization": "Basic NjAwLTIwMjMwNjI2LTE2Mjg0MS0yMTc6Zk4sNUtfaDFrMVk9bTdDLQ=="
+        'Authorization': f"Basic {decoded}",
+      
     }
+    
+
     base_url = "https://lk.iek.ru/api/"
 
+
     def get_iek_category(url_service, url_params):
-         
+
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
                 "GET", url, headers=headers, data=payload, allow_redirects=False
             )
+            print(response.headers)
 
             responset = response_request(response.status_code, "IEK получение групп")
           
@@ -360,9 +370,7 @@ def iek_api():
                 
                     # основная инфа
                     # получение или добавление вендора
-                    print(data_item["TM"])
                     if data_item["TM"] == None:
-                        print(data_item)
                         break
                     else:    
                         vendor_add = Vendor.objects.get_or_create(
@@ -373,7 +381,6 @@ def iek_api():
                                 "currency_catalog": currency,
                             },
                         )
-                        print(vendor_add)
 
                         article_suppliers = data_item["art"]
                         category = data_item["groupId"]
@@ -381,15 +388,11 @@ def iek_api():
                         categ_names = SupplierCategoryProductAll.objects.filter(
                             supplier=supplier, article_name=category
                         )
-                        
-                        
-                        print(categ_names[0])
+
                         item_category_all = get_category(
                             supplier, vendor_add[0], categ_names[0].name
                         )
-                        print(item_category_all)
-                    
-                    
+
                         item_category = item_category_all[0]
                         item_group = item_category_all[1]
                         item_group_all = item_category_all[2]
@@ -400,10 +403,10 @@ def iek_api():
                         if  "price" in  data_item:
                             saleprice = data_item["saleprice"]
                             price = data_item["price"]
-                            if saleprice:
-                                price_supplier = saleprice
-                            else:
-                                price_supplier = price
+                            # if saleprice:
+                            #     price_supplier = saleprice
+                            # else:
+                            #     price_supplier = price
 
                             extra = data_item["extra"]
                             if extra == "Цена по запросу":
@@ -556,6 +559,17 @@ def iek_api():
                         stock_supplier_unit = lots[1]
                     
                         stock_motrum = 0
+                        
+                        if "order_multiplicity" in data_item:
+                            if data_item["order_multiplicity"] > 1:
+                                order_multiplicity = data_item["order_multiplicity"]
+                                is_one_sale = False
+                            else:
+                                order_multiplicity = 1
+                                is_one_sale = True
+                        else: 
+                            order_multiplicity = 1
+                            is_one_sale = True
                     
                         # основной товар
                         try:
@@ -623,6 +637,8 @@ def iek_api():
                             stock_prod.stock_supplier = stock_supplier[0]
                             stock_prod.to_order = stock_supplier[1]
                             stock_prod.stock_motrum = stock_motrum
+                            stock_prod.order_multiplicity = order_multiplicity
+                            stock_prod.is_one_sale = is_one_sale
                             stock_prod.save()
                             update_change_reason(stock_prod, "Автоматическое")
     
@@ -667,7 +683,8 @@ def iek_api():
     #         )
 
     #     return data["shopItems"]
-
+    
+    # остатки на складах
     def get_iek_stock_one(prod):
         try:
 
@@ -705,7 +722,47 @@ def iek_api():
           
                 info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
                 e = error_alert(error, location, info)
+    
+    # планы прихода 
+    def get_iek_stock_one_plannig(prod):
+        try:
+
+            url_params = f"sku={prod.article_supplier}"
+
+            url_service = "/planresidues/json/"
+
+            url = "{0}{1}?{2}".format(base_url, url_service, url_params)
+            response = requests.request(
+                "GET", url, headers=headers, data=payload, allow_redirects=False
+            )
+            data = response.json()
+           
+            if data["shopItems"] !=[]:
+                for data_item in data["shopItems"]:
+                    if data_item["zakaz"] == 1:
+                        to_order = True
+                    else:
+                        to_order = False
+                            
+                    stock = 0
+                    product = data_item["sku"]
+                    for a in data_item["residues"].values():
+                        stock += a
+                return (stock,to_order)    
+            else:
+                stock = 0
+                to_order = False
+                return (stock,to_order)
+            
+        except Exception as e: 
+                print(e)
+                error = "file_api_error"
+                location = "Загрузка фаилов IEK"
+          
+                info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
+                e = error_alert(error, location, info)
          
+        
    
     def get_iek_property(url_service, url_params):
         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
@@ -762,14 +819,14 @@ def iek_api():
                 continue 
      
     # категории 
-    # get_iek_category("ddp", None)
-    get_iek_product("products", f"art=AR-M10N-4-K006")
+    get_iek_category("ddp", None)
+
     # запись продуктов и пропсовдля каждого по категориям 
-    # for item_iek_save_categ in iek_save_categ:
-    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
-    #     get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    for item_iek_save_categ in iek_save_categ:
+        get_iek_product("products", f"groupId={item_iek_save_categ}")
+        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
-    # get_iek_property("etim", None)
+
   
 
     return [0]

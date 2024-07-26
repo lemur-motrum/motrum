@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 from simple_history.utils import update_change_reason
 
-from apps.core.models import Currency
+from apps.core.models import CalendarHoliday, Currency
 from apps.product.models import CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
@@ -99,3 +99,35 @@ def currency_chek(current, now_rate):
                   
         except  ProductSpecification.DoesNotExist:
             pass
+
+
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def get_year_holiday(self):
+    try:
+        import json
+        import requests
+        year_date = datetime.datetime.now().year
+        year = str(year_date)
+        
+        try:
+            data_bd = CalendarHoliday.objects.get(year=year)
+            data_bd.json_date = holidays_dict
+            data_bd.save()
+    
+        except CalendarHoliday.DoesNotExist:
+            url = (
+                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+                + year
+                + ".json"
+            )
+            r = requests.get(url)
+            holidays_dict = r.json()
+            data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
+            data_bd.save()
+            
+    except Exception as exc:
+        self.retry(exc=exc, countdown=160)    
+    

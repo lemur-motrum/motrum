@@ -27,7 +27,7 @@ class CurrencyPercent(models.Model):
 
 
 class Vat(models.Model):
-    name = models.SmallIntegerField("процент ндс")
+    name = models.SmallIntegerField("Процент ндс")
 
     class Meta:
         verbose_name = "НДС"
@@ -35,3 +35,11 @@ class Vat(models.Model):
 
     def __str__(self):
         return str(self.name) + "%"
+
+
+class CalendarHoliday(models.Model):
+    year = models.CharField("Год", max_length=30)
+    json_date = models.JSONField("Список выходных из консультанта")
+
+    class Meta:
+        verbose_name = "Даты выходных и праздников"

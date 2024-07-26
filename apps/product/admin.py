@@ -470,12 +470,13 @@ class StockInline(admin.TabularInline):
             )
         ]
         if stock:
-
-            if stock.data_transit < datetime.date.today():
-                return fieldsets_obj_no_transit
+            if stock.data_transit != None:
+                if stock.data_transit < datetime.date.today():
+                    return fieldsets_obj_no_transit
+                else:
+                    return fieldsets
             else:
-
-                return fieldsets
+                    return fieldsets    
         else:
             return fieldsets_none_obj
         # if obj and obj.pk:

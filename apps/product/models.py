@@ -109,8 +109,8 @@ class Product(models.Model):
     name = models.CharField("Название товара", max_length=600)
 
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
-    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     check_to_order = models.BooleanField("Доступность к заказу", default=True)
    
 
@@ -277,8 +277,8 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
-    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
-    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
@@ -366,8 +366,8 @@ class Stock(models.Model):
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
     to_order = models.BooleanField("Товар под заказ", default=False)
-    # data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
-    data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
+    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     transit_count = models.PositiveIntegerField(
         "Ближайшая поставка количество", blank=True, null=True
     )

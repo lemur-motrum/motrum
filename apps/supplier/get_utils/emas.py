@@ -384,7 +384,7 @@ def add_group_emas():
         vendor = Vendor.objects.get(slug="emas")
 
         path = f"{MEDIA_ROOT}/price/emas_site/emas.xml"
-
+        print(path)
         with open(f"{MEDIA_ROOT}/price/emas_site/emas.xml", "r") as f:
             file = f.read()
 
@@ -405,6 +405,7 @@ def add_group_emas():
                     name=categ_name_text,
                     article_name=categ_id_text,
                 )
+                print(categ)
 
             except SupplierCategoryProduct.DoesNotExist:
                 categ = SupplierCategoryProduct(

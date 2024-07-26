@@ -401,6 +401,9 @@ def save_optimus_props(row2, article):
             if row_row_list != None and name_props != "":
                 if "<br>" in name_props:
                     name_props = name_props.replace("<br>", " ,")
+                    
+                if "<br>" in value_props:
+                    value_props = value_props.replace("<br>", " ,")
 
                 if "</sup>" in name_props:
                     name_props = name_props.replace("</sup>", "*")
@@ -411,7 +414,6 @@ def save_optimus_props(row2, article):
                 if value_props != "" and value_props != " ":
                     props_product = ProductProperty(product=article)
                     props_product.name = name_props
-
                     props_product.value = value_props
                     props_product.save()
                     update_change_reason(props_product, "Автоматическое")

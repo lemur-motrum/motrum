@@ -5,6 +5,7 @@ from xml.etree import ElementTree, ElementInclude
 from simple_history.utils import update_change_reason
 
 from apps.core.models import CalendarHoliday, Currency
+from apps.logs.utils import error_alert
 from apps.product.models import CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
@@ -45,6 +46,11 @@ def get_currency(self):
             currency_chek(current, now_rate[0])
 
     except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Обновление валют"
+            info = f"Обновление валют и валютных цен не удалось"
+            e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
 
@@ -129,5 +135,11 @@ def get_year_holiday(self):
             data_bd.save()
             
     except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Получение производственного календаря"
+
+            info = f"Получение производственного календаря не удалось"
+            e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)    
     

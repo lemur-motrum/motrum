@@ -12,9 +12,10 @@ urlpatterns = [
 
     path("add_iek", views.add_iek, name="add_iek"),
     path("test", views.test, name="test"),
-    path("save_emas_props", views.save_emas_props, name="save_emas_props"),
+    path("save_emas_props", views.save_emas_props, name="save_emas_props"),# характеристики и фото есмас из выгрузок первичное
     
-   path("add_permission", views.add_permission, name="add_permission"),# права админа
+    path("add_permission", views.add_permission, name="add_permission"),# Праздники
+    path("add_holidays", views.add_holidays, name="add_holidays"),# права админа
     
     # url для автозаполнения
     url(
@@ -31,8 +32,7 @@ urlpatterns = [
         r"^group-autocomplete/$",
         SupplierGroupAutocomplete.as_view(),
         name="group-autocomplete",
-    ),
-    
+    ), 
     url(
         r"^category-all-autocomplete/$",
         SupplierCategoryProductAllAutocomplete.as_view(),

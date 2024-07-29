@@ -51,15 +51,15 @@ def test(request):
 
 
 def save_emas_props(request):
-    add_group_emas()
-    # def background_task():
-    #         # Долгосрочная фоновая задача
-    #         add_group_emas()
-    #         add_props_emas_product()
+ 
+    def background_task():
+            # Долгосрочная фоновая задача
+            add_group_emas()
+            add_props_emas_product()
 
-    # daemon_thread = threading.Thread(target=background_task)
-    # daemon_thread.setDaemon(True)
-    # daemon_thread.start()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
 
     
 
@@ -180,7 +180,12 @@ class SupplierGroupAutocomplete(autocomplete.Select2QuerySetView):
         category_supplier = self.forwarded.get("category_supplier", None)
         if category_supplier:
             qs = qs.filter(category_supplier=category_supplier)
-
+            
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+                | Q(article_name__icontains=self.q)
+            )      
         return qs
 
 
@@ -205,7 +210,10 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(group_supplier=group_supplier)
 
         if self.q:
-            qs = qs.filter(Q(name__icontains=self.q))
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+                | Q(article_name__icontains=self.q)
+            )      
 
         return qs
 
@@ -217,5 +225,10 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
         category_catalog = self.forwarded.get("category_catalog", None)
         if category_catalog:
             qs = qs.filter(category=category_catalog)
-
+        
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+                | Q(article_name__icontains=self.q)
+            )    
         return qs

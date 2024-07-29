@@ -29,13 +29,13 @@ def veda_api():
 
     response = requests.request("GET", url, headers=headers,)
     data = response.json()
-    print(response)
+
     i = 0
     for data_item in data['prices']:
      
                 
         try:
-            print(data_item)
+            
             article_suppliers = data_item["materialCode"]
             name = data_item["description"]
                 # цены
@@ -44,7 +44,7 @@ def veda_api():
             
             price_supplier = float(data_item["salesPrice"])
             if price_supplier == 0:
-                pass
+                price_supplier = None
             sale_persent = float(data_item["discountPercent"])
             # остатки
             lot = Lot.objects.get(name="штука")

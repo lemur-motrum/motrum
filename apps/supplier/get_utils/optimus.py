@@ -92,10 +92,16 @@ def add_optimus_product():
         for item_name_categ in items_categ:
             name = list(item_name_categ.values())[0]
             slug = list(item_name_categ.keys())[0]
-            categ = SupplierCategoryProduct(
-                name=name, slug=slug, supplier=obj, autosave_tag=True
-            )
-            categ.save()
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    name=name, slug=slug, supplier=obj
+                )
+                
+            except SupplierCategoryProduct.DoesNotExist:
+                categ = SupplierCategoryProduct(
+                    name=name, slug=slug, supplier=obj, autosave_tag=True
+                )
+                categ.save()
 
 
     # перебор фаилов и считывание

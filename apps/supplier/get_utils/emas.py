@@ -454,12 +454,10 @@ def add_group_emas():
                     try:
                         all_groupe = SupplierCategoryProductAll.objects.get(
                             supplier=supplier,
-                            name=group_name_text,
-                            article_name=group_id_text,
+                            name=all_groupe_name_text,
+                            article_name=all_groupe_id_text,   
                         )
-                        print(00000000000)
-                        print(all_groupe)
-
+                        
                     except SupplierCategoryProductAll.DoesNotExist:
                         all_groupe = SupplierCategoryProductAll(
                             name=all_groupe_name_text,
@@ -470,8 +468,7 @@ def add_group_emas():
                             category_supplier=categ,
                             group_supplier=groupe,
                         )
-                        print(1212121)
-                        print(all_groupe)
+                        
                         all_groupe.save()
 
     except Exception as e:

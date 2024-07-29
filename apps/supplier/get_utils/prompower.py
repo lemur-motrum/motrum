@@ -344,8 +344,9 @@ def prompower_api():
                             vendor=vendori,
                             article_supplier=article_suppliers,
                         )
+                        
                         # если у товара не было совсем дококв из пропсов
-                        props =  ProductProperty.objects.filter(product=article).exists
+                        props =  ProductProperty.objects.filter(product=article).exists()
                         if props == False:
                             for prop in data_item["props"]:
                                 property_product = ProductProperty(
@@ -356,11 +357,11 @@ def prompower_api():
                                 property_product.save()
                                 update_change_reason(property_product, "Автоматическое")
                         
-                        image =  ProductImage.objects.filter(product=article).exists    
+                        image =  ProductImage.objects.filter(product=article).exists()    
                         if image == False:
                             save_image(article)
                             
-                        doc =  ProductDocument.objects.filter(product=article).exists    
+                        doc =  ProductDocument.objects.filter(product=article).exists()    
                         if doc == False:
                             save_document(categ,article)  
                             
@@ -406,8 +407,9 @@ def prompower_api():
                         price_product.price_supplier = price_supplier
                         price_product.vat = vat_catalog
                         price_product.vat_include = vat_include
+                        price_product.changeReason = "Автоматическое"
                         price_product.save()
-                        update_change_reason(price_product, "Автоматическое")
+                        # update_change_reason(price_product, "Автоматическое")
 
                     # остатки
                     try:
@@ -418,8 +420,9 @@ def prompower_api():
                         )
                     finally:
                         stock_prod.stock_supplier = stock_supplier
+                        stock_prod.changeReason = "Автоматическое"
                         stock_prod.save()
-                        update_change_reason(stock_prod, "Автоматическое")
+                        # update_change_reason(stock_prod, "Автоматическое")
                 
                 
             except Exception as e: 

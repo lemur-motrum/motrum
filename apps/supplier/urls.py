@@ -16,6 +16,7 @@ urlpatterns = [
     
     path("add_permission", views.add_permission, name="add_permission"),# Праздники
     path("add_holidays", views.add_holidays, name="add_holidays"),# права админа
+    path("get_currency", views.get_currency, name="get_currency"),
     
     # url для автозаполнения
     url(

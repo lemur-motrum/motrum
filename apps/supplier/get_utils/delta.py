@@ -7,6 +7,7 @@ from simple_history.utils import update_change_reason
 from apps.core.models import Currency, Vat
 from apps.logs.utils import error_alert
 
+from apps.product.models import Lot
 from project.settings import MEDIA_ROOT
 
 items_name = [
@@ -77,10 +78,17 @@ def add_delta_product():
         for item_name_categ in items_name:
             name = list(item_name_categ.values())[0]
             slug = list(item_name_categ.keys())[0]
-            categ = SupplierCategoryProduct(
-                name=name, slug=slug, supplier=obj, autosave_tag=True
-            )
-            categ.save()
+            print(name,slug)
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    name=name, slug=slug, supplier=obj
+                )
+                
+            except SupplierCategoryProduct.DoesNotExist:
+                categ = SupplierCategoryProduct(
+                    name=name, slug=slug, supplier=obj, autosave_tag=True
+                )
+                categ.save()
 
     # перебор фаилов и считывание
     file_names = []
@@ -297,6 +305,15 @@ def delta_written_file(file_name, obj, new_dir):
 
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
+                    stock_motrum = 0
+                    stock_supplier = None
+                    lot = Lot.objects.get(name="штука")
+                    stock_prod = Stock(
+                            prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
+                        )
+                    
+                    stock_prod.changeReason = "Автоматическое"
+                    stock_prod.save()  
                 
                 # цены товара
                 try:
@@ -311,9 +328,10 @@ def delta_written_file(file_name, obj, new_dir):
                     price_product.vat = vat_catalog
                     price_product.vat_include = True
                     price_product.extra_price = extra
+                    price_product.changeReason = "Автоматическое"
                     price_product.save()
-                    update_change_reason(price_product, "Автоматическое")
-                    
+                    # update_change_reason(price_product, "Автоматическое")
+                  
                 # свойства из отдельных колонок
                 save_delta_props(row2, article)    
                 # свойства из из общей колонки    

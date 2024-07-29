@@ -129,12 +129,18 @@ class SupplierCategoryProduct(models.Model):
             return f"{self.name}"
 
     def save(self, *args, **kwargs):
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            self.slug = slugify(slugish)
+
+       
         super().save(*args, **kwargs)
         from apps.product.models import Product
 
         # обновление категорий связанных продукты
         product = Product.objects.filter(category_supplier=self.id)
-        print(product)
+     
         def background_task():
             # Долгосрочная фоновая задача
             for product_one in product:

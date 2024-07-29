@@ -677,9 +677,9 @@ def save_update_product_attr(
 
     if product.name == None:
         product.name = name
-
+    product.changeReason = "Автоматическое"
     product.save()
-    update_change_reason(product, "Автоматическое")
+    # update_change_reason(product, "Автоматическое")
 
 
 def save_specification(received_data):

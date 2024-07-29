@@ -74,8 +74,9 @@ def update_currency_price(currency, current_world_code):
     products = Price.objects.filter(currency=currency)
     for product in products:
         price = Price.objects.get(id=product.id)
+        price._change_reason = 'Автоматическое'
         price.save()
-        update_change_reason(price, "Автоматическое")        
+        # update_change_reason(price, "Автоматическое")        
 
 
 # проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны

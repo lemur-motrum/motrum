@@ -4,20 +4,26 @@ from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
 
-from apps.core.models import CalendarHoliday
-from apps.product.models import GroupProduct
+from apps.core.models import CalendarHoliday, Currency
+from apps.core.tasks import currency_chek, del_currency, update_currency_price
+from apps.product.models import CurrencyRate, GroupProduct
+from apps.supplier.get_utils.iek import iek_api
+from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
 from apps.user.utils import upgrade_permission
+from urllib.request import urlopen
+import xml.etree.ElementTree as ET
+from xml.etree import ElementTree, ElementInclude
 
 
 def add_iek(request):
     from django.db.models import Prefetch
-
+    iek_api()
     title = "Услуги"
-    add_veda()
+   
 
     responsets = ["233", "2131"]
     # responsets = 0
@@ -28,8 +34,10 @@ def add_iek(request):
     return render(request, "supplier/supplier.html", context)
 
 
-def test(request):
 
+
+def test(request):
+    prompower_api()
     title = "Услуги"
     print(124)
 
@@ -43,21 +51,22 @@ def test(request):
 
 
 def save_emas_props(request):
-    def background_task():
-            # Долгосрочная фоновая задача
-            add_group_emas()
-            add_props_emas_product()
+    add_group_emas()
+    # def background_task():
+    #         # Долгосрочная фоновая задача
+    #         add_group_emas()
+    #         add_props_emas_product()
 
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-    title = "Услуги"
+    # daemon_thread = threading.Thread(target=background_task)
+    # daemon_thread.setDaemon(True)
+    # daemon_thread.start()
+
     
 
     responsets = ["233", "2131"]
 
     context = {
-        "title": title,
+     
         "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
@@ -89,6 +98,36 @@ def add_holidays(request):
         holidays_dict = r.json()
         data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
         data_bd.save()
+    context = {}
+    return render(request, "supplier/supplier.html", context)
+
+def get_currency(request):
+    del_currency()
+    currency_list = Currency.objects.exclude(words_code="RUB")
+    resp = "https://www.cbr.ru/scripts/XML_daily.asp"
+    response = urlopen(resp)
+    item = ET.parse(response)
+    root = item.getroot()
+    ElementInclude.include(root)
+    date = datetime.datetime.now()
+    for current in currency_list:
+        current_world_code = current.words_code
+        value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
+        vunit_rate = item.findtext(
+            f".//Valute[CharCode='{current_world_code}']/VunitRate"
+        )
+        count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
+        
+        v = float(value.replace(",", "."))
+        vi = float(vunit_rate.replace(",", "."))
+
+        now_rate = CurrencyRate.objects.get_or_create(
+            currency=current ,
+            date=date,
+            defaults={"value": v, "vunit_rate": vi, "count": int(count)},
+        )
+        update_currency_price(current, current_world_code)
+        currency_chek(current, now_rate[0])
     context = {}
     return render(request, "supplier/supplier.html", context)
 

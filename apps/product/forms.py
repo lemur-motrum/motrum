@@ -91,6 +91,7 @@ class ProductForm(forms.ModelForm):
                 }
             ),
         }
+      
 
 
 # форма обновления продукта добавленного автоматически
@@ -155,20 +156,22 @@ class ProductChangeForm(forms.ModelForm):
                 }
             ),
         }
+        help_texts = {
+            'check_to_order': 'Group to which this message belongs to',
+        }
+    # def __init__(self, *args, **kwargs):
+    #     super(ProductChangeForm, self).__init__(*args, **kwargs)
 
-    def __init__(self, *args, **kwargs):
-        super(ProductChangeForm, self).__init__(*args, **kwargs)
+    #     prod = Product.objects.filter(id=self.instance.pk).values()
 
-        prod = Product.objects.filter(id=self.instance.pk).values()
+    #     for product_item in prod:
+    #         product_blank_dict = {k: v for k, v in product_item.items() if v == None}
 
-        for product_item in prod:
-            product_blank_dict = {k: v for k, v in product_item.items() if v == None}
-
-            for item_dict in product_blank_dict:
-                verbose_name = Product._meta.get_field(item_dict).name
-                # self.fields[verbose_name].widget.attrs = {
-                #     "style": "border: 1px solid red;",
-                # }
+    #         for item_dict in product_blank_dict:
+    #             verbose_name = Product._meta.get_field(item_dict).name
+    #             # self.fields[verbose_name].widget.attrs = {
+    #             #     "style": "border: 1px solid red;",
+    #             # }
 
 
 # форма обновления продукта добавленного вручную

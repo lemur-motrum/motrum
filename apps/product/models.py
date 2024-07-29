@@ -292,12 +292,14 @@ class Price(models.Model):
     def save(self, *args, **kwargs):
 
         # если 0 цена или экстра прайс проставить нули и теги
-        if self.price_supplier == 0 or self.extra_price == True:
+        if self.price_supplier == 0 or self.extra_price == True or self.price_supplier == None:
             self.extra_price = True
             self.price_supplier = 0
             self.rub_price_supplier = 0
             self.price_motrum = 0
-
+            
+  
+        
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
@@ -318,6 +320,7 @@ class Price(models.Model):
             self.rub_price_supplier,
             self.prod.category_supplier_all,
         )
+        
         price_motrum = price_motrum_all[0]
         sale = price_motrum_all[1]
         self.price_motrum = price_motrum
@@ -345,10 +348,9 @@ class CurrencyRate(models.Model):
 class Stock(models.Model):
     prod = models.OneToOneField(
         Product,
-        # related_name="historic_stock",
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
+        # blank=True,
+        # null=True,
     )
     lot = models.ForeignKey(
         "Lot",
@@ -356,13 +358,15 @@ class Stock(models.Model):
         on_delete=models.PROTECT,
     )
     stock_supplier = models.PositiveIntegerField(
-        "Остаток на складе поставщика в единицах поставщика"
+        "Остаток на складе поставщика в единицах поставщика",
+        null=True,
     )
     lot_complect = models.PositiveIntegerField(
         "Содержание набора (комплекта) в штуках", default=1
     )
     stock_supplier_unit = models.PositiveIntegerField(
-        "Остаток на складе поставщика в штуках"
+        "Остаток на складе поставщика в штуках",
+        null=True,
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
     to_order = models.BooleanField("Товар под заказ", default=False)
@@ -390,9 +394,10 @@ class Stock(models.Model):
 
     def save(self, *args, **kwargs):
         # посчитать комплекты лотов
-        lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
-        self.stock_supplier_unit = lots[1]
-        self.lot_complect = lots[2]
+        if self.stock_supplier != None:
+            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
+            self.stock_supplier_unit = lots[1]
+            self.lot_complect = lots[2]
 
         # if self.stock_supplier != 0:
         #     self.to_order = False

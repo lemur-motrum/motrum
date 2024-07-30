@@ -156,9 +156,7 @@ class ProductChangeForm(forms.ModelForm):
                 }
             ),
         }
-        help_texts = {
-            'check_to_order': 'Group to which this message belongs to',
-        }
+     
     # def __init__(self, *args, **kwargs):
     #     super(ProductChangeForm, self).__init__(*args, **kwargs)
 

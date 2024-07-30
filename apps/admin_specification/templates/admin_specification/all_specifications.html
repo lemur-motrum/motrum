@@ -18,7 +18,7 @@
                     {% if specification.tag_stop == True %}
                         <div data-status={{ specification.tag_stop }} class="table_item">
                             <div class="table_item_value">
-                                <a href="/media/{{ specification.file }}"
+                                <a href="{{ specification.file.url }}"
                                    target="_blank"
                                    class="table_item_value">{{ specification.pk }}</a>
                             </div>

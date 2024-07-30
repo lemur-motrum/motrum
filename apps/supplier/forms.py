@@ -62,7 +62,12 @@ class DiscountForm(forms.ModelForm):
         #         url="supplier:category-autocomplete", forward=["supplier", "vendor"]
         #     )
         # }
-        
+    # def __init__(self, *args, **kwargs):
+    #     super(DiscountForm, self).__init__(*args, **kwargs)
+
+    #     # self.fields['is_tag_pre_sale'].label = 'My new label'
+    #     self.fields['is_tag_pre_sale'].widget = forms.CheckboxInput()    
+
         
 class SupplierCategoryProductAllAdminForm(forms.ModelForm):
     

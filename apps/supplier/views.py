@@ -9,6 +9,7 @@ from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.product.models import CurrencyRate, GroupProduct
 from apps.supplier.get_utils.iek import iek_api
 from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
@@ -37,7 +38,7 @@ def add_iek(request):
 
 
 def test(request):
-    prompower_api()
+    iek_api()
     title = "Услуги"
     print(124)
 

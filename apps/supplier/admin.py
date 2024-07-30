@@ -340,6 +340,7 @@ class DiscountAdmin(admin.ModelAdmin):
         "is_tag_pre_sale",
         
     )
+    
 
     def delete_model(self, request, obj):
         id_sec = obj.id

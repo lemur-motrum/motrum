@@ -407,7 +407,7 @@ def prompower_api():
                         price_product.price_supplier = price_supplier
                         price_product.vat = vat_catalog
                         price_product.vat_include = vat_include
-                        price_product.changeReason = "Автоматическое"
+                        price_product._change_reason = "Автоматическое"
                         price_product.save()
                         # update_change_reason(price_product, "Автоматическое")
 
@@ -420,7 +420,7 @@ def prompower_api():
                         )
                     finally:
                         stock_prod.stock_supplier = stock_supplier
-                        stock_prod.changeReason = "Автоматическое"
+                        stock_prod._change_reason = "Автоматическое"
                         stock_prod.save()
                         # update_change_reason(stock_prod, "Автоматическое")
                 

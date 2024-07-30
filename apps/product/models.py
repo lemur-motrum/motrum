@@ -350,7 +350,7 @@ class Stock(models.Model):
         Product,
         on_delete=models.CASCADE,
         # blank=True,
-        # null=True,
+        null=True,
     )
     lot = models.ForeignKey(
         "Lot",
@@ -359,6 +359,7 @@ class Stock(models.Model):
     )
     stock_supplier = models.PositiveIntegerField(
         "Остаток на складе поставщика в единицах поставщика",
+        blank=True,
         null=True,
     )
     lot_complect = models.PositiveIntegerField(
@@ -398,12 +399,13 @@ class Stock(models.Model):
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
-
+        print(self.stock_supplier)
+        print(111111111111111)
         # if self.stock_supplier != 0:
         #     self.to_order = False
 
         super().save(*args, **kwargs)
-
+        print(33333)
 
 class Lot(models.Model):
     name = models.CharField("Полное название", max_length=30)

@@ -138,19 +138,9 @@ def delta_written_file(file_name, obj, new_dir):
     from bs4 import BeautifulSoup
     from apps.supplier.models import SupplierGroupProduct, SupplierCategoryProduct, Vendor
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
-  
-  
-    # if file_name ==  "vyigruzka-upp-d.svc":
-    #     vendor = Vendor.objects.get(slug='aucom')
-    # elif file_name == "vyigruzka-tormoznyie-moduli-i-rezistoryi-d.svc":
-    #     vendor = None
-    # elif file_name == "vyigruzka-kip-d.svc":
-    #     vendor = None 
-    # else:
-    #     vendor = Vendor.objects.get(slug='delta-electronics') 
-        
+
     path = f"{new_dir}/{file_name}"
-    # получение названий столюцов
+    # получение названий столбцов
     fieldnames = []
     with open(path, "r", newline="", encoding="windows-1251") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -305,16 +295,23 @@ def delta_written_file(file_name, obj, new_dir):
 
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
-                    stock_motrum = 0
-                    stock_supplier = None
-                    lot = Lot.objects.get(name="штука")
-                    stock_prod = Stock(
+                    
+                    try:
+                        stock_prod = Stock.objects.get(prod=article)
+                        
+                    except Stock.DoesNotExist:
+                        stock_motrum = 0
+                        stock_supplier = None
+                        lot = Lot.objects.get(name="штука")
+                        
+                        stock_prod = Stock(
                             prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
                         )
-                    
-                    stock_prod.changeReason = "Автоматическое"
-                    stock_prod.save()  
+                        stock_prod._change_reason = 'Автоматическое'
+                        stock_prod.save() 
                 
+                
+                print(444444)
                 # цены товара
                 try:
                     price_product = Price.objects.get(prod=article)
@@ -323,45 +320,54 @@ def delta_written_file(file_name, obj, new_dir):
                     price_product = Price(prod=article)
 
                 finally:
+                    
+                    print(2222222222222222222)
                     price_product.currency = currency
                     price_product.price_supplier = price_supplier
                     price_product.vat = vat_catalog
                     price_product.vat_include = True
                     price_product.extra_price = extra
-                    price_product.changeReason = "Автоматическое"
+                    price_product._change_reason = "Автоматическое"
                     price_product.save()
                     # update_change_reason(price_product, "Автоматическое")
                   
                 # свойства из отдельных колонок
-                save_delta_props(row2, article)    
+                save_delta_props(row2, article)  
+                print(8888888888888888)  
                 # свойства из из общей колонки    
                 props_product = ProductProperty.objects.filter(product=article).exists()
                 if props_product == False:
+                    print(999999)
                     if tds != []:
-                        i = 0
+                        print(tds)
+                       
+                        
+                      
                         for td in tds:
-                            i += 1
-                            if i > 1:
-                                if td != []:
-                                    value_props_no_br = td[1].replace("<br>", " ,")
-                                    
-                                    name_props = re.sub(
-                                        r"<[^>]+>", "", str(td[0]), flags=re.S
-                                    )
-                                    value_props = re.sub(
-                                        r"<[^>]+>", "", str(value_props_no_br), flags=re.S
-                                    )
+                            
+                            if td != []:
+                                print(222222222)
+                                print(td)
+                                value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                value_props_no_br = str(td[1]).replace("<br/>", ". ")
                                 
-                                    props_product = ProductProperty(product=article)
-                                    props_product.name = name_props
+                                name_props = re.sub(
+                                    r"<[^>]+>", "", str(td[0]), flags=re.S
+                                )
+                                value_props = re.sub(
+                                    r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                )
+                            
+                                props_product = ProductProperty(product=article)
+                                props_product.name = name_props
 
-                                    props_product.value = value_props
-                                    props_product.save()
-                                    update_change_reason(
-                                        props_product, "Автоматическое"
-                                    )   
-                 
-                print (article)                    
+                                props_product.value = value_props
+                                props_product.save()
+                                update_change_reason(
+                                    props_product, "Автоматическое"
+                                )   
+                
+                             
             except Exception as e:
                 print(e)
                 error = "file_error"

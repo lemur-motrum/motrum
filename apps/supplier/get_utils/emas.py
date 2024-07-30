@@ -2,7 +2,7 @@ import re
 import openpyxl as openxl
 from simple_history.utils import update_change_reason
 
-from apps.core.models import Currency
+from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
     get_category_emas,
@@ -12,6 +12,7 @@ from apps.core.utils import (
 )
 from apps.logs.utils import error_alert
 from apps.product.models import (
+    Price,
     Product,
     ProductImage,
     ProductProperty,
@@ -330,6 +331,7 @@ def add_file_emas(new_file, obj):
                             )
                             article.save()
                             update_change_reason(article, "Автоматическое")
+                            
                         try:
                             stock_prod = Stock.objects.get(prod=article)
 
@@ -342,11 +344,33 @@ def add_file_emas(new_file, obj):
                             )
 
                         finally:
+                            
                             stock_prod.stock_supplier = count
-
+                            stock_prod._change_reason = 'Автоматическое'
                             stock_prod.save()
-                            print(stock_prod)
-                            update_change_reason(stock_prod, "Автоматическое")
+                            # print(stock_prod)
+                            # update_change_reason(stock_prod, "Автоматическое")
+                            
+                        # цены товара
+                        vat_catalog = Vat.objects.get(name=20)
+                        currency = Currency.objects.get(words_code="RUB")
+                        price_supplier = None
+                        try:
+                            price_product = Price.objects.get(prod=article)
+
+                        except Price.DoesNotExist:
+                            price_product = Price(prod=article)
+
+                        finally:
+                            price_product.currency = currency
+                            price_product.price_supplier = price_supplier
+                            price_product.vat = vat_catalog
+                            price_product.vat_include = True
+                            price_product.extra_price = True
+                            price_product._change_reason = "Автоматическое"
+                            price_product.save()    
+                            
+                            
                     except Exception as e:
                         print(e)
                         error = "file_api_error"
@@ -361,6 +385,7 @@ def add_file_emas(new_file, obj):
                     location = "Загрузка фаилов Emas"
                     info = f"Ошибка структуры в строке {index}. Фаил не соответствует обрабатываемой структуре фаила-считывание фаила невозможно"
                     e = error_alert(error, location, info)
+                    
         if first == 0:
             error = "file structure"
             location = "Загрузка фаилов Emas"

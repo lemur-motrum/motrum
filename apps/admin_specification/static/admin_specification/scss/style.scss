@@ -560,16 +560,22 @@ h1 {
         margin-left: 12rem;
       }
       &:nth-of-type(3) {
-        margin-left: 6.6rem;
+        margin-left: 3.6rem;
       }
+
       &:nth-of-type(4) {
-        margin-left: 10.4rem;
+        margin-left: 5.4rem;
       }
+
+
       &:nth-of-type(5) {
-        margin-left: 1.4rem;
+        margin-left: 2.4rem;
       }
       &:nth-of-type(6) {
-        margin-left: 2.8rem;
+        margin-left: 2.4rem;
+      }
+      &:nth-of-type(7) {
+        margin-left: 2.6rem;
       }
     }
   }
@@ -676,23 +682,54 @@ h1 {
                   margin-left: 2.438rem;
                 }
                 &.charactiristics {
-                  width: 18.25rem;
+                  width: 14.25rem;
                   text-align: left;
-                  margin-left: 5.35rem;
+                  margin-left: 2.35rem;
+                }
+                &.stock {
+                  margin-left: 0.513rem;
+                  width: 6.375rem;
+                  position: relative;
+                  .stock_item{
+                    white-space: nowrap;   
+                }
                 }
                 &.lot {
                   width: 3.063rem;
                   margin-left: 1.75rem;
+                  position: relative;
                 }
                 &.suppler-price {
-                  margin-left: 1.313rem;
+                  margin-left: 2rem;
                   width: 6.375rem;
                 }
                 &.price {
                   margin-left: 3.513rem;
-                  width: 6.375rem;
+                  width: 5.375rem;
+                  position: relative;
+                  
                 }
               }
+            
+              .span-update{
+                font-size: 0.513rem;
+                position: absolute;
+                top: 20px;
+                z-index: 200;
+               
+              }
+              .span-min{
+                font-size: 0.513rem;
+                position: absolute;
+                top: 20px;
+                z-index: 200;
+               
+              }
+              .span-transit{
+                font-size: 10px;
+                line-height: 5px;
+              }
+
             }
             .item-buttons_container {
               display: flex;
@@ -1051,3 +1088,4 @@ h1 {
     }
   }
 }
+

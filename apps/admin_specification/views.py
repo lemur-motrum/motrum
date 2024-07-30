@@ -25,7 +25,7 @@ from .forms import SearchForm
 from django.db.models import Q
 
 
-# Рендер главной стриницы каталога с пагинацией
+# Рендер главной страницы каталога с пагинацией
 def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all()
@@ -73,8 +73,6 @@ def all_categories(request):
 
 
 # Рендер страницы групп товаров с пагинацией
-
-
 def group_product(request, cat):
     categoryes = CategoryProduct.objects.all()
     groups = GroupProduct.objects.select_related("category").filter(category=cat)
@@ -427,7 +425,8 @@ def load_products(request):
     cat = data["category"]
     gr = data["group"]
     page_num = data["pageNum"]
-
+    print(1111111111)
+    print(data)
     if page_num == "":
         start_point = 9
     else:
@@ -618,6 +617,7 @@ def update_specification(request):
     }
     return JsonResponse(out)
 
+
 # def load_products(request):
 #     data = json.loads(request.body)
 #     cat = data["category"]
@@ -680,13 +680,13 @@ def update_specification(request):
 #     products = []
 
 #     for product_elem in items:
-        
-        
+
+
 #         try:
 #             price_all = Price.objects.get(prod=product_elem.pk)
 #             price = price_all.rub_price_supplier
 #             price_suppler = price_all.price_motrum
-            
+
 #             discount = get_price_motrum(
 #             product_elem.category_supplier,
 #             product_elem.group_supplier,
@@ -699,12 +699,12 @@ def update_specification(request):
 #             price = None
 #             price_suppler = 0
 #             discount = None
- 
+
 #         chars = ProductProperty.objects.filter(product=product_elem.pk)
 #         try:
 #             stock_item =  Stock.objects.get(prod=product_elem.pk)
 #             lotname = stock_item.lot.name_shorts
-            
+
 #             if stock_item.is_one_sale == True:
 #                 product_multiplicity = 1
 #             else:
@@ -717,17 +717,17 @@ def update_specification(request):
 #             lotname = None
 #             product_multiplicity = 1
 
-        
+
 #         name = product_elem.name
 #         pk = product_elem.pk
 #         article = product_elem.article
 #         saler_article = product_elem.article_supplier
-        
-        
+
+
 #         characteristics = []
 #         for char in chars:
 #             characteristics.append(char.value)
-        
+
 
 #         product = {
 #             "name": name,

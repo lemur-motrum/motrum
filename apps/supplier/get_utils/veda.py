@@ -30,12 +30,9 @@ def veda_api():
     response = requests.request("GET", url, headers=headers,)
     data = response.json()
 
-    i = 0
+  
     for data_item in data['prices']:
-     
-                
         try:
-            
             article_suppliers = data_item["materialCode"]
             name = data_item["description"]
                 # цены
@@ -49,6 +46,8 @@ def veda_api():
             # остатки
             lot = Lot.objects.get(name="штука")
             stock_supplier = data_item["avaliability"]
+            if stock_supplier == "":
+                stock_supplier = 0
             lot_complect = 1
             stock_motrum = 0
             
@@ -75,10 +74,7 @@ def veda_api():
                 if data_transit != None:
                     data_transit = datetime.datetime.fromisoformat(data_transit)
                     data_transit = data_transit.date()
-                    # print(data_transit.date())
-                    # print(type(data_transit))
-                    # data_transit = datetime.datetime.strftime(data_transit.date(), '%d.%m.%Y')
-                    # print(data_transit)e
+               
             try:
                 # если товар есть в бдd
                 
@@ -118,8 +114,9 @@ def veda_api():
                 price_product.price_supplier = price_supplier
                 price_product.vat = vat_catalog
                 price_product.vat_include = vat_include
+                price_product._change_reason = 'Автоматическое'
                 price_product.save()
-                update_change_reason(price_product, "Автоматическое")
+                # update_change_reason(price_product, "Автоматическое")
 
             # остатки
             try:
@@ -129,12 +126,13 @@ def veda_api():
                     prod=article, lot=lot, stock_motrum=stock_motrum
                 )
             finally:
-                print(transit_count,data_transit)
+              
                 stock_prod.transit_count = transit_count
                 stock_prod.data_transit = data_transit
                 stock_prod.stock_supplier = stock_supplier
+                stock_prod._change_reason = 'Автоматическое'
                 stock_prod.save()
-                update_change_reason(stock_prod, "Автоматическое")
+                # update_change_reason(stock_prod, "Автоматическое")
                             
             
         except Exception as e: 
@@ -146,7 +144,7 @@ def veda_api():
         finally:    
             continue      
         
-        уу
+        
                
-    return [1]
+
         

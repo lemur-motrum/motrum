@@ -616,8 +616,10 @@ def iek_api():
                             price_product.vat = vat_catalog
                             price_product.vat_include = vat_include
                             price_product.extra_price = extra
+                            price_product._change_reason = 'Автоматическое'
                             price_product.save()
-                            update_change_reason(price_product, "Автоматическое")
+                            
+                            # update_change_reason(price_product, "Автоматическое")
 
                         # остатки
                         stock_supplier = get_iek_stock_one(article)
@@ -639,8 +641,10 @@ def iek_api():
                             stock_prod.stock_motrum = stock_motrum
                             stock_prod.order_multiplicity = order_multiplicity
                             stock_prod.is_one_sale = is_one_sale
+                            stock_prod._change_reason = 'Автоматическое'
                             stock_prod.save()
-                            update_change_reason(stock_prod, "Автоматическое")
+                            
+                            # update_change_reason(stock_prod, "Автоматическое")
     
                 except Exception as e: 
                     print(e)
@@ -830,3 +834,65 @@ def iek_api():
   
 
     return [0]
+
+    # остатки на складах
+def get_iek_stock():
+    encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
+    decoded = encoded.decode()
+    headers = {
+        'Authorization': f"Basic {decoded}", 
+    }
+    payload = {}
+    base_url = "https://lk.iek.ru/api/"
+    
+    try:
+        supplier = Supplier.objects.get(slug="iek")
+        product = Product.objects.filter(supplier=supplier)
+        for product_item in product:
+                
+            url_params = f"sku={product_item.article_supplier}"
+
+            url_service = "/residues/json/"
+
+            url = "{0}{1}?{2}".format(base_url, url_service, url_params)
+            response = requests.request(
+                "GET", url, headers=headers, data=payload, allow_redirects=False
+            )
+            data = response.json()
+            
+            if data["shopItems"] !=[]:
+                for data_item in data["shopItems"]:
+                    if data_item["zakaz"] == 1:
+                        to_order = True
+                    else:
+                        to_order = False
+                            
+                    stock = 0
+                    product = data_item["sku"]
+                    for a in data_item["residues"].values():
+                        stock += a
+                
+            else:
+                stock = 0
+                to_order = False
+               
+            try:
+                stock_prod = Stock.objects.get(prod=product_item.article_supplier)
+                stock_prod.stock_supplier = stock
+                stock_prod.to_order = to_order
+                stock_prod._change_reason = 'Автоматическое'
+                stock_prod.save()
+            except Stock.DoesNotExist:
+                pass
+                
+          
+            
+            
+            
+    except Exception as e: 
+            print(e)
+            error = "file_api_error"
+            location = "Загрузка фаилов IEK2"
+        
+            info = f"2ошибка при чтении остатков Тип ошибки:{e}"
+            e = error_alert(error, location, info)

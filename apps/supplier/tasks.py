@@ -1,6 +1,6 @@
 from requests import JSONDecodeError
 from apps.logs.utils import error_alert
-from apps.supplier.get_utils.iek import iek_api
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.veda import veda_api
 from project.celery import app
@@ -21,7 +21,7 @@ def add_iek(self):
 
             info = f"Нет связи с сервером ИЕК "
             e = error_alert(error, location, info)
-
+            get_iek_stock()
         self.retry(exc=exc, countdown=600)
 
 
@@ -57,4 +57,6 @@ def add_prompower(self):
 
             info = f"Нет связи с сервером Prompower "
             e = error_alert(error, location, info)
+            
+            get_iek_stock()
         self.retry(exc=exc, countdown=600)

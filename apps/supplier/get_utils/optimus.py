@@ -13,6 +13,7 @@ from apps.core.models import Currency, Vat
 from apps.logs.utils import error_alert
 
 
+from apps.product.models import Lot
 from apps.supplier.models import SupplierGroupProduct
 from project.settings import MEDIA_ROOT
 
@@ -323,6 +324,19 @@ def optimus_written_file(file_name, obj, new_dir):
 
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
+                    try:
+                        stock_prod = Stock.objects.get(prod=article)
+                        
+                    except Stock.DoesNotExist:
+                        stock_motrum = 0
+                        stock_supplier = None
+                        lot = Lot.objects.get(name="штука")
+                        
+                        stock_prod = Stock(
+                            prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
+                        )
+                        stock_prod._change_reason = 'Автоматическое'
+                        stock_prod.save() 
                     
                 # свойства из из общей колонки    
                 props_product = ProductProperty.objects.filter(product=article).exists()
@@ -335,11 +349,13 @@ def optimus_written_file(file_name, obj, new_dir):
                             if i > 1:
                                 if td != []:
                                     print(td)
+                                    value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                    value_props_no_br = str(td[1]).replace("<br/>", ". ")
                                     name_props = re.sub(
                                         r"<[^>]+>", "", str(td[0]), flags=re.S
                                     )
                                     value_props = re.sub(
-                                        r"<[^>]+>", "", str(td[1]), flags=re.S
+                                        r"<[^>]+>", "", value_props_no_br, flags=re.S
                                     )
                                     props_product = ProductProperty(product=article)
                                     props_product.name = name_props
@@ -365,8 +381,10 @@ def optimus_written_file(file_name, obj, new_dir):
                     price_product.vat = vat_catalog
                     price_product.vat_include = True
                     price_product.extra_price = extra
+                    price_product._change_reason = "Автоматическое"
                     price_product.save()
-                    update_change_reason(price_product, "Автоматическое")
+                    
+                    
             except Exception as e:
                 print(e)
                 error = "file_error"

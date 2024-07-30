@@ -470,14 +470,14 @@ class StockInline(admin.TabularInline):
             )
         ]
         if stock:
-            print(stock.data_transit)
+            
             if stock.data_transit != None:
                 if stock.data_transit < datetime.date.today():
                     return fieldsets_obj_no_transit
                 else:
                     return fieldsets
             else:
-                    return fieldsets_none_obj    
+                    return fieldsets_obj_no_transit    
         else:
             return fieldsets_none_obj
         # if obj and obj.pk:
@@ -611,9 +611,9 @@ class ProductAdmin(SimpleHistoryAdmin):
                     (
                         "article_supplier",
                         "additional_article_supplier",
-                        "check_to_order",
+                        
                     ),
-                    # "check_to_order",
+                    "check_to_order",
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -745,11 +745,11 @@ class ProductAdmin(SimpleHistoryAdmin):
                 "Основные параметры",
                 {
                     "fields": [
-                        ("check_to_order",),
                         (
                             "article_supplier",
                             "additional_article_supplier",
                         ),
+                        "check_to_order",
                         "name",
                         "description",
                         ("supplier", "vendor"),

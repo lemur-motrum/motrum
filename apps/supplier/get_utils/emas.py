@@ -495,7 +495,8 @@ def add_group_emas():
                         )
                         
                         all_groupe.save()
-
+        
+        add_props_emas_product()
     except Exception as e:
 
         print(e)
@@ -520,21 +521,7 @@ def add_props_emas_product():
             file = f.read()
 
         soup = BeautifulSoup(file, "xml")
-        # props = []
-        # class_props = soup.Классификатор.Свойства.find_all("Группа", recursive=False)
-        # def finder_props(id,name):
-        #     for class_item in class_props:
-        #         prop_id = class_item.find("Ид", recursive=False)
-        #         prop_id_text = prop_id.get_text()
-
-        #         if prop_id == prop_id_text:
-
-        #             prop_name = class_item.find("Наименование", recursive=False)
-        #             prop_name_text = prop_name.get_text()
-
-        #             # f_var =
-        #             variable = class_item.ВариантыЗначений.Значение.find_all("Значение", recursive=False)
-
+   
         # перебор товаров
         non_props = 0
         yes_props = 0
@@ -620,12 +607,14 @@ def add_props_emas_product():
 
                 quotes_li = soup_desc.find_all("li")
                 for li_text in quotes_li:
-                    text_li = re.sub(r"<[^>]+>", "", str(li_text), flags=re.S)
+                    
                     text_li = " ".join(text_li.split())
                     print(text_li)
-                    text_li = text_li.replace("<br>", ". ")
-                    text_li = text_li.replace("</li>", ". ")
-                    text_li = text_li.replace("<li>", "")
+                    text_li = str(li_text).replace("<br>", ". ")
+                    text_li = str(li_text).replace("</li>", ". ")
+                    text_li = str(li_text).replace("<li>", "")
+                    
+                    text_li = re.sub(r"<[^>]+>", "", str(li_text), flags=re.S)
 
                     if text_li != "":
                         if text_desc == "":
@@ -633,13 +622,13 @@ def add_props_emas_product():
                         else:
                             text_desc = f"{text_desc}{text_li}"
 
-                if text_desc == "":
-                    text_desc = str(soup_desc)
+                # if text_desc == "":
+                #     text_desc = str(soup_desc)
 
                 if text_desc == "":
                     text_desc = None
 
-                if product_item.description == None:
+                if product_item.description == None or product_item.description == '' :
                     product_item.description = text_desc
                 if product_item.category_supplier == None:
                     product_item.category_supplier_all = groupe_items[0]
@@ -648,13 +637,7 @@ def add_props_emas_product():
                 if product_item.vendor == None:
                     product_item.vendor = vendor
 
-                # product_item.description = text_desc
-
-                # product_item.category_supplier_all=groupe_items[0]
-                # product_item.group_supplier=groupe_items[1]
-                # product_item.category_supplier=groupe_items[2]
-
-                # product_item.vendor = vendor
+               
                 product_item._change_reason = 'Автоматическое'
                 product_item.save()
                 print(product_item)

@@ -16,7 +16,7 @@ from apps.product.models import (
     Stock,
 )
 from django.core.paginator import Paginator
-
+from django.contrib.auth.decorators import login_required
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
 from apps.supplier.models import Discount
@@ -24,6 +24,9 @@ from project.settings import MEDIA_ROOT
 from .forms import SearchForm
 from django.db.models import Q
 
+@login_required
+def show_admin_custom_page(request,render,context):
+    return render(request, render, context)
 
 # Рендер главной страницы каталога с пагинацией
 def all_categories(request):
@@ -68,8 +71,18 @@ def all_categories(request):
         "num_of_pages": num_of_pages,
         "form": form,
     }
+    render =  "admin_specification/categories.html"
+  
+    return show_admin_custom_page(request,render,context)
+  
 
-    return render(request, "admin_specification/categories.html", context)
+    # print(request)
+    # if request.user.is_authenticated:
+    # # Do something for authenticated users.
+    #     print(1111)
+    # else:
+    #     print(222)
+    # return render(request, "admin_specification/categories.html", context)
 
 
 # Рендер страницы групп товаров с пагинацией

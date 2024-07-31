@@ -7,7 +7,7 @@ from django.db.models import Q
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.product.models import CurrencyRate, GroupProduct
-from apps.supplier.get_utils.iek import iek_api
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
@@ -38,7 +38,7 @@ def add_iek(request):
 
 
 def test(request):
-    iek_api()
+    get_iek_stock()
     title = "Услуги"
     print(124)
 

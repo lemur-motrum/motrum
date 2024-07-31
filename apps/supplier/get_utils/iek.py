@@ -4,7 +4,7 @@ import traceback
 import requests
 from simple_history.utils import update_change_reason
 import base64
-
+from requests.auth import HTTPBasicAuth
 from apps import product
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -38,8 +38,8 @@ from apps.supplier.models import (
     Vendor,
 )
 iek_save_categ = [
-"20.01.70",
 "01.01.01",
+"20.01.70",
 "02.01.01",
 "03.01.01",
 "04.01.01",
@@ -240,11 +240,11 @@ def iek_api():
     vendors = Vendor.objects.filter(supplier=supplier)
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name="20")
-    for vendor_items in vendors:
-        if vendor_items.slug == "oni":
-            vendor_id = vendor_items.id
-            vendor_name = vendor_items.slug
-            vendor_item = vendor_items
+    # for vendor_items in vendors:
+    #     if vendor_items.slug == "oni":
+    #         vendor_id = vendor_items.id
+    #         vendor_name = vendor_items.slug
+    #         vendor_item = vendor_items
 
    
    
@@ -252,11 +252,15 @@ def iek_api():
     payload = {}
     encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
     decoded = encoded.decode()
+    print(encoded)
+    print(decoded)
 
     headers = {
-        'Authorization': f"Basic {decoded}",
+        # 'Authorization': f"Basic {decoded}",
+        # 'Authorization': 'Basic NjAwLTIwMjMwNjI2LTE2Mjg0MS0yMTc6Zk4sNUtfaDFrMVk9bTdDLQ==',
       
     }
+    
     
 
     base_url = "https://lk.iek.ru/api/"
@@ -266,7 +270,7 @@ def iek_api():
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
-                "GET", url, headers=headers, data=payload, allow_redirects=False
+                "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             print(response.headers)
 
@@ -354,10 +358,11 @@ def iek_api():
         entity = "&entity=all"
         url = "{0}{1}?{2}{3}".format(base_url, url_service, url_params, entity)
         response = requests.request(
-            "GET", url, headers=headers, data=payload, allow_redirects=False
+            "GET", url, auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
         )
+        print(headers)
         responset = response_request(response.status_code, "IEK получение товаров")
-      
+        print(response)
         data = response.json()
         if data == []:
                     error = "file_api_error"
@@ -413,7 +418,8 @@ def iek_api():
                                 extra= True
                                 price_supplier = 0
                             else:
-                                extra= False   
+                                extra= False
+                                price_supplier = price  
                         else:
                             extra= True
                             price_supplier = 0
@@ -698,7 +704,7 @@ def iek_api():
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
-                "GET", url, headers=headers, data=payload, allow_redirects=False
+                "GET", url, auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
            
@@ -737,7 +743,7 @@ def iek_api():
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
-                "GET", url, headers=headers, data=payload, allow_redirects=False
+                "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
            
@@ -771,7 +777,7 @@ def iek_api():
     def get_iek_property(url_service, url_params):
         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
         response = requests.request(
-            "GET", url, headers=headers, data=payload, allow_redirects=False
+            "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
         )
    
         data = response.json()
@@ -833,9 +839,9 @@ def iek_api():
 
   
 
-    return [0]
+  
 
-    # остатки на складах
+    # остатки на складах отдельная функция
 def get_iek_stock():
     encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
     decoded = encoded.decode()
@@ -849,14 +855,14 @@ def get_iek_stock():
         supplier = Supplier.objects.get(slug="iek")
         product = Product.objects.filter(supplier=supplier)
         for product_item in product:
-                
+            print(product_item.article_supplier)    
             url_params = f"sku={product_item.article_supplier}"
 
             url_service = "/residues/json/"
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
             response = requests.request(
-                "GET", url, headers=headers, data=payload, allow_redirects=False
+                "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
             
@@ -877,11 +883,15 @@ def get_iek_stock():
                 to_order = False
                
             try:
-                stock_prod = Stock.objects.get(prod=product_item.article_supplier)
+                
+                stock_prod = Stock.objects.get(prod=product_item)
+              
+                # stock_prod = Stock.objects.get(prod_id=product_item.article_supplier)
                 stock_prod.stock_supplier = stock
                 stock_prod.to_order = to_order
                 stock_prod._change_reason = 'Автоматическое'
                 stock_prod.save()
+                
             except Stock.DoesNotExist:
                 pass
                 

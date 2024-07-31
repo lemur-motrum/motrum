@@ -6,6 +6,6 @@ from . import views
 app_name = 'user'
 
 urlpatterns = [
-    # path("", views.index, name="home"),
+    path("login_admin/", views.login_admin, name="login_admin"),
 
 ]

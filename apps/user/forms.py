@@ -30,3 +30,12 @@ class PasswordForm(forms.ModelForm):
     #         )
     #     else:    
     #         return item
+
+class LoginAdminForm(forms.Form):
+    username = forms.CharField(label="Имя пользователя")
+    password = forms.CharField(widget=forms.PasswordInput,label="Пароль")
+    
+    class Meta:
+        model = AdminUser
+        fields = "__all__"
+        

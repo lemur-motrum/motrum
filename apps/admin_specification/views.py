@@ -29,7 +29,7 @@ from django.db.models import Q
 
 
 # Рендер главной страницы каталога с пагинацией
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all().order_by("article_name")
@@ -74,22 +74,13 @@ def all_categories(request):
     }
     
     renders =  "admin_specification/categories.html"
-    print(request)
-    # return show_admin_custom_page(request,renders,context)
-  
 
-    # print(request)
-    # if request.user.is_authenticated:
-    # # Do something for authenticated users.
-    #     print(1111)
-    # else:
-    #     print(222)
     
     return render(request, "admin_specification/categories.html", context)
 
 
 # Рендер страницы групп товаров с пагинацией
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def group_product(request, cat):
     categoryes = CategoryProduct.objects.all().order_by("article_name")
     groups = GroupProduct.objects.select_related("category").filter(category=cat).order_by("article_name")
@@ -152,7 +143,7 @@ def group_product(request, cat):
 
 
 # Рендер страницы подгрупп с пагинацией
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def specifications(request, cat, gr):
     categoryes = CategoryProduct.objects.all().order_by("article_name")
     product_list = Product.objects.select_related(
@@ -233,7 +224,7 @@ def specifications(request, cat, gr):
 
 
 # рендер страницы корзины
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def create_specification(request):
     cookie = request.COOKIES.get("key")
     if cookie:
@@ -258,7 +249,7 @@ def create_specification(request):
 
 
 # Вьюха для сохранения спецификации
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def save_specification_view_admin(request):
     from apps.specification.models import ProductSpecification, Specification
 
@@ -272,7 +263,7 @@ def save_specification_view_admin(request):
 
 
 # рендер страницы со всеми спецификациями
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def get_all_specifications(request):
 
     all_specifications = (
@@ -306,10 +297,10 @@ def get_all_specifications(request):
 
 
 # рендер страницы товаров у которых есть категория, но нет групп
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def instruments(request, cat):
 
-    category = CategoryProduct.objects.filter(pk=cat)
+    category = CategoryProduct.objects.filter(pk=cat).order_by("article_name")
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",
@@ -322,7 +313,7 @@ def instruments(request, cat):
         "stock",
     ).filter(
         category=cat,
-    ).order_by("article_name")
+    )
     title = category[0].name
     category = category[0]
     if request.method == "GET":
@@ -375,7 +366,7 @@ def instruments(request, cat):
 
 
 # Вьюха для аякс поиска, подзагрузка товаров при скролле вниз
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def search_product(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -420,7 +411,7 @@ def search_product(request):
 
 
 # Вьюха логики при нажатии на кнопку "Загрузить ещё"
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def load_products(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -549,7 +540,7 @@ def load_products(request):
 
 
 # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
-@permission_required('specification.add_specification',login_url='/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/')
 def update_specification(request):
     if request.method == "POST":
         id_specification = json.loads(request.body)

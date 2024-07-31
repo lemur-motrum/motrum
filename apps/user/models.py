@@ -28,14 +28,11 @@ class CustomUser(AbstractUser):
     pass
 
 
-
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
-  
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
 
     class Meta:
-
         verbose_name = "Администратор"
         verbose_name_plural = "Администраторы"
 
@@ -46,8 +43,7 @@ class AdminUser(CustomUser):
             if  password_old == self.password:
                 pass
             else:
-                self.set_password(self.password)
-                
+                self.set_password(self.password)        
         else:
             self.set_password(self.password)
         
@@ -55,7 +51,6 @@ class AdminUser(CustomUser):
             self.is_superuser = True
 
         self.is_staff = True
-
         # if self.password is not None:
         #     self.set_password(self.password)
         

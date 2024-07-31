@@ -543,10 +543,14 @@ def add_props_emas_product():
                             text = parent_product_soup.ЗначенияСвойств.find(
                                 "Ид", string="CML2_PREVIEW_TEXT"
                             )
+                            print(text)
                             description_bs_parent = text.parent.Значение.get_text()
+                            print(description_bs_parent)
                             if description_bs_parent != "":
                                 item_product_bs = parent_product_soup
-
+                            else:
+                                item_product_bs = parent_product_soup
+                            
                 groupe_bs = item_product_bs.Группы.Ид.get_text()
                 groupe_items = get_category_emas(supplier, groupe_bs)
 
@@ -571,7 +575,12 @@ def add_props_emas_product():
                     "Ид", string="CML2_PREVIEW_TEXT"
                 )
                 description_bs_parent = description_bs.parent.Значение.get_text()
-
+                if description_bs_parent == "":
+                    description_bs = item_product_bs.ЗначенияСвойств.find(
+                    "Ид", string="CML2_DETAIL_TEXT"
+                )
+                    
+                description_bs_parent = description_bs.parent.Значение.get_text()
                 tds = []
                 soup_desc = BeautifulSoup(description_bs_parent, "html.parser")
 
@@ -592,12 +601,13 @@ def add_props_emas_product():
                 # текст из р
                 quotes_text = soup_desc.find_all("p")
                 for p_text in quotes_text:
-
-                    text = re.sub(r"<[^>]+>", "", str(p_text), flags=re.S)
-                    text = " ".join(text.split())
-                    text = text.replace("<br>", ". ")
+                    text = str(p_text).replace("<br>", ". ")
                     text = text.replace("</li>", ". ")
                     text = text.replace("<li>", "")
+                    
+                    text = re.sub(r"<[^>]+>", "", text, flags=re.S)
+                    text = " ".join(text.split())
+                    
 
                     if text != "":
                         if text_desc == "":
@@ -608,13 +618,12 @@ def add_props_emas_product():
                 quotes_li = soup_desc.find_all("li")
                 for li_text in quotes_li:
                     
-                    text_li = " ".join(text_li.split())
-                    print(text_li)
+                   
                     text_li = str(li_text).replace("<br>", ". ")
-                    text_li = str(li_text).replace("</li>", ". ")
-                    text_li = str(li_text).replace("<li>", "")
+                    text_li = text_li.replace("</li>", ". ")
+                    text_li = text_li.replace("<li>", "")
                     
-                    text_li = re.sub(r"<[^>]+>", "", str(li_text), flags=re.S)
+                    text_li = re.sub(r"<[^>]+>", "", text_li, flags=re.S)
 
                     if text_li != "":
                         if text_desc == "":

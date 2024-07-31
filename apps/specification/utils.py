@@ -145,8 +145,7 @@ def crete_pdf_specification(specification):
     pdf = SimpleDocTemplate(fileName)
     pdf.build(story)
    
-    file_path = "{0}{1}/{2}".format(
-        MEDIA_URL,
+    file_path = "{0}/{1}".format(
         "specification",
         name_specification,
     )

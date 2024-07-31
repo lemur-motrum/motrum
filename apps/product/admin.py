@@ -666,12 +666,18 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         try:
             price = Price.objects.get(prod=obj.id)
+            if price.price_supplier == None or price.price_supplier < 0.1:
+                item_one = f"<li>Цена</li>"
+                product_blank_new = f"{product_blank_new}{item_one}"
         except Price.DoesNotExist:
             item_one = f"<li>Цена</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
         try:
             stock = Stock.objects.get(prod=obj.id)
+            if stock.stock_supplier == None :
+                item_one = f"<li>Остаток</li>"
+                product_blank_new = f"{product_blank_new}{item_one}"
         except Stock.DoesNotExist:
             item_one = f"<li>Остаток</li>"
             product_blank_new = f"{product_blank_new}{item_one}"

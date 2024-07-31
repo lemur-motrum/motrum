@@ -561,6 +561,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const products = [];
         const checkbox = document.querySelector("#prepayment-checkbox");
         const specificationId = getCookie("specificationId");
+        const adminCreator = document.querySelector("[data-user-id]")
+        const adminCreatorId = adminCreator.getAttribute('data-user-id')
+        
 
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -595,7 +598,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const dataObj = {
           id_bitrix: 22,
-          admin_creator_id: 2,
+          admin_creator_id: adminCreatorId,
           products: products,
           is_pre_sale: checkbox.checked ? true : false,
           id_specification: specificationId ? specificationId : null,

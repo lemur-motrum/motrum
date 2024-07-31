@@ -386,6 +386,7 @@ h1 {
           font-size: 0.813rem;
           width: 80%;
           box-sizing: border-box;
+          
           &.discount-input {
             width: 40%;
           }
@@ -407,6 +408,10 @@ h1 {
           &::placeholder {
             font-size: 0.813rem;
           }
+        }
+        label{
+          font-size: 0.613rem;
+          color:#a4a4a4;
         }
       }
       &:nth-of-type(even) {

@@ -16,9 +16,9 @@
                         Поставщика:
                     </div>
                     <div class="title_item">Количество:</div>
-                    <div class="title_item">Цена за шт:</div>
+                    <div class="title_item">Цена за шт. в ₽:</div>
                     <div class="title_item">Стоимость:</div>
-                    <div class="title_item">Скидка мортрум</div>
+                    <div class="title_item">Скидка Motrum:</div>
                     <div class="title_item">Скидка %:</div>
                 </div>
                 {% for item in specification_items %}
@@ -27,7 +27,7 @@
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.idMotrum }}</div>
                         <div class="item_value">{{ item.idSaler }}</div>
-                        {% if item.price == "0" or item.price == 0 %}
+                        {% if item.price == "0" or item.price == 0 or item.price == 0.0 or item.price == "0.0"  %}
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -36,11 +36,17 @@
                                 </div>
                             </div>
                             <div class="item_value">
+     
                                 <input class="price-input"
+                                        name = "price-input-extra"
                                        type="text"
                                        onkeypress='validate(event)'
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
+                                       <label for="price-input-extra">
+                                        {% if item.product_price_extra_old %}
+                                        {{item.data_old}} - {{item.product_price_extra_old}}
+                                        {% endif %}₽</label>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
@@ -51,11 +57,12 @@
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
-                            <div class="item_value price price_once">{{ item.price }}</div>
+                            <div class="item_value price price_once">{{ item.price }}  </div>
                             <div class="item_value total_cost price">{{ item.totalCost }}</div>
                         {% endif %}
                         <div class="item_value">
-                            {% if item.discount == "" %}
+                    
+                            {% if item.discount == "" or item.discount == None %}
                                 Нет
                             {% else %}
                                 {{ item.discount }} %
@@ -66,7 +73,7 @@
                                    type="text"
                                    onkeypress='validate(event)'
                                    placeholder="% скидки"
-                                   maxlength="2"
+                                   maxlength="5"
                                    value="0" />
                         </div>
                     </div>
@@ -79,7 +86,9 @@
                         <input type="checkbox" id="prepayment-checkbox" />
                         <label for="prepayment-checkbox">Предоплата</label>
                     </div>
-                    <button class="save_button">Сохранить спецификацию</button>
+                    
+                    
+                    <button  class="save_button">Сохранить спецификацию</button>
                 </div>
             </div>
         {% else %}

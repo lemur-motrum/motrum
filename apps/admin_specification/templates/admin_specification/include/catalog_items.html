@@ -33,10 +33,15 @@
                 {% for product in products %}
            
 
-                    <div class="catalog-item" data-id={{ product.pk }} {% if product.price.rub_price_supplier %} data-price={{ product.price.rub_price_supplier }} {% else %} data-price="0" {% endif %}  data-motrum-id={{ product.article }} data-saler-id={{ product.article_supplier }} data-discoutnt={{ product.price.sale.percent }} 
+                    <div class="catalog-item" 
+                    data-id="{{ product.pk }} "
+                    data-price="{% if product.price.rub_price_supplier %} {{ product.price.rub_price_supplier }} {% else %}0{% endif %}"  
+                    data-motrum-id="{{ product.article }}"
+                    data-saler-id="{{ product.article_supplier }}"
+                    data-discoutnt="{% if product.price.sale  %}{{ product.price.sale.percent }}{% endif %}"
+                    data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}"
                     
-                    data-order-multiplicity={% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}>
-        
+                    >
                     <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">

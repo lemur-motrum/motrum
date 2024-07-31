@@ -33,7 +33,7 @@ class ProductSpecificationInline(admin.TabularInline):
         (
             None,
             {
-                "fields": ["product", "quantity", "price_one", "price_all"],
+                "fields": ["product", "quantity", "price_one", "price_all","extra_discount"],
             },
         ),
     ]
@@ -50,7 +50,7 @@ class ProductSpecificationInline(admin.TabularInline):
 
                 return ["quantity", "price_all"]
             else:
-                return ["product", "quantity", "price_one", "price_all"]
+                return ["product", "quantity", "price_one", "price_all","extra_discount"]
         return []
 
     def get_fieldsets(self, request, obj):

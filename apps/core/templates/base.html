@@ -11,15 +11,20 @@
         <title>{{ title }}</title>
     </head>
     <body>
+        <input id="user_id" type="hidden" data-user-id="{{ request.user.id }}"></input>
         {% block content %}
         {% endblock content %}
         <script type="module" src="{% static "core/js/scripts.js" %}"></script>
         <script>
             function validate(evt) {
                 let theEvent = evt || window.event;
+                console.log(theEvent)
                 let key = theEvent.keyCode || theEvent.which;
+                console.log(key)
                 key = String.fromCharCode(key);
+                console.log(key)
                 const regex = /[0-9]|\./;
+           
                 if( !regex.test(key) ) {
                     theEvent.returnValue = false;
                 if(theEvent.preventDefault) theEvent.preventDefault();

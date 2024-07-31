@@ -1,11 +1,12 @@
 import json
 import os
+from click import group
 from django.core import serializers
 from django.db.models import Prefetch
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from apps.core.utils import get_price_motrum
+from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     CategoryProduct,
     GroupProduct,
@@ -16,22 +17,22 @@ from apps.product.models import (
     Stock,
 )
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required, login_required
+from django.utils.decorators import method_decorator
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
 from apps.supplier.models import Discount
+from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
 from django.db.models import Q
 
-@login_required
-def show_admin_custom_page(request,render,context):
-    return render(request, render, context)
 
 # Рендер главной страницы каталога с пагинацией
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def all_categories(request):
     title = "Каталог"
-    categories = CategoryProduct.objects.all()
+    categories = CategoryProduct.objects.all().order_by("article_name")
 
     product_list = Product.objects.select_related(
         "supplier",
@@ -71,9 +72,10 @@ def all_categories(request):
         "num_of_pages": num_of_pages,
         "form": form,
     }
-    render =  "admin_specification/categories.html"
-  
-    return show_admin_custom_page(request,render,context)
+    
+    renders =  "admin_specification/categories.html"
+    print(request)
+    # return show_admin_custom_page(request,renders,context)
   
 
     # print(request)
@@ -82,13 +84,15 @@ def all_categories(request):
     #     print(1111)
     # else:
     #     print(222)
-    # return render(request, "admin_specification/categories.html", context)
+    
+    return render(request, "admin_specification/categories.html", context)
 
 
 # Рендер страницы групп товаров с пагинацией
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def group_product(request, cat):
-    categoryes = CategoryProduct.objects.all()
-    groups = GroupProduct.objects.select_related("category").filter(category=cat)
+    categoryes = CategoryProduct.objects.all().order_by("article_name")
+    groups = GroupProduct.objects.select_related("category").filter(category=cat).order_by("article_name")
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",
@@ -148,8 +152,9 @@ def group_product(request, cat):
 
 
 # Рендер страницы подгрупп с пагинацией
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def specifications(request, cat, gr):
-    categoryes = CategoryProduct.objects.all()
+    categoryes = CategoryProduct.objects.all().order_by("article_name")
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",
@@ -162,7 +167,7 @@ def specifications(request, cat, gr):
         "stock",
     ).filter(category=cat, group=gr)
 
-    groups = GroupProduct.objects.select_related("category").all()
+    groups = GroupProduct.objects.select_related("category").all().order_by("article_name")
 
     supplers = []
 
@@ -228,14 +233,23 @@ def specifications(request, cat, gr):
 
 
 # рендер страницы корзины
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def create_specification(request):
-    title = "Текущая спецификация"
     cookie = request.COOKIES.get("key")
     if cookie:
         key = json.loads(cookie)
     else:
         key = []
-
+        
+    id_specification =  request.COOKIES.get("specificationId") 
+    
+    if id_specification:
+        title = f"Cпецификация № {id_specification}"
+    else:
+         title = "Текущая спецификация"
+        
+   
+    
     context = {
         "title": title,
         "specification_items": key,
@@ -244,62 +258,23 @@ def create_specification(request):
 
 
 # Вьюха для сохранения спецификации
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def save_specification_view_admin(request):
     from apps.specification.models import ProductSpecification, Specification
 
     received_data = json.loads(request.body)
 
     # сохранение спецификации
-    id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
-    admin_creator_id = received_data[
-        "admin_creator_id"
-    ]  # сюда распарсить значения с фронта
-
-    specification = Specification(
-        id_bitrix=id_bitrix,
-        admin_creator_id=admin_creator_id,
-    )
-    specification.save()
-
-    # сохранение продуктов для спецификации
-
-    # массив products имитация массива с фронта в него распирсить значения с фронта
-    products = received_data["products"]
-
-    # перебор продуктов и сохранение
-    for product_item in products:
-        product = Product.objects.get(id=product_item["product_id"])
-        price = Price.objects.get(prod=product)
-
-        # если цена по запросу взять ее если нет взять цену из бд
-        if product_item["price_exclusive"] == True:
-            price_one = product_item["price_one"]
-        else:
-            price_one = price.rub_price_supplier
-
-        price_all = float(price_one) * int(product_item["quantity"])
-
-        product_new = ProductSpecification(
-            specification=specification,
-            product=product,
-            product_currency=price.currency,
-            quantity=product_item["quantity"],
-            price_one=price_one,
-            price_all=price_all,
-            price_exclusive=product_item["price_exclusive"],
-        )
-        product_new.save()
-
-    # обновить спецификацию пдф
-    pdf = crete_pdf_specification(specification.id)
-    Specification.objects.filter(id=specification.id).update(file=pdf)
+    save_specification(received_data)
 
     out = {"status": "ok", "data": received_data}
     return JsonResponse(out)
 
 
 # рендер страницы со всеми спецификациями
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def get_all_specifications(request):
+
     all_specifications = (
         Specification.objects.select_related(
             "admin_creator",
@@ -308,6 +283,15 @@ def get_all_specifications(request):
         .order_by("pk")
         .reverse()
     )
+    print( AdminUser.user)
+    user_admin = AdminUser.objects.get(user=request.user)
+    user_admin_type = user_admin.admin_type
+    
+    if user_admin_type == "ALL":
+        pass
+    elif user_admin_type == "BASE":
+        all_specifications = all_specifications.filter(admin_creator_id= request.user.id)
+
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
@@ -317,10 +301,12 @@ def get_all_specifications(request):
         "specifications": all_specifications,
         "media_root": media_root,
     }
+  
     return render(request, "admin_specification/all_specifications.html", context)
 
 
 # рендер страницы товаров у которых есть категория, но нет групп
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def instruments(request, cat):
 
     category = CategoryProduct.objects.filter(pk=cat)
@@ -336,7 +322,7 @@ def instruments(request, cat):
         "stock",
     ).filter(
         category=cat,
-    )
+    ).order_by("article_name")
     title = category[0].name
     category = category[0]
     if request.method == "GET":
@@ -389,6 +375,7 @@ def instruments(request, cat):
 
 
 # Вьюха для аякс поиска, подзагрузка товаров при скролле вниз
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def search_product(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -433,6 +420,7 @@ def search_product(request):
 
 
 # Вьюха логики при нажатии на кнопку "Загрузить ещё"
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def load_products(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -561,6 +549,7 @@ def load_products(request):
 
 
 # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
+@permission_required('specification.add_specification',login_url='/login_admin/')
 def update_specification(request):
     if request.method == "POST":
         id_specification = json.loads(request.body)
@@ -590,6 +579,7 @@ def update_specification(request):
             specification_id = current_specification.pk
 
             product_price = str(product_price).replace(",", ".")
+            product_price_extra_old = str(product.price_one).replace(",", ".")
             product_totla_cost = str(product_totla_cost).replace(",", ".")
             product_multiplicity_item = Stock.objects.get(prod=product_id)
             if product_multiplicity_item.is_one_sale == True:
@@ -598,13 +588,20 @@ def update_specification(request):
                 product_multiplicity = Stock.objects.get(
                     prod=product_id
                 ).order_multiplicity
-            discount = get_price_motrum(
+            discount_item = get_price_motrum(
                 product.product.category_supplier,
                 product.product.group_supplier,
                 product.product.vendor,
                 product_prices.rub_price_supplier,
                 product.product.category_supplier_all,
-            )[1].percent
+            )[1]
+            if discount_item == None:
+                discount = None
+            else:
+                discount = discount_item.percent
+                
+            data_old = current_specification.date.strftime("%m.%d.%Y")
+            print(data_old)
 
             product_item = {
                 "discount": discount,
@@ -618,6 +615,8 @@ def update_specification(request):
                 "productSpecificationId": product_pk,
                 "specificationId": specification_id,
                 "multiplicity": product_multiplicity,
+                "product_price_extra_old":product_price_extra_old,
+                "data_old":data_old,
             }
 
             products.append(product_item)
@@ -627,6 +626,7 @@ def update_specification(request):
     out = {
         "status": "ok",
         "products": current_products,
+        
     }
     return JsonResponse(out)
 

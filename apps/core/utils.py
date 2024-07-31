@@ -747,9 +747,6 @@ def save_specification(received_data):
             price_one_motrum = price.price_motrum
             
         # если есть доп скидка отнять от цены поставщика
-        print(9999999999999999999999999999)
-        print(float(product_item["extra_discount"]))
-        print(product_item["extra_discount"])
         if product_item["extra_discount"] != '0':
             print(price_one)
             price_one = price_one - (

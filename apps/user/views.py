@@ -10,21 +10,26 @@ from apps.user.forms import LoginAdminForm
 def login_admin(request):
     form = LoginAdminForm()
     next_url = request.POST.get("next")
-    print(next_url)
+    # после войти в форме входа
     if request.method == "POST":
         form = LoginAdminForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
             user = authenticate(username=cd["username"], password=cd["password"])
+            # если прошел аутентификация
             if user is not None:
+                # если не заблокирова
                 if user.is_active:
                     login(request, user)
                     is_groups_user = user.groups.filter(
                         name__in=["Полный доступ", "Базовый доступ"]
                     ).exists()
-                    print(is_groups_user)
+                    
+                    # если есть право на просмотр спецификаций
                     if is_groups_user == True:
                         return HttpResponseRedirect(next_url)
+                    
+                    # нет права на спецификации
                     else:
                         request.GET._mutable = True
                         request.GET["next"] = next_url
@@ -36,7 +41,8 @@ def login_admin(request):
                             "user/login_admin.html",
                             {"form": form, "context": context},
                         )
-
+                
+                # заблокирован пользователь
                 else:
                     request.GET._mutable = True
                     request.GET["next"] = next_url
@@ -48,6 +54,7 @@ def login_admin(request):
                         "user/login_admin.html",
                         {"form": form, "context": context},
                     )
+            # если отказ в аутентификации
             else:
                 request.GET._mutable = True
                 request.GET["next"] = next_url
@@ -57,6 +64,7 @@ def login_admin(request):
                 return render(
                     request, "user/login_admin.html", {"form": form, "context": context}
                 )
+    # форма входа
     else:
         context = {
             "error": "",

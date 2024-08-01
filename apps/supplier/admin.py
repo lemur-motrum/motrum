@@ -350,8 +350,9 @@ class DiscountAdmin(admin.ModelAdmin):
         def background_task():
             # Долгосрочная фоновая задача
             for price_one in price:
+                price_one._change_reason = "Автоматическое"
                 price_one.save()
-                update_change_reason(price_one, "Автоматическое")
+              
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -364,8 +365,9 @@ class DiscountAdmin(admin.ModelAdmin):
         def background_task():
             # Долгосрочная фоновая задача
             for price_one in price:
+                price_one._change_reason = "Автоматическое"
                 price_one.save()
-                update_change_reason(price_one, "Автоматическое")
+                # update_change_reason(price_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)

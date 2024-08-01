@@ -38,7 +38,7 @@ def get_category_avangard(name, supplier, vendor):
 
 
 def get_price_avangard(vendor, supplier, article, price_supplier, category_item):
-    from apps.core.utils import get_price_supplier_rub, get_category, get_price_motrum
+    from apps.core.utils import get_price_supplier_rub, get_category
     currency = Currency.objects.get(words_code="CNY")
     vat_include = True
     vat = Vat.objects.get(name=20)

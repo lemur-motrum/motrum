@@ -14,7 +14,6 @@ from apps.core.utils import (
     get_file_path,
     get_file_path_add,
     get_lot,
-    get_price_motrum,
     response_request,
     save_file_product,
     save_update_product_attr,

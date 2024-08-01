@@ -437,8 +437,10 @@ class Discount(models.Model):
             def background_task():
                 # Долгосрочная фоновая задача
                 for price_one in price:
+                    print(price_one)
+                    price_one._change_reason = "Автоматическое"
                     price_one.save()
-                    update_change_reason(price_one, "Автоматическое")
+                    
 
             daemon_thread = threading.Thread(target=background_task)
             daemon_thread.setDaemon(True)

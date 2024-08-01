@@ -10,6 +10,7 @@ import traceback
 
 
 # from apps import supplier
+from apps import supplier
 from apps.core.models import CurrencyPercent
 from apps.logs.utils import error_alert
 
@@ -21,7 +22,7 @@ from simple_history.utils import update_change_reason
 
 # цена мотрум со скидкой
 def get_price_motrum(
-    item_category, item_group, vendors, rub_price_supplier, all_item_group
+    item_category, item_group, vendors, rub_price_supplier, all_item_group,supplier
 ):
     from apps.supplier.models import (
         Discount,
@@ -57,11 +58,11 @@ def get_price_motrum(
         discount_group = Discount.objects.filter(
             group_supplier=item_group.id, is_tag_pre_sale=False
         )
-        print(discount_group)
+     
         if discount_group:
             percent = get_percent(discount_group)
             sale = discount_group
-            print(sale)
+         
             # if percent != 0
 
     # скидка по категории
@@ -77,7 +78,7 @@ def get_price_motrum(
             percent = get_percent(discount_categ)
             sale = discount_categ
 
-    if percent == 0:
+    if vendors and percent == 0:
 
         discount_all = Discount.objects.filter(
             vendor=vendors,
@@ -90,7 +91,21 @@ def get_price_motrum(
         if discount_all:
             percent = get_percent(discount_all)
             sale = discount_all
+            
+    if percent == 0:
 
+        discount_all = Discount.objects.filter(
+            supplier=supplier,
+            vendor__isnull=True,
+            group_supplier__isnull=True,
+            category_supplier__isnull=True,
+            category_supplier_all__isnull=True,
+            is_tag_pre_sale = False
+        )
+        # скидка по всем вендору
+        if discount_all:
+            percent = get_percent(discount_all)
+            sale = discount_all
         # нет скидки
     
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
@@ -773,6 +788,7 @@ def save_specification(received_data):
                 # price.rub_price_supplier,
                 price_one,
                 price.prod.category_supplier_all,
+                price.prod.supplier,
             )
             price_one_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]

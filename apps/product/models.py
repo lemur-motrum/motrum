@@ -319,6 +319,7 @@ class Price(models.Model):
             self.prod.vendor,
             self.rub_price_supplier,
             self.prod.category_supplier_all,
+            self.prod.supplier,
         )
         
         price_motrum = price_motrum_all[0]

@@ -6,8 +6,7 @@ def upgrade_permission():
     s = Permission.objects.filter(
         content_type__app_label="product",
     )
-    print("TESTTEST")
-    print(s)
+    
     # codenames = ['view_blogpost', 'change_blogpost', 'add_blogpost', 	"delete_logentry"]
     from apps.user.models import ADMIN_TYPE
 

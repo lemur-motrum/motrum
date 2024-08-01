@@ -25,6 +25,58 @@ from django.contrib.admin.utils import unquote
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 
+class ProductSpecificationAdmin(SimpleHistoryAdmin):
+    model = ProductSpecification
+
+    def history_view(self, request, object_id, extra_context=None):
+        """The 'history' admin view for this model."""
+     
+        model = ProductSpecification
+        opts = model._meta
+
+        pk_name = opts.pk.attname
+        history = getattr(model, model._meta.simple_history_manager_attribute)
+        object_id = object_id
+
+        historical_records = ProductSpecificationAdmin.get_history_queryset(
+            ProductSpecificationAdmin, request, history, pk_name, object_id
+        )
+
+        history_list_display = ProductSpecificationAdmin.get_history_list_display(ProductSpecificationAdmin, request)
+
+        for history_list_entry in history_list_display:
+            value_for_entry = getattr(self, history_list_entry, None)
+            if value_for_entry and callable(value_for_entry):
+                for record in historical_records:
+                    setattr(record, history_list_entry, value_for_entry(record))
+
+        ProductSpecificationAdmin.set_history_delta_changes(ProductSpecificationAdmin, request, historical_records)
+
+        return historical_records
+
+    def set_history_delta_changes(
+        self,
+        request,
+        historical_records,
+        foreign_keys_are_objs=True,
+    ):
+        previous = None
+        for current in historical_records:
+            if previous is None:
+                previous = current
+                continue
+            # Related objects should have been prefetched in `get_history_queryset()`
+            delta = previous.diff_against(
+                current, foreign_keys_are_objs=foreign_keys_are_objs
+            )
+            helper = ProductSpecificationAdmin.get_historical_record_context_helper(
+                ProductSpecificationAdmin, request, previous
+            )
+            previous.history_delta_changes = helper.context_for_delta_changes(delta)
+
+            previous = current
+
+
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     form = PersonForm
@@ -114,55 +166,11 @@ class ProductSpecificationInline(admin.TabularInline):
             return False
         return True
 
-    def history_view(self, request, object_id, extra_context=None):
-        """The 'history' admin view for this model."""
-        model = self.model
-        opts = model._meta
 
-        pk_name = opts.pk.attname
-        history = getattr(model, model._meta.simple_history_manager_attribute)
-        object_id = object_id
-
-        historical_records = ProductSpecification.get_history_queryset(
-            ProductSpecification, request, history, pk_name, object_id
-        )
-
-        history_list_display = ProductSpecification.get_history_list_display(ProductSpecification, request)
-
-        for history_list_entry in history_list_display:
-            value_for_entry = getattr(self, history_list_entry, None)
-            if value_for_entry and callable(value_for_entry):
-                for record in historical_records:
-                    setattr(record, history_list_entry, value_for_entry(record))
-
-        ProductSpecification.set_history_delta_changes(ProductSpecification, request, historical_records)
-
-        return historical_records
-
-    def set_history_delta_changes(
-        self,
-        request,
-        historical_records,
-        foreign_keys_are_objs=True,
-    ):
-        previous = None
-        for current in historical_records:
-            if previous is None:
-                previous = current
-                continue
-            # Related objects should have been prefetched in `get_history_queryset()`
-            delta = previous.diff_against(
-                current, foreign_keys_are_objs=foreign_keys_are_objs
-            )
-            helper = ProductSpecification.get_historical_record_context_helper(
-                ProductSpecification, request, previous
-            )
-            previous.history_delta_changes = helper.context_for_delta_changes(delta)
-
-            previous = current
 
 class SpecificationAdmin(SimpleHistoryAdmin):
-
+    object_history_list_template = "specification/templates_history.html"
+    history_list_display = []
     search_fields = [
         "id_bitrix",
     ]
@@ -288,20 +296,23 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         history = getattr(model, model._meta.simple_history_manager_attribute)
 
         object_id = unquote(object_id)
-        
+        print(object_id)
         try:
-            product_id_ex = ProductSpecification.objects.filter(product=object_id).last()
-            product_id = ProductSpecification.objects.filter(product=object_id)
+            product_id_ex = ProductSpecification.objects.filter(specification=object_id).last()
+            product_id = ProductSpecification.objects.filter(specification=object_id)
+            print(product_id)
         except ProductSpecification.DoesNotExist:
             product_id = None
 
-
+        
         historical_records_product = []
         if product_id != None:
             for item in product_id:
-                item_list = ProductSpecification.history_view(
+                item_list = ProductSpecificationAdmin.history_view(
                     ProductSpecification, request, item.id, extra_context=None
                 )
+                print(11111111111111111)
+                print(item_list)
                 if historical_records_product == []:
                     historical_records_product = item_list
                 else:

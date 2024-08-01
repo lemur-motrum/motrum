@@ -690,8 +690,7 @@ def save_specification(received_data):
     
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
-    # admin_creator_id = received_data["admin_creator_id"]
-    admin_creator_id = 1
+    admin_creator_id = received_data["admin_creator_id"]
     id_specification = received_data["id_specification"]
     is_pre_sale = received_data["is_pre_sale"]
     products = received_data["products"]
@@ -707,17 +706,34 @@ def save_specification(received_data):
         for product_item_for_old in product_old:
             item_id = product_item_for_old.id
             having_items = False
-            for i, dic in enumerate(products):
-                if dic["product_specif_id"] == item_id:
-                    having_items = True
-
+            for products_new in products:
+                if products_new['product_specif_id'] != "None":
+                   
+                    if int(products_new['product_specif_id']) == item_id:
+                        having_items = True
+                 
             if having_items == False:
-                product_item_for_old.delete()
+                print(product_item_for_old.id)
+                product_item_for_old.delete()        
+            having_items = False
+            
+            # for i, dic in enumerate(products):
+            #     print(99999)
+            #     print(dic["product_specif_id"] )
+            #     print(item_id)
+            #     if dic["product_specif_id"] == item_id:
+            #         having_items = True
+            #         print(having_items)
+
+            # if having_items == False:
+            #     print(product_item_for_old.id)
+            #     product_item_for_old.delete()
 
     except Specification.DoesNotExist:
         specification = Specification(
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id
         )
+        specification._change_reason = "Ручное"
         specification.save()
 
     # сохранение продуктов для спецификации
@@ -732,41 +748,48 @@ def save_specification(received_data):
         
         # если цена по запросу взять ее если нет взять цену из бд
         if product_item["price_exclusive"] == True:
-            print(1111111111111111111111111)
+            
             price_one_before = product_item["price_one"]
+            print(1111111)
+            print(product_item["extra_discount"])
+            print(price_one_before)
             price_one = product_item["price_one"]
-            print(price_one)
-           
+        
+            # оригинальная цена без примененой скидки
             if product_item["extra_discount"] != '0':
-                price_one = price_one_before + (
-                price_one_before / 100 * float(product_item["extra_discount"])
-            )   
-                print(product_item["extra_discount"])
-                print(33333333333)
+                price_one =  price_one_before / (1 - float(product_item["extra_discount"]) /
+                100)
+                print(2222)
                 print(price_one)
+                price_one = round(price_one, 2)
+                print(price_one)
+
+            
+
             price_motrum_all = get_price_motrum(
                 price.prod.category_supplier,
                 price.prod.group_supplier,
                 price.prod.vendor,
-                price.rub_price_supplier,
+                # price.rub_price_supplier,
+                price_one,
                 price.prod.category_supplier_all,
             )
             price_one_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
+            print(price_one_motrum,sale)
 
         else:
             price_one = price.rub_price_supplier
-            price_one_motrum = price.price_motrum
+            price_one_motrum = price.price_motrum 
             
         # если есть доп скидка отнять от цены поставщика
         if product_item["extra_discount"] != '0':
-            print(price_one)
             price_one = price_one - (
                 price_one / 100 * float(product_item["extra_discount"])
             )
-            print(price_one)
             price_one = round(price_one, 2)
-            
+            print()
+  
         # если есть предоплата найти скидку по предоплате мотрум
         if is_pre_sale == True and price_pre_sale != False :
             persent_pre_sale = price_pre_sale.percent
@@ -776,24 +799,29 @@ def save_specification(received_data):
         price_all = float(price_one) * int(product_item["quantity"])
         price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
         
-        if product_item["product_specif_id"] == None:
+        if product_item["product_specif_id"] != "None":
             product_spes = ProductSpecification.objects.get(
                 id=product_item["product_specif_id"],
             )
+            
         else:  
             product_spes = ProductSpecification(
                 specification=specification,
                 product=product,
-                product_currency=price.currency,
-                price_exclusive=product_item["price_exclusive"],
+                # product_currency=price.currency,
+                # price_exclusive=product_item["price_exclusive"],
             )
+        product_spes.price_exclusive = product_item["price_exclusive"]       
+        product_spes.product_currency = price.currency   
         product_spes.quantity = product_item["quantity"]
         product_spes.price_all = price_all
         product_spes.price_one = price_one
         product_spes.extra_discount = product_item["extra_discount"]
         product_spes.price_one_motrum = price_one_motrum
         product_spes.price_all_motrum = price_all_motrum
+        product_spes._change_reason = "Ручное"
         product_spes.save()    
+        
         # try:
         #     product_spes = ProductSpecification.objects.get(
         #         id=product_item["product_specif_id"],
@@ -820,6 +848,7 @@ def save_specification(received_data):
     pdf = crete_pdf_specification(specification.id)
     specification.file = pdf
     specification.total_amount = total_amount
+    specification._change_reason = "Ручное"             
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)
 

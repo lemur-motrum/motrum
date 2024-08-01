@@ -38,7 +38,7 @@ def add_iek(request):
 
 
 def test(request):
-    get_iek_stock()
+    add_props_emas_product()
     title = "Услуги"
     print(124)
 

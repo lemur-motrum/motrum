@@ -23,7 +23,8 @@
                         <div data-status='{{ specification.tag_stop }}' class="table_item">
                             <div class="table_item_value">
                           
-                               <a href="{{ specification.file.url }}"
+                               <a href="{% if specification.file %}{{ specification.file.url }}{% endif %}
+                               "
                                    target="_blank"
                                    class="table_item_value">{{ specification.pk }}</a> 
                                    {% if request.user.is_superuser %} <br>

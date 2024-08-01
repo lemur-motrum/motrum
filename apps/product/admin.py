@@ -787,7 +787,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         return super().get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print(123123123)
+        
         if "/change/" in request.path:
 
             for id_table in request.resolver_match.captured_kwargs.values():
@@ -798,7 +798,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
             if item.autosave_tag == False:
-                print(123123123)
+            
                 if db_field.name == "category_supplier":
                     kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
                         supplier_id=item.supplier.id

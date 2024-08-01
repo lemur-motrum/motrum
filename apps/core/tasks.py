@@ -118,6 +118,13 @@ def get_year_holiday(self):
         import requests
         year_date = datetime.datetime.now().year
         year = str(year_date)
+        url = (
+                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+                + year
+                + ".json"
+            )
+        r = requests.get(url)
+        holidays_dict = r.json()
         
         try:
             data_bd = CalendarHoliday.objects.get(year=year)
@@ -125,13 +132,7 @@ def get_year_holiday(self):
             data_bd.save()
     
         except CalendarHoliday.DoesNotExist:
-            url = (
-                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
-                + year
-                + ".json"
-            )
-            r = requests.get(url)
-            holidays_dict = r.json()
+
             data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
             data_bd.save()
             

@@ -687,7 +687,7 @@ def save_specification(received_data):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
-  
+    
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
     # admin_creator_id = received_data["admin_creator_id"]
@@ -725,13 +725,25 @@ def save_specification(received_data):
     total_amount = 0
     currency_product = False
     for product_item in products:
+      
         product = Product.objects.get(id=product_item["product_id"])
         price = Price.objects.get(prod=product)
         price_pre_sale = get_presale_discount(product)
         
         # если цена по запросу взять ее если нет взять цену из бд
         if product_item["price_exclusive"] == True:
+            print(1111111111111111111111111)
+            price_one_before = product_item["price_one"]
             price_one = product_item["price_one"]
+            print(price_one)
+           
+            if product_item["extra_discount"] != '0':
+                price_one = price_one_before + (
+                price_one_before / 100 * float(product_item["extra_discount"])
+            )   
+                print(product_item["extra_discount"])
+                print(33333333333)
+                print(price_one)
             price_motrum_all = get_price_motrum(
                 price.prod.category_supplier,
                 price.prod.group_supplier,
@@ -763,26 +775,44 @@ def save_specification(received_data):
         
         price_all = float(price_one) * int(product_item["quantity"])
         price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-
-        try:
+        
+        if product_item["product_specif_id"] == None:
             product_spes = ProductSpecification.objects.get(
                 id=product_item["product_specif_id"],
             )
-        except ProductSpecification.DoesNotExist:
+        else:  
             product_spes = ProductSpecification(
                 specification=specification,
                 product=product,
                 product_currency=price.currency,
                 price_exclusive=product_item["price_exclusive"],
             )
-        finally:
-            product_spes.quantity = product_item["quantity"]
-            product_spes.price_all = price_all
-            product_spes.price_one = price_one
-            product_spes.extra_discount = product_item["extra_discount"]
-            product_spes.price_one_motrum = price_one_motrum
-            product_spes.price_all_motrum = price_all_motrum
-            product_spes.save()
+        product_spes.quantity = product_item["quantity"]
+        product_spes.price_all = price_all
+        product_spes.price_one = price_one
+        product_spes.extra_discount = product_item["extra_discount"]
+        product_spes.price_one_motrum = price_one_motrum
+        product_spes.price_all_motrum = price_all_motrum
+        product_spes.save()    
+        # try:
+        #     product_spes = ProductSpecification.objects.get(
+        #         id=product_item["product_specif_id"],
+        #     )
+        # except ProductSpecification.DoesNotExist:
+        #     product_spes = ProductSpecification(
+        #         specification=specification,
+        #         product=product,
+        #         product_currency=price.currency,
+        #         price_exclusive=product_item["price_exclusive"],
+        #     )
+        # finally:
+        #     product_spes.quantity = product_item["quantity"]
+        #     product_spes.price_all = price_all
+        #     product_spes.price_one = price_one
+        #     product_spes.extra_discount = product_item["extra_discount"]
+        #     product_spes.price_one_motrum = price_one_motrum
+        #     product_spes.price_all_motrum = price_all_motrum
+        #     product_spes.save()
 
         total_amount = total_amount + price_all
 

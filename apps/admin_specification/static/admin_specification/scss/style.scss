@@ -521,6 +521,10 @@ h1 {
             margin-left: 8.563rem;
           }
         }
+        .table_item_value_span{
+          font-size: 14px;
+        }
+        
         .uptate-specification-button {
           opacity: 0;
           transition: 0.6s;
@@ -1092,5 +1096,16 @@ h1 {
       font-weight: bold;
     }
   }
+}
+
+.logout_btn{
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px;
+  margin-top: 10px;
+  gap: 20px;
+  align-items: center;
+
 }
 

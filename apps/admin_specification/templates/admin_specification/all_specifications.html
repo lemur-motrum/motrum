@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="logout_btn">
+    <p>Пользователь: {{ request.user.username}}</p>
+    <a href="{% url "user:logout_admin" %}">Выход</a>
+</div>
     <div class="all_specifications_container">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
@@ -16,11 +20,15 @@
             <div class="all_specifications_table">
                 {% for specification in specifications %}
                     {% if specification.tag_stop == True %}
-                        <div data-status={{ specification.tag_stop }} class="table_item">
+                        <div data-status='{{ specification.tag_stop }}' class="table_item">
                             <div class="table_item_value">
-                                <a href="{{ specification.file.url }}"
+                          
+                               <a href="{{ specification.file.url }}"
                                    target="_blank"
-                                   class="table_item_value">{{ specification.pk }}</a>
+                                   class="table_item_value">{{ specification.pk }}</a> 
+                                   {% if request.user.is_superuser %} <br>
+                                   <span class="table_item_value_span" >Создал: {{specification.admin_creator}}</span> 
+                                   {% endif %}
                             </div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">
@@ -31,7 +39,7 @@
                             <button class="change-specification-button">Редактировать</button>
                         </div>
                     {% else %}
-                        <div data-status={{ specification.tag_stop }}  class="table_item disabled">
+                        <div data-status='{{ specification.tag_stop }}'  class="table_item disabled">
                             <div class="table_item_value">{{ specification.pk }}</div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">

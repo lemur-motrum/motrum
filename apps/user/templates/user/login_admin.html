@@ -4,7 +4,8 @@
     <div class="admin_login_wrapper">
         <h1>Вход для сотрудников</h1>
         <p>Данные для входа вы можете узнать у вашего руководства </p>
-        
+        <p style=color:red;>{{context.error}}</p>
+   
         <form  method="post" action="./?next={{ redirect_to }}">
             {{ form.as_p }}
             {% csrf_token %}

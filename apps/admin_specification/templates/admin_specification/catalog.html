@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="logout_btn">
+    <p>Пользователь: {{ request.user.username}}</p>
+    <a href="{% url "user:logout_admin" %}">Выход</a>
+</div>
     <div class="specification-container">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
@@ -22,7 +26,18 @@
                     <div class="title_item">Скидка %:</div>
                 </div>
                 {% for item in specification_items %}
-                    <div class="item_container" data-id={{ item.id }} data-price={{ item.price }}  {% if item.price == "0" %} data-price-exclusive="1" {% else %} data-price-exclusive="0" {% endif %} data-product-specification-id="{{ item.product_specif_id }}" data-multiplicity={{ item.multiplicity }}>
+                    
+                    <div class="item_container" 
+                    data-id="{{ item.id }} "
+                    data-price="{{ item.price }}"  
+        
+                    data-price-exclusive="
+                    {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True  %} 
+                    1 {% else %} 
+                    0 {% endif %} "
+                    data-product-specification-id="{{ item.productSpecificationId }}" 
+                    data-multiplicity="{{ item.multiplicity }}"
+                    >
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.idMotrum }}</div>

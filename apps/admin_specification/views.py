@@ -263,7 +263,7 @@ def save_specification_view_admin(request):
 
 
 # рендер страницы со всеми спецификациями
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required('specification.add_specification',login_url='/user/login_admin/',)
 def get_all_specifications(request):
 
     all_specifications = (
@@ -481,13 +481,18 @@ def load_products(request):
             price = price_all.rub_price_supplier
             price_suppler = price_all.price_motrum
 
-            discount = get_price_motrum(
+            discount_item = get_price_motrum(
                 product_elem.category_supplier,
                 product_elem.group_supplier,
                 product_elem.vendor,
                 price,
                 product_elem.category_supplier_all,
-            )[1].percent
+            )[1]
+            
+            if discount_item == None:
+                discount = None
+            else:
+                discount = discount_item.percent
         except Price.DoesNotExist:
             price_all = None
             price = None

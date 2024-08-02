@@ -86,7 +86,12 @@ function setCookie(name, value, options = {}) {
 
 // функция удаления куки
 function deleteCookie(name, path, domain) {
+  console.log(name)
+  console.log(path)
+  console.log(domain)
   if (getCookie(name)) {
+    console.log("cookie")
+    console.log(getCookie(name))
     document.cookie =
       name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
@@ -620,7 +625,7 @@ window.addEventListener("DOMContentLoaded", () => {
               localStorage.removeItem("specificationValues");
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
-              window.location.href = "/admin_specification/all_specifications/";
+              // window.location.href = "/admin_specification/all_specifications/";
             }
           })
           .catch((error) => console.error(error));
@@ -629,7 +634,7 @@ window.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("specificationValues");
         deleteCookie("key", "/", window.location.hostname);
         deleteCookie("specificationId", "/", window.location.hostname);
-        window.location.href = "/admin_specification/all_specifications/";
+        // window.location.href = "/admin_specification/all_specifications/";
       }
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");

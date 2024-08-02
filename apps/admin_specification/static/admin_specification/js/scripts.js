@@ -86,15 +86,16 @@ function setCookie(name, value, options = {}) {
 
 // функция удаления куки
 function deleteCookie(name, path, domain) {
-  console.log(name)
-  console.log(path)
-  console.log(domain)
   if (getCookie(name)) {
-    console.log("cookie")
-    console.log(getCookie(name))
+    console.log(document.cookie)
     document.cookie =
-      name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
+    name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;";
+    document.cookie =
+    name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
+    console.log(document.cookie) 
+      
   }
+  // Max-Age=-1;
 }
 // функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {
@@ -808,7 +809,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
             const allPrice = curentPrice * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
-            getResult();
+            getResult(); 
           };
           saveButton.onclick = () => saveSpecification(productItems);
         }
@@ -817,6 +818,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const specificationArray = JSON.parse(
             localStorage.getItem("specificationValues")
           );
+          console.log(specificationArray)
           specificationArray.splice(i, 1);
           const result = JSON.stringify(specificationArray);
 

@@ -547,6 +547,7 @@ window.addEventListener("DOMContentLoaded", () => {
         spetificationTable.querySelector(".price_description");
       const valueContainer = totalPriceValueContainer.querySelector(".price");
       const saveButton = spetificationTable.querySelector(".save_button");
+      const exitButton = spetificationTable.querySelector(".exit_button");
 
       function getResult() {
         let sum = 0;
@@ -624,7 +625,12 @@ window.addEventListener("DOMContentLoaded", () => {
           })
           .catch((error) => console.error(error));
       }
-
+      function exitSpecification(elems){
+        localStorage.removeItem("specificationValues");
+        deleteCookie("key", "/", window.location.hostname);
+        deleteCookie("specificationId", "/", window.location.hostname);
+        window.location.href = "/admin_specification/all_specifications/";
+      }
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const itemPrices = item.querySelectorAll(".price");
@@ -820,6 +826,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       saveButton.onclick = () => saveSpecification(productItems);
+      exitButton.onclick = () => exitSpecification(productItems);
       // saveButton.onclick = (e) => {
       //   e.preventDefault();
       //   const products = [];

@@ -438,7 +438,11 @@ h1 {
           cursor: pointer;
         }
       }
-      .save_button {
+      .button_specification-wrapper{
+        display: flex;
+        gap: 20px;
+      }
+      .save_button,.exit_button {
         font-size: 0.938rem;
         text-transform: uppercase;
         display: flex;

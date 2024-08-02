@@ -91,7 +91,7 @@ function deleteCookie(name, path, domain) {
     console.log(document.cookie)
     document.cookie =
     name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;";
-    document.cookie = name + "=0;" + "; domain=" + domain + "; max-age=0;"
+    document.cookie = name + "=0; path=/; " + "domain=" + domain + "; max-age=0;"
  
     console.log(name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;") 
     console.log(name + "=0;" + "; domain=" + domain + "; max-age=0;") 

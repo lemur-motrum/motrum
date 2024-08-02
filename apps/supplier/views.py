@@ -38,7 +38,7 @@ def add_iek(request):
 
 # тестовая страница скриптов
 def test(request):
-    add_props_emas_product()
+    veda_api()
     title = "Услуги"
     print(124)
 

@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 import zipfile
@@ -260,8 +261,6 @@ def delta_written_file(file_name, obj, new_dir):
                         image = ProductImage.objects.create(product=article)
                         update_change_reason(image, "Автоматическое")
                         image_path = get_file_path_add(image, image_link)
-                        print(image_link)
-                        print(image_path)
                         p = save_file_product(image_link, image_path)
                         image.photo = image_path
                         image.link = image_link
@@ -305,7 +304,10 @@ def delta_written_file(file_name, obj, new_dir):
                         lot = Lot.objects.get(name="штука")
                         
                         stock_prod = Stock(
-                            prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
+                            prod=article, lot=lot, 
+                            stock_motrum=stock_motrum,
+                            stock_supplier = stock_supplier,
+                            data_update = datetime.datetime.now()
                         )
                         stock_prod._change_reason = 'Автоматическое'
                         stock_prod.save() 
@@ -320,8 +322,7 @@ def delta_written_file(file_name, obj, new_dir):
                     price_product = Price(prod=article)
 
                 finally:
-                    
-                    print(2222222222222222222)
+
                     price_product.currency = currency
                     price_product.price_supplier = price_supplier
                     price_product.vat = vat_catalog

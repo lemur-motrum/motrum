@@ -1,3 +1,4 @@
+import datetime
 from fileinput import filename
 import os
 import re
@@ -333,7 +334,11 @@ def optimus_written_file(file_name, obj, new_dir):
                         lot = Lot.objects.get(name="штука")
                         
                         stock_prod = Stock(
-                            prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
+                            prod=article, 
+                            lot=lot, 
+                            stock_motrum=stock_motrum, 
+                            stock_supplier = stock_supplier,
+                            data_update = datetime.datetime.now()
                         )
                         stock_prod._change_reason = 'Автоматическое'
                         stock_prod.save() 

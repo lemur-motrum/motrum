@@ -1,3 +1,4 @@
+import datetime
 import re
 import openpyxl as openxl
 from simple_history.utils import update_change_reason
@@ -97,7 +98,7 @@ def add_file_emas(new_file, obj):
                             )
 
                         finally:
-                            
+                            stock_prod.data_update = datetime.datetime.now()
                             stock_prod.stock_supplier = count
                             stock_prod._change_reason = 'Автоматическое'
                             stock_prod.save()
@@ -438,7 +439,7 @@ def add_props_emas_product():
                                     update_change_reason(
                                         props_product, "Автоматическое"
                                     )
-                                    print(11111111111)
+
 
     except Exception as e:
         print(e)

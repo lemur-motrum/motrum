@@ -839,10 +839,16 @@ class ProductAdmin(SimpleHistoryAdmin):
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
-        print(formset)
+     
         instances = formset.save()
+        print(8888888888888888)
         for instance in instances:
-            update_change_reason(instance, "Ручное")
+            print(instance)
+            print(instance.to_order)
+            if instance.is_one_sale == True or instance.is_one_sale == False:
+                instance.data_update = datetime.datetime.now()
+            instance._change_reason = "Ручное"
+            # update_change_reason(instance, "Ручное")
             instance.save()
 
     # def get_formset(self, request, obj=None, **kwargs):

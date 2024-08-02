@@ -372,7 +372,8 @@ class Stock(models.Model):
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
     to_order = models.BooleanField("Товар под заказ", default=False)
-    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    data_update = models.DateField(verbose_name="Дата обновления поставщика")
+    # data_update_motrum = models.DateField(auto_now=True, verbose_name="Дата обновления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     transit_count = models.PositiveIntegerField(
         "Ближайшая поставка количество", blank=True, null=True

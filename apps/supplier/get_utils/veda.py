@@ -123,17 +123,21 @@ def veda_api():
                 stock_prod = Stock.objects.get(prod=article)
             except Stock.DoesNotExist:
                 stock_prod = Stock(
-                    prod=article, lot=lot, stock_motrum=stock_motrum
+                    prod=article, 
+                    lot=lot, 
+                    stock_motrum=stock_motrum
                 )
             finally:
-              
+                print(9999999999999999999)
+                print(datetime.datetime.now())
                 stock_prod.transit_count = transit_count
                 stock_prod.data_transit = data_transit
                 stock_prod.stock_supplier = stock_supplier
+                stock_prod.data_update = datetime.datetime.now()
                 stock_prod._change_reason = 'Автоматическое'
                 stock_prod.save()
                 # update_change_reason(stock_prod, "Автоматическое")
-                            
+  
             
         except Exception as e: 
             print(e)

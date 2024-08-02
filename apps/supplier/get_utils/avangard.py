@@ -1,3 +1,4 @@
+import datetime
 from locale import currency
 import os
 import re
@@ -13,7 +14,12 @@ from simple_history.utils import update_change_reason
 from apps.core.utils import create_article_motrum
 from apps.logs.utils import error_alert
 from apps.product.models import Lot, Price, Product, Stock
-from apps.supplier.models import Supplier, SupplierCategoryProduct, SupplierCategoryProductAll, Vendor
+from apps.supplier.models import (
+    Supplier,
+    SupplierCategoryProduct,
+    SupplierCategoryProductAll,
+    Vendor,
+)
 from project.settings import BASE_DIR, MEDIA_ROOT
 
 
@@ -39,6 +45,7 @@ def get_category_avangard(name, supplier, vendor):
 
 def get_price_avangard(vendor, supplier, article, price_supplier, category_item):
     from apps.core.utils import get_price_supplier_rub, get_category
+
     currency = Currency.objects.get(words_code="CNY")
     vat_include = True
     vat = Vat.objects.get(name=20)
@@ -55,10 +62,9 @@ def get_price_avangard(vendor, supplier, article, price_supplier, category_item)
         price_product.vat = vat
         price_product.vat_include = True
         price_product.extra_price = False
-        price_product._change_reason = 'Автоматическое'
+        price_product._change_reason = "Автоматическое"
         price_product.save()
         # update_change_reason(price_product, "Автоматическое")
-                    
 
 
 def get_avangard_file(new_file, obj):
@@ -77,16 +83,19 @@ def get_avangard_file(new_file, obj):
         category = ""
         category_item = None
         for i in range(sheet.min_row, sheet.max_row + 1):
-            
+
             if first == 0:
                 if sheet[f"A{i}"].value == "P/N\nАртикул":
                     first = i
-                
-                
+
             elif first != 0:
                 # запись категорий
-                
-                if sheet[f"C{i}"].value is None and sheet[f"b{i}"].value is None and sheet[f"a{i}"].value is not None:
+
+                if (
+                    sheet[f"C{i}"].value is None
+                    and sheet[f"b{i}"].value is None
+                    and sheet[f"a{i}"].value is not None
+                ):
                     # print(sheet[f"b{i}"].value)
                     category = sheet[f"A{i}"].value
                     # print(category)
@@ -103,9 +112,13 @@ def get_avangard_file(new_file, obj):
                             vendor=vendor,
                         )
                         category_item.save()
-                    print(11111111111111)    
-                    print(category_item)    
-                elif sheet[f"C{i}"].value is None and sheet[f"b{i}"].value is None and sheet[f"a{i}"].value is None:
+                    print(11111111111111)
+                    print(category_item)
+                elif (
+                    sheet[f"C{i}"].value is None
+                    and sheet[f"b{i}"].value is None
+                    and sheet[f"a{i}"].value is None
+                ):
                     category_item = None
                 # запись товаров
                 elif (
@@ -122,11 +135,12 @@ def get_avangard_file(new_file, obj):
                     ).replace(",", ".")
                     price_supplier = float(price_supplier_sub)
                     name = sheet[f"B{i}"].value
-              
-                    
+
                     try:
                         article = Product.objects.get(
-                            supplier=supplier, vendor=vendor, article_supplier=article_supplier
+                            supplier=supplier,
+                            vendor=vendor,
+                            article_supplier=article_supplier,
                         )
 
                     except Product.DoesNotExist:
@@ -142,41 +156,45 @@ def get_avangard_file(new_file, obj):
                             group_supplier=None,
                             category_supplier=category_item,
                         )
+                        
                         article.save()
                         update_change_reason(article, "Автоматическое")
-                    print(article)    
-                  
+                    print(article)
 
                     price = get_price_avangard(
                         vendor, supplier, article, price_supplier, category_item
                     )
-                    
+
                     try:
                         stock_prod = Stock.objects.get(prod=article)
                     except Stock.DoesNotExist:
                         stock_motrum = 0
                         stock_supplier = None
                         lot = Lot.objects.get(name="штука")
-                        
+
                         stock_prod = Stock(
-                            prod=article, lot=lot, stock_motrum=stock_motrum, stock_supplier = stock_supplier
+                            prod=article,
+                            lot=lot,
+                            stock_motrum=stock_motrum,
+                            stock_supplier=stock_supplier,
+                            data_update = datetime.datetime.now()
                         )
-                        stock_prod._change_reason = 'Автоматическое'
+                        stock_prod._change_reason = "Автоматическое"
                         stock_prod.save()
-                        
+
                 # обработка ошибок считыввания
                 else:
                     error = "file structure"
-                    location=f"Загрузка фаилов авангард строка:{i}"
-                    info="Фаил не соответствует обрабатываемой структуре фаила-считывание фаила невозможно"
-                    e = error_alert(error,location,info)
+                    location = f"Загрузка фаилов авангард строка:{i}"
+                    info = "Фаил не соответствует обрабатываемой структуре фаила-считывание фаила невозможно"
+                    e = error_alert(error, location, info)
 
         if first == 0:
             error = "file structure"
-            location="Загрузка фаилов авангард"
-            info="Фаил не соответствует обрабатываемой структуре фаила-считывание фаила невозможно"
-            e = error_alert(error,location,info)
-            
+            location = "Загрузка фаилов авангард"
+            info = "Фаил не соответствует обрабатываемой структуре фаила-считывание фаила невозможно"
+            e = error_alert(error, location, info)
+
     except Exception as e:
         print(e)
         error = "file_error"

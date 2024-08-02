@@ -1,3 +1,4 @@
+import datetime
 from html import entities
 import os
 import traceback
@@ -638,14 +639,16 @@ def iek_api():
                             stock_prod = Stock(
                                 prod=article,
                                 lot=lot,
+                                stock_motrum = stock_motrum
                             )
                             
                         finally:
                             stock_prod.stock_supplier = stock_supplier[0]
                             stock_prod.to_order = stock_supplier[1]
-                            stock_prod.stock_motrum = stock_motrum
+                            # stock_prod.stock_motrum = stock_motrum
                             stock_prod.order_multiplicity = order_multiplicity
                             stock_prod.is_one_sale = is_one_sale
+                            stock_prod.data_update = datetime.datetime.now()
                             stock_prod._change_reason = 'Автоматическое'
                             stock_prod.save()
                             
@@ -888,6 +891,7 @@ def get_iek_stock():
                 # stock_prod = Stock.objects.get(prod_id=product_item.article_supplier)
                 stock_prod.stock_supplier = stock
                 stock_prod.to_order = to_order
+                stock_prod.data_update = datetime.datetime.now()
                 stock_prod._change_reason = 'Автоматическое'
                 stock_prod.save()
                 

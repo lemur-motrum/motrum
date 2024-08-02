@@ -86,11 +86,12 @@ function setCookie(name, value, options = {}) {
 
 // функция удаления куки
 function deleteCookie(name, path, domain) {
+  print(name, path, domain)
   if (getCookie(name)) {
     console.log(document.cookie)
     document.cookie =
     name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;";
-    document.cookie = "user=" + name + "; max-age=0"
+    document.cookie = name + "=0;" + "; domain=" + domain + "; max-age=0"
  
     console.log() 
     // document.cookie =
@@ -636,6 +637,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       function exitSpecification(elems){
         localStorage.removeItem("specificationValues");
+        console.log(window.location.hostname)
         deleteCookie("key", "/", window.location.hostname);
         deleteCookie("specificationId", "/", window.location.hostname);
         // window.location.href = "/admin_specification/all_specifications/";

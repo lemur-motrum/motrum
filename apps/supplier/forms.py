@@ -91,6 +91,22 @@ class SupplierCategoryProductAllAdminForm(forms.ModelForm):
         fields = "__all__"
 
 class SupplierGroupProductAdminForm(forms.ModelForm):
+    supplier = forms.ModelChoiceField(
+        queryset=Supplier.objects.all(), label="Поставщик"
+    )
+    vendor = forms.ModelChoiceField(
+        queryset=Vendor.objects.all(), label="Вендор"
+    )
+    
+    category_supplier = forms.ModelChoiceField(
+        queryset=SupplierCategoryProduct.objects.all(),
+        required=False,
+        label="Категория поставщика",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:category-autocomplete",
+            forward=["supplier",],
+        ),
+    )
     
     category_catalog = forms.ModelChoiceField(
     queryset=CategoryProduct.objects.all(), label="Категория Motrum"

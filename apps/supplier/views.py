@@ -20,11 +20,12 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 
 
+# тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
+
     iek_api()
     title = "Услуги"
-   
 
     responsets = ["233", "2131"]
     # responsets = 0
@@ -35,8 +36,7 @@ def add_iek(request):
     return render(request, "supplier/supplier.html", context)
 
 
-
-
+# тестовая страница скриптов
 def test(request):
     add_props_emas_product()
     title = "Услуги"
@@ -50,47 +50,46 @@ def test(request):
     }
     return render(request, "supplier/supplier.html", context)
 
-
+# сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
- 
+
     def background_task():
-            # Долгосрочная фоновая задача
-            add_group_emas()
-            # add_props_emas_product()
+        # Долгосрочная фоновая задача
+        add_group_emas()
+        # add_props_emas_product()
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
 
-    
-
     responsets = ["233", "2131"]
 
     context = {
-     
         "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
 
-
+# добавление разрешений админам 
 def add_permission(request):
     upgrade_permission()
     context = {}
     return render(request, "supplier/supplier.html", context)
 
+# добавление праздников вручную
 def add_holidays(request):
     import json
     import requests
+
     year_date = datetime.datetime.now().year
     year = str(year_date)
     url = (
-            "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
-            + year
-            + ".json"
-        )
+        "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+        + year
+        + ".json"
+    )
     r = requests.get(url)
     holidays_dict = r.json()
-    
+
     try:
         data_bd = CalendarHoliday.objects.get(year=year)
         data_bd.json_date = holidays_dict
@@ -100,10 +99,11 @@ def add_holidays(request):
 
         data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
         data_bd.save()
-        
+
     context = {}
     return render(request, "supplier/supplier.html", context)
 
+# получение валют вручную
 def get_currency(request):
     del_currency()
     currency_list = Currency.objects.exclude(words_code="RUB")
@@ -120,12 +120,12 @@ def get_currency(request):
             f".//Valute[CharCode='{current_world_code}']/VunitRate"
         )
         count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
-        
+
         v = float(value.replace(",", "."))
         vi = float(vunit_rate.replace(",", "."))
 
         now_rate = CurrencyRate.objects.get_or_create(
-            currency=current ,
+            currency=current,
             date=date,
             defaults={"value": v, "vunit_rate": vi, "count": int(count)},
         )
@@ -133,6 +133,7 @@ def get_currency(request):
         currency_chek(current, now_rate[0])
     context = {}
     return render(request, "supplier/supplier.html", context)
+
 
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
@@ -183,13 +184,37 @@ class SupplierGroupAutocomplete(autocomplete.Select2QuerySetView):
         category_supplier = self.forwarded.get("category_supplier", None)
         if category_supplier:
             qs = qs.filter(category_supplier=category_supplier)
-            
+
         if self.q:
             qs = qs.filter(
-                Q(name__icontains=self.q)
-                | Q(article_name__icontains=self.q)
-            )      
+                Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
+            )
         return qs
+
+
+# class SupplierGroupСategoryAutocomplete(autocomplete.Select2QuerySetView):
+
+#     def get_queryset(self):
+#         qs = SupplierGroupProduct.objects.all()
+#         supplier = self.forwarded.get("supplier", None)
+
+#         if supplier:
+#             qs = qs.filter(supplier=supplier)
+
+#         vendor = self.forwarded.get("vendor", None)
+#         if vendor:
+#             qs = qs.filter(vendor=vendor)
+
+#         category_supplier = self.forwarded.get("category_supplier", None)
+#         if category_supplier:
+#             qs = qs.filter(category_supplier=category_supplier)
+
+#         if self.q:
+#             qs = qs.filter(
+#                 Q(name__icontains=self.q)
+#                 | Q(article_name__icontains=self.q)
+#             )
+#         return qs
 
 
 class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
@@ -214,9 +239,8 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
 
         if self.q:
             qs = qs.filter(
-                Q(name__icontains=self.q)
-                | Q(article_name__icontains=self.q)
-            )      
+                Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
+            )
 
         return qs
 
@@ -228,10 +252,9 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
         category_catalog = self.forwarded.get("category_catalog", None)
         if category_catalog:
             qs = qs.filter(category=category_catalog)
-        
+
         if self.q:
             qs = qs.filter(
-                Q(name__icontains=self.q)
-                | Q(article_name__icontains=self.q)
-            )    
+                Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
+            )
         return qs

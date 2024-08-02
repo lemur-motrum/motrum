@@ -86,12 +86,12 @@ function setCookie(name, value, options = {}) {
 
 // функция удаления куки
 function deleteCookie(name, path, domain) {
-  print(name, path, domain)
+  console.log(name, path, domain)
   if (getCookie(name)) {
     console.log(document.cookie)
     document.cookie =
     name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;";
-    document.cookie = name + "=0; path=/; " + "domain=" + domain + "; max-age=0;"
+    document.cookie = name + "=0; path=/; " + "domain=" + domain.split('.')[0] + "; max-age=0;"
  
     console.log(name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=3600;") 
     console.log(name + "=0;" + "; domain=" + domain + "; max-age=0;") 

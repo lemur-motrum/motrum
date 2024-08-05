@@ -29,7 +29,7 @@ from django.db.models import Q
 
 
 # Рендер главной страницы каталога с пагинацией
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all().order_by("article_name")
@@ -44,14 +44,14 @@ def all_categories(request):
         "group",
         "price",
         "stock",
-    ).all()
+    ).filter(check_to_order=True)
 
     if request.method == "GET":
         form = SearchForm(request.GET)
         if form.is_valid():
             search_input = request.GET.get("search_input")
             if request.GET.get("search_input") != None:
-               
+
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
                     | Q(article__icontains=search_input)
@@ -73,18 +73,21 @@ def all_categories(request):
         "num_of_pages": num_of_pages,
         "form": form,
     }
-    
-    renders =  "admin_specification/categories.html"
 
-    
+    renders = "admin_specification/categories.html"
+
     return render(request, "admin_specification/categories.html", context)
 
 
 # Рендер страницы групп товаров с пагинацией
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def group_product(request, cat):
     categoryes = CategoryProduct.objects.all().order_by("article_name")
-    groups = GroupProduct.objects.select_related("category").filter(category=cat).order_by("article_name")
+    groups = (
+        GroupProduct.objects.select_related("category")
+        .filter(category=cat)
+        .order_by("article_name")
+    )
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",
@@ -95,7 +98,7 @@ def group_product(request, cat):
         "group",
         "price",
         "stock",
-    ).filter(category=cat)
+    ).filter(category=cat, check_to_order=True)
 
     if request.method == "GET":
         form = SearchForm(request.GET)
@@ -144,22 +147,28 @@ def group_product(request, cat):
 
 
 # Рендер страницы подгрупп с пагинацией
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def specifications(request, cat, gr):
     categoryes = CategoryProduct.objects.all().order_by("article_name")
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(category=cat, group=gr)
+    product_list = (
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category_supplier_all",
+            "group_supplier",
+            "category_supplier",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .filter(category=cat, group=gr)
+        .filter(check_to_order=True)
+    )
 
-    groups = GroupProduct.objects.select_related("category").all().order_by("article_name")
+    groups = (
+        GroupProduct.objects.select_related("category").all().order_by("article_name")
+    )
 
     supplers = []
 
@@ -225,23 +234,21 @@ def specifications(request, cat, gr):
 
 
 # рендер страницы корзины
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cookie = request.COOKIES.get("key")
     if cookie:
         key = json.loads(cookie)
     else:
         key = []
-        
-    id_specification =  request.COOKIES.get("specificationId") 
-    
+
+    id_specification = request.COOKIES.get("specificationId")
+
     if id_specification:
         title = f"Cпецификация № {id_specification}"
     else:
-         title = "Текущая спецификация"
-        
-   
-    
+        title = "Текущая спецификация"
+
     context = {
         "title": title,
         "specification_items": key,
@@ -250,7 +257,7 @@ def create_specification(request):
 
 
 # Вьюха для сохранения спецификации
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def save_specification_view_admin(request):
     from apps.specification.models import ProductSpecification, Specification
 
@@ -264,7 +271,10 @@ def save_specification_view_admin(request):
 
 
 # рендер страницы со всеми спецификациями
-@permission_required('specification.add_specification',login_url='/user/login_admin/',)
+@permission_required(
+    "specification.add_specification",
+    login_url="/user/login_admin/",
+)
 def get_all_specifications(request):
 
     all_specifications = (
@@ -275,15 +285,14 @@ def get_all_specifications(request):
         .order_by("pk")
         .reverse()
     )
-    print( AdminUser.user)
+    print(AdminUser.user)
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type
-    
+
     if user_admin_type == "ALL":
         pass
     elif user_admin_type == "BASE":
-        all_specifications = all_specifications.filter(admin_creator_id= request.user.id)
-
+        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
@@ -293,27 +302,31 @@ def get_all_specifications(request):
         "specifications": all_specifications,
         "media_root": media_root,
     }
-  
+
     return render(request, "admin_specification/all_specifications.html", context)
 
 
 # рендер страницы товаров у которых есть категория, но нет групп
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def instruments(request, cat):
 
     category = CategoryProduct.objects.filter(pk=cat).order_by("article_name")
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(
-        category=cat,
+    product_list = (
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category_supplier_all",
+            "group_supplier",
+            "category_supplier",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .filter(
+            category=cat,
+        )
+        .filter(check_to_order=True)
     )
     title = category[0].name
     category = category[0]
@@ -367,7 +380,7 @@ def instruments(request, cat):
 
 
 # Вьюха для аякс поиска, подзагрузка товаров при скролле вниз
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def search_product(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -382,22 +395,30 @@ def search_product(request):
             "vendor",
             "category",
             "group",
-        ).all()
+        ).filter(check_to_order=True)
     elif gr == "":
-        product_list = Product.objects.select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-        ).filter(category=cat)
+        product_list = (
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+            )
+            .filter(category=cat)
+            .filter(check_to_order=True)
+        )
     else:
-        product_list = Product.objects.select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-        ).filter(category=cat, group=gr)
-  
+        product_list = (
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+            )
+            .filter(category=cat, group=gr)
+            .filter(check_to_order=True)
+        )
+
     product_list = product_list.filter(
         Q(name__icontains=value)
         | Q(article__icontains=value)
@@ -412,7 +433,7 @@ def search_product(request):
 
 
 # Вьюха логики при нажатии на кнопку "Загрузить ещё"
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def load_products(request):
     data = json.loads(request.body)
     cat = data["category"]
@@ -440,7 +461,7 @@ def load_products(request):
                 "price",
                 "stock",
             )
-            .all()
+            .filter(check_to_order=True)
             .order_by("pk")
         )
     elif gr == "":
@@ -457,6 +478,7 @@ def load_products(request):
                 "stock",
             )
             .filter(category=cat)
+            .filter(check_to_order=True)
             .order_by("pk")
         )
     else:
@@ -468,6 +490,7 @@ def load_products(request):
                 "group",
             )
             .filter(category=cat, group=gr)
+            .filter(check_to_order=True)
             .order_by("pk")
         )
 
@@ -490,7 +513,7 @@ def load_products(request):
                 product_elem.category_supplier_all,
                 product.product.supplier,
             )[1]
-            
+
             if discount_item == None:
                 discount = None
             else:
@@ -547,7 +570,7 @@ def load_products(request):
 
 
 # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
-@permission_required('specification.add_specification',login_url='/user/login_admin/')
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
 def update_specification(request):
     if request.method == "POST":
         id_specification = json.loads(request.body)
@@ -572,19 +595,26 @@ def update_specification(request):
             product_id_motrum = product.product.article
             product_id_suppler = product.product.article_supplier
             specification_id = current_specification.pk
-            
+
             product_individual_sale = product.extra_discount
-            
+
             product_price = str(product_price).replace(",", ".")
-            
-            if product_individual_sale != '0' and product_individual_sale != '' and product_individual_sale != None:
-                product_price_extra_old_before = product.price_one / (1 - float(product_individual_sale) /
-                    100)
+
+            if (
+                product_individual_sale != "0"
+                and product_individual_sale != ""
+                and product_individual_sale != None
+            ):
+                product_price_extra_old_before = product.price_one / (
+                    1 - float(product_individual_sale) / 100
+                )
                 print(product_price_extra_old_before)
-            else: 
+            else:
                 product_price_extra_old_before = product.price_one
-           
-            product_price_extra_old = str(product_price_extra_old_before).replace(",", ".")
+
+            product_price_extra_old = str(product_price_extra_old_before).replace(
+                ",", "."
+            )
             product_totla_cost = str(product_totla_cost).replace(",", ".")
             product_multiplicity_item = Stock.objects.get(prod=product_id)
             if product_multiplicity_item.is_one_sale == True:
@@ -605,9 +635,8 @@ def update_specification(request):
                 discount = None
             else:
                 discount = discount_item.percent
-                
+
             data_old = current_specification.date.strftime("%m.%d.%Y")
-           
 
             product_item = {
                 "discount": discount,
@@ -621,9 +650,9 @@ def update_specification(request):
                 "productSpecificationId": product_pk,
                 "specificationId": specification_id,
                 "multiplicity": product_multiplicity,
-                "product_price_extra_old":product_price_extra_old,
-                "data_old":data_old,
-                "product_individual_sale":product_individual_sale
+                "product_price_extra_old": product_price_extra_old,
+                "data_old": data_old,
+                "product_individual_sale": product_individual_sale,
             }
 
             products.append(product_item)
@@ -633,7 +662,6 @@ def update_specification(request):
     out = {
         "status": "ok",
         "products": current_products,
-        
     }
     return JsonResponse(out)
 

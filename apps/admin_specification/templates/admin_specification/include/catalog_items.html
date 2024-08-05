@@ -65,16 +65,17 @@
                                     {% if product.stock  %}
                                     
                                         <div class="stock_item">
-                                            {% if product.stock.stock_supplier %}
-                                                Поставщик: {{product.stock.stock_supplier}}
-                                            {% else %}
-                                                {% if product.stock.to_order %}
+                                            {% if product.stock.to_order %}
                                                 Поставщик: <br>
                                                 Под заказ
                                                 {% else %}
+                                                {% if product.stock.stock_supplier != None %}
+                                                    Поставщик: {{product.stock.stock_supplier}}
+                                                {% else %}
+                                                    Поставщик: - 
                                                 {% endif %}
-                                        Поставщик: - 
-                                            {% endif %}
+                                            {% endif %} 
+
                                         </div>
                                         <div class="stock_item">
                                             Motrum:{{product.stock.stock_motrum}}

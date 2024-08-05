@@ -51,6 +51,7 @@ def all_categories(request):
         if form.is_valid():
             search_input = request.GET.get("search_input")
             if request.GET.get("search_input") != None:
+               
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
                     | Q(article__icontains=search_input)
@@ -396,7 +397,7 @@ def search_product(request):
             "category",
             "group",
         ).filter(category=cat, group=gr)
-
+  
     product_list = product_list.filter(
         Q(name__icontains=value)
         | Q(article__icontains=value)

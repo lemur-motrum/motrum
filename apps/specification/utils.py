@@ -107,10 +107,12 @@ def crete_pdf_specification(specification):
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ]
     )
+    count_total = 0
     for product in product_specification:
         product_price = product.price_one
         product_price_all = product.price_all
         product_quantity = product.quantity
+        count_total += product.quantity
         data.append(
             (
                 Paragraph(str(product), normal_style),
@@ -123,7 +125,7 @@ def crete_pdf_specification(specification):
         (
             None,
             "Итого",
-            f"штук",
+            f"штук {count_total}",
             f"{specifications.total_amount}рублей",
         )
     )

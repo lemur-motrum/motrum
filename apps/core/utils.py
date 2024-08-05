@@ -28,7 +28,6 @@ def get_price_motrum(
         Discount,
     )
 
-    print(vendors, item_category, item_group, all_item_group)
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -111,9 +110,7 @@ def get_price_motrum(
     motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
     # обрезать цены
     motrum_price = round(motrum_price, 2)
-    print(sale[0])
-    # for sal in sales:
-    #             sale = sal
+
     return motrum_price, sale[0]
 
 
@@ -390,8 +387,7 @@ def get_file_path_add(instance, filename):
 
     s = str(instance.product.article_supplier)
     item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
-    print(999999999999999999999)
-    print(item_instanse_name)
+
     base_dir = "products"
     base_dir_supplier = instance.product.supplier.slug
 
@@ -414,10 +410,7 @@ def get_file_path_add(instance, filename):
             ).count()
         except ProductDocument.DoesNotExist:
             item_count = 1
-        # print(instance.type_doc)
-        # print(item_count)
-        print(instance)
-        print(instance.type_doc)
+
         filenames = create_name_file_downloading(item_instanse_name, item_count)
         filename = f"{filenames}_{instance.type_doc}{type_file}"
 
@@ -430,7 +423,7 @@ def get_file_path_add(instance, filename):
             item_count = ProductImage.objects.filter(product=instance.product).count()
         except ProductImage.DoesNotExist:
             item_count = 1
-        # print(item_count)
+
         filenames = create_name_file_downloading(item_instanse_name, item_count)
 
         filename = filenames + type_file
@@ -544,7 +537,6 @@ def get_motrum_category(self):
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-        print(category_catalog, group_catalog)
 
     if self.group_supplier != None:
 
@@ -552,17 +544,13 @@ def get_motrum_category(self):
             category_catalog = self.group_supplier.category_catalog
             group_catalog = self.group_supplier.group_catalog
 
-            print(
-                self.group_supplier.category_catalog, self.group_supplier.group_catalog
-            )
 
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
-            print(category_catalog, group_catalog)
 
-    print(category_catalog, group_catalog)
+
     return (category_catalog, group_catalog)
 
 
@@ -652,7 +640,6 @@ def get_file_price_path_add(instance, filename):
             random_number,
             instance.file,
         )
-        # print(filename + filetype)
 
         return file
 
@@ -728,8 +715,10 @@ def save_specification(received_data):
                         having_items = True
                  
             if having_items == False:
-                print(product_item_for_old.id)
-                product_item_for_old.delete()        
+                product_item_for_old._change_reason = "Ручное"
+                product_item_for_old.delete()
+                
+                
             having_items = False
             
             # for i, dic in enumerate(products):
@@ -765,9 +754,6 @@ def save_specification(received_data):
         if product_item["price_exclusive"] == True:
             
             price_one_before = product_item["price_one"]
-            print(1111111)
-            print(product_item["extra_discount"])
-            print(price_one_before)
             price_one = product_item["price_one"]
         
             # оригинальная цена без примененой скидки
@@ -775,7 +761,6 @@ def save_specification(received_data):
                 price_one =  price_one_before / (1 - float(product_item["extra_discount"]) /
                 100)
                 price_one = round(price_one, 2)
-                print(price_one)
 
             price_motrum_all = get_price_motrum(
                 price.prod.category_supplier,
@@ -795,15 +780,13 @@ def save_specification(received_data):
             price_one_motrum = price.price_motrum 
             
         # если есть доп скидка отнять от цены поставщика
-        print(product_item["extra_discount"])
+    
         if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
             price_one = price_one - (
                 price_one / 100 * float(product_item["extra_discount"])
             )
             price_one = round(price_one, 2)
-            print(price_one)
-       
-  
+
         # если есть предоплата найти скидку по предоплате мотрум
         if is_pre_sale == True and price_pre_sale != False :
             persent_pre_sale = price_pre_sale.percent
@@ -862,10 +845,11 @@ def save_specification(received_data):
         total_amount = total_amount + price_all
 
     # обновить спецификацию пдф
-    pdf = crete_pdf_specification(specification.id)
-    specification.file = pdf
     specification.total_amount = total_amount
     specification._change_reason = "Ручное"             
+    specification.save()
+    pdf = crete_pdf_specification(specification.id)
+    specification.file = pdf        
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)
 

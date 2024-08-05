@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from apps.core.utils import  create_time_stop_specification, send_email_error
+from apps.core.utils import create_time_stop_specification, send_email_error
 from apps.product.models import Price, Product
 from apps.specification.forms import PersonForm
 from apps.specification.models import ProductSpecification, Specification
@@ -22,27 +22,32 @@ from django.utils.text import capfirst
 from django.utils.encoding import force_str
 from django.core.exceptions import PermissionDenied
 from django.contrib.admin.utils import unquote
+from django.db.models import Q
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
+
 
 class ProductSpecificationAdmin(SimpleHistoryAdmin):
     model = ProductSpecification
 
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
-     
+
         model = ProductSpecification
         opts = model._meta
 
         pk_name = opts.pk.attname
         history = getattr(model, model._meta.simple_history_manager_attribute)
+
         object_id = object_id
 
         historical_records = ProductSpecificationAdmin.get_history_queryset(
             ProductSpecificationAdmin, request, history, pk_name, object_id
         )
 
-        history_list_display = ProductSpecificationAdmin.get_history_list_display(ProductSpecificationAdmin, request)
+        history_list_display = ProductSpecificationAdmin.get_history_list_display(
+            ProductSpecificationAdmin, request
+        )
 
         for history_list_entry in history_list_display:
             value_for_entry = getattr(self, history_list_entry, None)
@@ -50,7 +55,9 @@ class ProductSpecificationAdmin(SimpleHistoryAdmin):
                 for record in historical_records:
                     setattr(record, history_list_entry, value_for_entry(record))
 
-        ProductSpecificationAdmin.set_history_delta_changes(ProductSpecificationAdmin, request, historical_records)
+        ProductSpecificationAdmin.set_history_delta_changes(
+            ProductSpecificationAdmin, request, historical_records
+        )
 
         return historical_records
 
@@ -69,6 +76,7 @@ class ProductSpecificationAdmin(SimpleHistoryAdmin):
             delta = previous.diff_against(
                 current, foreign_keys_are_objs=foreign_keys_are_objs
             )
+
             helper = ProductSpecificationAdmin.get_historical_record_context_helper(
                 ProductSpecificationAdmin, request, previous
             )
@@ -85,7 +93,13 @@ class ProductSpecificationInline(admin.TabularInline):
         (
             None,
             {
-                "fields": ["product", "quantity", "price_one", "price_all","extra_discount"],
+                "fields": [
+                    "product",
+                    "quantity",
+                    "price_one",
+                    "price_all",
+                    "extra_discount",
+                ],
             },
         ),
     ]
@@ -102,7 +116,13 @@ class ProductSpecificationInline(admin.TabularInline):
 
                 return ["quantity", "price_all"]
             else:
-                return ["product", "quantity", "price_one", "price_all","extra_discount"]
+                return [
+                    "product",
+                    "quantity",
+                    "price_one",
+                    "price_all",
+                    "extra_discount",
+                ]
         return []
 
     def get_fieldsets(self, request, obj):
@@ -165,7 +185,6 @@ class ProductSpecificationInline(admin.TabularInline):
         if obj:
             return False
         return True
-
 
 
 class SpecificationAdmin(SimpleHistoryAdmin):
@@ -296,23 +315,22 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         history = getattr(model, model._meta.simple_history_manager_attribute)
 
         object_id = unquote(object_id)
-        print(object_id)
+
         try:
-            product_id_ex = ProductSpecification.objects.filter(specification=object_id).last()
+            product_id_ex = ProductSpecification.objects.filter(
+                specification=object_id
+            ).last()
             product_id = ProductSpecification.objects.filter(specification=object_id)
-            print(product_id)
+
         except ProductSpecification.DoesNotExist:
             product_id = None
 
-        
         historical_records_product = []
         if product_id != None:
             for item in product_id:
                 item_list = ProductSpecificationAdmin.history_view(
                     ProductSpecification, request, item.id, extra_context=None
                 )
-                print(11111111111111111)
-                print(item_list)
                 if historical_records_product == []:
                     historical_records_product = item_list
                 else:
@@ -323,11 +341,31 @@ class SpecificationAdmin(SimpleHistoryAdmin):
                         )
                     )
 
+        deleted_prod = ProductSpecification.history.filter(history_type="-", specification_id=object_id)
+
+        historical_records_product2 = []
+        id_old_prod = []
+        for item2 in deleted_prod:
+            id_old_prod.append(item2.id)
+            item_list = ProductSpecificationAdmin.history_view(
+                ProductSpecification, request, item2.id, extra_context=None
+            )
+
+            if historical_records_product2 == []:
+                historical_records_product2 = item_list
+            else:
+                historical_records_product2 = list(
+                    chain(
+                        historical_records_product2,
+                        item_list,
+                    )
+                )
+        
+        
 
         historical_records = self.get_history_queryset(
             request, history, pk_name, object_id
         )
-
 
         history_list_display = self.get_history_list_display(request)
 
@@ -356,6 +394,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
             chain(
                 historical_records,
                 historical_records_product,
+                historical_records_product2,
             )
         )
 
@@ -395,5 +434,6 @@ class SpecificationAdmin(SimpleHistoryAdmin):
 
     def has_add_permission(self, request):
         return False
+
 
 admin.site.register(Specification, SpecificationAdmin)

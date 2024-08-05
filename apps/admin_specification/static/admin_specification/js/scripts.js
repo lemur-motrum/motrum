@@ -55,8 +55,8 @@ function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-        "=([^;]*)"
+      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+      "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -91,7 +91,7 @@ function deleteCookie(name, path, domain) {
     // document.cookie =
     // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
- 
+
 }
 // функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {
@@ -427,42 +427,34 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
-                    product.pk
-                  }  data-price=${
-                    !product.price ? 0 : product.price
-                  }  data-motrum-id=${product.article} data-saler-id=${
-                    product.saler_article
-                  } data-discoutnt=${
-                    product.discount
-                  } data-order-multiplicity=${product.multiplicity}> 
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk
+                    }  data-price=${!product.price ? 0 : product.price
+                    }  data-motrum-id=${product.article} data-saler-id=${product.saler_article
+                    } data-discoutnt=${product.discount
+                    } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">${product.name}</div>
-                                <div class="article-motrum">${
-                                  product.article
-                                }</div>
+                                <div class="article-motrum">${product.article
+                    }</div>
                                 <div class="charactiristics">
-                                    ${
-                                      product.chars.length == 0
-                                        ? "Характеристика"
-                                        : product.chars.join(" ")
-                                    }
+                                    ${product.chars.length == 0
+                      ? "Характеристика"
+                      : product.chars.join(" ")
+                    }
                                 </div>
                                 <div class="lot">
                                     1 ${!product.lot ? "шт" : product.lot}
                                 </div>
                                 <div class="suppler-price">
-                                    <span class="price-suppler-count">${
-                                      product.price_suppler
-                                    }</span> ₽
+                                    <span class="price-suppler-count">${product.price_suppler
+                    }</span> ₽
                                 </div>
                                 <div class="price">
-                                    ${
-                                      !product.price
-                                        ? "<span>По запросу</span>"
-                                        : `<span class="price-count">${product.price}</span> ₽`
-                                    }
+                                    ${!product.price
+                      ? "<span>По запросу</span>"
+                      : `<span class="price-count">${product.price}</span> ₽`
+                    }
                                   
                                 </div>
                             </div>
@@ -561,14 +553,16 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       function saveSpecification(elems) {
+        console.log(elems)
         const products = [];
         const checkbox = document.querySelector("#prepayment-checkbox");
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]")
         const adminCreatorId = adminCreator.getAttribute('data-user-id')
-        
+        let validate = true
 
         elems.forEach((item, i) => {
+
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-id");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
@@ -577,6 +571,8 @@ window.addEventListener("DOMContentLoaded", () => {
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
           );
+          console.log(itemID)
+          console.log(itemPrice)
 
           const inputPrice = item.querySelector(".price-input");
 
@@ -587,47 +583,56 @@ window.addEventListener("DOMContentLoaded", () => {
             price_one: !itemPrice
               ? +inputPrice.value
               : new NumberParser("ru").parse(
-                  JSON.parse(getCookie("key"))[i].price
-                ),
+                JSON.parse(getCookie("key"))[i].price
+              ),
             product_specif_id: productSpecificationId
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
           };
-          products.push(product);
+          if (product.price_one == 0) {
+            validate = false
+            inputPrice.style.border = "1px solid red"
+            inputPrice.style.borderRadius = "10px"
+          } else {
+            products.push(product);
+          }
+
+
         });
+        console.log(products)
+        if (validate == true) {
+          const endpoint = "/admin_specification/save_specification_view_admin/";
+          const dataObj = {
+            id_bitrix: 22,
+            admin_creator_id: adminCreatorId,
+            products: products,
+            is_pre_sale: checkbox.checked ? true : false,
+            id_specification: specificationId ? specificationId : null,
+          };
 
-        const endpoint = "/admin_specification/save_specification_view_admin/";
-
-        const dataObj = {
-          id_bitrix: 22,
-          admin_creator_id: adminCreatorId,
-          products: products,
-          is_pre_sale: checkbox.checked ? true : false,
-          id_specification: specificationId ? specificationId : null,
-        };
-
-        const data = JSON.stringify(dataObj);
-        fetch(endpoint, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.status == "ok") {
-              localStorage.removeItem("specificationValues");
-              deleteCookie("key", "/", window.location.hostname);
-              deleteCookie("specificationId", "/", window.location.hostname);
-              window.location.href = "/admin_specification/all_specifications/";
-            }
+          const data = JSON.stringify(dataObj);
+          fetch(endpoint, {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
           })
-          .catch((error) => console.error(error));
+            .then((response) => response.json())
+            .then((response) => {
+              if (response.status == "ok") {
+                localStorage.removeItem("specificationValues");
+                deleteCookie("key", "/", window.location.hostname);
+                deleteCookie("specificationId", "/", window.location.hostname);
+                window.location.href = "/admin_specification/all_specifications/";
+              }
+            })
+            .catch((error) => console.error(error));
+        }
       }
-      function exitSpecification(elems){
+      function exitSpecification(elems) {
         localStorage.removeItem("specificationValues");
         console.log(window.location.hostname)
         deleteCookie("key", "/", window.location.hostname);
@@ -807,7 +812,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
             const allPrice = curentPrice * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
-            getResult(); 
+            getResult();
           };
           saveButton.onclick = () => saveSpecification(productItems);
         }
@@ -832,7 +837,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       saveButton.onclick = () => saveSpecification(productItems);
       exitButton.onclick = () => exitSpecification(productItems);
-      
+
       // saveButton.onclick = (e) => {
       //   e.preventDefault();
       //   const products = [];
@@ -953,7 +958,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     searchInput.onkeyup = () => {
       searchValue = searchInput.value;
-      objData.value = searchValue;
+      objData.value = searchValue.trim();
+      objData.value = objData.value.replace(/ {1,}/g, " ");
       objData.start = start;
       objData.counter = counter;
       if (searchInput.value.length > 2) {
@@ -987,7 +993,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 searchDescriptionField.onscroll = () => {
                   if (
                     searchDescriptionField.scrollHeight -
-                      searchDescriptionField.scrollTop <=
+                    searchDescriptionField.scrollTop <=
                     searchDescriptionField.offsetHeight
                   ) {
                     const data = JSON.stringify(objData);

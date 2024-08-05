@@ -86,21 +86,12 @@ function setCookie(name, value, options = {}) {
 
 // функция удаления куки
 function deleteCookie(name, path, domain) {
-  console.log(name, path, domain)
   if (getCookie(name)) {
-    console.log(document.cookie)
-    // document.cookie = `${name}=; Path=${path}; Domain=${domain}; SameSite=None; Max-Age=3600;`
-    // document.cookie = `${name}=; Path=${path}; Domain=${domain}; Max-Age=-1;`
-    // document.cookie = `${name}=; Path=${path}; Domain=${domain};SameSite=None; Max-Age=3600;`
-
     document.cookie = `${name}=; Path=${path}; Max-Age=-1;`
-    // document.cookie = `${name}=; Path=${path}; Domain=${domain}; Max-Age=-1;`
     // document.cookie =
     // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
-    console.log(document.cookie) 
-      
   }
-  // Max-Age=-1;
+ 
 }
 // функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {
@@ -631,7 +622,7 @@ window.addEventListener("DOMContentLoaded", () => {
               localStorage.removeItem("specificationValues");
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
-              // window.location.href = "/admin_specification/all_specifications/";
+              window.location.href = "/admin_specification/all_specifications/";
             }
           })
           .catch((error) => console.error(error));
@@ -641,7 +632,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log(window.location.hostname)
         deleteCookie("key", "/", window.location.hostname);
         deleteCookie("specificationId", "/", window.location.hostname);
-        // window.location.href = "/admin_specification/all_specifications/";
+        window.location.href = "/admin_specification/all_specifications/";
       }
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");

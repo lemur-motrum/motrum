@@ -634,6 +634,7 @@ window.addEventListener("DOMContentLoaded", () => {
         deleteCookie("specificationId", "/", window.location.hostname);
         window.location.href = "/admin_specification/all_specifications/";
       }
+
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const itemPrices = item.querySelectorAll(".price");
@@ -831,6 +832,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       saveButton.onclick = () => saveSpecification(productItems);
       exitButton.onclick = () => exitSpecification(productItems);
+      
       // saveButton.onclick = (e) => {
       //   e.preventDefault();
       //   const products = [];

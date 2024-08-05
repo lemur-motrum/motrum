@@ -18,11 +18,11 @@
         <script>
             function validate(evt) {
                 let theEvent = evt || window.event;
-                console.log(theEvent)
+           
                 let key = theEvent.keyCode || theEvent.which;
-                console.log(key)
+              
                 key = String.fromCharCode(key);
-                console.log(key)
+              
                 const regex = /[0-9]|\./;
            
                 if( !regex.test(key) ) {

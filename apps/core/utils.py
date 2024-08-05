@@ -771,15 +771,11 @@ def save_specification(received_data):
             price_one = product_item["price_one"]
         
             # оригинальная цена без примененой скидки
-            if product_item["extra_discount"] != '0':
+            if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
                 price_one =  price_one_before / (1 - float(product_item["extra_discount"]) /
                 100)
-                print(2222)
-                print(price_one)
                 price_one = round(price_one, 2)
                 print(price_one)
-
-            
 
             price_motrum_all = get_price_motrum(
                 price.prod.category_supplier,
@@ -792,19 +788,21 @@ def save_specification(received_data):
             )
             price_one_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
-            print(price_one_motrum,sale)
+            
 
         else:
             price_one = price.rub_price_supplier
             price_one_motrum = price.price_motrum 
             
         # если есть доп скидка отнять от цены поставщика
-        if product_item["extra_discount"] != '0':
+        print(product_item["extra_discount"])
+        if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
             price_one = price_one - (
                 price_one / 100 * float(product_item["extra_discount"])
             )
             price_one = round(price_one, 2)
-            print()
+            print(price_one)
+       
   
         # если есть предоплата найти скидку по предоплате мотрум
         if is_pre_sale == True and price_pre_sale != False :
@@ -832,7 +830,10 @@ def save_specification(received_data):
         product_spes.quantity = product_item["quantity"]
         product_spes.price_all = price_all
         product_spes.price_one = price_one
-        product_spes.extra_discount = product_item["extra_discount"]
+        if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
+            product_spes.extra_discount = product_item["extra_discount"]
+        else:
+             product_spes.extra_discount = None
         product_spes.price_one_motrum = price_one_motrum
         product_spes.price_all_motrum = price_all_motrum
         product_spes._change_reason = "Ручное"

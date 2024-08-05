@@ -570,13 +570,20 @@ def update_specification(request):
             product_totla_cost = int(product_quantity) * float(product_price)
             product_id_motrum = product.product.article
             product_id_suppler = product.product.article_supplier
-
-            # suppelier = Product.objects.filter(pk=product_id)[0].supplier
-            # discount = Discount.objects.filter(supplier=suppelier)[0].percent
             specification_id = current_specification.pk
-
+            
+            product_individual_sale = product.extra_discount
+            
             product_price = str(product_price).replace(",", ".")
-            product_price_extra_old = str(product.price_one).replace(",", ".")
+            
+            if product_individual_sale != '0' and product_individual_sale != '' and product_individual_sale != None:
+                product_price_extra_old_before = product.price_one / (1 - float(product_individual_sale) /
+                    100)
+                print(product_price_extra_old_before)
+            else: 
+                product_price_extra_old_before = product.price_one
+           
+            product_price_extra_old = str(product_price_extra_old_before).replace(",", ".")
             product_totla_cost = str(product_totla_cost).replace(",", ".")
             product_multiplicity_item = Stock.objects.get(prod=product_id)
             if product_multiplicity_item.is_one_sale == True:
@@ -599,7 +606,7 @@ def update_specification(request):
                 discount = discount_item.percent
                 
             data_old = current_specification.date.strftime("%m.%d.%Y")
-            print(data_old)
+           
 
             product_item = {
                 "discount": discount,
@@ -615,6 +622,7 @@ def update_specification(request):
                 "multiplicity": product_multiplicity,
                 "product_price_extra_old":product_price_extra_old,
                 "data_old":data_old,
+                "product_individual_sale":product_individual_sale
             }
 
             products.append(product_item)

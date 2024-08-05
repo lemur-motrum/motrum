@@ -58,6 +58,7 @@
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                                        <label for="price-input-extra">
+                                       
                                         {% if item.product_price_extra_old %}
                                         {{item.data_old}} - {{item.product_price_extra_old}}
                                         {% endif %}₽</label>
@@ -82,13 +83,20 @@
                                 {{ item.discount }} %
                             {% endif %}
                         </div>
+                        
                         <div class="item_value">
                             <input class="discount-input"
                                    type="text"
+                                    name = "price-input-discount"
                                    onkeypress='validate(event)'
                                    placeholder="% скидки"
                                    maxlength="5"
-                                   value="0" />
+                                   value="" />
+                                   <label for="price-input-discount">
+                                       
+                                    {% if item.product_individual_sale %}
+                                    {{item.product_individual_sale}}
+                                    {% endif %}%</label>
                         </div>
                     </div>
                 {% endfor %}

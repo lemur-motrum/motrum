@@ -57,4 +57,8 @@ app.conf.beat_schedule = {
         'task': 'apps.supplier.tasks.add_prompower',
         'schedule': crontab(minute=00, hour=13),
     },
+    'add_iek3': {
+        'task': 'apps.supplier.tasks.add_iek',
+        'schedule': crontab(minute=00, hour=10),
+    },
 }

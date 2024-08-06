@@ -59,6 +59,6 @@ app.conf.beat_schedule = {
     },
     'add_iek3': {
         'task': 'apps.supplier.tasks.add_iek',
-        'schedule': crontab(minute=00, hour=10),
+        'schedule': crontab(minute=00, hour=9),
     },
 }

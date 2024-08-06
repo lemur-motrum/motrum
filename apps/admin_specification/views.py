@@ -511,7 +511,7 @@ def load_products(request):
                 product_elem.vendor,
                 price,
                 product_elem.category_supplier_all,
-                product.product.supplier,
+                product_elem.product.supplier,
             )[1]
 
             if discount_item == None:

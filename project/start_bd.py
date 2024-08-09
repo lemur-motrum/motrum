@@ -28,3 +28,5 @@ def start_project_in_server():
     group = Group.objects.create(name="Доступ администрирования товаров")
     group = Group.objects.create(name="Доступ для загрузки каталогов поставщиков")
     group = Group.objects.create(name="Полный доступ")
+    
+    

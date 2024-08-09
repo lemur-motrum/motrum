@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class Currency(models.Model):
@@ -43,3 +43,6 @@ class CalendarHoliday(models.Model):
 
     class Meta:
         verbose_name = "Даты выходных и праздников"
+
+# class User(AbstractUser):
+#     pass

@@ -6,12 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import signals, Sum, Q
 from django.dispatch import receiver
-from simple_history.signals import (
-    pre_create_historical_record,
-    post_create_historical_record,
-    pre_create_historical_m2m_records,
-    post_create_historical_m2m_records,
-)
+
 
 from apps.user.signals import update_group
 
@@ -28,6 +23,7 @@ class CustomUser(AbstractUser):
     pass
 
 
+# юзер администратор
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
@@ -40,26 +36,24 @@ class AdminUser(CustomUser):
         if self.id:
             user = AdminUser.objects.get(id=self.id)
             password_old = user.password
-            if  password_old == self.password:
+            if password_old == self.password:
                 pass
             else:
-                self.set_password(self.password)        
+                self.set_password(self.password)
         else:
             self.set_password(self.password)
-        
+
         if self.admin_type == "ALL":
             self.is_superuser = True
 
         self.is_staff = True
         # if self.password is not None:
         #     self.set_password(self.password)
-        
+
         super().save(*args, **kwargs)
-        
-signals.post_save.connect(update_group, sender=AdminUser)        
-    
 
 
+signals.post_save.connect(update_group, sender=AdminUser)
 
 
 class Roles(Group):
@@ -80,3 +74,27 @@ class Roles(Group):
 
 # 7.4. Полный доступ
 # Позволяет просматривать историю изменений и предоставлять права доступа и корректировать условия скидок поставщиков.
+
+class ManagerWebUser(CustomUser):
+    user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
+
+
+    class Meta:
+        verbose_name ="Менеджер сайта"
+        verbose_name_plural = "Менеджер сайта"
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            user = AdminUser.objects.get(id=self.id)
+            password_old = user.password
+            if password_old == self.password:
+                pass
+            else:
+                self.set_password(self.password)
+        else:
+            self.set_password(self.password)
+
+        self.is_staff = True
+
+        super().save(*args, **kwargs)
+

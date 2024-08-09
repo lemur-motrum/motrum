@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-
-class WebsiteAdminSite(admin.AdminSite):
+# админка бд
+class DatabaseAdminSite(admin.AdminSite):
    
     def get_app_list(self, request, app_label=None):
         """
@@ -46,3 +46,16 @@ class WebsiteAdminSite(admin.AdminSite):
             app["models"].sort(key=lambda x: ordering[x["name"]])
 
         return app_list
+
+# админка сайта
+class WebsiteAdminSite(admin.AdminSite):
+    def log_addition(self, request, object, message):
+        pass  # Disables logging of additions
+
+    def log_change(self, request, object, message):
+        pass  # Disables logging of changes
+
+    def log_deletion(self, request, object, object_repr):
+        pass  # Disables logging of deletions
+
+website_admin = WebsiteAdminSite(name="website_admin")   

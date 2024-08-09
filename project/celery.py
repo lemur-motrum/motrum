@@ -12,6 +12,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+
     'year_holidays': {
         'task': 'apps.core.tasks.get_year_holiday',
         'schedule': crontab(minute=3, hour=0, day_of_month=1),
@@ -36,6 +37,7 @@ app.conf.beat_schedule = {
         'task': 'apps.supplier.tasks.add_prompower',
         'schedule': crontab(minute=00, hour=1),
     },
+    # таски днем повторы для теста
     
     'current_rate2': {
         'task': 'apps.core.tasks.get_currency',

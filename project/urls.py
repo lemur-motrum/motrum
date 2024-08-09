@@ -21,12 +21,23 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.urls import re_path as url
 
+from project.admin import website_admin
+from rest_framework import routers
+
+from apps.client.urls import router as client_router
+
+
+
+router = routers.DefaultRouter()
+router.registry.extend(client_router.registry)
+
 
 
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('admin/', admin.site.urls),
+    path('website_admin/', website_admin.urls),
    
     path("", include("apps.core.urls", namespace="core")),
     path("client/", include("apps.client.urls", namespace="client")),
@@ -37,6 +48,8 @@ urlpatterns = [
     path("user/", include("apps.user.urls", namespace="user")),
     path("admin_specification/", include("apps.admin_specification.urls", namespace="admin_specification")),
     
+    # path('api/', include('rest_framework.urls')),
+    path("api/", include(router.urls)),
     
 ]
 

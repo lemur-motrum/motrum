@@ -53,7 +53,7 @@ h1 {
 }
 
 .all-categories-content {
-  padding: 2.625rem;
+  padding: 0 2.625rem 2.625rem 2.625rem;
   .title {
     font-size: 1.875rem;
     padding: 0;
@@ -717,10 +717,14 @@ h1 {
                   width: 6.375rem;
                 }
                 &.price {
-                  margin-left: 3.513rem;
+                  margin-left: 2.813rem;
                   width: 5.375rem;
                   position: relative;
                   
+                }
+                
+                &.price-count{
+                  white-space: nowrap; 
                 }
               }
             
@@ -811,6 +815,18 @@ h1 {
                 border: none;
                 color: #000;
                 text-transform: uppercase;
+                cursor: pointer;
+
+                &:hover{
+                  background-color: #7a7878;
+                }
+                &:active {
+                  color: #a4a4a4;
+                }
+                &:disabled{
+                  background-color: #a4a4a4;
+                  cursor:default;
+                }
               }
             }
           }

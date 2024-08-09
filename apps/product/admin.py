@@ -15,6 +15,7 @@ from django import http
 from django.contrib.auth import get_user_model
 from django.utils.text import capfirst
 from django.utils.encoding import force_str
+from project.admin import website_admin
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 
@@ -324,21 +325,6 @@ class GroupProductAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
-# class PriceInlineInlineFormSet(BaseInlineFormSet):
-#     def clean(self):
-       
-#         super().clean()
-#         for form in self.fields_formset:
-#             if not form.is_valid():
-#                 form.cleaned_data = {'field':'id', 'DELETE': True}
-                
-        # data = self.cleaned_data
-        # print(self.cleaned_data)
-       
-        
-        # do whatever validation on data here
-
-
 class PriceInline(admin.TabularInline):
     model = Price
     # formset = PriceInlineInlineFormSet
@@ -395,8 +381,6 @@ class PriceInline(admin.TabularInline):
             formfield.widget.can_view_related = False
 
         return formfield
-
-       
 
 
 class StockInline(admin.TabularInline):
@@ -470,14 +454,14 @@ class StockInline(admin.TabularInline):
             )
         ]
         if stock:
-            
+
             if stock.data_transit != None:
                 if stock.data_transit < datetime.date.today():
                     return fieldsets_obj_no_transit
                 else:
                     return fieldsets
             else:
-                    return fieldsets_obj_no_transit    
+                return fieldsets_obj_no_transit
         else:
             return fieldsets_none_obj
         # if obj and obj.pk:
@@ -611,7 +595,6 @@ class ProductAdmin(SimpleHistoryAdmin):
                     (
                         "article_supplier",
                         "additional_article_supplier",
-                        
                     ),
                     "check_to_order",
                     "name",
@@ -675,7 +658,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         try:
             stock = Stock.objects.get(prod=obj.id)
-            if stock.stock_supplier == None :
+            if stock.stock_supplier == None:
                 item_one = f"<li>Остаток</li>"
                 product_blank_new = f"{product_blank_new}{item_one}"
         except Stock.DoesNotExist:
@@ -787,7 +770,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         return super().get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        
+
         if "/change/" in request.path:
 
             for id_table in request.resolver_match.captured_kwargs.values():
@@ -798,7 +781,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
             if item.autosave_tag == False:
-            
+
                 if db_field.name == "category_supplier":
                     kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
                         supplier_id=item.supplier.id
@@ -839,7 +822,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
-     
+
         instances = formset.save()
         print(8888888888888888)
         for instance in instances:
@@ -1055,15 +1038,19 @@ class LotAdmin(admin.ModelAdmin):
 
 class GroupProductInline(admin.TabularInline):
     model = GroupProduct
+    extra = 1
     fields = ("name", "article_name")
 
 
 class CategoryProductAdmin(admin.ModelAdmin):
-    fields = ("name", "article_name")
+    fields = ("name", "article_name",
+            
+            )
     list_display = [
         "name",
         "article_name",
         "get_name",
+        
     ]
     # exclude = ["get_name"]
 
@@ -1080,11 +1067,44 @@ class CategoryProductAdmin(admin.ModelAdmin):
 
         return mark_safe("<ul>{}</ul>".format(item))
 
-    # get_name.admin_order_field  = 'author'  #Allows column order sorting
-    # get_name.short_description = 'Author Name'  #Renames column head
+
+# АДМИНКА ДЛЯ ВЕБСАЙТА
+
+
+class GroupProductInlineWeb(admin.TabularInline):
+    model = GroupProduct
+    extra = 1
+    fields = ("name", "article_name", "image")
+
+
+class CategoryProductAdminWeb(admin.ModelAdmin):
+    fields = ("name", "article_name", "image", "is_view_home_web")
+    list_display = [
+        "name",
+        "article_name",
+        "get_name",
+         "is_view_home_web"
+    ]
+
+    inlines = [
+        GroupProductInlineWeb,
+    ]
+
+    def get_name(self, obj):
+        group = GroupProduct.objects.filter(category=obj)
+        item = ""
+        for gr in group:
+            item_one = f"<li>{gr.name}</li>"
+            item = f"{item}{item_one}"
+
+        return mark_safe("<ul>{}</ul>".format(item))
+
+    def has_add_permission(self, request):
+        return False
 
 
 admin.site.register(CategoryProduct, CategoryProductAdmin)
+website_admin.register(CategoryProduct, CategoryProductAdminWeb)
 # admin.site.register(GroupProduct)
 
 admin.site.register(Product, ProductAdmin)

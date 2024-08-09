@@ -10,10 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from typing import Final
+
 import environ
 import os
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,7 +50,7 @@ DEBUG = True
 INSTALLED_APPS = [
     "apps.product.apps.ProductConfig",
     "apps.core.apps.CoreConfig",
-    # "apps.client.apps.ClientConfig",
+    "apps.client.apps.ClientConfig",
     "apps.logs.apps.LogsConfig",
     "apps.specification.apps.SpecificationConfig",
     "apps.supplier.apps.SupplierConfig",
@@ -70,6 +69,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "simple_history",
     "sass_processor",
+    'rest_framework',
 ]
 
 STATICFILES_FINDERS = [
@@ -212,3 +212,12 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False

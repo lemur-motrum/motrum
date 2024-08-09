@@ -85,5 +85,5 @@ services:
     ports:
       - 89:8080
     
-volumes:
-  pgdbdata: null    
+# volumes:
+#   pgdbdata: null    

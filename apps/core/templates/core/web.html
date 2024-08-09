@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 100px;
+gap: 20px;"
+class="">
+    <a style="
+    border: 1px solid;
+    padding: 10px;"
+ href="{% url 'website_admin:index' %}">Админка Сайта</a>
+ <a style="
+ border: 1px solid;
+ padding: 10px;"
+href="{% url 'client:index' %}">Личный кабинет</a>
+    </div>
+{% endblock content %}

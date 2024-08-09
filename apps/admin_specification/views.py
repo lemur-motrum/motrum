@@ -282,13 +282,12 @@ def get_all_specifications(request):
             "admin_creator",
         )
         .all()
-        .order_by("pk")
+        .order_by("tag_stop","pk")
         .reverse()
     )
-    print(AdminUser.user)
+    # фильтрация по админу
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type
-
     if user_admin_type == "ALL":
         pass
     elif user_admin_type == "BASE":

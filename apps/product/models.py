@@ -18,6 +18,7 @@ from apps.core.utils import (
 from simple_history.signals import (
     post_create_historical_record,
 )
+from apps.core.utils_web import get_file_path_catalog_web
 from apps.supplier.models import (
     Discount,
     Supplier,
@@ -187,7 +188,8 @@ class CategoryProduct(models.Model):
         blank=True,
         null=True,
     )
-
+    image = models.ImageField("Изображение категории",upload_to =get_file_path_catalog_web, null=True)
+    is_view_home_web = models.BooleanField("Отображение на главной сайта", default=False)
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"
@@ -216,6 +218,8 @@ class GroupProduct(models.Model):
         blank=True,
         null=True,
     )
+    image = models.ImageField("Изображение категории",upload_to =get_file_path_catalog_web, null=True)
+ 
 
     class Meta:
         verbose_name = "Группа товара"
@@ -401,13 +405,10 @@ class Stock(models.Model):
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
-        print(self.stock_supplier)
-        print(111111111111111)
-        # if self.stock_supplier != 0:
-        #     self.to_order = False
+
 
         super().save(*args, **kwargs)
-        print(33333)
+     
 
 class Lot(models.Model):
     name = models.CharField("Полное название", max_length=30)
@@ -439,12 +440,13 @@ class ProductImage(models.Model):
     # file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("Ссылка у поставщика", max_length=150)
     hide = models.BooleanField("Скрыть", default=False)
-
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
 
-    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
 
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
@@ -486,7 +488,6 @@ class ProductDocument(models.Model):
 class ProductProperty(models.Model):
     product = models.ForeignKey(
         Product,
-        # related_name="historic_property",
         on_delete=CASCADE,
     )
 

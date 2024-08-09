@@ -15,6 +15,7 @@ class Specification(models.Model):
     date = models.DateField(
         default=datetime.datetime.now, verbose_name="Дата добавления"
     )
+    date_update = models.DateField(auto_now=True,verbose_name="Дата обновления")
     # date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
     date_stop = models.DateField(verbose_name="Дата окончания")
     currency_product = models.BooleanField(
@@ -46,21 +47,11 @@ class Specification(models.Model):
         
         data_stop = create_time_stop_specification()
         self.date_stop = data_stop
+        self.tag_stop = True
         
         super().save(*args, **kwargs)
         
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-
-
-
-# @receiver(post_save)
-# def my_callback(sender, instance, *args, **kwargs):
-#     sums = ProductSpecification.objects.filter(specification=instance.id).aggregate(Sum("price_all"))
-#     spes = Specification.objects.get(id = instance.id)
-#     spes.total_amount = sums['price_all__sum']
-#     spes.save()
-#     print(sender)
-#     print(instance.id)
 
 
 class ProductSpecification(models.Model):
@@ -142,3 +133,13 @@ class ProductSpecification(models.Model):
             spec.save()
         
         super().save(*args, **kwargs)
+
+# @receiver(post_save)
+# def my_callback(sender, instance, *args, **kwargs):
+#     sums = ProductSpecification.objects.filter(specification=instance.id).aggregate(Sum("price_all"))
+#     spes = Specification.objects.get(id = instance.id)
+#     spes.total_amount = sums['price_all__sum']
+#     spes.save()
+#     print(sender)
+#     print(instance.id)
+

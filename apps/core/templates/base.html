@@ -5,31 +5,22 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-        <link href="{% sass_src 'core/scss/style.scss' %}" rel="stylesheet" />
+         <!--css инклудить в общий -->
+        {% include "core/includes/stylesheets.html" %}
+
         <title>{{ title }}</title>
     </head>
     <body>
-        <input id="user_id" type="hidden" data-user-id="{{ request.user.id }}"></input>
+        <input id="user_id" type="hidden" data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}"></input>
+        <input id="client_id" type="hidden" data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}"></input>
+
+
         {% block content %}
         {% endblock content %}
-        <script type="module" src="{% static "core/js/scripts.js" %}"></script>
-        <script>
-            function validate(evt) {
-                let theEvent = evt || window.event;
-           
-                let key = theEvent.keyCode || theEvent.which;
-              
-                key = String.fromCharCode(key);
-              
-                const regex = /[0-9]|\./;
-           
-                if( !regex.test(key) ) {
-                    theEvent.returnValue = false;
-                if(theEvent.preventDefault) theEvent.preventDefault();
-                }
-            }
-        </script>
+
+       <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+        {% include "core/includes/scripts.html" %}
+
+   
     </body>
 </html>

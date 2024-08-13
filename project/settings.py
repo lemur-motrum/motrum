@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.supplier.apps.SupplierConfig",
     "apps.user.apps.UserConfig",
     "apps.admin_specification.apps.AdminSpecificationConfig",
+    "apps.projects_web.apps.ProjectWebConfig",
     "dal",
     "dal_select2",
     "project.apps.WebsiteAdminConfig",

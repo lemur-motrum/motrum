@@ -48,7 +48,10 @@ urlpatterns = [
     path("user/", include("apps.user.urls", namespace="user")),
     path("admin_specification/", include("apps.admin_specification.urls", namespace="admin_specification")),
     
-    # path('api/', include('rest_framework.urls')),
+    # для сайта
+    path("project/", include("apps.projects_web.urls", namespace="project")),
+    
+    # апи
     path("api/", include(router.urls)),
     
 ]

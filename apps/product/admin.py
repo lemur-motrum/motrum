@@ -19,8 +19,6 @@ from project.admin import website_admin
 
 SIMPLE_HISTORY_EDIT = getattr(settings, "SIMPLE_HISTORY_EDIT", False)
 
-from simple_history.manager import HistoricalQuerySet, HistoryManager
-
 from apps.product.forms import (
     ProductChangeForm,
     ProductChangeNotAutosaveForm,
@@ -596,7 +594,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "article_supplier",
                         "additional_article_supplier",
                     ),
-                    "check_to_order",
+                    ("check_to_order","promote"),
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -824,7 +822,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     def save_formset(self, request, form, formset, change):
 
         instances = formset.save()
-        print(8888888888888888)
+     
         for instance in instances:
             print(instance)
             print(instance.to_order)
@@ -1078,12 +1076,12 @@ class GroupProductInlineWeb(admin.TabularInline):
 
 
 class CategoryProductAdminWeb(admin.ModelAdmin):
-    fields = ("name", "article_name", "image", "is_view_home_web")
+    fields = ("name", "article_home_web", "image", "is_view_home_web")
     list_display = [
         "name",
-        "article_name",
+        "article_home_web",
         "get_name",
-         "is_view_home_web"
+        "is_view_home_web"
     ]
 
     inlines = [

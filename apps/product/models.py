@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
 
-from apps.core.models import Currency, Vat
+from apps.core.models import Currency, SliderMain, Vat
 from apps.core.utils import (
     create_article_motrum,
     get_file_path_add,
@@ -18,7 +18,7 @@ from apps.core.utils import (
 from simple_history.signals import (
     post_create_historical_record,
 )
-from apps.core.utils_web import get_file_path_catalog_web
+from apps.core.utils_web import get_file_path_catalog_web, promote_product_slider
 from apps.supplier.models import (
     Discount,
     Supplier,
@@ -113,6 +113,7 @@ class Product(models.Model):
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     check_to_order = models.BooleanField("Доступность к заказу", default=True)
+    promote = models.BooleanField("Продвижение на главной в слайдере", default=False)
    
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
@@ -153,13 +154,24 @@ class Product(models.Model):
         if self.description != None:
             self.description = self.description.strip()
             self.description = " ".join(self.description.split())
+             
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
-        price = Price.objects.filter(prod=self.id)
-        for price_one in price:
-            price_one.price_supplier = price_one.price_supplier
-            price_one.save()
+        price = Price.objects.get(prod=self.id)
+        
+        
+        price.price_supplier = price.price_supplier
+        price.save()
+        print(222222222222222222222)
+        print(self.id)
+        if self.promote:
+            promote_product_slider(self)
+        else:
+            SliderMain.objects.update_or_create(product_promote = self,defaults={'active': False})     
+      
+        
+
 
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)
@@ -190,6 +202,11 @@ class CategoryProduct(models.Model):
     )
     image = models.ImageField("Изображение категории",upload_to =get_file_path_catalog_web, null=True)
     is_view_home_web = models.BooleanField("Отображение на главной сайта", default=False)
+    article_home_web = models.PositiveIntegerField(
+        "Очередность вывода на главную",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"

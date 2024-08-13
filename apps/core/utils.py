@@ -500,36 +500,6 @@ def create_time_stop_specification():
 
     return data_stop
 
-
-# емеил
-def send_email_error():
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-    import smtplib
-
-    smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
-    smtp_server.starttls()
-    smtp_server.login("steisysi@gmail.com", "")
-
-    # Создание объекта сообщения
-    msg = MIMEMultipart()
-
-    # Настройка параметров сообщения
-    msg["From"] = "steisysi@gmail.com"
-    msg["To"] = "steisysi@gmail.com"
-    msg["Subject"] = "Тестовое письмо 📧"
-
-    # Добавление текста в сообщение
-    text = "Привет! Это тестовое письмо, отправленное с помощью Python 😊"
-    msg.attach(MIMEText(text, "plain"))
-
-    # Отправка письма
-    smtp_server.sendmail("steisysi@gmail.com", "steisysi@gmail.com", msg.as_string())
-
-    # Закрытие соединения
-    smtp_server.quit()
-
-
 # получение категорий мотрум из категорий поставщика
 def get_motrum_category(self):
     category_catalog = None
@@ -554,7 +524,7 @@ def get_motrum_category(self):
     return (category_catalog, group_catalog)
 
 
-# сохранение фаилов прайсовы из админки
+# сохранение фаилов прайс из админки
 def get_file_price_path_add(instance, filename):
     if instance.slug == "delta":
         base_dir = "price"
@@ -644,7 +614,7 @@ def get_file_price_path_add(instance, filename):
         return file
 
 
-# проверка заполненны ли поля продукта если нет добавить занчение
+# проверка заполненны ли поля продукта если нет добавить значение
 def save_update_product_attr(
     product,
     supplier,

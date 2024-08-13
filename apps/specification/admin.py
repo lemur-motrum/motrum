@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from apps.core.utils import create_time_stop_specification, send_email_error
+from apps.core.utils import create_time_stop_specification
 from apps.product.models import Price, Product
 from apps.specification.forms import PersonForm
 from apps.specification.models import ProductSpecification, Specification

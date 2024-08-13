@@ -107,32 +107,32 @@ class ProductSpecification(models.Model):
     def __str__(self):
         return f"{self.product}"
 
-    def save(self, *args, **kwargs):
-        # если с админки сохранение(работало правильно до отделения сборки спецификаций на фронте)
-        if self.price_all == None:
-            spec = Specification.objects.get(id=self.specification.id)
-            price = Price.objects.get(prod=self.product)
-            if self.price_one != price.price_supplier:
-                self.price_exclusive = True
-            price_current = price.currency.words_code
-            self.product_currency = price.currency
-            self.price_all = self.price_one * self.quantity
+    # def save(self, *args, **kwargs):
+    #     # если с админки сохранение(работало правильно до отделения сборки спецификаций на фронте)
+    #     # if self.price_all == None:
+    #     #     spec = Specification.objects.get(id=self.specification.id)
+    #     #     price = Price.objects.get(prod=self.product)
+    #     #     if self.price_one != price.price_supplier:
+    #     #         self.price_exclusive = True
+    #     #     price_current = price.currency.words_code
+    #     #     self.product_currency = price.currency
+    #     #     self.price_all = self.price_one * self.quantity
 
-            # отметка о валютности + добавление общец суммы
-            if price_current != "RUB":
-                # spec.tag_currency = price.currency
-                spec.currency_product = True
-            print(spec.total_amount)
-            if spec.total_amount is None:
-                total_init = 0
-            else:
-                total_init = spec.total_amount
+    #     #     # отметка о валютности + добавление общец суммы
+    #     #     if price_current != "RUB":
+    #     #         # spec.tag_currency = price.currency
+    #     #         spec.currency_product = True
+    #     #     print(spec.total_amount)
+    #     #     if spec.total_amount is None:
+    #     #         total_init = 0
+    #     #     else:
+    #     #         total_init = spec.total_amount
 
-            total = total_init + self.price_all
-            spec.total_amount = total
-            spec.save()
+    #     #     total = total_init + self.price_all
+    #     #     spec.total_amount = total
+    #     #     spec.save()
         
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
 # @receiver(post_save)
 # def my_callback(sender, instance, *args, **kwargs):

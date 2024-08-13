@@ -10,10 +10,9 @@ app_name = 'client'
 
 router = routers.DefaultRouter()
 router.register(r"v1/client", view_sets.ApiClient)
-# router.register(r"v1/requisites", view_sets.ApiRequisites)
-# router.register(r"v1/account_requisites", view_sets.ApiAccountRequisites)
-router.register(r"v1/client_requisites",view_sets.ApiClientRequisites)
-# router.register(r"v1/client_info", view_sets.ApiAllClientRequisites)
+router.register(r"v1/client-requisites",view_sets.ApiClientRequisitesAccount, basename="client-requisites")
+router.register(r"v1/requisites",view_sets.ApiRequisites)
+
 
 urlpatterns = [
     path("", views.index, name="index"),

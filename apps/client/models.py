@@ -42,14 +42,14 @@ class Requisites(models.Model):
         "Юридическое лицо",
         max_length=150,
     )
-    inn = models.PositiveIntegerField(
-        "ИНН",
+    inn = models.CharField(
+        "ИНН",max_length=12,
     )
-    kpp = models.PositiveIntegerField(
-        "КПП",
+    kpp = models.CharField(
+        "КПП",max_length=10,
     )
-    ogrn = models.PositiveIntegerField(
-        "ОГРН",
+    ogrn = models.CharField(
+        "ОГРН",max_length=15,
     )
     legal_post_code = models.PositiveIntegerField(
         "Юридический адрес :индекс",
@@ -62,8 +62,8 @@ class Requisites(models.Model):
         "Юридический адрес : адрес",
         max_length=200,
     )
-    postal_post_code = models.PositiveIntegerField(
-        "Почтовый адрес :индекс",
+    postal_post_code = models.CharField(
+        "Почтовый адрес :индекс",max_length=10,
     )
     postal_city = models.CharField(
         "Почтовый адрес : город",
@@ -83,25 +83,25 @@ class Requisites(models.Model):
 
 class AccountRequisites(models.Model):
     requisites = models.ForeignKey(Requisites,verbose_name="Реквизиты", on_delete=models.CASCADE)
-    account_requisites = models.PositiveIntegerField(
-        "Расчётный счёт",
+    account_requisites = models.CharField(
+        "Расчётный счёт", max_length=30,
     )
     bank = models.CharField(
         "Банк",
         max_length=200,
     )
-    kpp = models.PositiveIntegerField(
-        "КПП",
+    kpp = models.CharField(
+        "КПП",max_length=10,
     )
-    bic = models.PositiveIntegerField(
-        "БИК",
+    bic = models.CharField(
+        "БИК",max_length=10,
     )
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
 
     def __str__(self):
-        return self.name
+        return self.account_requisites
 
 
 class ClientDiscount(models.Model):

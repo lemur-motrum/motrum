@@ -19,14 +19,20 @@ class AccountRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountRequisites
         fields = "__all__"
+        # exclude = ('requisites',)
         
 class AllAccountRequisitesSerializer(serializers.ModelSerializer):
-    client = ClientSerializer(read_only=True)
-    accountrequisites_set = AccountRequisitesSerializer(read_only=True, many=True)
+    accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
     class Meta:
         model = Requisites
-        fields = "__all__"
-                
+        exclude = ('client',)
+
+class ClientRequisitesSerializer(serializers.ModelSerializer):
+    requisites_set = AllAccountRequisitesSerializer(read_only=False, many=True)
+    class Meta:
+        model = Client
+        exclude = ('password',"date_joined","contact_name","email","first_name","groups","phone","is_active","is_staff","is_superuser","last_login","last_name","user_permissions","username")  
+                  
 # class AllClientRequisitesSerializer(serializers.ModelSerializer):
 #     requisites = RequisitesSerializer(many=True, read_only=True)
     

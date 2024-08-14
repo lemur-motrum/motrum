@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
-from apps.supplier.models import Discount
+from apps.supplier.models import Discount, Supplier, Vendor
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
@@ -34,17 +34,21 @@ def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all().order_by("article_name")
 
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(check_to_order=True)
+    product_list = (
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category_supplier_all",
+            "group_supplier",
+            "category_supplier",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .filter(check_to_order=True)
+        .order_by("pk")
+    )
 
     if request.method == "GET":
         form = SearchForm(request.GET)
@@ -88,17 +92,21 @@ def group_product(request, cat):
         .filter(category=cat)
         .order_by("article_name")
     )
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(category=cat, check_to_order=True)
+    product_list = (
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category_supplier_all",
+            "group_supplier",
+            "category_supplier",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .filter(category=cat, check_to_order=True)
+        .order_by("pk")
+    )
 
     if request.method == "GET":
         form = SearchForm(request.GET)
@@ -164,6 +172,7 @@ def specifications(request, cat, gr):
         )
         .filter(category=cat, group=gr)
         .filter(check_to_order=True)
+        .order_by("pk")
     )
 
     groups = (
@@ -282,7 +291,7 @@ def get_all_specifications(request):
             "admin_creator",
         )
         .all()
-        .order_by("tag_stop","pk")
+        .order_by("tag_stop", "pk")
         .reverse()
     )
     # фильтрация по админу
@@ -326,6 +335,7 @@ def instruments(request, cat):
             category=cat,
         )
         .filter(check_to_order=True)
+        .order_by("pk")
     )
     title = category[0].name
     category = category[0]
@@ -405,6 +415,7 @@ def search_product(request):
             )
             .filter(category=cat)
             .filter(check_to_order=True)
+            .order_by("pk")
         )
     else:
         product_list = (
@@ -416,6 +427,7 @@ def search_product(request):
             )
             .filter(category=cat, group=gr)
             .filter(check_to_order=True)
+            .order_by("pk")
         )
 
     product_list = product_list.filter(
@@ -438,7 +450,6 @@ def load_products(request):
     cat = data["category"]
     gr = data["group"]
     page_num = data["pageNum"]
-    print(1111111111)
     print(data)
     if page_num == "":
         start_point = 9
@@ -510,7 +521,7 @@ def load_products(request):
                 product_elem.vendor,
                 price,
                 product_elem.category_supplier_all,
-                product_elem.product.supplier,
+                product_elem.supplier,
             )[1]
 
             if discount_item == None:
@@ -544,6 +555,32 @@ def load_products(request):
         pk = product_elem.pk
         article = product_elem.article
         saler_article = product_elem.article_supplier
+        supplier_name = product_elem.supplier.name
+        if product_elem.vendor != None:
+            vendor_name = product_elem.vendor.name
+        else:
+            vendor_name = ""
+
+        if stock_item != None:
+            stock = 1
+            stok_to_order = stock_item.to_order
+            stock_supplier = stock_item.stock_supplier
+            stock_motrum = stock_item.stock_motrum
+            data_update = str(price_all.data_update)
+            transit_count = stock_item.transit_count
+            data_transit = str(stock_item.data_transit)
+            is_one_sale = stock_item.is_one_sale
+            lot_complect = stock_item.lot_complect
+        else:
+            stock = 0
+            stok_to_order = 0
+            stock_supplier = 0
+            stock_motrum = 0
+            data_update = 0
+            transit_count = 0
+            data_transit = 0
+            is_one_sale = 0
+            lot_complect = 0
 
         characteristics = []
         for char in chars:
@@ -551,6 +588,13 @@ def load_products(request):
 
         product = {
             "name": name,
+            "stock": stock,
+            "stock_to_order": stok_to_order,
+            "stock_supplier": stock_supplier,
+            "stock_motrum": stock_motrum,
+            "data_update": data_update,
+            "transit_count": transit_count,
+            "data_transit": data_transit,
             "lot": lotname,
             "pk": pk,
             "article": article,
@@ -560,6 +604,10 @@ def load_products(request):
             "price_suppler": price_suppler,
             "discount": discount,
             "multiplicity": product_multiplicity,
+            "supplier": supplier_name,
+            "vendor": vendor_name,
+            "is_one_sale": is_one_sale,
+            "lot_complect": lot_complect,
         }
         products.append(product)
 

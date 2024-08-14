@@ -1,7 +1,8 @@
 {% extends 'admin/base.html' %}
-{% block extrastyle %}{{ block.super }}
-{% if request.current_app == "website_admin" %}
-<style>
+{% block extrastyle %}
+  {{ block.super }}
+  {% if request.current_app == "website_admin" %}
+    <style>
     html[data-theme="light"], :root {
       --primary: #9774d5;
       --secondary: #785cab;
@@ -12,12 +13,6 @@
         display: none;
       }
     </style>
-  
-    {% else %}
-   
-{% endif %}
-
-
-
-
+  {% else %}
+  {% endif %}
 {% endblock %}

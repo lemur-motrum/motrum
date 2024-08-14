@@ -1,20 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="
-display: flex;
-align-items: center;
-justify-content: center;
-margin-top: 100px;
-gap: 20px;"
-class="">
-
- <a style="
- border: 1px solid;
- padding: 10px;"
-href="{% url 'core:okt' %}">OKT</a>
-<a style="
-border: 1px solid;
-padding: 10px;"
-href="{% url 'core:web' %}">САЙТ</a>
-    </div>
+       <div style="display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   margin-top: 100px;
+                   gap: 20px"
+            class="">
+              <a style="border: 1px solid; padding: 10px" href="{% url 'core:okt' %}">OKT</a>
+              <a style="border: 1px solid; padding: 10px" href="{% url 'core:web' %}">САЙТ</a>
+       </div>
 {% endblock content %}

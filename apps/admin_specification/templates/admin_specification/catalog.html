@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="logout_btn">
-    <p>Пользователь: {{ request.user.username}}</p>
-    <a href="{% url "user:logout_admin" %}">Выход</a>
-</div>
+    <div class="logout_btn">
+        <p>Пользователь: {{ request.user.username }}</p>
+        <a href="{% url "user:logout_admin" %}">Выход</a>
+    </div>
     <div class="specification-container">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
@@ -26,23 +26,17 @@
                     <div class="title_item">Скидка %:</div>
                 </div>
                 {% for item in specification_items %}
-                    
-                    <div class="item_container" 
-                    data-id="{{ item.id }} "
-                    data-price="{{ item.price }}"  
-        
-                    data-price-exclusive="
-                    {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True  %} 
-                    1 {% else %} 
-                    0 {% endif %} "
-                    data-product-specification-id="{{ item.productSpecificationId }}" 
-                    data-multiplicity="{{ item.multiplicity }}"
-                    >
+                    <div class="item_container"
+                         data-id="{{ item.id }} "
+                         data-price="{{ item.price }}"
+                         data-price-exclusive=" {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %} 1 {% else %} 0 {% endif %} "
+                         data-product-specification-id="{{ item.productSpecificationId }}"
+                         data-multiplicity="{{ item.multiplicity }}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.idMotrum }}</div>
                         <div class="item_value">{{ item.idSaler }}</div>
-                        {% if item.price == "0" or item.price == 0 or item.price == 0.0 or item.price == "0.0"  %}
+                        {% if item.price == "0" or item.price == 0 or item.price == 0.0 or item.price == "0.0" %}
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -52,16 +46,14 @@
                             </div>
                             <div class="item_value">
                                 <input class="price-input"
-                                        name = "price-input-extra"
+                                       name="price-input-extra"
                                        type="text"
                                        onkeypress='validate(event)'
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
-                                       <label for="price-input-extra">
-                                       
-                                        {% if item.product_price_extra_old %}
-                                        {{item.data_old}} - {{item.product_price_extra_old}}
-                                        {% endif %}</label>
+                                <label for="price-input-extra">
+                                    {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
+                                </label>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
@@ -72,33 +64,28 @@
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
-                            <div class="item_value price price_once">{{ item.price }}
-
-                            </div>
+                            <div class="item_value price price_once">{{ item.price }}</div>
                             <div class="item_value total_cost price">{{ item.totalCost }}</div>
                         {% endif %}
                         <div class="item_value">
-                    
                             {% if item.discount == "" or item.discount == None %}
                                 Нет
                             {% else %}
                                 {{ item.discount }} %
                             {% endif %}
                         </div>
-                        
                         <div class="item_value">
                             <input class="discount-input"
                                    type="text"
-                                    name = "price-input-discount"
+                                   name="price-input-discount"
                                    onkeypress='validate(event)'
                                    placeholder="% скидки"
                                    maxlength="5"
                                    value="" />
-                                   <label for="price-input-discount">
-                                       
-                                    {% if item.product_individual_sale %}
-                                    {{item.product_individual_sale}}
-                                    {% endif %}%</label>
+                            <label for="price-input-discount">
+                                {% if item.product_individual_sale %}{{ item.product_individual_sale }}{% endif %}
+                                %
+                            </label>
                         </div>
                     </div>
                 {% endfor %}
@@ -110,10 +97,10 @@
                         <input type="checkbox" id="prepayment-checkbox" />
                         <label for="prepayment-checkbox">Предоплата</label>
                     </div>
-                    
                     <div class="button_specification-wrapper">
-                    <button  class="save_button">Сохранить спецификацию</button>
-                    <button  class="exit_button">Выйти без изменений</button></div>
+                        <button class="save_button">Сохранить спецификацию</button>
+                        <button class="exit_button">Выйти без изменений</button>
+                    </div>
                 </div>
             </div>
         {% else %}

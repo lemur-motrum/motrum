@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="logout_btn">
-    <p>Пользователь: {{ request.user.username}}</p>
-    <a href="{% url "user:logout_admin" %}">Выход</a>
-</div>
-
+    <div class="logout_btn">
+        <p>Пользователь: {{ request.user.username }}</p>
+        <a href="{% url "user:logout_admin" %}">Выход</a>
+    </div>
     <div class="all-categories-content">
         <div class="all-categories-content_top-menu">
-
-        
-        <div class="bread-crumbs">
-            <a class="all-specification-link"
-               href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
+            <div class="bread-crumbs">
+                <a class="all-specification-link"
+                   href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
+            </div>
+            {% include "admin_specification/include/search_form.html" %}
         </div>
-        {% include "admin_specification/include/search_form.html" %}
-    </div>
-
         {% comment %} <h1 class="title">{{ title }}</h1> {% endcomment %}
         <div class="categories-container">
             {% for category in categories %}

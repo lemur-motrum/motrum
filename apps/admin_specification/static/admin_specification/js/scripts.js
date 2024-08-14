@@ -1,4 +1,5 @@
 import "/static/core/js/slider.js";
+import {getCookie} from "/static/core/js/functions.js";
 
 //Класс для разделения чила на разряды
 class NumberParser {
@@ -50,49 +51,7 @@ class NumberParser {
 //   window.history.replaceState(null, "", "?" + searchParams);
 // };
 
-//функция получения куки
-function getCookie(name) {
-  let matches = document.cookie.match(
-    new RegExp(
-      "(?:^|; )" +
-      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-      "=([^;]*)"
-    )
-  );
-  return matches ? decodeURIComponent(matches[1]) : undefined;
-}
 
-//функция создания куки
-function setCookie(name, value, options = {}) {
-  options = {
-    ...options,
-  };
-
-  if (options.expires instanceof Date) {
-    options.expires = options.expires.toUTCString();
-  }
-
-  let updatedCookie = name + "=" + value;
-
-  for (let optionKey in options) {
-    updatedCookie += "; " + optionKey;
-    let optionValue = options[optionKey];
-    if (optionValue !== true) {
-      updatedCookie += "=" + optionValue;
-    }
-  }
-  document.cookie = updatedCookie;
-}
-
-// функция удаления куки
-function deleteCookie(name, path, domain) {
-  if (getCookie(name)) {
-    document.cookie = `${name}=; Path=${path}; Max-Age=-1;`
-    // document.cookie =
-    // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
-  }
-
-}
 // функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {
   const price = p.replace(",", ".");

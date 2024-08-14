@@ -4,9 +4,7 @@
         <div class="article">Товар</div>
         <div class="article">Артикул</div>
         <div class="article">Характеристики</div>
-
         <div class="article">Остатки</div>
-
         <div class="article">Упак.</div>
         <div class="article">Цена закуп.</div>
         <div class="article">Цена</div>
@@ -31,28 +29,23 @@
         <div class="spetification-product-catalog">
             <div class="all-products">
                 {% for product in products %}
-           
-
-                    <div class="catalog-item" 
-                    data-id="{{ product.pk }} "
-                    data-price="{% if product.price.rub_price_supplier %} {{ product.price.rub_price_supplier }} {% else %}0{% endif %}"  
-                    data-motrum-id="{{ product.article }}"
-                    data-saler-id="{{ product.article_supplier }}"
-                    data-discoutnt="{% if product.price.sale  %}{{ product.price.sale.percent }}{% endif %}"
-                    data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}"
-                    
-                    >
-                    <div class="hidden-description">
+                    <div class="catalog-item"
+                         data-id="{{ product.pk }} "
+                         data-price="{% if product.price.rub_price_supplier %} {{ product.price.rub_price_supplier }} {% else %}0{% endif %}"
+                         data-motrum-id="{{ product.article }}"
+                         data-saler-id="{{ product.article_supplier }}"
+                         data-discoutnt="{% if product.price.sale %}{{ product.price.sale.percent }}{% endif %}"
+                         data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}">
+                        <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">
                                     {% if product.supplier.name != product.vendor.name and product.vendor.name != None %}
-                                        {{ product.supplier }} {{product.vendor}}
+                                        {{ product.supplier }} {{ product.vendor }}
                                     {% else %}
                                         {{ product.supplier }}
                                     {% endif %}
-                                     {{ product.name }}
-                                    
-                                    </div>
+                                    {{ product.name }}
+                                </div>
                                 <div class="article-motrum">{{ product.article }}</div>
                                 <div class="charactiristics">
                                     {% for char in product.productproperty_set.all %}
@@ -62,75 +55,60 @@
                                     {% endfor %}
                                 </div>
                                 <div class="stock">
-                                    {% if product.stock  %}
-                                    
+                                    {% if product.stock %}
                                         <div class="stock_item">
                                             {% if product.stock.to_order %}
-                                                Поставщик: <br>
+                                                Поставщик:
+                                                <br>
                                                 Под заказ
-                                                {% else %}
+                                            {% else %}
                                                 {% if product.stock.stock_supplier != None %}
-                                                    Поставщик: {{product.stock.stock_supplier}}
+                                                    Поставщик: {{ product.stock.stock_supplier }}
                                                 {% else %}
-                                                    Поставщик: - 
+                                                    Поставщик: -
                                                 {% endif %}
-                                            {% endif %} 
-
+                                            {% endif %}
                                         </div>
-                                        <div class="stock_item">
-                                            Motrum:{{product.stock.stock_motrum}}
-                                        </div>
-                                      <span class="span-transit">{{product.price.data_update|date:"d.m.Y"}}</span><br>
-                                      <span class="span-transit">
-                                        {% if product.stock.transit_count  %} 
-                                        Ближайшая поставка: {{product.stock.data_transit|date:"d.m.Y"}} - {{product.stock.transit_count}} шт.
-                                                                            {% endif %}
-                                      </span>
-                                      
-                                       
+                                        <div class="stock_item">Motrum:{{ product.stock.stock_motrum }}</div>
+                                        <span class="span-transit">{{ product.price.data_update|date:"d.m.Y" }}</span>
+                                        <br>
+                                        <span class="span-transit">
+                                            {% if product.stock.transit_count %}
+                                                Ближайшая поставка: {{ product.stock.data_transit|date:"d.m.Y" }} - {{ product.stock.transit_count }} шт.
+                                            {% endif %}
+                                        </span>
                                     {% else %}
-                                    {% if to_order %}
-                                        Под заказ
-                                    {% endif %}
+                                        {% if product.stock.to_order %}Под заказ{% endif %}
                                         Неизвестно
                                     {% endif %}
                                 </div>
-
-
                                 <div class="lot">
                                     {% if product.stock %}
-                                    {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
-                                       
-                                        <span class="span-min">Минимальный заказ {{product.stock.order_multiplicity}}
-                                             {{ product.stock.lot.name_shorts }}</span>
+                                        {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
+                                            <span class="span-min">Минимальный заказ {{ product.stock.order_multiplicity }}
+                                            {{ product.stock.lot.name_shorts }}</span>
                                         {% endif %}
                                         {% if product.stock.lot_complect != 1 %}
-                                        {{ product.stock.lot.name_shorts }}.({{ product.stock.lot_complect }}ед.)
+                                            {{ product.stock.lot.name_shorts }}.({{ product.stock.lot_complect }}ед.)
                                         {% else %}
-                                        {{ product.stock.lot_complect }}
-                                        {{ product.stock.lot.name_shorts }}.
+                                            {{ product.stock.lot_complect }}
+                                            {{ product.stock.lot.name_shorts }}.
                                         {% endif %}
-                                        
-                                    
-                                        
                                     {% else %}
                                         -
                                     {% endif %}
                                 </div>
-
                                 <div class="suppler-price">
                                     {% if product.price.price_motrum and product.price.price_motrum != 0 %}
                                         <span class="price-suppler-count">{{ product.price.price_motrum }}</span> ₽
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}
-                                   
                                 </div>
                                 <div class="price">
                                     {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
-                                       <span class="span-update">{{product.price.data_update|date:"d.m.Y"}}</span>
+                                        <span class="span-update">{{ product.price.data_update|date:"d.m.Y" }}</span>
                                         <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
-                                        
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}
@@ -164,9 +142,8 @@
             </div>
             <div class="loader">loading</div>
             {% if products %}
-            {{products.count}}
+                {{ products.count }}
                 <div class="products-end-content">
-                    <div class=""></div>
                     <div class="load-more-btn">Загрузить еще</div>
                     <div class="pagintion">
                         {% if products.number == 1 or products.number == 2 or products.number == 3 %}

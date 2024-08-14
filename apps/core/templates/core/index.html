@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "core/base.html" %}
 {% block content %}
 <div style="
@@ -18,3 +19,17 @@ padding: 10px;"
 href="{% url 'core:web' %}">САЙТ</a>
     </div>
 {% endblock content %}
+=======
+{% extends "base.html" %}
+{% block content %}
+       <div style="display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   margin-top: 100px;
+                   gap: 20px"
+            class="">
+              <a style="border: 1px solid; padding: 10px" href="{% url 'core:okt' %}">OKT</a>
+              <a style="border: 1px solid; padding: 10px" href="{% url 'core:web' %}">САЙТ</a>
+       </div>
+{% endblock content %}
+>>>>>>> 56b375d773cb4595c724124c206df2a2dd5ba548

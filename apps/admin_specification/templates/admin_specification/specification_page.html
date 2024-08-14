@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="logout_btn">
-    <p>Пользователь: {{ request.user.username}}</p>
-    <a href="{% url "user:logout_admin" %}">Выход</a>
-</div>
+    <div class="logout_btn">
+        <p>Пользователь: {{ request.user.username }}</p>
+        <a href="{% url "user:logout_admin" %}">Выход</a>
+    </div>
     <div class="specification-content">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>

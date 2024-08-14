@@ -1,3 +1,4 @@
+<<<<<<< HEAD:apps/core/templates/core/base.html
 {% load static %}
 
 {% load manager_client %}
@@ -28,3 +29,34 @@
    
     </body>
 </html>
+=======
+{% load sass_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--css инклудить в общий -->
+        {% include "core/includes/stylesheets.html" %}
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <input id="user_id"
+                   type="hidden"
+                   data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
+            <input id="client_id"
+                   type="hidden"
+                   data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
+            <div class="site-content">
+                {% block content %}
+                {% endblock content %}
+            </div>
+            {% include "core/includes/footer.html" %}
+            <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+            {% include "core/includes/scripts.html" %}
+        </div>
+    </body>
+</html>
+>>>>>>> 56b375d773cb4595c724124c206df2a2dd5ba548:apps/core/templates/base.html

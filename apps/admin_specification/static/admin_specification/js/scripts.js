@@ -321,6 +321,14 @@ function showButton(container, button) {
     button.classList.remove("show");
   };
 }
+function backendDataFormat(string) {
+  const dateArray = string.split("-");
+  const year = dateArray[0];
+  const mounth = dateArray[1];
+  const day = dateArray[2];
+  const result = `${day}.${mounth}.${year}`;
+  return result;
+}
 
 window.addEventListener("DOMContentLoaded", () => {
   const catalogContainer = document.querySelector(".catalog_container");
@@ -347,7 +355,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const group = searhForm.getAttribute("group");
         const allProducts = catalog.querySelector(".all-products");
         const loader = catalog.querySelector(".loader");
-
         const params = new URLSearchParams(window.location.search);
         let pageNum = params.get("page");
         if (pageNum == 1 || !pageNum) {
@@ -386,35 +393,123 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk
-                    }  data-price=${!product.price ? 0 : product.price
-                    }  data-motrum-id=${product.article} data-saler-id=${product.saler_article
-                    } data-discoutnt=${product.discount
-                    } data-order-multiplicity=${product.multiplicity}> 
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                    product.pk
+                  }  data-price=${
+                    !product.price ? 0 : product.price
+                  }  data-motrum-id=${product.article} data-saler-id=${
+                    product.saler_article
+                  } data-discoutnt=${
+                    product.discount
+                  } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
-                                <div class="name">${product.name}</div>
-                                <div class="article-motrum">${product.article
-                    }</div>
+                                <div class="name">${
+                                  product.supplier != product.vendor &&
+                                  product.vendor != null
+                                    ? product.supplier +
+                                      " " +
+                                      product.vendor +
+                                      " " +
+                                      product.name
+                                    : product.supplier + " " + product.name
+                                }</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
                                 <div class="charactiristics">
-                                    ${product.chars.length == 0
-                      ? "Характеристика"
-                      : product.chars.join(" ")
-                    }
+                                    ${
+                                      product.chars.length == 0
+                                        ? "-"
+                                        : product.chars.join(" ")
+                                    }
+                                </div>
+                                <div class="stock">
+                                ${
+                                  product.stock
+                                    ? `<div class="stock_item">
+                                    ${
+                                      product.stock_to_order
+                                        ? " Поставщик:<br>Под заказ"
+                                        : `${
+                                            product.stock_supplier
+                                              ? `Поставщик: ${product.stock_supplier}`
+                                              : "Поставщик: -"
+                                          }`
+                                    }
+                                        </div>
+                                        <div class="stock_item">Motrum:${
+                                          product.stock_motrum
+                                        }</div>
+                                        <span class="span-transit">${backendDataFormat(
+                                          product.data_update
+                                        )}</span>
+                                        <br>
+                                        <span class="span-transit">
+                                        ${
+                                          product.transit_count
+                                            ? `Ближайшая поставка: ${backendDataFormat(
+                                                product.data_transit
+                                              )} - ${product.transit_count} шт.`
+                                            : ""
+                                        }
+                                        </span>`
+                                    : `${
+                                        product.stok_to_order ? "Под заказ" : ""
+                                      } Неизвестно`
+                                }
                                 </div>
                                 <div class="lot">
-                                    1 ${!product.lot ? "шт" : product.lot}
+                                ${
+                                  product.stock
+                                    ? `${
+                                        product.multiplicity != 1 &&
+                                        !product.is_one_sale
+                                          ? `<span class="span-min">Минимальный заказ ${
+                                              product.multiplicity +
+                                              " " +
+                                              product.lot
+                                            }
+                                           </span>`
+                                          : ""
+                                      }${
+                                        product.lot_complect != 1
+                                          ? `${
+                                              product.lot +
+                                              "." +
+                                              product.lot_complect +
+                                              "ед."
+                                            }`
+                                          : `${
+                                              product.lot_complect +
+                                              " " +
+                                              product.lot +
+                                              "."
+                                            }`
+                                      }
+                                        `
+                                    : "-"
+                                }
                                 </div>
-                                <div class="suppler-price">
-                                    <span class="price-suppler-count">${product.price_suppler
-                    }</span> ₽
+                                 <div class="suppler-price">
+                                 ${
+                                   product.price_suppler &&
+                                   product.price_suppler != 0
+                                     ? `<span class="price-suppler-count">${product.price_suppler}</span> ₽`
+                                     : "<span>По запросу</span>"
+                                 }
                                 </div>
                                 <div class="price">
-                                    ${!product.price
-                      ? "<span>По запросу</span>"
-                      : `<span class="price-count">${product.price}</span> ₽`
-                    }
-                                  
+                                ${
+                                  product.price && product.price != 0
+                                    ? `<span class="span-update">${backendDataFormat(
+                                        product.data_update
+                                      )}</span>
+                                        <span class="price-count">${
+                                          product.price
+                                        }</span> ₽`
+                                    : `<span>По запросу</span>`
+                                }
                                 </div>
                             </div>
                             <div class="item-buttons_container">
@@ -512,16 +607,15 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       function saveSpecification(elems) {
-        console.log(elems)
+        console.log(elems);
         const products = [];
         const checkbox = document.querySelector("#prepayment-checkbox");
         const specificationId = getCookie("specificationId");
-        const adminCreator = document.querySelector("[data-user-id]")
-        const adminCreatorId = adminCreator.getAttribute('data-user-id')
-        let validate = true
+        const adminCreator = document.querySelector("[data-user-id]");
+        const adminCreatorId = adminCreator.getAttribute("data-user-id");
+        let validate = true;
 
         elems.forEach((item, i) => {
-
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-id");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
@@ -530,8 +624,8 @@ window.addEventListener("DOMContentLoaded", () => {
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
           );
-          console.log(itemID)
-          console.log(itemPrice)
+          console.log(itemID);
+          console.log(itemPrice);
 
           const inputPrice = item.querySelector(".price-input");
 
@@ -542,26 +636,25 @@ window.addEventListener("DOMContentLoaded", () => {
             price_one: !itemPrice
               ? +inputPrice.value
               : new NumberParser("ru").parse(
-                JSON.parse(getCookie("key"))[i].price
-              ),
+                  JSON.parse(getCookie("key"))[i].price
+                ),
             product_specif_id: productSpecificationId
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
           };
           if (product.price_one == 0) {
-            validate = false
-            inputPrice.style.border = "1px solid red"
-            inputPrice.style.borderRadius = "10px"
+            validate = false;
+            inputPrice.style.border = "1px solid red";
+            inputPrice.style.borderRadius = "10px";
           } else {
             products.push(product);
           }
-
-
         });
-        console.log(products)
+        console.log(products);
         if (validate == true) {
-          const endpoint = "/admin_specification/save_specification_view_admin/";
+          const endpoint =
+            "/admin_specification/save_specification_view_admin/";
           const dataObj = {
             id_bitrix: 22,
             admin_creator_id: adminCreatorId,
@@ -585,7 +678,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 localStorage.removeItem("specificationValues");
                 deleteCookie("key", "/", window.location.hostname);
                 deleteCookie("specificationId", "/", window.location.hostname);
-                window.location.href = "/admin_specification/all_specifications/";
+                window.location.href =
+                  "/admin_specification/all_specifications/";
               }
             })
             .catch((error) => console.error(error));
@@ -593,7 +687,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       function exitSpecification(elems) {
         localStorage.removeItem("specificationValues");
-        console.log(window.location.hostname)
+        console.log(window.location.hostname);
         deleteCookie("key", "/", window.location.hostname);
         deleteCookie("specificationId", "/", window.location.hostname);
         window.location.href = "/admin_specification/all_specifications/";
@@ -780,7 +874,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const specificationArray = JSON.parse(
             localStorage.getItem("specificationValues")
           );
-          console.log(specificationArray)
+          console.log(specificationArray);
           specificationArray.splice(i, 1);
           const result = JSON.stringify(specificationArray);
 
@@ -952,7 +1046,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 searchDescriptionField.onscroll = () => {
                   if (
                     searchDescriptionField.scrollHeight -
-                    searchDescriptionField.scrollTop <=
+                      searchDescriptionField.scrollTop <=
                     searchDescriptionField.offsetHeight
                   ) {
                     const data = JSON.stringify(objData);

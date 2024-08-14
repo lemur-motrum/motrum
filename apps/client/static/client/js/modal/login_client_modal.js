@@ -4,6 +4,8 @@ function getCookie(name) {
       "(?:^|; )" +
         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
         "=([^;]*)"
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+        "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -11,12 +13,12 @@ function getCookie(name) {
 
 function addNewClient(endpointClient, phone, pin) {
   const clientAdd = document.querySelector(".client_add");
-
-  clientAdd.addEventListener("click", (event) => {
-    let dataArr = {
-      phone: phone,
-      pin: pin,
-    };
+  if (clientAdd) {
+    clientAdd.addEventListener("click", (event) => {
+      let dataArr = {
+        phone: phone,
+        pin: pin,
+      };
 
     let data = JSON.stringify(dataArr);
     let csrfToken = getCookie("csrftoken");
@@ -42,32 +44,33 @@ function updateClient() {
   const idClient = "9";
   const endpoint = "/api/v1/client/" + idClient + "/";
   const clientAdd = document.querySelector(".client_update");
+  if (clientAdd) {
+    clientAdd.addEventListener("click", (event) => {
+      let dataArr = {
+        contact_name: "contact_name",
+        phone: "89276892240",
+        email: "steisysi@gmail.com",
+        username: "89276892240",
+        password: "",
+      };
 
-  clientAdd.addEventListener("click", (event) => {
-    let dataArr = {
-      contact_name: "contact_name",
-      phone: "89276892240",
-      email: "steisysi@gmail.com",
-      username: "89276892240",
-      password: "",
-    };
-
-    let data = JSON.stringify(dataArr);
-    let csrfToken = getCookie("csrftoken");
-    console.log(data);
-    fetch(endpoint, {
-      method: "UPDATE",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  });
+      let data = JSON.stringify(dataArr);
+      let csrfToken = getCookie("csrftoken");
+      console.log(data);
+      fetch(endpoint, {
+        method: "UPDATE",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    });
+  }
 }
 updateClient();
 
@@ -76,6 +79,24 @@ function addRequisites() {
   const idClient = 10;
   const endpoint = "/api/v1/requisites/add/";
   const clientAdd = document.querySelector(".client_requisites");
+  if (clientAdd) {
+    clientAdd.addEventListener("click", (event) => {
+      let dataArr = [
+        {
+          requisites: {
+            contract: 23423424,
+            legal_entity: "3Юридическ1ое лицо",
+            inn: 123212,
+            kpp: 1232123,
+            ogrn: 122313,
+            legal_post_code: 1223123,
+            legal_city: "dsgsdfsf",
+            legal_address: "aweaeawe",
+            postal_post_code: 12313,
+            postal_city: "wewqweqe",
+            postal_address: "qweqwee",
+            client: idClient,
+          },
 
   clientAdd.addEventListener("click", (event) => {
     let dataArr = [
@@ -139,22 +160,23 @@ function addRequisites() {
       },
     ];
 
-    let data = JSON.stringify(dataArr);
-    let csrfToken = getCookie("csrftoken");
-    console.log(data);
-    fetch(endpoint, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  });
+      let data = JSON.stringify(dataArr);
+      let csrfToken = getCookie("csrftoken");
+      console.log(data);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    });
+  }
 }
 addRequisites();
 

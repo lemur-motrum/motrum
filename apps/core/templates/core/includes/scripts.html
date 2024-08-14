@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load static %}
 
 <!--functions  -->
@@ -11,3 +12,30 @@
 
 <!--продукты -->
 <script type="module" src={% static 'product/js/load_catalog_items.js' %}></script>
+=======
+{% load static %}
+
+<!--core  -->
+<script type="module" src="{% static "core/js/scripts.js" %}"></script>
+
+<!--клиенты  -->
+<script type="module" src="{% static "client/js/modal/login_client_modal.js" %}"></script>
+
+<!-- функции  -->
+<script>
+    function validate(evt) {
+        let theEvent = evt || window.event;
+   
+        let key = theEvent.keyCode || theEvent.which;
+      
+        key = String.fromCharCode(key);
+      
+        const regex = /[0-9]|\./;
+   
+        if( !regex.test(key) ) {
+            theEvent.returnValue = false;
+        if(theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+</script>
+>>>>>>> 56b375d773cb4595c724124c206df2a2dd5ba548

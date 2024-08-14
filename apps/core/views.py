@@ -3,6 +3,9 @@ import os
 from django.template import loader
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from apps.product.models import CategoryProduct
+
 from rest_framework import status
 
 from apps.client.models import Client
@@ -15,18 +18,27 @@ from project.settings import EMAIL_BACKEND
 def index(request):
 
     context = {}
+
+    context = {}
     return render(request, "core/index.html", context)
+
 
 
 def okt(request):
 
     context = {}
+
+    context = {}
     return render(request, "core/okt.html", context)
 
 
-def web(request):
 
-    context = {}
+def web(request):
+    categories = CategoryProduct.objects.all().order_by("article_name")
+
+    context = {
+        "categories": categories,
+    }
     return render(request, "core/web.html", context)
 
 

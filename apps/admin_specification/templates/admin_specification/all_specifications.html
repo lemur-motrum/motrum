@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="logout_btn">
-    <p>Пользователь: {{ request.user.username}}</p>
-    <a href="{% url "user:logout_admin" %}">Выход</a>
-</div>
+    <div class="logout_btn">
+        <p>Пользователь: {{ request.user.username }}</p>
+        <a href="{% url "user:logout_admin" %}">Выход</a>
+    </div>
     <div class="all_specifications_container">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
@@ -22,14 +22,13 @@
                     {% if specification.tag_stop == True %}
                         <div data-status='{{ specification.tag_stop }}' class="table_item">
                             <div class="table_item_value">
-                          
-                               <a href="{% if specification.file %}{{ specification.file.url }}{% endif %}
-                               "
+                                <a href="{% if specification.file %}{{ specification.file.url }}{% endif %} "
                                    target="_blank"
-                                   class="table_item_value">{{ specification.pk }}</a> 
-                                   {% if request.user.is_superuser %} <br>
-                                   <span class="table_item_value_span" >Создал: {{specification.admin_creator}}</span> 
-                                   {% endif %}
+                                   class="table_item_value">{{ specification.pk }}</a>
+                                {% if request.user.is_superuser %}
+                                    <br>
+                                    <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
+                                {% endif %}
                             </div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">
@@ -40,7 +39,8 @@
                             <button class="change-specification-button">Редактировать</button>
                         </div>
                     {% else %}
-                        <div data-status='{{ specification.tag_stop }}'  class="table_item disabled">
+                        <div data-status='{{ specification.tag_stop }}'
+                             class="table_item disabled">
                             <div class="table_item_value">{{ specification.pk }}</div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">

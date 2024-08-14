@@ -5,8 +5,326 @@ body {
   font-size: 1.111vw;
   box-sizing: border-box;
   width: 100%;
+  height: 100%;
   overflow-x: hidden;
   padding: 0;
   margin: 0;
   font-family: "Montserrat", sans-serif;
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .site-content {
+    flex: 1 0 auto;
+  }
+  .footer {
+    flex: 0 0 auto;
+  }
+}
+
+.header {
+  margin: 2.563rem 3.125rem 0 3.125rem;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  .logo-container {
+    width: 15.061rem;
+    height: 3.75rem;
+    img {
+      width: 100%;
+      height: 100%;
+      -o-object-fit: contain;
+      object-fit: contain;
+    }
+  }
+  .call-back-container {
+    display: flex;
+    font-size: 0.938rem;
+    gap: 1.688rem;
+    color: #676767;
+    .call-back-link {
+      text-decoration: underline;
+    }
+  }
+  .user-navigation {
+    position: absolute;
+    top: 70%;
+    left: 23%;
+    display: flex;
+    align-items: center;
+    gap: 5.525rem;
+    .navigation {
+      display: flex;
+      gap: 2.188rem;
+      width: 45.313rem;
+      .nav-elem {
+        text-transform: uppercase;
+        color: #a4a4a4;
+        font-weight: bold;
+        font-size: 0.938rem;
+      }
+    }
+    .cart-elems {
+      display: flex;
+      gap: 1.25rem;
+      .cart-elem {
+        font-size: 0.938rem;
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
+.footer {
+  margin-top: 3.125rem;
+  background-color: #a9a7a7;
+  display: flex;
+  justify-content: space-between;
+  padding: 3.5rem 3.125rem 2.938rem 3.125rem;
+  .motrum-footer {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.875rem;
+    .motrum-logo-container {
+      width: 9.375rem;
+      height: 2.334rem;
+      img {
+        width: 100%;
+        height: 100%;
+        -o-object-fit: contain;
+        object-fit: contain;
+      }
+    }
+    .description {
+      font-size: 0.75rem;
+      color: #fff;
+      a {
+        color: #fff;
+      }
+    }
+  }
+  .lemur-footer {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.875rem;
+    .description {
+      font-size: 0.75rem;
+      color: #fff;
+      div {
+        text-align: right;
+        a {
+          color: #fff;
+        }
+      }
+    }
+    .lemur-logo-container {
+      width: 3.69rem;
+      height: 2.334rem;
+      img {
+        width: 100%;
+        height: 100%;
+        -o-object-fit: contain;
+        object-fit: contain;
+      }
+    }
+  }
+}
+
+.head-page-container {
+  margin: 1.625rem 3.125rem 0 3.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.125rem;
+  .promo-slider {
+    width: 100%;
+    height: 28.188rem;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.875rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #bdbdbd;
+  }
+  .products {
+    display: flex;
+    flex-direction: column;
+    gap: 1.875rem;
+    .title-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      .title {
+        text-transform: uppercase;
+        font-size: 1.875rem;
+      }
+      .title-link {
+        display: inline-block;
+        text-transform: uppercase;
+        font-size: 0.938rem;
+        color: #000;
+        text-decoration: none;
+        position: absolute;
+        top: 42.5%;
+        left: 12rem;
+      }
+    }
+    .products-categories {
+      display: grid;
+      grid-template-columns: 18.75rem 18.75rem 18.75rem 18.75rem;
+      justify-content: space-between;
+      row-gap: 2.5rem;
+      .category-elem {
+        width: 100%;
+        height: 18.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+        text-decoration: none;
+        color: #bdbdbd;
+        border-radius: 10px;
+        span {
+          text-align: center;
+          width: 90%;
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+  .solutions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.875rem;
+    .title {
+      text-transform: uppercase;
+      font-size: 1.875rem;
+    }
+    .solutions-container {
+      display: flex;
+      justify-content: space-between;
+      .solution {
+        width: 40.1rem;
+        height: 18.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+        color: #bdbdbd;
+        font-weight: bold;
+        font-size: 1.25rem;
+        border-radius: 10px;
+        text-transform: uppercase;
+      }
+    }
+  }
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 1.875rem;
+    .title-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      .title {
+        text-transform: uppercase;
+        font-size: 1.875rem;
+      }
+      .title-link {
+        display: inline-block;
+        text-transform: uppercase;
+        font-size: 0.938rem;
+        color: #000;
+        text-decoration: none;
+        position: absolute;
+        top: 42.5%;
+        left: 31.5rem;
+      }
+    }
+    .projects-slider {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      .swiper-wrapper {
+        .project-elem {
+          width: 40.18rem;
+          height: 18.75rem;
+          padding-right: 2.6rem;
+          &:last-child {
+            padding-right: 0;
+          }
+          .content {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            color: #bdbdbd;
+            font-weight: bold;
+            font-size: 1.25rem;
+            border-radius: 10px;
+            text-transform: uppercase;
+          }
+        }
+      }
+      .swiper-button-prev {
+        position: absolute;
+        top: 50%;
+        left: -1.3%;
+        border-radius: 100%;
+        background-color: #fff;
+        width: 3.125rem;
+        height: 3.125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &::after {
+          color: #f5f5f5 !important;
+        }
+      }
+      .swiper-button-next {
+        position: absolute;
+        top: 50%;
+        right: -1.25%;
+        border-radius: 100%;
+        background-color: #fff;
+        width: 3.125rem;
+        height: 3.125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &::after {
+          color: #f5f5f5 !important;
+        }
+      }
+    }
+  }
+  .company-promo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.875rem;
+    .title {
+      text-transform: uppercase;
+      font-size: 1.875rem;
+    }
+    .promo {
+      width: 100%;
+      height: 28.188rem;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.875rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #bdbdbd;
+    }
+  }
 }

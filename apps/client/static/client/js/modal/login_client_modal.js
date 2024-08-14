@@ -35,7 +35,7 @@ function addNewClient(endpointClient, phone, pin) {
       });
   });
 }
-addNewClient("/api/v1/client/login/", "89276892248", "1111");
+addNewClient("/api/v1/client/login/", "89276892252", "1111");
 
 function updateClient() {
   // const idClient = element.getAttribute("data-client-id");
@@ -223,7 +223,7 @@ function updateRequisites() {
 }
 updateRequisites();
 
-function getAllClient(endpointClient, phone, pin) {
+function getAllClient() {
   const clientAdd = document.querySelector(".client_info");
 
   clientAdd.addEventListener("click", (event) => {
@@ -249,7 +249,7 @@ function getAllClient(endpointClient, phone, pin) {
 }
 getAllClient();
 
-function addEmailCall(endpointClient, phone, pin) {
+function addEmailCall() {
   const clientAdd = document.querySelector(".coll");
 
   clientAdd.addEventListener("click", (event) => {
@@ -281,3 +281,36 @@ function addEmailCall(endpointClient, phone, pin) {
   });
 }
 addEmailCall();
+
+function addEmailManager() {
+  const clientAdd = document.querySelector(".send-manager");
+
+  clientAdd.addEventListener("click", (event) => {
+    const client_id = "21";
+    const text_message = "werweукйукйцукйцку  йцуцуцйуй цйуй цуй уйцу йцуйцуйцццццццццццццццццццццццццццццццццццццццццццrwer";
+    const endpoint = "/send_email_manager";
+    const clientAdd = document.querySelector(".client_update");
+    let dataArr = {
+      client_id:client_id,
+      text_message:text_message,
+    };
+
+
+    let data = JSON.stringify(dataArr);
+    let csrfToken = getCookie("csrftoken");
+    console.log(data);
+    fetch(endpoint, {
+      method: "POST",
+      body: data,
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+  });
+}
+addEmailManager();

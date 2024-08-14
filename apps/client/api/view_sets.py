@@ -65,6 +65,9 @@ class ApiClient(viewsets.ModelViewSet):
                 # новый юзер
                 if serializer.is_valid():
                     client = serializer.save()
+                    client.add_manager()
+                    
+                    
                 # старый юзер логин
                 else:
                     client = Client.objects.get(username=phone)
@@ -73,9 +76,12 @@ class ApiClient(viewsets.ModelViewSet):
                 if client.is_active:
                     if client.last_login:
                         login(request, client)
+                        
+                        # client.add_manager()
                         return Response(serializer.data, status=status.HTTP_200_OK)
                     else:
                         login(request, client)
+                        # client.add_manager()
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
                 else:

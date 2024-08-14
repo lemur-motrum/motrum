@@ -147,6 +147,23 @@ def send_email_message_and_file(subject, message, to_email, file):
     email.send()
  
     return email    
+
+def send_email_message_html(subject, message, to_email,html_message):
+
+    send_result = send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [to_email],
+        fail_silently=True,
+        html_message=html_message,
+    )
+    
+
+    if send_result == 1:
+        return True
+    else:
+        return False
     
 def promote_product_slider(product):
     from apps.core.models import SliderMain

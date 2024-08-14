@@ -1,0 +1,12 @@
+
+{% if is_need == True %}
+<div style= "display: flex;border: 1px solid" >
+  ПЕРСОНАЛЬНЫЙ МЕНЕДЖЕР
+  {{manager}}
+  {{manager.first_name}}
+  {{manager.last_name}}
+  {{manager.email}}
+  <button class="send-manager" type="button">сообщение менеджеру</button>
+
+</div>
+{% endif %}

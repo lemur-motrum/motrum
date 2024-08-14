@@ -5,14 +5,14 @@ from django.db import models
 from simple_history.models import HistoricalRecords, HistoricForeignKey
 
 from apps.specification.models import Specification
-from apps.user.models import CustomUser
+from apps.user.models import AdminUser, CustomUser
 
 
 class Client(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     contact_name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
     phone = models.CharField("Номер телефона", max_length=40,unique=True)
-    # manager = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
+    manager = models.ForeignKey(AdminUser, blank=True,null=True, on_delete=models.CASCADE)
     
     class Meta:
         verbose_name = "Клиент"
@@ -28,6 +28,23 @@ class Client(CustomUser):
 
     def __str__(self):
         return self.phone
+    
+    def add_manager(self):
+        if self.manager == None:
+            old_user = Client.objects.filter().last()
+            print(old_user)
+            old_user_manager = old_user.manager
+            if old_user_manager:
+                admin = AdminUser.objects.filter(admin_type="BASE").exclude(id=old_user_manager.id).order_by("?").first()
+                self.manager = admin
+                self.save()
+                print(admin)
+            else:
+                admin = AdminUser.objects.filter(admin_type="BASE").order_by("?").first()
+                self.manager = admin
+                self.save()
+                print(admin)    
+            
 
 
 class Requisites(models.Model):

@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
-
+    
     class Meta:
         verbose_name = "Администратор"
         verbose_name_plural = "Администраторы"

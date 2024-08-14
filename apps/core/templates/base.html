@@ -1,5 +1,8 @@
-{% load sass_tags %}
 {% load static %}
+{% load sass_tags %}
+{% load manager_client %}
+
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -17,6 +20,8 @@
 
         {% block content %}
         {% endblock content %}
+        {% manager_client %}
+        
 
        <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
         {% include "core/includes/scripts.html" %}

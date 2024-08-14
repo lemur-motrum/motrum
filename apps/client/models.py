@@ -13,6 +13,9 @@ class Client(CustomUser):
     contact_name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
     phone = models.CharField("Номер телефона", max_length=40,unique=True)
     manager = models.ForeignKey(AdminUser, blank=True,null=True, on_delete=models.CASCADE)
+    percent = models.FloatField(
+            "Процент скидки",blank=True,null=True,
+        )
     
     class Meta:
         verbose_name = "Клиент"
@@ -121,18 +124,18 @@ class AccountRequisites(models.Model):
         return self.account_requisites
 
 
-class ClientDiscount(models.Model):
-    requisites = models.OneToOneField(Requisites,verbose_name="Юр.лицо", on_delete=models.CASCADE)
-    percent = models.FloatField(
-            "Процент скидки",
-        )
+# class ClientDiscount(models.Model):
+#     requisites = models.OneToOneField(Requisites,verbose_name="Юр.лицо", on_delete=models.CASCADE)
+#     percent = models.FloatField(
+#             "Процент скидки",
+#         )
     
-    class Meta:
-        verbose_name = "Скидка юрлица"
-        verbose_name_plural = "Скидки юрлиц"
+#     class Meta:
+#         verbose_name = "Скидка юрлица"
+#         verbose_name_plural = "Скидки юрлиц"
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
 STATUS_ORDER = (
     ("BASE", "В обработке"),

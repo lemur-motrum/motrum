@@ -4,10 +4,15 @@ from apps.product.views import VendorAutocomplete, GropeAutocomplete,SupplierCat
 # from apps.product.views import  GropeAutocomplete
 
 from . import views
+from .api import view_sets
+from rest_framework import routers
 
 from django.urls import re_path as url
 
 app_name = 'product'
+
+router = routers.DefaultRouter()
+router.register(r"v1/product", view_sets.ApiProduct)
 
 urlpatterns = [
 

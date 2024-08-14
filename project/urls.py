@@ -25,11 +25,13 @@ from project.admin import website_admin
 from rest_framework import routers
 
 from apps.client.urls import router as client_router
+from apps.product.urls import router as product_router
 
 
 
 router = routers.DefaultRouter()
 router.registry.extend(client_router.registry)
+router.registry.extend(product_router.registry)
 
 
 

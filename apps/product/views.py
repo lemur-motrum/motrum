@@ -8,6 +8,24 @@ from dal.views import BaseQuerySetView
 from apps.product.models import CategoryProduct, GroupProduct, Product
 from apps.supplier.models import SupplierCategoryProduct, SupplierCategoryProductAll, SupplierGroupProduct, Vendor
 
+def catalog(request):
+    product_list = Product.objects.select_related(
+        "supplier",
+        "vendor",
+        "category_supplier_all",
+        "group_supplier",
+        "category_supplier",
+        "category",
+        "group",
+        "price",
+        "stock",
+    ).filter(check_to_order=True)[0:10]
+
+    context = {
+        'product_list': product_list
+    }
+
+    return render(request, 'product/catalog.html', context)
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 

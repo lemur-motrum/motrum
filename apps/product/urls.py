@@ -1,5 +1,7 @@
 from django.urls import include, path
 
+from rest_framework import routers
+
 from apps.product.views import VendorAutocomplete, GropeAutocomplete,SupplierCategoryProductAllAutocomplete,SupplierCategoryProductAutocomplete,SupplierGroupProductAutocomplete
 # from apps.product.views import  GropeAutocomplete
 
@@ -7,10 +9,19 @@ from . import views
 
 from django.urls import re_path as url
 
+from .api.view_sets import ProductViewSet
+
 app_name = 'product'
 
-urlpatterns = [
+router = routers.DefaultRouter()
+router.register(r"v1/product", ProductViewSet)
 
+urlpatterns = [
+    url(
+        "",
+        views.catalog,
+        name="catalog"
+    ),
     url(
         r"^vendor-autocomplete/$",
         VendorAutocomplete.as_view(),

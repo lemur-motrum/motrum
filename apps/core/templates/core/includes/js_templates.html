@@ -1,0 +1,7 @@
+<div style="display: none;" template-elem="wrapper">
+    {% for template in template_list %}
+    	<div {{ template.module }}-elem="{{ template.name }}">
+            {{ template.template }}
+        </div>
+    {% endfor %}
+</div>

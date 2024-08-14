@@ -50,6 +50,7 @@ urlpatterns = [
     
     # для сайта
     path("project/", include("apps.projects_web.urls", namespace="project")),
+    path("vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
     
     # апи
     path("api/", include(router.urls)),

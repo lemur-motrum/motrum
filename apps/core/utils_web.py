@@ -4,6 +4,7 @@ from django.core.cache import cache
 import os
 import random
 from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 from django.http import HttpResponse
 
@@ -120,7 +121,7 @@ def send_pin( pin,mobile_number):
     return "пин отправлен"
 
 def send_email_message(subject, message, to_email):
-    print(settings.EMAIL_HOST_USER,)
+
     send_result = send_mail(
         subject,
         message,
@@ -128,11 +129,24 @@ def send_email_message(subject, message, to_email):
         [to_email],
         fail_silently=False,
     )
+    
 
     if send_result == 1:
         return True
     else:
         return False
+    
+def send_email_message_and_file(subject, message, to_email, file):
+
+    email = EmailMessage(
+    subject, 
+    message, 
+    settings.EMAIL_HOST_USER, 
+    [to_email])
+    email.attach_file(file)
+    email.send()
+ 
+    return email    
     
 def promote_product_slider(product):
     from apps.core.models import SliderMain
@@ -151,3 +165,6 @@ def promote_product_slider(product):
         # )
     else:
         pass
+    
+# def email_callback():
+#     pass    

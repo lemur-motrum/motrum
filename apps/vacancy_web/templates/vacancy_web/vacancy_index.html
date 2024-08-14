@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+{{title}}
+
+
+{% for vacancy_item in vacancy %}
+{{vacancy_item.slug}}
+<a href="{% url 'vacancy_web:vacancy_item' vacancy_item.slug %}">{{vacancy_item}}</a>
+
+{% endfor %}
+
+
+{% endblock content %}

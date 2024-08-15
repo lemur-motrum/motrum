@@ -1,5 +1,9 @@
 import "/static/core/js/slider.js";
-import {getCookie} from "/static/core/js/functions.js";
+import {
+  getCookie,
+  setCookie,
+  deleteCookie,
+} from "/static/core/js/functions.js";
 
 //Класс для разделения чила на разряды
 class NumberParser {
@@ -50,7 +54,6 @@ class NumberParser {
 //   // Обновляем URL в адресной строке без перезагрузки страницы
 //   window.history.replaceState(null, "", "?" + searchParams);
 // };
-
 
 // функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
 function getCurrentPrice(p) {

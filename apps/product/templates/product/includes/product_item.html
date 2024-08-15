@@ -1,4 +1,9 @@
 <div class="product_item" catalog-elem="product-item">
     test
     {{ product.name }}
+    {{ product.price.rub_price_supplier }}р
+    {{ product.productproperty_set }}
+    {% comment %} {% for props in product.productproperty_set %}
+        {{props.name}}-{{props.value}}
+    {% endfor %} {% endcomment %}
 </div>

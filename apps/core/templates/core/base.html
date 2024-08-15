@@ -24,7 +24,18 @@
 
        <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
         {% include "core/includes/scripts.html" %}
-
+        <script>
+            function validate(evt) {
+                let theEvent = evt || window.event;
+                let key = theEvent.keyCode || theEvent.which;
+                key = String.fromCharCode(key);
+                const regex = /[0-9]|\./;
+                if( !regex.test(key) ) {
+                    theEvent.returnValue = false;
+                if(theEvent.preventDefault) theEvent.preventDefault();
+                }
+            }
+        </script>
    
     </body>
 </html>

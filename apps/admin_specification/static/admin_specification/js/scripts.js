@@ -1,5 +1,5 @@
 import "/static/core/js/slider.js";
-import {getCookie} from "/static/core/js/functions.js";
+import {getCookie,setCookie,deleteCookie} from "/static/core/js/functions.js";
 
 //Класс для разделения чила на разряды
 class NumberParser {

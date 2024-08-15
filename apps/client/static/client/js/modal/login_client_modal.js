@@ -4,8 +4,6 @@ function getCookie(name) {
       "(?:^|; )" +
         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
         "=([^;]*)"
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-        "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -35,7 +33,7 @@ function addNewClient(endpointClient, phone, pin) {
       .then((data) => {
         console.log(data);
       });
-  });
+  });}
 }
 addNewClient("/api/v1/client/login/", "89276892252", "1111");
 
@@ -80,24 +78,6 @@ function addRequisites() {
   const endpoint = "/api/v1/requisites/add/";
   const clientAdd = document.querySelector(".client_requisites");
   if (clientAdd) {
-    clientAdd.addEventListener("click", (event) => {
-      let dataArr = [
-        {
-          requisites: {
-            contract: 23423424,
-            legal_entity: "3Юридическ1ое лицо",
-            inn: 123212,
-            kpp: 1232123,
-            ogrn: 122313,
-            legal_post_code: 1223123,
-            legal_city: "dsgsdfsf",
-            legal_address: "aweaeawe",
-            postal_post_code: 12313,
-            postal_city: "wewqweqe",
-            postal_address: "qweqwee",
-            client: idClient,
-          },
-
   clientAdd.addEventListener("click", (event) => {
     let dataArr = [
       {
@@ -186,7 +166,7 @@ function updateRequisites() {
   const idRequisites = 63;
   const endpoint = "/api/v1/requisites/" + idRequisites + "/update/";
   const clientAdd = document.querySelector(".client_upd");
-
+  if (clientAdd){
   clientAdd.addEventListener("click", (event) => {
     let dataArr = [
       {
@@ -241,13 +221,13 @@ function updateRequisites() {
       .then((data) => {
         console.log(data);
       });
-  });
+  });}
 }
 updateRequisites();
 
 function getAllClient() {
   const clientAdd = document.querySelector(".client_info");
-
+  if (clientAdd) {
   clientAdd.addEventListener("click", (event) => {
     const idClient = 10;
     const endpoint = "/api/v1/client-requisites/" + idClient + "/";
@@ -267,13 +247,13 @@ function getAllClient() {
       .then((data) => {
         console.log(data);
       });
-  });
+  });}
 }
 getAllClient();
 
 function addEmailCall() {
   const clientAdd = document.querySelector(".coll");
-
+  if (clientAdd){
   clientAdd.addEventListener("click", (event) => {
     const name = "sfsdfsf";
     const phone = "526626526";
@@ -300,39 +280,40 @@ function addEmailCall() {
       .then((data) => {
         console.log(data);
       });
-  });
+  });}
 }
 addEmailCall();
 
 function addEmailManager() {
   const clientAdd = document.querySelector(".send-manager");
+  if (clientAdd){
+    clientAdd.addEventListener("click", (event) => {
+      const client_id = "21";
+      const text_message = "werweукйукйцукйцку  йцуцуцйуй цйуй цуй уйцу йцуйцуйцццццццццццццццццццццццццццццццццццццццццццrwer";
+      const endpoint = "/send_email_manager";
+      const clientAdd = document.querySelector(".client_update");
+      let dataArr = {
+        client_id:client_id,
+        text_message:text_message,
+      };
 
-  clientAdd.addEventListener("click", (event) => {
-    const client_id = "21";
-    const text_message = "werweукйукйцукйцку  йцуцуцйуй цйуй цуй уйцу йцуйцуйцццццццццццццццццццццццццццццццццццццццццццrwer";
-    const endpoint = "/send_email_manager";
-    const clientAdd = document.querySelector(".client_update");
-    let dataArr = {
-      client_id:client_id,
-      text_message:text_message,
-    };
 
-
-    let data = JSON.stringify(dataArr);
-    let csrfToken = getCookie("csrftoken");
-    console.log(data);
-    fetch(endpoint, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
+      let data = JSON.stringify(dataArr);
+      let csrfToken = getCookie("csrftoken");
+      console.log(data);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  });
 }
-addEmailManager();
+}
+addEmailManager()

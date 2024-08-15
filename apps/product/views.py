@@ -13,7 +13,9 @@ from apps.supplier.models import (
     Vendor,
 )
 
+
 def catalog(request):
+    
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",
@@ -26,11 +28,10 @@ def catalog(request):
         "stock",
     ).filter(check_to_order=True)[0:10]
 
-    context = {
-        'product_list': product_list
-    }
+    context = {"product_list": product_list}
 
-    return render(request, 'product/catalog.html', context)
+    return render(request, "product/catalog.html", context)
+
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 

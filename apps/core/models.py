@@ -35,6 +35,7 @@ class CurrencyPercent(models.Model):
 
 class Vat(models.Model):
     name = models.SmallIntegerField("Процент ндс")
+    nameid = models.SmallIntegerField("Процент ндс",blank=True, null=True)
 
     class Meta:
         verbose_name = "НДС"

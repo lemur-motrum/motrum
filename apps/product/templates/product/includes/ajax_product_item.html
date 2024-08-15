@@ -1,4 +1,11 @@
 <div class="product_item" catalog-elem="product-item">
     ajax-test
     {{ name }}
+    {{ article }}
+    {{ price.rub_price_supplier }}
+    {% if productproperty_set %}
+        {% for props in  productproperty_set%}
+        {{props.name}}
+        {% endfor %}
+   {% endif %}
 </div>

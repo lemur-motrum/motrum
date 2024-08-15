@@ -6,9 +6,11 @@ let catalogButton = catalogWrapper.querySelector('[catalog-elem="button"]')
 
 catalogButton.addEventListener('click', function(event) {
   let productsCount = catalogContainer.querySelectorAll('[catalog-elem="product-item"]').length
-
+  let productsVendorId = "1"
   let data = {
-    'count': productsCount
+    'count': productsCount,
+    "vendor":productsVendorId,
+    "page": 3
   }
 
   let params = new URLSearchParams(data)
@@ -22,8 +24,11 @@ catalogButton.addEventListener('click', function(event) {
     }
   }).then((response) => response.json())
     .then(function (data) {
-      for (let i in data) {
-        addAjaxCatalogItem(data[i])
+      console.log(data)
+      for (let i in data.data) {
+        console.log(data.data[i])
+        addAjaxCatalogItem(data.data[i])
+        console.log(data.next)
       }
     })
 })

@@ -1,6 +1,5 @@
 import json
 import os
-from click import group
 from django.core import serializers
 from django.db.models import Prefetch
 
@@ -17,11 +16,10 @@ from apps.product.models import (
     Stock,
 )
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import permission_required, login_required
-from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
+
 from apps.specification.models import ProductSpecification, Specification
-from apps.specification.utils import crete_pdf_specification
-from apps.supplier.models import Discount, Supplier, Vendor
+
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm

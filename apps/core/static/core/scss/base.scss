@@ -15,11 +15,79 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
   .site-content {
     flex: 1 0 auto;
   }
   .footer {
     flex: 0 0 auto;
+  }
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    .modal-window {
+      width: 31.375rem;
+      height: -webkit-max-content;
+      height: -moz-max-content;
+      height: max-content;
+      background-color: #fff;
+      box-sizing: border-box;
+      padding: 2.313rem 2.063rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.875rem;
+
+      .title {
+        text-align: center;
+        font-size: 1.875rem;
+        text-transform: uppercase;
+      }
+      .autification-form {
+        display: flex;
+        flex-direction: column;
+        label {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          span {
+            text-align: center;
+            font-size: 0.813rem;
+          }
+          input {
+            height: 3.125rem;
+            font-size: 1.125rem;
+            border: 0.063rem solid #a4a4a4;
+            border-radius: 5px;
+            text-align: center;
+            &:focus {
+              outline: none;
+            }
+          }
+          &.password-label {
+            margin-top: 0.5rem;
+            display: none;
+          }
+        }
+        .autification-button {
+          margin-top: 1.75rem;
+          height: 3.125rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+          font-size: 1.125rem;
+          border: none;
+          border-radius: 5px;
+          background-color: #a4a4a4;
+        }
+      }
+    }
   }
 }
 
@@ -50,11 +118,12 @@ body {
   }
   .user-navigation {
     position: absolute;
+    width: 77%;
     top: 70%;
     left: 23%;
     display: flex;
     align-items: center;
-    gap: 5.525rem;
+    justify-content: space-between;
     .navigation {
       display: flex;
       gap: 2.188rem;
@@ -325,6 +394,76 @@ body {
       text-transform: uppercase;
       font-weight: bold;
       color: #bdbdbd;
+    }
+  }
+}
+
+.lc-container {
+  margin: 1.625rem 3.125rem 0 3.125rem;
+  .title-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    .bread-crumbs {
+      margin-bottom: 0;
+      .bread-crumb-elem {
+        font-size: 0.813rem;
+        text-transform: lowercase;
+      }
+    }
+    .title {
+      margin: 0;
+      padding: 0;
+    }
+  }
+  .navigation-and-sorting {
+    margin-top: 1.313rem;
+    display: flex;
+    justify-content: space-between;
+    .navigation {
+      display: flex;
+      gap: 1.875rem;
+      .nav-elem {
+        font-size: 0.938rem;
+        font-weight: bold;
+        color: #a4a4a4;
+        text-transform: uppercase;
+        &.active {
+          font-weight: bold;
+          color: #000;
+        }
+      }
+    }
+    .sort-container {
+      display: flex;
+      gap: 1.875rem;
+      font-size: 0.938rem;
+      .sort-elem {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        .arrow {
+          position: relative;
+          width: 0.688rem;
+          height: 0.361rem;
+          display: flex;
+          gap: 0.23rem;
+          .arrow-elem-1 {
+            width: 0.102rem;
+            height: 0.453rem;
+            border-radius: 2px;
+            transform: rotate(-45deg);
+            background-color: #000;
+          }
+          .arrow-elem-2 {
+            width: 0.102rem;
+            height: 0.453rem;
+            border-radius: 2px;
+            transform: rotate(45deg);
+            background-color: #000;
+          }
+        }
+      }
     }
   }
 }

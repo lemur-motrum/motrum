@@ -1,10 +1,11 @@
 from django.urls import include, path
 from . import views
+
 # from .api import view_sets
 from rest_framework import routers
 
 # router.register(r'accounts', AccountViewSet)
-app_name = 'core'
+app_name = "core"
 
 router = routers.DefaultRouter()
 # router.register(r"v1/email-callback", view_sets.ApiClient)
@@ -12,7 +13,8 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path("", views.index, name="index"),#главная
     path("okt", views.okt, name="okt"),
-    # path("web", views.web, name="web"),
+    path("web", views.web, name="web"),
+    path("lc", views.lc, name="lc"),
     path("company/", views.web, name="about"),#компания общая
     path("company/about", views.web, name="about"),#компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
@@ -30,5 +32,5 @@ urlpatterns = [
     
     # EMAILS
     path("send_email_callback", views.email_callback, name="send_email_callback"),
-    path("send_email_manager", views.email_manager, name="send_email_manager")
+    path("send_email_manager", views.email_manager, name="send_email_manager"),
 ]

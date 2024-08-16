@@ -18,8 +18,8 @@ export function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-      "=([^;]*)"
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+        "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -50,9 +50,8 @@ export function setCookie(name, value, options = {}) {
 // функция удаления куки
 export function deleteCookie(name, path, domain) {
   if (getCookie(name)) {
-    document.cookie = `${name}=; Path=${path}; Max-Age=-1;`
+    document.cookie = `${name}=; Path=${path}; Max-Age=-1;`;
     // document.cookie =
     // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
-
 }

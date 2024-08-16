@@ -24,14 +24,12 @@ def index(request):
     return render(request, "core/index.html", context)
 
 
-
 def okt(request):
 
     context = {}
 
     context = {}
     return render(request, "core/okt.html", context)
-
 
 
 def web(request):
@@ -42,6 +40,12 @@ def web(request):
     }
     return render(request, "core/web.html", context)
 
+
+def lc(request):
+    context = {
+        "title": "Личный кабинет",
+    }
+    return render(request, "core/lc.html", context)
 
 
 # EMAIL SEND
@@ -65,7 +69,8 @@ def email_callback(request):
     else:
         out = {"status": status.HTTP_400_BAD_REQUEST}
         return JsonResponse(out)
-    
+
+
 def email_manager(request):
     if request.method == "POST":
         body = json.loads(request.body)
@@ -73,23 +78,21 @@ def email_manager(request):
         client_id = body["client_id"]
         text_message = body["text_message"]
         client = Client.objects.get(id=int(client_id))
-      
 
         title_email = "Сообщение с сайта от клиента"
         text_email = f"Клиент: {client.contact_name}Телефон: {client.phone}Сообщение{text_message}"
-        
+
         to_manager = client.manager.email
         html_message = loader.render_to_string(
-            'core/email.html',
+            "core/email.html",
             {
-                'client_name': client.contact_name,
-                'client_phone':   client.phone,
-                "text": text_message
-                 
-            }
+                "client_name": client.contact_name,
+                "client_phone": client.phone,
+                "text": text_message,
+            },
         )
         send_code = send_email_message_html(
-            title_email, text_email, to_manager,html_message=html_message
+            title_email, text_email, to_manager, html_message=html_message
         )
 
         if send_code:
@@ -99,4 +102,4 @@ def email_manager(request):
         return JsonResponse(out)
     else:
         out = {"status": status.HTTP_400_BAD_REQUEST}
-        return JsonResponse(out)    
+        return JsonResponse(out)

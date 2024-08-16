@@ -1,11 +1,16 @@
 {% load static %}
+{% load current_year %}
 <div class="footer">
     <div class="motrum-footer">
         <div class="motrum-logo-container">
             <img src={% static "core/images/footer-logo.png" %} alt="logo" />
         </div>
         <div class="description">
-            <div>© 2024 ООО "ПМН Мотрум". Все права защищены.</div>
+            <div>
+                ©
+                {% current_year %}
+                ООО "ПМН Мотрум". Все права защищены.
+            </div>
             <a href="#">политика конфиденциальности</a>
         </div>
     </div>

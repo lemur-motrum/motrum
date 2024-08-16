@@ -1,28 +1,34 @@
 {% load static %}
-
 {% load manager_client %}
 {% load js_templates %}
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <!--css инклудить в общий -->
+        <!--css инклудить в общий -->
         {% include "core/includes/stylesheets.html" %}
-
         <title>{{ title }}</title>
     </head>
     <body>
-        <input id="user_id" type="hidden" data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}"></input>
-        <input id="client_id" type="hidden" data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}"></input>
-
-
-        {% block content %}
-        {% endblock content %}
-        {% manager_client %}
+        <div class="wrapper">
+            <div class="site-content">
+                <input id="user_id"
+                       type="hidden"
+                       data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
+                <input id="client_id"
+                       type="hidden"
+                       data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
+                {% block content %}
+                {% endblock content %}
+            </div>
+            {% include "core/includes/footer.html" %}
+            {% include "core/includes/overlay-modal.html" %}
+            {% manager_client %}
+        </div>
         {% js_templates %}
-
-       <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+        <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
         {% include "core/includes/scripts.html" %}
         <script>
             function validate(evt) {
@@ -36,6 +42,5 @@
                 }
             }
         </script>
-   
     </body>
 </html>

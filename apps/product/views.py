@@ -15,7 +15,7 @@ from apps.supplier.models import (
 
 
 def catalog(request):
-    
+
     product_list = Product.objects.select_related(
         "supplier",
         "vendor",

@@ -1,43 +1,65 @@
 from rest_framework import serializers
 
-from apps.product.models import Price, Product, ProductProperty, Stock
+from apps.product.models import Lot, Price, Product, ProductProperty, Stock
 
 
 class PriceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Price
-        fields = "__all__"
+        fields = (
+            "rub_price_supplier",
+            "extra_price",
+        )
+
+
+class LotSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Lot
+        fields = ("name_shorts",)
 
 
 class StockSerializer(serializers.ModelSerializer):
 
+    lot = serializers.SlugRelatedField(
+        slug_field="name_shorts",
+        many=False,
+        read_only=True,
+    )
+
     class Meta:
         model = Stock
-        fields = "__all__"
+        fields = (
+            "order_multiplicity",
+            "lot",
+            "lot_complect",
+        )
 
 
 class ProductPropertySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductProperty
-        fields = "__all__"
+        fields = (
+            "hide",
+            "name",
+            "value",
+        )
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # price_set = PriceSerializer(read_only=False, many=True)
-    # stock_set = StockSerializer(read_only=False, many=True)
-    # productproperty_set = ProductPropertySerializer(read_only=False, many=True)
-    class Meta:
-        model = Product
-        fields = ("name",)
-
-
-class ProductTestSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
     stock = StockSerializer(read_only=False, many=False)
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "article",
+            "price",
+            "stock",
+            "productproperty_set",
+        )

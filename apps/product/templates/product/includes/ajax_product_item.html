@@ -4,6 +4,10 @@
     {{ article }}
     {{ price.rub_price_supplier }}
     {% if productproperty_set %}
-        {% for props in  productproperty_set %}{{ props.name }}{% endfor %}
-    {% endif %}
+        {% for props in  productproperty_set%}
+        {{props.name}}
+        {% endfor %}
+   {% endif %}
+   {{ stock }}
+   {{ stock.name }}
 </div>

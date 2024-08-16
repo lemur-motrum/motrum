@@ -24,9 +24,7 @@ app_name = "product"
 
 router = routers.DefaultRouter()
 router.register(r"v1/product", ProductViewSet)
-router.register(
-    r"v1/product-test", view_sets.ApiCProductViewSet, basename="product-test"
-)
+# router.register(r"v1/product-test",view_sets.ApiCProductViewSet,basename="product-test")
 
 urlpatterns = [
     url("", views.catalog, name="catalog"),

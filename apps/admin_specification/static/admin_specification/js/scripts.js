@@ -141,7 +141,7 @@ function addProductInSpecification(
   if (btn.disabled == false) {
     const product = {
       id: +id,
-      name: name,
+      name: name.replace(/;/gi, ","),
       price: getCurrentPrice(price),
       idMotrum: motrumId,
       idSaler: salerId,

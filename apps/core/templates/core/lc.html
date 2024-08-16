@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}
+{% block content %}
+    {% include "core/includes/header.html" %}
+    <div class="lc-container">
+        <div class="title-container">
+            <div class="bread-crumbs">
+                <div class="bread-crumb-elem">Главная</div>
+            </div>
+            <h1 class="title">{{ title }}</h1>
+        </div>
+        <div class="navigation-and-sorting">
+            <div class="navigation">
+                <div class="nav-elem active">мои заказы</div>
+                <div class="nav-elem">документы</div>
+                <div class="nav-elem">мои реквизиты</div>
+                <div class="nav-elem">мои контакты</div>
+            </div>
+            <div class="sort-container">
+                <div class="sort-title">Сортировать по:</div>
+                <div class="sort-elem">
+                    <span>дата заказа</span>
+                    <div class="arrow">
+                        <div class="arrow-elem-1"></div>
+                        <div class="arrow-elem-2"></div>
+                    </div>
+                </div>
+                <div class="sort-elem">
+                    <span>сумма заказа</span>
+                    <div class="arrow">
+                        <div class="arrow-elem-1"></div>
+                        <div class="arrow-elem-2"></div>
+                    </div>
+                </div>
+                <div class="sort-elem">
+                    <span>статус</span>
+                    <div class="arrow">
+                        <div class="arrow-elem-1"></div>
+                        <div class="arrow-elem-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

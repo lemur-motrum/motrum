@@ -1,6 +1,7 @@
 {% load static %}
 {% load manager_client %}
 {% load js_templates %}
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -11,21 +12,25 @@
         <title>{{ title }}</title>
     </head>
     <body>
-        <input id="user_id"
-               type="hidden"
-               data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}">
-    </input>
-    <input id="client_id"
-           type="hidden"
-           data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}">
-</input>
-{% block content %}
-{% endblock content %}
-{% manager_client %}
-{% js_templates %}
-<!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
-{% include "core/includes/scripts.html" %}
-<script>
+        <div class="wrapper">
+            <div class="site-content">
+                <input id="user_id"
+                       type="hidden"
+                       data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
+                <input id="client_id"
+                       type="hidden"
+                       data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
+                {% block content %}
+                {% endblock content %}
+            </div>
+            {% include "core/includes/footer.html" %}
+            {% include "core/includes/overlay-modal.html" %}
+            {% manager_client %}
+        </div>
+        {% js_templates %}
+        <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+        {% include "core/includes/scripts.html" %}
+        <script>
             function validate(evt) {
                 let theEvent = evt || window.event;
                 let key = theEvent.keyCode || theEvent.which;
@@ -36,6 +41,6 @@
                 if(theEvent.preventDefault) theEvent.preventDefault();
                 }
             }
-</script>
-</body>
+        </script>
+    </body>
 </html>

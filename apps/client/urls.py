@@ -16,6 +16,7 @@ router.register(r"v1/requisites",view_sets.ApiRequisites)
 
 urlpatterns = [
     path("", views.index, name="index"),
+    
     # path("/<int:client_id>", views.client, name="lk"),
 
 ]

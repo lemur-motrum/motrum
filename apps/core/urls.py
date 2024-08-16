@@ -10,9 +10,21 @@ router = routers.DefaultRouter()
 # router.register(r"v1/email-callback", view_sets.ApiClient)
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.index, name="index"),#главная
     path("okt", views.okt, name="okt"),
-    path("web", views.web, name="web"),
+    # path("web", views.web, name="web"),
+    path("about", views.web, name="about"),#компания
+    path("solutions/", views.web, name="solutions"),#решения все
+    path("marking", views.web, name="marking"),#решения маркировка
+    path("cobots", views.web, name="cobots"),#решения коботы
+    path("shkaf-upravleniya", views.web, name="shkaf-upravleniya"),#сборка шкафов управления
+    path("contact", views.web, name="contact"),#контакты
+    path("cart", views.index, name="cart"),#корзина. или перенести в отдельный апп??
+    path("privacy-policy", views.web, name="privacy-policy"),#политика конфиденциальности
+    #проекты в app project_web
+    #вакансии в app vacancy_web
+    #каталог и товар  в app product
+    #личный кабинет   в  app client
     
     path("send_email_callback", views.email_callback, name="send_email_callback"),
     path("send_email_manager", views.email_manager, name="send_email_manager")

@@ -16,10 +16,11 @@ from project.settings import EMAIL_BACKEND
 
 # Create your views here.
 def index(request):
+    categories = CategoryProduct.objects.all().order_by("article_name")
 
-    context = {}
-
-    context = {}
+    context = {
+        "categories": categories,
+    }
     return render(request, "core/index.html", context)
 
 

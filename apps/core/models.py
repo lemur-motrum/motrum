@@ -106,7 +106,7 @@ class SliderMain(models.Model):
         slug_text = self.name
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
-        print(self.product_promote)
+
         if self.product_promote:
 
             if self.active:

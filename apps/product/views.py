@@ -32,7 +32,7 @@ def catalog(request):
 
     return render(request, "product/catalog.html", context)
 
-
+# автозаполнения для админки бек окт 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):

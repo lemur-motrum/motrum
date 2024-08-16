@@ -1,4 +1,5 @@
 import os
+import re
 from django.conf import settings
 from regex import F
 from rest_framework import routers, serializers, viewsets, mixins, status
@@ -28,20 +29,15 @@ class ClientViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"login")
     def create_or_login_users(self, request, *args, **kwargs):
         data = request.data
-        phone = data["phone"].replace(" ", "")
+        # phone = data["phone"].replace(" ", "")
+        phone = re.sub(r'[^0-9+]+', r'', data["phone"])
+        print(phone)
         pin_user = data["pin"]
         data["is_active"] = True
         data["username"] = phone
         # pin = _get_pin(4)
         pin = 1111
         cache.set(phone, pin, 120)
-        # email ="a@ashvechkova.ru"
-        # send_code = send_email_message(
-        #     "Вход в личный кабинет на сайте Motrum",
-        #     "Код для входа: " + str(pin),
-        #     email
-        # )
-
         # первый шаг отправка пин
         if pin_user == "":
             # cache.set(phone, pin, 120)

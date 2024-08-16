@@ -48,7 +48,7 @@ class ProductViewSet(viewsets.ViewSet):
             sort = "price__rub_price_supplier"
             ordering_filter = OrderBy(
                 F(sort.lstrip("-")),
-                descending=sort_price.startswith("-"),
+                descending="-".startswith("-"),
                 nulls_last=True,
             )
                 

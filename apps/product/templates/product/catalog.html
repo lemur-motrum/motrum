@@ -10,6 +10,15 @@
 
         <button catalog-elem="button">Кнопка</button>
     </div>
-
+    {% comment %} {% if category %}
+        {% for category_item in category %}
+     
+        {% if category_item.slug %}
+        {{category_item.slug}}
+            <a href="{% url 'product:group' category_item.slug %}">{{category_item}}</a> 
+        {% endif %}
+        
+        {% endfor %}
+    {% endif %} {% endcomment %}
 
 {% endblock %}

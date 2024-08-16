@@ -26,7 +26,17 @@ router = routers.DefaultRouter()
 router.register(r"v1/product", ProductViewSet)
 
 urlpatterns = [
-    url("", views.catalog, name="catalog"),
+    url("", views.catalog_all, name="catalog"),
+    # url("<slug:cat>", views.catalog_group, name="group"),
+    
+ 
+    url("PRODUCT-AJAX", views.catalog, name="catalog"),
+    
+    
+    
+    
+    
+    # автозаполнение для бека
     url(
         r"^vendor-autocomplete/$",
         VendorAutocomplete.as_view(),

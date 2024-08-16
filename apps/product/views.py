@@ -1,9 +1,11 @@
 from unicodedata import category
+from click import group
 from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
 from dal_select2.views import Select2ViewMixin
 from dal.views import BaseQuerySetView
+from regex import P
 
 from apps.product.models import CategoryProduct, GroupProduct, Product
 from apps.supplier.models import (
@@ -12,6 +14,23 @@ from apps.supplier.models import (
     SupplierGroupProduct,
     Vendor,
 )
+
+def catalog_all(request):
+
+    category = CategoryProduct.objects.all().order_by("article_home_web")
+    print(category)
+    context = {"category": category}
+
+    return render(request, "product/catalog.html", context)
+
+def catalog_group(request,slug):
+    # print(slug)
+    category = CategoryProduct.objects.all().order_by("article_home_web")
+    group = GroupProduct.objects.all()
+    print(group)
+    context = {"group": group}
+
+    return render(request, "product/catalog.html", context)
 
 
 def catalog(request):

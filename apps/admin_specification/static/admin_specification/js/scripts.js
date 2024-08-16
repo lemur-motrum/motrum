@@ -882,7 +882,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
           setCookie("key", result, {
             path: "/",
-            domain: window.location.hostname,
+            // domain: window.location.hostname,
           });
           window.location.reload();
         };

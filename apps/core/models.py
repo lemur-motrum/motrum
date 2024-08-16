@@ -13,6 +13,7 @@ class Currency(models.Model):
     name = models.CharField("Название валюты", max_length=30)
     words_code = models.CharField("Букв. код", max_length=30)
     code = models.SmallIntegerField("Цифр. код")
+    
 
     class Meta:
         verbose_name = "Валюта"
@@ -35,7 +36,7 @@ class CurrencyPercent(models.Model):
 
 class Vat(models.Model):
     name = models.SmallIntegerField("Процент ндс")
-    nameid = models.SmallIntegerField("Процент ндс",blank=True, null=True)
+
 
     class Meta:
         verbose_name = "НДС"

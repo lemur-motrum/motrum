@@ -7,15 +7,22 @@ register = template.Library()
 
 @register.inclusion_tag('core/includes/manager.html', takes_context=True)
 def manager_client(context):
-    if context.request.path != "/okt" and context.request.path != "/" and context.request.path != "/admin" and context.request.path != "/admin_specification" and context.request.path != "/web"and context.request.path != "/user/login_admin":
+    # if context.request.path != "/okt" or context.request.path != "/" or context.request.path != "/admin" or context.request.path != "/admin_specification" or context.request.path != "/web" or context.request.path != "/user/login_admin":
+    if context.request.path != "/okt" and context.request.path != "/" and context.request.path != "/admin" and context.request.path != "/admin_specification" and context.request.path != "/web" and context.request.path != "/user/login_admin":    
         if context.request.user.is_authenticated and context.request.user.is_staff == False:
-            client = Client.objects.get(username=context.request.user)
-            manager = client.manager
-            return {
-                'is_need': True,
-                'user': context.request.user,
-                'manager': manager,
-            }
+            try:
+                client = Client.objects.get(username=context.request.user)
+                manager = client.manager
+                return {
+                    'is_need': True,
+                    'user': context.request.user,
+                    'manager': manager,
+                }
+            except Client.DoesNotExist:
+                return {
+                'is_need': False,
+            }    
+          
         else:
             return {
                 'is_need': False,

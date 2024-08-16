@@ -1,7 +1,7 @@
 from django.db import models
 
 
-from apps.core.utils_web import get_file_path_project_web, get_file_path_slider_web
+from apps.core.utils_web import  get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
 

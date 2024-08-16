@@ -14,7 +14,7 @@ urlpatterns = [
     path("", views.index, name="index"),#главная
     path("okt", views.okt, name="okt"),
     path("web", views.web, name="web"),
-    # path("lc", views.lc, name="lc"),
+    path("lc", views.lc, name="lc"),#удалить -  вся работа с лк в app client
     path("company/", views.web, name="about"),#компания общая
     path("company/about", views.web, name="about"),#компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
@@ -26,6 +26,7 @@ urlpatterns = [
     path("contact", views.web, name="contact"),#контакты
     path("cart", views.index, name="cart"),#корзина. или перенести в отдельный апп??
     path("privacy-policy", views.web, name="privacy-policy"),#политика конфиденциальности
+    
     #проекты в app project_web namespace="project"
     #каталог и товар  в app product
     #личный кабинет   в  app client  namespace="lk"

@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.forms import BaseInlineFormSet
 from django.utils.html import mark_safe
 from regex import D
+from apps.core.utils_web import promote_product_slider
 from simple_history.admin import SimpleHistoryAdmin
 from itertools import chain
 from django.contrib import admin
@@ -489,7 +490,7 @@ class ProductImageInline(admin.TabularInline):
     )
 
     def preview(self, obj):
-        print(obj.photo.url)
+     
         img = mark_safe('<img src="{}" height="100"  />'.format(obj.photo.url))
         return img
 
@@ -512,7 +513,7 @@ class ProductImageInline(admin.TabularInline):
         ]
 
     def get_fields(self, request, obj=None):
-        print(request)
+     
         if obj:
             return [
                 "preview",
@@ -775,7 +776,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 parent_id = id_table
 
             item = Product.objects.get(id=parent_id)
-            print(item)
+           
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
             if item.autosave_tag == False:
@@ -812,35 +813,27 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def save_model(self, request, obj, form, change):
         obj._change_reason = "Ручное"
-        print(obj.pk)
+    
         if obj.pk:
             pass
         else:
             obj.autosave_tag = False
+        promote_product_slider(obj)
         super().save_model(request, obj, form, change)
+     
+    
 
     def save_formset(self, request, form, formset, change):
 
         instances = formset.save()
      
         for instance in instances:
-            print(instance)
-            print(instance.to_order)
             if instance.is_one_sale == True or instance.is_one_sale == False:
                 instance.data_update = datetime.datetime.now()
             instance._change_reason = "Ручное"
             # update_change_reason(instance, "Ручное")
             instance.save()
 
-    # def get_formset(self, request, obj=None, **kwargs):
-    #     formset = super().get_formset(request, obj, **kwargs)
-    #     print(111111111111)
-    #     print(formset)
-    #     field = formset.form.base_fields["Price"]
-    #     field.widget.can_add_related = False
-    #     field.widget.can_change_related = False
-    #     field.widget.can_delete_related = False
-    #     return formset
 
     # история изменений
     def history_view(self, request, object_id, extra_context=None):

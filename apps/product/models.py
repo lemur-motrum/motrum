@@ -159,16 +159,14 @@ class Product(models.Model):
 
         # обновление цен товаров потому что могли заменить группы для скидки
         price = Price.objects.get(prod=self.id)
-        
-        
         price.price_supplier = price.price_supplier
         price.save()
-        print(222222222222222222222)
-        print(self.id)
-        if self.promote:
-            promote_product_slider(self)
-        else:
-            SliderMain.objects.update_or_create(product_promote = self,defaults={'active': False})     
+        
+        # promote_product_slider(self)
+        # if self.promote:
+        #     promote_product_slider(self)
+        # else:
+        #     SliderMain.objects.update_or_create(product_promote = self,defaults={'active': False})     
       
         
 

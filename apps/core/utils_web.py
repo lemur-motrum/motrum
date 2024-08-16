@@ -167,21 +167,24 @@ def send_email_message_html(subject, message, to_email,html_message):
     
 def promote_product_slider(product):
     from apps.core.models import SliderMain
+    print(product.promote)
     if product.promote:
         name = f"Товар {product.name}"
         try:
             slider = SliderMain.objects.get(product_promote=product,type_slider="PROMOTE")
             if slider.active == False:
-                slider.active == True
+                slider.active = True
                 slider.save()
         except SliderMain.DoesNotExist:
-            slider = SliderMain(active=True,name= name,type_slider="PROMOTE",product_promote=product)
+            slider = SliderMain(active=True,name=name,type_slider="PROMOTE",product_promote=product)
             slider.save()
-        #     SliderMain.objects.update_or_create( product_promote=product,type_slider="PROMOTE",
-        #     defaults={'active': True,"name": name},
-        # )
+
     else:
-        pass
-    
-# def email_callback():
-#     pass    
+        print(product.promote)
+        try:
+            slider = SliderMain.objects.get(product_promote=product,type_slider="PROMOTE")
+            if slider.active == True:
+                slider.active = False
+                slider.save()
+        except SliderMain.DoesNotExist:
+            pass

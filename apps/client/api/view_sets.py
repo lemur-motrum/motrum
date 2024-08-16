@@ -18,19 +18,11 @@ from apps.client.models import AccountRequisites, Client, Requisites
 from apps.core.utils_web import _get_pin, _verify_pin, send_email_message, send_pin
 
 
-class ApiClient(viewsets.ModelViewSet):
+class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
     http_method_names = ["get", "post", "put", "update"]
-
-    # def to_representation(self, instance):
-    #     rep = super().to_representation(instance)
-    #     rep["client"] = ClientSerializer(instance.client).data
-    #     requisites_all = 11
-    #     requisites = RequisitesSerializer(instance.purchased_by).data
-
-    #     return rep
 
     # РЕГИСТРАЦИЯ ИЛИ АВТОРИЗАЦИЯ
     @action(detail=False, methods=["post"], url_path=r"login")
@@ -92,13 +84,13 @@ class ApiClient(viewsets.ModelViewSet):
                 return Response(pin, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ApiClientRequisitesAccount(viewsets.ModelViewSet):
+class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientRequisitesSerializer
     http_method_names = ["get", "post", "update"]
 
 
-class ApiRequisites(viewsets.ModelViewSet):
+class RequisitesViewSet(viewsets.ModelViewSet):
     queryset = Requisites.objects.all()
     serializer_class = RequisitesSerializer
     http_method_names = ["get", "post", "update"]
@@ -194,73 +186,11 @@ class ApiRequisites(viewsets.ModelViewSet):
         if valid_all:
             serializer_data_new[0]["account_requisites"] = account_requisites
             return Response(serializer_data_new, status=status.HTTP_200_OK)
+            
         
-        
-        
-        
-class ApiAccountRequisites(viewsets.ModelViewSet):
+class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
     serializer_class = AccountRequisitesSerializer
 
     http_method_names = ["get", "post", "put", "update"]
 
-
-# class ApiAllClientRequisites(viewsets.ModelViewSet):
-#     queryset = Requisites.objects.all()
-#     serializer_class = AllAccountRequisitesSerializer
-
-#     http_method_names = ["get", "post", "put", "update"]
-
-#     @action(detail=True, methods=["get"], url_path=r"requisites")
-#     def get_all_requisites(self, request, pk=None, *args, **kwargs):
-#         queryset = Requisites.objects.filter(client=pk)
-#         serializer_class = AllAccountRequisitesSerializer
-#         serializer = self.serializer_class(queryset, many=True)
-#         return Response(serializer.data,status=status.HTTP_200_OK)
-
-
-#     # def get_serializer(self, methods=["post"], *args, **kwargs):
-#     #     print(11111)
-
-#     #     # add many=True if the data is of type list
-#     #     if isinstance(kwargs.get("data", {}), list):
-#     #         kwargs["many"] = True
-
-#     @action(detail=True, methods=["post"], url_path=r"add")
-#     def save_new_requisites(self, request,pk=None, *args, **kwargs):
-#         data = request.data
-#         i = -1
-#         # for data_item in data:
-#         #     i+=1
-#         #     requisites = data_item.get('requisites')
-
-#         #     account_requisites_data = data_item.get('account_requisites')
-
-#         #     serializer = self.serializer_class(data=requisites, many=False)
-#         #     serializer_data = []
-#         #     if serializer.is_valid():
-
-#         #         requisites_item = serializer.save()
-#         #         serializer_data.append(serializer.data)
-#         #         account_requisites = {}
-#         #         serializer_data[i]["account_requisites"] =  []
-#         #         print(serializer_data[i])
-#         #         for account_requisites_item in account_requisites_data:
-#         #             account_requisites_item["requisites"] = requisites_item.id
-
-#         #         serializer_class_new = AccountRequisitesSerializer
-#         #         serializer = serializer_class_new(data=account_requisites_data, many=True)
-#         #         if serializer.is_valid():
-
-#         #             account_requisites_item = serializer.save()
-#         #             serializer_data[i]["account_requisites"].append(serializer.data)
-#         #             return Response(serializer_data,status=status.HTTP_200_OK)
-#         #         else:
-#         #             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-#         #     else:
-
-#         #         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-
-#         return Response(data,status=status.HTTP_200_OK)

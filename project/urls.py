@@ -42,7 +42,7 @@ urlpatterns = [
     path('website_admin/', website_admin.urls),
    
     path("", include("apps.core.urls", namespace="core")),
-    path("client/", include("apps.client.urls", namespace="client")),
+    path("lk/", include("apps.client.urls", namespace="lk")),
     path("logs/", include("apps.logs.urls", namespace="logs")),
     path("product/", include("apps.product.urls", namespace="product")),
     path("specification/", include("apps.specification.urls", namespace="specification")),
@@ -52,7 +52,7 @@ urlpatterns = [
     
     # для сайта
     path("project/", include("apps.projects_web.urls", namespace="project")),
-    path("vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
+    # path("vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
     
     # апи
     path("api/", include(router.urls)),

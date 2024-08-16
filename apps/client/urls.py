@@ -9,14 +9,11 @@ app_name = 'client'
 
 
 router = routers.DefaultRouter()
-router.register(r"v1/client", view_sets.ApiClient)
-router.register(r"v1/client-requisites",view_sets.ApiClientRequisitesAccount, basename="client-requisites")
-router.register(r"v1/requisites",view_sets.ApiRequisites)
+router.register(r"v1/client", view_sets.ClientViewSet)
+router.register(r"v1/client-requisites",view_sets.ClientRequisitesAccountViewSet, basename="client-requisites")
+router.register(r"v1/requisites",view_sets.RequisitesViewSet)
 
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    
-    # path("/<int:client_id>", views.client, name="lk"),
-
+    path("", views.index,name="index"),
 ]

@@ -164,14 +164,6 @@ class Product(models.Model):
             price.save()
         except  Price.DoesNotExist:
             pass   
-        
-        # promote_product_slider(self)
-        # if self.promote:
-        #     promote_product_slider(self)
-        # else:
-        #     SliderMain.objects.update_or_create(product_promote = self,defaults={'active': False})     
-      
-        
 
 
     # удаление пустых исторических записей

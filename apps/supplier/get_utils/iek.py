@@ -832,7 +832,7 @@ def iek_api():
      
     # категории 
     get_iek_category("ddp", None)
-
+ 
     # запись продуктов и пропсовдля каждого по категориям 
     for item_iek_save_categ in iek_save_categ:
         get_iek_product("products", f"groupId={item_iek_save_categ}")

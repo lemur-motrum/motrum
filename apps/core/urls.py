@@ -14,7 +14,7 @@ urlpatterns = [
     path("", views.index, name="index"),#главная
     path("okt", views.okt, name="okt"),
     path("web", views.web, name="web"),
-    path("lc", views.lc, name="lc"),#удалить -  вся работа с лк в app client
+   
     path("company/", views.web, name="about"),#компания общая
     path("company/about", views.web, name="about"),#компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
@@ -36,6 +36,7 @@ urlpatterns = [
     path("personal_account/my_documents", views.my_documents, name="my_documents"),
     path("personal_account/my_details", views.my_details, name="my_details"),
     path("personal_account/my_contacts", views.my_contacts, name="my_contacts"),
+        # EMAILS
     path("send_email_callback", views.email_callback, name="send_email_callback"),
     path("send_email_manager", views.email_manager, name="send_email_manager"),
 ]

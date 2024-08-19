@@ -68,24 +68,24 @@ def product_one(request,category, group, article):
     return render(request, "product/product_one.html", context)
 
 
-# # юрина вьюха не используется
-# def catalog(request):
 
-#     product_list = Product.objects.select_related(
-#         "supplier",
-#         "vendor",
-#         "category_supplier_all",
-#         "group_supplier",
-#         "category_supplier",
-#         "category",
-#         "group",
-#         "price",
-#         "stock",
-#     ).filter(check_to_order=True)[0:10]
+def catalog(request):
 
-#     context = {"product_list": product_list}
+    product_list = Product.objects.select_related(
+        "supplier",
+        "vendor",
+        "category_supplier_all",
+        "group_supplier",
+        "category_supplier",
+        "category",
+        "group",
+        "price",
+        "stock",
+    ).filter(check_to_order=True)[0:10]
 
-#     return render(request, "product/catalog.html", context)
+    context = {"product_list": product_list}
+
+    return render(request, "product/catalog.html", context)
 
 
 # автозаполнения для админки бек окт

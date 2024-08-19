@@ -386,7 +386,7 @@ h1 {
           font-size: 0.813rem;
           width: 80%;
           box-sizing: border-box;
-          
+
           &.discount-input {
             width: 40%;
           }
@@ -409,9 +409,9 @@ h1 {
             font-size: 0.813rem;
           }
         }
-        label{
+        label {
           font-size: 0.613rem;
-          color:#a4a4a4;
+          color: #a4a4a4;
         }
       }
       &:nth-of-type(even) {
@@ -438,11 +438,12 @@ h1 {
           cursor: pointer;
         }
       }
-      .button_specification-wrapper{
+      .button_specification-wrapper {
         display: flex;
         gap: 20px;
       }
-      .save_button,.exit_button {
+      .save_button,
+      .exit_button {
         font-size: 0.938rem;
         text-transform: uppercase;
         display: flex;
@@ -525,10 +526,10 @@ h1 {
             margin-left: 8.563rem;
           }
         }
-        .table_item_value_span{
+        .table_item_value_span {
           font-size: 14px;
         }
-        
+
         .uptate-specification-button {
           opacity: 0;
           transition: 0.6s;
@@ -579,7 +580,6 @@ h1 {
       &:nth-of-type(4) {
         margin-left: 5.4rem;
       }
-
 
       &:nth-of-type(5) {
         margin-left: 2.4rem;
@@ -703,9 +703,9 @@ h1 {
                   margin-left: 0.513rem;
                   width: 6.375rem;
                   position: relative;
-                  .stock_item{
-                    white-space: nowrap;   
-                }
+                  .stock_item {
+                    white-space: nowrap;
+                  }
                 }
                 &.lot {
                   width: 3.063rem;
@@ -720,33 +720,29 @@ h1 {
                   margin-left: 2.813rem;
                   width: 5.375rem;
                   position: relative;
-                  
                 }
-                
-                &.price-count{
-                  white-space: nowrap; 
+
+                &.price-count {
+                  white-space: nowrap;
                 }
               }
-            
-              .span-update{
+
+              .span-update {
                 font-size: 0.513rem;
                 position: absolute;
                 top: 20px;
                 z-index: 200;
-               
               }
-              .span-min{
+              .span-min {
                 font-size: 0.513rem;
                 position: absolute;
                 top: 20px;
                 z-index: 200;
-               
               }
-              .span-transit{
+              .span-transit {
                 font-size: 10px;
                 line-height: 5px;
               }
-
             }
             .item-buttons_container {
               display: flex;
@@ -817,15 +813,15 @@ h1 {
                 text-transform: uppercase;
                 cursor: pointer;
 
-                &:hover{
+                &:hover {
                   background-color: #7a7878;
                 }
                 &:active {
                   color: #a4a4a4;
                 }
-                &:disabled{
+                &:disabled {
                   background-color: #a4a4a4;
-                  cursor:default;
+                  cursor: default;
                 }
               }
             }
@@ -1118,7 +1114,7 @@ h1 {
   }
 }
 
-.logout_btn{
+.logout_btn {
   font-size: 0.875rem;
   display: flex;
   justify-content: flex-end;
@@ -1126,6 +1122,4 @@ h1 {
   margin-top: 10px;
   gap: 20px;
   align-items: center;
-
 }
-

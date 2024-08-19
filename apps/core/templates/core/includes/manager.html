@@ -1,10 +1,21 @@
 {% if is_need == True %}
-  <div style= "display: flex;border: 1px solid">
-    ПЕРСОНАЛЬНЫЙ МЕНЕДЖЕР
-    {{ manager }}
-    {{ manager.first_name }}
-    {{ manager.last_name }}
-    {{ manager.email }}
-    <button class="send-manager" type="button">сообщение менеджеру</button>
+  <div class="personal-manager-container">
+    <div class="img-container"></div>
+    <div class="description-container">
+      <div class="name-description">
+        <div class="title-name">{{ manager.first_name }}</div>
+        <div class="title-name">{{ manager.last_name }}</div>
+        <div class="description">Ваш персональный менеджер</div>
+      </div>
+      <div class="contacts-description">
+        <div class="description">
+          тел: <span>{{ manager.phone }}</span>
+        </div>
+        <div class="description">
+          email: <span>{{ manager.email }}</span>
+        </div>
+        <button class="send-manager" type="button">сообщение менеджеру</button>
+      </div>
+    </div>
   </div>
 {% endif %}

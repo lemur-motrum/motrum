@@ -158,9 +158,12 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
-        price = Price.objects.get(prod=self.id)
-        price.price_supplier = price.price_supplier
-        price.save()
+        try:
+            price = Price.objects.get(prod=self.id)
+            price.price_supplier = price.price_supplier
+            price.save()
+        except  Price.DoesNotExist:
+            pass   
         
         # promote_product_slider(self)
         # if self.promote:

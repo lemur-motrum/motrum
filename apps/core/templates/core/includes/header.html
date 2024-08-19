@@ -16,10 +16,13 @@
             <div class="nav-elem">Контакты</div>
         </div>
         <div class="cart-elems">
-            <div class="cart-elem">вход</div>
-            {% comment %} <div class="cart-elem">Заказы</div>
-            <div class="cart-elem">Корзина</div>
-            <div class="cart-elem">Л.К.</div> {% endcomment %}
+            {% if request.user.username %}
+                <div class="cart-elem">Заказы</div>
+                <div class="cart-elem">Корзина</div>
+                <div class="cart-elem">Л.К.</div>
+            {% else %}
+                <div class="cart-elem enter-in-site">вход</div>
+            {% endif %}
         </div>
     </div>
 </div>

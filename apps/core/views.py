@@ -14,6 +14,14 @@ from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 
 
+nav_elems = [
+    {"name": "мои заказы", "link": "my_orders"},
+    {"name": "документы", "link": "my_documents"},
+    {"name": "мои реквизиты", "link": "my_details"},
+    {"name": "мои контакты", "link": "my_contacts"},
+]
+
+
 # Create your views here.
 def index(request):
 
@@ -40,11 +48,40 @@ def web(request):
     return render(request, "core/web.html", context)
 
 
-def lc(request):
+def my_orders(request):
+    nav_elems[0]["active"] = True
     context = {
-        "title": "Личный кабинет",
+        "title": "Личный кабинет | мои заказы",
+        "nav_elems": nav_elems,
     }
-    return render(request, "core/lc.html", context)
+    return render(request, "core/my_orders.html", context)
+
+
+def my_documents(request):
+    nav_elems[1]["active"] = True
+    context = {
+        "title": "Личный кабинет | мои документы",
+        "nav_elems": nav_elems,
+    }
+    return render(request, "core/my_documents.html", context)
+
+
+def my_details(request):
+    nav_elems[2]["active"] = True
+    context = {
+        "title": "Личный кабинет | мои реквизиты",
+        "nav_elems": nav_elems,
+    }
+    return render(request, "core/my_details.html", context)
+
+
+def my_contacts(request):
+    nav_elems[3]["active"] = True
+    context = {
+        "title": "Личный кабинет | мои контакты",
+        "nav_elems": nav_elems,
+    }
+    return render(request, "core/my_contacts.html", context)
 
 
 # EMAIL SEND

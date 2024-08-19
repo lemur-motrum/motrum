@@ -55,3 +55,12 @@ export function deleteCookie(name, path, domain) {
     // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
 }
+
+// функция отображения ошибки при валидации формы
+export function showErrorValidation(description, error) {
+  error.textContent = description;
+  error.classList.add("show");
+  setTimeout(() => {
+    error.classList.remove("show");
+  }, 2000);
+}

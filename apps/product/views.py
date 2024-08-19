@@ -16,26 +16,24 @@ from apps.supplier.models import (
     Vendor,
 )
 
-
+# все категории
 def catalog_all(request):
-    print(1111)
     category = CategoryProduct.objects.all().order_by("article_name")
 
     context = {"category": category}
 
     return render(request, "product/product_catalog.html", context)
 
-
+# группы категорий
 def catalog_group(request, category):
-    print(2222)
-    # category_item = CategoryProduct.objects.get(slug=category)
-    group = GroupProduct.objects.filter(category__slug=category)
+
+    group = GroupProduct.objects.filter(category__slug=category).order_by("article_name")
 
     context = {"category": category, "group": group}
 
     return render(request, "product/product_group.html", context)
 
-
+# страница всех продуктов в категории\группе
 def products_items(request, category, group):
     vendor = Vendor.objects.filter()
     q_object = Q()
@@ -63,31 +61,31 @@ def products_items(request, category, group):
 
     return render(request, "product/catalog.html", context)
 
-
+# страница отдельного продукта
 def product_one(request,category, group, article):
     product = Product.objects.get(article=article)
     context = {"product":product}
     return render(request, "product/product_one.html", context)
 
 
-# юрина вьюха не используется
-def catalog(request):
+# # юрина вьюха не используется
+# def catalog(request):
 
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(check_to_order=True)[0:10]
+#     product_list = Product.objects.select_related(
+#         "supplier",
+#         "vendor",
+#         "category_supplier_all",
+#         "group_supplier",
+#         "category_supplier",
+#         "category",
+#         "group",
+#         "price",
+#         "stock",
+#     ).filter(check_to_order=True)[0:10]
 
-    context = {"product_list": product_list}
+#     context = {"product_list": product_list}
 
-    return render(request, "product/catalog.html", context)
+#     return render(request, "product/catalog.html", context)
 
 
 # автозаполнения для админки бек окт

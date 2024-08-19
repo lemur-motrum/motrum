@@ -1,13 +1,19 @@
 <div class="product_item" catalog-elem="product-item">
-    ajax-test
-    {{ name }}
+    <a href="{{url}}">{{ name }}</a>
+    
+  
+
+    {{article_supplier}}
+    
     {{ article }}
-    {{ price.rub_price_supplier }}
+    ЦЕНА:{{ price.rub_price_supplier }}
     {% if productproperty_set %}
+    ПРОПСЫ:
         {% for props in  productproperty_set%}
         {{props.name}}
         {% endfor %}
    {% endif %}
-   {{ stock }}
-   {{ stock.name }}
+   СТОК:{{ stock }}
+   
+   
 </div>

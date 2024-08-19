@@ -7,6 +7,7 @@ from dal_select2.views import Select2ViewMixin
 from dal.views import BaseQuerySetView
 from regex import P
 
+from apps import product
 from apps.product.models import CategoryProduct, GroupProduct, Product
 from apps.supplier.models import (
     SupplierCategoryProduct,
@@ -15,24 +16,61 @@ from apps.supplier.models import (
     Vendor,
 )
 
-def catalog_all(request):
 
-    category = CategoryProduct.objects.all().order_by("article_home_web")
-    print(category)
+def catalog_all(request):
+    print(1111)
+    category = CategoryProduct.objects.all().order_by("article_name")
+
     context = {"category": category}
 
+    return render(request, "product/product_catalog.html", context)
+
+
+def catalog_group(request, category):
+    print(2222)
+    # category_item = CategoryProduct.objects.get(slug=category)
+    group = GroupProduct.objects.filter(category__slug=category)
+
+    context = {"category": category, "group": group}
+
+    return render(request, "product/product_group.html", context)
+
+
+def products_items(request, category, group):
+    vendor = Vendor.objects.filter()
+    q_object = Q()
+    q_object &= Q(check_to_order=True)
+    if category is not None:
+        q_object &= Q(category__slug=category)
+    if group is not None:
+        q_object &= Q(group__slug=group)
+
+    product_vendor = (
+        Product.objects.select_related(
+            "vendor",
+            "category",
+            "group",
+        )
+        .filter(q_object)
+        .distinct("vendor")
+        .values("vendor", "vendor__name", "vendor__slug")
+    )
+
+    context = {
+        "category": category, 
+        "group": group, 
+        "product_vendor": product_vendor,}
+
     return render(request, "product/catalog.html", context)
 
-def catalog_group(request,slug):
-    # print(slug)
-    category = CategoryProduct.objects.all().order_by("article_home_web")
-    group = GroupProduct.objects.all()
-    print(group)
-    context = {"group": group}
 
-    return render(request, "product/catalog.html", context)
+def product_one(request,category, group, article):
+    product = Product.objects.get(article=article)
+    context = {"product":product}
+    return render(request, "product/product_one.html", context)
 
 
+# юрина вьюха не используется
 def catalog(request):
 
     product_list = Product.objects.select_related(
@@ -51,7 +89,8 @@ def catalog(request):
 
     return render(request, "product/catalog.html", context)
 
-# автозаполнения для админки бек окт 
+
+# автозаполнения для админки бек окт
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):

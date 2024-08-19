@@ -26,11 +26,12 @@ router = routers.DefaultRouter()
 router.register(r"v1/product", ProductViewSet)
 
 urlpatterns = [
-    url("", views.catalog_all, name="catalog"),
-    # url("<slug:cat>", views.catalog_group, name="group"),
-    
+    path("", views.catalog_all, name="catalog"),
+    path("<slug:category>", views.catalog_group, name="group"),
+    path("<slug:category>/<slug:group>", views.products_items, name="products_items"),
+    path("<slug:category>/<slug:group>/<slug:article>", views.product_one, name="product_one"),
  
-    url("PRODUCT-AJAX", views.catalog, name="catalog"),
+    url("product_ajax", views.catalog, name="catalog_ajax"),
     
     
     

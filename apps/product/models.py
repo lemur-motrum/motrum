@@ -1,4 +1,5 @@
 from django.forms import ValidationError
+from django.urls import reverse
 from django.utils import timezone
 from django.db import models
 from django.db.models.deletion import CASCADE
@@ -48,6 +49,7 @@ TYPE_DOCUMENT = (
 
 
 class Product(models.Model):
+
     article = models.CharField("Артикул мотрум", max_length=100, blank=False)
     supplier = models.ForeignKey(
         Supplier,
@@ -114,7 +116,6 @@ class Product(models.Model):
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     check_to_order = models.BooleanField("Доступность к заказу", default=True)
     promote = models.BooleanField("Продвижение на главной в слайдере", default=False)
-   
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
 
@@ -154,7 +155,7 @@ class Product(models.Model):
         if self.description != None:
             self.description = self.description.strip()
             self.description = " ".join(self.description.split())
-             
+
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
@@ -162,9 +163,18 @@ class Product(models.Model):
             price = Price.objects.get(prod=self.id)
             price.price_supplier = price.price_supplier
             price.save()
-        except  Price.DoesNotExist:
-            pass   
+        except Price.DoesNotExist:
+            pass
 
+    def get_absolute_url(self):
+        return reverse(
+            "product:product_one",
+            kwargs={
+                "category": self.category.slug,
+                "group": self.group.slug,
+                "article": self.article,
+            },
+        )
 
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)
@@ -193,13 +203,18 @@ class CategoryProduct(models.Model):
         blank=True,
         null=True,
     )
-    image = models.ImageField("Изображение категории",upload_to =get_file_path_catalog_web, null=True)
-    is_view_home_web = models.BooleanField("Отображение на главной сайта", default=False)
+    image = models.ImageField(
+        "Изображение категории", upload_to=get_file_path_catalog_web, null=True
+    )
+    is_view_home_web = models.BooleanField(
+        "Отображение на главной сайта", default=False
+    )
     article_home_web = models.PositiveIntegerField(
         "Очередность вывода на главную",
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Категория товара"
         verbose_name_plural = "Категории товаров"
@@ -228,8 +243,9 @@ class GroupProduct(models.Model):
         blank=True,
         null=True,
     )
-    image = models.ImageField("Изображение категории",upload_to =get_file_path_catalog_web, null=True)
- 
+    image = models.ImageField(
+        "Изображение категории", upload_to=get_file_path_catalog_web, null=True
+    )
 
     class Meta:
         verbose_name = "Группа товара"
@@ -271,7 +287,7 @@ class Price(models.Model):
         "Цена в каталоге поставщика в валюте каталога",
         # blank=True,
         null=True,
-        default=0
+        default=0,
     )
     rub_price_supplier = models.FloatField(
         "Цена в каталоге поставщика в рублях + НДС",
@@ -306,14 +322,16 @@ class Price(models.Model):
     def save(self, *args, **kwargs):
 
         # если 0 цена или экстра прайс проставить нули и теги
-        if self.price_supplier == 0 or self.extra_price == True or self.price_supplier == None:
+        if (
+            self.price_supplier == 0
+            or self.extra_price == True
+            or self.price_supplier == None
+        ):
             self.extra_price = True
             self.price_supplier = 0
             self.rub_price_supplier = 0
             self.price_motrum = 0
-            
-  
-        
+
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
@@ -335,18 +353,20 @@ class Price(models.Model):
             self.prod.category_supplier_all,
             self.prod.supplier,
         )
-        
+
         price_motrum = price_motrum_all[0]
         sale = price_motrum_all[1]
         self.price_motrum = price_motrum
         self.sale = sale
 
         super().save(*args, **kwargs)
-    
+
     # def clean(self):
     #     super().clean()
     #     if self.extra_price:
     #        self.price_supplier = None
+
+
 # курсы валют
 class CurrencyRate(models.Model):
     currency = models.ForeignKey(
@@ -416,9 +436,8 @@ class Stock(models.Model):
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
 
-
         super().save(*args, **kwargs)
-     
+
 
 class Lot(models.Model):
     name = models.CharField("Полное название", max_length=30)
@@ -451,12 +470,10 @@ class ProductImage(models.Model):
     link = models.CharField("Ссылка у поставщика", max_length=150)
     hide = models.BooleanField("Скрыть", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-    
+
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
-
-    
 
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
@@ -478,7 +495,7 @@ class ProductDocument(models.Model):
     name = models.CharField("Название документа", max_length=255, null=True)
     link = models.CharField("Ссылка у поставщика", max_length=255, null=True)
     hide = models.BooleanField("Скрыть", default=False)
-    
+
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -505,7 +522,7 @@ class ProductProperty(models.Model):
     value = models.CharField("Значение", max_length=600)
     unit_measure = models.CharField("Короткое имя значения", max_length=600, null=True)
     hide = models.BooleanField("Удалить", default=False)
-    
+
     history = HistoricalRecords()
 
     class Meta:

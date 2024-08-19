@@ -96,7 +96,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
         if isinstance(kwargs.get("data", {}), list):
             kwargs["many"] = True
 
-        return super(ApiRequisites, self).get_serializer(*args, **kwargs)
+        return super(RequisitesViewSet, self).get_serializer(*args, **kwargs)
 
     @action(detail=False, methods=["post"], url_path=r"add")
     def add_all_requisites(self, request, *args, **kwargs):

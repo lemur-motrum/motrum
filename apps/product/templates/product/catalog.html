@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% block content %}
     <h1>Каталог</h1>
+    {{product_vendor}}
     <div class="catalog_wrapper" catalog-elem="wrapper">
         <div class="catalog_container" catalog-elem="container">
             {% for product in product_list %}
@@ -10,15 +11,6 @@
 
         <button catalog-elem="button">Кнопка</button>
     </div>
-    {% comment %} {% if category %}
-        {% for category_item in category %}
-     
-        {% if category_item.slug %}
-        {{category_item.slug}}
-            <a href="{% url 'product:group' category_item.slug %}">{{category_item}}</a> 
-        {% endif %}
-        
-        {% endfor %}
-    {% endif %} {% endcomment %}
+
 
 {% endblock %}

@@ -34,6 +34,10 @@ class StockSerializer(serializers.ModelSerializer):
             "order_multiplicity",
             "lot",
             "lot_complect",
+            "stock_supplier",
+            "stock_supplier_unit",
+            "stock_motrum",
+            "to_order",
         )
 
 
@@ -52,14 +56,20 @@ class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
     stock = StockSerializer(read_only=False, many=False)
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
-
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
     class Meta:
         model = Product
         fields = (
             "id",
             "name",
             "article",
+            "vendor",
+            "supplier",
+            "category",
+            "group",
+            "check_to_order",
             "price",
             "stock",
             "productproperty_set",
+            "url",
         )

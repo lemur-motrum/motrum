@@ -1,0 +1,12 @@
+{% if group %}
+{% for group_item in group %}
+
+{% if group_item.slug %}
+
+<a href="{% url "product:products_items" category group_item.slug %}">{{group_item.slug}}</a>
+
+
+{% endif %}
+
+{% endfor %}
+{% endif %} 

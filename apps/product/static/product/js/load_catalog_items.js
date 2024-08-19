@@ -11,18 +11,20 @@ if (catalogWrapper) {
     let productsCount = catalogContainer.querySelectorAll(
       '[catalog-elem="product-item"]'
     ).length;
-    let productsVendorId = "1";
+    // let productsVendorId = "1";
     let data = {
       count: productsCount,
-      vendor: productsVendorId,
-      // "page": 3
+      sort: "+",
+      page: "1",
+      // vendor: productsVendorId,
+      
     };
 
     let params = new URLSearchParams(data);
-
+    let location = window.location.pathname
     let csrfToken = getCookie("csrftoken");
-
-    fetch(`/api/v1/product/load-ajax-product-list/?${params.toString()}`, {
+    // fetch(`/api/v1/product/${location}load-ajax-product-list/?${params.toString()}`, {
+    fetch(`/api/v1${location}/load-ajax-product-list/?${params.toString()}`, {
       method: "GET",
       headers: {
         "X-CSRFToken": csrfToken,

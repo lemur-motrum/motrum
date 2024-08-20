@@ -12,8 +12,8 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path("", views.index, name="index"),#главная
-    path("okt", views.okt, name="okt"),
-    path("web", views.web, name="web"),
+    path("okt", views.okt, name="okt"),#окт
+    path("web", views.web, name="web"),#!!!удалить надо 
    
     path("company/", views.web, name="about"),#компания общая
     path("company/about", views.web, name="about"),#компания
@@ -31,7 +31,7 @@ urlpatterns = [
     #каталог и товар  в app product
     #личный кабинет   в  app client  namespace="lk"
     
-    # EMAILS
+  
     path("personal_account/my_orders", views.my_orders, name="my_orders"),
     path("personal_account/my_documents", views.my_documents, name="my_documents"),
     path("personal_account/my_details", views.my_details, name="my_details"),

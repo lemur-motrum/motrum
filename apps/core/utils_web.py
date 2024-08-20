@@ -7,6 +7,9 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 
 from django.http import HttpResponse
+from django.contrib.sessions.models import Session
+
+
 
 
 from project.settings import MEDIA_ROOT
@@ -188,3 +191,30 @@ def promote_product_slider(product):
                 slider.save()
         except SliderMain.DoesNotExist:
             pass
+
+
+
+def save_product_cart(request):
+    from apps.client.models import Cart
+    print(request.session)
+    # cart_session = request.COOKIES["cart","None"]
+ 
+    if "cart" not in request.COOKIES.keys():
+        if request.user.is_anonymous:
+            request.session['cached_session_key'] = request.session.session_key
+            user = request.COOKIES["sessionid"]
+            session_key = request.session.session_key
+            
+            cart = Cart.objects.get_or_create( session_key=Session.objects.get(session_key=session_key),save_cart=False)
+   
+            request.session['cart'] = cart[0]
+            
+                   
+        else:
+            user = request.user
+            try:  
+                cart = Cart.objects.get(client=user,save_cart=False) 
+            except Cart.DoesNotExist:
+                Cart.session_client = user 
+                request.session['cart'] = request.session.session_key   
+        

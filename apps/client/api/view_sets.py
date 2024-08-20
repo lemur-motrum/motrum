@@ -11,11 +11,12 @@ from django.contrib.auth import authenticate, login
 from apps.client.api.serializers import (
     AccountRequisitesSerializer,
     AllAccountRequisitesSerializer,
+    CartSerializer,
     ClientRequisitesSerializer,
     ClientSerializer,
     RequisitesSerializer,
 )
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Cart, Client, Requisites
 from apps.core.utils_web import _get_pin, _verify_pin, send_email_message, send_pin
 
 
@@ -190,3 +191,12 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
 
     http_method_names = ["get", "post", "put", "update"]
 
+
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.filter()
+    serializer_class = CartSerializer
+    http_method_names = ["get", "post", "update"]
+    
+    @action(detail=False, methods=["post"], url_path=r"add-cart-product")
+    def add_cart_product(self, request, *args, **kwargs):
+        data = request.data

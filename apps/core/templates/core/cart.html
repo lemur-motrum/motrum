@@ -1,0 +1,19 @@
+{% extends 'core/base.html' %}
+{% block content %}
+    <h1>Корзина</h1>
+    {% for product_item in product%}
+    <p>{{ product_item.name }}</p>
+    {% for char in product.productproperty_set.all %}
+        {{ char.value }}
+    {% empty %}
+        -
+    {% endfor %}
+   
+        {% for cart_product in product.productcart_set.all %}
+            {% if cart == cart_product.cart %}{{ cart_product}}{% endif %}
+                        
+        {% endfor %}
+    {% endfor %}
+
+ 
+{% endblock %}

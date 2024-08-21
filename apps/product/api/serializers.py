@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.product.models import Lot, Price, Product, ProductProperty, Stock
+from apps.product.models import Cart, Lot, Price, Product, ProductProperty, Stock, ProductCart
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -73,3 +73,14 @@ class ProductSerializer(serializers.ModelSerializer):
             "productproperty_set",
             "url",
         )
+        
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        
+class ProductCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCart
+        fields = "__all__"        
+       

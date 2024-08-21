@@ -1,4 +1,4 @@
-from apps.client.models import Cart, Client, ProductCart
+from apps.client.models import Client
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -31,16 +31,7 @@ class ClientRequisitesSerializer(serializers.ModelSerializer):
         model = Client
         exclude = ('password',"date_joined","contact_name","email","first_name","groups","phone","is_active","is_staff","is_superuser","last_login","last_name","user_permissions","username")  
                   
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = "__all__"
-        
-class ProductCartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductCart
-        fields = "__all__"        
-       
+
         
    
         

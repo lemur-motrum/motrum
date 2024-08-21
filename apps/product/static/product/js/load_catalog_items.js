@@ -17,7 +17,7 @@ if (catalogWrapper) {
       sort: "+",
       page: "1",
       // vendor: productsVendorId,
-      
+
     };
 
     let params = new URLSearchParams(data);
@@ -34,10 +34,10 @@ if (catalogWrapper) {
       .then(function (data) {
         console.log(data);
         for (let i in data.data) {
-          console.log(data.data[i]);
           addAjaxCatalogItem(data.data[i]);
-          console.log(data.next);
+
         }
+        addCart()
       });
   });
 
@@ -56,5 +56,71 @@ if (catalogWrapper) {
     let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
 
     catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+  }
+}
+
+function addCart() {
+  const clientAdd = document.querySelectorAll(".add-cart-button");
+  if (clientAdd) {
+    clientAdd.forEach((element) => {
+      element.addEventListener("click", () => {
+
+        let el = element.getAttribute("data-id-product");
+        console.log(el)
+        let cart = getCookie("cart");
+        console.log(cart)
+        let csrfToken = getCookie("csrftoken");
+
+        if (!cart) {
+          let dataArr = {
+          };
+
+          let data = JSON.stringify(dataArr);
+          let csrfToken = getCookie("csrftoken");
+          let endpoint = "/api/v1/cart/add-cart/"
+          fetch(endpoint, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            });
+          
+        }
+        else{
+          cart = getCookie("cart");
+          let dataArr = {
+            "cart": cart,
+            "product":el,
+            "quantity":1,
+          };
+          
+          let data = JSON.stringify(dataArr);
+          let csrfToken = getCookie("csrftoken");
+
+          let endpoint = `/api/v1/cart/${cart}/save-product/`
+          fetch(endpoint, {
+            method: "POST",
+            body:data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              cart = getCookie("cart");
+            });
+          
+        }
+
+  
+      })
+    })
   }
 }

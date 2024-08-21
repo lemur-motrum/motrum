@@ -709,23 +709,23 @@ def iek_api():
                 "GET", url, auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
-           
-            if data["shopItems"] !=[]:
-                for data_item in data["shopItems"]:
-                    if data_item["zakaz"] == 1:
-                        to_order = True
-                    else:
-                        to_order = False
-                            
+            if data:
+                if data["shopItems"] !=[]:
+                    for data_item in data["shopItems"]:
+                        if data_item["zakaz"] == 1:
+                            to_order = True
+                        else:
+                            to_order = False
+                                
+                        stock = 0
+                        product = data_item["sku"]
+                        for a in data_item["residues"].values():
+                            stock += a
+                    return (stock,to_order)    
+                else:
                     stock = 0
-                    product = data_item["sku"]
-                    for a in data_item["residues"].values():
-                        stock += a
-                return (stock,to_order)    
-            else:
-                stock = 0
-                to_order = False
-                return (stock,to_order)
+                    to_order = False
+                    return (stock,to_order)
             
         except Exception as e: 
                 print(e)
@@ -783,52 +783,53 @@ def iek_api():
         )
    
         data = response.json()
-        for data_item in data:
-            try:
-                prod_article = data_item["Code"]
-                try: 
-                    prod = Product.objects.get(supplier=supplier,article_supplier=prod_article)
-                    old_prop = ProductProperty.objects.filter(product=prod).exists()
-                    if old_prop == False:
-                        for params in data_item["Features"]:
-                            pass_item = False
-                    
-                            name = params["Attribute"]
-                            value = params["value"]
-                            unit_measure = None
-                            names = name.split("_")
+        if data:
+            for data_item in data:
+                try:
+                    prod_article = data_item["Code"]
+                    try: 
+                        prod = Product.objects.get(supplier=supplier,article_supplier=prod_article)
+                        old_prop = ProductProperty.objects.filter(product=prod).exists()
+                        if old_prop == False:
+                            for params in data_item["Features"]:
+                                pass_item = False
                         
-                            if  len(names) > 1:
-                                name = names[0]
-                                if names[1] == "Code":
-                                    pass_item = True
+                                name = params["Attribute"]
+                                value = params["value"]
+                                unit_measure = None
+                                names = name.split("_")
                             
-                            if "unit" in params:
-                                unit_measure = params["unit"]
+                                if  len(names) > 1:
+                                    name = names[0]
+                                    if names[1] == "Code":
+                                        pass_item = True
                                 
-                        
-                            if pass_item == False:
-                        
-                                prop = ProductProperty(
-                                    product=prod,
-                                    name=name,
-                                    value=value,
-                                    hide=False,
-                                    unit_measure=unit_measure,
-                                )
-                        
-                                prop.save()
-                                update_change_reason(prop, "Автоматическое")
-                except Product.DoesNotExist:
-                            pass
-            except Exception as e: 
-                print(e)
-                error = "file_api_error"
-                location = "Загрузка фаилов IEK"
-                info = f"ошибка при чтении свойств: . Тип ошибки:{e}"
-                e = error_alert(error, location, info)
-            finally:    
-                continue 
+                                if "unit" in params:
+                                    unit_measure = params["unit"]
+                                    
+                            
+                                if pass_item == False:
+                            
+                                    prop = ProductProperty(
+                                        product=prod,
+                                        name=name,
+                                        value=value,
+                                        hide=False,
+                                        unit_measure=unit_measure,
+                                    )
+                            
+                                    prop.save()
+                                    update_change_reason(prop, "Автоматическое")
+                    except Product.DoesNotExist:
+                                pass
+                except Exception as e: 
+                    print(e)
+                    error = "file_api_error"
+                    location = "Загрузка фаилов IEK"
+                    info = f"ошибка при чтении свойств: . Тип ошибки:{e}"
+                    e = error_alert(error, location, info)
+                finally:    
+                    continue 
      
     # категории 
     get_iek_category("ddp", None)
@@ -867,38 +868,38 @@ def get_iek_stock():
                 "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
-            
-            if data["shopItems"] !=[]:
-                for data_item in data["shopItems"]:
-                    if data_item["zakaz"] == 1:
-                        to_order = True
-                    else:
-                        to_order = False
-                            
+            if data:
+                if data["shopItems"] !=[]:
+                    for data_item in data["shopItems"]:
+                        if data_item["zakaz"] == 1:
+                            to_order = True
+                        else:
+                            to_order = False
+                                
+                        stock = 0
+                        product = data_item["sku"]
+                        for a in data_item["residues"].values():
+                            stock += a
+                    
+                else:
                     stock = 0
-                    product = data_item["sku"]
-                    for a in data_item["residues"].values():
-                        stock += a
+                    to_order = False
                 
-            else:
-                stock = 0
-                to_order = False
-               
-            try:
+                try:
+                    
+                    stock_prod = Stock.objects.get(prod=product_item)
                 
-                stock_prod = Stock.objects.get(prod=product_item)
-              
-                # stock_prod = Stock.objects.get(prod_id=product_item.article_supplier)
-                stock_prod.stock_supplier = stock
-                stock_prod.to_order = to_order
-                stock_prod.data_update = datetime.datetime.now()
-                stock_prod._change_reason = 'Автоматическое'
-                stock_prod.save()
-                
-            except Stock.DoesNotExist:
-                pass
-                
-          
+                    # stock_prod = Stock.objects.get(prod_id=product_item.article_supplier)
+                    stock_prod.stock_supplier = stock
+                    stock_prod.to_order = to_order
+                    stock_prod.data_update = datetime.datetime.now()
+                    stock_prod._change_reason = 'Автоматическое'
+                    stock_prod.save()
+                    
+                except Stock.DoesNotExist:
+                    pass
+                    
+            
             
             
             

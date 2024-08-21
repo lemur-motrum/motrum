@@ -6,7 +6,6 @@ from django.db.models.deletion import CASCADE
 from django.dispatch import receiver
 from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
-
 from apps.core.models import Currency, SliderMain, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -532,7 +531,50 @@ class ProductProperty(models.Model):
     def __str__(self):
         return f"{self.name}:{self.value}"
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     product = self.product
-    #     product.save
+    def save(self, *args, **kwargs):
+        if self.value == "true" or self.value == "True":
+            self.value == "Да"
+
+        if self.value == "false" or self.value == "False":
+            self.value == "Нет"
+        super().save(*args, **kwargs)
+
+
+class Cart(models.Model):
+    from apps.client.models import Client
+    client = models.OneToOneField(
+        Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
+    )
+    save_cart = models.BooleanField("корзина сохранена", default=False)
+    session_key = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзины"
+        
+    def __str__(self):
+        return str(self.id)    
+
+
+class ProductCart(models.Model):
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.PROTECT,
+    )
+    product = models.ForeignKey(
+        Product,
+        verbose_name="Продукты",
+        on_delete=models.PROTECT,
+    )
+    quantity = models.IntegerField(
+        "количество товара",
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Корзина продукт"
+        verbose_name_plural = "Корзина Продукты"
+
+    def __str__(self):
+        return str(self.id)

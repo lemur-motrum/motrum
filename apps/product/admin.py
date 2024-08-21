@@ -828,8 +828,8 @@ class ProductAdmin(SimpleHistoryAdmin):
         instances = formset.save()
      
         for instance in instances:
-            if instance.is_one_sale == True or instance.is_one_sale == False:
-                instance.data_update = datetime.datetime.now()
+            # if instance.is_one_sale == True or instance.is_one_sale == False:
+            instance.data_update = datetime.datetime.now()
             instance._change_reason = "Ручное"
             # update_change_reason(instance, "Ручное")
             instance.save()

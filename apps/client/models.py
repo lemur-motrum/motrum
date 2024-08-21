@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.sessions.models import Session
 from simple_history.models import HistoricalRecords, HistoricForeignKey
 
-from apps.product.models import Product
+
 from apps.specification.models import Specification
 from apps.user.models import AdminUser, CustomUser
 
@@ -157,39 +157,39 @@ class Order(models.Model):
     status =  models.CharField(max_length=100, choices=STATUS_ORDER, default="ALL")
     specification = models.OneToOneField(Specification,verbose_name="Спецификация", on_delete=models.PROTECT)
     
-class Cart(models.Model):
-    client =  models.OneToOneField(Client,verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True)
-    save_cart = models.BooleanField(
-        "корзина сохранена", default=False
-    )
-    session_key  = models.ForeignKey(Session, on_delete=models.SET_NULL, blank=True, null=True,related_name='session_keys')
+# class Cart(models.Model):
+#     client =  models.OneToOneField(Client,verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True)
+#     save_cart = models.BooleanField(
+#         "корзина сохранена", default=False
+#     )
+#     session_key  = models.CharField(max_length=100, blank=True, null=True)
     
-    class Meta:
-        verbose_name = "Корзина"
-        verbose_name_plural = "Корзины"
+#     class Meta:
+#         verbose_name = "Корзина"
+#         verbose_name_plural = "Корзины"
         
         
-class ProductCart(models.Model):
-    cart = models.ForeignKey(
-        Cart,
-        on_delete=models.PROTECT,
-    )
-    product = models.ForeignKey(
-        Product,
-        verbose_name="Продукты",
-        on_delete=models.PROTECT,
-    )
-    quantity = models.IntegerField(
-        "количество товара",
-        blank=True,
-        null=True,
-    )
+# class ProductCart(models.Model):
+#     cart = models.ForeignKey(
+#         Cart,
+#         on_delete=models.PROTECT,
+#     )
+#     product = models.ForeignKey(
+#         Product,
+#         verbose_name="Продукты",
+#         on_delete=models.PROTECT,
+#     )
+#     quantity = models.IntegerField(
+#         "количество товара",
+#         blank=True,
+#         null=True,
+#     )
     
-    class Meta:
-        verbose_name = "Корзина продукт"
-        verbose_name_plural = "Корзина Продукты"
+#     class Meta:
+#         verbose_name = "Корзина продукт"
+#         verbose_name_plural = "Корзина Продукты"
         
-    def __str__(self):
-        return self.id    
+#     def __str__(self):
+#         return str(self.id)
         
         

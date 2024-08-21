@@ -194,27 +194,38 @@ def promote_product_slider(product):
 
 
 
-def save_product_cart(request):
-    from apps.client.models import Cart
-    print(request.session)
-    # cart_session = request.COOKIES["cart","None"]
- 
-    if "cart" not in request.COOKIES.keys():
-        if request.user.is_anonymous:
-            request.session['cached_session_key'] = request.session.session_key
-            user = request.COOKIES["sessionid"]
-            session_key = request.session.session_key
-            
-            cart = Cart.objects.get_or_create( session_key=Session.objects.get(session_key=session_key),save_cart=False)
-   
-            request.session['cart'] = cart[0]
+# def save_new_cart(request):
+#     from apps.client.models import Cart
+#     if request.user.is_anonymous:
+#         request.session['cached_session_key'] = request.session.session_key
+#         print(request.session['cached_session_key'])
+#         print(request.session.session_key)
+        # user = request.COOKIES["sessionid"]
+        # session_key = request.session.session_key
+     
+        # cart = Cart.objects.get_or_create( session_key=session_key,save_cart=False)
+
+        # request.session['cart'] = cart[0]
             
                    
-        else:
-            user = request.user
-            try:  
-                cart = Cart.objects.get(client=user,save_cart=False) 
-            except Cart.DoesNotExist:
-                Cart.session_client = user 
-                request.session['cart'] = request.session.session_key   
+    # cart_session = request.COOKIES["cart","None"]
+ 
+    # if "cart" not in request.COOKIES.keys():
+    #     if request.user.is_anonymous:
+    #         request.session['cached_session_key'] = request.session.session_key
+    #         user = request.COOKIES["sessionid"]
+    #         session_key = request.session.session_key
+            
+    #         cart = Cart.objects.get_or_create( session_key=Session.objects.get(session_key=session_key),save_cart=False)
+   
+    #         request.session['cart'] = cart[0]
+            
+                   
+    #     else:
+    #         user = request.user
+    #         try:  
+    #             cart = Cart.objects.get(client=user,save_cart=False) 
+    #         except Cart.DoesNotExist:
+    #             Cart.session_client = user 
+    #             request.session['cart'] = request.session.session_key   
         

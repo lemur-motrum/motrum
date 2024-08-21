@@ -3,6 +3,7 @@ from . import views
 
 # from .api import view_sets
 from rest_framework import routers
+from django.urls import re_path as url
 
 # router.register(r'accounts', AccountViewSet)
 app_name = "core"
@@ -24,9 +25,12 @@ urlpatterns = [
     path("cobots", views.web, name="cobots"),#решения коботы
     path("shkaf-upravleniya", views.web, name="shkaf-upravleniya"),#сборка шкафов управления
     path("contact", views.web, name="contact"),#контакты
-    path("cart", views.index, name="cart"),#корзина. или перенести в отдельный апп??
-    path("privacy-policy", views.web, name="privacy-policy"),#политика конфиденциальности
+    path("cart", views.cart, name="cart"),#корзина
+
     
+    path("privacy-policy", views.web, name="privacy-policy"),#политика конфиденциальности
+    # path("cart", views.cart,name="cart"),
+    # path("/cart", include("apps.client.urls", namespace="cart")),
     #проекты в app project_web namespace="project"
     #каталог и товар  в app product
     #личный кабинет   в  app client  namespace="lk"

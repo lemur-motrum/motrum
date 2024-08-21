@@ -27,7 +27,11 @@ def get_price_motrum(
     from apps.supplier.models import (
         Discount,
     )
-
+    print(12312312312313)
+    print(item_category.name)
+    print(item_group.name)
+    print(all_item_group.name)
+    
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -41,10 +45,8 @@ def get_price_motrum(
         discount_all_group = Discount.objects.filter(
             category_supplier_all=all_item_group.id,
             is_tag_pre_sale=False,
-            # vendor=vendors,
-            # group_supplier__isnull=True,
-            # category_supplier__isnull=True,
         )
+       
 
         if discount_all_group:
             percent = get_percent(discount_all_group)
@@ -55,8 +57,10 @@ def get_price_motrum(
     if item_group and percent == 0:
 
         discount_group = Discount.objects.filter(
+            category_supplier_all__isnull=True,
             group_supplier=item_group.id, is_tag_pre_sale=False
         )
+        
      
         if discount_group:
             percent = get_percent(discount_group)
@@ -66,13 +70,14 @@ def get_price_motrum(
 
     # скидка по категории
     if item_category and percent == 0:
-
+      
         discount_categ = Discount.objects.filter(
+            category_supplier_all__isnull=True,
+            group_supplier__isnull=True,
             category_supplier=item_category.id,
             is_tag_pre_sale = False
-            # group_supplier__isnull=True,
         )
-
+        
         if discount_categ:
             percent = get_percent(discount_categ)
             sale = discount_categ

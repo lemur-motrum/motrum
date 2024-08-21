@@ -24,7 +24,7 @@ from xml.etree import ElementTree, ElementInclude
 def add_iek(request):
     from django.db.models import Prefetch
 
-    iek_api()
+    prompower_api()
     title = "Услуги"
 
     responsets = ["233", "2131"]

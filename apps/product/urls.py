@@ -18,12 +18,13 @@ from rest_framework import routers
 
 from django.urls import re_path as url
 
-from .api.view_sets import ProductViewSet
+from .api.view_sets import ProductViewSet,CartViewSet
 
 app_name = "product"
 
 router = routers.DefaultRouter()
 router.register(r"v1/product", ProductViewSet)
+router.register(r"v1/cart", CartViewSet)
 
 urlpatterns = [
     path("", views.catalog_all, name="catalog"),

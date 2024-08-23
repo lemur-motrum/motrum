@@ -5,3 +5,6 @@ import "/static/admin_specification/js/scripts.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
 import "/static/core/js/scripts/manager-popup-logic.js";
+import "/static/core/js/scripts/get-client-id.js";
+import "/static/client/js/contacts.js";
+import "/static/client/js/details.js";

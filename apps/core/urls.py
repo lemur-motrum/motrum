@@ -32,10 +32,7 @@ urlpatterns = [
     #личный кабинет   в  app client  namespace="lk"
     
     # EMAILS
-    path("personal_account/my_orders", views.my_orders, name="my_orders"),
-    path("personal_account/my_documents", views.my_documents, name="my_documents"),
-    path("personal_account/my_details", views.my_details, name="my_details"),
-    path("personal_account/my_contacts", views.my_contacts, name="my_contacts"),
+    
         # EMAILS
     path("send_email_callback", views.email_callback, name="send_email_callback"),
     path("send_email_manager", views.email_manager, name="send_email_manager"),

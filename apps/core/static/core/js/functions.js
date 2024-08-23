@@ -64,3 +64,10 @@ export function showErrorValidation(description, error) {
     error.classList.remove("show");
   }, 2000);
 }
+
+// валидация Email
+export function isEmailValid(value) {
+  const emailValidate =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
+  return emailValidate.test(value);
+}

@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
 
 from apps.client.models import Client
-from apps.product.models import Cart, CategoryProduct, Product, ProductProperty
+from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
 
@@ -17,6 +17,7 @@ from apps.product.models import ProductCart
 from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
+from django.db.models import F
 
 
 # Create your views here.
@@ -45,6 +46,7 @@ def web(request):
     }
     return render(request, "core/web.html", context)
 
+
 # вьюяха странцы корзина
 def cart(request):
     cart = request.COOKIES.get("cart")
@@ -69,6 +71,7 @@ def cart(request):
             "group",
             "price",
             "stock",
+            "stock__lot",
         )
         .prefetch_related(
             Prefetch(
@@ -85,12 +88,17 @@ def cart(request):
             ),
         )
     )
+    
+
     context = {
         "product": product,
         "cart": cart,
+        "request":request,
     }
-    
+
     return render(request, "core/cart.html", context)
+
+
 # EMAIL SEND
 def email_callback(request):
     if request.method == "POST":

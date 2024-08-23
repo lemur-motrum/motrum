@@ -90,6 +90,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    'middlewares.middlewares.RequestMiddleware',
 ]
 
 ROOT_URLCONF = "project.urls"

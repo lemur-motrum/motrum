@@ -83,18 +83,17 @@ class ProductViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by(ordering_filter)[count + 1 : count + 11]
         )
-        for queryset_item in queryset:
-            print(queryset_item.stock)
+    
         # проверка есть ли еще данные для след запроса
         queryset_next = (
             Product.objects.select_related()
             .filter(q_object)[count + 12 : count + 13]
             .exists()
         )
-        print(queryset)
+   
 
-        serializer = ProductSerializer(queryset, many=True)
-        print(serializer.data)
+        serializer = ProductSerializer(queryset,context={'request':request}, many=True)
+       
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
 

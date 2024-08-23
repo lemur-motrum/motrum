@@ -232,16 +232,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["cart"])
         
         client = cart.client
-        extra_discount = client.percent
+        
+            
 
         # сохранение спецификации для заказа с реквизитами
         if "requisites" in data:
             print(data["requisites"])
+            extra_discount = client.percent
             # сохранение спецификации
             products_cart = ProductCart.objects.filter(cart_id=cart)
-            print(products_cart)
             serializer_class_specification = SpecificationSerializer
-            print(serializer_class_specification)
             data_stop = create_time_stop_specification()
             data_specification = {
                 "cart": cart.id,

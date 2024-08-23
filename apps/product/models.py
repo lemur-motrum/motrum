@@ -6,6 +6,7 @@ from django.db.models.deletion import CASCADE
 from django.dispatch import receiver
 from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
+from middlewares.middlewares import RequestMiddleware
 from apps.core.models import Currency, SliderMain, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -360,8 +361,24 @@ class Price(models.Model):
 
         super().save(*args, **kwargs)
 
-    
-        
+    def price_sale_personal(self):
+        from apps.client.models import Client
+
+        request = RequestMiddleware(get_response=None)
+        request = request.thread_local.current_request
+        print(request.user)
+
+        if request.user:
+            if request.user.is_staff == False:
+                client = Client.objects.get(id=request.user.id)
+                discount = client.percent
+                price = self.rub_price_supplier
+                price_discount = price - (price / 100 * float(discount))
+                return price_discount
+            else:
+                return self.rub_price_supplier
+        else:
+            return self.rub_price_supplier
 
 
 # курсы валют
@@ -540,6 +557,7 @@ class ProductProperty(models.Model):
 
 class Cart(models.Model):
     from apps.client.models import Client
+
     client = models.OneToOneField(
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
@@ -549,9 +567,9 @@ class Cart(models.Model):
     class Meta:
         verbose_name = "Корзина"
         verbose_name_plural = "Корзины"
-        
+
     def __str__(self):
-        return str(self.id)    
+        return str(self.id)
 
 
 class ProductCart(models.Model):

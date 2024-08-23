@@ -3,8 +3,7 @@
     <h1>Корзина</h1>
    
     {% for product_item in product%}
-    <p class="id-product-cart">{{product_item.id_product_cart}}</p>
-    {{product_item.id}}
+    {{product_item.price.price_sale_personal }}
     <p>{{ product_item.quantity }}</p>
     <p>{{ product_item.name }}</p>
     <p>{{ product_item.supplier }}</p>

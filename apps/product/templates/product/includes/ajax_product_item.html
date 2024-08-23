@@ -6,7 +6,7 @@
     {{article_supplier}}
     
     {{ article }}
-    ЦЕНА:{{ price.rub_price_supplier }}
+    ЦЕНА:{{ price.rub_price_supplier }}{{ price.current_user }}
     {% if productproperty_set %}
     ПРОПСЫ:
         {% for props in  productproperty_set%}

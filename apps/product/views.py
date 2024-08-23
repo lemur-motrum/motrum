@@ -53,10 +53,11 @@ def products_items(request, category, group):
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
-
+    category = CategoryProduct.objects.get(slug=category)
+    group = GroupProduct.objects.get(slug=group)
     context = {
-        "category": category, 
-        "group": group, 
+        "category": category.id, 
+        "group": group.id, 
         "product_vendor": product_vendor,}
 
     return render(request, "product/catalog.html", context)
@@ -68,7 +69,7 @@ def product_one(request,category, group, article):
     return render(request, "product/product_one.html", context)
 
 
-
+#юрина вьюха каталога
 def catalog(request):
 
     product_list = Product.objects.select_related(

@@ -1,19 +1,43 @@
 {% extends 'core/base.html' %}
 {% block content %}
     <h1>Корзина</h1>
-    {% for product_item in product%}
-    <p>{{ product_item.name }}</p>
-    {% for char in product.productproperty_set.all %}
-        {{ char.value }}
-    {% empty %}
-        -
-    {% endfor %}
    
-        {% for cart_product in product.productcart_set.all %}
-            {% if cart == cart_product.cart %}{{ cart_product}}{% endif %}
-                        
+    {% for product_item in product%}
+    <p class="id-product-cart">{{product_item.id_product_cart}}</p>
+    {{product_item.id}}
+    <p>{{ product_item.quantity }}</p>
+    <p>{{ product_item.name }}</p>
+    <p>{{ product_item.supplier }}</p>
+    <div class="charactiristics">
+        {% for char in product_item.productproperty_set.all %}
+            {{ char.value }}
+        {% empty %}
+            -
         {% endfor %}
+    </div>
+
+    <div class="lot">
+        {% if product_item.stock %}
+            {% if product_item.stock.order_multiplicity != 1 and product_item.stock.is_one_sale == False %}
+                <span class="span-min">Минимальный заказ {{ product_item.stock.order_multiplicity }}
+                {{ product_item.stock.lot.name_shorts }}</span>
+            {% endif %}
+            {% if product_item.stock.lot_complect != 1 %}
+                {{ product_item.stock.lot.name_shorts }}.({{ product_item.stock.lot_complect }}ед.)
+            {% else %}
+                {{ product_item.stock.lot_complect }}
+                {{ product_item.stock.lot.name_shorts }}.
+            {% endif %}
+        {% else %}
+            -
+        {% endif %}
+        <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-update">обновить число</button>
+        <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-delite">удалить</button>
+    </div>
+   
+    
     {% endfor %}
 
- 
+    <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-save-user">сохранить корзину</button>
+    
 {% endblock %}

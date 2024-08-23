@@ -27,10 +27,6 @@ def get_price_motrum(
     from apps.supplier.models import (
         Discount,
     )
-    print(12312312312313)
-    print(item_category.name)
-    print(item_group.name)
-    print(all_item_group.name)
     
     motrum_price = rub_price_supplier
     percent = 0
@@ -671,6 +667,7 @@ def save_specification(received_data):
     id_specification = received_data["id_specification"]
     is_pre_sale = received_data["is_pre_sale"]
     products = received_data["products"]
+    id_cart = received_data["id_cart"] 
     print(received_data)
    
 
@@ -710,8 +707,9 @@ def save_specification(received_data):
 
     except Specification.DoesNotExist:
         specification = Specification(
-            id_bitrix=id_bitrix, admin_creator_id=admin_creator_id
+            id_bitrix=id_bitrix, admin_creator_id=admin_creator_id,cart=id_cart
         )
+        
         specification._change_reason = "Ручное"
         specification.save()
 
@@ -828,7 +826,7 @@ def save_specification(received_data):
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)
 
-    return received_data
+    return specification
 
 
 def get_presale_discount(product):

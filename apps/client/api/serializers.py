@@ -1,4 +1,4 @@
-from apps.client.models import Client
+from apps.client.models import Client, Order
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -30,7 +30,12 @@ class ClientRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         exclude = ('password',"date_joined","contact_name","email","first_name","groups","phone","is_active","is_staff","is_superuser","last_login","last_name","user_permissions","username")  
-                  
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__"                  
 
         
    

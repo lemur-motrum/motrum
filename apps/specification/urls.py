@@ -1,8 +1,13 @@
 from django.urls import include, path, re_path
 
 from apps.product.models import Product
+from apps.specification.api.view_sets import SpecificationViewSet
 from apps.specification.models import ProductSpecification
 from project import admin
+from .api import view_sets
+from rest_framework import routers
+
+from django.urls import re_path as url
 
 from . import views
 
@@ -15,6 +20,9 @@ from apps.specification.views import (
 )
 
 app_name = "specification"
+
+router = routers.DefaultRouter()
+router.register(r"v1/specification", SpecificationViewSet)
 
 urlpatterns = [
     url(

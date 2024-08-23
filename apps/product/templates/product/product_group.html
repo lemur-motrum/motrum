@@ -3,7 +3,7 @@
 
 {% if group_item.slug %}
 
-<a href="{% url "product:products_items" category group_item.slug %}">{{group_item.slug}}</a>
+<a data-group="group_item.id"href="{% url "product:products_items" category group_item.slug %}">{{group_item.slug}}</a>
 
 
 {% endif %}

@@ -1,15 +1,19 @@
 from itertools import product
 import json
 import os
+from django.db.models import Prefetch
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.template import loader
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.db.models import OuterRef, Subquery
 
-from apps.product.models import CategoryProduct, Product, ProductProperty
+from apps.client.models import Client
+from apps.product.models import Cart, CategoryProduct, Product, ProductProperty
 
 from rest_framework import status
 
-from apps.product.models import  ProductCart
+from apps.product.models import ProductCart
 from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
@@ -85,25 +89,52 @@ def my_contacts(request):
     }
     return render(request, "core/my_contacts.html", context)
 
-def cart(request):
-    cart = request.COOKIES.get('cart')
-    print(cart)
-    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
-    product_cart_list_count = ProductCart.objects.filter(cart=cart)
-    print(product_cart_list)
-    
-    product = Product.objects.filter(id__in=product_cart_list).select_related(
-        "supplier",
-        "vendor", 
-        "category",
-        "group",
-        "price",
-        "stock",
-        )
 
-    context = {"product": product,"cart":cart,}
+# вьюяха странцы корзина
+def cart(request):
+    cart = request.COOKIES.get("cart")
+    cart_qs = Cart.objects.get(id=cart)
+
+    discount_client = 0
+    if cart_qs.client:
+        discount_client = Client.objects.filter(id=cart_qs.client.id)
+
+    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
+    product_cart = ProductCart.objects.filter(cart=cart)
+
+    prefetch_queryset_property = ProductProperty.objects.filter(
+        product__in=product_cart_list
+    )
+    product = (
+        Product.objects.filter(id__in=product_cart_list)
+        .select_related(
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .prefetch_related(
+            Prefetch(
+                "productproperty_set",
+                queryset=prefetch_queryset_property,
+            )
+        )
+        .annotate(
+            quantity=product_cart.filter(product=OuterRef("pk")).values(
+                "quantity",
+            ),
+            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                "id",
+            ),
+        )
+    )
+    context = {
+        "product": product,
+        "cart": cart,
+    }
     
-  
     return render(request, "core/cart.html", context)
 
 

@@ -1,12 +1,11 @@
 {% if category %}
 {% for category_item in category %}
 
-{% if category_item.slug %}
 
-<a href="{% url "product:group" category_item.slug %}">{{category_item.slug}}</a>
+<a data-category="category_item.id" href="{% url "product:group" category_item.slug %}">{{category_item.slug}}</a>
 
 
-{% endif %}
+
 
 {% endfor %}
 {% endif %} 

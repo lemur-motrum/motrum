@@ -14,17 +14,29 @@ from apps.client.api.serializers import (
     AllAccountRequisitesSerializer,
     ClientRequisitesSerializer,
     ClientSerializer,
+    OrderSerializer,
     RequisitesSerializer,
 )
 from django.contrib.sessions.models import Session
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.core.utils import (
+    create_time_stop_specification,
+    get_presale_discount,
+    save_specification,
+)
 from apps.core.utils_web import (
     _get_pin,
     _verify_pin,
+    get_product_item_data,
     send_email_message,
     send_pin,
 )
-from apps.product.models import Product
+from apps.product.models import Cart, Price, Product, ProductCart
+from apps.specification.api.serializers import (
+    ProductSpecificationSerializer,
+    SpecificationSerializer,
+)
+from apps.specification.utils import crete_pdf_specification
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -39,10 +51,11 @@ class ClientViewSet(viewsets.ModelViewSet):
         data = request.data
         # phone = data["phone"].replace(" ", "")
         phone = re.sub(r"[^0-9+]+", r"", data["phone"])
-        print(phone)
         pin_user = data["pin"]
         data["is_active"] = True
         data["username"] = phone
+        cart_id = request.COOKIES.get("cart")
+
         # pin = _get_pin(4)
         pin = 1111
         cache.set(phone, pin, 120)
@@ -58,7 +71,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             # коды совпадают
             if verify_pin:
                 serializer = self.serializer_class(data=data, many=False)
-                # новый юзер
+                # создание новый юзер
                 if serializer.is_valid():
                     client = serializer.save()
                     client.add_manager()
@@ -68,15 +81,20 @@ class ClientViewSet(viewsets.ModelViewSet):
                     client = Client.objects.get(username=phone)
                     serializer = ClientSerializer(client, many=False)
 
+                # юзер логин
                 if client.is_active:
+                    # логин старого пользователя
                     if client.last_login:
                         login(request, client)
-
-                        # client.add_manager()
+                        if cart_id:
+                            Cart.objects.filter(id=cart_id).update(client=client)
                         return Response(serializer.data, status=status.HTTP_200_OK)
+                    # логин нового пользоваеля
                     else:
+
                         login(request, client)
-                        # client.add_manager()
+                        if cart_id:
+                            Cart.objects.filter(id=cart_id).update(client=client)
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
                 else:
@@ -200,3 +218,164 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "put", "update"]
 
 
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    http_method_names = ["get", "post", "put", "update"]
+
+    # сохранение заказа с сайта
+    @action(detail=False, methods=["post"], url_path=r"add_order")
+    def add_order(self, request, *args, **kwargs):
+        data = request.data
+
+        cart = Cart.objects.get(id=data["cart"])
+        
+        client = cart.client
+        extra_discount = client.percent
+
+        # сохранение спецификации для заказа с реквизитами
+        if "requisites" in data:
+            print(data["requisites"])
+            # сохранение спецификации
+            products_cart = ProductCart.objects.filter(cart_id=cart)
+            print(products_cart)
+            serializer_class_specification = SpecificationSerializer
+            print(serializer_class_specification)
+            data_stop = create_time_stop_specification()
+            data_specification = {
+                "cart": cart.id,
+                "admin_creator": client.manager.id,
+                "id_bitrix": None,
+                "date_stop": data_stop,
+            }
+
+            serializer = serializer_class_specification(
+                data=data_specification, partial=True
+            )
+            if serializer.is_valid():
+                serializer.skip_history_when_saving = True
+                specification = serializer.save()
+
+                # сохранение продуктов для спецификации
+                total_amount = 0
+                currency_product = False
+                for product_item in products_cart:
+                    quantity = product_item.quantity
+                    product = Product.objects.get(id=product_item.product.id)
+                    item_data = get_product_item_data(
+                        specification, product, extra_discount, quantity
+                    )
+
+                    serializer_class_specification_product = (
+                        ProductSpecificationSerializer
+                    )
+                    serializer_prod = serializer_class_specification_product(
+                        data=item_data, partial=True
+                    )
+                    if serializer_prod.is_valid():
+                        serializer_prod.skip_history_when_saving = True
+                        specification_product = serializer_prod.save()
+
+                    else:
+                        return Response(
+                            serializer_prod.errors,
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    total_amount += int(item_data["price_all"])
+                # # обновить спецификацию пдф
+                specification.total_amount = total_amount
+                specification.skip_history_when_saving = True
+                specification.save()
+
+                pdf = crete_pdf_specification(specification.id)
+                specification.file = pdf
+                specification.skip_history_when_saving = True
+                specification.save()
+                specification = specification.id
+                requisites =  data["requisites"]
+                account_requisites =  data["account_requisites"]
+                status_order = "PAYMENT"
+
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # сохранение заказа БЕЗ реквизитами
+        else:
+            specification = None
+            status_order = "PROCESSING"
+            requisites = None
+            account_requisites = None
+            
+       
+
+        serializer_class = OrderSerializer
+        data_order = {
+            "client": client,
+            "name": 123131,
+            "specification": specification,
+            "cart": cart.id,
+            "status": status_order,
+            "requisites": requisites,
+            "account_requisites": account_requisites,
+        }
+        serializer = self.serializer_class(data=data_order, many=False)
+        if serializer.is_valid():
+            order = serializer.save()
+            
+            cart.is_active = True
+            cart.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # сохранение спецификации дмин специф
+    @action(detail=False, methods=["post"], url_path=r"add-order-admin")
+    def add_order_admin(self, request, *args, **kwargs):
+        data = request.data
+        cart = Cart.objects.get(id=data["cart"])
+        cart.is_active = True
+        cart.save()
+
+        client = cart.client
+        specification = save_specification(data)
+
+        data_order = {
+            "client": client,
+            "name": 123131,
+            "specification": specification.id,
+            "status": "PAYMENT",
+        }
+        try:
+            order = Order.objects.get(specification=specification)
+            serializer = self.serializer_class(order, data=data, many=False)
+            if serializer.is_valid():
+                order = serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Order.DoesNotExist:
+            serializer = self.serializer_class(data=data, many=False)
+            if serializer.is_valid():
+                order = serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # изменение спецификации дмин специф
+    @action(detail=True, methods=["update"], url_path=r"update-order-admin")
+    def update_order_admin(self, request, pk=None, *args, **kwargs):
+        data = request.data
+        cart = Cart.objects.filter(id=data["cart"]).update(is_active=False)
+
+        return Response(cart, status=status.HTTP_200_OK)
+
+    # выйти и з изменения без сохранения спецификации дмин специф
+    @action(detail=False, methods=["get"], url_path=r"exit-order-admin")
+    def exit_order_admin(self, request, *args, **kwargs):
+        cart_id = request.COOKIES.get("cart")
+        cart = Cart.objects.filter(id=cart_id).update(is_active=True)
+
+        return Response(cart, status=status.HTTP_200_OK)

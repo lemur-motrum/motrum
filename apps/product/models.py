@@ -360,10 +360,8 @@ class Price(models.Model):
 
         super().save(*args, **kwargs)
 
-    # def clean(self):
-    #     super().clean()
-    #     if self.extra_price:
-    #        self.price_supplier = None
+    
+        
 
 
 # курсы валют
@@ -545,7 +543,7 @@ class Cart(models.Model):
     client = models.OneToOneField(
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
-    save_cart = models.BooleanField("корзина сохранена", default=False)
+    is_active = models.BooleanField("корзина сохранена", default=False)
     session_key = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:

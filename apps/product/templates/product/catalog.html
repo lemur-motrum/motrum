@@ -2,7 +2,14 @@
 {% block content %}
     <h1>Каталог</h1>
     {{product_vendor}}
-    <div class="catalog_wrapper" catalog-elem="wrapper">
+    <input id="category-product"
+        type="hidden"
+        data-category-id="{{category}}" />
+    <input id="group-product"
+        type="hidden"
+        data-group-id="{{group}}" />    
+    
+                           <div class="catalog_wrapper" catalog-elem="wrapper">
         <div class="catalog_container" catalog-elem="container">
             {% for product in product_list %}
                 {% include 'product/includes/product_item.html' with product=product %}

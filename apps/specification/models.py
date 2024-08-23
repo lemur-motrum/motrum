@@ -2,7 +2,7 @@ import datetime
 from django.db import models
 
 from apps.core.models import Currency
-from apps.product.models import Price, Product
+from apps.product.models import  Price, Product
 from apps.specification.utils import get_document_path
 from simple_history.models import HistoricalRecords
 from apps.user.models import AdminUser
@@ -11,16 +11,17 @@ from apps.user.models import AdminUser
 
 
 class Specification(models.Model):
-    id_bitrix = models.PositiveIntegerField("Номер сделки битрикс")
+    
+    id_bitrix = models.PositiveIntegerField("Номер сделки битрикс", null=True,)
     date = models.DateField(
-        default=datetime.datetime.now, verbose_name="Дата добавления"
+        default=datetime.date.today, verbose_name="Дата добавления"
     )
     date_update = models.DateField(auto_now=True,verbose_name="Дата обновления")
     # date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
     date_stop = models.DateField(verbose_name="Дата окончания")
-    currency_product = models.BooleanField(
-        "Валютные товары в спецификации", default=False
-    )
+    # currency_product = models.BooleanField(
+    #     "Валютные товары в спецификации", default=False
+    # )
     tag_stop = models.BooleanField("Действительно", default=True)
     total_amount = models.FloatField("Сумма спецификации", null=True, default=None)
     admin_creator = models.ForeignKey(
@@ -34,7 +35,13 @@ class Specification(models.Model):
         "Фаил", upload_to=get_document_path, null=True, default=None
     )
     is_prepay =  models.BooleanField("Предоплата", default=False)
-
+    cart = models.ForeignKey(
+        "product.Cart",
+        on_delete=models.PROTECT,
+        verbose_name="корзина",
+        null=True,
+    )
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Спецификация"
         verbose_name_plural = "Спецификации"
@@ -51,7 +58,7 @@ class Specification(models.Model):
         
         super().save(*args, **kwargs)
         
-    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
 
 
 class ProductSpecification(models.Model):
@@ -98,12 +105,12 @@ class ProductSpecification(models.Model):
     price_exclusive = models.BooleanField("Цена по запросу", default=False)
     extra_discount = models.FloatField("Процент дополнительной скидки",blank=True,
         null=True,)
-    
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Спецификация продукт"
         verbose_name_plural = "Спецификации Продукты"
         
-    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
     def __str__(self):
         return f"{self.product}"
 

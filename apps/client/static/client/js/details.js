@@ -117,5 +117,31 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       };
     }
+
+    const legalEntities =
+      personalAccountContent.querySelectorAll(".legal_entity");
+    const countContainer = personalAccountContent.querySelector(
+      ".new_bank_detail_counter"
+    );
+    const count = legalEntities.length + 1;
+    countContainer.textContent = count;
+
+    legalEntities.forEach((legalEntity) => {
+      const btn = legalEntity.querySelector(".change_button");
+      legalEntity.onmouseover = () => {
+        btn.classList.add("show");
+      };
+      legalEntity.onmouseout = () => {
+        btn.classList.remove("show");
+      };
+      btn.onclick = () => {
+        legalEntity.classList.toggle("show");
+        if (legalEntity.classList.contains("show")) {
+          btn.textContent = "Скрыть";
+        } else {
+          btn.textContent = "Редактировать";
+        }
+      };
+    });
   }
 });

@@ -3,7 +3,7 @@ import random
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from apps.client.models import Client, Requisites
+from apps.client.models import AccountRequisites, Client, Requisites
 
 
 # Create your views here.
@@ -38,9 +38,13 @@ def my_details(request):
 
     details = Requisites.objects.filter(client=client_id)
 
+    for detail in details:
+        bank_details = AccountRequisites.objects.filter(requisites=detail.pk)
+
     context = {
         "title": "Личный кабинет | мои реквизиты",
         "details": details,
+        "bank_details": bank_details,
     }
     return render(request, "client/my_details.html", context)
 

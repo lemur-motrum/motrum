@@ -20,114 +20,187 @@
                                     <div class="detail">КПП {{ detail.kpp }}</div>
                                     <div class="detail">ОГРН {{ detail.ogrn }}</div>
                                     <div class="detail">Договор №{{ detail.contract }}</div>
+                                    <button class="change_button">Редактировать</button>
                                 </div>
-                                <div class="adresses">
+                                <div class="addresses">
                                     <div class="address">
                                         <div class="title">Юридический адрес</div>
                                         <div class="legal_adress_form">
                                             <label>
                                                 <span>Индекс</span>
-                                                <input class="current_legal_adress_index" type="text" />
+                                                <input value={{ detail.legal_post_code }} class="current_legal_adress_index" type="text" />
                                             </label>
                                             <label>
                                                 <span>Город</span>
-                                                <input class="current_legal_adress_city" type="text" />
+                                                <input value={{ detail.legal_city }} class="current_legal_adress_city" type="text" />
                                             </label>
                                             <label>
                                                 <span>Адрес</span>
-                                                <input class="current_legal_adress_adress" type="text" />
+                                                <input value="{{ detail.legal_address }}"
+                                                       class="current_legal_adress_adress"
+                                                       type="text" />
                                             </label>
+                                            <button class="change-legal-adress-button">Изменить</button>
                                         </div>
-                                        <div class="address"></div>
+                                    </div>
+                                    <div class="address">
+                                        <div class="title">Почтовый адрес</div>
+                                        <div class="post_adress_form">
+                                            <label>
+                                                <span>Индекс</span>
+                                                <input value={{ detail.legal_post_code }} class="current_post_adress_index" type="text" />
+                                            </label>
+                                            <label>
+                                                <span>Город</span>
+                                                <input value={{ detail.legal_city }} class="current_post_adress_city" type="text" />
+                                            </label>
+                                            <label>
+                                                <span>Адрес</span>
+                                                <input value="{{ detail.legal_address }}"
+                                                       class="current_post_adress_adress"
+                                                       type="text" />
+                                            </label>
+                                            <button class="change-post-adress-button">Изменить</button>
+                                        </div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="new_legal_entity">
-                    <form class="legal_entity_form">
-                        <div class="head_details">
-                            <label>
-                                <span>Наименование юрлица</span>
-                                <input class="name" type="text" />
-                            </label>
-                            <label>
-                                <span>ИНН</span>
-                                <input class="inn" type="text" />
-                            </label>
-                            <label>
-                                <span>КПП</span>
-                                <input class="kpp" type="text" />
-                            </label>
-                            <label>
-                                <span>ОГРН</span>
-                                <input class="ogrn" type="text" />
-                            </label>
-                            <label>
-                                <span>Договор</span>
-                                <input class="contract" type="text" />
-                            </label>
-                        </div>
-                        <div class="legal_address_container">
-                            <div class="title">Юридический адрес</div>
-                            <div class="labels">
-                                <label>
-                                    <span>Индекс</span>
-                                    <input class="legal-adress-index" type="text" />
-                                </label>
-                                <label>
-                                    <span>Город</span>
-                                    <input class="legal-adress-city" type="text" />
-                                </label>
-                                <label>
-                                    <span>Адрес</span>
-                                    <input class="legal-adress-adress" type="text" />
-                                </label>
+                                <div class="bank-details-container">
+                                    <div class="title">Расчётный счёт</div>
+                                    <div class="bank-details">
+                                        {% for bank_detail in bank_details %}
+                                            <div class="bank_detail">
+                                                <label>
+                                                    <span>Расчётный счёт {{ forloop.counter }}:</span>
+                                                    <input value="{{ bank_detail.account_requisites }}"
+                                                           class="bank_detail-current_account"
+                                                           type="text" />
+                                                </label>
+                                                <label>
+                                                    <span>Банк:</span>
+                                                    <input value="{{ bank_detail.bank }}" class="bank_detail-bank" type="text" />
+                                                </label>
+                                                <label>
+                                                    <span>Корреспондентский счёт:</span>
+                                                    <input value="{{ bank_detail.kpp }}"
+                                                           class="bank_detail-correspondent_account"
+                                                           type="text" />
+                                                </label>
+                                                <label>
+                                                    <span>БИК:</span>
+                                                    <input value="{{ bank_detail.bic }}" class="bank_detail-bic" type="text" />
+                                                </label>
+                                                <button class="bank-detail-button">Изменить</button>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="new_bank_detail">
+                                            <label>
+                                                <span>Расчётный счёт <span class="new_bank_detail_counter"></span>:</span>
+                                                <input class="bank_detail-current_account" type="text" />
+                                            </label>
+                                            <label>
+                                                <span>Банк:</span>
+                                                <input class="bank_detail-bank" type="text" />
+                                            </label>
+                                            <label>
+                                                <span>Корреспондентский счёт:</span>
+                                                <input class="bank_detail-correspondent_account" type="text" />
+                                            </label>
+                                            <label>
+                                                <span>БИК:</span>
+                                                <input class="bank_detail-bic" type="text" />
+                                            </label>
+                                            <button class="bank-detail-button">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="post_address_container">
-                            <div class="title">Почтовый адрес</div>
-                            <div class="labels">
-                                <label>
-                                    <span>Индекс</span>
-                                    <input class="post-adress-index" type="text" />
-                                </label>
-                                <label>
-                                    <span>Город</span>
-                                    <input class="post-adress-city" type="text" />
-                                </label>
-                                <label>
-                                    <span>Адрес</span>
-                                    <input class="post-adress-adress" type="text" />
-                                </label>
-                            </div>
-                        </div>
-                        <div class="bank-details-container">
-                            <div class="title">Расчетный счет</div>
-                            <div class="labels">
-                                <label>
-                                    <span>Расчетный счет</span>
-                                    <input class="bank-details-input-current-account" type="text" />
-                                </label>
-                                <label>
-                                    <span>Банк</span>
-                                    <input class="bank-details-input-bank" type="text">
-                                </label>
-                                <label>
-                                    <span>Корреспондентский счёт</span>
-                                    <input class="bank-details-input-correspondent-account" type="text">
-                                </label>
-                                <label>
-                                    <span>БИК</span>
-                                    <input class="bank-details-input-bik" type="text">
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="save_legal_entity">Сохранить реквизиты</button>
-                    </form>
-                </div>
-                <div class="add_legal_entity">+ добавить юридическое лицо</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
+            <div class="new_legal_entity">
+                <form class="legal_entity_form">
+                    <div class="head_details">
+                        <label>
+                            <span>Наименование юрлица</span>
+                            <input class="name" type="text" />
+                        </label>
+                        <label>
+                            <span>ИНН</span>
+                            <input class="inn" type="text" />
+                        </label>
+                        <label>
+                            <span>КПП</span>
+                            <input class="kpp" type="text" />
+                        </label>
+                        <label>
+                            <span>ОГРН</span>
+                            <input class="ogrn" type="text" />
+                        </label>
+                        <label>
+                            <span>Договор</span>
+                            <input class="contract" type="text" />
+                        </label>
+                    </div>
+                    <div class="legal_address_container">
+                        <div class="title">Юридический адрес</div>
+                        <div class="labels">
+                            <label>
+                                <span>Индекс</span>
+                                <input class="legal-adress-index" type="text" />
+                            </label>
+                            <label>
+                                <span>Город</span>
+                                <input class="legal-adress-city" type="text" />
+                            </label>
+                            <label>
+                                <span>Адрес</span>
+                                <input class="legal-adress-adress" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="post_address_container">
+                        <div class="title">Почтовый адрес</div>
+                        <div class="labels">
+                            <label>
+                                <span>Индекс</span>
+                                <input class="post-adress-index" type="text" />
+                            </label>
+                            <label>
+                                <span>Город</span>
+                                <input class="post-adress-city" type="text" />
+                            </label>
+                            <label>
+                                <span>Адрес</span>
+                                <input class="post-adress-adress" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bank-details-container">
+                        <div class="title">Расчетный счет</div>
+                        <div class="labels">
+                            <label>
+                                <span>Расчетный счет</span>
+                                <input class="bank-details-input-current-account" type="text" />
+                            </label>
+                            <label>
+                                <span>Банк</span>
+                                <input class="bank-details-input-bank" type="text">
+                            </label>
+                            <label>
+                                <span>Корреспондентский счёт</span>
+                                <input class="bank-details-input-correspondent-account" type="text">
+                            </label>
+                            <label>
+                                <span>БИК</span>
+                                <input class="bank-details-input-bik" type="text">
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="save_legal_entity">Сохранить реквизиты</button>
+                </form>
+            </div>
+            <div class="add_legal_entity">+ добавить юридическое лицо</div>
         </div>
-    {% endblock personal_account_content %}
+    </div>
+{% endblock personal_account_content %}

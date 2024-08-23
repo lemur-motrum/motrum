@@ -1,0 +1,31 @@
+{% extends "client/lc.html" %}
+{% block personal_account_content %}
+    <div class="personal_account_content">
+        <div class="contacts">
+            <form class="contact-form">
+                <label>
+                    <span class="description">Контактное лицо</span>
+                    <input value="{% if client.contact_name %}{{ client.contact_name }}{% else %}{% endif %}"
+                           type="text"
+                           class="name-input" />
+                    <div class="error name_error"></div>
+                </label>
+                <label>
+                    <span class="description">Телефон</span>
+                    <input value="{% if client.phone %}{{ client.phone }}{% else %}{% endif %}"
+                           type="text"
+                           class="phone-input" />
+                    <div class="error phone_error"></div>
+                </label>
+                <label>
+                    <span class="description">Email</span>
+                    <input value="{% if client.email %}{{ client.email }}{% else %}{% endif %}"
+                           type="text"
+                           class="mail-input" />
+                    <div class="error mail_error"></div>
+                </label>
+                <button type="submit">Изменить</button>
+            </form>
+        </div>
+    </div>
+{% endblock personal_account_content %}

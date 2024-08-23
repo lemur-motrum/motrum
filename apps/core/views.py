@@ -19,14 +19,6 @@ from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 
 
-nav_elems = [
-    {"name": "мои заказы", "link": "my_orders"},
-    {"name": "документы", "link": "my_documents"},
-    {"name": "мои реквизиты", "link": "my_details"},
-    {"name": "мои контакты", "link": "my_contacts"},
-]
-
-
 # Create your views here.
 def index(request):
     categories = CategoryProduct.objects.all().order_by("article_name")
@@ -52,90 +44,6 @@ def web(request):
         "categories": categories,
     }
     return render(request, "core/web.html", context)
-
-
-def my_orders(request):
-    nav_elems[0]["active"] = True
-    context = {
-        "title": "Личный кабинет | мои заказы",
-        "nav_elems": nav_elems,
-    }
-    return render(request, "core/my_orders.html", context)
-
-
-def my_documents(request):
-    nav_elems[1]["active"] = True
-    context = {
-        "title": "Личный кабинет | мои документы",
-        "nav_elems": nav_elems,
-    }
-    return render(request, "core/my_documents.html", context)
-
-
-def my_details(request):
-    nav_elems[2]["active"] = True
-    context = {
-        "title": "Личный кабинет | мои реквизиты",
-        "nav_elems": nav_elems,
-    }
-    return render(request, "core/my_details.html", context)
-
-
-def my_contacts(request):
-    nav_elems[3]["active"] = True
-    context = {
-        "title": "Личный кабинет | мои контакты",
-        "nav_elems": nav_elems,
-    }
-    return render(request, "core/my_contacts.html", context)
-
-
-# вьюяха странцы корзина
-def cart(request):
-    cart = request.COOKIES.get("cart")
-    cart_qs = Cart.objects.get(id=cart)
-
-    discount_client = 0
-    if cart_qs.client:
-        discount_client = Client.objects.filter(id=cart_qs.client.id)
-
-    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
-    product_cart = ProductCart.objects.filter(cart=cart)
-
-    prefetch_queryset_property = ProductProperty.objects.filter(
-        product__in=product_cart_list
-    )
-    product = (
-        Product.objects.filter(id__in=product_cart_list)
-        .select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
-        )
-        .prefetch_related(
-            Prefetch(
-                "productproperty_set",
-                queryset=prefetch_queryset_property,
-            )
-        )
-        .annotate(
-            quantity=product_cart.filter(product=OuterRef("pk")).values(
-                "quantity",
-            ),
-            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
-                "id",
-            ),
-        )
-    )
-    context = {
-        "product": product,
-        "cart": cart,
-    }
-    
-    return render(request, "core/cart.html", context)
 
 
 # EMAIL SEND

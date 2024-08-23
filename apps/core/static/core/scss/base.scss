@@ -21,6 +21,7 @@ body {
     position: relative;
     .site-description-content {
       margin-bottom: 3.125rem;
+      min-height: 22rem;
     }
   }
   .footer {
@@ -173,6 +174,8 @@ body {
         font-size: 0.938rem;
         text-transform: uppercase;
         cursor: pointer;
+        color: #000;
+        text-decoration: none;
       }
     }
   }
@@ -272,6 +275,9 @@ body {
         text-transform: lowercase;
       }
     }
+  }
+  .contacts-description {
+    display: none;
   }
   &.visible {
     opacity: 1;
@@ -542,6 +548,7 @@ body {
         font-weight: bold;
         color: #a4a4a4;
         text-transform: uppercase;
+        text-decoration: none;
         &.active {
           font-weight: bold;
           color: #000;

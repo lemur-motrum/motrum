@@ -1,0 +1,114 @@
+{% extends "client/lc.html" %}
+{% block personal_account_content %}
+    <div class="personal_account_content">
+        <div class="details">
+            <div class="legal_entitis">
+                {% if details %}
+                    <div class="small_titles">
+                        <div class="small_title">Юридическое лицо</div>
+                        <div class="small_title">ИНН</div>
+                        <div class="small_title">кпп</div>
+                        <div class="small_title">ОГРН</div>
+                        <div class="small_title">Договор</div>
+                    </div>
+                    <div class="container">
+                        {% for detail in details %}
+                            <div class="legal_entity">
+                                <div class="head_legal_entity_details">
+                                    <div class="detail">{{ detail.legal_entity }}</div>
+                                    <div class="detail">ИНН {{ detail.inn }}</div>
+                                    <div class="detail">КПП {{ detail.kpp }}</div>
+                                    <div class="detail">ОГРН {{ detail.ogrn }}</div>
+                                    <div class="detail">Договор №{{ detail.contract }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="new_legal_entity">
+                <form class="legal_entity_form">
+                    <div class="head_details">
+                        <label>
+                            <span>Наименование юрлица</span>
+                            <input class="name" type="text" />
+                        </label>
+                        <label>
+                            <span>ИНН</span>
+                            <input class="inn" type="text" />
+                        </label>
+                        <label>
+                            <span>КПП</span>
+                            <input class="kpp" type="text" />
+                        </label>
+                        <label>
+                            <span>ОГРН</span>
+                            <input class="ogrn" type="text" />
+                        </label>
+                        <label>
+                            <span>Договор</span>
+                            <input class="contract" type="text" />
+                        </label>
+                    </div>
+                    <div class="legal_address_container">
+                        <div class="title">Юридический адрес</div>
+                        <div class="labels">
+                            <label>
+                                <span>Индекс</span>
+                                <input class="legal-adress-index" type="text" />
+                            </label>
+                            <label>
+                                <span>Город</span>
+                                <input class="legal-adress-city" type="text" />
+                            </label>
+                            <label>
+                                <span>Адрес</span>
+                                <input class="legal-adress-adress" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="post_address_container">
+                        <div class="title">Почтовый адрес</div>
+                        <div class="labels">
+                            <label>
+                                <span>Индекс</span>
+                                <input class="post-adress-index" type="text" />
+                            </label>
+                            <label>
+                                <span>Город</span>
+                                <input class="post-adress-city" type="text" />
+                            </label>
+                            <label>
+                                <span>Адрес</span>
+                                <input class="post-adress-adress" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bank-details-container">
+                        <div class="title">Расчетный счет</div>
+                        <div class="labels">
+                            <label>
+                                <span>Расчетный счет</span>
+                                <input class="bank-details-input-current-account" type="text" />
+                            </label>
+                            <label>
+                                <span>Банк</span>
+                                <input class="bank-details-input-bank" type="text">
+                            </label>
+                            <label>
+                                <span>Корреспондентский счёт</span>
+                                <input class="bank-details-input-correspondent-account" type="text">
+                            </label>
+                            <label>
+                                <span>БИК</span>
+                                <input class="bank-details-input-bik" type="text">
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="save_legal_entity">Сохранить реквизиты</button>
+                </form>
+            </div>
+            <div class="add_legal_entity">+ добавить юридическое лицо</div>
+        </div>
+    </div>
+{% endblock personal_account_content %}

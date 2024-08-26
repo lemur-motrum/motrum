@@ -1,12 +1,21 @@
-{% if category %}
-{% for category_item in category %}
-
-
-<a data-category="category_item.id" href="{% url "product:group" category_item.slug %}">{{category_item.slug}}</a>
-
-
-
-
-{% endfor %}
-{% endif %} 
-
+{% extends "core/base.html" %}
+{% block content %}
+    {% include "core/includes/header.html" %}
+    <div class="web_catalog_container">
+        <div class="title_content">
+            <div class="bread_crumbs">
+                <a href="{% url "core:index" %}">главная</a>
+            </div>
+            <h1 class="title">Каталог</h1>
+        </div>
+        <div class="category_container">
+            {% if category %}
+                {% for category_item in category %}
+                    <a class="category"
+                       data-category="category_item.id"
+                       href="{% url "product:group" category_item.slug %}"><span>{{ category_item.name }}</span></a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

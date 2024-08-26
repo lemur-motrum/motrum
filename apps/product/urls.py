@@ -18,7 +18,7 @@ from rest_framework import routers
 
 from django.urls import re_path as url
 
-from .api.view_sets import ProductViewSet,CartViewSet
+from .api.view_sets import ProductViewSet, CartViewSet
 
 app_name = "product"
 
@@ -30,14 +30,12 @@ urlpatterns = [
     path("", views.catalog_all, name="catalog"),
     path("<slug:category>", views.catalog_group, name="group"),
     path("<slug:category>/<slug:group>", views.products_items, name="products_items"),
-    path("<slug:category>/<slug:group>/<slug:article>", views.product_one, name="product_one"),
- 
+    path(
+        "<slug:category>/<slug:group>/<slug:article>",
+        views.product_one,
+        name="product_one",
+    ),
     url("product_ajax", views.catalog, name="catalog_ajax"),
-    
-    
-    
-    
-    
     # автозаполнение для бека
     url(
         r"^vendor-autocomplete/$",

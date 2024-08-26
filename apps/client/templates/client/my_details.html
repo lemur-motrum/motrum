@@ -15,7 +15,7 @@
                         {% for detail in details %}
                             <div class="legal_entity">
                                 <div class="head_legal_entity_details">
-                                    <div class="detail">{{ detail.legal_entity }}</div>
+                                    <div class="detail">{{ detail.name }}</div>
                                     <div class="detail">ИНН {{ detail.inn }}</div>
                                     <div class="detail">КПП {{ detail.kpp }}</div>
                                     <div class="detail">ОГРН {{ detail.ogrn }}</div>
@@ -48,15 +48,15 @@
                                         <div class="post_adress_form">
                                             <label>
                                                 <span>Индекс</span>
-                                                <input value={{ detail.legal_post_code }} class="current_post_adress_index" type="text" />
+                                                <input value={{ detail.postal_post_code }} class="current_post_adress_index" type="text" />
                                             </label>
                                             <label>
                                                 <span>Город</span>
-                                                <input value={{ detail.legal_city }} class="current_post_adress_city" type="text" />
+                                                <input value={{ detail.postal_city }} class="current_post_adress_city" type="text" />
                                             </label>
                                             <label>
                                                 <span>Адрес</span>
-                                                <input value="{{ detail.legal_address }}"
+                                                <input value="{{ detail.postal_address }}"
                                                        class="current_post_adress_adress"
                                                        type="text" />
                                             </label>
@@ -67,7 +67,7 @@
                                 <div class="bank-details-container">
                                     <div class="title">Расчётный счёт</div>
                                     <div class="bank-details">
-                                        {% for bank_detail in bank_details %}
+                                        {% for bank_detail in detail.bank_details %}
                                             <div class="bank_detail">
                                                 <label>
                                                     <span>Расчётный счёт {{ forloop.counter }}:</span>
@@ -124,22 +124,27 @@
                         <label>
                             <span>Наименование юрлица</span>
                             <input class="name" type="text" />
+                            <div class="error new_legal_entity_name_error"></div>
                         </label>
                         <label>
                             <span>ИНН</span>
                             <input class="inn" type="text" />
+                            <div class="error new_legal_entity_inn_error"></div>
                         </label>
                         <label>
                             <span>КПП</span>
                             <input class="kpp" type="text" />
+                            <div class="error new_legal_entity_kpp_error"></div>
                         </label>
                         <label>
                             <span>ОГРН</span>
                             <input class="ogrn" type="text" />
+                            <div class="error new_legal_entity_ogrn_error"></div>
                         </label>
                         <label>
                             <span>Договор</span>
                             <input class="contract" type="text" />
+                            <div class="error new_legal_entity_contract_error"></div>
                         </label>
                     </div>
                     <div class="legal_address_container">
@@ -148,14 +153,17 @@
                             <label>
                                 <span>Индекс</span>
                                 <input class="legal-adress-index" type="text" />
+                                <div class="error new_legal_entity_legal_adress_index_error"></div>
                             </label>
                             <label>
                                 <span>Город</span>
                                 <input class="legal-adress-city" type="text" />
+                                <div class="error new_legal_entity_legal_adress_city_error"></div>
                             </label>
                             <label>
                                 <span>Адрес</span>
                                 <input class="legal-adress-adress" type="text" />
+                                <div class="error new_legal_entity_legal_adress_adress_error"></div>
                             </label>
                         </div>
                     </div>
@@ -165,14 +173,17 @@
                             <label>
                                 <span>Индекс</span>
                                 <input class="post-adress-index" type="text" />
+                                <div class="error new_legal_entity_post_adress_index_error"></div>
                             </label>
                             <label>
                                 <span>Город</span>
                                 <input class="post-adress-city" type="text" />
+                                <div class="error new_legal_entity_post_adress_city_error"></div>
                             </label>
                             <label>
                                 <span>Адрес</span>
                                 <input class="post-adress-adress" type="text" />
+                                <div class="error new_legal_entity_post_adress_adress_error"></div>
                             </label>
                         </div>
                     </div>
@@ -182,18 +193,22 @@
                             <label>
                                 <span>Расчетный счет</span>
                                 <input class="bank-details-input-current-account" type="text" />
+                                <div class="error new_legal_entity_bank_current_account_error"></div>
                             </label>
                             <label>
                                 <span>Банк</span>
                                 <input class="bank-details-input-bank" type="text">
+                                <div class="error new_legal_entity_bank_error"></div>
                             </label>
                             <label>
                                 <span>Корреспондентский счёт</span>
                                 <input class="bank-details-input-correspondent-account" type="text">
+                                <div class="error new_legal_entity_bank_correspondent_account_error"></div>
                             </label>
                             <label>
                                 <span>БИК</span>
                                 <input class="bank-details-input-bik" type="text">
+                                <div class="error new_legal_entity_bank_bik_error"></div>
                             </label>
                         </div>
                     </div>

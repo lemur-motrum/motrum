@@ -1,21 +1,13 @@
 <div class="product_item" catalog-elem="product-item">
-    <a href="{{url}}">{{ name }}</a>
-    
-  
-
-    {{article_supplier}}
-    
+    <a href="{{ url }}">{{ name }}</a>
+    {{ article_supplier }}
     {{ article }}
     ЦЕНА:{{ price.rub_price_supplier }}{{ price.current_user }}
     {% if productproperty_set %}
-    ПРОПСЫ:
-        {% for props in  productproperty_set%}
-        {{props.name}}
-        {% endfor %}
-   {% endif %}
-   СТОК:{{ stock }}
-   <button data-id-product={{id}} class="add-cart-button">В корзину</button>
-   
-   
-   
+        ПРОПСЫ:
+        {% for props in productproperty_set %}{{ props.name }}{% endfor %}
+    {% endif %}
+    СТОК:{{ stock }}
+    <button data-id-product={{ id }} class="add-cart-button">В корзину
+    </button>
 </div>

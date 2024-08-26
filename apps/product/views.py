@@ -8,6 +8,7 @@ from dal.views import BaseQuerySetView
 from regex import P
 
 from apps import product
+from apps.admin_specification.views import all_categories
 from apps.product.models import CategoryProduct, GroupProduct, Product
 from apps.supplier.models import (
     SupplierCategoryProduct,
@@ -16,22 +17,43 @@ from apps.supplier.models import (
     Vendor,
 )
 
+
 # все категории
 def catalog_all(request):
     category = CategoryProduct.objects.all().order_by("article_name")
 
-    context = {"category": category}
+    context = {
+        "category": category,
+        "title": "Каталог",
+    }
 
     return render(request, "product/product_catalog.html", context)
+
 
 # группы категорий
 def catalog_group(request, category):
 
-    group = GroupProduct.objects.filter(category__slug=category).order_by("article_name")
+    group = GroupProduct.objects.filter(category__slug=category).order_by(
+        "article_name"
+    )
+    all_categories = CategoryProduct.objects.all()
+    cat = CategoryProduct.objects.get(slug=category)
 
-    context = {"category": category, "group": group}
+    def get_another_category():
+        current_cats = [
+            category for category in all_categories if category.pk != cat.pk
+        ]
+        return current_cats
+
+    context = {
+        "category": cat,
+        "group": group,
+        "another_categories": get_another_category(),
+        "title": cat.name,
+    }
 
     return render(request, "product/product_group.html", context)
+
 
 # страница всех продуктов в категории\группе
 def products_items(request, category, group):
@@ -56,20 +78,22 @@ def products_items(request, category, group):
     category = CategoryProduct.objects.get(slug=category)
     group = GroupProduct.objects.get(slug=group)
     context = {
-        "category": category.id, 
-        "group": group.id, 
-        "product_vendor": product_vendor,}
+        "category": category.id,
+        "group": group.id,
+        "product_vendor": product_vendor,
+    }
 
     return render(request, "product/catalog.html", context)
 
+
 # страница отдельного продукта
-def product_one(request,category, group, article):
+def product_one(request, category, group, article):
     product = Product.objects.get(article=article)
-    context = {"product":product}
+    context = {"product": product}
     return render(request, "product/product_one.html", context)
 
 
-#юрина вьюха каталога
+# юрина вьюха каталога
 def catalog(request):
 
     product_list = Product.objects.select_related(
@@ -84,7 +108,9 @@ def catalog(request):
         "stock",
     ).filter(check_to_order=True)[0:10]
 
-    context = {"product_list": product_list}
+    context = {
+        "product_list": product_list,
+    }
 
     return render(request, "product/catalog.html", context)
 

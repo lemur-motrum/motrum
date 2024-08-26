@@ -1,6 +1,7 @@
 from itertools import product
 import json
 import os
+import random
 from django.db.models import Prefetch
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.template import loader
@@ -22,10 +23,12 @@ from django.db.models import F
 
 # Create your views here.
 def index(request):
-    categories = CategoryProduct.objects.all().order_by("article_name")
+    categories = list(CategoryProduct.objects.all())
+    random.shuffle(categories)
+    cat = categories[0:7]
 
     context = {
-        "categories": categories,
+        "categories": cat,
     }
     return render(request, "core/index.html", context)
 
@@ -88,12 +91,11 @@ def cart(request):
             ),
         )
     )
-    
 
     context = {
         "product": product,
         "cart": cart,
-        "request":request,
+        "request": request,
     }
 
     return render(request, "core/cart.html", context)

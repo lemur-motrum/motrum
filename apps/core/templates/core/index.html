@@ -10,11 +10,13 @@
               <div class="products">
                      <div class="title-container">
                             <div class="title">товары</div>
-                            <a href="#" class="title-link">весь каталог</a>
+                            <a href="{% url "product:catalog" %}" class="title-link">весь каталог</a>
                      </div>
                      <div class="products-categories">
-                            {% for category in categories %}<a class="category-elem" href="#"><span>{{ category.name }}</span></a>{% endfor %}
-                            <a class="category-elem" href="#"><span>весь каталог</span></a>
+                            {% for category in categories %}
+                                   <a class="category-elem" href="{% url "product:group" category.slug %}"><span>{{ category.name }}</span></a>
+                            {% endfor %}
+                            <a class="category-elem" href="{% url "product:catalog" %}"><span>весь каталог</span></a>
                      </div>
               </div>
               <div class="solutions">

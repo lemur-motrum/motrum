@@ -1,12 +1,35 @@
-{% if group %}
-{% for group_item in group %}
-
-{% if group_item.slug %}
-
-<a data-group="group_item.id"href="{% url "product:products_items" category group_item.slug %}">{{group_item.slug}}</a>
-
-
-{% endif %}
-
-{% endfor %}
-{% endif %} 
+{% extends "core/base.html" %}
+{% block content %}
+    {% include "core/includes/header.html" %}
+    <div class="group_catalog_container">
+        <div class="title_content">
+            <div class="bread_crumbs">
+                <a href="{% url "core:index" %}">главная</a>
+                <a href="{% url "product:catalog" %}">каталог</a>
+            </div>
+            <h1 class="title">{{ category.name }}</h1>
+            <div class="site_categories_container">
+                <div class="swiper-wrapper">
+                    {% for category in another_categories %}
+                        <a href="{% url "product:group" category.slug %}"
+                           class="swiper-slide category">
+                            <span>{{ category.name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="slider-arrow">></div>
+            </div>
+        </div>
+        <div class="group_container">
+            {% if group %}
+                {% for group_item in group %}
+                    {% if group_item.slug %}
+                        <a class="group"
+                           data-group="group_item.id"
+                           href="{% url "product:products_items" category.slug group_item.slug %}"><span>{{ group_item.name }}</span></a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

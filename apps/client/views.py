@@ -37,14 +37,37 @@ def my_details(request):
     client_id = int(cookie)
 
     details = Requisites.objects.filter(client=client_id)
-
+    bank_obj = []
     for detail in details:
+        my_details = {
+            "name": detail.legal_entity,
+            "inn": detail.inn,
+            "kpp": detail.kpp,
+            "ogrn": detail.ogrn,
+            "contract": detail.contract,
+            "legal_post_code": detail.legal_post_code,
+            "legal_city": detail.legal_city,
+            "legal_address": detail.legal_address,
+            "postal_post_code": detail.postal_post_code,
+            "postal_city": detail.postal_city,
+            "postal_address": detail.postal_address,
+            "bank_details": [],
+        }
         bank_details = AccountRequisites.objects.filter(requisites=detail.pk)
+        for bank_detail in bank_details:
+            bank_object = {
+                "account_requisites": bank_detail.account_requisites,
+                "bank": bank_detail.bank,
+                "kpp": bank_detail.kpp,
+                "bic": bank_detail.bic,
+            }
+            my_details["bank_details"].append(bank_object)
+
+        bank_obj.append(my_details)
 
     context = {
         "title": "Личный кабинет | мои реквизиты",
-        "details": details,
-        "bank_details": bank_details,
+        "details": bank_obj,
     }
     return render(request, "client/my_details.html", context)
 

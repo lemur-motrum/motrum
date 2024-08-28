@@ -405,6 +405,17 @@
             border-radius: 10px;
             background-color: #f5f5f5;
             overflow: hidden;
+            button {
+              font-size: 1rem;
+            }
+          }
+        }
+        .add_more {
+          display: none;
+          margin-top: 1rem;
+          font-size: 1rem;
+          &.show {
+            display: block;
           }
         }
       }

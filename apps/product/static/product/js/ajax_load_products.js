@@ -4,6 +4,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const catalogWrapper = document.querySelector('[catalog-elem="wrapper"]');
   if (catalogWrapper) {
     const loader = catalogWrapper.querySelector(".loader");
+    const btn = catalogWrapper.querySelector(".add_more");
     const catalogContainer = catalogWrapper.querySelector(
       '[catalog-elem="container"]'
     );
@@ -45,9 +46,11 @@ window.addEventListener("DOMContentLoaded", () => {
         .then(function (data) {
           console.log(data);
           loader.style.display = "none";
+
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
           }
+          btn.classList.add("show");
           // addCart();
         });
     };

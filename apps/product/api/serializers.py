@@ -90,10 +90,14 @@ class ProductSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         if self.context["request"].user:
             if self.context["request"].user.is_staff == False:
-                client = Client.objects.get(id=self.context["request"].user.id)
-                if client.percent:
-                    discount = client.percent
-                else:
+                try:
+                    client = Client.objects.get(id=self.context["request"].user.id)
+                    if client.percent:
+                        discount = client.percent
+                    else:
+                        discount = 100
+                except Client.DoesNotExist:
+                    client = None
                     discount = 100
                 price = data["price"]["rub_price_supplier"]
                 price_discount = price - (price / 100 * float(discount))

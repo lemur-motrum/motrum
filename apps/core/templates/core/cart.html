@@ -1,42 +1,39 @@
 {% extends 'core/base.html' %}
 {% block content %}
     <h1>Корзина</h1>
-   
-    {% for product_item in product%}
-    {{product_item.price.price_sale_personal }}
-    <p>{{ product_item.quantity }}</p>
-    <p>{{ product_item.name }}</p>
-    <p>{{ product_item.supplier }}</p>
-    <div class="charactiristics">
-        {% for char in product_item.productproperty_set.all %}
-            {{ char.value }}
-        {% empty %}
-            -
-        {% endfor %}
-    </div>
-
-    <div class="lot">
-        {% if product_item.stock %}
-            {% if product_item.stock.order_multiplicity != 1 and product_item.stock.is_one_sale == False %}
-                <span class="span-min">Минимальный заказ {{ product_item.stock.order_multiplicity }}
-                {{ product_item.stock.lot.name_shorts }}</span>
-            {% endif %}
-            {% if product_item.stock.lot_complect != 1 %}
-                {{ product_item.stock.lot.name_shorts }}.({{ product_item.stock.lot_complect }}ед.)
+    {% for product_item in product %}
+        {{ product_item.price.price_sale_personal }}
+        <p>{{ product_item.quantity }}</p>
+        <p>{{ product_item.name }}</p>
+        <p>{{ product_item.supplier }}</p>
+        <div class="charactiristics">
+            {% for char in product_item.productproperty_set.all %}
+                {{ char.value }}
+            {% empty %}
+                -
+            {% endfor %}
+        </div>
+        <div class="lot">
+            {% if product_item.stock %}
+                {% if product_item.stock.order_multiplicity != 1 and product_item.stock.is_one_sale == False %}
+                    <span class="span-min">Минимальный заказ {{ product_item.stock.order_multiplicity }}
+                    {{ product_item.stock.lot.name_shorts }}</span>
+                {% endif %}
+                {% if product_item.stock.lot_complect != 1 %}
+                    {{ product_item.stock.lot.name_shorts }}.({{ product_item.stock.lot_complect }}ед.)
+                {% else %}
+                    {{ product_item.stock.lot_complect }}
+                    {{ product_item.stock.lot.name_shorts }}.
+                {% endif %}
             {% else %}
-                {{ product_item.stock.lot_complect }}
-                {{ product_item.stock.lot.name_shorts }}.
+                -
             {% endif %}
-        {% else %}
-            -
-        {% endif %}
-        <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-update">обновить число</button>
-        <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-delite">удалить</button>
-    </div>
-   
-    
+            <button data-id-cart-product="{{ product_item.id_product_cart }}"
+                    class="button-cart-update">обновить число</button>
+            <button data-id-cart-product="{{ product_item.id_product_cart }}"
+                    class="button-cart-delite">удалить</button>
+        </div>
     {% endfor %}
-
-    <button data-id-cart-product="{{product_item.id_product_cart}}" class="button-cart-save-user">сохранить корзину</button>
-    
+    <button data-id-cart-product="{{ product_item.id_product_cart }}"
+            class="button-cart-save-user">сохранить корзину</button>
 {% endblock %}

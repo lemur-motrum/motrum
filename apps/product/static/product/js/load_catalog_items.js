@@ -46,7 +46,7 @@ if (catalogWrapper) {
         for (let i in data.data) {
           addAjaxCatalogItem(data.data[i]);
         }
-        addCart();
+        // addCart();
       });
   });
 
@@ -92,7 +92,7 @@ function addCart() {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          })  
+          })
             .then((response) => response.json())
             .then((data) => {
               console.log(data);
@@ -195,11 +195,10 @@ function DelProductCart() {
 }
 DelProductCart();
 
-
 // ФУНКЦИЯ ДОБАВИТЬ ЗАКАЗ пользователем ТЕСТ
 function addOrder() {
   const clientAdd = document.querySelectorAll(".button-cart-save-user");
-  
+
   if (clientAdd) {
     clientAdd.forEach((element) => {
       element.addEventListener("click", () => {
@@ -208,13 +207,12 @@ function addOrder() {
         let cart = getCookie("cart");
         console.log(cart);
         let csrfToken = getCookie("csrftoken");
-        let dataArr = 
-          {
-            cart: cart,
-            requisites: 32,
-            account_requisites: 1,
-          }
-        
+        let dataArr = {
+          cart: cart,
+          requisites: 32,
+          account_requisites: 1,
+        };
+
         let data = JSON.stringify(dataArr);
         let endpoint = `/api/v1/order/add_order/`;
         fetch(endpoint, {

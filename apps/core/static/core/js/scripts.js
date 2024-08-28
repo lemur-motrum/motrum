@@ -9,3 +9,5 @@ import "/static/core/js/scripts/get-client-id.js";
 import "/static/client/js/contacts.js";
 import "/static/client/js/details.js";
 import "/static/product/js/sliders.js";
+import "/static/product/js/filters_logic.js";
+import "/static/product/js/ajax_load_products.js";

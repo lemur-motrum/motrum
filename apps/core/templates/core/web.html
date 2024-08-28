@@ -13,9 +13,7 @@
                             <a href="#" class="title-link">весь каталог</a>
                      </div>
                      <div class="products-categories">
-                            {% for category in categories %}
-                                   <a class="category-elem" href="#"><span>{{ category.name }}</span></a>
-                            {% endfor %}
+                            {% for category in categories %}<a class="category-elem" href="#"><span>{{ category.name }}</span></a>{% endfor %}
                             <a class="category-elem" href="#"><span>весь каталог</span></a>
                      </div>
               </div>

@@ -75,12 +75,27 @@ def products_items(request, category, group):
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
-    category = CategoryProduct.objects.get(slug=category)
-    group = GroupProduct.objects.get(slug=group)
+    current_category = CategoryProduct.objects.get(slug=category)
+    current_group = GroupProduct.objects.get(slug=group)
+
+    all_groups = (
+        GroupProduct.objects.select_related("category").all().order_by("article_name")
+    )
+
+    def get_another_groups():
+        current_groups = [
+            group_elem
+            for group_elem in all_groups
+            if group_elem.pk != current_group.pk
+            and group_elem.category.pk == current_category.pk
+        ]
+        return current_groups
+
     context = {
-        "category": category.id,
-        "group": group.id,
+        "current_category": current_category,
+        "current_group": current_group,
         "product_vendor": product_vendor,
+        "another_groups": get_another_groups(),
     }
 
     return render(request, "product/catalog.html", context)

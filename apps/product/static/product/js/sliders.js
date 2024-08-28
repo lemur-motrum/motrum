@@ -5,4 +5,11 @@ window.addEventListener("DOMContentLoaded", () => {
       nextEl: ".slider-arrow",
     },
   });
+
+  const groupSwiper = new Swiper(".site_groups_container", {
+    slidesPerView: "auto",
+    navigation: {
+      nextEl: ".slider-arrow",
+    },
+  });
 });

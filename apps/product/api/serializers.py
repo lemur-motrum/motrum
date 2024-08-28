@@ -1,12 +1,20 @@
 from rest_framework import serializers
 
 from apps.client.models import Client
-from apps.product.models import Cart, Lot, Price, Product, ProductProperty, Stock, ProductCart
+from apps.product.models import (
+    Cart,
+    Lot,
+    Price,
+    Product,
+    ProductProperty,
+    Stock,
+    ProductCart,
+)
 
 
 class PriceSerializer(serializers.ModelSerializer):
     current_user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-        
+
     class Meta:
         model = Price
         fields = (
@@ -14,7 +22,6 @@ class PriceSerializer(serializers.ModelSerializer):
             "extra_price",
             "current_user",
         )
-     
 
 
 class LotSerializer(serializers.ModelSerializer):
@@ -60,7 +67,8 @@ class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
     stock = StockSerializer(read_only=False, many=False)
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
-    url = serializers.CharField(source='get_absolute_url', read_only=True)
+    url = serializers.CharField(source="get_absolute_url", read_only=True)
+
     class Meta:
         model = Product
         fields = (
@@ -77,31 +85,30 @@ class ProductSerializer(serializers.ModelSerializer):
             "productproperty_set",
             "url",
         )
-        
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if self.context["request"].user:
             if self.context["request"].user.is_staff == False:
                 client = Client.objects.get(id=self.context["request"].user.id)
-                discount = client.percent
-           
-        
-                price = data["price"]['rub_price_supplier']
-                price_discount = price - (
-                    price / 100 * float(discount)
-                )
-                data["price"]['rub_price_supplier'] = round(price_discount, 2)
-        
-       
-        return data       
-        
+                if client.percent:
+                    discount = client.percent
+                else:
+                    discount = 100
+                price = data["price"]["rub_price_supplier"]
+                price_discount = price - (price / 100 * float(discount))
+                data["price"]["rub_price_supplier"] = round(price_discount, 2)
+
+        return data
+
+
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = "__all__"
-        
+
+
 class ProductCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCart
-        fields = "__all__"        
-       
+        fields = "__all__"

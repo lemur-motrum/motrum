@@ -109,6 +109,7 @@ window.addEventListener("DOMContentLoaded", () => {
                         response.json();
                         if (response.status == 201) {
                           console.log("Новый Клиент");
+                          window.location.reload();
                         }
                         if (response.status == 200) {
                           console.log("Вы вошли");

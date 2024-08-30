@@ -1,6 +1,6 @@
 {% extends "core/base.html" %}
 {% block content %}
-{% include "core/includes/header.html" %}
+    {% include "core/includes/header.html" %}
     <div class="products_wrapper">
         <div class="title_container">
             <div class="bread_crumbs">
@@ -8,7 +8,13 @@
                 <a href={% url "product:catalog" %}>каталог</a>
                 <a href={% url "product:group" current_category.slug %}>{{ current_category.name }}</a>
             </div>
-            <h1>{{ current_group.name }}</h1>
+            <h1>
+                {% if current_group %}
+                    {{ current_group.name }}
+                {% else %}
+                    {{ current_category.name }}
+                {% endif %}
+            </h1>
             <div class="site_groups_container">
                 <div class="swiper-wrapper">
                     {% for group in another_groups %}
@@ -18,7 +24,7 @@
                         </a>
                     {% endfor %}
                 </div>
-                {% comment %} <div class="slider-arrow">></div> {% endcomment %}
+                {% comment %} <div class="slider-arrow">></div>  {% endcomment %}
             </div>
         </div>
         <div class="product_container">
@@ -66,7 +72,18 @@
                             {% include "product/includes/product_item.html" with product=product %}
                         {% endfor %}
                     </div>
-                    <button class="add_more" catalog-elem="button">загрузить еще</button>
+                    <div class="small_loader">loading</div>
+                    <div class="end_content">
+                        <button class="add_more" catalog-elem="button">загрузить еще</button>
+                        <div class="pagination">
+                            <div class="first">1 ...</div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="last">... 578</div>
+                            <div class="next">далее</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,72 +1,72 @@
 import { getCookie } from "/static/core/js/functions.js";
 
 // ЮРИНА ФУНКЦИЯ ДЛЯ АДЖАКС ЗАГРУЗКИ АЙТЕМОВ ТОВАРОВ
-let catalogWrapper = document.querySelector('[catalog-elem="wrapper"]');
-if (catalogWrapper) {
-  let catalogContainer = catalogWrapper.querySelector(
-    '[catalog-elem="container"]'
-  );
-  let catalogButton = catalogWrapper.querySelector('[catalog-elem="button"]');
+// let catalogWrapper = document.querySelector('[catalog-elem="wrapper"]');
+// if (catalogWrapper) {
+//   let catalogContainer = catalogWrapper.querySelector(
+//     '[catalog-elem="container"]'
+//   );
+//   let catalogButton = catalogWrapper.querySelector('[catalog-elem="button"]');
 
-  catalogButton.addEventListener("click", function (event) {
-    let productsCount = catalogContainer.querySelectorAll(
-      '[catalog-elem="product-item"]'
-    ).length;
-    // let productsVendorId = "1";
-    let category = document
-      .querySelector("[data-category-id]")
-      .getAttribute("data-category-id");
-    let group = document
-      .querySelector("[data-group-id]")
-      .getAttribute("data-group-id");
+//   catalogButton.addEventListener("click", function (event) {
+//     let productsCount = catalogContainer.querySelectorAll(
+//       '[catalog-elem="product-item"]'
+//     ).length;
+//     // let productsVendorId = "1";
+//     let category = document
+//       .querySelector("[data-category-id]")
+//       .getAttribute("data-category-id");
+//     let group = document
+//       .querySelector("[data-group-id]")
+//       .getAttribute("data-group-id");
 
-    let data = {
-      count: productsCount,
-      sort: "+",
-      page: "1",
-      category: category,
-      group: group,
-      // vendor: productsVendorId,
-    };
+//     let data = {
+//       count: productsCount,
+//       sort: "+",
+//       page: "1",
+//       category: category,
+//       group: group,
+//       // vendor: productsVendorId,
+//     };
 
-    let params = new URLSearchParams(data);
+//     let params = new URLSearchParams(data);
 
-    console.log(category);
-    let csrfToken = getCookie("csrftoken");
-    // fetch(`/api/v1/product/${location}load-ajax-product-list/?${params.toString()}`, {
-    fetch(`/api/v1/product/load-ajax-product-list/?${params.toString()}`, {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => response.json())
-      .then(function (data) {
-        console.log(data);
-        for (let i in data.data) {
-          addAjaxCatalogItem(data.data[i]);
-        }
-        // addCart();
-      });
-  });
+//     console.log(category);
+//     let csrfToken = getCookie("csrftoken");
+//     // fetch(`/api/v1/product/${location}load-ajax-product-list/?${params.toString()}`, {
+//     fetch(`/api/v1/product/load-ajax-product-list/?${params.toString()}`, {
+//       method: "GET",
+//       headers: {
+//         "X-CSRFToken": csrfToken,
+//       },
+//     })
+//       .then((response) => response.json())
+//       .then(function (data) {
+//         console.log(data);
+//         for (let i in data.data) {
+//           addAjaxCatalogItem(data.data[i]);
+//         }
+//         // addCart();
+//       });
+//   });
 
-  function renderCatalogItem(productData) {
-    let ajaxTemplateWrapper = document.querySelector(
-      '[template-elem="wrapper"]'
-    );
-    let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
-      '[catalog-elem="product-item"]'
-    ).innerText;
+//   function renderCatalogItem(productData) {
+//     let ajaxTemplateWrapper = document.querySelector(
+//       '[template-elem="wrapper"]'
+//     );
+//     let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
+//       '[catalog-elem="product-item"]'
+//     ).innerText;
 
-    return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
-  }
+//     return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
+//   }
 
-  function addAjaxCatalogItem(ajaxElemData) {
-    let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
+//   function addAjaxCatalogItem(ajaxElemData) {
+//     let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
 
-    catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
-  }
-}
+//     catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+//   }
+// }
 
 // ФУНКЦИЯ ДОБАВИТЬ В КОРЗИНУ ТЕСТ ТУТ И ДОБАВЛЯЕТ И КОРЗИНУ И ДОБАВЛЯЕТ ПРОДУКТЫ
 function addCart() {

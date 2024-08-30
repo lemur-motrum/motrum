@@ -86,6 +86,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "url",
         )
 
+    print(url)
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if self.context["request"].user:
@@ -100,7 +102,10 @@ class ProductSerializer(serializers.ModelSerializer):
                     client = None
                     discount = 100
                 price = data["price"]["rub_price_supplier"]
-                price_discount = price - (price / 100 * float(discount))
+                if discount == 100:
+                    price_discount = price
+                else:
+                    price_discount = price - (price / 100 * float(discount))
                 data["price"]["rub_price_supplier"] = round(price_discount, 2)
 
         return data

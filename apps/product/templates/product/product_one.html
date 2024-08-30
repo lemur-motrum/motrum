@@ -1,2 +1,98 @@
-erert
-{{ product }}
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+    {% include "core/includes/header.html" %}
+    <div class="product_one_container">
+        <div class="title_content">
+            <div class="bread_crumbs">
+                <a href="{% url "core:index" %}">главная</a>
+                <a href="{% url "product:catalog" %}">каталог</a>
+                <a href="{% url "product:group" current_category.slug %}">{{ current_category.name }}</a>
+                {% if current_group %}
+                    <a href="{% url "product:products_items" current_category.slug current_group.slug %}">{{ current_group.name }}</a>
+                {% endif %}
+            </div>
+            <h1 class="title">{{ product.name }}</h1>
+        </div>
+        <div class="product_container">
+            <div class="left_container">
+                <div class="img_container">
+                    <div class="big_img">
+                        <span>изображение товара 1</span>
+                    </div>
+                    <div class="small_img_container">
+                        <div class="small_img"></div>
+                        <div class="small_img"></div>
+                        <div class="small_img"></div>
+                        <div class="small_img"></div>
+                        <div class="small_img"></div>
+                    </div>
+                </div>
+                <div class="documentation_container">
+                    <a href="#" class="documentation_elem">
+                        <div class="img_container">
+                            <img src={% static "product/img/documentation_img.png" %} alt="img">
+                        </div>
+                        <div class="description">Скачать техническую документацию</div>
+                    </a>
+                    <a href="#" class="documentation_elem">
+                        <div class="img_container">
+                            <img src={% static "product/img/documentation_img.png" %} alt="img">
+                        </div>
+                        <div class="description">Скачать техническую документацию</div>
+                    </a>
+                </div>
+            </div>
+            <div class="centered_container">
+                <div class="product_article">Арткул {{ product.article }}</div>
+                <div class="product_description">
+                    {% if product.description %}
+                        {{ product.description }}
+                    {% else %}
+                        Описания пока нет
+                    {% endif %}
+                </div>
+                <div class="technical_specifications">
+                    <div class="title">Технические характеристики</div>
+                    <div class="properties">
+                        {% for product_property in product_properties %}
+                            <div class="property">
+                                <div class="property_name">{{ product_property.name }}</div>
+                                <div class="property_description">
+                                    {% if product_property.value %}
+                                        {{ product_property.value }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="rigth_container">
+                <div class="price_container">
+                    <span class="price_item">
+                        {% if product.price.rub_price_supplier != 0 %}
+                            <span class="price">{{ product.price.rub_price_supplier }}</span> ₽</span>
+                        {% else %}
+                            <span>По запросу</span>
+                        {% endif %}
+                        / <span class="lot">{{ product.stock.lot_complect }} {{ product.stock.lot.name_shorts }}</span>
+                    </div>
+                    <div class="item-buttons_container">
+                        <div class="quantity-buttons">
+                            <button disabled class="minus-button">-</button>
+                            <input type="number"
+                                   value="0"
+                                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                   maxlength="3"
+                                   onkeypress='validate(event)'>
+                            <button class="plus-button">+</button>
+                        </div>
+                        <button disabled class="add-specification-button">В корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock content %}

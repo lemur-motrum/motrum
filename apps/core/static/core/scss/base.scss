@@ -37,6 +37,7 @@ body {
     justify-content: center;
     opacity: 0;
     transition: 1s;
+    z-index: 100;
     &.visible {
       opacity: 1;
     }

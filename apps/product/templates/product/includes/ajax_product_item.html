@@ -1,11 +1,31 @@
 <div class="product_item" catalog-elem="product-item">
     <a class="name" href="{{ url }}">{{ name }}</a>
-    <div>{{ article }}</div>
+    <div class="article">{{ article }}</div>
     <div class="charactiristics">
-        {% for productproperty in productproperty_set %}{{ productproperty.value }}{% endfor %}
+        {% if productproperty_set|length != 0 %}
+            {% for productproperty in productproperty_set %}{{ productproperty.value }}{% endfor %}
+        {% else %}
+            -
+        {% endif %}
     </div>
-    <div></div>
-    <div>ЦЕНА:{{ price }}</div>
-    <button data-id-product={{ id }} class="add-cart-button">В корзину
-    </button>
+    <div class="lot">{{ stock.lot_complect }} {{ stock.lot }}</div>
+    <div class="price">
+        {% if price.rub_price_supplier == 0 %}
+            по запросу
+        {% else %}
+            <span class="price_item">{{ price.rub_price_supplier }}</span> ₽
+        {% endif %}
+    </div>
+    <div class="item-buttons_container">
+        <div class="quantity-buttons">
+            <button disabled class="minus-button">-</button>
+            <input type="number"
+                   value="0"
+                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                   maxlength="3"
+                   onkeypress='validate(event)'>
+            <button class="plus-button">+</button>
+        </div>
+        <button disabled class="add-specification-button">В корзину</button>
+    </div>
 </div>

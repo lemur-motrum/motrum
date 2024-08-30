@@ -1,3 +1,4 @@
+from click import group
 from django.forms import ValidationError
 from django.urls import reverse
 from django.utils import timezone
@@ -167,14 +168,23 @@ class Product(models.Model):
             pass
 
     def get_absolute_url(self):
-        return reverse(
-            "product:product_one",
-            kwargs={
-                "category": self.category.slug,
-                "group": self.group.slug,
-                "article": self.article,
-            },
-        )
+        if self.group is not None:
+            return reverse(
+                "product:product_one",
+                kwargs={
+                    "category": self.category.slug,
+                    "group": self.group.slug,
+                    "article": self.article,
+                },
+            )
+        else:
+            return reverse(
+                "product:product_one_without_group",
+                kwargs={
+                    "category": self.category.slug,
+                    "article": self.article,
+                },
+            )
 
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)

@@ -1,5 +1,3 @@
-from unicodedata import category
-from click import group
 from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
@@ -9,7 +7,13 @@ from regex import P
 
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.product.models import CategoryProduct, GroupProduct, Product
+from apps.product.models import (
+    CategoryProduct,
+    GroupProduct,
+    Product,
+    ProductProperty,
+    Stock,
+)
 from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
@@ -36,23 +40,47 @@ def catalog_group(request, category):
     group = GroupProduct.objects.filter(category__slug=category).order_by(
         "article_name"
     )
-    all_categories = CategoryProduct.objects.all()
-    cat = CategoryProduct.objects.get(slug=category)
+    if len(group) > 0:
+        all_categories = CategoryProduct.objects.all()
+        cat = CategoryProduct.objects.get(slug=category)
 
-    def get_another_category():
-        current_cats = [
-            category for category in all_categories if category.pk != cat.pk
-        ]
-        return current_cats
+        def get_another_category():
+            current_cats = [
+                category for category in all_categories if category.pk != cat.pk
+            ]
+            return current_cats
 
-    context = {
-        "category": cat,
-        "group": group,
-        "another_categories": get_another_category(),
-        "title": cat.name,
-    }
+        context = {
+            "category": cat,
+            "group": group,
+            "another_categories": get_another_category(),
+            "title": cat.name,
+        }
 
-    return render(request, "product/product_group.html", context)
+        return render(request, "product/product_group.html", context)
+    else:
+        vendor = Vendor.objects.filter()
+        q_object = Q()
+        q_object &= Q(check_to_order=True)
+        if category is not None:
+            q_object &= Q(category__slug=category)
+
+        product_vendor = (
+            Product.objects.select_related(
+                "vendor",
+                "category",
+            )
+            .filter(q_object)
+            .distinct("vendor")
+            .values("vendor", "vendor__name", "vendor__slug")
+        )
+        current_category = CategoryProduct.objects.get(slug=category)
+
+        context = {
+            "current_category": current_category,
+            "product_vendor": product_vendor,
+        }
+        return render(request, "product/catalog.html", context)
 
 
 # страница всех продуктов в категории\группе
@@ -96,6 +124,7 @@ def products_items(request, category, group):
         "current_group": current_group,
         "product_vendor": product_vendor,
         "another_groups": get_another_groups(),
+        "title": current_group.name,
     }
 
     return render(request, "product/catalog.html", context)
@@ -103,8 +132,36 @@ def products_items(request, category, group):
 
 # страница отдельного продукта
 def product_one(request, category, group, article):
+    current_category = CategoryProduct.objects.get(slug=category)
+    current_group = GroupProduct.objects.get(slug=group)
     product = Product.objects.get(article=article)
-    context = {"product": product}
+    product_properties = ProductProperty.objects.filter(product=product.pk)
+    product_lot = Stock.objects.get(prod=product.pk)
+
+    context = {
+        "product": product,
+        "current_category": current_category,
+        "current_group": current_group,
+        "title": product.name,
+        "product_properties": product_properties,
+        "product_lot": product_lot,
+    }
+    return render(request, "product/product_one.html", context)
+
+
+def product_one_without_group(request, category, article):
+    current_category = CategoryProduct.objects.get(slug=category)
+    product = Product.objects.get(article=article)
+    product_properties = ProductProperty.objects.filter(product=product.pk)
+    product_lot = Stock.objects.get(prod=product.pk)
+
+    context = {
+        "product": product,
+        "current_category": current_category,
+        "title": product.name,
+        "product_properties": product_properties,
+        "product_lot": product_lot,
+    }
     return render(request, "product/product_one.html", context)
 
 

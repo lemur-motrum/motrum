@@ -26,20 +26,20 @@ class ProductViewSet(viewsets.ModelViewSet):
     http_method_names = [
         "get",
     ]
-    # аякс загрузка товаров в каталоге
-    @action(
-        detail=False,
-        url_path=r"load-ajax-product-list"
-    )
-    def load_ajax_match_list(self, request, *args, **kwargs):
 
+    # аякс загрузка товаров в каталоге
+    @action(detail=False, url_path=r"load-ajax-product-list")
+    def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
         vendor_get = request.query_params.get("vendor")
         category_get = request.query_params.get("category")
-        groupe_get = request.query_params.get("group")
+        if request.query_params.get("group"):
+            groupe_get = request.query_params.get("group")
+        else:
+            groupe_get = None
 
         if page_get:
             count = int(count) * int(page_get)
@@ -83,23 +83,40 @@ class ProductViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by(ordering_filter)[count + 1 : count + 11]
         )
-    
+
         # проверка есть ли еще данные для след запроса
         queryset_next = (
             Product.objects.select_related()
             .filter(q_object)[count + 12 : count + 13]
             .exists()
         )
-   
 
-        serializer = ProductSerializer(queryset,context={'request':request}, many=True)
-       
+        serializer = ProductSerializer(
+            queryset, context={"request": request}, many=True
+        )
+
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
 
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
+            "count": round(
+                len(
+                    Product.objects.select_related(
+                        "supplier",
+                        "vendor",
+                        "category",
+                        "group",
+                        "price",
+                        "stock",
+                    )
+                    .filter(q_object)
+                    .order_by(ordering_filter)
+                )
+                / 10
+            ),
+            "page": page_get,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
@@ -107,7 +124,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
-    http_method_names = ["get", "post", "update","delete"]
+    http_method_names = ["get", "post", "update", "delete"]
 
     # создать корзину
     @action(detail=False, methods=["get"], url_path=r"add-cart")
@@ -171,11 +188,9 @@ class CartViewSet(viewsets.ModelViewSet):
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
-                    response.set_cookie(
-                            "cart", cart.id, max_age=2629800
-                        )
+                    response.set_cookie("cart", cart.id, max_age=2629800)
                     return response
-                
+
                 except Cart.DoesNotExist:
                     data = {"session_key": session, "save_cart": False, "client": None}
                     serializer = self.serializer_class(data=data, many=False)
@@ -195,7 +210,7 @@ class CartViewSet(viewsets.ModelViewSet):
                         return Response(
                             serializer.errors, status=status.HTTP_400_BAD_REQUEST
                         )
-                        
+
                 # cart = Cart.objects.get_or_create(session_key=session, save_cart=False)
                 # response.set_cookie("cart", cart[0].id, max_age=2629800)
             else:
@@ -204,13 +219,15 @@ class CartViewSet(viewsets.ModelViewSet):
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
-                    response.set_cookie(
-                            "cart", cart.id, max_age=2629800
-                        )
+                    response.set_cookie("cart", cart.id, max_age=2629800)
                     return response
-                
+
                 except Cart.DoesNotExist:
-                    data = {"session_key": None, "save_cart": False, "client": request.user}
+                    data = {
+                        "session_key": None,
+                        "save_cart": False,
+                        "client": request.user,
+                    }
                     serializer = self.serializer_class(data=data, many=False)
                     if serializer.is_valid():
                         serializer.save()
@@ -230,7 +247,6 @@ class CartViewSet(viewsets.ModelViewSet):
                         )
                 # cart = Cart.objects.get_or_create(client=request.user, save_cart=False)
                 # response.set_cookie("cart", cart[0].id, max_age=2629800)
-
 
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
@@ -270,12 +286,12 @@ class CartViewSet(viewsets.ModelViewSet):
 
         data = request.data
         serializer = serializer_class(queryset, data=data, partial=True)
-    
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-     
+
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # удалить товар ИЗ корзине
@@ -283,8 +299,9 @@ class CartViewSet(viewsets.ModelViewSet):
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
         queryset.delete()
-        
+
         return Response(None, status=status.HTTP_200_OK)
+
 
 # class ProductViewSet(viewsets.ModelViewSet):
 #     permission_classes = (permissions.AllowAny,)

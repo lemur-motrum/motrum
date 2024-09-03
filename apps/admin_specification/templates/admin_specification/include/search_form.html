@@ -1,3 +1,4 @@
+{% load cart %}
 <div class="search-container">
     <form class="search-form-container"
           category="{% if category %}{{ category.pk }}{% endif %}"
@@ -19,7 +20,5 @@
             <button type="submit">Найти</button>
         </div>
     </form>
-    <div class="specification-link-container">
-        <a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span>0</span>
-    </div>
+    <div class="specification-link-container">{% cart %}</div>
 </div>

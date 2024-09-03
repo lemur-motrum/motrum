@@ -96,6 +96,7 @@ def cart(request):
         "product": product,
         "cart": cart,
         "request": request,
+        "title": "Корзина",
     }
 
     return render(request, "core/cart.html", context)

@@ -1,39 +1,57 @@
 {% extends 'core/base.html' %}
 {% block content %}
-    <h1>Корзина</h1>
-    {% for product_item in product %}
-        {{ product_item.price.price_sale_personal }}
-        <p>{{ product_item.quantity }}</p>
-        <p>{{ product_item.name }}</p>
-        <p>{{ product_item.supplier }}</p>
-        <div class="charactiristics">
-            {% for char in product_item.productproperty_set.all %}
-                {{ char.value }}
-            {% empty %}
-                -
-            {% endfor %}
+    {% include "core/includes/header.html" %}
+    <div class="cart_container">
+        <div class="title_container">
+            <div class="bread-crumbs">
+                <a href={% url "core:index" %}>главная</a>
+            </div>
+            <h1>Корзина</h1>
         </div>
-        <div class="lot">
-            {% if product_item.stock %}
-                {% if product_item.stock.order_multiplicity != 1 and product_item.stock.is_one_sale == False %}
-                    <span class="span-min">Минимальный заказ {{ product_item.stock.order_multiplicity }}
-                    {{ product_item.stock.lot.name_shorts }}</span>
-                {% endif %}
-                {% if product_item.stock.lot_complect != 1 %}
-                    {{ product_item.stock.lot.name_shorts }}.({{ product_item.stock.lot_complect }}ед.)
-                {% else %}
-                    {{ product_item.stock.lot_complect }}
-                    {{ product_item.stock.lot.name_shorts }}.
-                {% endif %}
+        <div class="cart_elems_container">
+            {% if product %}
+                <div class="titles">
+                    <div class="small_title">товар</div>
+                    <div class="small_title">артикул</div>
+                    <div class="small_title">характеристики</div>
+                    <div class="small_title">упак.</div>
+                    <div class="small_title">цена</div>
+                </div>
+                <div class="products">
+                    {% for product_item in product %}
+                        <div class="product_item" product-id="{{ product_item.id_product_cart }}">
+                            <div class="name">{{ product_item.name }}</div>
+                            <div class="article">{{ product_item.article }}</div>
+                            <div class="chars">{{ product_item.productproperty_set }}</div>
+                            <div class="lot">{{ product_item.stock.lot_complect }} {{ product_item.stock.lot.name_shorts }}</div>
+                            <div class="price">
+                                {% if product_item.price.rub_price_supplier == 0 %}
+                                    <span>по запросу</span>
+                                {% else %}
+                                    <span class="all_cart_price">250000</span> ₽
+                                {% endif %}
+                            </div>
+                            <div class="price_once">
+                                {% if  product_item.price.rub_price_supplier %}
+                                    <span> <span class="cart_price">{{ product_item.price.rub_price_supplier }}</span> ₽/ шт</span>
+                                {% else %}
+                                    <span>по запросу</span>
+                                {% endif %}
+                            </div>
+                            <div class="item-buttons_container">
+                                <div class="quantity-buttons">
+                                    <button class="minus-button">-</button>
+                                    <input type="number" value={{ product_item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                                <button class="delete_cart_button">удалить</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
-                -
+                <div>Корзина пока пуста</div>
             {% endif %}
-            <button data-id-cart-product="{{ product_item.id_product_cart }}"
-                    class="button-cart-update">обновить число</button>
-            <button data-id-cart-product="{{ product_item.id_product_cart }}"
-                    class="button-cart-delite">удалить</button>
         </div>
-    {% endfor %}
-    <button data-id-cart-product="{{ product_item.id_product_cart }}"
-            class="button-cart-save-user">сохранить корзину</button>
+    </div>
 {% endblock %}

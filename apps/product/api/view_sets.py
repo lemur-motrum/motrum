@@ -1,3 +1,4 @@
+import math
 from unicodedata import category
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
@@ -34,7 +35,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
-        vendor_get = request.query_params.get("vendor")
+        if request.query_params.get("vendor"):
+            vendor_get = request.query_params.get("vendor")
+            vendor_get = vendor_get.split(",")
+        else:
+            vendor_get = None
         category_get = request.query_params.get("category")
         if request.query_params.get("group"):
             groupe_get = request.query_params.get("group")
@@ -48,7 +53,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         q_object = Q()
         q_object &= Q(check_to_order=True)
         if vendor_get is not None:
-            q_object &= Q(vendor=vendor_get)
+            q_object &= Q(vendor__slug__in=vendor_get)
         if category_get is not None:
             q_object &= Q(category__id=category_get)
         if groupe_get is not None:
@@ -87,7 +92,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # проверка есть ли еще данные для след запроса
         queryset_next = (
             Product.objects.select_related()
-            .filter(q_object)[count + 12 : count + 13]
+            .filter(q_object)[count + 11 : count + 12]
             .exists()
         )
 
@@ -101,7 +106,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
-            "count": round(
+            "count": math.ceil(
                 len(
                     Product.objects.select_related(
                         "supplier",
@@ -184,7 +189,7 @@ class CartViewSet(viewsets.ModelViewSet):
         else:
             if request.user.is_staff:
                 try:
-                    cart = Cart.objects.get(session_key=session, save_cart=False)
+                    cart = Cart.objects.get(session_key=session, is_active=False)
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
@@ -215,7 +220,7 @@ class CartViewSet(viewsets.ModelViewSet):
                 # response.set_cookie("cart", cart[0].id, max_age=2629800)
             else:
                 try:
-                    cart = Cart.objects.get(client=request.user, save_cart=False)
+                    cart = Cart.objects.get(client=request.user, is_active=False)
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
@@ -265,7 +270,8 @@ class CartViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
-                return Response(cart_len, status=status.HTTP_200_OK)
+                data["cart_len"] = cart_len
+                return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
@@ -274,7 +280,8 @@ class CartViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
-                return Response(cart_len, status=status.HTTP_200_OK)
+                data["cart_len"] = cart_len
+                return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

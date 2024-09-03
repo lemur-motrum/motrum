@@ -4,6 +4,16 @@ let currentUrl = new URL(window.location.href);
 
 window.addEventListener("DOMContentLoaded", () => {
   const catalogWrapper = document.querySelector('[catalog-elem="wrapper"]');
+  const category = document
+    .querySelector("[data-category-id]")
+    .getAttribute("data-category-id");
+  const group = document
+    .querySelector("[data-group-id]")
+    .getAttribute("data-group-id");
+  let productCount = 0;
+  let pageCount = 0;
+  let lastPage = 0;
+  let paramsArray = [];
   if (catalogWrapper) {
     const loader = catalogWrapper.querySelector(".loader");
     const btn = catalogWrapper.querySelector(".add_more");
@@ -11,16 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
       '[catalog-elem="container"]'
     );
 
-    let productsCount = catalogContainer.querySelectorAll(
-      '[catalog-elem="product-item"]'
-    ).length;
     // // let productsVendorId = "1";
-    const category = document
-      .querySelector("[data-category-id]")
-      .getAttribute("data-category-id");
-    const group = document
-      .querySelector("[data-group-id]")
-      .getAttribute("data-group-id");
     const smallLoader = catalogWrapper.querySelector(".small_loader");
     const endContent = catalogWrapper.querySelector(".end_content");
     const catalogButton = endContent.querySelector('[catalog-elem="button"]');
@@ -29,10 +30,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationFirstElem = pagination.querySelector(".first");
     const paginationLastElem = pagination.querySelector(".last");
     const nextBtn = pagination.querySelector(".next");
-
-    let productCount = 0;
-    let pageCount = 0;
-    let lastPage = 0;
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -63,14 +60,18 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function loadItems(pagintaionFn = false, cleanArray = false) {
+    function loadItems(
+      pagintaionFn = false,
+      cleanArray = false,
+      vendor = false
+    ) {
       let data = {
         count: !pagintaionFn ? productCount : 10,
         sort: "+",
         page: !pagintaionFn ? "1" : pageCount,
         category: category,
         group: !group ? "" : group,
-        // vendor: productsVendorId,
+        vendor: !vendor ? "" : vendor,
       };
 
       let params = new URLSearchParams(data);
@@ -89,6 +90,7 @@ window.addEventListener("DOMContentLoaded", () => {
           loader.style.display = "none";
           endContent.classList.add("show");
           smallLoader.classList.remove("show");
+
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
           }
@@ -115,13 +117,12 @@ window.addEventListener("DOMContentLoaded", () => {
           pagintationArray.forEach((el, i) => {
             paginationElems[i].textContent = +el + 1;
           });
-
           getActivePaginationElem();
         });
     }
 
     window.onload = () => {
-      loadItems(false, false);
+      loadItems(false, false, false);
     };
 
     paginationFirstElem.onclick = () => {
@@ -129,7 +130,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, true);
+      loadItems(true, true, paramsArray.length > 0 ? paramsArray : false);
       productCount = pageCount * 10;
     };
 
@@ -138,7 +139,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, false);
+      loadItems(true, false, paramsArray.length > 0 ? paramsArray : false);
       productCount = pageCount * 10;
     };
 
@@ -148,7 +149,7 @@ window.addEventListener("DOMContentLoaded", () => {
         endContent.classList.remove("show");
         catalogContainer.innerHTML = "";
         loader.style.display = "block";
-        loadItems(true, false);
+        loadItems(true, false, paramsArray.length > 0 ? paramsArray : false);
         productCount = pageCount * 10;
       };
     });
@@ -157,7 +158,7 @@ window.addEventListener("DOMContentLoaded", () => {
       pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
-      loadItems(false, false);
+      loadItems(false, false, paramsArray.length > 0 ? paramsArray : false);
     };
 
     paginationLastElem.onclick = () => {
@@ -165,7 +166,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, true);
+      loadItems(true, true, paramsArray.length > 0 ? paramsArray : false);
       productCount = pageCount * 10;
     };
 
@@ -184,5 +185,63 @@ window.addEventListener("DOMContentLoaded", () => {
       let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
     }
+
+    const filters = document.querySelectorAll(".filter_elem");
+    filters.forEach((filterElem) => {
+      const title = filterElem.querySelector(".filter_title");
+      const filterContent = filterElem.querySelector(".filter-wrapper-content");
+      const arrow = filterElem.querySelector(".arrow");
+      const filterValues = filterElem.querySelectorAll(".filter_elem_content");
+
+      filterValues.forEach((filterValue) => {
+        const checkbox = filterValue.querySelector(".checked");
+        const vendorParam = filterValue.getAttribute("param");
+        filterValue.onclick = () => {
+          paramsArray.push(vendorParam);
+          checkbox.classList.toggle("show");
+          if (checkbox.classList.contains("show")) {
+            if (window.location.href.includes("?")) {
+              currentUrl.searchParams.set("vendor", paramsArray.join());
+              loader.style.display = "block";
+              catalogContainer.innerHTML = "";
+              endContent.classList.remove("show");
+              pageCount = 0;
+              loadItems(false, false, paramsArray);
+            } else {
+              currentUrl.searchParams.set("vendor", paramsArray.join(","));
+              loader.style.display = "block";
+              catalogContainer.innerHTML = "";
+              endContent.classList.remove("show");
+              pageCount = 0;
+              loadItems(false, false, paramsArray);
+            }
+          } else {
+            const searchParams = currentUrl.searchParams;
+            const filteredParamsArray = paramsArray.filter(
+              (el) => el !== vendorParam
+            );
+            paramsArray = filteredParamsArray;
+            searchParams.set("vendor", paramsArray.join());
+            loader.style.display = "block";
+            catalogContainer.innerHTML = "";
+            endContent.classList.remove("show");
+            pageCount = 0;
+            loadItems(false, true, paramsArray);
+            if (filteredParamsArray.length == 0) {
+              searchParams.delete("vendor", paramsArray.join());
+              loader.style.display = "block";
+              catalogContainer.innerHTML = "";
+              endContent.classList.remove("show");
+              loadItems(false, false, false);
+            }
+          }
+          history.pushState({}, "", currentUrl);
+        };
+      });
+      title.onclick = () => {
+        filterContent.classList.toggle("is_open");
+        arrow.classList.toggle("rotate");
+      };
+    });
   }
 });

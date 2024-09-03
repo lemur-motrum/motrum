@@ -60,47 +60,8 @@ function getCurrentPrice(p) {
   const price = p.replace(",", ".");
   return price;
 }
-let productsSpecificationList = [];
-
-let localStorageSpecification = JSON.parse(
-  localStorage.getItem("specificationValues")
-);
 
 // функция сохранения продукта в localstorage
-const saveProduct = (product) => {
-  if (localStorageSpecification) {
-    localStorageSpecification = localStorageSpecification.filter(
-      (item) => item.id !== product.id
-    );
-    localStorageSpecification.push(product);
-    localStorage.setItem(
-      "specificationValues",
-      JSON.stringify(localStorageSpecification)
-    );
-    document.cookie = `key=${JSON.stringify(
-      localStorageSpecification
-    )}; path=/`;
-  } else {
-    localStorage.setItem(
-      "specificationValues",
-      JSON.stringify(productsSpecificationList)
-    );
-    document.cookie = `key=${JSON.stringify(productsSpecificationList)};path=/`;
-  }
-};
-
-// Проверка есть ли продукт в корзине, если есть, то продукт перезаписывается, если нет, то добавляется новый продукт в корзину
-const setProduct = (product) => {
-  if (productsSpecificationList.length <= 0) {
-    productsSpecificationList.push(product);
-  } else {
-    productsSpecificationList = productsSpecificationList.filter(
-      (item) => item.id !== product.id
-    );
-    productsSpecificationList.push(product);
-  }
-  saveProduct(product);
-};
 
 // форматирования числового значения с разрядом, для отображения
 const getDigitsNumber = (container, value) => {
@@ -120,55 +81,6 @@ function showInformation(elem) {
   };
 }
 
-// добавление продукта в корзину
-function addProductInSpecification(
-  btn,
-  id,
-  name,
-  price,
-  motrumId,
-  salerId,
-  quantity,
-  discount,
-  valueContainer,
-  multiplicity
-) {
-  if (btn.disabled == false) {
-    btn.style.cursor = "pointer";
-  } else {
-    btn.style.cursor = "default";
-  }
-  if (btn.disabled == false) {
-    const product = {
-      id: +id,
-      name: name.replace(/;/gi, ","),
-      price: getCurrentPrice(price),
-      idMotrum: motrumId,
-      idSaler: salerId,
-      quantity: quantity,
-      totalCost: (getCurrentPrice(price) * quantity).toFixed(2),
-      discount: discount,
-      productSpecificationId: null,
-      multiplicity: multiplicity,
-    };
-    btn.onclick = () => {
-      setProduct(product);
-      if (localStorageSpecification) {
-        valueContainer.textContent = localStorageSpecification.length;
-      } else {
-        valueContainer.textContent = productsSpecificationList.length;
-      }
-    };
-  }
-}
-// Изменить значение товаров на фронте
-function showQuantityCart(value) {
-  if (localStorageSpecification) {
-    value.textContent = localStorageSpecification.length;
-  } else {
-    value.textContent = 0;
-  }
-}
 //рендеринг цен
 function setCurrentPriceCataloItem(elems) {
   elems.forEach((el) => {
@@ -190,10 +102,9 @@ function setCurrentPriceCataloItem(elems) {
   });
 }
 //логика страницы каталога
-function catalogLogic(elems, val) {
+function catalogLogic(elems) {
   elems.forEach((catalogItem) => {
     showInformation(catalogItem);
-    showQuantityCart(val);
 
     const productId = catalogItem.getAttribute("data-id");
     const productName = catalogItem.querySelector(".name").textContent;
@@ -230,88 +141,49 @@ function catalogLogic(elems, val) {
       } else {
         countQuantity = +countQuantityZone.value;
       }
-      if (countQuantity > 0) {
+      if (countQuantity >= 999) {
+        countQuantityZone.value = 999;
+        minusButton.disabled = false;
+        plusButton.disabled = true;
         addSpecificationButton.disabled = false;
-        addProductInSpecification(
-          addSpecificationButton,
-          productId,
-          productName,
-          productPrice,
-          productMotrumId,
-          productSalerId,
-          countQuantity,
-          productDiscount,
-          val,
-          productMultiplicityQuantity
-        );
+      } else if (countQuantity <= 0) {
+        countQuantityZone.value = 0;
+        plusButton.disabled = false;
+        addSpecificationButton.disabled = true;
+      } else {
+        minusButton.disabled = false;
+        plusButton.disabled = false;
+        addSpecificationButton.disabled = false;
       }
     });
 
     plusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity += +productMultiplicityQuantity;
-      } else {
-        countQuantity++;
-      }
+      countQuantity++;
       countQuantityZone.value = countQuantity;
       minusButton.disabled = false;
       addSpecificationButton.disabled = false;
-
       if (countQuantity >= 999) {
-        minusButton.disabled = false;
-        plusButton.disabled = true;
-      }
-      addProductInSpecification(
-        addSpecificationButton,
-        productId,
-        productName,
-        productPrice,
-        productMotrumId,
-        productSalerId,
-        countQuantity,
-        productDiscount,
-        val,
-        productMultiplicityQuantity
-      );
-    };
-
-    minusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity -= +productMultiplicityQuantity;
-      } else {
-        countQuantity--;
-      }
-      countQuantityZone.value = countQuantity;
-      if (countQuantityZone.value <= 0) {
-        countQuantityZone.value = 0;
-      }
-
-      if (countQuantity >= 999) {
+        countQuantityZone.value = 999;
         minusButton.disabled = false;
         plusButton.disabled = true;
       } else {
         plusButton.disabled = false;
+        minusButton.disabled = false;
       }
-
+    };
+    minusButton.onclick = () => {
+      countQuantity--;
+      countQuantityZone.value = countQuantity;
+      minusButton.disabled = false;
       if (countQuantity <= 0) {
+        countQuantityZone.value = 0;
         minusButton.disabled = true;
+        plusButton.disabled = false;
         addSpecificationButton.disabled = true;
       } else {
         minusButton.disabled = false;
-        addSpecificationButton.disabled = false;
+        plusButton.disabled = false;
       }
-      addProductInSpecification(
-        addSpecificationButton,
-        productId,
-        productName,
-        productPrice,
-        productMotrumId,
-        productSalerId,
-        countQuantity,
-        productDiscount,
-        val,
-        productMultiplicityQuantity
-      );
     };
   });
 }
@@ -336,18 +208,12 @@ function backendDataFormat(string) {
 window.addEventListener("DOMContentLoaded", () => {
   const catalogContainer = document.querySelector(".catalog_container");
   if (catalogContainer) {
-    const specificationLinkContainer = document.querySelector(
-      ".specification-link-container"
-    );
-    const specificationLinkContainerProductValue =
-      specificationLinkContainer.querySelector("span");
-    showQuantityCart(specificationLinkContainerProductValue);
     const catalog = catalogContainer.querySelector(
       ".spetification-product-catalog"
     );
     if (catalog) {
       const catalogItems = catalog.querySelectorAll(".catalog-item");
-      catalogLogic(catalogItems, specificationLinkContainerProductValue);
+      catalogLogic(catalogItems);
 
       const endContent = catalog.querySelector(".products-end-content");
       //Пагинация и аякс загрузка
@@ -532,10 +398,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 });
                 const catalogItems =
                   allProducts.querySelectorAll(".catalog-item");
-                catalogLogic(
-                  catalogItems,
-                  specificationLinkContainerProductValue
-                );
+                catalogLogic(catalogItems);
                 setCurrentPriceCataloItem(catalogItems);
               }
             });
@@ -545,42 +408,6 @@ window.addEventListener("DOMContentLoaded", () => {
       //
       setCurrentPriceCataloItem(catalogItems);
     }
-    // //Фильтры
-    // const filtersContainer = specificationContent.querySelector(".filters");
-    // const filters = filtersContainer.querySelectorAll(".filter-elem");
-    // filters.forEach((filter) => {
-    //   const tilte = filter.querySelector(".title-container");
-    //   const arrow = tilte.querySelector("span");
-    //   const content = filter.querySelector(".filter-content");
-
-    //   tilte.onclick = () => {
-    //     content.classList.toggle("show");
-    //     arrow.classList.toggle("rotate");
-
-    //     const checkboxes = content.querySelectorAll(".suppler-chekbox");
-    //     checkboxes.forEach((checkboxElem) => {
-    //       const checkBoxTitle = checkboxElem.querySelector("span").textContent;
-    //       const square = filter.querySelectorAll(".chekbox");
-
-    //       checkboxElem.addEventListener("click", function () {
-    //         const currentSquare = this.querySelector(".chekbox");
-    //         if (currentSquare.classList.contains("checked")) {
-    //           currentSquare.classList.remove("checked");
-    //         } else {
-    //           square.forEach((el) => el.classList.remove("checked"));
-    //           currentSquare.classList.toggle("checked");
-    //         }
-    //         const squareChecked = checkboxElem.querySelector(".checked");
-    //         if (squareChecked) {
-    //           setURLParams(location.href, { suppler: checkBoxTitle });
-    //         } else {
-    //           setURLParams(location.href, { suppler: "" });
-    //         }
-    //       });
-    //     });
-    //   };
-    // });
-    // //
   }
 
   const specificationContainer = document.querySelector(
@@ -893,58 +720,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       saveButton.onclick = () => saveSpecification(productItems);
       exitButton.onclick = () => exitSpecification(productItems);
-
-      // saveButton.onclick = (e) => {
-      //   e.preventDefault();
-      //   const products = [];
-      //   productItems.forEach((item) => {
-      //     let price;
-      //     if (!itemPrice) {
-      //       const inputPrice = item.querySelector("input");
-      //       price = +inputPrice.value;
-      //     } else {
-      //       price = new NumberParser("ru").parse(itemPrice.textContent);
-      //     }
-      //     const itemQuantity = item.querySelector(".quantity").textContent;
-      //     const itemID = item.getAttribute("data-id");
-      //     const itemPriceStatus = item.getAttribute("data-price-exclusive");
-
-      //     const product = {
-      //       product_id: +itemID,
-      //       quantity: +itemQuantity,
-      //       price_exclusive: +itemPriceStatus,
-      //       price_one: itemPrice,
-      //     };
-      //     products.push(product);
-      //   });
-
-      //   const endpoint = "/admin_specification/save_specification_view_admin/";
-
-      //   const dataObj = {
-      //     id_bitrix: 22,
-      //     admin_creator_id: 2,
-      //     products: products,
-      //   };
-
-      //   const data = JSON.stringify(dataObj);
-      //   fetch(endpoint, {
-      //     method: "POST",
-      //     body: data,
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "X-CSRFToken": csrfToken,
-      //     },
-      //   })
-      //     .then((response) => response.json())
-      //     .then((response) => {
-      //       if (response.status == "ok") {
-      //         localStorage.removeItem("specificationValues");
-      //         deleteCookie();
-      //         window.location.href = "/admin_specification/all_specifications/";
-      //       }
-      //     })
-      //     .catch((error) => console.error(error));
-      // };
     }
   }
 

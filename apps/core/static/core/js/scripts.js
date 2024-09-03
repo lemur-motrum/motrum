@@ -11,3 +11,5 @@ import "/static/client/js/details.js";
 import "/static/product/js/sliders.js";
 import "/static/product/js/filters_logic.js";
 import "/static/product/js/ajax_load_products.js";
+import "/static/product/js/cart_logic.js";
+import "/static/core/js/scripts/cart-logic.js";

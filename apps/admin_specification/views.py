@@ -1,17 +1,20 @@
 import json
 import os
 from django.core import serializers
-from django.db.models import Prefetch
+from django.db.models import Prefetch, OuterRef
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from apps.client.models import Client
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
+    Cart,
     CategoryProduct,
     GroupProduct,
     Lot,
     Price,
     Product,
+    ProductCart,
     ProductProperty,
     Stock,
 )
@@ -243,11 +246,45 @@ def specifications(request, cat, gr):
 # рендер страницы корзины
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-    cookie = request.COOKIES.get("key")
-    if cookie:
-        key = json.loads(cookie)
-    else:
-        key = []
+    cart = request.COOKIES.get("cart")
+    cart_qs = Cart.objects.get(id=cart)
+
+    discount_client = 0
+    if cart_qs.client:
+        discount_client = Client.objects.filter(id=cart_qs.client.id)
+
+    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
+    product_cart = ProductCart.objects.filter(cart=cart)
+
+    prefetch_queryset_property = ProductProperty.objects.filter(
+        product__in=product_cart_list
+    )
+    product = (
+        Product.objects.filter(id__in=product_cart_list)
+        .select_related(
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
+            "stock__lot",
+        )
+        .prefetch_related(
+            Prefetch(
+                "productproperty_set",
+                queryset=prefetch_queryset_property,
+            )
+        )
+        .annotate(
+            quantity=product_cart.filter(product=OuterRef("pk")).values(
+                "quantity",
+            ),
+            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                "id",
+            ),
+        )
+    )
 
     id_specification = request.COOKIES.get("specificationId")
 
@@ -258,7 +295,9 @@ def create_specification(request):
 
     context = {
         "title": title,
-        "specification_items": key,
+        "product": product,
+        "cart": cart,
+        "request": request,
     }
     return render(request, "admin_specification/catalog.html", context)
 

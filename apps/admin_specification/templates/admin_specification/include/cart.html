@@ -1,0 +1,7 @@
+<a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span>
+    {% if cart %}
+        {{ cart }}
+    {% else %}
+        0
+    {% endif %}
+</span>

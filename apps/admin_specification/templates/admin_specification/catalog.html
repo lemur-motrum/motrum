@@ -10,7 +10,7 @@
             <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
         </div>
         <h1 class="title">{{ title }}</h1>
-        {% if specification_items %}
+        {% if product %}
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
@@ -25,7 +25,7 @@
                     <div class="title_item">Скидка Motrum:</div>
                     <div class="title_item">Скидка %:</div>
                 </div>
-                {% for item in specification_items %}
+                {% for item in product %}
                     <div class="item_container"
                          data-id="{{ item.id }} "
                          data-price="{{ item.price }}"

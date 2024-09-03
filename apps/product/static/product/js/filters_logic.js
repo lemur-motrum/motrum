@@ -9,20 +9,29 @@ window.addEventListener("DOMContentLoaded", () => {
     const filterContent = filterElem.querySelector(".filter-wrapper-content");
     const arrow = filterElem.querySelector(".arrow");
     const filterValues = filterElem.querySelectorAll(".filter_elem_content");
+    let paramsArray = [];
     filterValues.forEach((filterValue) => {
       const checkbox = filterValue.querySelector(".checked");
       const vendorParam = filterValue.getAttribute("param");
       filterValue.onclick = () => {
+        paramsArray.push(vendorParam);
         checkbox.classList.toggle("show");
         if (checkbox.classList.contains("show")) {
           if (window.location.href.includes("?")) {
-            currentUrl.searchParams.append("vendor", vendorParam);
+            currentUrl.searchParams.set("vendor", paramsArray.join());
           } else {
-            currentUrl.searchParams.set("vendor", vendorParam);
+            currentUrl.searchParams.set("vendor", paramsArray.join(","));
           }
         } else {
           const searchParams = currentUrl.searchParams;
-          searchParams.delete("vendor", vendorParam);
+          const filteredParamsArray = paramsArray.filter(
+            (el) => el !== vendorParam
+          );
+          paramsArray = filteredParamsArray;
+          searchParams.set("vendor", paramsArray.join());
+          if (filteredParamsArray.length == 0) {
+            searchParams.delete("vendor", paramsArray.join());
+          }
         }
         history.pushState({}, "", currentUrl);
       };

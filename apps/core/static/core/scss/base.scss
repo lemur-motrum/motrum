@@ -177,6 +177,14 @@ body {
         cursor: pointer;
         color: #000;
         text-decoration: none;
+        position: relative;
+        span {
+          position: absolute;
+          font-size: 0.625rem;
+          font-weight: bold;
+          top: 0;
+          left: 102%;
+        }
       }
     }
   }
@@ -583,6 +591,142 @@ body {
             border-radius: 2px;
             transform: rotate(45deg);
             background-color: #000;
+          }
+        }
+      }
+    }
+  }
+}
+
+.cart_container {
+  margin: 1.625rem 3.125rem;
+  .cart_elems_container {
+    margin-top: 1.25rem;
+    .titles {
+      display: flex;
+      margin-left: 1.875rem;
+      .small_title {
+        font-size: 0.938rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        &:nth-of-type(2) {
+          margin-left: 12.563rem;
+        }
+        &:nth-of-type(3) {
+          margin-left: 5.563rem;
+        }
+        &:nth-of-type(4) {
+          margin-left: 5.375rem;
+        }
+        &:nth-of-type(5) {
+          margin-left: 2.25rem;
+        }
+      }
+    }
+    .products {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.313rem;
+      .product_item {
+        display: flex;
+        background-color: #f5f5f5;
+        box-sizing: border-box;
+        padding: 1rem 1.875rem;
+        border-radius: 10px;
+        font-size: 0.813rem;
+        .name {
+          width: 13.063rem;
+        }
+        .article {
+          margin-left: 3rem;
+          width: 6.188rem;
+        }
+        .chars {
+          margin-left: 4.25rem;
+          width: 10.25rem;
+          word-break: break-all;
+        }
+        .lot {
+          margin-left: 4.75rem;
+          width: 2.063rem;
+        }
+        .price {
+          width: 5.875rem;
+          margin-left: 3.375rem;
+          font-weight: bold;
+          font-size: 0.938rem;
+        }
+        .price_once {
+          width: 6.563rem;
+          margin-left: 4.688rem;
+        }
+        .item-buttons_container {
+          display: flex;
+          gap: 3.063rem;
+          margin-left: 2.375rem;
+          .quantity-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 5.563rem;
+            height: 2.125rem;
+            border: 1px solid black;
+            position: relative;
+            border-radius: 10px;
+            background-color: #fff;
+            input {
+              width: 2.063rem;
+              height: 100%;
+              text-align: center;
+              border: none;
+              background-color: transparent;
+              font-size: 1.125rem;
+              font-weight: bold;
+              &:focus {
+                outline: none;
+              }
+              &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+              }
+            }
+            button {
+              border: none;
+              background-color: transparent;
+              color: #a4a4a4;
+              height: -webkit-max-content;
+              height: -moz-max-content;
+              height: max-content;
+              cursor: pointer;
+              &:disabled,
+              &[disabled] {
+                cursor: auto;
+              }
+              &.minus-button {
+                font-size: 2rem;
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+              }
+              &.plus-button {
+                font-size: 1.8rem;
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+              }
+            }
+          }
+          .delete_cart_button {
+            display: flex;
+            border: none;
+            align-items: center;
+            justify-content: center;
+            background-color: inherit;
+            font-size: 0.813rem;
+            color: #000;
+            text-transform: lowercase;
+            cursor: pointer;
           }
         }
       }

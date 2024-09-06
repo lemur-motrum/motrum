@@ -1,6 +1,6 @@
-<a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span>
-    {% if cart %}
-        {{ cart }}
+<a href="{% url 'admin_specification:create_specification' %}">Корзина</a>: <span class="admin_specification_cart_length">
+    {% if count %}
+        {{ count }}
     {% else %}
         0
     {% endif %}

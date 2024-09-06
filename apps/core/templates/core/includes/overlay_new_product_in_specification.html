@@ -1,0 +1,23 @@
+<div class="overlay_new_product_in_specification">
+    <div class="modal_window">
+        <div class="title">Новый товар</div>
+        <form>
+            <label>
+                <span>Наименование товара</span>
+                <input class="name" type="text" />
+                <div class="error-maessage name-error"></div>
+            </label>
+            <label>
+                <span>Цена за 1шт</span>
+                <input class="price" onkeypress='validate(event)' type="text" />
+                <div class="error-maessage price-error"></div>
+            </label>
+            <label>
+                <span>Количество</span>
+                <input class="quantity" onkeypress='validate(event)' type="text" />
+                <div class="error-maessage quantity-error"></div>
+            </label>
+            <button type="submit">Добавить товар в корзину</button>
+        </form>
+    </div>
+</div>

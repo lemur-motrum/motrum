@@ -422,6 +422,21 @@ h1 {
         border-bottom-right-radius: 5px;
       }
     }
+    .add_new_product {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: none;
+      background-color: #a4a4a4;
+      color: #000;
+      cursor: pointer;
+      padding: 0.2rem 0.675rem;
+      width: 15%;
+      margin-top: 0.5rem;
+    }
     .submit-container {
       margin-top: 1rem;
       display: flex;
@@ -1122,4 +1137,52 @@ h1 {
   margin-top: 10px;
   gap: 20px;
   align-items: center;
+}
+
+.admin_specification_filters {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  .filter_content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    // max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease-out;
+    .filter_elem_content {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #000;
+      text-decoration: none;
+      .checkbox {
+        width: 1.125rem;
+        height: 1.125rem;
+        border-radius: 2px;
+        border: 0.063rem solid black;
+        position: relative;
+        .checked {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 0.875rem;
+          height: 0.875rem;
+          background-color: #000;
+          border-radius: 2px;
+          opacity: 0;
+          transition: 0.6s;
+          &.show {
+            opacity: 1;
+          }
+        }
+      }
+      .filter_name {
+        font-size: 0.813rem;
+      }
+    }
+  }
 }

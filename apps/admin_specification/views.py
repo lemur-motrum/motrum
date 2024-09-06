@@ -1,4 +1,6 @@
+import datetime
 import json
+from multiprocessing import context
 import os
 from django.core import serializers
 from django.db.models import Prefetch, OuterRef
@@ -17,6 +19,7 @@ from apps.product.models import (
     ProductCart,
     ProductProperty,
     Stock,
+    Vendor,
 )
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import permission_required
@@ -34,7 +37,19 @@ from django.db.models import Q
 def all_categories(request):
     title = "Каталог"
     categories = CategoryProduct.objects.all().order_by("article_name")
-
+    vendor = Vendor.objects.filter()
+    q_object = Q()
+    q_object &= Q(check_to_order=True)
+    product_vendor = (
+        Product.objects.select_related(
+            "vendor",
+            "category",
+            "group",
+        )
+        .filter(q_object)
+        .distinct("vendor")
+        .values("vendor", "vendor__name", "vendor__slug")
+    )
     product_list = (
         Product.objects.select_related(
             "supplier",
@@ -66,6 +81,22 @@ def all_categories(request):
     else:
         form = SearchForm()
 
+    if request.GET.get("vendor") != None:
+        vendor_urls = request.GET.get("vendor")
+        vendor_get = vendor_urls.split(",")
+        print(vendor_urls)
+        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        vendor_url = vendor_urls
+    else:
+        vendor_url = False
+
+    if request.GET.get("price") != None:
+        price_url = request.GET.get("price")
+        if price_url == "up":
+            product_list = product_list.order_by("price__rub_price_supplier")
+        else:
+            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -77,6 +108,8 @@ def all_categories(request):
         "products": page_obj,
         "num_of_pages": num_of_pages,
         "form": form,
+        "product_vendor": product_vendor,
+        "vendor_url": vendor_url,
     }
 
     renders = "admin_specification/categories.html"
@@ -92,6 +125,22 @@ def group_product(request, cat):
         GroupProduct.objects.select_related("category")
         .filter(category=cat)
         .order_by("article_name")
+    )
+
+    vendor = Vendor.objects.filter()
+    q_object = Q()
+    q_object &= Q(check_to_order=True)
+    if cat is not None:
+        q_object &= Q(category__pk=cat)
+    product_vendor = (
+        Product.objects.select_related(
+            "vendor",
+            "category",
+            "group",
+        )
+        .filter(q_object)
+        .distinct("vendor")
+        .values("vendor", "vendor__name", "vendor__slug")
     )
     product_list = (
         Product.objects.select_related(
@@ -123,6 +172,22 @@ def group_product(request, cat):
     else:
         form = SearchForm()
 
+    if request.GET.get("vendor") != None:
+        vendor_urls = request.GET.get("vendor")
+        vendor_get = vendor_urls.split(",")
+        print(vendor_urls)
+        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        vendor_url = vendor_urls
+    else:
+        vendor_url = False
+
+    if request.GET.get("price") != None:
+        price_url = request.GET.get("price")
+        if price_url == "up":
+            product_list = product_list.order_by("price__rub_price_supplier")
+        else:
+            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -150,6 +215,8 @@ def group_product(request, cat):
         "num_of_pages": num_of_pages,
         "form": form,
         "category": get_category(),
+        "product_vendor": product_vendor,
+        "vendor_url": vendor_url,
     }
 
     return render(request, "admin_specification/group.html", context)
@@ -175,6 +242,41 @@ def specifications(request, cat, gr):
         .filter(check_to_order=True)
         .order_by("pk")
     )
+
+    vendor = Vendor.objects.filter()
+    q_object = Q()
+    q_object &= Q(check_to_order=True)
+    if cat is not None:
+        q_object &= Q(category__pk=cat)
+    if gr is not None:
+        q_object &= Q(group__pk=gr)
+
+    product_vendor = (
+        Product.objects.select_related(
+            "vendor",
+            "category",
+            "group",
+        )
+        .filter(q_object)
+        .distinct("vendor")
+        .values("vendor", "vendor__name", "vendor__slug")
+    )
+
+    if request.GET.get("vendor") != None:
+        vendor_urls = request.GET.get("vendor")
+        vendor_get = vendor_urls.split(",")
+        print(vendor_urls)
+        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        vendor_url = vendor_urls
+    else:
+        vendor_url = False
+
+    if request.GET.get("price") != None:
+        price_url = request.GET.get("price")
+        if price_url == "up":
+            product_list = product_list.order_by("price__rub_price_supplier")
+        else:
+            product_list = product_list.order_by("price__rub_price_supplier").reverse()
 
     groups = (
         GroupProduct.objects.select_related("category").all().order_by("article_name")
@@ -239,6 +341,8 @@ def specifications(request, cat, gr):
         "another_groups": get_another_groups(),
         "category": get_category(),
         "supplers": get_unique_supplers(),
+        "product_vendor": product_vendor,
+        "vendor_url": vendor_url,
     }
     return render(request, "admin_specification/specification_page.html", context)
 
@@ -291,13 +395,15 @@ def create_specification(request):
     if id_specification:
         title = f"Cпецификация № {id_specification}"
     else:
-        title = "Текущая спецификация"
+        title = "Новая спецификация"
 
+    current_date = datetime.date.today().isoformat()
     context = {
         "title": title,
         "product": product,
         "cart": cart,
         "request": request,
+        "current_date": current_date,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -356,6 +462,23 @@ def get_all_specifications(request):
 def instruments(request, cat):
 
     category = CategoryProduct.objects.filter(pk=cat).order_by("article_name")
+
+    vendor = Vendor.objects.filter()
+    q_object = Q()
+    q_object &= Q(check_to_order=True)
+    if cat is not None:
+        q_object &= Q(category__pk=cat)
+    product_vendor = (
+        Product.objects.select_related(
+            "vendor",
+            "category",
+            "group",
+        )
+        .filter(q_object)
+        .distinct("vendor")
+        .values("vendor", "vendor__name", "vendor__slug")
+    )
+
     product_list = (
         Product.objects.select_related(
             "supplier",
@@ -390,6 +513,22 @@ def instruments(request, cat):
     else:
         form = SearchForm()
 
+    if request.GET.get("vendor") != None:
+        vendor_urls = request.GET.get("vendor")
+        vendor_get = vendor_urls.split(",")
+        print(vendor_urls)
+        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        vendor_url = vendor_urls
+    else:
+        vendor_url = False
+
+    if request.GET.get("price") != None:
+        price_url = request.GET.get("price")
+        if price_url == "up":
+            product_list = product_list.order_by("price__rub_price_supplier")
+        else:
+            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+
     supplers = []
 
     for product in product_list:
@@ -420,6 +559,8 @@ def instruments(request, cat):
         "search_input": search_input,
         "category": category,
         "supplers": get_unique_supplers(),
+        "product_vendor": product_vendor,
+        "vendor_url": vendor_url,
     }
 
     return render(request, "admin_specification/specification_page.html", context)
@@ -473,6 +614,7 @@ def search_product(request):
         | Q(article_supplier__icontains=value)
         | Q(additional_article_supplier__icontains=value)
     )
+
     items = product_list[start:counter]
 
     products = serializers.serialize("json", items)
@@ -483,11 +625,14 @@ def search_product(request):
 # Вьюха логики при нажатии на кнопку "Загрузить ещё"
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def load_products(request):
+
     data = json.loads(request.body)
     cat = data["category"]
     gr = data["group"]
     page_num = data["pageNum"]
-    print(data)
+    url_params = data["urlParams"]
+    price_url = data["priceUrl"]
+
     if page_num == "":
         start_point = 9
     else:
@@ -511,6 +656,7 @@ def load_products(request):
             .filter(check_to_order=True)
             .order_by("pk")
         )
+
     elif gr == "":
         product_list = (
             Product.objects.prefetch_related(
@@ -528,6 +674,7 @@ def load_products(request):
             .filter(check_to_order=True)
             .order_by("pk")
         )
+
     else:
         product_list = (
             Product.objects.select_related(
@@ -540,6 +687,15 @@ def load_products(request):
             .filter(check_to_order=True)
             .order_by("pk")
         )
+
+    if url_params != None:
+        product_list = product_list.filter(vendor__slug__in=url_params)
+
+    if price_url != None:
+        if price_url == "up":
+            product_list = product_list.order_by("price__rub_price_supplier")
+        else:
+            product_list = product_list.order_by("price__rub_price_supplier").reverse()
 
     items = product_list[start_point:endpoint_product]
 

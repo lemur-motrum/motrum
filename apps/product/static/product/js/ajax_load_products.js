@@ -4,17 +4,17 @@ let currentUrl = new URL(window.location.href);
 
 window.addEventListener("DOMContentLoaded", () => {
   const catalogWrapper = document.querySelector('[catalog-elem="wrapper"]');
-  const category = document
-    .querySelector("[data-category-id]")
-    .getAttribute("data-category-id");
-  const group = document
-    .querySelector("[data-group-id]")
-    .getAttribute("data-group-id");
-  let productCount = 0;
-  let pageCount = 0;
-  let lastPage = 0;
-  let paramsArray = [];
   if (catalogWrapper) {
+    const category = document
+      .querySelector("[data-category-id]")
+      .getAttribute("data-category-id");
+    const group = document
+      .querySelector("[data-group-id]")
+      .getAttribute("data-group-id");
+    let productCount = 0;
+    let pageCount = 0;
+    let lastPage = 0;
+    let paramsArray = [];
     const loader = catalogWrapper.querySelector(".loader");
     const btn = catalogWrapper.querySelector(".add_more");
     const catalogContainer = catalogWrapper.querySelector(
@@ -102,9 +102,10 @@ window.addEventListener("DOMContentLoaded", () => {
             nextBtn.classList.remove("show");
           }
           const pagintationArray = [];
+
           for (
             let i = pageCount == 0 ? pageCount : pageCount - 1;
-            i < pageCount + 2;
+            !data.small ? i < pageCount + 2 : i <= pageCount;
             i++
           ) {
             pagintationArray.push(i);
@@ -205,14 +206,14 @@ window.addEventListener("DOMContentLoaded", () => {
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
-              pageCount = 0;
+              pageCount = "1";
               loadItems(false, false, paramsArray);
             } else {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
-              pageCount = 0;
+              pageCount = "1";
               loadItems(false, false, paramsArray);
             }
           } else {
@@ -225,7 +226,7 @@ window.addEventListener("DOMContentLoaded", () => {
             loader.style.display = "block";
             catalogContainer.innerHTML = "";
             endContent.classList.remove("show");
-            pageCount = 0;
+            pageCount = "1";
             loadItems(false, true, paramsArray);
             if (filteredParamsArray.length == 0) {
               searchParams.delete("vendor", paramsArray.join());

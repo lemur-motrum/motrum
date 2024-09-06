@@ -100,6 +100,28 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset, context={"request": request}, many=True
         )
 
+        page_count = len(
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+            )
+            .filter(q_object)
+            .order_by(ordering_filter)
+        )
+
+        if page_count % 10 == 0:
+            count = page_count / 10
+        else:
+            count = math.trunc(page_count / 10) + 1
+
+        if page_count <= 20:
+            small = True
+        else:
+            small = False
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
 
@@ -122,6 +144,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 / 10
             ),
             "page": page_get,
+            "small": small,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
@@ -306,7 +329,6 @@ class CartViewSet(viewsets.ModelViewSet):
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
         queryset.delete()
-
         return Response(None, status=status.HTTP_200_OK)
 
 

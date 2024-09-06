@@ -5,6 +5,18 @@ import {
   deleteCookie,
 } from "/static/core/js/functions.js";
 
+let getClosestInteger = (a, b, x = Math.trunc(a / b)) => {
+  //х - сколько раз b содержится в а
+  if (a > b) {
+    //защита от дурака
+    if (!(a % b))
+      //если а делится на b без остатка
+      return a; //значит а это и есть ответ
+    return b * x == 1000 ? b * x - b : b * x; //иначе выбираем между b * x
+  }
+  return "Некорректный ввод данных";
+};
+
 //Класс для разделения чила на разряды
 class NumberParser {
   constructor(locale) {
@@ -107,10 +119,6 @@ function catalogLogic(elems) {
     showInformation(catalogItem);
 
     const productId = catalogItem.getAttribute("data-id");
-    const productName = catalogItem.querySelector(".name").textContent;
-    const productPrice = catalogItem.getAttribute("data-price");
-    const productMotrumId = catalogItem.getAttribute("data-motrum-id");
-    const productSalerId = catalogItem.getAttribute("data-saler-id");
     const buttonContainer = catalogItem.querySelector(".quantity-buttons");
     const productDiscount = getCurrentPrice(
       catalogItem.getAttribute("data-discoutnt")
@@ -141,8 +149,11 @@ function catalogLogic(elems) {
       } else {
         countQuantity = +countQuantityZone.value;
       }
+
       if (countQuantity >= 999) {
-        countQuantityZone.value = 999;
+        countQuantityZone.value = productMultiplicityQuantity
+          ? getClosestInteger(999, +productMultiplicityQuantity)
+          : 999;
         minusButton.disabled = false;
         plusButton.disabled = true;
         addSpecificationButton.disabled = false;
@@ -158,21 +169,31 @@ function catalogLogic(elems) {
     });
 
     plusButton.onclick = () => {
-      countQuantity++;
+      if (productMultiplicityQuantity) {
+        countQuantity += +productMultiplicityQuantity;
+      } else {
+        countQuantity++;
+      }
       countQuantityZone.value = countQuantity;
       minusButton.disabled = false;
       addSpecificationButton.disabled = false;
       if (countQuantity >= 999) {
-        countQuantityZone.value = 999;
-        minusButton.disabled = false;
+        countQuantityZone.value = productMultiplicityQuantity
+          ? getClosestInteger(999, +productMultiplicityQuantity)
+          : 999;
         plusButton.disabled = true;
+        minusButton.disabled = false;
       } else {
         plusButton.disabled = false;
         minusButton.disabled = false;
       }
     };
     minusButton.onclick = () => {
-      countQuantity--;
+      if (productMultiplicityQuantity) {
+        countQuantity -= +productMultiplicityQuantity;
+      } else {
+        countQuantity--;
+      }
       countQuantityZone.value = countQuantity;
       minusButton.disabled = false;
       if (countQuantity <= 0) {
@@ -183,6 +204,84 @@ function catalogLogic(elems) {
       } else {
         minusButton.disabled = false;
         plusButton.disabled = false;
+        addSpecificationButton.disabled = false;
+      }
+    };
+    addSpecificationButton.onclick = () => {
+      if (!getCookie("cart")) {
+        fetch("/api/v1/cart/add-cart/", {
+          method: "GET",
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((cart_id) => {
+            if (cart_id) {
+              const dataObj = {
+                product: +productId,
+                cart: +cart_id,
+                quantity: countQuantityZone.value,
+              };
+
+              const data = JSON.stringify(dataObj);
+
+              fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+                method: "POST",
+                body: data,
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": csrfToken,
+                },
+              })
+                .then((response) => {
+                  if (response.status == 200) {
+                    return response.json();
+                  } else {
+                    throw new Error("Ошибка");
+                  }
+                })
+                .then(
+                  (response) =>
+                    (document.querySelector(
+                      ".admin_specification_cart_length"
+                    ).textContent = response.cart_len)
+                )
+                .catch((error) => console.error(error));
+            }
+          })
+          .catch((error) => console.error(error));
+      } else {
+        const cart_id = getCookie("cart");
+        const dataObj = {
+          product: +productId,
+          cart: +cart_id,
+          quantity: countQuantityZone.value,
+        };
+
+        const data = JSON.stringify(dataObj);
+        fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            } else {
+              throw new Error("Ошибка");
+            }
+          })
+          .then(
+            (response) =>
+              (document.querySelector(
+                ".admin_specification_cart_length"
+              ).textContent = response.cart_len)
+          )
+          .catch((error) => console.error(error));
       }
     };
   });
@@ -231,11 +330,17 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         const endpoint = "/admin_specification/load_products/";
 
+        const urlParams = new URL(document.location).searchParams;
+        const urlParamasArray = urlParams.get("vendor")
+          ? urlParams.get("vendor").split(",")
+          : null;
+        const priceUrl = urlParams.get("price") ? urlParams.get("price") : null;
         const objData = {
           group: group,
           category: category,
-
           pageNum: pageNum,
+          urlParams: urlParamasArray,
+          priceUrl: priceUrl,
         };
         let data = JSON.stringify(objData);
 
@@ -437,19 +542,18 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       function saveSpecification(elems) {
-        console.log(elems);
-        const products = [];
         const checkbox = document.querySelector("#prepayment-checkbox");
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
         let validate = true;
+        const products = [];
 
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
-          const itemID = item.getAttribute("data-id");
+          const itemID = item.getAttribute("data-product-pk");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
-          const itemPrice = item.querySelector(".price_once");
+          const itemPrice = item.getAttribute("data-price");
           const extraDiscount = item.querySelector(".discount-input");
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
@@ -463,11 +567,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_id: +itemID,
             quantity: +itemQuantity,
             price_exclusive: +itemPriceStatus,
-            price_one: !itemPrice
-              ? +inputPrice.value
-              : new NumberParser("ru").parse(
-                  JSON.parse(getCookie("key"))[i].price
-                ),
+            price_one: +getCurrentPrice(itemPrice),
             product_specif_id: productSpecificationId
               ? productSpecificationId
               : null,
@@ -481,25 +581,24 @@ window.addEventListener("DOMContentLoaded", () => {
             products.push(product);
           }
         });
-        console.log(products);
+
         if (validate == true) {
-          const endpoint =
-            "/admin_specification/save_specification_view_admin/";
           const dataObj = {
             id_bitrix: 22,
             admin_creator_id: adminCreatorId,
             products: products,
             is_pre_sale: checkbox.checked ? true : false,
             id_specification: specificationId ? specificationId : null,
+            cart: +getCookie("cart"),
           };
 
           const data = JSON.stringify(dataObj);
-          fetch(endpoint, {
+          fetch("/api/v1/order/add-order-admin/", {
             method: "POST",
             body: data,
             headers: {
-              "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
+              "Content-Type": "application/json",
             },
           })
             .then((response) => response.json())
@@ -536,6 +635,41 @@ window.addEventListener("DOMContentLoaded", () => {
         const minusButton = item.querySelector(".minus-button");
         const quantity = item.querySelector(".input-quantity");
         let countQuantity = +quantity.value;
+        const productID = item.getAttribute("data-id");
+        if (itemPriceOnce) {
+          console.log(+getCurrentPrice(itemPriceOnce.textContent));
+        }
+        if (itemPriceOnce) {
+          const currentPrice =
+            +getCurrentPrice(itemPriceOnce.textContent) * +quantity.value;
+          getDigitsNumber(productTotalPrice, currentPrice);
+          getResult();
+        }
+
+        function updateProduct() {
+          setTimeout(() => {
+            const dataObj = {
+              quantity: +quantity.value,
+            };
+            const data = JSON.stringify(dataObj);
+            fetch(`/api/v1/cart/${productID}/update-product/`, {
+              method: "UPDATE",
+              body: data,
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+            })
+              .then((response) => {
+                if (response.status == 200) {
+                  console.log(
+                    `Товар с id ${productID}, успешно изменен на количество ${quantity.value}`
+                  );
+                }
+              })
+              .catch((error) => console.error(error));
+          }, 1500);
+        }
 
         const multiplicity = item.getAttribute("data-multiplicity");
 
@@ -553,11 +687,23 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity = +quantity.value;
           }
-          const currentPrice =
-            new NumberParser("ru").parse(itemPriceOnce.textContent) *
-            +quantity.value;
-          getDigitsNumber(productTotalPrice, currentPrice);
-          getResult();
+          if (countQuantity >= 999) {
+            quantity.value = 999;
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          } else if (countQuantity <= 1) {
+            quantity.value = 1;
+            plusButton.disabled = false;
+          } else {
+            minusButton.disabled = false;
+            plusButton.disabled = false;
+          }
+          if (itemPriceOnce) {
+            const currentPrice =
+              +getCurrentPrice(itemPriceOnce.textContent) * +quantity.value;
+            getDigitsNumber(productTotalPrice, currentPrice);
+            getResult();
+          }
         });
 
         plusButton.onclick = () => {
@@ -569,8 +715,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
           quantity.value = countQuantity;
           const currentPrice =
-            new NumberParser("ru").parse(itemPriceOnce.textContent) *
-            +quantity.value;
+            +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
           if (countQuantity >= 999) {
@@ -582,6 +727,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = true;
           }
+          updateProduct();
         };
 
         minusButton.onclick = () => {
@@ -596,8 +742,7 @@ window.addEventListener("DOMContentLoaded", () => {
             quantity.value = 0;
           }
           const currentPrice =
-            new NumberParser("ru").parse(itemPriceOnce.textContent) *
-            +quantity.value;
+            +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
           if (countQuantity >= 999) {
@@ -611,6 +756,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = false;
           }
+          updateProduct();
         };
 
         if (inputPrice) {
@@ -622,42 +768,56 @@ window.addEventListener("DOMContentLoaded", () => {
             const currentPrice =
               new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
 
-            getDigitsNumber(productTotalPrice, currentPrice);
+            // getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
           };
 
           plusButton.onclick = () => {
-            countQuantity++;
-            quantity.value = countQuantity;
             const currentPrice =
-              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+              +item.getAttribute("data-price") * +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
-            if (countQuantity >= 999) {
-              minusButton.disabled = false;
-              plusButton.disabled = true;
+            if (multiplicity) {
+              countQuantity += +multiplicity;
+            } else {
+              countQuantity++;
             }
+            quantity.value = countQuantity;
+            minusButton.disabled = false;
+            if (countQuantity >= 999) {
+              quantity.value = multiplicity
+                ? getClosestInteger(999, +multiplicity)
+                : 999;
+              plusButton.disabled = true;
+              minusButton.disabled = false;
+            } else {
+              plusButton.disabled = false;
+              minusButton.disabled = false;
+            }
+            updateProduct();
           };
 
           minusButton.onclick = () => {
-            countQuantity--;
-            quantity.value = countQuantity;
             const currentPrice =
-              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+              +item.getAttribute("data-price") * +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
-            if (countQuantity >= 999) {
-              minusButton.disabled = false;
-              plusButton.disabled = true;
+            if (multiplicity) {
+              countQuantity -= +multiplicity;
             } else {
+              countQuantity--;
+            }
+            quantity.value = countQuantity;
+            minusButton.disabled = false;
+            if (countQuantity <= 0) {
+              quantity.value = 0;
+              minusButton.disabled = true;
+              plusButton.disabled = false;
+            } else {
+              minusButton.disabled = false;
               plusButton.disabled = false;
             }
-
-            if (countQuantity <= 0) {
-              minusButton.disabled = true;
-            } else {
-              minusButton.disabled = false;
-            }
+            updateProduct();
           };
 
           inputPrice.onkeyup = () => {
@@ -669,10 +829,14 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             getResult();
             itemPrices.forEach((itemPrice) => {
-              getDigitsNumber(itemPrice, itemPrice.textContent);
+              // getDigitsNumber(itemPrice, itemPrice.textContent);
             });
+            updateProduct();
           };
           discountInput.onkeyup = () => {
+            if (discountInput.value >= 100) {
+              discountInput.value == 100;
+            }
             const curentPrice =
               (+item.getAttribute("data-price") *
                 (100 - +discountInput.value)) /
@@ -686,14 +850,18 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
           getResult();
           itemPrices.forEach((itemPrice) => {
-            getDigitsNumber(itemPrice, itemPrice.textContent);
+            // getDigitsNumber(itemPrice, itemPrice.textContent);
           });
           discountInput.onkeyup = () => {
+            if (discountInput.value >= 100) {
+              discountInput.value == 100;
+            }
             const curentPrice =
-              (+productPrice * (100 - +discountInput.value)) / 100;
+              (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
+              100;
             getDigitsNumber(productPriceContainer, curentPrice);
 
-            const allPrice = curentPrice * countQuantity;
+            const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
             getResult();
           };
@@ -701,20 +869,18 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         deleteItemBtn.onclick = () => {
-          const specificationArray = JSON.parse(
-            localStorage.getItem("specificationValues")
-          );
-          console.log(specificationArray);
-          specificationArray.splice(i, 1);
-          const result = JSON.stringify(specificationArray);
-
-          localStorage.setItem("specificationValues", result);
-
-          setCookie("key", result, {
-            path: "/",
-            // domain: window.location.hostname,
-          });
-          window.location.reload();
+          fetch(`/api/v1/cart/${+productID}/delete-product/`, {
+            method: "delete",
+            headers: {
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              }
+            })
+            .catch((error) => console.error(error));
         };
       });
 

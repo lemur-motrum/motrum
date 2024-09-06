@@ -1,3 +1,29 @@
+<div class="admin_specification_filters">
+    <div class="filter_content vendor_filters">
+        {% for vendor in product_vendor %}
+            <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
+                <div class="checkbox">
+                    <div class="checked"></div>
+                </div>
+                <div class="filter_name">{{ vendor.vendor__name }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="filter_content price_filters">
+        <div param="up" class="filter_elem_content">
+            <div class="checkbox">
+                <div class="checked"></div>
+            </div>
+            <div class="filter_name">По возврастанию</div>
+        </div>
+        <div param="down" class="filter_elem_content">
+            <div class="checkbox">
+                <div class="checked"></div>
+            </div>
+            <div class="filter_name">По убыванию</div>
+        </div>
+    </div>
+</div>
 <div class="catalog_container">
     <div class="product-catalog-articles">
         {% comment %} <div class="article">Фильтр</div> {% endcomment %}
@@ -30,7 +56,7 @@
             <div class="all-products">
                 {% for product in products %}
                     <div class="catalog-item"
-                         data-id="{{ product.pk }} "
+                         data-id="{{ product.pk }}"
                          data-price="{% if product.price.rub_price_supplier %} {{ product.price.rub_price_supplier }} {% else %}0{% endif %}"
                          data-motrum-id="{{ product.article }}"
                          data-saler-id="{{ product.article_supplier }}"
@@ -149,9 +175,11 @@
                         {% if products.number == 1 or products.number == 2 or products.number == 3 %}
                         {% else %}
                             {% if search_input %}
-                                <a class="first-elem" href="?page=1&search_input={{ search_input }}"><span>1</span></a>
+                                <a class="first-elem"
+                                   href="?page=1&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>1</span></a>
                             {% else %}
-                                <a class="first-elem" href="?page=1"><span>1</span></a>
+                                <a class="first-elem"
+                                   href="?page=1{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>1</span></a>
                             {% endif %}
                         {% endif %}
                         {% for p in products.paginator.page_range %}
@@ -161,9 +189,9 @@
                                 </div>
                             {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
                                 {% if search_input %}
-                                    <a href="?page={{ p }}&search_input={{ search_input }}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% else %}
-                                    <a href="?page={{ p }}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -171,9 +199,10 @@
                         {% else %}
                             {% if search_input %}
                                 <a class="last-elem"
-                                   href="?page={{ num_of_pages }}&search_input={{ search_input }}"><span>{{ num_of_pages }}</span></a>
+                                   href="?page={{ num_of_pages }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% else %}
-                                <a class="last-elem" href="?page={{ num_of_pages }}"><span>{{ num_of_pages }}</span></a>
+                                <a class="last-elem"
+                                   href="?page={{ num_of_pages }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% endif %}
                         {% endif %}
                     </div>

@@ -27,16 +27,17 @@
                 </div>
                 {% for item in product %}
                     <div class="item_container"
-                         data-id="{{ item.id }} "
-                         data-price="{{ item.price }}"
+                         data-product-pk="{{ item.pk }}"
+                         data-id="{{ item.id_product_cart }}"
+                         data-price="{{ item.price.rub_price_supplier }}"
                          data-price-exclusive=" {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %} 1 {% else %} 0 {% endif %} "
                          data-product-specification-id="{{ item.productSpecificationId }}"
-                         data-multiplicity="{{ item.multiplicity }}">
+                         data-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div class="item_value">{{ item.name }}</div>
-                        <div class="item_value">{{ item.idMotrum }}</div>
-                        <div class="item_value">{{ item.idSaler }}</div>
-                        {% if item.price == "0" or item.price == 0 or item.price == 0.0 or item.price == "0.0" %}
+                        <div class="item_value">{{ item.article }}</div>
+                        <div class="item_value">{{ item.article_supplier }}</div>
+                        {% if item.price.rub_price_supplier == 0 %}
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -64,8 +65,8 @@
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
-                            <div class="item_value price price_once">{{ item.price }}</div>
-                            <div class="item_value total_cost price">{{ item.totalCost }}</div>
+                            <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                            <div class="item_value total_cost price"></div>
                         {% endif %}
                         <div class="item_value">
                             {% if item.discount == "" or item.discount == None %}
@@ -80,15 +81,22 @@
                                    name="price-input-discount"
                                    onkeypress='validate(event)'
                                    placeholder="% скидки"
-                                   maxlength="5"
+                                   maxlength="2"
                                    value="" />
                             <label for="price-input-discount">
                                 {% if item.product_individual_sale %}{{ item.product_individual_sale }}{% endif %}
                                 %
                             </label>
                         </div>
+                        <div class="item_value">
+                            <label>
+                                <span>Срок поставки</span>
+                                <input type="date" name="calendar" min={{ current_date }}>
+                            </label>
+                        </div>
                     </div>
                 {% endfor %}
+                <div class="add_new_product">Добавить новый товар</div>
                 <div class="submit-container">
                     <div class="price_description">
                         Итого: <span class="price">0</span> <span class="total-price-description">₽</span>

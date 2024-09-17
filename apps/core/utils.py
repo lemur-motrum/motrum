@@ -159,10 +159,6 @@ def get_lot(lot, stock_supplier, lot_complect):
     return (lots, lot_stock, lot_complect)
 
 
-# остатки на складе мотрум
-def get_lot_motrum():
-    pass
-
 
 # артикул мотрум
 def create_article_motrum(supplier):
@@ -657,7 +653,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data):
+def save_specification(received_data,request):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -869,7 +865,7 @@ def save_specification(received_data):
     specification.save()
     requisites = None
     account_requisites = None
-    pdf = crete_pdf_specification(specification.id,requisites,account_requisites)
+    pdf = crete_pdf_specification(specification.id,requisites,account_requisites,request)
     specification.file = pdf        
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)

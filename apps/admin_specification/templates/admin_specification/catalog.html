@@ -23,7 +23,8 @@
                     <div class="title_item">Цена за шт. в ₽:</div>
                     <div class="title_item">Стоимость:</div>
                     <div class="title_item">Скидка Motrum:</div>
-                    <div class="title_item">Скидка %:</div>
+                    <div class="title_item">Доп.Скидка %:</div>
+                    <div class="title_item">Срок поставки:</div>
                 </div>
                 {% for item in product %}
                     <div class="item_container"
@@ -71,10 +72,11 @@
                             <div class="item_value total_cost price"></div>
                         {% endif %}
                         <div class="item_value">
-                            {% if item.discount == "" or item.discount == None %}
-                                Нет
+                            
+                            {% if item.price.get_sale_price_motrum %}
+                                {{item.price.get_sale_price_motrum }} %
                             {% else %}
-                                {{ item.discount }} %
+                                Нет
                             {% endif %}
                         </div>
                         <div class="item_value">

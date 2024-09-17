@@ -40,8 +40,11 @@
                             <div class="table_item_value">Договор</div>
                             
                             <button class="change-specification-button">Редактировать</button>
+                            {% if specification.get_order_bill %}
+                            <a href="{{specification.get_order_bill.url}}">    Счет ссылка</a>
+                            {% endif %}
+                            <button class="create-bill-button">   Создать счет</button>
                             
-                            <button class="create-bill-button">Создать счет</button>
                         </div>
                     {% else %}
                         <div data-status='{{ specification.tag_stop }}'

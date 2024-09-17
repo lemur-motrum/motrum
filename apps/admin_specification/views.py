@@ -465,7 +465,7 @@ def save_specification_view_admin(request):
     received_data = json.loads(request.body)
 
     # сохранение спецификации
-    save_specification(received_data)
+    save_specification(received_data,request)
 
     out = {"status": "ok", "data": received_data}
     return JsonResponse(out)

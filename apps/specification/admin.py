@@ -283,7 +283,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         spes.save()
         requisites = None
         account_requisites = None
-        pdf = crete_pdf_specification(id_sec,requisites,account_requisites)
+        pdf = crete_pdf_specification(id_sec,requisites,account_requisites,request)
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):

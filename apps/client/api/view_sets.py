@@ -299,7 +299,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 specification.save()
 
                 pdf = crete_pdf_specification(
-                    specification.id, requisites, account_requisites
+                    specification.id, requisites, account_requisites,request
                 )
                 specification.file = pdf
                 specification.skip_history_when_saving = True
@@ -356,7 +356,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # client = cart.client
         client = None
-        specification = save_specification(data)
+        specification = save_specification(data,request)
 
         data_order = {
             "client": client,

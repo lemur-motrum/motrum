@@ -68,7 +68,7 @@ class MyCanvas(canvas.Canvas):
 #             specification_item.save()
 
 
-def crete_pdf_specification(specification, requisites, account_requisites):
+def crete_pdf_specification(specification, requisites, account_requisites,request):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -177,11 +177,17 @@ def crete_pdf_specification(specification, requisites, account_requisites):
         if date_delivery and date_delivery > date_ship:
             date_ship = date_delivery
         if product.product:
-
-            product_name = str(product)
+            link = product.product.get_url_document()
+            link = request.build_absolute_uri(link)
+            
+            
+            address = f'<a href="{link}"</link>'
+            product_name_str = str(product.product.name)
+            product_name = Paragraph(f'<a href="{link}">{product_name_str}</a><br></br><a href="{link}">ссылка</a>', bold_style_center),
 
         else:
             product_name = product.product_new
+            product_name = Paragraph(f'{product_name}', bold_style_center),
 
         product_price = product.price_one
         product_price = "{0:,}".format(product_price).replace(",", " ")
@@ -191,7 +197,8 @@ def crete_pdf_specification(specification, requisites, account_requisites):
         data.append(
             (
                 i,
-                Paragraph(product_name, normal_style),
+                product_name,
+                # Paragraph(product_name, normal_style),
                 product_stock,
                 product_quantity,
                 product_price,
@@ -373,7 +380,7 @@ def crete_pdf_specification(specification, requisites, account_requisites):
 
     return file_path
 
-
+# путь до спецификаций пдф
 def get_document_path(instance, filename):
     directory = check_spesc_directory_exist(
         "specification",
@@ -382,7 +389,7 @@ def get_document_path(instance, filename):
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
 
-
+# путь до счета пдф
 def get_document_bill_path(instance, filename):
     directory = check_spesc_directory_exist(
         "specification",

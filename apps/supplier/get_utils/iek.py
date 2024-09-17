@@ -365,10 +365,11 @@ def iek_api():
         print(response)
         data = response.json()
         if data == []:
-                    error = "file_api_error"
-                    location = "Загрузка фаилов IEK"
-                    info = f"Пустая категория {url_params}"
-                    e = error_alert(error, location, info)
+            pass
+                    # error = "file_api_error"
+                    # location = "Загрузка фаилов IEK"
+                    # info = f"Пустая категория {url_params}"
+                    # e = error_alert(error, location, info)
         else:
             for data_item in data:
                 try:

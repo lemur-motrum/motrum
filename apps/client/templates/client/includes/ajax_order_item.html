@@ -1,0 +1,50 @@
+<div class="order_item"
+    order-id="{{ id }}"
+    order-elem="order-item">
+    <div class="">дата -{{date_order}}</div>
+    <div class="">номер -{{ name }}</div>
+    <div class="">состав заказа -
+       
+      {% for specification_list_item in specification_list.productspecification_set %}
+            {{specification_list_item.product_name}} - {{specification_list_item.quantity}} 
+            {{specification_list_item.lot.lot}}
+            
+        {% endfor %}
+
+    </div>
+    <div class="">сумма  -
+        {% if bill_sum %}
+        {{ bill_sum }}
+        {% else %}
+        счет не сформирован
+        {% endif %}
+        </div>
+    <div class="">оплата -{{ bill_sum_paid}}
+        {% if bill_sum_paid %}
+        {{ bill_sum_paid }}
+        {% else %}
+        счет не сформирован
+        {% endif %}
+    </div>
+
+    <div class="">статус -{{ status_full  }}</div>
+
+
+    <div class="">документы 
+        {% if specification_list.file %}
+        спецификация {{specification_list.file}}
+        {% endif %}
+
+        {% if bill_file %}
+        счёт {{bill_file}}
+        {% endif %}
+
+        {% if act_file %}
+        акт {{act_file}}
+        {% endif %}
+       
+        
+    </div>
+    
+   
+</div>

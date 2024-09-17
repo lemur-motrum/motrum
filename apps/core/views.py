@@ -65,6 +65,7 @@ def cart(request):
     prefetch_queryset_property = ProductProperty.objects.filter(
         product__in=product_cart_list
     )
+    
     product = (
         Product.objects.filter(id__in=product_cart_list)
         .select_related(
@@ -91,7 +92,11 @@ def cart(request):
             ),
         )
     )
-
+    print(product)
+    for products in product:
+        print(type(products.productproperty_set))
+        print(products.productproperty_set)
+        
     context = {
         "product": product,
         "cart": cart,

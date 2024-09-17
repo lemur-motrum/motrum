@@ -8,17 +8,24 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.cache import cache
 from django.contrib.auth import authenticate, login
+from django.db.models import Q, F, OrderBy
 
 from apps.client.api.serializers import (
     AccountRequisitesSerializer,
-    AllAccountRequisitesSerializer,
     ClientRequisitesSerializer,
     ClientSerializer,
+    LkOrderSerializer,
     OrderSerializer,
     RequisitesSerializer,
 )
 from django.contrib.sessions.models import Session
-from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.client.models import (
+    STATUS_ORDER,
+    AccountRequisites,
+    Client,
+    Order,
+    Requisites,
+)
 from apps.core.utils import (
     create_time_stop_specification,
     get_presale_discount,
@@ -230,14 +237,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
 
         cart = Cart.objects.get(id=data["cart"])
-        
+
         client = cart.client
-        
-            
 
         # сохранение спецификации для заказа с реквизитами
         if "requisites" in data:
             print(data["requisites"])
+            requisites = Requisites.objects.get(id=data["requisites"])
+            account_requisites = AccountRequisites.objects.get(
+                id=data["account_requisites"]
+            )
             extra_discount = client.percent
             # сохранение спецификации
             products_cart = ProductCart.objects.filter(cart_id=cart)
@@ -289,26 +298,26 @@ class OrderViewSet(viewsets.ModelViewSet):
                 specification.skip_history_when_saving = True
                 specification.save()
 
-                pdf = crete_pdf_specification(specification.id)
+                pdf = crete_pdf_specification(
+                    specification.id, requisites, account_requisites
+                )
                 specification.file = pdf
                 specification.skip_history_when_saving = True
                 specification.save()
                 specification = specification.id
-                requisites =  data["requisites"]
-                account_requisites =  data["account_requisites"]
+                requisites = data["requisites"]
+                account_requisites = data["account_requisites"]
                 status_order = "PAYMENT"
 
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # сохранение заказа БЕЗ реквизитами
+        # сохранение заказа БЕЗ реквизит
         else:
             specification = None
             status_order = "PROCESSING"
             requisites = None
             account_requisites = None
-            
-       
 
         serializer_class = OrderSerializer
         data_order = {
@@ -324,6 +333,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             order = serializer.save()
             
+            
+        #   ??
+            order.create_bill()
+            
+            
+            
+            
             cart.is_active = True
             cart.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -334,22 +350,24 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
-        cart = Cart.objects.get(id=data["cart"])
+        cart = Cart.objects.get(id=data["id_cart"])
         cart.is_active = True
         cart.save()
 
-        client = cart.client
+        # client = cart.client
+        client = None
         specification = save_specification(data)
 
         data_order = {
             "client": client,
             "name": 123131,
             "specification": specification.id,
-            "status": "PAYMENT",
+            "status": "PROCESSING",
         }
+        print(data_order)
         try:
             order = Order.objects.get(specification=specification)
-            serializer = self.serializer_class(order, data=data, many=False)
+            serializer = self.serializer_class(order, data=data_order, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -357,25 +375,93 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Order.DoesNotExist:
-            serializer = self.serializer_class(data=data, many=False)
+            serializer = self.serializer_class(data=data_order, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
+    def create_bill_admin(self, request, pk=None, *args, **kwargs):
+        print(pk)
+        order = Order.objects.get(specification_id=pk)
+        print(order)
+        order.create_bill()
+
+        return Response(None, status=status.HTTP_200_OK)
+
     # изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")
     def update_order_admin(self, request, pk=None, *args, **kwargs):
         data = request.data
-        cart = Cart.objects.filter(id=data["cart"]).update(is_active=False)
+        cart_id = request.COOKIES.get("cart")
+        cart = Cart.objects.filter(id=cart_id).update(is_active=False)
 
         return Response(cart, status=status.HTTP_200_OK)
 
     # выйти и з изменения без сохранения спецификации дмин специф
-    @action(detail=False, methods=["get"], url_path=r"exit-order-admin")
+    @action(detail=False, methods=["update"], url_path=r"exit-order-admin")
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
 
         return Response(cart, status=status.HTTP_200_OK)
+
+    @action(detail=False, url_path="load-ajax-order-list")
+    def load_ajax_order_list(self, request):
+        count = int(request.query_params.get("count"))
+        serializer_class = LkOrderSerializer
+        current_user = request.user.id
+        client = Client.objects.get(pk=current_user)
+        
+        if request.query_params.get("sortDate"):
+            date_get = request.query_params.get("sortDate")
+        else:
+            date_get = "ASC"
+            # date_get = None
+            
+        if request.query_params.get("sortSum"):
+            sum_get = request.query_params.get("sortSum")
+        else:
+            sum_get = "ASC"  
+            # sum_get = None   
+            
+        if request.query_params.get("sortStatus"):
+            status_get = request.query_params.get("sortStatus")
+        else:
+            status_get = "ASC"   
+            # status_get = None   
+                
+        q_object = Q()
+        if date_get:
+            sort = "bill_sum"
+            ordering_filter = OrderBy(
+                F(sort.lstrip("-")),
+                descending=date_get.startswith("-"),
+                nulls_last=True,
+            )
+        else:
+            sort = "bill_sum"
+            ordering_filter = OrderBy(
+                F(sort.lstrip("-")),
+                descending="-".startswith("-"),
+                nulls_last=True,
+            )
+        
+        orders = Order.objects.select_related(
+            "specification",
+            "cart",
+            "requisites",
+            "account_requisites",
+        ).filter(client=client)[count : count + 6]
+        print(orders)
+
+        serializer = serializer_class(orders, many=True)
+        
+
+        data_response = {
+            "data": serializer.data, 
+            
+            }
+        return Response(data=data_response, status=status.HTTP_200_OK)

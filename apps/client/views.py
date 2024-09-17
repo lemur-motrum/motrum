@@ -3,7 +3,7 @@ import random
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Client, Order, Requisites
 
 
 # Create your views here.
@@ -18,9 +18,28 @@ def index(request):
 
 
 def my_orders(request):
+    current_user = request.user.id
+    
+    # cookie = request.COOKIES.get("client_id")
+    # client_id = int(cookie)
+
+    client = Client.objects.get(pk=current_user)
+    orders = Order.objects.filter(client = client).select_related(
+                "specification",
+                "cart",
+                "requisites",
+                "account_requisites",
+            )
+     
+    
     context = {
         "title": "Личный кабинет | мои заказы",
+        "orders": orders,
     }
+    
+    
+    
+    
     return render(request, "client/my_orders.html", context)
 
 

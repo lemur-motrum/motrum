@@ -591,7 +591,23 @@ class ProductCart(models.Model):
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
+    product_new = models.CharField(
+        "Название товара нового без добавления в бд",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
+    product_new_price = models.FloatField(
+        "Цена товара нового без добавления в бд",
+        blank=True,
+        null=True,
+        default=None,
+    )
+
     quantity = models.IntegerField(
         "количество товара",
         blank=True,

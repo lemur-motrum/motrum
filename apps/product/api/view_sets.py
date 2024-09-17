@@ -32,6 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
+        print(count)
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
@@ -161,10 +162,10 @@ class CartViewSet(viewsets.ModelViewSet):
         session = request.COOKIES.get("sessionid")
         if request.user.is_anonymous:
             if session == None:
-                # session = request.session._get_or_create_session_key()
+                
                 request.session.create()
                 session = request.session.session_key
-                # response.set_cookie("sessionid", session, max_age=2629800)
+              
                 data = {"session_key": session, "save_cart": False, "client": None}
                 serializer = self.serializer_class(data=data, many=False)
                 if serializer.is_valid():
@@ -265,27 +266,31 @@ class CartViewSet(viewsets.ModelViewSet):
                         # response.set_cookie(
                         #     "sessionid", serializer.data["session_key"], max_age=2629800
                         # )
-                        response.set_cookie(
-                            "cart", serializer.data["id"], max_age=2629800
-                        )
+                        # response.set_cookie(
+                        #     "cart", serializer.data["id"], max_age=2629800
+                        # )
                         return response
                     else:
                         return Response(
                             serializer.errors, status=status.HTTP_400_BAD_REQUEST
                         )
-                # cart = Cart.objects.get_or_create(client=request.user, save_cart=False)
-                # response.set_cookie("cart", cart[0].id, max_age=2629800)
+              
 
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
         print(kwargs["cart"])
+       
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
+        if "product_new" in data:
+            product_new = data["product_new"]
+        else:
+            product_new = None
         # обновление товара
         try:
-            product = queryset.get(product=data["product"])
+            product = queryset.get(product=data["product"], product_new=product_new)
             print(product)
             data["id"] = product.id
 

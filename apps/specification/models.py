@@ -42,6 +42,7 @@ class Specification(models.Model):
         null=True,
     )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
     class Meta:
         verbose_name = "Спецификация"
         verbose_name_plural = "Спецификации"
@@ -73,6 +74,15 @@ class ProductSpecification(models.Model):
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    product_new = models.CharField(
+        "Название товара нового без добавления в бд",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
     )
     product_currency = models.ForeignKey(
         Currency,
@@ -105,6 +115,7 @@ class ProductSpecification(models.Model):
     price_exclusive = models.BooleanField("Цена по запросу", default=False)
     extra_discount = models.FloatField("Процент дополнительной скидки",blank=True,
         null=True,)
+    date_delivery  = models.DateField(verbose_name="Дата поставки товара",null=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Спецификация продукт"

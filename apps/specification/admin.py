@@ -281,8 +281,9 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         spes = Specification.objects.get(id=id_sec)
         spes.total_amount = sums["price_all__sum"]
         spes.save()
-
-        pdf = crete_pdf_specification(id_sec)
+        requisites = None
+        account_requisites = None
+        pdf = crete_pdf_specification(id_sec,requisites,account_requisites)
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):

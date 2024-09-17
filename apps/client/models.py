@@ -1,3 +1,4 @@
+import datetime
 from pyexpat import model
 from django.db import models
 
@@ -5,7 +6,9 @@ from django.db import models
 
 
 
+
 from apps.specification.models import Specification
+from apps.specification.utils import get_document_bill_path
 from apps.user.models import AdminUser, CustomUser
 
 
@@ -174,11 +177,15 @@ STATUS_ORDER = (
 
 class Order(models.Model):
     client = models.ForeignKey(
-        Client, verbose_name="Клиент", on_delete=models.PROTECT
+        Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
+        null=True,
     )
     name = models.PositiveIntegerField(
         "номер заказа",
     )
+    date_order = models.DateField(default=datetime.date.today,verbose_name="Дата создания заказа", blank=True,
+        null=True,)
+    
     status = models.CharField(
         max_length=100, choices=STATUS_ORDER, default="PROCESSING"
     )
@@ -210,8 +217,70 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    
+    bill_file = models.FileField(
+        "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
+    )
+    bill_date_start = models.DateField(default=datetime.date.today,verbose_name="Дата создания счета", blank=True,
+        null=True,)
+    bill_date_stop = models.DateField(verbose_name="Дата окончания счета", blank=True,
+        null=True,) 
+    bill_sum = models.FloatField("Сумма счета", blank=True,
+        null=True,)
+    bill_sum_paid = models.FloatField("Оплаченная сумма", blank=True,
+        null=True,default=0)
+    
+    act_file = models.FileField(
+        "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
+    )
+    
+    
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
 
-
+    def __str__(self):
+        return str(self.id)
+    
+    
+    def create_bill(self):
+        from apps.core.utils import create_time_stop_specification
+        from apps.client.utils import crete_pdf_bill
+        
+        data_stop = create_time_stop_specification()
+        self.bill_date_stop = data_stop
+        print(self.id)
+        pdf = crete_pdf_bill(self.specification.id)
+        self.bill_file = pdf
+        
+        self.bill_sum = self.specification.total_amount
+        self.status = "PAYMENT"        
+        self.save()
+        
+    def get_status_name(self):
+            for choice in STATUS_ORDER:
+                if choice[0] == self.status:
+                    return choice[1]
+            return ''
+                
+        
+# class Document(models.Model):
+#     client = models.ForeignKey(
+#         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
+#         null=True,
+#     )
+#     order = models.ForeignKey(
+#         Order,
+#         verbose_name="Заказ",
+#         on_delete=models.PROTECT,
+#         blank=True,
+#         null=True,
+#     )
+#     date = models.DateField(
+#         default=datetime.date.today, verbose_name="Дата добавления"
+#     )
+     
+    
 # class Cart(models.Model):
 #     client =  models.OneToOneField(Client,verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True)
 #     save_cart = models.BooleanField(

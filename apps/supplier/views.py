@@ -9,6 +9,7 @@ from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.product.models import CurrencyRate, GroupProduct
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.one_c import one_c_price
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
@@ -38,7 +39,20 @@ def add_iek(request):
 
 # тестовая страница скриптов
 def test(request):
-    veda_api()
+    one_c_price()
+    title = "Услуги"
+   
+
+    responsets = ["233", "2131"]
+
+    context = {
+        "title": title,
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)
+
+def add_one_c (request):
+    one_c_price()
     title = "Услуги"
     print(124)
 

@@ -1,4 +1,4 @@
-import { setCookie, getCookie } from "/static/core/js/functions.js";
+import { setCookie, getCookie,deleteCookie } from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
 
@@ -118,4 +118,49 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+  // сохранение корзины сайт
+  const saveCartBtn = document.querySelector(".save_cart_button");
+  if (saveCartBtn) {
+    saveCartBtn.onclick = () => {
+      saveCart()
+    }
+  }
+
+
 });
+
+function saveCart() {
+  let validate = true;
+  const products = [];
+  const cart_id = getCookie("cart");
+
+  if (validate == true) {
+    const dataObj =
+    {
+      cart: +cart_id,
+      requisites: 65,
+      account_requisites: 42,
+    }
+
+    const data = JSON.stringify(dataObj);
+    fetch("/api/v1/order/add_order/", {
+      method: "POST",
+      body: data,
+      headers: {
+        "X-CSRFToken": csrfToken,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => {
+
+        deleteCookie("cart", "/", window.location.hostname);
+
+        window.location.href =
+          "/lk/my_orders";
+
+      })
+      .catch((error) => console.error(error));
+  }
+}

@@ -22,7 +22,12 @@
                         <div class="product_item" product-id="{{ product_item.id_product_cart }}">
                             <div class="name">{{ product_item.name }}</div>
                             <div class="article">{{ product_item.article }}</div>
-                            <div class="chars">{{ product_item.productproperty_set }}</div>
+                            <div class="chars">
+                                {{products.productproperty_set}}
+                                 {% if product_item.productproperty_set != 'product.ProductProperty.None' %}{{product_item.productproperty_set}}
+                                {% else %} - 
+                                {% endif %} 
+                            </div>
                             <div class="lot">{{ product_item.stock.lot_complect }} {{ product_item.stock.lot.name_shorts }}</div>
                             <div class="price">
                                 {% if product_item.price.rub_price_supplier == 0 %}
@@ -48,6 +53,10 @@
                             </div>
                         </div>
                     {% endfor %}
+                </div>
+                <div class="button_cart-wrapper">
+                    <button class="save_cart_button">Сделать заказ</button>
+                    {% comment %} <button class="exit_button">Выйти без изменений</button> {% endcomment %}
                 </div>
             {% else %}
                 <div>Корзина пока пуста</div>

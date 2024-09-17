@@ -2,6 +2,7 @@ from apps.client.models import Client, Order
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
+from apps.specification.api.serializers import ListProductSpecificationSerializer, ListsProductSpecificationSerializer, ProductSpecificationSerializer
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +36,16 @@ class ClientRequisitesSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = "__all__"                  
+        fields = "__all__"      
+
+class LkOrderSerializer(serializers.ModelSerializer):
+    status_full = serializers.CharField(source='get_status_display')
+    specification_list = ListsProductSpecificationSerializer(source='specification',read_only=True)
+    # specification_list = ListProductSpecificationSerializer(source='specification',read_only=True)
+    class Meta:
+       model = Order
+       fields = ('name','client','date_order','specification','cart','requisites','account_requisites','status', 'status_full',"specification_list","bill_sum","bill_sum_paid","bill_file","act_file")
+       read_only_fields = ('status_full',)                        
 
         
    

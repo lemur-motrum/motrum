@@ -709,8 +709,11 @@ def iek_api():
                 "GET", url, auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
             )
             data = response.json()
+       
             if data:
-                if data["shopItems"] !=[]:
+ 
+                if data["shopItems"] !=[] :
+                
                     for data_item in data["shopItems"]:
                         if data_item["zakaz"] == 1:
                             to_order = True
@@ -725,7 +728,10 @@ def iek_api():
                 else:
                     stock = 0
                     to_order = False
+                 
                     return (stock,to_order)
+            else:
+                pass
             
         except Exception as e: 
                 print(e)
@@ -736,43 +742,43 @@ def iek_api():
                 e = error_alert(error, location, info)
     
     # планы прихода 
-    def get_iek_stock_one_plannig(prod):
-        try:
+    # def get_iek_stock_one_plannig(prod):
+    #     try:
 
-            url_params = f"sku={prod.article_supplier}"
+    #         url_params = f"sku={prod.article_supplier}"
 
-            url_service = "/planresidues/json/"
+    #         url_service = "/planresidues/json/"
 
-            url = "{0}{1}?{2}".format(base_url, url_service, url_params)
-            response = requests.request(
-                "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
-            )
-            data = response.json()
+    #         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
+    #         response = requests.request(
+    #             "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
+    #         )
+    #         data = response.json()
            
-            if data["shopItems"] !=[]:
-                for data_item in data["shopItems"]:
-                    if data_item["zakaz"] == 1:
-                        to_order = True
-                    else:
-                        to_order = False
+    #         if data["shopItems"] !=[]:
+    #             for data_item in data["shopItems"]:
+    #                 if data_item["zakaz"] == 1:
+    #                     to_order = True
+    #                 else:
+    #                     to_order = False
                             
-                    stock = 0
-                    product = data_item["sku"]
-                    for a in data_item["residues"].values():
-                        stock += a
-                return (stock,to_order)    
-            else:
-                stock = 0
-                to_order = False
-                return (stock,to_order)
+    #                 stock = 0
+    #                 product = data_item["sku"]
+    #                 for a in data_item["residues"].values():
+    #                     stock += a
+    #             return (stock,to_order)    
+    #         else:
+    #             stock = 0
+    #             to_order = False
+    #             return (stock,to_order)
             
-        except Exception as e: 
-                print(e)
-                error = "file_api_error"
-                location = "Загрузка фаилов IEK"
+    #     except Exception as e: 
+    #             print(e)
+    #             error = "file_api_error"
+    #             location = "Загрузка фаилов IEK"
           
-                info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
-                e = error_alert(error, location, info)
+    #             info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
+    #             e = error_alert(error, location, info)
          
         
    
@@ -833,7 +839,7 @@ def iek_api():
      
     # категории 
     get_iek_category("ddp", None)
- 
+    # get_iek_product("products", f"art=CLM30-100-300-3-048-HDZ")
     # запись продуктов и пропсовдля каждого по категориям 
     for item_iek_save_categ in iek_save_categ:
         get_iek_product("products", f"groupId={item_iek_save_categ}")
@@ -884,8 +890,11 @@ def get_iek_stock():
                 else:
                     stock = 0
                     to_order = False
+                    print(1111)
                 
+              
                 try:
+                    print(1111)
                     
                     stock_prod = Stock.objects.get(prod=product_item)
                 

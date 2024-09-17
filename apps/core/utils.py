@@ -11,8 +11,9 @@ import traceback
 
 # from apps import supplier
 from apps import supplier
-from apps.core.models import CurrencyPercent
+from apps.core.models import Currency, CurrencyPercent
 from apps.logs.utils import error_alert
+
 
 
 
@@ -660,6 +661,7 @@ def save_specification(received_data):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
+    from apps.product.models import ProductCart
     
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
@@ -668,7 +670,7 @@ def save_specification(received_data):
     is_pre_sale = received_data["is_pre_sale"]
     products = received_data["products"]
     id_cart = received_data["id_cart"] 
-    print(received_data)
+    
    
 
     try:
@@ -681,7 +683,7 @@ def save_specification(received_data):
             item_id = product_item_for_old.id
             having_items = False
             for products_new in products:
-                if products_new['product_specif_id'] != "None":
+                if products_new['product_specif_id'] != "None" and products_new['product_specif_id'] != None :
                    
                     if int(products_new['product_specif_id']) == item_id:
                         having_items = True
@@ -707,7 +709,7 @@ def save_specification(received_data):
 
     except Specification.DoesNotExist:
         specification = Specification(
-            id_bitrix=id_bitrix, admin_creator_id=admin_creator_id,cart=id_cart
+            id_bitrix=id_bitrix, admin_creator_id=admin_creator_id,cart_id=id_cart
         )
         
         specification._change_reason = "Ручное"
@@ -716,112 +718,158 @@ def save_specification(received_data):
     # сохранение продуктов для спецификации
     # перебор продуктов и сохранение
     total_amount = 0
+    date_ship = datetime.date.today().isoformat()
+    
     currency_product = False
     for product_item in products:
-      
-        product = Product.objects.get(id=product_item["product_id"])
-        price = Price.objects.get(prod=product)
-        price_pre_sale = get_presale_discount(product)
-        
-        # если цена по запросу взять ее если нет взять цену из бд
-        if product_item["price_exclusive"] == True:
+        if product_item["price_exclusive"] == "0":
+            price_exclusive = False
+        else:
+            price_exclusive = True
             
-            price_one_before = product_item["price_one"]
+        if product_item["product_id"]  != 0:
+            product = Product.objects.get(id=product_item["product_id"])
+            price = Price.objects.get(prod=product)
+            price_pre_sale = get_presale_discount(product)
+            
+            # если цена по запросу взять ее если нет взять цену из бд
+            print(product_item["price_exclusive"])
+            print(type(product_item["price_exclusive"]))
+            
+            if product_item["price_exclusive"] != "0" and product_item["price_exclusive"] != "" and product_item["price_exclusive"] != 0:
+                
+                price_one_before = product_item["price_one"]
+                price_one = product_item["price_one"]
+            
+                # оригинальная цена без примененой скидки
+                if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
+                    price_one =  price_one_before / (1 - float(product_item["extra_discount"]) /
+                    100)
+                    price_one = round(price_one, 2)
+
+                price_motrum_all = get_price_motrum(
+                    price.prod.category_supplier,
+                    price.prod.group_supplier,
+                    price.prod.vendor,
+                    # price.rub_price_supplier,
+                    price_one,
+                    price.prod.category_supplier_all,
+                    price.prod.supplier,
+                )
+                price_one_motrum = price_motrum_all[0]
+                sale = price_motrum_all[1]
+                
+
+            else:
+                price_one = price.rub_price_supplier
+                price_one_motrum = price.price_motrum 
+                print(price_one)
+                
+            # если есть доп скидка отнять от цены поставщика
+        
+            if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '' and product_item["extra_discount"] != 0:
+            
+                persent_sale = float(product_item["extra_discount"])
+                price_one_sale = price_one - (
+                    price_one / 100 * persent_sale)
+                
+            
+                price_one = round(price_one_sale, 2)
+           
+               
+
+            # если есть предоплата найти скидку по предоплате мотрум
+            # print(price_one)
+            
+            if  is_pre_sale != "False" and is_pre_sale != False:
+                persent_pre_sale = price_pre_sale.percent
+                price_one_motrum = price_one_motrum - (price_one_motrum / 100 * float(persent_pre_sale))
+                price_one_motrum = round(price_one_motrum, 2)
+            
+            price_all = float(price_one) * int(product_item["quantity"])
+            price_all = round(price_all, 2)
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            price_all_motrum = round(price_all_motrum, 2)
+            
+            if product_item["product_specif_id"] != "None" and product_item["product_specif_id"] != None:
+                product_spes = ProductSpecification.objects.get(
+                    id=product_item["product_specif_id"],
+                )
+                
+            else:  
+                product_spes = ProductSpecification(
+                    specification=specification,
+                    product=product,
+                )
+            product_spes.price_exclusive = product_item["price_exclusive"]       
+            product_spes.product_currency = price.currency   
+            product_spes.quantity = product_item["quantity"]
+            product_spes.price_all = price_all
+            
+            product_spes.price_one = price_one
+            if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '' and product_item["extra_discount"] != 0:
+                product_spes.extra_discount = product_item["extra_discount"]
+            else:
+                product_spes.extra_discount = None
+            product_spes.price_one_motrum = price_one_motrum
+            product_spes.price_all_motrum = price_all_motrum
+            product_spes._change_reason = "Ручное"
+            
+            date_delivery = product_item["date_delivery"]
+            
+            if  date_delivery != "":
+                product_spes.date_delivery = datetime.datetime.strptime(date_delivery , '%Y-%m-%d')
+                product_spes.date_delivery = date_delivery
+                
+            product_spes.save()    
+            total_amount = total_amount + price_all
+        else:
+
             price_one = product_item["price_one"]
-        
-            # оригинальная цена без примененой скидки
-            if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
-                price_one =  price_one_before / (1 - float(product_item["extra_discount"]) /
-                100)
-                price_one = round(price_one, 2)
-
-            price_motrum_all = get_price_motrum(
-                price.prod.category_supplier,
-                price.prod.group_supplier,
-                price.prod.vendor,
-                # price.rub_price_supplier,
-                price_one,
-                price.prod.category_supplier_all,
-                price.prod.supplier,
-            )
-            price_one_motrum = price_motrum_all[0]
-            sale = price_motrum_all[1]
+            price_all = float(price_one) * int(product_item["quantity"])
+            price_all = round(price_all, 2)
+            currency = Currency.objects.get(words_code="RUB")
             
+            if product_item["product_specif_id"] != "None" and product_item["product_specif_id"] != None:
+                product_spes = ProductSpecification.objects.get(
+                    id=product_item["product_specif_id"],
+                )
+                
+            else:  
+                product_spes = ProductSpecification(
+                    specification=specification,
+                    product=None,
+                )
 
-        else:
-            price_one = price.rub_price_supplier
-            price_one_motrum = price.price_motrum 
+            product_spes.price_exclusive = product_item["price_exclusive"]       
+            product_spes.product_currency = currency   
+            product_spes.quantity = product_item["quantity"]
+            product_spes.price_all = price_all
+            product_spes.price_one = price_one
+            product_spes.extra_discount = None
+            product_spes.price_one_motrum = None
+            product_spes.price_all_motrum = None
+            product_spes.product_new = product_item["product_name_new"]
+            product_spes._change_reason = "Ручное"
             
-        # если есть доп скидка отнять от цены поставщика
+            date_delivery = product_item["date_delivery"]
+            if  date_delivery != "":
+                product_spes.date_delivery = datetime.datetime.strptime(date_delivery , '%Y-%m-%d')
+                product_spes.date_delivery = date_delivery
+            product_spes.save() 
+            
+            total_amount = total_amount + price_all  
     
-        if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
-            price_one = price_one - (
-                price_one / 100 * float(product_item["extra_discount"])
-            )
-            price_one = round(price_one, 2)
-
-        # если есть предоплата найти скидку по предоплате мотрум
-        if is_pre_sale == True and price_pre_sale != False :
-            persent_pre_sale = price_pre_sale.percent
-            price_one_motrum = price_one_motrum - (price_one_motrum / 100 * float(persent_pre_sale))
-            price_one_motrum = round(price_one_motrum, 2)
-        
-        price_all = float(price_one) * int(product_item["quantity"])
-        price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-        
-        if product_item["product_specif_id"] != "None":
-            product_spes = ProductSpecification.objects.get(
-                id=product_item["product_specif_id"],
-            )
+    
             
-        else:  
-            product_spes = ProductSpecification(
-                specification=specification,
-                product=product,
-                # product_currency=price.currency,
-                # price_exclusive=product_item["price_exclusive"],
-            )
-        product_spes.price_exclusive = product_item["price_exclusive"]       
-        product_spes.product_currency = price.currency   
-        product_spes.quantity = product_item["quantity"]
-        product_spes.price_all = price_all
-        product_spes.price_one = price_one
-        if product_item["extra_discount"] != '0' and product_item["extra_discount"] != '':
-            product_spes.extra_discount = product_item["extra_discount"]
-        else:
-             product_spes.extra_discount = None
-        product_spes.price_one_motrum = price_one_motrum
-        product_spes.price_all_motrum = price_all_motrum
-        product_spes._change_reason = "Ручное"
-        product_spes.save()    
-        
-        # try:
-        #     product_spes = ProductSpecification.objects.get(
-        #         id=product_item["product_specif_id"],
-        #     )
-        # except ProductSpecification.DoesNotExist:
-        #     product_spes = ProductSpecification(
-        #         specification=specification,
-        #         product=product,
-        #         product_currency=price.currency,
-        #         price_exclusive=product_item["price_exclusive"],
-        #     )
-        # finally:
-        #     product_spes.quantity = product_item["quantity"]
-        #     product_spes.price_all = price_all
-        #     product_spes.price_one = price_one
-        #     product_spes.extra_discount = product_item["extra_discount"]
-        #     product_spes.price_one_motrum = price_one_motrum
-        #     product_spes.price_all_motrum = price_all_motrum
-        #     product_spes.save()
-
-        total_amount = total_amount + price_all
-
     # обновить спецификацию пдф
+    total_amount = round(total_amount, 2)
     specification.total_amount = total_amount
     specification._change_reason = "Ручное"             
     specification.save()
-    pdf = crete_pdf_specification(specification.id)
+    requisites = None
+    account_requisites = None
+    pdf = crete_pdf_specification(specification.id,requisites,account_requisites)
     specification.file = pdf        
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)
@@ -838,3 +886,42 @@ def get_presale_discount(product):
         return discount
     except  Discount.DoesNotExist:
         return False
+    
+def transform_date(date):
+    print(date)
+    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+           'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+    year,month,day, = date.split('-')
+    return f'{day} {months[int(month) - 1]} {year} г.'    
+
+def rub_words(n):
+    
+    n = str(n)
+
+    if n[-2:] in ('11', '12', '13', '14'):
+        return f'рублей'
+        # print(n, 'копеек')
+    elif n[-1] == '1':
+        return f'рубль'
+    elif n[-1] in ('2', '3', '4'):
+        return f'рубля'
+        # print(n, 'копейки')
+    else:
+        return f'рублей'
+        # print(n, 'копеек')
+        
+def pens_words(n):
+    
+
+    if n[-2:] in ('11', '12', '13', '14'):
+        return f'копеек'
+        print(n, 'копеек')
+    elif n[-1] == '1':
+        return f'копейка'
+        print(n, 'копейка')
+    elif n[-1] in ('2', '3', '4'):
+        return f'копейки'
+        print(n, 'копейки')
+    else:
+        return f'копеек'
+        print(n, 'копеек')     

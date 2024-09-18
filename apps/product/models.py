@@ -189,15 +189,14 @@ class Product(models.Model):
             )
     
     def get_url_document(self):
-        category = self.category
+        category = self.category.slug
         product = int(self.article)
         if self.group is not None:
-            groupe = self.group
+            groupe = "none_group"
         else:
-            groupe =  self.group
+            groupe =  self.group.slug
             
-        url = "{0}/{1}/{2}/{3}/{4}".format(
-        BASE_DIR,
+        url = "{0}/{1}/{2}/{3}".format(
         "product",
         category,
         groupe,

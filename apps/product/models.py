@@ -192,9 +192,10 @@ class Product(models.Model):
         category = self.category.slug
         product = int(self.article)
         if self.group is not None:
-            groupe = "none_group"
-        else:
+            
             groupe =  self.group.slug
+        else:
+            groupe = "none_group"
             
         url = "{0}/{1}/{2}/{3}".format(
         "product",
@@ -208,8 +209,7 @@ class Product(models.Model):
         
         product = int(self.article,)
         
-        url = "{0}/{1}/{2}".format(
-        BASE_DIR,
+        url = "{0}/{1}".format(
         "product",
         product,
     )

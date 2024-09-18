@@ -190,7 +190,7 @@ class Product(models.Model):
     
     def get_url_document(self):
         category = self.category.slug
-        product = int(self.article)
+        product = str(self.article)
         if self.group is not None:
             
             groupe =  self.group.slug
@@ -207,7 +207,7 @@ class Product(models.Model):
     
     def get_url_document_test(self):
         
-        product = int(self.article,)
+        product = int(self.article)
         
         url = "{0}/{1}".format(
         "product",

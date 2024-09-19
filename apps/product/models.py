@@ -189,15 +189,15 @@ class Product(models.Model):
             )
     
     def get_url_document(self):
-        category = self.category
-        product = int(self.article)
+        category = self.category.slug
+        product = str(self.article)
         if self.group is not None:
-            groupe = self.group
-        else:
-            groupe =  self.group
             
-        url = "{0}/{1}/{2}/{3}/{4}".format(
-        BASE_DIR,
+            groupe =  self.group.slug
+        else:
+            groupe = "none_group"
+            
+        url = "{0}/{1}/{2}/{3}".format(
         "product",
         category,
         groupe,
@@ -207,10 +207,9 @@ class Product(models.Model):
     
     def get_url_document_test(self):
         
-        product = int(self.article,)
+        product = int(self.article)
         
-        url = "{0}/{1}/{2}".format(
-        BASE_DIR,
+        url = "{0}/{1}".format(
         "product",
         product,
     )
@@ -698,7 +697,7 @@ class ProductProperty(models.Model):
 class Cart(models.Model):
     from apps.client.models import Client
 
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
     is_active = models.BooleanField("корзина сохранена", default=False)

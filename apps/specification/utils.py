@@ -23,7 +23,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 
 
-from project.settings import MEDIA_ROOT, MEDIA_URL
+from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL
 
 
 # Custom Canvas class for automatically adding page-numbers
@@ -177,11 +177,14 @@ def crete_pdf_specification(specification, requisites, account_requisites,reques
         if date_delivery and date_delivery > date_ship:
             date_ship = date_delivery
         if product.product:
-            link = product.product.get_url_document()
-            link = request.build_absolute_uri(link)
             
-            
-            address = f'<a href="{link}"</link>'
+            if IS_TESTING:
+                link = product.product.get_url_document_test()
+            else:
+                link = product.product.get_url_document()
+                
+            url_absolute = request.build_absolute_uri('/').strip("/")
+            link = f'{url_absolute}/{link}'
             product_name_str = str(product.product.name)
             product_name = Paragraph(f'<a href="{link}">{product_name_str}</a><br></br><a href="{link}">ссылка</a>', bold_style_center),
 

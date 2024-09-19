@@ -1,7 +1,7 @@
 import datetime
 from pyexpat import model
 from django.db import models
-
+from django.db.models import Case, Value, When
 # Create your models here.
 
 
@@ -163,6 +163,13 @@ class AccountRequisites(models.Model):
 
 #     def __str__(self):
 #         return self.name
+# PROCESSING = 1
+# PAYMENT = 2
+# IN_MOTRUM = 3
+# SHIPMENT_AUTO = 4
+# SHIPMENT_PICKUP = 5
+# CANCELED = 6
+# COMPLETED = 7
 
 STATUS_ORDER = (
     ("PROCESSING", "В обработке"),
@@ -172,6 +179,15 @@ STATUS_ORDER = (
     ("SHIPMENT_PICKUP", "Готов к отгрузке самовывозом"),
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
+)
+STATUS_ORDER_INT = (
+    (1, "PROCESSING"),
+    (2, "PAYMENT"),
+    (3, "IN_MOTRUM"),
+    (4, "SHIPMENT_AUTO"),
+    (5, "SHIPMENT_PICKUP"),
+    (6, "CANCELED"),
+    (7, "COMPLETED"),
 )
 
 
@@ -262,6 +278,29 @@ class Order(models.Model):
                 if choice[0] == self.status:
                     return choice[1]
             return ''
+        
+        
+    @classmethod
+    def sort_by_status(cls, queryset=None):
+        """
+        Takes a queryset, returns an ordered list; ordered by role.
+        """
+        if queryset == None:
+            queryset = cls.objects.all()
+
+        # represent roles as numbers in a new column, starting at 0
+        whens = [
+            When(status=Value(value), then=i)
+            for i, (value, label) in enumerate(User.Roles.choices)
+        ]
+
+        # adds the new column, _order, to queryset and orders by new column
+        queryset = (
+            queryset.annotate(_order=Case(*whens, output_field=models.IntegerField()))
+            .order_by('_order')
+        )
+
+        return queryset    
                 
         
 # class Document(models.Model):

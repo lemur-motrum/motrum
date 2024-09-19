@@ -697,7 +697,7 @@ class ProductProperty(models.Model):
 class Cart(models.Model):
     from apps.client.models import Client
 
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
     is_active = models.BooleanField("корзина сохранена", default=False)

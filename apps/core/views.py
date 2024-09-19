@@ -53,50 +53,51 @@ def web(request):
 # вьюяха странцы корзина
 def cart(request):
     cart = request.COOKIES.get("cart")
-    cart_qs = Cart.objects.get(id=cart)
+    if cart:
+        cart_qs = Cart.objects.get(id=cart)
+        
 
-    discount_client = 0
-    if cart_qs.client:
-        discount_client = Client.objects.filter(id=cart_qs.client.id)
+        discount_client = 0
+        if cart_qs.client:
+            discount_client = Client.objects.filter(id=cart_qs.client.id)
 
-    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
-    product_cart = ProductCart.objects.filter(cart=cart)
+        product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
+        product_cart = ProductCart.objects.filter(cart=cart)
 
-    prefetch_queryset_property = ProductProperty.objects.filter(
-        product__in=product_cart_list
-    )
-    
-    product = (
-        Product.objects.filter(id__in=product_cart_list)
-        .select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
-            "stock__lot",
+        prefetch_queryset_property = ProductProperty.objects.filter(
+            product__in=product_cart_list
         )
-        .prefetch_related(
-            Prefetch(
-                "productproperty_set",
-                queryset=prefetch_queryset_property,
+        
+        product = (
+            Product.objects.filter(id__in=product_cart_list)
+            .select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+                "stock__lot",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "productproperty_set",
+                    queryset=prefetch_queryset_property,
+                )
+            )
+            .annotate(
+                quantity=product_cart.filter(product=OuterRef("pk")).values(
+                    "quantity",
+                ),
+                id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                    "id",
+                ),
             )
         )
-        .annotate(
-            quantity=product_cart.filter(product=OuterRef("pk")).values(
-                "quantity",
-            ),
-            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
-                "id",
-            ),
-        )
-    )
-    print(product)
-    for products in product:
-        print(type(products.productproperty_set))
-        print(products.productproperty_set)
-        
+    
+    else:
+        product = None 
+        cart = None     
     context = {
         "product": product,
         "cart": cart,

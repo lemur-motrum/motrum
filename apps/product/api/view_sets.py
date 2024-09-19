@@ -76,7 +76,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 nulls_last=True,
             )
 
-        print(q_object)
+        
         queryset = (
             Product.objects.select_related(
                 "supplier",
@@ -245,6 +245,8 @@ class CartViewSet(viewsets.ModelViewSet):
             else:
                 try:
                     cart = Cart.objects.get(client=request.user, is_active=False)
+                    print(11111)
+                    print(cart)
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
@@ -252,12 +254,17 @@ class CartViewSet(viewsets.ModelViewSet):
                     return response
 
                 except Cart.DoesNotExist:
+                    print(222222)
+                    
                     data = {
-                        "session_key": None,
+                        "session_key": session,
                         "save_cart": False,
                         "client": request.user,
                     }
+                    print(data)
+                    
                     serializer = self.serializer_class(data=data, many=False)
+                    
                     if serializer.is_valid():
                         serializer.save()
                         response = Response()
@@ -266,9 +273,10 @@ class CartViewSet(viewsets.ModelViewSet):
                         # response.set_cookie(
                         #     "sessionid", serializer.data["session_key"], max_age=2629800
                         # )
-                        # response.set_cookie(
-                        #     "cart", serializer.data["id"], max_age=2629800
-                        # )
+                        response.set_cookie(
+                            "cart", serializer.data["id"], max_age=2629800
+                        )
+                        
                         return response
                     else:
                         return Response(

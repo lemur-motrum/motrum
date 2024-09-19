@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.core.cache import cache
 from django.contrib.auth import authenticate, login
 from django.db.models import Q, F, OrderBy
+from django.db.models import Case, When, Value, IntegerField
 
 from apps.client.api.serializers import (
     AccountRequisitesSerializer,
@@ -21,6 +22,7 @@ from apps.client.api.serializers import (
 from django.contrib.sessions.models import Session
 from apps.client.models import (
     STATUS_ORDER,
+    STATUS_ORDER_INT,
     AccountRequisites,
     Client,
     Order,
@@ -299,7 +301,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 specification.save()
 
                 pdf = crete_pdf_specification(
-                    specification.id, requisites, account_requisites,request
+                    specification.id, requisites, account_requisites, request
                 )
                 specification.file = pdf
                 specification.skip_history_when_saving = True
@@ -332,14 +334,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=data_order, many=False)
         if serializer.is_valid():
             order = serializer.save()
-            
-            
-        #   ??
+
+            #   ??
             order.create_bill()
-            
-            
-            
-            
+
             cart.is_active = True
             cart.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -356,7 +354,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # client = cart.client
         client = None
-        specification = save_specification(data,request)
+        specification = save_specification(data, request)
 
         data_order = {
             "client": client,
@@ -382,6 +380,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # создание счета к заказу
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         print(pk)
@@ -408,60 +407,114 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(cart, status=status.HTTP_200_OK)
 
+    # страница заказов аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
         count = int(request.query_params.get("count"))
         serializer_class = LkOrderSerializer
         current_user = request.user.id
         client = Client.objects.get(pk=current_user)
-        
-        if request.query_params.get("sortDate"):
-            date_get = request.query_params.get("sortDate")
-        else:
-            date_get = "ASC"
-            # date_get = None
-            
-        if request.query_params.get("sortSum"):
-            sum_get = request.query_params.get("sortSum")
-        else:
-            sum_get = "ASC"  
-            # sum_get = None   
-            
-        if request.query_params.get("sortStatus"):
-            status_get = request.query_params.get("sortStatus")
-        else:
-            status_get = "ASC"   
-            # status_get = None   
+        if request.query_params.get("sort"):
+            sorting = "bill_sum"
+            sorting = request.query_params.get("sort")
+        sorting = "-bill_sum"
+        # if request.query_params.get("sortDate"):
+        #     date_get = request.query_params.get("sortDate")
+        # else:
+        #     date_get = "ASC"
+        #     # date_get = None
+
+        # if request.query_params.get("sortSum"):
+        #     sum_get = request.query_params.get("sortSum")
+        # else:
+        #     # sum_get = "ASC"
+        #     sum_get = None
+
+        # if request.query_params.get("sortStatus"):
+        #     status_get = request.query_params.get("sortStatus")
+        # else:
+        #     status_get = "ASC"
+            # status_get = None
+
+
+
+        # if date_get:
+        #     sort = "date_order"
+        #     if date_get == "ASC":
+        #         ordering_filter_date = F(sort).asc(nulls_last=True)
+        #     else:
+        #         ordering_filter_date = F(sort).desc(nulls_last=True)
                 
-        q_object = Q()
-        if date_get:
-            sort = "bill_sum"
-            ordering_filter = OrderBy(
-                F(sort.lstrip("-")),
-                descending=date_get.startswith("-"),
-                nulls_last=True,
-            )
-        else:
-            sort = "bill_sum"
-            ordering_filter = OrderBy(
-                F(sort.lstrip("-")),
-                descending="-".startswith("-"),
-                nulls_last=True,
-            )
+        # else:  
+        #     ordering_filter_date = None      
+
+
+        # if sum_get:
+        #     sort = "bill_sum"
+        #     if sum_get == "ASC":
+        #         ordering_filter_summ = F(sort).asc(nulls_last=True)
+        #         print(ordering_filter_summ)
+        #     else:
+        #         ordering_filter_summ = F(sort).desc(nulls_last=True)
+        # else:  
+        #     ordering_filter_summ = None  
+                
         
-        orders = Order.objects.select_related(
-            "specification",
-            "cart",
-            "requisites",
-            "account_requisites",
-        ).filter(client=client)[count : count + 6]
-        print(orders)
+        # if status_get:
+        #     sort = "status"
+        #     if status_get == "ASC":
+
+        #         custom_order = Case(
+        #             When(status="PROCESSING", then=Value(1)),
+        #             When(status="PAYMENT", then=Value(2)),
+        #             When(status="IN_MOTRUM", then=Value(3)),
+        #             When(status="SHIPMENT_AUTO", then=Value(4)),
+        #             When(status="SHIPMENT_PICKUP", then=Value(5)),
+        #             When(status="CANCELED", then=Value(6)),
+        #             When(status="COMPLETED", then=Value(7)),
+        #             output_field=IntegerField(),
+        #         )
+
+        #     else:
+        #         custom_order = Case(
+        #             When(status="PROCESSING", then=Value(7)),
+        #             When(status="PAYMENT", then=Value(6)),
+        #             When(status="IN_MOTRUM", then=Value(5)),
+        #             When(status="SHIPMENT_AUTO", then=Value(4)),
+        #             When(status="SHIPMENT_PICKUP", then=Value(3)),
+        #             When(status="CANCELED", then=Value(2)),
+        #             When(status="COMPLETED", then=Value(1)),
+        #             output_field=IntegerField(),
+        #         )
+        # else:  
+        #     custom_order = None          
+            
+
+        # ordering = {
+        # 'ordering_filter_date': ordering_filter_date,
+        # 'ordering_filter_summ': ordering_filter_summ,
+        # 'custom_order': custom_order,
+        # }
+        # ordering = {k:v for k,v in ordering.items() if v is not None}    
+        # ordering = list(ordering.values())
+
+       
+
+        orders = (
+            Order.objects.select_related(
+                "specification",
+                "cart",
+                "requisites",
+                "account_requisites",
+            )
+            .filter(client=client)
+            .order_by(sorting)[count : count + 10]
+        )
+     
 
         serializer = serializer_class(orders, many=True)
-        
 
         data_response = {
-            "data": serializer.data, 
-            
-            }
+            "data": serializer.data,
+        }
         return Response(data=data_response, status=status.HTTP_200_OK)

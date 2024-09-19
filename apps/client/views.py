@@ -30,6 +30,7 @@ def my_orders(request):
                 "requisites",
                 "account_requisites",
             )
+    print(orders)
      
     
     context = {

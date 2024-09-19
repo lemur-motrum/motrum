@@ -17,6 +17,12 @@ def js_templates():
             'name': 'order-item',
             'template': 'client/includes/ajax_order_item.html',
         }
+        ,
+        {
+            'module': 'lk',
+            'name': 'document-item',
+            'template': 'client/includes/ajax_document_item.html',
+        }
     ]
 
     for template_item in template_list:

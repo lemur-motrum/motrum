@@ -465,3 +465,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             
             }
         return Response(data=data_response, status=status.HTTP_200_OK)
+
+
+    @action(detail=False, url_path="load-ajax-document-list")
+    def load_ajax_document_list(self, request):
+        count = int(request.query_params.get("count"))
+        serializer_class = LkOrderSerializer
+        

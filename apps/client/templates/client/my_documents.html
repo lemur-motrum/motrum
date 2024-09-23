@@ -7,7 +7,9 @@
         {% comment %} <div class="loader">loading</div> {% endcomment %}
         <div class="site_document_container" document-elem="container">
             {% for document in document_list %}
+            
                 {% include "document/includes/document_item.html" with document=document %}
+            
             {% endfor %}
         </div>
        

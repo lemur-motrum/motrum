@@ -1,6 +1,14 @@
-<div class="order_item"
+<div  class="order_item"
     order-id="{{ id }}"
-    order-elem="order-item">
+    order-elem="order-item"
+    style="border-style: solid;{% if notification_set|length %}
+    border-color: red
+    {% endif %} "
+   
+    
+    >
+    
+  
     <div class="">дата -{{date_order}}</div>
     <div class="">номер -{{ name }}</div>
     <div class="">состав заказа -

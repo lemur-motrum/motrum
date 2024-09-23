@@ -51,7 +51,15 @@ class ListsProductSpecificationSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "file",
+            "date",
+            "date_stop",
+            "total_amount",
             "productspecification_set",
             
-        )               
+        )
+    def to_representation(self, instance):
+        representation = super(ListsProductSpecificationSerializer, self).to_representation(instance)
+        representation['date'] = instance.date.strftime('%d.%m.%Y')
+        representation['date_stop'] = instance.date_stop.strftime('%d.%m.%Y')
+        return representation                       
        

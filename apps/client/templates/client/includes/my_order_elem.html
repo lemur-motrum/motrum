@@ -1,0 +1,12 @@
+{% url 'client:my_orders' as my_orders_url %}
+{% if request.get_full_path == my_orders_url or type_url == "/my_orders" %}
+    <span class="nav-elem active">мои заказы</span>
+    <span class="global_cart_count">
+        {% if count %}{{ count }}{% endif %}
+    </span>
+{% else %}
+    <a href={% url "client:my_orders" %} class="nav-elem">мои заказы</a>
+    <span class="global_cart_count">
+        {% if count %}{{ count }}{% endif %}
+    </span>
+{% endif %}

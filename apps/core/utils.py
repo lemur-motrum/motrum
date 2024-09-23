@@ -713,7 +713,7 @@ def save_specification(received_data,request):
 
     # сохранение продуктов для спецификации
     # перебор продуктов и сохранение
-    total_amount = 0
+    total_amount = 0.00
     date_ship = datetime.date.today().isoformat()
     
     currency_product = False

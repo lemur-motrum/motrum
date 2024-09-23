@@ -291,7 +291,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         obj.admin_creator = request.user
         if change:
             obj.tag_stop = True
-            obj.total_amount = 0
+            obj.total_amount = 0.00
             date = timezone.now()
             date_stop = create_time_stop_specification()
 

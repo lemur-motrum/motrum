@@ -262,6 +262,7 @@ class Order(models.Model):
     def create_bill(self):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
+        from apps.notifications.models import Notification
         
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
@@ -270,7 +271,10 @@ class Order(models.Model):
         self.bill_file = pdf
         
         self.bill_sum = self.specification.total_amount
-        self.status = "PAYMENT"        
+        self.status = "PAYMENT" 
+        
+        Notification.add_notification(self.id, "DOCUMENT_BILL")  
+             
         self.save()
         
     def get_status_name(self):
@@ -280,44 +284,24 @@ class Order(models.Model):
             return ''
         
         
-    @classmethod
-    def sort_by_status(cls, queryset=None):
-        """
-        Takes a queryset, returns an ordered list; ordered by role.
-        """
-        if queryset == None:
-            queryset = cls.objects.all()
-
-        # represent roles as numbers in a new column, starting at 0
-        whens = [
-            When(status=Value(value), then=i)
-            for i, (value, label) in enumerate(User.Roles.choices)
-        ]
-
-        # adds the new column, _order, to queryset and orders by new column
-        queryset = (
-            queryset.annotate(_order=Case(*whens, output_field=models.IntegerField()))
-            .order_by('_order')
-        )
-
-        return queryset    
+   
                 
         
-# class Document(models.Model):
-#     client = models.ForeignKey(
-#         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
-#         null=True,
-#     )
-#     order = models.ForeignKey(
-#         Order,
-#         verbose_name="Заказ",
-#         on_delete=models.PROTECT,
-#         blank=True,
-#         null=True,
-#     )
-#     date = models.DateField(
-#         default=datetime.date.today, verbose_name="Дата добавления"
-#     )
+class Document(models.Model):
+    client = models.ForeignKey(
+        Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
+        null=True,
+    )
+    order = models.ForeignKey(
+        Order,
+        verbose_name="Заказ",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        default=datetime.date.today, verbose_name="Дата добавления"
+    )
      
     
 # class Cart(models.Model):

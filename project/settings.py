@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "apps.admin_specification.apps.AdminSpecificationConfig",
     "apps.projects_web.apps.ProjectWebConfig",
     "apps.vacancy_web.apps.VacancyWebConfig",
+    "apps.notifications.apps.NotificationsConfig",
     "dal",
     "dal_select2",
     "project.apps.WebsiteAdminConfig",

@@ -252,8 +252,7 @@ def iek_api():
     payload = {}
     encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
     decoded = encoded.decode()
-    print(encoded)
-    print(decoded)
+    
 
     headers = {
         # 'Authorization': f"Basic {decoded}",
@@ -360,9 +359,9 @@ def iek_api():
         response = requests.request(
             "GET", url, auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
         )
-        print(headers)
+        
         responset = response_request(response.status_code, "IEK получение товаров")
-        print(response)
+       
         data = response.json()
         if data == []:
             pass
@@ -631,7 +630,7 @@ def iek_api():
                         # остатки
                         stock_supplier = get_iek_stock_one(article)
                 
-                        print(stock_supplier[0])
+                       
                         
                         try:
                             stock_prod = Stock.objects.get(prod=article)
@@ -839,9 +838,11 @@ def iek_api():
                 finally:    
                     continue 
      
+
+    # get_iek_product("products", f"art=CLM30-100-300-3-048-HDZ")
+    
     # категории 
     get_iek_category("ddp", None)
-    # get_iek_product("products", f"art=CLM30-100-300-3-048-HDZ")
     # запись продуктов и пропсовдля каждого по категориям 
     for item_iek_save_categ in iek_save_categ:
         get_iek_product("products", f"groupId={item_iek_save_categ}")
@@ -866,7 +867,7 @@ def get_iek_stock():
         supplier = Supplier.objects.get(slug="iek")
         product = Product.objects.filter(supplier=supplier)
         for product_item in product:
-            print(product_item.article_supplier)    
+            
             url_params = f"sku={product_item.article_supplier}"
 
             url_service = "/residues/json/"
@@ -892,11 +893,11 @@ def get_iek_stock():
                 else:
                     stock = 0
                     to_order = False
-                    print(1111)
+                   
                 
               
                 try:
-                    print(1111)
+                   
                     
                     stock_prod = Stock.objects.get(prod=product_item)
                 

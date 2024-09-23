@@ -1,5 +1,7 @@
 {% load static %}
 {% load cart_link %}
+{% load order_link %}
+{% load lk_link %}
 <div class="header">
     <div class="logo-container">
         <img src={% static "core/images/logo.png" %} alt="logo" />
@@ -18,10 +20,12 @@
         </div>
         <div class="cart-elems">
             {% if request.user.username %}
-                <a href={% url 'client:my_orders' %} class="cart-elem">Заказы</a>
+                {% order_link %}
+                {% comment %} <a href={% url 'client:my_orders' %} class="cart-elem">Заказы</a> {% endcomment %}
                 {% comment %} <div class="cart-elem">Заказы</div> {% endcomment %}
                 {% cart_link %}
-                <a href={% url 'client:my_orders' %} class="cart-elem">Л.К.</a>
+                {% lk_link %}
+                {% comment %} <a href={% url 'client:my_orders' %} class="cart-elem">Л.К.</a> {% endcomment %}
             {% else %}
                 <div class="cart-elem enter-in-site">вход</div>
             {% endif %}

@@ -571,9 +571,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = serializer_class(orders, many=True)
         data = serializer.data
 
-        notifications = Notification.objects.filter(
-            client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
-        ).update(is_viewed=True)
+        # notifications = Notification.objects.filter(
+        #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+        # ).update(is_viewed=True)
 
         if sorting == "-id":
             data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)

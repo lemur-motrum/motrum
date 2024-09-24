@@ -237,7 +237,7 @@ class Order(models.Model):
     bill_file = models.FileField(
         "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
     )
-    bill_date_start = models.DateField(default=datetime.date.today,verbose_name="Дата создания счета", blank=True,
+    bill_date_start = models.DateField(verbose_name="Дата создания счета", blank=True,
         null=True,)
     bill_date_stop = models.DateField(verbose_name="Дата окончания счета", blank=True,
         null=True,) 
@@ -263,7 +263,7 @@ class Order(models.Model):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
-        
+        self.bill_date_start = datetime.date.today()
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
         print(self.id)

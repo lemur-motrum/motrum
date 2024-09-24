@@ -227,13 +227,6 @@ class Product(models.Model):
                 history_instance.delete()
 
 
-# @receiver(post_save, sender=Product)
-# def update_change_reason(sender, instance, **kwargs):
-#     print(instance)
-#     # if instance._change_reason == None:
-#     update_change_reason(instance, 'Автоматическое')
-
-
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
@@ -406,19 +399,23 @@ class Price(models.Model):
 
         request = RequestMiddleware(get_response=None)
         request = request.thread_local.current_request
-        print(request.user)
+     
 
         if request.user:
             if request.user.is_staff == False:
                 client = Client.objects.get(id=request.user.id)
                 discount = client.percent
+          
                 price = self.rub_price_supplier
+              
                 price_discount = price - (price / 100 * float(discount))
+              
                 return price_discount
             else:
                 return self.rub_price_supplier
         else:
             return self.rub_price_supplier
+   
     def get_sale_price_motrum(
         self
     ):

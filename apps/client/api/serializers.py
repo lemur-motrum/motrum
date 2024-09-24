@@ -103,8 +103,9 @@ class LkOrderSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         representation = super(LkOrderSerializer, self).to_representation(instance)
-        representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
-        representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')
+        if representation['bill_date_start']:
+            representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
+            representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')
         return representation    
     
 

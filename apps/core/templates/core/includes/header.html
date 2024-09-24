@@ -27,6 +27,7 @@
                 {% lk_link %}
                 {% comment %} <a href={% url 'client:my_orders' %} class="cart-elem">Л.К.</a> {% endcomment %}
             {% else %}
+                {% cart_link %}
                 <div class="cart-elem enter-in-site">вход</div>
             {% endif %}
         </div>

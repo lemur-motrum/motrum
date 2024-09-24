@@ -242,21 +242,32 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
-
         cart = Cart.objects.get(id=data["cart"])
-
         client = cart.client
+        extra_discount = client.percent
+        products_cart = ProductCart.objects.filter(cart_id=cart)
+        all_info_requisites = False
+        all_info_product = True
+        requisites_id = None
+        account_requisites_id = None
+        
+        if "requisites" in data:
+            all_info_requisites = True 
+            requisites = Requisites.objects.get(id=data["requisites"])
+            requisites_id = requisites.id
+            account_requisites = AccountRequisites.objects.get(
+                requisites=requisites, account_requisites=data["account_requisites"]
+            )
+            account_requisites_id = account_requisites.id
+            
+        for product_cart in products_cart:
+            if product_cart.product.price.rub_price_supplier == 0:
+                all_info_product = False
+       
 
         # сохранение спецификации для заказа с реквизитами
-        if "requisites" in data:
-            requisites = Requisites.objects.get(id=data["requisites"])
-            account_requisites = AccountRequisites.objects.get(
-                id=data["account_requisites"]
-            )
-            extra_discount = client.percent
-
+        if all_info_requisites and all_info_product:
             # сохранение спецификации
-            products_cart = ProductCart.objects.filter(cart_id=cart)
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
             data_specification = {
@@ -320,13 +331,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # сохранение заказа БЕЗ реквизит
+        # сохранение данные заказа БЕЗ реквизит и продукты под вопросом
         else:
             specification = None
             status_order = "PROCESSING"
-            requisites = None
-            account_requisites = None
+            
 
+        # сохранение ордера
         serializer_class = OrderSerializer
         data_order = {
             "client": client,
@@ -334,25 +345,28 @@ class OrderViewSet(viewsets.ModelViewSet):
             "specification": specification,
             "cart": cart.id,
             "status": status_order,
-            "requisites": requisites,
-            "account_requisites": account_requisites,
+            "requisites": requisites_id,
+            "account_requisites": account_requisites_id,
         }
         serializer = self.serializer_class(data=data_order, many=False)
         if serializer.is_valid():
             order = serializer.save()
-
-            Notification.add_notification(order.id, "STATUS_ORDERING")
-            Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
-
-            #   ??
-            order.create_bill()
+            if all_info_requisites and all_info_product:
+                Notification.add_notification(order.id, "STATUS_ORDERING")
+                Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
+                order.create_bill()
+            else: 
+                pass   
 
             cart.is_active = True
             cart.save()
+            
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        
+        
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
@@ -571,9 +585,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = serializer_class(orders, many=True)
         data = serializer.data
 
-        # notifications = Notification.objects.filter(
-        #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
-        # ).update(is_viewed=True)
+        notifications = Notification.objects.filter(
+            client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+        ).update(is_viewed=True)
 
         if sorting == "-id":
             data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)

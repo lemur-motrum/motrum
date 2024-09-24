@@ -361,308 +361,312 @@ def iek_api():
         )
         
         responset = response_request(response.status_code, "IEK получение товаров")
-       
-        data = response.json()
-        if data == []:
-            pass
-                    # error = "file_api_error"
-                    # location = "Загрузка фаилов IEK"
-                    # info = f"Пустая категория {url_params}"
-                    # e = error_alert(error, location, info)
-        else:
-            for data_item in data:
-                try:
-                
-                    # основная инфа
-                    # получение или добавление вендора
-                    if data_item["TM"] == None:
-                        break
-                    else:    
-                        vendor_add = Vendor.objects.get_or_create(
-                            supplier=supplier,
-                            name=data_item["TM"],
-                            defaults={
-                                "vat_catalog": None,
-                                "currency_catalog": currency,
-                            },
-                        )
+        if responset:
+            data = response.json()
+            if data == [] :
+                pass
+                        # error = "file_api_error"
+                        # location = "Загрузка фаилов IEK"
+                        # info = f"Пустая категория {url_params}"
+                        # e = error_alert(error, location, info)
+            else:
+                for data_item in data:
+                    try:
+                    
+                        # основная инфа
+                        # получение или добавление вендора
+                        if data_item["TM"] == None:
+                            break
+                        else:    
+                            vendor_add = Vendor.objects.get_or_create(
+                                supplier=supplier,
+                                name=data_item["TM"],
+                                defaults={
+                                    "vat_catalog": None,
+                                    "currency_catalog": currency,
+                                },
+                            )
 
-                        article_suppliers = data_item["art"]
-                        category = data_item["groupId"]
-                
-                        categ_names = SupplierCategoryProductAll.objects.filter(
-                            supplier=supplier, article_name=category
-                        )
+                            article_suppliers = data_item["art"]
+                            category = data_item["groupId"]
+                    
+                            categ_names = SupplierCategoryProductAll.objects.filter(
+                                supplier=supplier, article_name=category
+                            )
 
-                        item_category_all = get_category(
-                            supplier, vendor_add[0], categ_names[0].name
-                        )
+                            item_category_all = get_category(
+                                supplier, vendor_add[0], categ_names[0].name
+                            )
 
-                        item_category = item_category_all[0]
-                        item_group = item_category_all[1]
-                        item_group_all = item_category_all[2]
+                            item_category = item_category_all[0]
+                            item_group = item_category_all[1]
+                            item_group_all = item_category_all[2]
 
-                        name = data_item["name"]
-                        
-                        # цены
-                        if  "price" in  data_item:
-                            saleprice = data_item["saleprice"]
-                            price = data_item["price"]
-                            # if saleprice:
-                            #     price_supplier = saleprice
-                            # else:
-                            #     price_supplier = price
+                            name = data_item["name"]
+                            
+                            # цены
+                            if  "price" in  data_item:
+                                saleprice = data_item["saleprice"]
+                                price = data_item["price"]
+                                # if saleprice:
+                                #     price_supplier = saleprice
+                                # else:
+                                #     price_supplier = price
 
-                            extra = data_item["extra"]
-                            if extra == "Цена по запросу":
+                                extra = data_item["extra"]
+                                if extra == "Цена по запросу":
+                                    extra= True
+                                    price_supplier = 0
+                                else:
+                                    extra= False
+                                    price_supplier = price  
+                            else:
                                 extra= True
                                 price_supplier = 0
-                            else:
-                                extra= False
-                                price_supplier = price  
-                        else:
-                            extra= True
-                            price_supplier = 0
-                        
-                        # ндс    
-                        if "vat" in data_item:
-                            vat = data_item["vat"]
-                            vat_catalog = Vat.objects.get(name=vat)
-
-                            vat_include = data_item["vat_included"]    
-                        else:
-                            vat_catalog = Vat.objects.get(name=20)
-                            vat_include = True
-                        
-                        # описание
-                        if "Description" in data_item:
-                            description_arr = data_item["Description"]
-                            for desc in description_arr:
-                                description = desc["desc_ru"]
-                        else:
-                            description = None
-                        def save_image(
-                            new_product,
-                        ):
-                            if "ImgJpeg" in data_item:
-                                img_list = data_item["ImgJpeg"]
-                                for item_image in img_list:
-                                    # item_count = 0
-                                    if len(item_image) > 0:
-                                        # item_count += 1
-                                        img = item_image["file_ref"]["uri"]
-
-                                        image = ProductImage.objects.create(product=article)
-                                        update_change_reason(image, "Автоматическое")
-                                        image_path = get_file_path_add(image, img)
-                                        p = save_file_product(img, image_path)
-                                        image.photo = image_path
-                                        image.link = img
-                                        image.save()
-                                        update_change_reason(image, "Автоматическое")
-
-                            else:
-                                pass
-
-                        # def saves_doc(
-                        #     item,
-                        #     article,
-                        #     name_str,
-                        #     type_doc
-                        # ):
-                        #     # try:
-                        #     for sertif in item:
                             
-                        #         doc = sertif["file_ref"]["uri"]
+                            # ндс    
+                            if "vat" in data_item:
+                                vat = data_item["vat"]
+                                vat_catalog = Vat.objects.get(name=vat)
+
+                                vat_include = data_item["vat_included"]    
+                            else:
+                                vat_catalog = Vat.objects.get(name=20)
+                                vat_include = True
+                            
+                            # описание
+                            if "Description" in data_item:
+                                description_arr = data_item["Description"]
+                                for desc in description_arr:
+                                    description = desc["desc_ru"]
+                            else:
+                                description = None
+                            def save_image(
+                                new_product,
+                            ):
+                                if "ImgJpeg" in data_item:
+                                    img_list = data_item["ImgJpeg"]
+                                    for item_image in img_list:
+                                        # item_count = 0
+                                        if len(item_image) > 0:
+                                            # item_count += 1
+                                            img = item_image["file_ref"]["uri"]
+
+                                            image = ProductImage.objects.create(product=article)
+                                            update_change_reason(image, "Автоматическое")
+                                            image_path = get_file_path_add(image, img)
+                                            p = save_file_product(img, image_path)
+                                            image.photo = image_path
+                                            image.link = img
+                                            image.save()
+                                            update_change_reason(image, "Автоматическое")
+
+                                else:
+                                    pass
+
+                            # def saves_doc(
+                            #     item,
+                            #     article,
+                            #     name_str,
+                            #     type_doc
+                            # ):
+                            #     # try:
+                            #     for sertif in item:
                                 
-                            
-                        #         document = ProductDocument.objects.create(
-                        #             product=article, type_doc=type_doc
-                        #         )
-                        #         update_change_reason(document, "Автоматическое")
+                            #         doc = sertif["file_ref"]["uri"]
+                                    
+                                
+                            #         document = ProductDocument.objects.create(
+                            #             product=article, type_doc=type_doc
+                            #         )
+                            #         update_change_reason(document, "Автоматическое")
 
-                        #         document_path = get_file_path_add(document, doc)
-                        #         p = save_file_product(doc, document_path)
-                        #         document.document = document_path
-                        #         document.link = doc
-                        #         document.name = sertif[name_str]
-                        #         document.save()
-                        #         update_change_reason(document, "Автоматическое")
-                        #     # except item.DoesNotExist:
-                        #     #     pass
-                        # def save_all_doc(data_item,article):
-                        #     # saves_doc(
-                        #     #     data_item["Certificates"],
-                        #     #     article,
-                        #     #     "name"
-                        #     # )
-                            
-                        #     if "Certificates" in data_item:
-                        #         saves_doc(
-                        #             data_item["Certificates"],
-                        #             article,
-                        #             "name",
-                        #             "Certificates"
-                        #         )
-                        #     if "InstallationProduct" in data_item:
-                        #         saves_doc(
-                        #             data_item["InstallationProduct"],
-                        #             article,
-                        #             "name",
-                        #             "InstallationProduct"
-                        #         )
-                        #     if "DimensionDrawing" in data_item:
-                        #         saves_doc(
-                        #             data_item["DimensionDrawing"],
-                        #             article,
-                        #             "name",
-                        #             "DimensionDrawing"
-                        #         )
-                        #     if "Passport" in data_item:
-                        #         saves_doc(
-                        #             data_item["Passport"],
-                        #             article,
-                        #             "pubName",
-                        #             "Passport"
-                        #         )
-                        #     if "WiringDiagram" in data_item:
-                        #         saves_doc(
-                        #             data_item["WiringDiagram"],
-                        #             article,
-                        #             "name",
-                        #             "WiringDiagram"
-                        #         )
-                        #     if "Models3d" in data_item:
-                        #         saves_doc(
-                        #             data_item["Models3d"],
-                        #             article,
-                        #             "pubName",
-                        #             "Models3d"
-                        #         )
-                        #     if "Brochure" in data_item:
-                        #         saves_doc(
-                        #             data_item["Brochure"],
-                        #             article,
-                        #             "pubName",
-                        #             "Brochure"
-                        #         )
+                            #         document_path = get_file_path_add(document, doc)
+                            #         p = save_file_product(doc, document_path)
+                            #         document.document = document_path
+                            #         document.link = doc
+                            #         document.name = sertif[name_str]
+                            #         document.save()
+                            #         update_change_reason(document, "Автоматическое")
+                            #     # except item.DoesNotExist:
+                            #     #     pass
+                            # def save_all_doc(data_item,article):
+                            #     # saves_doc(
+                            #     #     data_item["Certificates"],
+                            #     #     article,
+                            #     #     "name"
+                            #     # )
+                                
+                            #     if "Certificates" in data_item:
+                            #         saves_doc(
+                            #             data_item["Certificates"],
+                            #             article,
+                            #             "name",
+                            #             "Certificates"
+                            #         )
+                            #     if "InstallationProduct" in data_item:
+                            #         saves_doc(
+                            #             data_item["InstallationProduct"],
+                            #             article,
+                            #             "name",
+                            #             "InstallationProduct"
+                            #         )
+                            #     if "DimensionDrawing" in data_item:
+                            #         saves_doc(
+                            #             data_item["DimensionDrawing"],
+                            #             article,
+                            #             "name",
+                            #             "DimensionDrawing"
+                            #         )
+                            #     if "Passport" in data_item:
+                            #         saves_doc(
+                            #             data_item["Passport"],
+                            #             article,
+                            #             "pubName",
+                            #             "Passport"
+                            #         )
+                            #     if "WiringDiagram" in data_item:
+                            #         saves_doc(
+                            #             data_item["WiringDiagram"],
+                            #             article,
+                            #             "name",
+                            #             "WiringDiagram"
+                            #         )
+                            #     if "Models3d" in data_item:
+                            #         saves_doc(
+                            #             data_item["Models3d"],
+                            #             article,
+                            #             "pubName",
+                            #             "Models3d"
+                            #         )
+                            #     if "Brochure" in data_item:
+                            #         saves_doc(
+                            #             data_item["Brochure"],
+                            #             article,
+                            #             "pubName",
+                            #             "Brochure"
+                            #         )
 
 
-                        # остатки
-                        if "min_ship" in data_item:
-                            if data_item["min_ship"] > 1:
-                                # lot_short = "набор"
-                                lot_short = "штука"
-                            else:
-                                lot_short = "штука"
-                        else: 
-                            lot_short = "штука"       
+                            # остатки
+                            if "min_ship" in data_item:
+                                if data_item["min_ship"] > 1:
+                                    # lot_short = "набор"
+                                    lot_short = "штука"
+                                else:
+                                    lot_short = "штука"
+                            else: 
+                                lot_short = "штука"       
 
-                        stock_supplier = 0
-                        lot_complect = 1
-                        lots = get_lot(lot_short, stock_supplier, lot_complect)
-                        lot = lots[0]
-                        stock_supplier_unit = lots[1]
-                    
-                        stock_motrum = 0
+                            stock_supplier = 0
+                            lot_complect = 1
+                            lots = get_lot(lot_short, stock_supplier, lot_complect)
+                            lot = lots[0]
+                            stock_supplier_unit = lots[1]
                         
-                        if "order_multiplicity" in data_item:
-                            if data_item["order_multiplicity"] > 1:
-                                order_multiplicity = data_item["order_multiplicity"]
-                                is_one_sale = False
-                            else:
+                            stock_motrum = 0
+                            
+                            if "order_multiplicity" in data_item:
+                                if data_item["order_multiplicity"] > 1:
+                                    order_multiplicity = data_item["order_multiplicity"]
+                                    is_one_sale = False
+                                else:
+                                    order_multiplicity = 1
+                                    is_one_sale = True
+                            else: 
                                 order_multiplicity = 1
                                 is_one_sale = True
-                        else: 
-                            order_multiplicity = 1
-                            is_one_sale = True
-                    
-                        # основной товар
-                        try:
-                            article = Product.objects.get(
-                                supplier=supplier, article_supplier=article_suppliers
-                            )
-                            save_update_product_attr(article, supplier, vendor_add[0],None,item_category_all[2],item_category_all[1],item_category_all[0],description, name)
-                            
-                            
-                            image =  ProductImage.objects.filter(product=article).exists()   
-                            if image == False:
-                                save_image(article)
-                            # documents =  ProductDocument.objects.filter(product=article).exists()   
-                            # if documents == False:
-                            #     save_all_doc(data_item,article)
-                                
-                        except Product.DoesNotExist:
-                            new_article = create_article_motrum(supplier.id)
-                            article = Product(
-                                    article=new_article,
-                                    supplier=supplier,
-                                    vendor=vendor_add[0],
-                                    article_supplier=article_suppliers,
-                                    name=name,
-                                    description=description,
-                                    category_supplier_all=item_category_all[2],
-                                    group_supplier=item_category_all[1],
-                                    category_supplier=item_category_all[0],
-                                )
-                            article.save()
-                            update_change_reason(article, "Автоматическое")        
-                            save_image(article)
-                            # save_all_doc(data_item,article)
-                        # цены товара
-                        try:
-                            price_product = Price.objects.get(prod=article)
-
-                        except Price.DoesNotExist:
-                            price_product = Price(prod=article)
-
-                        finally:
-                            price_product.currency = currency
-                            price_product.price_supplier = price_supplier
-                            price_product.vat = vat_catalog
-                            price_product.vat_include = vat_include
-                            price_product.extra_price = extra
-                            price_product._change_reason = 'Автоматическое'
-                            price_product.save()
-                            
-                            # update_change_reason(price_product, "Автоматическое")
-
-                        # остатки
-                        stock_supplier = get_iek_stock_one(article)
-                
-                       
                         
-                        try:
-                            stock_prod = Stock.objects.get(prod=article)
+                            # основной товар
+                            try:
+                                article = Product.objects.get(
+                                    supplier=supplier, article_supplier=article_suppliers
+                                )
+                                save_update_product_attr(article, supplier, vendor_add[0],None,item_category_all[2],item_category_all[1],item_category_all[0],description, name)
+                                
+                                
+                                image =  ProductImage.objects.filter(product=article).exists()   
+                                if image == False:
+                                    save_image(article)
+                                # documents =  ProductDocument.objects.filter(product=article).exists()   
+                                # if documents == False:
+                                #     save_all_doc(data_item,article)
+                                    
+                            except Product.DoesNotExist:
+                                new_article = create_article_motrum(supplier.id)
+                                article = Product(
+                                        article=new_article,
+                                        supplier=supplier,
+                                        vendor=vendor_add[0],
+                                        article_supplier=article_suppliers,
+                                        name=name,
+                                        description=description,
+                                        category_supplier_all=item_category_all[2],
+                                        group_supplier=item_category_all[1],
+                                        category_supplier=item_category_all[0],
+                                    )
+                                article.save()
+                                update_change_reason(article, "Автоматическое")        
+                                save_image(article)
+                                # save_all_doc(data_item,article)
+                            # цены товара
+                            try:
+                                price_product = Price.objects.get(prod=article)
+
+                            except Price.DoesNotExist:
+                                price_product = Price(prod=article)
+
+                            finally:
+                                price_product.currency = currency
+                                price_product.price_supplier = price_supplier
+                                price_product.vat = vat_catalog
+                                price_product.vat_include = vat_include
+                                price_product.extra_price = extra
+                                price_product._change_reason = 'Автоматическое'
+                                price_product.save()
+                                
+                                # update_change_reason(price_product, "Автоматическое")
+
+                            # остатки
+                            stock_supplier = get_iek_stock_one(article)
+                    
+                        
                             
-                        except Stock.DoesNotExist:
-                            stock_prod = Stock(
-                                prod=article,
-                                lot=lot,
-                                stock_motrum = stock_motrum
-                            )
-                            
-                        finally:
-                            stock_prod.stock_supplier = stock_supplier[0]
-                            stock_prod.to_order = stock_supplier[1]
-                            # stock_prod.stock_motrum = stock_motrum
-                            stock_prod.order_multiplicity = order_multiplicity
-                            stock_prod.is_one_sale = is_one_sale
-                            stock_prod.data_update = datetime.datetime.now()
-                            stock_prod._change_reason = 'Автоматическое'
-                            stock_prod.save()
-                            
-                            # update_change_reason(stock_prod, "Автоматическое")
-    
-                except Exception as e: 
-                    print(e)
-                    error = "file_api_error"
-                    location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении товара артикул: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
-                    e = error_alert(error, location, info)
-                finally:    
-                    continue      
+                            try:
+                                stock_prod = Stock.objects.get(prod=article)
+                                
+                            except Stock.DoesNotExist:
+                                stock_prod = Stock(
+                                    prod=article,
+                                    lot=lot,
+                                    stock_motrum = stock_motrum
+                                )
+                                
+                            finally:
+                                stock_prod.stock_supplier = stock_supplier[0]
+                                stock_prod.to_order = stock_supplier[1]
+                                # stock_prod.stock_motrum = stock_motrum
+                                stock_prod.order_multiplicity = order_multiplicity
+                                stock_prod.is_one_sale = is_one_sale
+                                stock_prod.data_update = datetime.datetime.now()
+                                stock_prod._change_reason = 'Автоматическое'
+                                stock_prod.save()
+                                
+                                # update_change_reason(stock_prod, "Автоматическое")
         
+                    except Exception as e: 
+                        print(e)
+                        error = "file_api_error"
+                        location = "Загрузка фаилов IEK"
+                        info = f"ошибка при чтении товара артикул: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                        e = error_alert(error, location, info)
+                    finally:    
+                        continue      
+        else:    
+            error = "file_api_error"
+            location = "Загрузка фаилов IEK"
+            info = f"ошибка доступа к ответу: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+            e = error_alert(error, location, info)
     # def get_iek_stock():
     #     products = Product.objects.filter(supplier=supplier, vendor=vendor_items)
     #     print(123123)
@@ -837,6 +841,11 @@ def iek_api():
                     e = error_alert(error, location, info)
                 finally:    
                     continue 
+        else: 
+            error = "file_api_error"
+            location = "Загрузка фаилов IEK"
+            info = f"ошибка при чтении свойств2: . Тип ошибки:{e}"
+            e = error_alert(error, location, info)       
      
 
     # get_iek_product("products", f"art=CLM30-100-300-3-048-HDZ")

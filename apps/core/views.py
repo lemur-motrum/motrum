@@ -9,7 +9,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
 
-from apps.client.models import Client
+from apps import client
+from apps.client.models import AccountRequisites, Client, Requisites
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -19,6 +20,7 @@ from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 from django.db.models import F
+from django.db.models.functions import Round
 
 
 # Create your views here.
@@ -55,11 +57,23 @@ def cart(request):
     cart = request.COOKIES.get("cart")
     if cart:
         cart_qs = Cart.objects.get(id=cart)
-        
-
         discount_client = 0
         if cart_qs.client:
-            discount_client = Client.objects.filter(id=cart_qs.client.id)
+            client = Client.objects.get(id=cart_qs.client.id)
+            discount_client = client.percent
+            if discount_client is None:
+                discount_client = 0
+                
+                requisites = Requisites.objects.filter(client=client).prefetch_related("accountrequisites_set").annotate(accountrequisit=F('accountrequisites__account_requisites'))
+                
+                # .prefetch_related("accountrequisites_set")
+                for requisit in requisites:
+                    print(requisit.accountrequisit)
+                #    print(requisit.accountrequisites_set.all())
+        else:
+            requisites = None 
+            client = None       
+                 
 
         product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
         product_cart = ProductCart.objects.filter(cart=cart)
@@ -92,17 +106,28 @@ def cart(request):
                 id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
                     "id",
                 ),
+                # sale_price_total=ArrayAgg('price__rub_price_supplier')
+                sale_price=Round(F('price__rub_price_supplier')* 0.01 * (100-float(discount_client)), 2),
+  
             )
         )
-    
+        
     else:
         product = None 
-        cart = None     
+        cart = None
+        account_requisites = None  
+        discount_client = None 
+        requisites = None 
+    
     context = {
+        "client" : client, 
         "product": product,
         "cart": cart,
         "request": request,
         "title": "Корзина",
+        "discount_client":discount_client,
+        "requisites":requisites,
+        # "account_requisites":account_requisites,
     }
 
     return render(request, "core/cart.html", context)

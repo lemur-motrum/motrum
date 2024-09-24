@@ -139,7 +139,7 @@ def crete_pdf_specification(specification, requisites, account_requisites,reques
     doc_title.fontSize = 10
 
     to_contract = 88775545
-    to_address = "Компания название"
+    to_address = requisites.legal_entity
 
     story.append(
         Paragraph(

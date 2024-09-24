@@ -20,7 +20,8 @@
                     <input id="client_id"
                            type="hidden"
                            data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
-                    {% block content %}
+                    
+                           {% block content %}
                     {% endblock content %}
                 </div>
                 {% manager_client %}

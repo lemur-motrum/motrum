@@ -1,4 +1,4 @@
-import { setCookie, getCookie,deleteCookie } from "/static/core/js/functions.js";
+import { setCookie, getCookie, deleteCookie } from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
 
@@ -7,17 +7,29 @@ window.addEventListener("DOMContentLoaded", () => {
   if (cartContainer) {
     const productContainer = cartContainer.querySelector(".products");
     if (productContainer) {
+      const personalDiscount = cartContainer.querySelector(".personal_discount");
+
+      let totalSumCart = 0
+      let totalSumSaleCart = 0
+      let totalSalePriceCart = 0
+      let itemNotPrice = 0
+
       const productItems = productContainer.querySelectorAll(".product_item");
       productItems.forEach((productItem) => {
         const productId = productItem.getAttribute("product-id");
-        const inputCount = productItem.querySelector("input");
+        const inputCount = productItem.querySelector(".quantity");
         const plusButton = productItem.querySelector(".plus-button");
         const minusButton = productItem.querySelector(".minus-button");
         const deleteBtn = productItem.querySelector(".delete_cart_button");
         const priceOnce = productItem.querySelector(".cart_price");
+        let priceOnceNoSale = productItem.querySelector(".cart_price_one_no_sale");
+        priceOnceNoSale = priceOnceNoSale.getAttribute("data-cart-one-no-sale");
+        const priceAll = productItem.querySelector(".all_cart_price");
+        const priceAllNoSale = productItem.querySelector(".all_cart_no_sale_price");
+
         function getAllProductSumm() {
           if (priceOnce) {
-            const priceAll = productItem.querySelector(".all_cart_price");
+            // const priceAll = productItem.querySelector(".all_cart_price");
             priceAll.textContent = (
               +priceOnce.textContent.replace(",", ".") * +inputCount.value
             ).toFixed(2);
@@ -26,6 +38,41 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         }
         getAllProductSumm();
+       
+        function getAllProductSummNoSale() {
+         
+          if (priceOnce) {
+            priceAllNoSale.textContent = (
+              +priceOnceNoSale.replace(",", ".") * +inputCount.value
+            ).toFixed(2);
+            
+          } else {
+            return;
+          }
+        }
+        
+
+        if (personalDiscount.dataset.personalDiscount != "0") {
+          getAllProductSummNoSale()
+        }
+
+        function getTotalSum() {
+          if (priceAll  ) {
+            
+            totalSumSaleCart += +priceAll.textContent
+            if (personalDiscount.dataset.personalDiscount != "0" ) {
+             
+              totalSumCart += Number.parseFloat(priceAllNoSale.textContent)
+              totalSalePriceCart = totalSumCart - totalSumSaleCart
+            }
+          }
+          else {
+            itemNotPrice += 1
+          }
+
+
+        }
+        getTotalSum()
 
         function updateProduct() {
           setTimeout(() => {
@@ -43,6 +90,7 @@ window.addEventListener("DOMContentLoaded", () => {
             })
               .then((response) => {
                 if (response.status == 200) {
+                  
                   console.log(
                     `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
                   );
@@ -68,6 +116,9 @@ window.addEventListener("DOMContentLoaded", () => {
             plusButton.disabled = false;
           }
           getAllProductSumm();
+          if (personalDiscount.dataset.personalDiscount != "0") {
+            getAllProductSummNoSale()
+          }
           updateProduct();
         };
         plusButton.onclick = () => {
@@ -83,6 +134,11 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = false;
           }
           getAllProductSumm();
+          if (personalDiscount.dataset.personalDiscount != "0") {
+            getAllProductSummNoSale()
+          }
+
+         
           updateProduct();
         };
         minusButton.onclick = () => {
@@ -98,6 +154,9 @@ window.addEventListener("DOMContentLoaded", () => {
             plusButton.disabled = false;
           }
           getAllProductSumm();
+          if (personalDiscount.dataset.personalDiscount != "0") {
+            getAllProductSummNoSale()
+          }
           updateProduct();
         };
 
@@ -116,6 +175,37 @@ window.addEventListener("DOMContentLoaded", () => {
             .catch((error) => console.error(error));
         };
       });
+
+      function addTotalSum() {
+        
+        let totalSalePriceCartItem = cartContainer.querySelector(".cart_total_price");
+        totalSalePriceCartItem.textContent = (
+          totalSumSaleCart
+        ).toFixed(2);
+
+        if (itemNotPrice > 0) {
+          let totalSumItem = cartContainer.querySelector(".total_sum_all");
+       
+          let div_message_price = document.createElement('div');
+          div_message_price.className = "alert_total_sum_all";
+          div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
+          // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`; 
+          totalSumItem.append(div_message_price);
+        }
+
+        if (personalDiscount.dataset.personalDiscount != "0") {
+          let totalSumCartItem = cartContainer.querySelector(".cart_total_price_all");
+          let totalSumSaleCartItem = cartContainer.querySelector(".cart_total_price_sale");
+          totalSumCartItem.textContent = (
+            totalSumCart
+          ).toFixed(2);
+          totalSumSaleCartItem.textContent = (
+            totalSalePriceCart
+          ).toFixed(2);
+        }
+      }
+      addTotalSum()
+
     }
   }
 
@@ -136,15 +226,22 @@ function saveCart() {
   const cart_id = getCookie("cart");
 
   if (validate == true) {
+    const select = document.querySelector('.select_account_requisites')
+    const selected = select.options[select.selectedIndex]
+    const requisites = selected.getAttribute("data-requisites-id");
+    const account_requisites_name = selected.getAttribute("data-account-requisites-id");
+    
+
     const dataObj =
     {
       cart: +cart_id,
-      requisites: 65,
-      account_requisites: 42,
+      requisites: +requisites,
+      account_requisites: account_requisites_name,
     }
 
     const data = JSON.stringify(dataObj);
-    fetch("/api/v1/order/add_order/", {
+    let endpoint = "/api/v1/order/add_order/"
+    fetch(endpoint, {
       method: "POST",
       body: data,
       headers: {
@@ -157,8 +254,8 @@ function saveCart() {
 
         deleteCookie("cart", "/", window.location.hostname);
 
-        window.location.href =
-          "/lk/my_orders";
+        // window.location.href =
+        //   "/lk/my_orders";
 
       })
       .catch((error) => console.error(error));

@@ -1,5 +1,6 @@
 import datetime
 from html import entities
+from logging import log
 import os
 import traceback
 import requests
@@ -15,6 +16,7 @@ from apps.core.utils import (
     get_file_path,
     get_file_path_add,
     get_lot,
+    lot_chek,
     response_request,
     save_file_product,
     save_update_product_attr,
@@ -441,28 +443,66 @@ def iek_api():
                                     description = desc["desc_ru"]
                             else:
                                 description = None
+                                
+                            def add_save_image(img_list):
+                                # img_list = data_item[name]
+                                for item_image in img_list:
+                                    # item_count = 0
+                                    if len(item_image) > 0:
+                                        # item_count += 1
+                                        img = item_image["file_ref"]["uri"]
+
+                                        image = ProductImage.objects.create(product=article)
+                                        update_change_reason(image, "Автоматическое")
+                                        image_path = get_file_path_add(image, img)
+                                        p = save_file_product(img, image_path)
+                                        image.photo = image_path
+                                        image.link = img
+                                        image.save()
+                                        update_change_reason(image, "Автоматическое")
+                                        
+                            def add_save_image_logistic(img_list):
+                                
+                              
+                                img = img_list["uri"]
+
+                                image = ProductImage.objects.create(product=article)
+                                update_change_reason(image, "Автоматическое")
+                                image_path = get_file_path_add(image, img)
+                                p = save_file_product(img, image_path)
+                                image.photo = image_path
+                                image.link = img
+                                image.save()
+                                update_change_reason(image, "Автоматическое")            
+                                
+                                
                             def save_image(
                                 new_product,
                             ):
-                                if "ImgJpeg" in data_item:
-                                    img_list = data_item["ImgJpeg"]
-                                    for item_image in img_list:
-                                        # item_count = 0
-                                        if len(item_image) > 0:
-                                            # item_count += 1
-                                            img = item_image["file_ref"]["uri"]
-
-                                            image = ProductImage.objects.create(product=article)
-                                            update_change_reason(image, "Автоматическое")
-                                            image_path = get_file_path_add(image, img)
-                                            p = save_file_product(img, image_path)
-                                            image.photo = image_path
-                                            image.link = img
-                                            image.save()
-                                            update_change_reason(image, "Автоматическое")
+                                if "ImgPng" in data_item:
+                                    img_list = data_item["ImgPng"]
+                                    add_save_image(img_list)
+                          
+                                elif  "ImgJpeg" in data_item: 
+                                    img_list = data_item["ImgJpeg"]  
+                                    add_save_image(img_list)       
 
                                 else:
                                     pass
+                                
+                                if "IndPacking" in data_item:  
+                                    print(data_item["IndPacking"])
+                                    if "png_ref" in data_item["IndPacking"][0]:
+                                        print(data_item["IndPacking"][0]["png_ref"]  )
+                                        img_list = data_item["IndPacking"][0]["png_ref"]  
+                                        add_save_image_logistic(img_list)
+                                    elif "jpg_ref" in data_item["IndPacking"]:
+                                        print(data_item["IndPacking"]["jpg_ref"]  )
+                                        img_list = data_item["IndPacking"]["jpg_ref"]  
+                                        add_save_image_logistic(img_list) 
+                                    else:
+                                        pass       
+                                    
 
                             # def saves_doc(
                             #     item,
@@ -548,22 +588,47 @@ def iek_api():
                             #         )
 
 
-                            # остатки
-                            if "min_ship" in data_item:
-                                if data_item["min_ship"] > 1:
-                                    # lot_short = "набор"
-                                    lot_short = "штука"
-                                else:
-                                    lot_short = "штука"
-                            else: 
-                                lot_short = "штука"       
+                            # # остатки
+                            # param = "шт"
+                            # if "LogisticParameters" in data_item:
+                                
+                            #     i = 0
+                            #     for logistic_param in data_item["LogisticParameters"]:
+                            #         i+= 1
+                            #         if i == 1:
+                            #             param = logistic_param
+                                      
+                            # lot_short_name = data_item["LogisticParameters"][param]["unit"]          
+                            # lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
+                            # if  lot_short_name == "шт":
+                            #        lot_short = "штука"
+                            #        lot = Lot.objects.get(name_shorts="шт")
+                            #        lot_complect = 1
+                            #        stock_supplier = 0
+                            #        stock_supplier_unit = 0
+                            # else:
+                            #     lot = Lot.objects.get(name_shorts=lot_short_name)
+                                       
+                            
+                            # if "min_ship" in data_item:
+                            #     if data_item["min_ship"] > 1:
+                            #         # lot_short = "набор"
+                            #         lot_short = "штука"
+                            #     else:
+                            #         lot_short = "штука"
+                            # else: 
+                            #     lot_short = "штука"       
 
-                            stock_supplier = 0
-                            lot_complect = 1
-                            lots = get_lot(lot_short, stock_supplier, lot_complect)
-                            lot = lots[0]
-                            stock_supplier_unit = lots[1]
-                        
+                            # stock_supplier = 0
+                            # lot_complect = 1
+                            
+                            # lots = get_lot(lot_short, stock_supplier, lot_complect)
+                            
+                            
+                            # lot = lots[0]
+                            # stock_supplier_unit = lots[1]
+                            
+
                             stock_motrum = 0
                             
                             if "order_multiplicity" in data_item:
@@ -578,6 +643,7 @@ def iek_api():
                                 is_one_sale = True
                         
                             # основной товар
+                            print(article_suppliers)
                             try:
                                 article = Product.objects.get(
                                     supplier=supplier, article_supplier=article_suppliers
@@ -628,24 +694,67 @@ def iek_api():
                                 # update_change_reason(price_product, "Автоматическое")
 
                             # остатки
+                            # остатки
+                            param = "шт"
+                            logistic_parametr_quantity = 1
+                            if "LogisticParameters" in data_item:
+                                i = 0
+                                for logistic_param in data_item["LogisticParameters"]:
+                                    i+= 1
+                                    if i == 1:
+                                        param = logistic_param
+                                
+                                if "individual" in data_item["LogisticParameters"]:
+                                    logistic_parametr_quantity = data_item["LogisticParameters"]["individual"]["quantity"]
+                                elif "group" in data_item["LogisticParameters"]:
+                                    logistic_parametr_quantity = data_item["LogisticParameters"]["group"]["quantity"]
+                                elif "transport" in data_item["LogisticParameters"]:
+                                    logistic_parametr_quantity = data_item["LogisticParameters"]["transport"]["quantity"]    
+                                         
+                                        
+                                        
+
+                            lot_short_name = data_item["LogisticParameters"][param]["unit"]          
+                            lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
+                            
+                            
+                            if  lot_short_name == "шт":
+                                   lot_short = "штука"
+                                   lot = Lot.objects.get(name_shorts="шт")
+                                   lot_complect = int(logistic_parametr_quantity)
+                                   stock_supplier = 0
+                                   stock_supplier_unit = 0
+                            else:
+                                try:
+                                    lot = Lot.objects.get(name_shorts=lot_short_name)
+                                except Lot.DoesNotExist:
+                                    lot = lot_chek(lot_short_name)
+                                        
+                                lot_complect = int(logistic_parametr_quantity)
+                                stock_supplier = 0                       
+                                
+                                
+                                
+                                
                             stock_supplier = get_iek_stock_one(article)
-                    
-                        
+                            stock_prod_stock_supplier = stock_supplier[0] / int(order_multiplicity)
                             
                             try:
                                 stock_prod = Stock.objects.get(prod=article)
-                                
+                               
                             except Stock.DoesNotExist:
                                 stock_prod = Stock(
                                     prod=article,
-                                    lot=lot,
-                                    stock_motrum = stock_motrum
+                                    # lot=lot,
+                                    # stock_motrum = stock_motrum
                                 )
                                 
                             finally:
-                                stock_prod.stock_supplier = stock_supplier[0]
+                                stock_prod.lot = lot
+                                stock_prod.stock_supplier = stock_prod_stock_supplier
+                                stock_prod.stock_supplier_unit = stock_supplier[0]
                                 stock_prod.to_order = stock_supplier[1]
-                                # stock_prod.stock_motrum = stock_motrum
+                                stock_prod.lot_complect = lot_complect
                                 stock_prod.order_multiplicity = order_multiplicity
                                 stock_prod.is_one_sale = is_one_sale
                                 stock_prod.data_update = datetime.datetime.now()
@@ -718,10 +827,15 @@ def iek_api():
                             to_order = True
                         else:
                             to_order = False
+                            
                         stock = 0
-                        product = data_item["sku"]
+                        
+                        # product = data_item["sku"]
+                        
                         for a in data_item["residues"].values():
                             stock += a
+                        
+                            
                     return (stock,to_order)    
                 else:
                     stock = 0
@@ -746,45 +860,7 @@ def iek_api():
                 info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content}{data} Артикул{prod.article_supplier}"
                 e = error_alert(error, location, info)
     
-    # планы прихода 
-    # def get_iek_stock_one_plannig(prod):
-    #     try:
-
-    #         url_params = f"sku={prod.article_supplier}"
-
-    #         url_service = "/planresidues/json/"
-
-    #         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
-    #         response = requests.request(
-    #             "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
-    #         )
-    #         data = response.json()
-           
-    #         if data["shopItems"] !=[]:
-    #             for data_item in data["shopItems"]:
-    #                 if data_item["zakaz"] == 1:
-    #                     to_order = True
-    #                 else:
-    #                     to_order = False
-                            
-    #                 stock = 0
-    #                 product = data_item["sku"]
-    #                 for a in data_item["residues"].values():
-    #                     stock += a
-    #             return (stock,to_order)    
-    #         else:
-    #             stock = 0
-    #             to_order = False
-    #             return (stock,to_order)
-            
-    #     except Exception as e: 
-    #             print(e)
-    #             error = "file_api_error"
-    #             location = "Загрузка фаилов IEK"
-          
-    #             info = f"ошибка при чтении остатков Тип ошибки:{e} Артикул{prod.article_supplier}"
-    #             e = error_alert(error, location, info)
-         
+  
         
    
     def get_iek_property(url_service, url_params):
@@ -848,7 +924,8 @@ def iek_api():
             e = error_alert(error, location, info)       
      
 
-    # get_iek_product("products", f"art=CLM30-100-300-3-048-HDZ")
+    get_iek_product("products", f"art=CMAT11-16-010")
+    # get_iek_product("products", f"groupId=05.04.02")
     
     # категории 
     get_iek_category("ddp", None)
@@ -857,6 +934,7 @@ def iek_api():
         get_iek_product("products", f"groupId={item_iek_save_categ}")
         get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
+
 
   
 

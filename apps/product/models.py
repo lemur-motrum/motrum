@@ -554,7 +554,7 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках",
         null=True,
     )
-    stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
+    stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
     to_order = models.BooleanField("Товар под заказ", default=False)
     data_update = models.DateField(verbose_name="Дата обновления поставщика")
     # data_update_motrum = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -581,7 +581,7 @@ class Stock(models.Model):
 
     def save(self, *args, **kwargs):
         # посчитать комплекты лотов
-        if self.stock_supplier != None:
+        if self.stock_supplier != None and self.stock_supplier_unit == None:
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]

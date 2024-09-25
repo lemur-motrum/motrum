@@ -39,7 +39,15 @@ def add_iek(request):
 
 # тестовая страница скриптов
 def test(request):
-    iek_api()
+    def background_task():
+    # Долгосрочная фоновая задача
+        iek_api()
+                    
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
     title = "Услуги"
    
 

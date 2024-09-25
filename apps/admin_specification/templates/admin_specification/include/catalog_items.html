@@ -89,7 +89,7 @@
                                                 Под заказ
                                             {% else %}
                                                 {% if product.stock.stock_supplier != None %}
-                                                    Поставщик: {{ product.stock.stock_supplier }}
+                                                    Поставщик: {{ product.stock.stock_supplier_unit }}
                                                 {% else %}
                                                     Поставщик: -
                                                 {% endif %}
@@ -111,11 +111,11 @@
                                 <div class="lot">
                                     {% if product.stock %}
                                         {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
-                                            <span class="span-min">Минимальный заказ {{ product.stock.order_multiplicity }}
+                                            <span class="span-min">Заказ по {{ product.stock.order_multiplicity }}
                                             {{ product.stock.lot.name_shorts }}</span>
                                         {% endif %}
                                         {% if product.stock.lot_complect != 1 %}
-                                            {{ product.stock.lot.name_shorts }}.({{ product.stock.lot_complect }}ед.)
+                                        {{ product.stock.lot_complect }}{{ product.stock.lot.name_shorts }}.
                                         {% else %}
                                             {{ product.stock.lot_complect }}
                                             {{ product.stock.lot.name_shorts }}.

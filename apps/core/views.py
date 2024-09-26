@@ -117,7 +117,8 @@ def cart(request):
         cart = None
         account_requisites = None  
         discount_client = None 
-        requisites = None 
+        requisites = None  
+        client = None
     
     context = {
         "client" : client, 

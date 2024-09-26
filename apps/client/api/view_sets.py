@@ -118,6 +118,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             else:
                 return Response(pin, status=status.HTTP_400_BAD_REQUEST)
 
+    
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()

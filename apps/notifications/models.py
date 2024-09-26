@@ -2,14 +2,15 @@ from django.db import models
 
 
 from apps.client.models import Client, Order
+from apps.core.utils_web import send_email_message_html
 
 # Create your models here.
 
 TYPE_NOTIFICATION = (
-    ("DOCUMENT_SPECIFICATION", "DOCUMENT_SPECIFICATION"),
-    ("DOCUMENT_BILL", "DOCUMENT_BILL"),
-    ("DOCUMENT_ACT", "DOCUMENT_ACT"),
-    ("STATUS_ORDERING", "STATUS_ORDERING"),
+    ("DOCUMENT_SPECIFICATION", "документ спецификации"),
+    ("DOCUMENT_BILL", "документ счета"),
+    ("DOCUMENT_ACT", "документ акта"),
+    ("STATUS_ORDERING", "статус заказа"),
 )
 class Notification(models.Model):
     client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE)
@@ -37,3 +38,16 @@ class Notification(models.Model):
             client=client,
             type_notification=type_notification,
         )
+        name_notification =  None
+        for name_notifications in TYPE_NOTIFICATION:
+            if type_notification in name_notifications:
+                name_notification =  name_notifications
+                
+        print(name_notification)
+        title_email = f"У вашего заказа {order.name} новый "
+        text_email = f"Клиент: {client.contact_name}Телефон: {client.phone}Сообщение{text_message}"
+        
+        send_email_message_html(
+            title_email, text_email, to_manager, html_message=html_message
+        )
+        

@@ -64,6 +64,9 @@ class Client(CustomUser):
                 self.save()
                 print(admin)
 
+    # def send_email_notification(self,text_email):
+       
+        
 
 class Requisites(models.Model):
     client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE)

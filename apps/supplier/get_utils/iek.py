@@ -913,18 +913,18 @@ def iek_api():
                     print(e)
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении свойств: . Тип ошибки:{e}"
+                    info = f"ошибка при чтении свойств: .{url_params} Тип ошибки:{e}"
                     e = error_alert(error, location, info)
                 finally:    
                     continue 
         else: 
             error = "file_api_error"
             location = "Загрузка фаилов IEK"
-            info = f"ошибка при чтении свойств2: . Тип ошибки:{e}"
+            info = f"ошибка при чтении свойств2: .{url_params}{data}{response} Тип ошибки:"
             e = error_alert(error, location, info)       
      
 
-    get_iek_product("products", f"art=CMAT11-16-010")
+    # get_iek_product("products", f"art=CMAT11-16-010")
     # get_iek_product("products", f"groupId=05.04.02")
     
     # категории 

@@ -111,8 +111,15 @@ def get_year_holiday(self):
     try:
         import json
         import requests
-        year_date = datetime.datetime.now().year
-        year = str(year_date)
+        # year_date = datetime.datetime.now().year
+        # year = str(year_date)
+        
+        if datetime.datetime.now().month == 12:
+            year_date = datetime.datetime.now() + datetime.timedelta(days=367)
+            year_date = year_date.year
+        else:    
+            year_date = datetime.datetime.now().year 
+        year = str(year_date)    
         url = (
                 "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
                 + year

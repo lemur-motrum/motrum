@@ -7,6 +7,7 @@ from apps.notifications.api.serializers import NotificationOrderSerializer, Noti
 from apps.specification.api.serializers import (
     ListProductSpecificationSerializer,
     ListsProductSpecificationSerializer,
+    ListsSpecificationSerializer,
     ProductSpecificationSerializer,
 )
 
@@ -103,6 +104,48 @@ class LkOrderSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         representation = super(LkOrderSerializer, self).to_representation(instance)
+        if representation['bill_date_start']:
+            representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
+            representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')
+        return representation    
+    
+    
+class LkOrderDocumentSerializer(serializers.ModelSerializer):
+    status_full = serializers.CharField(source="get_status_display")
+    requisites_full = RequisitesSerializer(source="requisites", read_only=True)
+    specification_list = ListsSpecificationSerializer(
+        source="specification", read_only=True
+    )
+    notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
+    
+    
+    class Meta:
+        model = Order
+        fields = (
+            "id",
+            "name",
+            "client",
+            "date_order",
+            "specification",
+            "cart",
+            "requisites",
+            "requisites_full",
+            "account_requisites",
+            "status",
+            "status_full",
+            "specification_list",
+            "bill_sum",
+            "bill_sum_paid",
+            "bill_file",
+            "bill_date_start",
+            "bill_date_stop",
+            "bill_date_start",
+            "notification_set",
+        )
+        read_only_fields = ("status_full",)
+        
+    def to_representation(self, instance):
+        representation = super(LkOrderDocumentSerializer, self).to_representation(instance)
         if representation['bill_date_start']:
             representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
             representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')

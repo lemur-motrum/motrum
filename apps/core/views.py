@@ -64,11 +64,11 @@ def cart(request):
             if discount_client is None:
                 discount_client = 0
                 
-                requisites = Requisites.objects.filter(client=client).prefetch_related("accountrequisites_set").annotate(accountrequisit=F('accountrequisites__account_requisites'))
+            requisites = Requisites.objects.filter(client=client).prefetch_related("accountrequisites_set").annotate(accountrequisit=F('accountrequisites__account_requisites'))
                 
                 # .prefetch_related("accountrequisites_set")
-                for requisit in requisites:
-                    print(requisit.accountrequisit)
+            # for requisit in requisites:
+            #      print(requisit.accountrequisit)
                 #    print(requisit.accountrequisites_set.all())
         else:
             requisites = None 

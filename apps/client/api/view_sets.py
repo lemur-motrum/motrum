@@ -2,6 +2,7 @@ import datetime
 from operator import itemgetter
 import os
 import re
+from itertools import chain
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
@@ -11,7 +12,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.cache import cache
 from django.contrib.auth import authenticate, login
-from django.db.models import Q, F, OrderBy
+from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
 from apps.notifications.models import Notification
 
@@ -20,6 +21,7 @@ from apps.client.api.serializers import (
     ClientRequisitesSerializer,
     ClientSerializer,
     DocumentSerializer,
+    LkOrderDocumentSerializer,
     LkOrderSerializer,
     OrderSerializer,
     RequisitesSerializer,
@@ -36,6 +38,7 @@ from apps.client.models import (
 from apps.core.utils import (
     create_time_stop_specification,
     get_presale_discount,
+    loc_mem_cache,
     save_specification,
 )
 from apps.core.utils_web import (
@@ -45,7 +48,7 @@ from apps.core.utils_web import (
     send_email_message,
     send_pin,
 )
-from apps.product.models import Cart, Price, Product, ProductCart
+from apps.product.models import Cart, Lot, Price, Product, ProductCart
 from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
     SpecificationSerializer,
@@ -118,7 +121,6 @@ class ClientViewSet(viewsets.ModelViewSet):
             else:
                 return Response(pin, status=status.HTTP_400_BAD_REQUEST)
 
-    
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -251,20 +253,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         all_info_product = True
         requisites_id = None
         account_requisites_id = None
-        
+
         if "requisites" in data:
-            all_info_requisites = True 
+            all_info_requisites = True
             requisites = Requisites.objects.get(id=data["requisites"])
             requisites_id = requisites.id
             account_requisites = AccountRequisites.objects.get(
                 requisites=requisites, account_requisites=data["account_requisites"]
             )
             account_requisites_id = account_requisites.id
-            
+
         for product_cart in products_cart:
             if product_cart.product.price.rub_price_supplier == 0:
                 all_info_product = False
-       
 
         # сохранение спецификации для заказа с реквизитами
         if all_info_requisites and all_info_product:
@@ -336,7 +337,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             specification = None
             status_order = "PROCESSING"
-            
 
         # сохранение ордера
         serializer_class = OrderSerializer
@@ -354,20 +354,19 @@ class OrderViewSet(viewsets.ModelViewSet):
             order = serializer.save()
             if all_info_requisites and all_info_product:
                 Notification.add_notification(order.id, "STATUS_ORDERING")
+
                 Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
                 order.create_bill()
-            else: 
-                pass   
+            else:
+                pass
 
             cart.is_active = True
             cart.save()
-            
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        
+
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
@@ -437,18 +436,20 @@ class OrderViewSet(viewsets.ModelViewSet):
         from django.db.models.functions import Length
 
         count = int(request.query_params.get("count"))
+        count_last = 5
+
         serializer_class = LkOrderSerializer
         current_user = request.user.id
         client = Client.objects.get(pk=current_user)
-        
+
         # сортировки
-        sorting = "-id"
+        sorting = "-notification_count"
         # direction = "ASC"
         if request.query_params.get("sort"):
             sorting = request.query_params.get("sort")
         if request.query_params.get("direction"):
             direction = request.query_params.get("direction")
-        
+
         if sorting == "date_order":
             if direction == "ASC":
                 sorting = F("date_order").asc(nulls_last=True)
@@ -484,8 +485,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     When(status="COMPLETED", then=Value(1)),
                     output_field=IntegerField(),
                 )
-            
-        # ОСТАТКИ СОРТИРОВКИ ПО НЕСКОЛЬКИМ ПОЛЯЬ ОДНОВРЕМЕННО НЕ УДАЛЯТЬ 
+
+        # ОСТАТКИ СОРТИРОВКИ ПО НЕСКОЛЬКИМ ПОЛЯЬ ОДНОВРЕМЕННО НЕ УДАЛЯТЬ
         # if request.query_params.get("sortDate"):
         #     date_get = request.query_params.get("sortDate")
         # else:
@@ -553,7 +554,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         # else:
         #     custom_order = None
         # для такой сортировки если нет данных использовать custom_order ordering_filter_summ ordering_filter_date = None
-        
+
         # ordering = {
         # 'ordering_filter_date': ordering_filter_date,
         # 'ordering_filter_summ': ordering_filter_summ,
@@ -561,7 +562,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         # }
         # ordering = {k:v for k,v in ordering.items() if v is not None}
         # ordering = list(ordering.values())
-
+        # lot = Lot.objects.all()
+       
         orders = (
             Order.objects.filter(client=client)
             .select_related(
@@ -569,6 +571,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "cart",
                 "requisites",
                 "account_requisites",
+
             )
             .prefetch_related(
                 Prefetch(
@@ -579,10 +582,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                     to_attr="filtered_notification_items",
                 )
             )
-            .order_by(sorting)
+            .prefetch_related(
+                Prefetch('specification__productspecification_set'))
+            .prefetch_related(
+                Prefetch('specification__productspecification_set__product'))
+            .prefetch_related(
+                Prefetch('specification__productspecification_set__product__stock'))
+            .annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="STATUS_ORDERING")))
+            .order_by(sorting,"-id")[count : count + count_last]
         )
 
-        # 
         serializer = serializer_class(orders, many=True)
         data = serializer.data
 
@@ -590,31 +599,36 @@ class OrderViewSet(viewsets.ModelViewSet):
             client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
         ).update(is_viewed=True)
 
-        if sorting == "-id":
-            data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)
+        # if sorting == "-id":
+        #     data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)
 
         data_response = {
-            "data": data[count : count + 5],
+            "data": data,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
-
 
     # страница мои документы аякс загрузка
     @action(detail=False, url_path="load-ajax-document-list")
     def load_ajax_document_list(self, request):
         count = int(request.query_params.get("count"))
-        serializer_class = LkOrderSerializer
+        count_last = 10
+        serializer_class = LkOrderDocumentSerializer
         current_user = request.user.id
         client = Client.objects.get(pk=current_user)
 
         # сортировки
         sorting = None
+        sorting_spesif = "specification__date"
+        sorting_bill = "bill_date_start"
         if request.query_params.get("sort"):
             sorting = request.query_params.get("sort")
+            if sorting == "specification__date":
+                sorting_spesif = "date"
+                sorting_bill = "bill_date_start"
 
         if request.query_params.get("direction"):
             sorting_directing = request.query_params.get("direction")
-       
+
         # заказы сериализировать
         orders = (
             Order.objects.filter(client=client)
@@ -634,8 +648,55 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
             )
         )
-        serializer = serializer_class(orders, many=True)
 
+
+        # order_document = (
+        #     Order.objects.filter(client=client)
+        #     .select_related(
+        #         "specification",
+        #         "cart",
+        #         "requisites",
+        #         "account_requisites",
+        #     )
+        #     .prefetch_related(
+        #         Prefetch(
+        #             "notification_set",
+        #             queryset=Notification.objects.filter(is_viewed=False).exclude(
+        #                 type_notification="DOCUMENT_SPECIFICATION"
+        #             ),
+        #             to_attr="filtered_notification_items",
+        #         )
+        #     ).annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="DOCUMENT_SPECIFICATION")))
+        #     .order_by(sorting_spesif)[count : count + count_last],
+        #     Order.objects.filter(client=client)
+        #     .select_related(
+        #         "specification",
+        #         "cart",
+        #         "requisites",
+        #         "account_requisites",
+        #     )
+        #     .prefetch_related(
+        #         Prefetch(
+        #             "notification_set",
+        #             queryset=Notification.objects.filter(is_viewed=False).exclude(
+        #                 type_notification="DOCUMENT_BILL"
+        #             ),
+        #             to_attr="filtered_notification_items",
+        #         )
+        #     ).annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="DOCUMENT_BILL")))
+        #     .order_by(sorting_bill)[count : count + count_last] )
+
+        # print(order_document)
+        # for r in order_document:
+        #     print(r)
+
+        # result_list = list(chain(order_document[0],order_document[1]))
+        # print(result_list)
+
+        # for order in orders:
+        #     print(order)
+        serializer = serializer_class(orders, many=True)
+        # print(serializer.data)
         # формирование отдельных документов из сериализированных заказов
         documents = []
         for order in serializer.data:
@@ -682,13 +743,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["bill_sum"],
                     "notification_set": [],
                 }
-            
+
                 for notification_set in order["notification_set"]:
                     if notification_set["type_notification"] == "DOCUMENT_BILL":
                         data_bill["notification_set"].append(notification_set)
 
                 documents.append(data_bill)
-                
+
             # if order["bill_file"]:
             #     data_act = {
             #         "type": 3,
@@ -736,7 +797,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
         data_response = {
-            "data": documents[count : count + 10],
+            "data": documents[count : count + count_last],
             # [count : count + 10]
         }
 

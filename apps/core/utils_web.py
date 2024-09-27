@@ -161,7 +161,7 @@ def send_email_message_and_file(subject, message, to_email, file):
 
 
 def send_email_message_html(subject, message, to_email, html_message):
-
+    print(subject, message, to_email, html_message)
     send_result = send_mail(
         subject,
         message,
@@ -170,6 +170,7 @@ def send_email_message_html(subject, message, to_email, html_message):
         fail_silently=True,
         html_message=html_message,
     )
+    print(send_result)
 
     if send_result == 1:
         return True

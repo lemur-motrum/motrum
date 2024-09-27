@@ -6,6 +6,7 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import currency_chek, del_currency, update_currency_price
+from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
@@ -25,7 +26,44 @@ from xml.etree import ElementTree, ElementInclude
 def add_iek(request):
     from django.db.models import Prefetch
 
-    iek_api()
+    year_date = datetime.datetime.now().year
+    year = str(year_date)
+    data_bd = CalendarHoliday.objects.get(year=year)
+    data_bd_holidays = data_bd.json_date
+    now = datetime.datetime.now()
+
+    day_need = 1
+    i = 0
+    while day_need <= 3:
+        i += 1
+        date = now + datetime.timedelta(days=i)
+        print(date)
+        if date.year > year_date:
+            data_bd = CalendarHoliday.objects.get(year=date.year)
+            data_bd_holidays = data_bd.json_date
+            holidays_day_need = data_bd_holidays["holidays"].count(str(date.date()))
+            
+            if "nowork" in data_bd_holidays and holidays_day_need == 0:
+                holidays_day_need_nowork = data_bd_holidays["nowork"].count(str(date.date()))
+                holidays_day_need += holidays_day_need_nowork
+        else:
+            holidays_day_need = data_bd_holidays["holidays"].count(str(date.date()))
+            
+            if "nowork" in data_bd_holidays and holidays_day_need == 0:
+                holidays_day_need_nowork = data_bd_holidays["nowork"].count(str(date.date()))
+                holidays_day_need += holidays_day_need_nowork
+
+        if holidays_day_need == 0:
+            print(holidays_day_need)
+            
+            day_need += 1
+
+    three_days = datetime.timedelta(i)
+    in_three_days = now + three_days
+    data_stop = in_three_days.strftime("%Y-%m-%d")
+
+    print(data_stop)
+
     title = "Услуги"
 
     responsets = ["233", "2131"]
@@ -40,16 +78,14 @@ def add_iek(request):
 # тестовая страница скриптов
 def test(request):
     def background_task():
-    # Долгосрочная фоновая задача
+        # Долгосрочная фоновая задача
         iek_api()
-                    
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
+
     title = "Услуги"
-   
 
     responsets = ["233", "2131"]
 
@@ -59,7 +95,8 @@ def test(request):
     }
     return render(request, "supplier/supplier.html", context)
 
-def add_one_c (request):
+
+def add_one_c(request):
     one_c_price()
     title = "Услуги"
     print(124)
@@ -71,6 +108,7 @@ def add_one_c (request):
         "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
+
 
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
@@ -91,11 +129,13 @@ def save_emas_props(request):
     }
     return render(request, "supplier/supplier.html", context)
 
-# добавление разрешений админам 
+
+# добавление разрешений админам
 def add_permission(request):
     upgrade_permission()
     context = {}
     return render(request, "supplier/supplier.html", context)
+
 
 # добавление праздников вручную
 def add_holidays(request):
@@ -124,6 +164,7 @@ def add_holidays(request):
 
     context = {}
     return render(request, "supplier/supplier.html", context)
+
 
 # получение валют вручную
 def get_currency(request):
@@ -155,7 +196,6 @@ def get_currency(request):
         currency_chek(current, now_rate[0])
     context = {}
     return render(request, "supplier/supplier.html", context)
-
 
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):

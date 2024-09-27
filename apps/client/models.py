@@ -236,6 +236,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    # is_status_notification_counter = models.BooleanField("Уведомления по статусц", default=False)
     
     bill_file = models.FileField(
         "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
@@ -307,37 +308,3 @@ class Document(models.Model):
     )
      
     
-# class Cart(models.Model):
-#     client =  models.OneToOneField(Client,verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True)
-#     save_cart = models.BooleanField(
-#         "корзина сохранена", default=False
-#     )
-#     session_key  = models.CharField(max_length=100, blank=True, null=True)
-
-#     class Meta:
-#         verbose_name = "Корзина"
-#         verbose_name_plural = "Корзины"
-
-
-# class ProductCart(models.Model):
-#     cart = models.ForeignKey(
-#         Cart,
-#         on_delete=models.PROTECT,
-#     )
-#     product = models.ForeignKey(
-#         Product,
-#         verbose_name="Продукты",
-#         on_delete=models.PROTECT,
-#     )
-#     quantity = models.IntegerField(
-#         "количество товара",
-#         blank=True,
-#         null=True,
-#     )
-
-#     class Meta:
-#         verbose_name = "Корзина продукт"
-#         verbose_name_plural = "Корзина Продукты"
-
-#     def __str__(self):
-#         return str(self.id)

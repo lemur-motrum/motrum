@@ -2,8 +2,10 @@ from functools import cache
 import random
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.db.models import Prefetch
 
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.notifications.models import Notification
 
 
 # Create your views here.
@@ -18,14 +20,30 @@ def index(request):
 
 
 def my_orders(request):
+    # current_user = request.user.id
+
+    # cookie = request.COOKIES.get("client_id")
+    # client_id = int(cookie)
+
+    # client = Client.objects.get(pk=current_user)
+
+    
+    
     context = {
         "title": "Личный кабинет | мои заказы",
     }
+
     return render(request, "client/my_orders.html", context)
 
 
 def my_documents(request):
-
+    current_user = request.user.id
+    client = Client.objects.get(pk=current_user)
+    
+    # notifications = Notification.objects.filter(
+    #     client_id=current_user, is_viewed=False
+    # ).exclude(type_notification="STATUS_ORDERING").update(is_viewed=True)
+    
     context = {
         "title": "Личный кабинет | мои документы",
     }

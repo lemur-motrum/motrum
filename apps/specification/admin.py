@@ -281,8 +281,9 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         spes = Specification.objects.get(id=id_sec)
         spes.total_amount = sums["price_all__sum"]
         spes.save()
-
-        pdf = crete_pdf_specification(id_sec)
+        requisites = None
+        account_requisites = None
+        pdf = crete_pdf_specification(id_sec,requisites,account_requisites,request)
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):
@@ -290,7 +291,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         obj.admin_creator = request.user
         if change:
             obj.tag_stop = True
-            obj.total_amount = 0
+            obj.total_amount = 0.00
             date = timezone.now()
             date_stop = create_time_stop_specification()
 

@@ -111,7 +111,57 @@ def get_year_holiday(self):
     try:
         import json
         import requests
-        year_date = datetime.datetime.now().year
+        # year_date = datetime.datetime.now().year
+        # year = str(year_date)
+        
+        if datetime.datetime.now().month == 12:
+            year_date = datetime.datetime.now() + datetime.timedelta(days=367)
+            year_date = year_date.year
+        else:    
+            year_date = datetime.datetime.now().year 
+        year = str(year_date)    
+        url = (
+                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+                + year
+                + ".json"
+            )
+        r = requests.get(url)
+        holidays_dict = r.json()
+        
+        try:
+            data_bd = CalendarHoliday.objects.get(year=year)
+            data_bd.json_date = holidays_dict
+            data_bd.save()
+    
+        except CalendarHoliday.DoesNotExist:
+
+            data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
+            data_bd.save()
+            
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Получение производственного календаря"
+
+            info = f"Получение производственного календаря не удалось"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=160)    
+    
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def get_next_year_holiday(self):
+    try:
+        import json
+        import requests
+        if datetime.datetime.now().month == 12:
+            year_date = datetime.datetime.now() + datetime.datetime.timedelta(days=367)
+            year_date = year_date.year
+        else:    
+            year_date = datetime.datetime.now().year     
+            
+        
         year = str(year_date)
         url = (
                 "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"

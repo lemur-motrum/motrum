@@ -32,6 +32,8 @@ from apps.supplier.models import (
 from pytils import translit
 from django.utils.text import slugify
 
+from project.settings import BASE_DIR
+
 
 TYPE_DOCUMENT = (
     ("InstallationProduct", "Руководство по монтажу и эксплуатации"),
@@ -185,7 +187,35 @@ class Product(models.Model):
                     "article": self.article,
                 },
             )
+    
+    def get_url_document(self):
+        category = self.category.slug
+        product = str(self.article)
+        if self.group is not None:
+            
+            groupe =  self.group.slug
+        else:
+            groupe = "none_group"
+            
+        url = "{0}/{1}/{2}/{3}".format(
+        "product",
+        category,
+        groupe,
+        product,
+    )
+        return url    
+    
+    def get_url_document_test(self):
+        
+        product = int(self.article)
+        
+        url = "{0}/{1}".format(
+        "product",
+        product,
+    )
+        return url   
 
+    
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)
     def post_create_historical_record_callback(
@@ -195,13 +225,6 @@ class Product(models.Model):
             delta = history_instance.diff_against(history_instance.prev_record)
             if delta.changed_fields == []:
                 history_instance.delete()
-
-
-# @receiver(post_save, sender=Product)
-# def update_change_reason(sender, instance, **kwargs):
-#     print(instance)
-#     # if instance._change_reason == None:
-#     update_change_reason(instance, 'Автоматическое')
 
 
 class CategoryProduct(models.Model):
@@ -376,20 +399,123 @@ class Price(models.Model):
 
         request = RequestMiddleware(get_response=None)
         request = request.thread_local.current_request
-        print(request.user)
+     
 
         if request.user:
             if request.user.is_staff == False:
                 client = Client.objects.get(id=request.user.id)
                 discount = client.percent
+          
                 price = self.rub_price_supplier
+              
                 price_discount = price - (price / 100 * float(discount))
+              
                 return price_discount
             else:
                 return self.rub_price_supplier
         else:
             return self.rub_price_supplier
+   
+    def get_sale_price_motrum(
+        self
+    ):
+        from apps.supplier.models import (
+            Discount,
+        )
+        item_category = self.prod.category_supplier
+        item_group = self.prod.group_supplier
+        vendors = self.prod.vendor
+        rub_price_supplier = self.rub_price_supplier
+        all_item_group = self.prod.category_supplier_all
+        supplier = self.prod.supplier
+        
+        motrum_price = rub_price_supplier
+        percent = 0
+        sale = [None]
 
+        # получение процента функция
+        def get_percent(item):
+            for i in item:
+                return i.percent
+
+        if all_item_group and percent == 0:
+            discount_all_group = Discount.objects.filter(
+                category_supplier_all=all_item_group.id,
+                is_tag_pre_sale=False,
+            )
+        
+
+            if discount_all_group:
+                percent = get_percent(discount_all_group)
+                sale = discount_all_group
+
+            # скидка по группе
+
+        if item_group and percent == 0:
+
+            discount_group = Discount.objects.filter(
+                category_supplier_all__isnull=True,
+                group_supplier=item_group.id, is_tag_pre_sale=False
+            )
+            
+        
+            if discount_group:
+                percent = get_percent(discount_group)
+                sale = discount_group
+            
+                # if percent != 0
+
+        # скидка по категории
+        if item_category and percent == 0:
+        
+            discount_categ = Discount.objects.filter(
+                category_supplier_all__isnull=True,
+                group_supplier__isnull=True,
+                category_supplier=item_category.id,
+                is_tag_pre_sale = False
+            )
+            
+            if discount_categ:
+                percent = get_percent(discount_categ)
+                sale = discount_categ
+
+        if vendors and percent == 0:
+
+            discount_all = Discount.objects.filter(
+                vendor=vendors,
+                group_supplier__isnull=True,
+                category_supplier__isnull=True,
+                category_supplier_all__isnull=True,
+                is_tag_pre_sale = False
+            )
+            # скидка по всем вендору
+            if discount_all:
+                percent = get_percent(discount_all)
+                sale = discount_all
+                
+        if percent == 0:
+
+            discount_all = Discount.objects.filter(
+                supplier=supplier,
+                vendor__isnull=True,
+                group_supplier__isnull=True,
+                category_supplier__isnull=True,
+                category_supplier_all__isnull=True,
+                is_tag_pre_sale = False
+            )
+            # скидка по всем вендору
+            if discount_all:
+                percent = get_percent(discount_all)
+                sale = discount_all
+            # нет скидки
+        
+        motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
+        # обрезать цены
+        motrum_price = round(motrum_price, 2)
+        if sale[0]:
+            return sale[0].percent
+        else:
+            return  None
 
 # курсы валют
 class CurrencyRate(models.Model):
@@ -428,7 +554,7 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках",
         null=True,
     )
-    stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках")
+    stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
     to_order = models.BooleanField("Товар под заказ", default=False)
     data_update = models.DateField(verbose_name="Дата обновления поставщика")
     # data_update_motrum = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -455,7 +581,7 @@ class Stock(models.Model):
 
     def save(self, *args, **kwargs):
         # посчитать комплекты лотов
-        if self.stock_supplier != None:
+        if self.stock_supplier != None and self.stock_supplier_unit == None:
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
@@ -568,7 +694,7 @@ class ProductProperty(models.Model):
 class Cart(models.Model):
     from apps.client.models import Client
 
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
     is_active = models.BooleanField("корзина сохранена", default=False)
@@ -591,7 +717,23 @@ class ProductCart(models.Model):
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
+    product_new = models.CharField(
+        "Название товара нового без добавления в бд",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
+    product_new_price = models.FloatField(
+        "Цена товара нового без добавления в бд",
+        blank=True,
+        null=True,
+        default=None,
+    )
+
     quantity = models.IntegerField(
         "количество товара",
         blank=True,

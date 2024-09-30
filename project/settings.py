@@ -41,6 +41,10 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+IS_TESTING = os.environ.get("IS_TESTING", 'False').lower() in ('true', '1', 't')
+
+
+
 
 # ALLOWED_HOSTS = []
 
@@ -58,6 +62,7 @@ INSTALLED_APPS = [
     "apps.admin_specification.apps.AdminSpecificationConfig",
     "apps.projects_web.apps.ProjectWebConfig",
     "apps.vacancy_web.apps.VacancyWebConfig",
+    "apps.notifications.apps.NotificationsConfig",
     "dal",
     "dal_select2",
     "project.apps.WebsiteAdminConfig",
@@ -189,7 +194,12 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
         "LOCATION": os.path.join(BASE_DIR, "coolsite_cache"),
     }
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    #     'LOCATION': 'unique-snowflake',
+    # },
 }
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

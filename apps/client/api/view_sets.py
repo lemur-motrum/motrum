@@ -1,27 +1,44 @@
 import datetime
+from operator import itemgetter
 import os
 import re
+from itertools import chain
+from xmlrpc.client import boolean
 from django.conf import settings
+from django.db.models import Prefetch
 from regex import F
 from rest_framework import routers, serializers, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.cache import cache
 from django.contrib.auth import authenticate, login
+from django.db.models import Q, F, OrderBy, Count
+from django.db.models import Case, When, Value, IntegerField
+from apps.notifications.models import Notification
 
 from apps.client.api.serializers import (
     AccountRequisitesSerializer,
-    AllAccountRequisitesSerializer,
     ClientRequisitesSerializer,
     ClientSerializer,
+    DocumentSerializer,
+    LkOrderDocumentSerializer,
+    LkOrderSerializer,
     OrderSerializer,
     RequisitesSerializer,
 )
 from django.contrib.sessions.models import Session
-from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.client.models import (
+    STATUS_ORDER,
+    STATUS_ORDER_INT,
+    AccountRequisites,
+    Client,
+    Order,
+    Requisites,
+)
 from apps.core.utils import (
     create_time_stop_specification,
     get_presale_discount,
+    loc_mem_cache,
     save_specification,
 )
 from apps.core.utils_web import (
@@ -31,7 +48,7 @@ from apps.core.utils_web import (
     send_email_message,
     send_pin,
 )
-from apps.product.models import Cart, Price, Product, ProductCart
+from apps.product.models import Cart, Lot, Price, Product, ProductCart
 from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
     SpecificationSerializer,
@@ -228,19 +245,31 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
-
         cart = Cart.objects.get(id=data["cart"])
-        
         client = cart.client
-        
-            
+        extra_discount = client.percent
+        products_cart = ProductCart.objects.filter(cart_id=cart)
+        all_info_requisites = False
+        all_info_product = True
+        requisites_id = None
+        account_requisites_id = None
+
+        if "requisites" in data:
+            all_info_requisites = True
+            requisites = Requisites.objects.get(id=data["requisites"])
+            requisites_id = requisites.id
+            account_requisites = AccountRequisites.objects.get(
+                requisites=requisites, account_requisites=data["account_requisites"]
+            )
+            account_requisites_id = account_requisites.id
+
+        for product_cart in products_cart:
+            if product_cart.product.price.rub_price_supplier == 0:
+                all_info_product = False
 
         # сохранение спецификации для заказа с реквизитами
-        if "requisites" in data:
-            print(data["requisites"])
-            extra_discount = client.percent
+        if all_info_requisites and all_info_product:
             # сохранение спецификации
-            products_cart = ProductCart.objects.filter(cart_id=cart)
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
             data_specification = {
@@ -258,7 +287,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 specification = serializer.save()
 
                 # сохранение продуктов для спецификации
-                total_amount = 0
+                total_amount = 0.00
                 currency_product = False
                 for product_item in products_cart:
                     quantity = product_item.quantity
@@ -283,33 +312,33 @@ class OrderViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST,
                         )
 
-                    total_amount += int(item_data["price_all"])
+                    total_amount += float(item_data["price_all"])
                 # # обновить спецификацию пдф
+
                 specification.total_amount = total_amount
                 specification.skip_history_when_saving = True
                 specification.save()
 
-                pdf = crete_pdf_specification(specification.id)
+                pdf = crete_pdf_specification(
+                    specification.id, requisites, account_requisites, request
+                )
                 specification.file = pdf
                 specification.skip_history_when_saving = True
                 specification.save()
                 specification = specification.id
-                requisites =  data["requisites"]
-                account_requisites =  data["account_requisites"]
+                requisites = data["requisites"]
+                account_requisites = data["account_requisites"]
                 status_order = "PAYMENT"
 
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # сохранение заказа БЕЗ реквизитами
+        # сохранение данные заказа БЕЗ реквизит и продукты под вопросом
         else:
             specification = None
             status_order = "PROCESSING"
-            requisites = None
-            account_requisites = None
-            
-       
 
+        # сохранение ордера
         serializer_class = OrderSerializer
         data_order = {
             "client": client,
@@ -317,15 +346,23 @@ class OrderViewSet(viewsets.ModelViewSet):
             "specification": specification,
             "cart": cart.id,
             "status": status_order,
-            "requisites": requisites,
-            "account_requisites": account_requisites,
+            "requisites": requisites_id,
+            "account_requisites": account_requisites_id,
         }
         serializer = self.serializer_class(data=data_order, many=False)
         if serializer.is_valid():
             order = serializer.save()
-            
+            if all_info_requisites and all_info_product:
+                Notification.add_notification(order.id, "STATUS_ORDERING")
+
+                Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
+                order.create_bill()
+            else:
+                pass
+
             cart.is_active = True
             cart.save()
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -334,22 +371,24 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
-        cart = Cart.objects.get(id=data["cart"])
+        cart = Cart.objects.get(id=data["id_cart"])
         cart.is_active = True
         cart.save()
 
-        client = cart.client
-        specification = save_specification(data)
+        # client = cart.client
+        client = None
+        specification = save_specification(data, request)
 
         data_order = {
             "client": client,
             "name": 123131,
             "specification": specification.id,
-            "status": "PAYMENT",
+            "status": "PROCESSING",
         }
+
         try:
             order = Order.objects.get(specification=specification)
-            serializer = self.serializer_class(order, data=data, many=False)
+            serializer = self.serializer_class(order, data=data_order, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -357,25 +396,384 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Order.DoesNotExist:
-            serializer = self.serializer_class(data=data, many=False)
+            serializer = self.serializer_class(data=data_order, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # создание счета к заказу
+    @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
+    def create_bill_admin(self, request, pk=None, *args, **kwargs):
+
+        order = Order.objects.get(specification_id=pk)
+
+        order.create_bill()
+
+        return Response(None, status=status.HTTP_200_OK)
+
     # изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")
     def update_order_admin(self, request, pk=None, *args, **kwargs):
         data = request.data
-        cart = Cart.objects.filter(id=data["cart"]).update(is_active=False)
+        cart_id = request.COOKIES.get("cart")
+        cart = Cart.objects.filter(id=cart_id).update(is_active=False)
 
         return Response(cart, status=status.HTTP_200_OK)
 
-    # выйти и з изменения без сохранения спецификации дмин специф
-    @action(detail=False, methods=["get"], url_path=r"exit-order-admin")
+    # выйти из изменения без сохранения спецификации дмин специф
+    @action(detail=False, methods=["update"], url_path=r"exit-order-admin")
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
 
         return Response(cart, status=status.HTTP_200_OK)
+
+    # страница мои заказов аякс загрузка
+    @action(detail=False, url_path="load-ajax-order-list")
+    def load_ajax_order_list(self, request):
+        from django.db.models.functions import Length
+
+        count = int(request.query_params.get("count"))
+        count_last = 5
+
+        serializer_class = LkOrderSerializer
+        current_user = request.user.id
+        client = Client.objects.get(pk=current_user)
+
+        # сортировки
+        sorting = "-notification_count"
+        # direction = "ASC"
+        if request.query_params.get("sort"):
+            sorting = request.query_params.get("sort")
+        if request.query_params.get("direction"):
+            direction = request.query_params.get("direction")
+
+        if sorting == "date_order":
+            if direction == "ASC":
+                sorting = F("date_order").asc(nulls_last=True)
+            else:
+                sorting = F("date_order").desc(nulls_last=True)
+
+        if sorting == "bill_sum":
+            if direction == "ASC":
+                sorting = F("bill_sum").asc(nulls_last=True)
+            else:
+                sorting = F("bill_sum").desc(nulls_last=True)
+
+        if sorting == "status":
+            if direction == "ASC":
+                sorting = Case(
+                    When(status="PROCESSING", then=Value(1)),
+                    When(status="PAYMENT", then=Value(2)),
+                    When(status="IN_MOTRUM", then=Value(3)),
+                    When(status="SHIPMENT_AUTO", then=Value(4)),
+                    When(status="SHIPMENT_PICKUP", then=Value(5)),
+                    When(status="CANCELED", then=Value(6)),
+                    When(status="COMPLETED", then=Value(7)),
+                    output_field=IntegerField(),
+                )
+            else:
+                sorting = Case(
+                    When(status="PROCESSING", then=Value(7)),
+                    When(status="PAYMENT", then=Value(6)),
+                    When(status="IN_MOTRUM", then=Value(5)),
+                    When(status="SHIPMENT_AUTO", then=Value(4)),
+                    When(status="SHIPMENT_PICKUP", then=Value(3)),
+                    When(status="CANCELED", then=Value(2)),
+                    When(status="COMPLETED", then=Value(1)),
+                    output_field=IntegerField(),
+                )
+
+        # ОСТАТКИ СОРТИРОВКИ ПО НЕСКОЛЬКИМ ПОЛЯЬ ОДНОВРЕМЕННО НЕ УДАЛЯТЬ
+        # if request.query_params.get("sortDate"):
+        #     date_get = request.query_params.get("sortDate")
+        # else:
+        #     date_get = "ASC"
+        #     # date_get = None
+
+        # if request.query_params.get("sortSum"):
+        #     sum_get = request.query_params.get("sortSum")
+        # else:
+        #     # sum_get = "ASC"
+        #     sum_get = None
+
+        # if request.query_params.get("sortStatus"):
+        #     status_get = request.query_params.get("sortStatus")
+        # else:
+        #     status_get = "ASC"
+        # status_get = None
+
+        # if date_get:
+        #     sort = "date_order"
+        #     if date_get == "ASC":
+        #         ordering_filter_date = F(sort).asc(nulls_last=True)
+        #     else:
+        #         ordering_filter_date = F(sort).desc(nulls_last=True)
+
+        # else:
+        #     ordering_filter_date = None
+
+        # if sum_get:
+        #     sort = "bill_sum"
+        #     if sum_get == "ASC":
+        #         ordering_filter_summ = F(sort).asc(nulls_last=True)
+        #
+        #     else:
+        #         ordering_filter_summ = F(sort).desc(nulls_last=True)
+        # else:
+        #     ordering_filter_summ = None
+
+        # if status_get:
+        #     sort = "status"
+        #     if status_get == "ASC":
+
+        #         custom_order = Case(
+        #             When(status="PROCESSING", then=Value(1)),
+        #             When(status="PAYMENT", then=Value(2)),
+        #             When(status="IN_MOTRUM", then=Value(3)),
+        #             When(status="SHIPMENT_AUTO", then=Value(4)),
+        #             When(status="SHIPMENT_PICKUP", then=Value(5)),
+        #             When(status="CANCELED", then=Value(6)),
+        #             When(status="COMPLETED", then=Value(7)),
+        #             output_field=IntegerField(),
+        #         )
+
+        #     else:
+        #         custom_order = Case(
+        #             When(status="PROCESSING", then=Value(7)),
+        #             When(status="PAYMENT", then=Value(6)),
+        #             When(status="IN_MOTRUM", then=Value(5)),
+        #             When(status="SHIPMENT_AUTO", then=Value(4)),
+        #             When(status="SHIPMENT_PICKUP", then=Value(3)),
+        #             When(status="CANCELED", then=Value(2)),
+        #             When(status="COMPLETED", then=Value(1)),
+        #             output_field=IntegerField(),
+        #         )
+        # else:
+        #     custom_order = None
+        # для такой сортировки если нет данных использовать custom_order ordering_filter_summ ordering_filter_date = None
+
+        # ordering = {
+        # 'ordering_filter_date': ordering_filter_date,
+        # 'ordering_filter_summ': ordering_filter_summ,
+        # 'custom_order': custom_order,
+        # }
+        # ordering = {k:v for k,v in ordering.items() if v is not None}
+        # ordering = list(ordering.values())
+        # lot = Lot.objects.all()
+       
+        orders = (
+            Order.objects.filter(client=client)
+            .select_related(
+                "specification",
+                "cart",
+                "requisites",
+                "account_requisites",
+
+            )
+            # .prefetch_related(
+            #     Prefetch(
+            #         "notification_set",
+            #         queryset=Notification.objects.filter(
+            #             type_notification="STATUS_ORDERING", is_viewed=False
+            #         ),
+            #         to_attr="filtered_notification_items",
+            #     )
+            # )
+            .prefetch_related(
+                Prefetch('specification__productspecification_set'))
+            .prefetch_related(
+                Prefetch('specification__productspecification_set__product'))
+            # .prefetch_related(
+            #     Prefetch('specification__productspecification_set__product__stock'))
+            # .prefetch_related(
+            #     Prefetch('specification__productspecification_set__product__stock__lot'))
+            .annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=False,notification__type_notification="STATUS_ORDERING")))
+            .order_by(sorting, "-id")[count : count + count_last]
+        )
+       
+        for o in orders:
+            print(o.notification_count)
+           
+# [count : count + count_last]
+        serializer = serializer_class(orders, many=True)
+        data = serializer.data
+        # прочитать уведомления только выведенные ордеры
+        for data_order in data:
+            if int(data_order["notification_count"]) > 0:
+                Notification.objects.filter(order=data_order["id"],
+                client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+            ).update(is_viewed=True)
+            
+        # прочитать уведомления всех ордеров
+        # notifications = Notification.objects.filter(
+        #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+        # ).update(is_viewed=True)
+
+        # if sorting == "-id":
+        #     data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)
+
+        data_response = {
+            "data": data,
+        }
+        return Response(data=data_response, status=status.HTTP_200_OK)
+
+    # страница мои документы аякс загрузка
+    @action(detail=False, url_path="load-ajax-document-list")
+    def load_ajax_document_list(self, request):
+        count = int(request.query_params.get("count"))
+        count_last = 10
+        serializer_class = LkOrderDocumentSerializer
+        current_user = request.user.id
+        client = Client.objects.get(pk=current_user)
+
+        # сортировки
+        sorting = None
+        # sorting_spesif = "specification__date"
+        # sorting_bill = "bill_date_start"
+        if request.query_params.get("sort"):
+            sorting = request.query_params.get("sort")
+            if sorting == "specification__date":
+                sorting_spesif = "date"
+                sorting_bill = "bill_date_start"
+
+        if request.query_params.get("direction"):
+            sorting_directing = request.query_params.get("direction")
+
+        # заказы сериализировать
+        orders = (
+            Order.objects.filter(client=client)
+            .select_related(
+                "specification",
+                "cart",
+                "requisites",
+                "account_requisites",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "notification_set",
+                    queryset=Notification.objects.filter(is_viewed=False).exclude(
+                        type_notification="STATUS_ORDERING"
+                    ),
+                    to_attr="filtered_notification_items",
+                )
+            )
+        )
+
+        serializer = serializer_class(orders, many=True)
+    
+        # формирование отдельных документов из сериализированных заказов
+        documents = []
+        for order in serializer.data:
+
+            if order["specification"]:
+
+                data_spesif = {
+                    "type": 1,
+                    "name": "спецификация",
+                    "order": order["id"],
+                    "status": order["status"],
+                    "status_full": order["status_full"],
+                    "pdf": order["specification_list"]["file"],
+                    "requisites_contract": order["requisites_full"]["contract"],
+                    "requisites_legal_entity": order["requisites_full"]["legal_entity"],
+                    "date_created": order["specification_list"]["date"],
+                    "data_stop": order["specification_list"]["date_stop"],
+                    "amount": order["specification_list"]["total_amount"],
+                    "notification_set": [],
+                    "type_notification":"DOCUMENT_SPECIFICATION",
+                }
+
+                for notification_set in order["notification_set"]:
+                    if (
+                        notification_set["type_notification"]
+                        == "DOCUMENT_SPECIFICATION"
+                    ):
+
+                        data_spesif["notification_set"].append(notification_set)
+
+                documents.append(data_spesif)
+
+            if order["bill_file"]:
+                data_bill = {
+                    "type": 2,
+                    "name": "счёт",
+                    "order": order["id"],
+                    "status": order["status"],
+                    "status_full": order["status_full"],
+                    "pdf": order["bill_file"],
+                    "requisites_contract": order["requisites_full"]["contract"],
+                    "requisites_legal_entity": order["requisites_full"]["legal_entity"],
+                    "date_created": order["bill_date_start"],
+                    "data_stop": order["bill_date_stop"],
+                    "amount": order["bill_sum"],
+                    "notification_set": [],
+                    "type_notification":"DOCUMENT_BILL",
+                }
+
+                for notification_set in order["notification_set"]:
+                    if notification_set["type_notification"] == "DOCUMENT_BILL":
+                        data_bill["notification_set"].append(notification_set)
+
+                documents.append(data_bill)
+
+            # if order["bill_file"]:
+            #     data_act = {
+            #         "type": 3,
+            #         "name": "акт",
+            #         "order": order["cart"],
+            #         "status": order["status"],
+            #         "status_full": order["status_full"],
+            #         "pdf": order["bill_file"],
+            #         "requisites_contract": order["requisites_full"]["contract"],
+            #         "requisites_legal_entity": order["requisites_full"]["legal_entity"],
+            #         "date_created": order["bill_date_start"],
+            #         "data_stop": order["bill_date_stop"],
+            #         "amount": order["bill_sum"],
+            #         "notification_set" : []
+            #     }
+            #  for notification_set in order["notification_set"]:
+            #         if notification_set['type_notification'] == 'DOCUMENT_ACT':
+            #             data_spesif['notification_set'].append(notification_set)
+
+            #     documents.append(data_act)
+
+        # сортировки для документов
+        if sorting:
+            if sorting == "date":
+                documents = sorted(
+                    documents,
+                    key=lambda x: datetime.datetime.strptime(
+                        x["date_created"], "%d.%m.%Y"
+                    ),
+                    reverse=sorting_directing,
+                )
+            else:
+                documents = sorted(
+                    documents, key=itemgetter(sorting), reverse=sorting_directing
+                )
+        else:
+            documents = sorted(
+                documents, key=lambda x: len(x["notification_set"]), reverse=True
+            )
+        # прочитать уведомления только выведенные ордеры
+        # for data_order in documents:
+        #     if len(data_order["notification_set"]) > 0:
+        #         Notification.objects.filter(order=data_order["order"],
+        #         client_id=current_user, type_notification=data_order["type_notification"], is_viewed=False
+        #     ).update(is_viewed=True)
+                
+        notifications = (
+            Notification.objects.filter(client_id=current_user, is_viewed=False)
+            .exclude(type_notification="STATUS_ORDERING")
+            .update(is_viewed=True)
+        )
+
+        data_response = {
+            "data": documents[count : count + count_last],
+            # [count : count + 10]
+        }
+
+        return Response(data=data_response, status=status.HTTP_200_OK)

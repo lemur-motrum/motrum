@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 
+
 from apps.core.models import Currency
 from apps.product.models import  Price, Product
 from apps.specification.utils import get_document_path
@@ -42,6 +43,7 @@ class Specification(models.Model):
         null=True,
     )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    
     class Meta:
         verbose_name = "Спецификация"
         verbose_name_plural = "Спецификации"
@@ -58,7 +60,16 @@ class Specification(models.Model):
         
         super().save(*args, **kwargs)
         
-    
+    def get_order_bill(self):
+        from apps.client.models import Order
+        try:
+            
+            order = Order.objects.get(specification = self)
+            print(order.bill_file)
+            return order.bill_file
+        except Order.DoesNotExist:
+            return None    
+        
 
 
 class ProductSpecification(models.Model):
@@ -73,6 +84,15 @@ class ProductSpecification(models.Model):
         Product,
         verbose_name="Продукты",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    product_new = models.CharField(
+        "Название товара нового без добавления в бд",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
     )
     product_currency = models.ForeignKey(
         Currency,
@@ -105,6 +125,7 @@ class ProductSpecification(models.Model):
     price_exclusive = models.BooleanField("Цена по запросу", default=False)
     extra_discount = models.FloatField("Процент дополнительной скидки",blank=True,
         null=True,)
+    date_delivery  = models.DateField(verbose_name="Дата поставки товара",null=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Спецификация продукт"

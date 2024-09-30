@@ -3,6 +3,7 @@ import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
 window.addEventListener("DOMContentLoaded", () => {
   const specificationTable = document.querySelector(".spetification_table");
   if (specificationTable) {
+    const csrfToken = getCookie("csrftoken");
     const addNewProductBtn =
       specificationTable.querySelector(".add_new_product");
     const overlay = document.querySelector(
@@ -54,6 +55,42 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       if (nameInput.value && priceInput.value && quantityInput.value) {
         console.log("Ура, товар добавлен в корзину");
+        const cart_id = getCookie("cart");
+        const dataObj = {
+          product: null,
+          product_new: nameInput.value,
+          product_new_price: +priceInput.value,
+          cart: +cart_id,
+          quantity: +quantityInput.value
+        };
+
+        const data = JSON.stringify(dataObj);
+        fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              location.reload();
+              return response.json();
+              
+              
+
+            } else {
+              throw new Error("Ошибка");
+            }
+          })
+          .then(
+            (response) =>
+              (document.querySelector(
+                ".admin_specification_cart_length"
+              ).textContent = response.cart_len)
+          )
+          .catch((error) => console.error(error));
       }
     };
   }

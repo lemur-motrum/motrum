@@ -19,6 +19,7 @@ flower
 django-simple-history
 beautifulsoup4
 djangorestframework
+num2words
 
 djlint
 libsass 

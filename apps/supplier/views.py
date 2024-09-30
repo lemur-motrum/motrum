@@ -6,9 +6,11 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import currency_chek, del_currency, update_currency_price
+from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.one_c import one_c_price
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
@@ -24,7 +26,7 @@ from xml.etree import ElementTree, ElementInclude
 def add_iek(request):
     from django.db.models import Prefetch
 
-    prompower_api()
+    iek_api()
     title = "Услуги"
 
     responsets = ["233", "2131"]
@@ -38,7 +40,27 @@ def add_iek(request):
 
 # тестовая страница скриптов
 def test(request):
-    veda_api()
+    def background_task():
+        # Долгосрочная фоновая задача
+        iek_api()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
+    title = "Услуги"
+
+    responsets = ["233", "2131"]
+
+    context = {
+        "title": title,
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)
+
+
+def add_one_c(request):
+    one_c_price()
     title = "Услуги"
     print(124)
 
@@ -49,6 +71,7 @@ def test(request):
         "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
+
 
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
@@ -69,11 +92,13 @@ def save_emas_props(request):
     }
     return render(request, "supplier/supplier.html", context)
 
-# добавление разрешений админам 
+
+# добавление разрешений админам
 def add_permission(request):
     upgrade_permission()
     context = {}
     return render(request, "supplier/supplier.html", context)
+
 
 # добавление праздников вручную
 def add_holidays(request):
@@ -102,6 +127,7 @@ def add_holidays(request):
 
     context = {}
     return render(request, "supplier/supplier.html", context)
+
 
 # получение валют вручную
 def get_currency(request):
@@ -133,7 +159,6 @@ def get_currency(request):
         currency_chek(current, now_rate[0])
     context = {}
     return render(request, "supplier/supplier.html", context)
-
 
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):

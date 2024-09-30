@@ -1,0 +1,52 @@
+{% load static %}
+
+{% load header_menu_counter %}
+{% load header_menu_url %}
+{% url 'core:index' as index_url %}
+
+
+<header class="header">
+    <div class="logo-container">
+       
+        {% if request.get_full_path  == index_url %}
+        <img src={% static "core/images/logo.png" %} alt="logo" />
+      {% else %}
+        <a class="navbar_menu_item_link" href="/">
+
+          <img src={% static "core/images/logo.png" %} alt="logo" />
+        </a>
+      {% endif %}
+    </div>
+    <div class="call-back-container">
+        <div class="call-back-link">обратный звонок</div>
+        <div class="tel-link">+7 (846) 300 - 41 - 17</div>
+    </div>
+    <div class="user-navigation">
+        <div class="navigation">
+          <!-- ЭТОТ ТЕГ НАДО ВЗЯТЬ В UL  -->
+          {% header_menu_url %}
+        </div>
+
+        {% comment %} <ul class="header_nav">
+            <li class="header_nav-link">
+              {% url 'service:index' as the_url %}
+              {% if request.get_full_path == the_url or type_url ==  "service" %}
+                <span class="menu-active">Услуги</span>
+              {% else %}
+                <a class="" href="{% url 'service:index' %}">Товары</a>
+              {% endif %}
+            </li>
+        
+            
+          </ul> {% endcomment %}
+      
+
+
+
+
+         
+        <div class="cart-elems">
+            {% header_menu_counter %}
+        </div>
+    </div>
+</header>

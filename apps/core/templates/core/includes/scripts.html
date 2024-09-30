@@ -1,10 +1,18 @@
 {% load static %}
 <!--functions  -->
 <script type="module" src={% static 'core/js/functions.js' %}></script>
+
 <!--core  -->
+
 <script type="module" src={% static 'core/js/scripts.js' %}></script>
+
 <!--клиенты  -->
 <script type="module"
         src="{% static 'client/js/modal/login_client_modal.js' %}"></script>
+<script type="module"
+        src="{% static 'client/js/ajax_load_order.js' %}"></script>       
+<script type="module"
+        src="{% static 'client/js/ajax_load_document.js' %}"></script>
+
 <!--продукты -->
 <script type="module" src={% static 'product/js/load_catalog_items.js' %}></script>

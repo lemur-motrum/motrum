@@ -351,59 +351,108 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
-    cart_qs = Cart.objects.get(id=cart)
+    if cart != None:
+        
+        cart_qs = Cart.objects.get(id=cart)
 
-    discount_client = 0
-    if cart_qs.client:
-        discount_client = Client.objects.filter(id=cart_qs.client.id)
+        discount_client = 0
+        if cart_qs.client:
+            discount_client = Client.objects.filter(id=cart_qs.client.id)
 
-    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
-    product_cart = ProductCart.objects.filter(cart=cart)
-
-    prefetch_queryset_property = ProductProperty.objects.filter(
-        product__in=product_cart_list
-    )
-    product = (
-        Product.objects.filter(id__in=product_cart_list)
-        .select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
-            "stock__lot",
+        product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+            "product__id"
         )
-        .prefetch_related(
-            Prefetch(
-                "productproperty_set",
-                queryset=prefetch_queryset_property,
+      
+        product_cart = ProductCart.objects.filter(cart=cart)
+        try:
+            specification = Specification.objects.get(cart=cart)
+            product_specification = ProductSpecification.objects.filter(
+                specification=specification
+            )
+            print(product_specification)
+        except Specification.DoesNotExist:
+            specification = None
+            product_specification = ProductSpecification.objects.filter(
+                specification=specification
+            )
+
+        prefetch_queryset_property = ProductProperty.objects.filter(
+            product__in=product_cart_list
+        )
+        product = (
+            Product.objects.filter(id__in=product_cart_list)
+            .select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+                "stock__lot",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "productproperty_set",
+                    queryset=prefetch_queryset_property,
+                )
+            )
+            .annotate(
+                quantity=product_cart.filter(product=OuterRef("pk")).values(
+                    "quantity",
+                ),
+                id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                    "id",
+                ),
+                id_product_spesif=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "id",
+                ),
             )
         )
-        .annotate(
-            quantity=product_cart.filter(product=OuterRef("pk")).values(
-                "quantity",
-            ),
-            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
-                "id",
-            ),
-        )
-    )
 
-    id_specification = request.COOKIES.get("specificationId")
+        id_specification = request.COOKIES.get("specificationId")
+        if id_specification:
+            product_new = ProductSpecification.objects.filter(
+                # id__in=product_cart_list,
+                specification=specification,
+                product=None,
+            ).annotate(
+                id_product_cart=product_cart.filter(
+                    product_new=OuterRef("product_new")
+                ).values(
+                    "id",
+                ),
+            )
+            print(product_new)
+            update_spesif = True
 
-    if id_specification:
-        title = f"Cпецификация № {id_specification}"
+        else:
+            product_new = ProductCart.objects.filter(cart=cart, product=None)
+            update_spesif = False
+
+        print(product_new)
+        if id_specification:
+            title = f"Cпецификация № {id_specification}"
+        else:
+            title = "Новая спецификация"
+
     else:
         title = "Новая спецификация"
+        product = None
+        product_new = None
+        cart = None
+        update_spesif = False
 
     current_date = datetime.date.today().isoformat()
     context = {
         "title": title,
         "product": product,
+        "product_new": product_new,
         "cart": cart,
         "request": request,
         "current_date": current_date,
+        "update_spesif": update_spesif,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -416,7 +465,7 @@ def save_specification_view_admin(request):
     received_data = json.loads(request.body)
 
     # сохранение спецификации
-    save_specification(received_data)
+    save_specification(received_data,request)
 
     out = {"status": "ok", "data": received_data}
     return JsonResponse(out)
@@ -437,6 +486,7 @@ def get_all_specifications(request):
         .order_by("tag_stop", "pk")
         .reverse()
     )
+    
     # фильтрация по админу
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type

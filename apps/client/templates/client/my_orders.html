@@ -1,6 +1,27 @@
 {% extends "client/lc.html" %}
 {% block personal_account_content %}
-    <div class="personal_account_content">
-        <h2>Заказов пока нет</h2>
+
+    <div class="order_container">
+        <div class="order_wrapper" order-elem="wrapper">
+            <div class="site_order_container" order-elem="container">
+               
+                {% for order in order_list %}
+                    {% include "order/includes/order_item.html" with order=order %}
+
+                    
+                {% endfor %}
+            </div>
+           
+            <div class="end_content">
+                <button class="add_more" order-elem="button">загрузить еще</button>
+                
+            </div>
+        </div>
+
     </div>
+
+
+
+
+
 {% endblock personal_account_content %}

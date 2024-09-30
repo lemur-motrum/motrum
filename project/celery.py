@@ -47,6 +47,10 @@ app.conf.beat_schedule = {
     #     'task': 'apps.specification.tasks.specification_date_stop',
     #     'schedule': crontab(minute=20, hour=12),
     # },
+    'add_iek3': {
+        'task': 'apps.supplier.tasks.add_iek',
+        'schedule': crontab(minute=45, hour=11),
+    },
     'add_iek2': {
         'task': 'apps.supplier.tasks.add_iek',
         'schedule': crontab(minute=00, hour=15),

@@ -11,6 +11,17 @@ def js_templates():
             'module': 'catalog',
             'name': 'product-item',
             'template': 'product/includes/ajax_product_item.html',
+        },
+        {
+            'module': 'lk',
+            'name': 'order-item',
+            'template': 'client/includes/ajax_order_item.html',
+        }
+        ,
+        {
+            'module': 'lk',
+            'name': 'document-item',
+            'template': 'client/includes/ajax_document_item.html',
         }
     ]
 

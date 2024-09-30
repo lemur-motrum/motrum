@@ -9,26 +9,32 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
 
-from apps.client.models import Client
+from apps import client
+from apps.client.models import AccountRequisites, Client, Requisites
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
 
 from apps.product.models import ProductCart
 from apps.core.utils_web import send_email_message, send_email_message_html
+from apps.projects_web.models import Project
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 from django.db.models import F
+from django.db.models.functions import Round
 
 
 # Create your views here.
 def index(request):
-    categories = list(CategoryProduct.objects.all())
-    random.shuffle(categories)
-    cat = categories[0:7]
-
+    # categories = list(CategoryProduct.objects.all())
+    # random.shuffle(categories)
+    # cat = categories[0:7]
+    categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by("article_home_web")[0:7]
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    
     context = {
-        "categories": cat,
+        "categories": categories,
+        "projects":projects,
     }
     return render(request, "core/index.html", context)
 
@@ -41,62 +47,86 @@ def okt(request):
     return render(request, "core/okt.html", context)
 
 
-def web(request):
-    categories = CategoryProduct.objects.all().order_by("article_name")
-
-    context = {
-        "categories": categories,
-    }
-    return render(request, "core/web.html", context)
 
 
-# вьюяха странцы корзина
+# вьюха странцы корзина
 def cart(request):
+
     cart = request.COOKIES.get("cart")
-    cart_qs = Cart.objects.get(id=cart)
+    if cart:
+        cart_qs = Cart.objects.get(id=cart)
+        discount_client = 0
+        if cart_qs.client:
+            client = Client.objects.get(id=cart_qs.client.id)
+            discount_client = client.percent
+            if discount_client is None:
+                discount_client = 0
+                
+            requisites = Requisites.objects.filter(client=client).prefetch_related("accountrequisites_set").annotate(accountrequisit=F('accountrequisites__account_requisites'))
+                
+                # .prefetch_related("accountrequisites_set")
+            # for requisit in requisites:
+            #      print(requisit.accountrequisit)
+                #    print(requisit.accountrequisites_set.all())
+        else:
+            requisites = None 
+            client = None       
+                 
 
-    discount_client = 0
-    if cart_qs.client:
-        discount_client = Client.objects.filter(id=cart_qs.client.id)
+        product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
+        product_cart = ProductCart.objects.filter(cart=cart)
 
-    product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
-    product_cart = ProductCart.objects.filter(cart=cart)
-
-    prefetch_queryset_property = ProductProperty.objects.filter(
-        product__in=product_cart_list
-    )
-    product = (
-        Product.objects.filter(id__in=product_cart_list)
-        .select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
-            "stock__lot",
+        prefetch_queryset_property = ProductProperty.objects.filter(
+            product__in=product_cart_list
         )
-        .prefetch_related(
-            Prefetch(
-                "productproperty_set",
-                queryset=prefetch_queryset_property,
+        
+        product = (
+            Product.objects.filter(id__in=product_cart_list)
+            .select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+                "stock__lot",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "productproperty_set",
+                    queryset=prefetch_queryset_property,
+                )
+            )
+            .annotate(
+                quantity=product_cart.filter(product=OuterRef("pk")).values(
+                    "quantity",
+                ),
+                id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                    "id",
+                ),
+                # sale_price_total=ArrayAgg('price__rub_price_supplier')
+                sale_price=Round(F('price__rub_price_supplier')* 0.01 * (100-float(discount_client)), 2),
+  
             )
         )
-        .annotate(
-            quantity=product_cart.filter(product=OuterRef("pk")).values(
-                "quantity",
-            ),
-            id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
-                "id",
-            ),
-        )
-    )
-
+        
+    else:
+        product = None 
+        cart = None
+        account_requisites = None  
+        discount_client = None 
+        requisites = None  
+        client = None
+    
     context = {
+        "client" : client, 
         "product": product,
         "cart": cart,
         "request": request,
         "title": "Корзина",
+        "discount_client":discount_client,
+        "requisites":requisites,
+        # "account_requisites":account_requisites,
     }
 
     return render(request, "core/cart.html", context)
@@ -138,7 +168,7 @@ def email_manager(request):
 
         to_manager = client.manager.email
         html_message = loader.render_to_string(
-            "core/email.html",
+            "core/emails/email.html",
             {
                 "client_name": client.contact_name,
                 "client_phone": client.phone,

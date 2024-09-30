@@ -76,7 +76,9 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             };
             cartButton.onclick = () => {
-              if (!setCookie("cart")) {
+              console.log(getCookie("cart"))
+              if (!getCookie("cart")) {
+                console.log(111)
                 fetch("/api/v1/cart/add-cart/", {
                   method: "GET",
                   headers: {
@@ -120,7 +122,8 @@ window.addEventListener("DOMContentLoaded", () => {
                   })
                   .catch((error) => console.error(error));
               } else {
-                const cart_id = setCookie("cart");
+                console.log(22)
+                const cart_id = getCookie("cart");
                 const dataObj = {
                   product: product_id,
                   cart: cart_id,
@@ -221,7 +224,7 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       cartButton.onclick = () => {
-        if (!setCookie("cart")) {
+        if (!getCookie("cart")) {
           fetch("/api/v1/cart/add-cart/", {
             method: "GET",
             headers: {

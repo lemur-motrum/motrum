@@ -62,7 +62,15 @@ class ProductPropertySerializer(serializers.ModelSerializer):
             "value",
         )
 
+class ProductSpesifSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "name",
+        )
+        
 class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
     stock = StockSerializer(read_only=False, many=False)

@@ -696,6 +696,7 @@ def iek_api():
                             # остатки
                             # остатки
                             param = "шт"
+                            lot = None
                             logistic_parametr_quantity = 1
                             if "LogisticParameters" in data_item:
                                 i = 0
@@ -711,58 +712,59 @@ def iek_api():
                                 elif "transport" in data_item["LogisticParameters"]:
                                     logistic_parametr_quantity = data_item["LogisticParameters"]["transport"]["quantity"]    
                                          
-                                        
+                                if logistic_parametr_quantity == None:
+                                       logistic_parametr_quantity = 1     
                                         
 
-                            lot_short_name = data_item["LogisticParameters"][param]["unit"]          
-                            lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
+                                lot_short_name = data_item["LogisticParameters"][param]["unit"]          
+                                lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
                             
                             
-                            if  lot_short_name == "шт":
-                                   lot_short = "штука"
-                                   lot = Lot.objects.get(name_shorts="шт")
-                                   lot_complect = int(logistic_parametr_quantity)
-                                   stock_supplier = 0
-                                   stock_supplier_unit = 0
-                            else:
-                                try:
-                                    lot = Lot.objects.get(name_shorts=lot_short_name)
-                                except Lot.DoesNotExist:
-                                    lot = lot_chek(lot_short_name)
-                                        
-                                lot_complect = int(logistic_parametr_quantity)
-                                stock_supplier = 0                       
-                                
+                                if  lot_short_name == "шт":
+                                    lot_short = "штука"
+                                    lot = Lot.objects.get(name_shorts="шт")
+                                    lot_complect = int(logistic_parametr_quantity)
+                                    stock_supplier = 0
+                                    stock_supplier_unit = 0
+                                else:
+                                    try:
+                                        lot = Lot.objects.get(name_shorts=lot_short_name)
+                                    except Lot.DoesNotExist:
+                                        lot = lot_chek(lot_short_name)
+                                            
+                                    lot_complect = int(logistic_parametr_quantity)
+                                    stock_supplier = 0                       
+                                    
                                 
                                 
                                 
                             stock_supplier = get_iek_stock_one(article)
                             stock_prod_stock_supplier = stock_supplier[0] / int(order_multiplicity)
-                            
-                            try:
-                                stock_prod = Stock.objects.get(prod=article)
-                               
-                            except Stock.DoesNotExist:
-                                stock_prod = Stock(
-                                    prod=article,
-                                    # lot=lot,
-                                    # stock_motrum = stock_motrum
-                                )
+                            if lot:
+                                try:
+                                    stock_prod = Stock.objects.get(prod=article)
                                 
-                            finally:
-                                stock_prod.lot = lot
-                                stock_prod.stock_supplier = stock_prod_stock_supplier
-                                stock_prod.stock_supplier_unit = stock_supplier[0]
-                                stock_prod.to_order = stock_supplier[1]
-                                stock_prod.lot_complect = lot_complect
-                                stock_prod.order_multiplicity = order_multiplicity
-                                stock_prod.is_one_sale = is_one_sale
-                                stock_prod.data_update = datetime.datetime.now()
-                                stock_prod._change_reason = 'Автоматическое'
-                                stock_prod.save()
-                                
-                                # update_change_reason(stock_prod, "Автоматическое")
-        
+                                except Stock.DoesNotExist:
+                                    stock_prod = Stock(
+                                        prod=article,
+                                        # lot=lot,
+                                        # stock_motrum = stock_motrum
+                                    )
+                                    
+                                finally:
+                                    stock_prod.lot = lot
+                                    stock_prod.stock_supplier = stock_prod_stock_supplier
+                                    stock_prod.stock_supplier_unit = stock_supplier[0]
+                                    stock_prod.to_order = stock_supplier[1]
+                                    stock_prod.lot_complect = lot_complect
+                                    stock_prod.order_multiplicity = order_multiplicity
+                                    stock_prod.is_one_sale = is_one_sale
+                                    stock_prod.data_update = datetime.datetime.now()
+                                    stock_prod._change_reason = 'Автоматическое'
+                                    stock_prod.save()
+                                    
+                                    # update_change_reason(stock_prod, "Автоматическое")
+            
                     except Exception as e: 
                         print(e)
                         error = "file_api_error"
@@ -926,7 +928,7 @@ def iek_api():
             pass       
      
 
-    get_iek_product("products", f"art=IND-LW05-20U67-PF-SBZ")
+    get_iek_product("products", f"art=TEST-NSI-15-11-22-003")
     # get_iek_property("etim",  f"groupId=30.04.03")
     
     # # категории 

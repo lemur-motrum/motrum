@@ -1149,8 +1149,11 @@ window.addEventListener("DOMContentLoaded", () => {
             "X-CSRFToken": csrfToken,
           },
         })
-          .then((response) => response.json())
+          // .then((response) => response.json())
           .then((response) => {
+            if (response.status == 200) {
+              window.location.reload();
+            }
               
 
           });

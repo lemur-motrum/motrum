@@ -276,8 +276,8 @@ class Order(models.Model):
         
         self.bill_sum = self.specification.total_amount
         self.status = "PAYMENT" 
-        
-        Notification.add_notification(self.id, "DOCUMENT_BILL")  
+        if self.client:
+            Notification.add_notification(self.id, "DOCUMENT_BILL")  
              
         self.save()
         

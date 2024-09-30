@@ -155,7 +155,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         if (orgnInput.value && orgnInput.value.length < 13) {
           showErrorValidation(
-            "ОГРН должен состоять из 9 цифр",
+            "ОГРН должен состоять из 13 цифр",
             newLegalEntityOgrnError
           );
         }

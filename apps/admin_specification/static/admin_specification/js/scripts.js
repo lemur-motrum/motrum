@@ -589,7 +589,7 @@ window.addEventListener("DOMContentLoaded", () => {
             products: products,
             is_pre_sale: checkbox.checked ? true : false,
             id_specification: specificationId ? specificationId : null,
-            cart: +getCookie("cart"),
+            id_cart: +getCookie("cart"),
           };
 
           const data = JSON.stringify(dataObj);

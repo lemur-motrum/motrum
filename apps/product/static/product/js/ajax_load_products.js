@@ -15,6 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let pageCount = 0;
     let lastPage = 0;
     let paramsArray = [];
+
     const loader = catalogWrapper.querySelector(".loader");
     const btn = catalogWrapper.querySelector(".add_more");
     const catalogContainer = catalogWrapper.querySelector(
@@ -116,7 +117,9 @@ window.addEventListener("DOMContentLoaded", () => {
             });
           }
           pagintationArray.forEach((el, i) => {
-            paginationElems[i].textContent = +el + 1;
+            if (paginationElems[i]) {
+              paginationElems[i].textContent = +el + 1;
+            }
           });
           getActivePaginationElem();
         });
@@ -194,9 +197,62 @@ window.addEventListener("DOMContentLoaded", () => {
       const arrow = filterElem.querySelector(".arrow");
       const filterValues = filterElem.querySelectorAll(".filter_elem_content");
 
+      const urlParams = new URL(document.location).searchParams;
+
+      if (urlParams.get("vendor")) {
+        const urlsParamArray = urlParams.get("vendor").split(",");
+        urlsParamArray.forEach((el) => {
+          paramsArray.push(el);
+        });
+      }
+
       filterValues.forEach((filterValue) => {
         const checkbox = filterValue.querySelector(".checked");
         const vendorParam = filterValue.getAttribute("param");
+        if (paramsArray.length > 0) {
+          paramsArray.forEach((param) => {
+            if (vendorParam == param) {
+              checkbox.classList.add("show");
+              if (checkbox.classList.contains("show")) {
+                if (window.location.href.includes("?")) {
+                  currentUrl.searchParams.set("vendor", paramsArray.join());
+                  loader.style.display = "block";
+                  catalogContainer.innerHTML = "";
+                  endContent.classList.remove("show");
+                  pageCount = "1";
+                  loadItems(false, false, paramsArray);
+                } else {
+                  currentUrl.searchParams.set("vendor", paramsArray.join(","));
+                  loader.style.display = "block";
+                  catalogContainer.innerHTML = "";
+                  endContent.classList.remove("show");
+                  pageCount = "1";
+                  loadItems(false, false, paramsArray);
+                }
+              } else {
+                const searchParams = currentUrl.searchParams;
+                const filteredParamsArray = paramsArray.filter(
+                  (el) => el !== vendorParam
+                );
+                paramsArray = filteredParamsArray;
+                searchParams.set("vendor", paramsArray.join());
+                loader.style.display = "block";
+                catalogContainer.innerHTML = "";
+                endContent.classList.remove("show");
+                pageCount = "1";
+                loadItems(false, true, paramsArray);
+                if (filteredParamsArray.length == 0) {
+                  searchParams.delete("vendor", paramsArray.join());
+                  loader.style.display = "block";
+                  catalogContainer.innerHTML = "";
+                  endContent.classList.remove("show");
+                  loadItems(false, false, false);
+                }
+              }
+              history.pushState({}, "", currentUrl);
+            }
+          });
+        }
         filterValue.onclick = () => {
           paramsArray.push(vendorParam);
           checkbox.classList.toggle("show");

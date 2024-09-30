@@ -23,6 +23,12 @@ def js_templates():
             'name': 'document-item',
             'template': 'client/includes/ajax_document_item.html',
         }
+        ,
+        {
+            'module': 'project',
+            'name': 'project-item',
+            'template': 'projects_web/includes/ajax_project_item.html',
+        }
     ]
 
     for template_item in template_list:

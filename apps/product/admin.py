@@ -1069,10 +1069,11 @@ class GroupProductInlineWeb(admin.TabularInline):
 
 
 class CategoryProductAdminWeb(admin.ModelAdmin):
-    fields = ("name", "article_home_web", "image", "is_view_home_web")
+    fields = ("name", "article_home_web","article_name", "image", "is_view_home_web")
     list_display = [
         "name",
         "article_home_web",
+        "article_name",
         "get_name",
         "is_view_home_web"
     ]

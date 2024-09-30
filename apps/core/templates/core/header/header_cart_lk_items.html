@@ -16,9 +16,9 @@
         {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
     </span>
     </a>
-    {% elif request.user.is_staff  %}  
+{% elif request.user.is_staff  %}  
     <div class="cart-elem enter-in-site">вход</div>
-    {% else %}
+{% else %}
     <a href={% url "core:cart" %} class="cart-elem">
         Корзина <span class="global_cart_count">
         {% if count_cart %}{{ count_cart }}{% endif %}

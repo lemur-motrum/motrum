@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from pytils import translit
 from django.utils.text import slugify
 
@@ -61,7 +62,14 @@ class Project(models.Model):
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)
 
-
+    def get_absolute_url(self):
+        return reverse(
+            "projects_web:project",
+            kwargs={
+                "project": self.slug,
+            },
+        )
+        
 class ProjectImage(models.Model):
     project = models.ForeignKey(
         Project,

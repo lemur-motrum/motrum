@@ -25,6 +25,7 @@ def project(request,project):
     
 
     context = {
+        "project":project_one
         
     }
     return render(request, "projects_web/project_one.html", context)

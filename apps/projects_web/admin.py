@@ -21,10 +21,18 @@ class ProjectWebAdmin(admin.ModelAdmin):
    
 
 class CategoryProjectWebAdmin(admin.ModelAdmin):
-   exclude = ["slug"]
+    list_display = [
+        "name",
+        "article",
+    ]
+    exclude = ["slug"]
 
 class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
-   exclude = ["slug"]
+    list_display = [
+        "name",
+        "article",
+    ]
+    exclude = ["slug"]
     
 
 

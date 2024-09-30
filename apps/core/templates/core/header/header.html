@@ -27,24 +27,6 @@
           {% header_menu_url %}
         </div>
 
-        {% comment %} <ul class="header_nav">
-            <li class="header_nav-link">
-              {% url 'service:index' as the_url %}
-              {% if request.get_full_path == the_url or type_url ==  "service" %}
-                <span class="menu-active">Услуги</span>
-              {% else %}
-                <a class="" href="{% url 'service:index' %}">Товары</a>
-              {% endif %}
-            </li>
-        
-            
-          </ul> {% endcomment %}
-      
-
-
-
-
-         
         <div class="cart-elems">
             {% header_menu_counter %}
         </div>

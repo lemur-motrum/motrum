@@ -449,7 +449,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             sorting = request.query_params.get("sort")
         if request.query_params.get("direction"):
             direction = request.query_params.get("direction")
-
+        print(request.query_params)
+        
         if sorting == "date_order":
             if direction == "ASC":
                 sorting = F("date_order").asc(nulls_last=True)
@@ -635,9 +636,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         # sorting_bill = "bill_date_start"
         if request.query_params.get("sort"):
             sorting = request.query_params.get("sort")
-            if sorting == "specification__date":
-                sorting_spesif = "date"
-                sorting_bill = "bill_date_start"
 
         if request.query_params.get("direction"):
             sorting_directing = request.query_params.get("direction")

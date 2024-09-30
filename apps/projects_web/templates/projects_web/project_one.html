@@ -1,7 +1,14 @@
 {% extends "core/base.html" %}
 {% block content %}
 
+{{project.name}}
+<img src="{{project.image_main.url}}" alt="">
+{{project.short_text}}
+{{project.text}}
+{% for project_image in project.image_main %}
+<img src="{{project_image.ulr}}" alt="">
 
+{% endfor %}
 
 
 

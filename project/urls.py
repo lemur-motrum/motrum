@@ -27,6 +27,7 @@ from rest_framework import routers
 from apps.client.urls import router as client_router
 from apps.product.urls import router as product_router
 from apps.notifications.urls import router as notifications_router
+from apps.projects_web.urls import router as projects_web_router
 
 
 
@@ -34,6 +35,7 @@ router = routers.DefaultRouter()
 router.registry.extend(client_router.registry)
 router.registry.extend(product_router.registry)
 router.registry.extend(notifications_router.registry)
+router.registry.extend(projects_web_router.registry)
 
 
 urlpatterns = [

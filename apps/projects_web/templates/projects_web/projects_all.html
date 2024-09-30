@@ -3,18 +3,35 @@
 <div class="">тут фильтры
     <div class="category_projects">
     {% for category_project in category_projects %}
-        {{category_project}}
+        {{category_project}}{{category_project.slug}}
     {% endfor %}
     </div>
     <div class="client_category_projects">
         {% for client_category_project in client_category_projects %}
-            {{client_category_project}}
+            {{client_category_project}} {{client_category_project.slug}}
         {% endfor %}
     </div>
 
 </div>
 <div class="">тут проекты</div>
+<div class="project_container">
+    <div class="project_wrapper" project-elem="wrapper">
+        <div class="site_project_container" project-elem="container">
+           
+            {% for project in project_list %}
+                {% include "projects_web/includes/project_item.html" with project=project %}
 
+                
+            {% endfor %}
+        </div>
+       
+        <div class="end_content">
+            <button class="add_more" project-elem="button">загрузить еще</button>
+            
+        </div>
+    </div>
+
+</div>
 
 
 

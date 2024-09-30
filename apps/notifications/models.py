@@ -65,7 +65,7 @@ class Notification(models.Model):
         
         
         html_message = loader.render_to_string(
-            "core/email_client_status.html",
+            "core/emails/email_client_status.html",
             {
                 "text": text_email,
                 "link" : link,

@@ -20,16 +20,14 @@ def index(request):
 
 
 def my_orders(request):
-    current_user = request.user.id
+    # current_user = request.user.id
 
     # cookie = request.COOKIES.get("client_id")
     # client_id = int(cookie)
 
-    client = Client.objects.get(pk=current_user)
+    # client = Client.objects.get(pk=current_user)
 
-    # notifications = Notification.objects.filter(
-    #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
-    # ).update(is_viewed=True)
+    
     
     context = {
         "title": "Личный кабинет | мои заказы",

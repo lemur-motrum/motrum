@@ -1,10 +1,6 @@
 {% extends "core/base.html" %}
 {% block content %}
-       {% comment %} <div style="display: flex; align-items: center; justify-content: center; margin-top: 100px; gap: 20px" class="">
-        <a style="border: 1px solid; padding: 10px" href="{% url 'website_admin:index' %}">Админка Сайта</a>
-        <a style="border: 1px solid; padding: 10px" href="{% url 'client:index' %}">Личный кабинет</a>
-       </div> {% endcomment %}
-       {% include "core/includes/header.html" %}
+    
        <div class="head-page-container">
               <div class="promo-slider">промо-слайдер</div>
               <div class="products">
@@ -14,6 +10,7 @@
                      </div>
                      <div class="products-categories">
                             {% for category in categories %}
+                                   {% comment %} КАРТИНКА КАТЕГОРИИ<img src="{{category.image.url}}" alt=""> {% endcomment %}
                                    <a class="category-elem" href="{% url "product:group" category.slug %}"><span>{{ category.name }}</span></a>
                             {% endfor %}
                             <a class="category-elem" href="{% url "product:catalog" %}"><span>весь каталог</span></a>
@@ -29,10 +26,23 @@
               <div class="projects">
                      <div class="title-container">
                             <div class="title">Реализованные проекты</div>
-                            <a href="#" class="title-link">все проекты</a>
+                            <a href="{% url 'projects_web:projects'%}" class="title-link">все проекты</a>
                      </div>
                      <div class="projects-slider">
                             <div class="swiper-wrapper">
+                                   {% for project in projects %}
+                                          <div class="swiper-slide project-elem">
+                                                 <div class="content">
+                                                        <a href="{% url 'projects_web:project' project.slug %}">
+                                                                
+                                                        <p class="">{{project.name}} </p>
+                                                        <img src="{{project.image_main.url}}" alt="">
+                                                        
+                                                        </a>
+                                                        Проект 2
+                                                 </div>
+                                          </div> 
+                                   {% endfor %}
                                    <div class="swiper-slide project-elem">
                                           <div class="content">Проект 1</div>
                                    </div>
@@ -55,4 +65,5 @@
                      <div class="promo">блок с краткой презентацией компании</div>
               </div>
        </div>
+       
 {% endblock content %}

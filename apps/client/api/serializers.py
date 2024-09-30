@@ -74,8 +74,9 @@ class LkOrderSerializer(serializers.ModelSerializer):
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
     )
-    notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
     
+    # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
+    notification_count =  serializers.CharField()
     
     class Meta:
         model = Order
@@ -98,7 +99,9 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "bill_date_start",
             "bill_date_stop",
             "act_file",
-            "notification_set",
+            # "notification_set",
+            "notification_count",
+            
         )
         read_only_fields = ("status_full",)
         
@@ -141,6 +144,7 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
             "bill_date_stop",
             "bill_date_start",
             "notification_set",
+            
         )
         read_only_fields = ("status_full",)
         

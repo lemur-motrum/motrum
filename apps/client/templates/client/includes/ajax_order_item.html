@@ -1,7 +1,7 @@
 <div  class="order_item"
     order-id="{{ id }}"
     order-elem="order-item"
-    style="border-style: solid;{% if notification_set|length %}
+    style="border-style: solid;{% if notification_count > 0 %}
     border-color: red
     {% endif %} "
    
@@ -14,10 +14,14 @@
     <div class="">состав заказа -
        
       {% for specification_list_item in specification_list.productspecification_set %}
-            {{specification_list_item.product_name}} - {{specification_list_item.quantity}} 
+
+            {{specification_list_item.product_name}} - {{specification_list_item.quantity}}
+
             {{specification_list_item.lot.lot}}
             
         {% endfor %}
+
+
 
     </div>
     <div class="">сумма  -

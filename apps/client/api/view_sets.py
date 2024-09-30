@@ -573,31 +573,44 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "account_requisites",
 
             )
-            .prefetch_related(
-                Prefetch(
-                    "notification_set",
-                    queryset=Notification.objects.filter(
-                        type_notification="STATUS_ORDERING", is_viewed=False
-                    ),
-                    to_attr="filtered_notification_items",
-                )
-            )
+            # .prefetch_related(
+            #     Prefetch(
+            #         "notification_set",
+            #         queryset=Notification.objects.filter(
+            #             type_notification="STATUS_ORDERING", is_viewed=False
+            #         ),
+            #         to_attr="filtered_notification_items",
+            #     )
+            # )
             .prefetch_related(
                 Prefetch('specification__productspecification_set'))
             .prefetch_related(
                 Prefetch('specification__productspecification_set__product'))
-            .prefetch_related(
-                Prefetch('specification__productspecification_set__product__stock'))
-            .annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="STATUS_ORDERING")))
-            .order_by(sorting,"-id")[count : count + count_last]
+            # .prefetch_related(
+            #     Prefetch('specification__productspecification_set__product__stock'))
+            # .prefetch_related(
+            #     Prefetch('specification__productspecification_set__product__stock__lot'))
+            .annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=False,notification__type_notification="STATUS_ORDERING")))
+            .order_by(sorting, "-id")[count : count + count_last]
         )
-
+       
+        for o in orders:
+            print(o.notification_count)
+           
+# [count : count + count_last]
         serializer = serializer_class(orders, many=True)
         data = serializer.data
-
-        notifications = Notification.objects.filter(
-            client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
-        ).update(is_viewed=True)
+        # прочитать уведомления только выведенные ордеры
+        for data_order in data:
+            if int(data_order["notification_count"]) > 0:
+                Notification.objects.filter(order=data_order["id"],
+                client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+            ).update(is_viewed=True)
+            
+        # прочитать уведомления всех ордеров
+        # notifications = Notification.objects.filter(
+        #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
+        # ).update(is_viewed=True)
 
         # if sorting == "-id":
         #     data = sorted(data, key=lambda x: len(x["notification_set"]), reverse=True)
@@ -618,8 +631,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # сортировки
         sorting = None
-        sorting_spesif = "specification__date"
-        sorting_bill = "bill_date_start"
+        # sorting_spesif = "specification__date"
+        # sorting_bill = "bill_date_start"
         if request.query_params.get("sort"):
             sorting = request.query_params.get("sort")
             if sorting == "specification__date":
@@ -649,54 +662,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             )
         )
 
-
-        # order_document = (
-        #     Order.objects.filter(client=client)
-        #     .select_related(
-        #         "specification",
-        #         "cart",
-        #         "requisites",
-        #         "account_requisites",
-        #     )
-        #     .prefetch_related(
-        #         Prefetch(
-        #             "notification_set",
-        #             queryset=Notification.objects.filter(is_viewed=False).exclude(
-        #                 type_notification="DOCUMENT_SPECIFICATION"
-        #             ),
-        #             to_attr="filtered_notification_items",
-        #         )
-        #     ).annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="DOCUMENT_SPECIFICATION")))
-        #     .order_by(sorting_spesif)[count : count + count_last],
-        #     Order.objects.filter(client=client)
-        #     .select_related(
-        #         "specification",
-        #         "cart",
-        #         "requisites",
-        #         "account_requisites",
-        #     )
-        #     .prefetch_related(
-        #         Prefetch(
-        #             "notification_set",
-        #             queryset=Notification.objects.filter(is_viewed=False).exclude(
-        #                 type_notification="DOCUMENT_BILL"
-        #             ),
-        #             to_attr="filtered_notification_items",
-        #         )
-        #     ).annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=True,notification__type_notification="DOCUMENT_BILL")))
-        #     .order_by(sorting_bill)[count : count + count_last] )
-
-        # print(order_document)
-        # for r in order_document:
-        #     print(r)
-
-        # result_list = list(chain(order_document[0],order_document[1]))
-        # print(result_list)
-
-        # for order in orders:
-        #     print(order)
         serializer = serializer_class(orders, many=True)
-        # print(serializer.data)
+    
         # формирование отдельных документов из сериализированных заказов
         documents = []
         for order in serializer.data:
@@ -716,6 +683,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "data_stop": order["specification_list"]["date_stop"],
                     "amount": order["specification_list"]["total_amount"],
                     "notification_set": [],
+                    "type_notification":"DOCUMENT_SPECIFICATION",
                 }
 
                 for notification_set in order["notification_set"]:
@@ -742,6 +710,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "data_stop": order["bill_date_stop"],
                     "amount": order["bill_sum"],
                     "notification_set": [],
+                    "type_notification":"DOCUMENT_BILL",
                 }
 
                 for notification_set in order["notification_set"]:
@@ -789,7 +758,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             documents = sorted(
                 documents, key=lambda x: len(x["notification_set"]), reverse=True
             )
-
+        # прочитать уведомления только выведенные ордеры
+        # for data_order in documents:
+        #     if len(data_order["notification_set"]) > 0:
+        #         Notification.objects.filter(order=data_order["order"],
+        #         client_id=current_user, type_notification=data_order["type_notification"], is_viewed=False
+        #     ).update(is_viewed=True)
+                
         notifications = (
             Notification.objects.filter(client_id=current_user, is_viewed=False)
             .exclude(type_notification="STATUS_ORDERING")

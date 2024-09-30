@@ -10,6 +10,10 @@ class ProjectImageInlineWeb(admin.TabularInline):
     fields = ("image",)
     
 class ProjectWebAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "is_view_home_web",
+    ]
     exclude = ["slug"]
     inlines = [
         ProjectImageInlineWeb,

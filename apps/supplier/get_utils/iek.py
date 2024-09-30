@@ -868,11 +868,15 @@ def iek_api():
         response = requests.request(
             "GET", url,auth=HTTPBasicAuth(os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")), headers=headers, data=payload, allow_redirects=False
         )
-   
+        
         data = response.json()
-        if data:
+       
+        if  len(data) > 0 :
+            print(99999999999)
             for data_item in data:
+                print(8888888)
                 try:
+                    print(777777777777)
                     prod_article = data_item["Code"]
                     try: 
                         prod = Product.objects.get(supplier=supplier,article_supplier=prod_article)
@@ -918,21 +922,19 @@ def iek_api():
                 finally:    
                     continue 
         else: 
-            error = "file_api_error"
-            location = "Загрузка фаилов IEK"
-            info = f"ошибка при чтении свойств2: .{url_params}{data}{response} Тип ошибки:"
-            e = error_alert(error, location, info)       
+            # нет свойств
+            pass       
      
 
-    # get_iek_product("products", f"art=CMAT11-16-010")
-    # get_iek_product("products", f"groupId=05.04.02")
+    get_iek_product("products", f"art=IND-LW05-20U67-PF-SBZ")
+    # get_iek_property("etim",  f"groupId=30.04.03")
     
-    # категории 
-    get_iek_category("ddp", None)
-    # запись продуктов и пропсовдля каждого по категориям 
-    for item_iek_save_categ in iek_save_categ:
-        get_iek_product("products", f"groupId={item_iek_save_categ}")
-        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    # # категории 
+    # get_iek_category("ddp", None)
+    # # запись продуктов и пропсовдля каждого по категориям 
+    # for item_iek_save_categ in iek_save_categ:
+    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
+    #     get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
 
 

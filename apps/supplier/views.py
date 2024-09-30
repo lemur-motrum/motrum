@@ -26,44 +26,7 @@ from xml.etree import ElementTree, ElementInclude
 def add_iek(request):
     from django.db.models import Prefetch
 
-    year_date = datetime.datetime.now().year
-    year = str(year_date)
-    data_bd = CalendarHoliday.objects.get(year=year)
-    data_bd_holidays = data_bd.json_date
-    now = datetime.datetime.now()
-
-    day_need = 1
-    i = 0
-    while day_need <= 3:
-        i += 1
-        date = now + datetime.timedelta(days=i)
-        print(date)
-        if date.year > year_date:
-            data_bd = CalendarHoliday.objects.get(year=date.year)
-            data_bd_holidays = data_bd.json_date
-            holidays_day_need = data_bd_holidays["holidays"].count(str(date.date()))
-            
-            if "nowork" in data_bd_holidays and holidays_day_need == 0:
-                holidays_day_need_nowork = data_bd_holidays["nowork"].count(str(date.date()))
-                holidays_day_need += holidays_day_need_nowork
-        else:
-            holidays_day_need = data_bd_holidays["holidays"].count(str(date.date()))
-            
-            if "nowork" in data_bd_holidays and holidays_day_need == 0:
-                holidays_day_need_nowork = data_bd_holidays["nowork"].count(str(date.date()))
-                holidays_day_need += holidays_day_need_nowork
-
-        if holidays_day_need == 0:
-            print(holidays_day_need)
-            
-            day_need += 1
-
-    three_days = datetime.timedelta(i)
-    in_three_days = now + three_days
-    data_stop = in_three_days.strftime("%Y-%m-%d")
-
-    print(data_stop)
-
+    iek_api()
     title = "Услуги"
 
     responsets = ["233", "2131"]

@@ -243,9 +243,9 @@ function catalogLogic(elems) {
                 })
                 .then(
                   (response) =>
-                  (document.querySelector(
-                    ".admin_specification_cart_length"
-                  ).textContent = response.cart_len)
+                    (document.querySelector(
+                      ".admin_specification_cart_length"
+                    ).textContent = response.cart_len)
                 )
                 .catch((error) => console.error(error));
             }
@@ -277,9 +277,9 @@ function catalogLogic(elems) {
           })
           .then(
             (response) =>
-            (document.querySelector(
-              ".admin_specification_cart_length"
-            ).textContent = response.cart_len)
+              (document.querySelector(
+                ".admin_specification_cart_length"
+              ).textContent = response.cart_len)
           )
           .catch((error) => console.error(error));
       }
@@ -367,101 +367,123 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk
-                    }  data-price=${!product.price ? 0 : product.price
-                    }  data-motrum-id=${product.article} data-saler-id=${product.saler_article
-                    } data-discoutnt=${product.discount
-                    } data-order-multiplicity=${product.multiplicity}> 
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                    product.pk
+                  }  data-price=${
+                    !product.price ? 0 : product.price
+                  }  data-motrum-id=${product.article} data-saler-id=${
+                    product.saler_article
+                  } data-discoutnt=${
+                    product.discount
+                  } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
-                                <div class="name">${product.supplier != product.vendor &&
-                      product.vendor != null
-                      ? product.supplier +
-                      " " +
-                      product.vendor +
-                      " " +
-                      product.name
-                      : product.supplier + " " + product.name
-                    }</div>
-                                <div class="article-motrum">${product.article
-                    }</div>
+                                <div class="name">${
+                                  product.supplier != product.vendor &&
+                                  product.vendor != null
+                                    ? product.supplier +
+                                      " " +
+                                      product.vendor +
+                                      " " +
+                                      product.name
+                                    : product.supplier + " " + product.name
+                                }</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
                                 <div class="charactiristics">
-                                    ${product.chars.length == 0
-                      ? "-"
-                      : product.chars.join(" ")
-                    }
+                                    ${
+                                      product.chars.length == 0
+                                        ? "-"
+                                        : product.chars.join(" ")
+                                    }
                                 </div>
                                 <div class="stock">
-                                ${product.stock
-                      ? `<div class="stock_item">
-                                    ${product.stock_to_order
-                        ? " Поставщик:<br>Под заказ"
-                        : `${product.stock_supplier
-                          ? `Поставщик: ${product.stock_supplier}`
-                          : "Поставщик: -"
-                        }`
-                      }
+                                ${
+                                  product.stock
+                                    ? `<div class="stock_item">
+                                    ${
+                                      product.stock_to_order
+                                        ? " Поставщик:<br>Под заказ"
+                                        : `${
+                                            product.stock_supplier
+                                              ? `Поставщик: ${product.stock_supplier}`
+                                              : "Поставщик: -"
+                                          }`
+                                    }
                                         </div>
-                                        <div class="stock_item">Motrum:${product.stock_motrum
-                      }</div>
+                                        <div class="stock_item">Motrum:${
+                                          product.stock_motrum
+                                        }</div>
                                         <span class="span-transit">${backendDataFormat(
-                        product.data_update
-                      )}</span>
+                                          product.data_update
+                                        )}</span>
                                         <br>
                                         <span class="span-transit">
-                                        ${product.transit_count
-                        ? `Ближайшая поставка: ${backendDataFormat(
-                          product.data_transit
-                        )} - ${product.transit_count} шт.`
-                        : ""
-                      }
+                                        ${
+                                          product.transit_count
+                                            ? `Ближайшая поставка: ${backendDataFormat(
+                                                product.data_transit
+                                              )} - ${product.transit_count} шт.`
+                                            : ""
+                                        }
                                         </span>`
-                      : `${product.stok_to_order ? "Под заказ" : ""
-                      } Неизвестно`
-                    }
+                                    : `${
+                                        product.stok_to_order ? "Под заказ" : ""
+                                      } Неизвестно`
+                                }
                                 </div>
                                 <div class="lot">
-                                ${product.stock
-                      ? `${product.multiplicity != 1 &&
-                        !product.is_one_sale
-                        ? `<span class="span-min">Минимальный заказ ${product.multiplicity +
-                        " " +
-                        product.lot
-                        }
+                                ${
+                                  product.stock
+                                    ? `${
+                                        product.multiplicity != 1 &&
+                                        !product.is_one_sale
+                                          ? `<span class="span-min">Минимальный заказ ${
+                                              product.multiplicity +
+                                              " " +
+                                              product.lot
+                                            }
                                            </span>`
-                        : ""
-                      }${product.lot_complect != 1
-                        ? `${product.lot +
-                        "." +
-                        product.lot_complect +
-                        "ед."
-                        }`
-                        : `${product.lot_complect +
-                        " " +
-                        product.lot +
-                        "."
-                        }`
-                      }
+                                          : ""
+                                      }${
+                                        product.lot_complect != 1
+                                          ? `${
+                                              product.lot +
+                                              "." +
+                                              product.lot_complect +
+                                              "ед."
+                                            }`
+                                          : `${
+                                              product.lot_complect +
+                                              " " +
+                                              product.lot +
+                                              "."
+                                            }`
+                                      }
                                         `
-                      : "-"
-                    }
+                                    : "-"
+                                }
                                 </div>
                                  <div class="suppler-price">
-                                 ${product.price_suppler &&
-                      product.price_suppler != 0
-                      ? `<span class="price-suppler-count">${product.price_suppler}</span> ₽`
-                      : "<span>По запросу</span>"
-                    }
+                                 ${
+                                   product.price_suppler &&
+                                   product.price_suppler != 0
+                                     ? `<span class="price-suppler-count">${product.price_suppler}</span> ₽`
+                                     : "<span>По запросу</span>"
+                                 }
                                 </div>
                                 <div class="price">
-                                ${product.price && product.price != 0
-                      ? `<span class="span-update">${backendDataFormat(
-                        product.data_update
-                      )}</span>
-                                        <span class="price-count">${product.price
-                      }</span> ₽`
-                      : `<span>По запросу</span>`
-                    }
+                                ${
+                                  product.price && product.price != 0
+                                    ? `<span class="span-update">${backendDataFormat(
+                                        product.data_update
+                                      )}</span>
+                                        <span class="price-count">${
+                                          product.price
+                                        }</span> ₽`
+                                    : `<span>По запросу</span>`
+                                }
                                 </div>
                             </div>
                             <div class="item-buttons_container">
@@ -539,7 +561,6 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-product-specification-id"
           );
           const deliveryDate = item.querySelector(".delivery_date").value;
-         
 
           const inputPrice = item.querySelector(".price-input");
 
@@ -552,8 +573,8 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery:deliveryDate,
-            product_name_new:nameProductNew,
+            date_delivery: deliveryDate,
+            product_name_new: nameProductNew,
           };
           if (product.price_one == 0) {
             validate = false;
@@ -589,16 +610,14 @@ window.addEventListener("DOMContentLoaded", () => {
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
               deleteCookie("cart", "/", window.location.hostname);
-              window.location.href =
-                "/admin_specification/all_specifications/";
-
+              window.location.href = "/admin_specification/all_specifications/";
             })
             .catch((error) => console.error(error));
         }
       }
       function exitSpecification(elems) {
         // localStorage.removeItem("specificationValues");
-        
+
         const endpoint = `/api/v1/order/exit-order-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
@@ -614,11 +633,7 @@ window.addEventListener("DOMContentLoaded", () => {
             deleteCookie("specificationId", "/", window.location.hostname);
             deleteCookie("cart", "/", window.location.hostname);
 
-              window.location.href =
-                "/admin_specification/all_specifications/";
-
-            
-
+            window.location.href = "/admin_specification/all_specifications/";
           });
       }
 
@@ -739,8 +754,8 @@ window.addEventListener("DOMContentLoaded", () => {
           }
 
           quantity.value = countQuantity;
-          if (quantity.value <= 0) {
-            quantity.value = 0;
+          if (quantity.value <= 1) {
+            quantity.value = 1;
           }
           const currentPrice =
             +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
@@ -752,7 +767,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             plusButton.disabled = false;
           }
-          if (countQuantity <= 0) {
+          if (countQuantity <= 1) {
             minusButton.disabled = true;
           } else {
             minusButton.disabled = false;
@@ -810,8 +825,8 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             quantity.value = countQuantity;
             minusButton.disabled = false;
-            if (countQuantity <= 0) {
-              quantity.value = 0;
+            if (countQuantity <= 1) {
+              quantity.value = 1;
               minusButton.disabled = true;
               plusButton.disabled = false;
             } else {
@@ -991,7 +1006,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 searchDescriptionField.onscroll = () => {
                   if (
                     searchDescriptionField.scrollHeight -
-                    searchDescriptionField.scrollTop <=
+                      searchDescriptionField.scrollTop <=
                     searchDescriptionField.offsetHeight
                   ) {
                     const data = JSON.stringify(objData);
@@ -1056,14 +1071,13 @@ window.addEventListener("DOMContentLoaded", () => {
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".change-specification-button");
       showButton(item, changeButton);
-      const link = item.querySelector("a")
+      const link = item.querySelector("a");
       const specificationId = +link.textContent;
-      const cartId = +link.dataset.cartId
-
+      const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
-        console.log(specificationId)
-        console.log(cartId)
+        console.log(specificationId);
+        console.log(cartId);
         // setCookie("cart", cartId,)
         document.cookie = `cart=${cartId};path=/`;
         document.cookie = `specificationId=${specificationId};path=/`;
@@ -1078,11 +1092,8 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-              window.location.href =
-                "/admin_specification/current_specification/";
-
-            
-
+            window.location.href =
+              "/admin_specification/current_specification/";
           });
 
         // const objData = {
@@ -1126,20 +1137,19 @@ window.addEventListener("DOMContentLoaded", () => {
       "div[data-status='False']"
     );
 
-    //добавление счета 
-    
+    //добавление счета
+
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".create-bill-button");
-      
-      const link = item.querySelector("a")
-      const specificationId = +link.textContent;
-      const cartId = +link.dataset.cartId
 
+      const link = item.querySelector("a");
+      const specificationId = +link.textContent;
+      const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
-        console.log(specificationId)
-        console.log(cartId)
-        
+        console.log(specificationId);
+        console.log(cartId);
+
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
@@ -1150,10 +1160,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         })
           .then((response) => response.json())
-          .then((response) => {
-              
-
-          });
+          .then((response) => {});
 
         // const objData = {
         //   specification_id: specificationId,
@@ -1195,13 +1202,13 @@ window.addEventListener("DOMContentLoaded", () => {
       // const link = item.querySelector("a")
       const specificationId =
         +item.querySelectorAll(".table_item_value")[0].textContent;
-      let cartId = item.querySelectorAll(".table_item_value")[0]
-      
-      console.log(cartId)
+      let cartId = item.querySelectorAll(".table_item_value")[0];
+
+      console.log(cartId);
       updatingBtn.onclick = () => {
-        console.log(specificationId)
-        cartId = cartId.getAttribute('data-cart-id')
-        console.log(cartId)
+        console.log(specificationId);
+        cartId = cartId.getAttribute("data-cart-id");
+        console.log(cartId);
         document.cookie = `cart=${cartId};path=/`;
         document.cookie = `specificationId=${specificationId};path=/`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
@@ -1215,12 +1222,10 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-              window.location.href =
-                "/admin_specification/current_specification/";
-
-            
-
-          });}
+            window.location.href =
+              "/admin_specification/current_specification/";
+          });
+      };
       // const specificationId =
       //   +item.querySelectorAll(".table_item_value")[0].textContent;
       // updatingBtn.onclick = () => {
@@ -1257,5 +1262,22 @@ window.addEventListener("DOMContentLoaded", () => {
       // };
     });
     //
+  }
+
+  const priceDiscountInput = document.querySelectorAll(
+    '[name="price-input-discount"]'
+  );
+  if (priceDiscountInput) {
+    priceDiscountInput.forEach((el) => {
+      el.addEventListener("input", function () {
+        const currentValue = this.value
+          .replace(/[^.\d]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1");
+        el.value = currentValue;
+        if (+el.value > 99.99) {
+          el.value = el.value.slice(0, 2);
+        }
+      });
+    });
   }
 });

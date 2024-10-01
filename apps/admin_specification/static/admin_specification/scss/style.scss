@@ -605,6 +605,17 @@ h1 {
       &:nth-of-type(7) {
         margin-left: 2.6rem;
       }
+      .price_arrow {
+        transition: 0.6s;
+        cursor: pointer;
+        display: inline-block;
+        &.up {
+          transform: rotate(0deg);
+        }
+        &.down {
+          transform: rotate(180deg);
+        }
+      }
     }
   }
   .content-container {

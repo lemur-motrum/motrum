@@ -1,49 +1,51 @@
-{% load static %}
-{% load manager_client %}
-{% load js_templates %}
+{% load static %} {% load manager_client %} {% load js_templates %}
 <!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!--css инклудить в общий -->
-        {% include "core/includes/stylesheets.html" %}
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <div class="wrapper">
-            {% include "core/header/header.html" %}
-            <div class="site-content">
-                <div class="site-description-content">
-                    <input id="user_id"
-                           type="hidden"
-                           data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
-                    <input id="client_id"
-                           type="hidden"
-                           data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
-                    
-                    {% block content %}{% endblock content %}
-                </div>
-                {% manager_client %}
-            </div>
-            {% include "core/includes/footer.html" %}
-            {% include "core/includes/overlay-modal.html" %}
-            {% include "core/includes/overlay_new_product_in_specification.html" %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--css инклудить в общий -->
+    {% include "core/includes/stylesheets.html" %}
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      {% include "core/header/header.html" %}
+      <div class="site-content">
+        <div class="site-description-content">
+          <input
+            id="user_id"
+            type="hidden"
+            data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}"
+          />
+          <input
+            id="client_id"
+            type="hidden"
+            data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}"
+          />
+
+          {% block content %}{% endblock content %}
         </div>
-        {% js_templates %}
-        <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
-        {% include "core/includes/scripts.html" %}
-        <script>
-            function validate(evt) {
-                let theEvent = evt || window.event;
-                let key = theEvent.keyCode || theEvent.which;
-                key = String.fromCharCode(key);
-                const regex = /[0-9]|\./;
-                if( !regex.test(key) ) {
-                    theEvent.returnValue = false;
-                if(theEvent.preventDefault) theEvent.preventDefault();
-                }
-            }
-        </script>
-    </body>
+        {% manager_client %}
+      </div>
+      {% include "core/includes/footer.html" %} {% include
+      "core/includes/overlay-modal.html" %} {% include
+      "core/includes/overlay_new_product_in_specification.html" %}
+    </div>
+    {% js_templates %}
+    <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+    {% include "core/includes/scripts.html" %}
+    <script>
+      function validate(evt) {
+        let theEvent = evt || window.event;
+        let key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+        const regex = /[^\d.]/gi;
+        if (!regex.test(key)) {
+          theEvent.returnValue = false;
+          if (theEvent.preventDefault) theEvent.preventDefault();
+        }
+      }
+    </script>
+  </body>
 </html>

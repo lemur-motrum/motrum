@@ -6,9 +6,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const enterBtn = document.querySelector(".enter-in-site");
   if (enterBtn) {
     const overlay = document.querySelector(".overlay");
+    console.log(overlay);
     if (overlay) {
       const autificationForm = overlay.querySelector(".autification-form");
-
       const phoneInput = autificationForm.querySelector(".phone-input");
       const maskPhoneOptions = {
         mask: "+{7} (000) 000-00-00",

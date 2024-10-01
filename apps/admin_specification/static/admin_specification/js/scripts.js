@@ -546,6 +546,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
+
         let validate = true;
         const products = [];
 
@@ -1164,8 +1165,6 @@ window.addEventListener("DOMContentLoaded", () => {
             if (response.status == 200) {
               window.location.reload();
             }
-              
-
           });
 
         // const objData = {
@@ -1275,13 +1274,16 @@ window.addEventListener("DOMContentLoaded", () => {
   );
   if (priceDiscountInput) {
     priceDiscountInput.forEach((el) => {
-      el.addEventListener("input", function () {
+      el.addEventListener("input", function (e) {
         const currentValue = this.value
           .replace(/[^.\d]+/g, "")
           .replace(/^([^\.]*\.)|\./g, "$1");
         el.value = currentValue;
         if (+el.value > 99.99) {
           el.value = el.value.slice(0, 2);
+        }
+        if (el.value == ".") {
+          e.target.value = "";
         }
       });
     });

@@ -1,12 +1,7 @@
 {
-    "cSpell.language": "en,ru",
-    "cSpell.words": [
-        "bitrix",
-        "motrum",
-        "prompower",
-        "битрикс",
-        "мотрум"
-    ],
-    "python.analysis.typeCheckingMode": "off",
-    "python.analysis.autoImportCompletions": true
+  "cSpell.language": "en,ru",
+  "cSpell.words": ["bitrix", "motrum", "prompower", "битрикс", "мотрум"],
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.autoImportCompletions": true,
+  "djlint.showInstallError": false
 }

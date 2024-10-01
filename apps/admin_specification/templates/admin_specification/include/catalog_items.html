@@ -9,7 +9,7 @@
             </div>
         {% endfor %}
     </div>
-    <div class="filter_content price_filters">
+    {% comment %} <div class="filter_content price_filters">
         <div param="up" class="filter_elem_content">
             <div class="checkbox">
                 <div class="checked"></div>
@@ -22,7 +22,7 @@
             </div>
             <div class="filter_name">По убыванию</div>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 <div class="catalog_container">
     <div class="product-catalog-articles">
@@ -32,7 +32,7 @@
         <div class="article">Характеристики</div>
         <div class="article">Остатки</div>
         <div class="article">Упак.</div>
-        <div class="article">Цена закуп.</div>
+        <div class="article">Цена закуп. <span param="" class="price_arrow">&uarr;</span></div>
         <div class="article">Цена</div>
     </div>
     <div class="content-container">

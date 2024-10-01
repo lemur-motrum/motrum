@@ -24,7 +24,16 @@ from django.db.models import F
 from django.db.models.functions import Round
 
 
-# Create your views here.
+from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+
+from django.http import JsonResponse, HttpResponse, Http404
+from django.shortcuts import get_list_or_404, render
+from django.template.loader import render_to_string
+from django.views.generic.base import TemplateView
+
+
+# ГЛАВНАЯ
 def index(request):
     # categories = list(CategoryProduct.objects.all())
     # random.shuffle(categories)
@@ -38,18 +47,13 @@ def index(request):
     }
     return render(request, "core/index.html", context)
 
-
-def okt(request):
-
-    context = {}
-
-    context = {}
-    return render(request, "core/okt.html", context)
+# ссылки внутренней работы
+# def okt(request):
+#     context = {}
+#     return render(request, "core/okt.html", context)
 
 
-
-
-# вьюха странцы корзина
+#КОРЗИНА ПОЛЬЗОВАТЕЛЯ
 def cart(request):
 
     cart = request.COOKIES.get("cart")
@@ -130,6 +134,35 @@ def cart(request):
     }
 
     return render(request, "core/cart.html", context)
+
+
+#политика конфиденциальности
+def privacy_policy(request):
+    return render(request, "core/privacy_policy.html")
+
+
+
+def csrf_failure(request, reason=""):
+    return render(request, "core/403csrf.html")
+
+
+def permission_denied(request, exception):
+    print(403)
+    return render(request, "core/403.html", status=403)
+
+
+def page_not_found(request, exception):
+    print(404)
+    return render(request, "core/404.html", status=404)
+
+
+def server_error(request):
+    print(500)
+    return render(request, "core/500.html", status=500)
+
+
+
+
 
 
 # EMAIL SEND

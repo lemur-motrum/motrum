@@ -226,6 +226,19 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
+
+
+
+
+
+
+
+# CSRF_FAILURE_VIEW = "apps.core.views.csrf_failure"
+
+
+
+
+
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

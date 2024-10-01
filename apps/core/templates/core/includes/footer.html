@@ -3,7 +3,18 @@
 <div class="footer">
     <div class="motrum-footer">
         <div class="motrum-logo-container">
-            <img src={% static "core/images/footer-logo.png" %} alt="logo" />
+            {% if request.get_full_path  == index_url %}
+                <img src={% static "core/images/footer-logo.png" %} alt="logo" />   
+            {% else %}
+                <a class="navbar_menu_item_link" href="/">
+
+                <img src={% static "core/images/footer-logo.png" %} alt="logo" />
+                </a>
+            {% endif %}
+
+
+
+           
         </div>
         <div class="description">
             <div>
@@ -11,7 +22,7 @@
                 {% current_year %}
                 ООО "ПМН Мотрум". Все права защищены.
             </div>
-            <a href="#">политика конфиденциальности</a>
+            <a href="{% url "core:privacy-policy" %}">политика конфиденциальности</a>
         </div>
     </div>
     <div class="lemur-footer">

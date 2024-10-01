@@ -29,6 +29,8 @@ from apps.product.urls import router as product_router
 from apps.notifications.urls import router as notifications_router
 from apps.projects_web.urls import router as projects_web_router
 
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 
 router = routers.DefaultRouter()
@@ -67,3 +69,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # else:
 #     urlpatterns += staticfiles_urlpatterns()
+
+handler403 = "apps.core.views.permission_denied"
+handler404 = "apps.core.views.page_not_found"
+handler500 = "apps.core.views.server_error"

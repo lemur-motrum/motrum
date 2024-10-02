@@ -98,22 +98,21 @@ class ProductViewSet(viewsets.ModelViewSet):
             )
             .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"))
             .filter(q_object)
-            .order_by(ordering_filter)[count : count + count_last]
+            .order_by("-id")[count : count + count_last]
         )
-
+        # .order_by(ordering_filter)
         # проверка есть ли еще данные для след запроса
         queryset_next = Product.objects.filter(q_object)[
             count + count_last + 1 : count + count_last + 2
         ].exists()
-        for i in queryset:
-            print(i.id)
+        
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
         # page_count = queryset.count()
 
         page_count = Product.objects.filter(q_object).count()
-        print(page_count)
+       
 
         if page_count % 10 == 0:
             count = page_count / 10
@@ -126,11 +125,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             small = False
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
-        print(
-            math.ceil(page_count / 10),
-        )
-        print(page_get)
-        print(small)
+       
         data_response = {
             "data": serializer.data,
             "next": queryset_next,

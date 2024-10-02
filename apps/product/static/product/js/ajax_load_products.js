@@ -64,7 +64,8 @@ window.addEventListener("DOMContentLoaded", () => {
     function loadItems(
       pagintaionFn = false,
       cleanArray = false,
-      vendor = false
+      vendor = false,
+      addMoreBtn = false
     ) {
       let data = {
         count: !pagintaionFn ? productCount : 10,
@@ -73,6 +74,7 @@ window.addEventListener("DOMContentLoaded", () => {
         category: category,
         group: !group ? "" : group,
         vendor: !vendor ? "" : vendor,
+        addMoreBtn: addMoreBtn ? true : false,
       };
 
       let params = new URLSearchParams(data);
@@ -118,7 +120,6 @@ window.addEventListener("DOMContentLoaded", () => {
             i++
           ) {
             pagintationArray.push(i);
-            console.log(pagintationArray);
           }
           if (cleanArray) {
             paginationElems.forEach((elem) => {
@@ -146,7 +147,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     window.onload = () => {
       if (!window.location.href.includes("?")) {
-        loadItems(false, false, false);
+        loadItems(false, false, false, false);
       }
     };
 
@@ -155,7 +156,12 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, true, paramsArray.length > 0 ? paramsArray : false);
+      loadItems(
+        true,
+        true,
+        paramsArray.length > 0 ? paramsArray : false,
+        false
+      );
       productCount = pageCount * 10;
     };
 
@@ -164,7 +170,12 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, false, paramsArray.length > 0 ? paramsArray : false);
+      loadItems(
+        true,
+        false,
+        paramsArray.length > 0 ? paramsArray : false,
+        false
+      );
       productCount = pageCount * 10;
     };
 
@@ -174,7 +185,12 @@ window.addEventListener("DOMContentLoaded", () => {
         endContent.classList.remove("show");
         catalogContainer.innerHTML = "";
         loader.style.display = "block";
-        loadItems(true, false, paramsArray.length > 0 ? paramsArray : false);
+        loadItems(
+          true,
+          false,
+          paramsArray.length > 0 ? paramsArray : false,
+          false
+        );
         productCount = pageCount * 10;
       };
     });
@@ -183,7 +199,12 @@ window.addEventListener("DOMContentLoaded", () => {
       +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
-      loadItems(false, false, paramsArray.length > 0 ? paramsArray : false);
+      loadItems(
+        false,
+        false,
+        paramsArray.length > 0 ? paramsArray : false,
+        true
+      );
     };
 
     paginationLastElem.onclick = () => {
@@ -191,7 +212,12 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(true, true, paramsArray.length > 0 ? paramsArray : false);
+      loadItems(
+        true,
+        true,
+        paramsArray.length > 0 ? paramsArray : false,
+        false
+      );
       productCount = pageCount * 10;
     };
 
@@ -241,7 +267,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   endContent.classList.remove("show");
 
                   pageCount = 0;
-                  loadItems(false, false, paramsArray);
+                  loadItems(false, false, paramsArray, false);
                 }
               } else {
                 const searchParams = currentUrl.searchParams;
@@ -261,7 +287,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
-                  loadItems(false, false, false);
+                  loadItems(false, false, false, false);
                 }
               }
               history.pushState({}, "", currentUrl);
@@ -278,14 +304,14 @@ window.addEventListener("DOMContentLoaded", () => {
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
               pageCount = 0;
-              loadItems(false, false, paramsArray);
+              loadItems(false, false, paramsArray, false);
             } else {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
               pageCount = 0;
-              loadItems(false, false, paramsArray);
+              loadItems(false, false, paramsArray, false);
             }
           } else {
             const searchParams = currentUrl.searchParams;
@@ -304,9 +330,9 @@ window.addEventListener("DOMContentLoaded", () => {
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
-              loadItems(false, false, false);
+              loadItems(false, false, false, false);
             } else {
-              loadItems(false, true, paramsArray);
+              loadItems(false, true, paramsArray, false);
             }
           }
           history.pushState({}, "", currentUrl);

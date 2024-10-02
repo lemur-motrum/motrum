@@ -51,7 +51,12 @@
                                             <div class="checkbox">
                                                 <div class="checked"></div>
                                             </div>
-                                            <div class="filter_name">{{ vendor.vendor__name }}</div>
+                                            <div class="filter_name">
+                                                {% if vendor.vendor__name %}
+                                                    {{ vendor.vendor__name }}
+                                                {% else %}
+                                                    Неизвестный производитель
+                                                {% endif %}</div>
                                         </div>
                                     {% endfor %}
                                 </div>

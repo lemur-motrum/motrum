@@ -107,6 +107,7 @@ def catalog_group(request, category):
 # страница всех продуктов в категории\группе
 def products_items(request, category, group):
     print("products_items")
+    print(9999999999)
    
     q_object = Q()
     q_object &= Q(check_to_order=True)

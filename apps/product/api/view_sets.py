@@ -103,7 +103,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # проверка есть ли еще данные для след запроса
         queryset_next = Product.objects.filter(q_object)[
-            count : count_last + 1
+            count + count_last + 1 : count + count_last + 2
         ].exists()
         for i in queryset:
             print(i.id)

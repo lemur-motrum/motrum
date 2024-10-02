@@ -69,7 +69,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let data = {
         count: !pagintaionFn ? productCount : 10,
         sort: "+",
-        page: !pagintaionFn ? "0" : pageCount,
+        page: pageCount,
         category: category,
         group: !group ? "" : group,
         vendor: !vendor ? "" : vendor,
@@ -87,9 +87,9 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then(function (data) {
           lastPage = +data.count;
-          console.log(lastPage);
+          const pagintationArray = [];
           paginationLastElem.textContent = `... ${lastPage}`;
-          console.log(lastPage);
+
           loader.style.display = "none";
           endContent.classList.add("show");
           smallLoader.classList.remove("show");
@@ -104,7 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
             catalogButton.disabled = true;
             nextBtn.classList.remove("show");
           }
-          const pagintationArray = [];
+
           if (data.small) {
             nextBtn.classList.remove("show");
           }
@@ -117,14 +117,15 @@ window.addEventListener("DOMContentLoaded", () => {
               : i <= pageCount;
             i++
           ) {
-            console.log(pagintationArray);
             pagintationArray.push(i);
+            console.log(pagintationArray);
           }
           if (cleanArray) {
             paginationElems.forEach((elem) => {
               elem.textContent = "";
             });
           }
+          paginationElems.forEach((el) => (el.textContent = ""));
           pagintationArray.forEach((el, i) => {
             if (paginationElems[i]) {
               paginationElems[i].textContent = +el + 1;
@@ -134,8 +135,17 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const urlParams = new URL(document.location).searchParams;
+
+    if (urlParams.get("vendor")) {
+      const urlsParamArray = urlParams.get("vendor").split(",");
+      urlsParamArray.forEach((el) => {
+        paramsArray.push(el);
+      });
+    }
+
     window.onload = () => {
-      loadItems(false, false, false);
+      loadItems(false, false, paramsArray.length > 0 ? paramsArray : false);
     };
 
     paginationFirstElem.onclick = () => {
@@ -168,7 +178,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     catalogButton.onclick = () => {
       productCount += 10;
-      pageCount++;
+      +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
       loadItems(false, false, paramsArray.length > 0 ? paramsArray : false);
@@ -206,15 +216,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const arrow = filterElem.querySelector(".arrow");
       const filterValues = filterElem.querySelectorAll(".filter_elem_content");
 
-      const urlParams = new URL(document.location).searchParams;
-
-      if (urlParams.get("vendor")) {
-        const urlsParamArray = urlParams.get("vendor").split(",");
-        urlsParamArray.forEach((el) => {
-          paramsArray.push(el);
-        });
-      }
-
       filterValues.forEach((filterValue) => {
         const checkbox = filterValue.querySelector(".checked");
         const vendorParam = filterValue.getAttribute("param");
@@ -228,6 +229,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
+                  paginationElems.forEach((el) => (el.textContent = ""));
                   pageCount = 0;
                   loadItems(false, false, paramsArray);
                 } else {
@@ -235,6 +237,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
+
                   pageCount = 0;
                   loadItems(false, false, paramsArray);
                 }
@@ -248,6 +251,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 loader.style.display = "block";
                 catalogContainer.innerHTML = "";
                 endContent.classList.remove("show");
+
                 pageCount = 0;
                 loadItems(false, true, paramsArray);
                 if (filteredParamsArray.length == 0) {

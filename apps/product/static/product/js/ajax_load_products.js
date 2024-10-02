@@ -145,7 +145,9 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     window.onload = () => {
-      loadItems(false, false, paramsArray.length > 0 ? paramsArray : false);
+      if (!window.location.href.includes("?")) {
+        loadItems(false, false, false);
+      }
     };
 
     paginationFirstElem.onclick = () => {

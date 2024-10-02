@@ -44,8 +44,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             vendor_get = None
 
         category_get = request.query_params.get("category")
-         
-        
+
         if request.query_params.get("group"):
             groupe_get = request.query_params.get("group")
         else:
@@ -57,10 +56,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True)
-        
+
         if vendor_get is not None:
             q_object &= Q(vendor__slug__in=vendor_get)
-            
+
         if category_get is not None:
             if category_get == "all":
                 q_object &= Q(article__isnull=False)
@@ -68,7 +67,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 q_object &= Q(category=None)
             else:
                 q_object &= Q(category__id=category_get)
-            
+
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
 
@@ -88,7 +87,6 @@ class ProductViewSet(viewsets.ModelViewSet):
                 nulls_last=True,
             )
 
-        
         queryset = (
             Product.objects.select_related(
                 "supplier",
@@ -97,28 +95,24 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "group",
                 "price",
                 "stock",
-            ).prefetch_related(
-                Prefetch('stock__lot'),Prefetch('productproperty_set'))
-            
+            )
+            .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"))
             .filter(q_object)
-            .order_by(ordering_filter)[count  : count + count_last]
+            .order_by(ordering_filter)[count : count + count_last]
         )
-   
-   
+
         # проверка есть ли еще данные для след запроса
-        queryset_next = (
-            Product.objects
-            .filter(q_object)[count: count_last + 1]
-            .exists()
-        )
+        queryset_next = Product.objects.filter(q_object)[
+            count : count_last + 1
+        ].exists()
         for i in queryset:
             print(i.id)
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
         # page_count = queryset.count()
-        
-        page_count =  Product.objects.filter(q_object).count()
+
+        page_count = Product.objects.filter(q_object).count()
         print(page_count)
 
         if page_count % 10 == 0:
@@ -132,13 +126,15 @@ class ProductViewSet(viewsets.ModelViewSet):
             small = False
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
-        print(math.ceil(page_count/10),)
+        print(
+            math.ceil(page_count / 10),
+        )
         print(page_get)
         print(small)
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
-            "count": math.ceil(page_count/10),
+            "count": math.ceil(page_count / 10),
             # "count": math.ceil(
             #     len(
             #         Product.objects
@@ -166,10 +162,10 @@ class CartViewSet(viewsets.ModelViewSet):
         session = request.COOKIES.get("sessionid")
         if request.user.is_anonymous:
             if session == None:
-                
+
                 request.session.create()
                 session = request.session.session_key
-              
+
                 data = {"session_key": session, "save_cart": False, "client": None}
                 serializer = self.serializer_class(data=data, many=False)
                 if serializer.is_valid():
@@ -259,16 +255,16 @@ class CartViewSet(viewsets.ModelViewSet):
 
                 except Cart.DoesNotExist:
                     print(222222)
-                    
+
                     data = {
                         "session_key": session,
                         "save_cart": False,
                         "client": request.user,
                     }
                     print(data)
-                    
+
                     serializer = self.serializer_class(data=data, many=False)
-                    
+
                     if serializer.is_valid():
                         serializer.save()
                         response = Response()
@@ -280,19 +276,18 @@ class CartViewSet(viewsets.ModelViewSet):
                         response.set_cookie(
                             "cart", serializer.data["id"], max_age=2629800
                         )
-                        
+
                         return response
                     else:
                         return Response(
                             serializer.errors, status=status.HTTP_400_BAD_REQUEST
                         )
-              
 
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
         print(kwargs["cart"])
-       
+
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data

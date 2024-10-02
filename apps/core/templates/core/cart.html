@@ -1,10 +1,9 @@
 {% extends 'core/base.html' %}
 {% block content %}
-   
     <div class="cart_container">
         <input class="personal_discount"
-            type="hidden"
-            data-personal-discount="{{discount_client}}" />
+               type="hidden"
+               data-personal-discount="{{ discount_client }}" />
         <div class="title_container">
             <div class="bread-crumbs">
                 <a href={% url "core:index" %}>главная</a>
@@ -22,15 +21,18 @@
                 </div>
                 <div class="products">
                     {% for product_item in product %}
-                        <div class="product_item" product-id="{{ product_item.id_product_cart }}">
-                            
+                        <div class="product_item"
+                             product-id="{{ product_item.id_product_cart }}"
+                             order-multiplicity="{{ product_item.stock.order_multiplicity }}">
                             <div class="name">{{ product_item.name }}</div>
                             <div class="article">{{ product_item.article }}</div>
                             <div class="chars">
-                                {{products.productproperty_set}}
-                                 {% if product_item.productproperty_set != 'product.ProductProperty.None' %}{{product_item.productproperty_set}}
-                                {% else %} - 
-                                {% endif %} 
+                                {{ products.productproperty_set }}
+                                {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
+                                    {{ product_item.productproperty_set }}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </div>
                             <div class="lot">{{ product_item.stock.lot_complect }} {{ product_item.stock.lot.name_shorts }}</div>
                             <div class="price">
@@ -39,27 +41,21 @@
                                 {% else %}
                                     <span class="all_cart_price">0</span> ₽
                                     {% if discount_client %}
-                                    <span class="all_cart_no_sale_price">{{product_item.price.rub_price_supplier}}</span> ₽ розничная цена
+                                        <span class="all_cart_no_sale_price">{{ product_item.price.rub_price_supplier }}</span> ₽ розничная цена
                                     {% else %}
                                     {% endif %}
-                                    
-                          
                                 {% endif %}
                             </div>
                             <div class="price_once">
                                 {% if  product_item.price.rub_price_supplier %}
-                               
-                                    <span> <span class="cart_price">{{ product_item.sale_price   }}</span> ₽/ {{product_item.stock.lot.name_shorts}}</span>
-                                    
+                                    <span> <span class="cart_price">{{ product_item.sale_price }}</span> ₽/ {{ product_item.stock.lot.name_shorts }}</span>
                                 {% else %}
                                     <span>по запросу</span>
                                 {% endif %}
-                            <input class="cart_price_one_no_sale"
-                                type="hidden"
-                                data-cart-one-no-sale="{{product_item.price.rub_price_supplier}}" />    
-                                
+                                <input class="cart_price_one_no_sale"
+                                       type="hidden"
+                                       data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
                             </div>
-                             
                             <div class="item-buttons_container">
                                 <div class="quantity-buttons">
                                     <button class="minus-button">-</button>
@@ -72,62 +68,67 @@
                     {% endfor %}
                 </div>
                 {% if discount_client %}
-                <div class="total_sum">
-                    <div class="">розничная цена: <span> <span class="cart_total_price_all">{{ product_item.sale_price   }}</span> ₽</span></div>
-                    <div class="">персональная скидка: <span> <span class="cart_total_price_sale">{{ product_item.sale_price   }}</span> ₽</span></div>
-                    <div class="total_sum_all">стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price   }}</span> ₽</span></div>
-                </div>
+                    <div class="total_sum">
+                        <div class="">
+                            розничная цена: <span> <span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                        <div class="">
+                            персональная скидка: <span> <span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                        <div class="total_sum_all">
+                            стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                    </div>
                 {% else %}
-                <div class="total_sum">
-                    
-                    <div class="total_sum_all">стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price   }}</span> ₽</span></div>
-                </div>
+                    <div class="total_sum">
+                        <div class="total_sum_all">
+                            стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                    </div>
                 {% endif %}
-                {% if client  %}
+                {% if client %}
                     <div class="">
                         <select class="select_account_requisites">
-                            {% for requisit in  requisites%}
-                            <option data-requisites-id = "{{requisit.id}}" data-account-requisites-id = "{{requisit.accountrequisit}}">>Юр.лицо - {{requisit.legal_entity}}- Расчетный счет -{{requisit.accountrequisit}}</option>
+                            {% for requisit in  requisites %}
+                                <option data-requisites-id="{{ requisit.id }}"
+                                        data-account-requisites-id="{{ requisit.accountrequisit }}">
+                                    Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="button_cart-wrapper">
                         <button class="save_cart_button">оформить заказ</button>
                     </div>
                 {% else %}
-
-                <form class="autification-form-cart">
-                    <label class="name-label">
-                        <span>Ваше имя</span>
-                        <input class="name-input" type="text">
-                        <div class="error-maessage name-error"></div>
-                    </label>
-
-                    <label class="phone-label">
-                        <span>Телефон</span>
-                        <input class="phone-input" type="text">
-                        <div class="error-maessage phone-error"></div>
-                    </label>
-                    <label class="password-label">
-                        <span>Введите пароль из SMS</span>
-                        <input class="password-input" type="text">
-                        <div class="error-maessage pin-error"></div>
-                    </label>
-                    <button class="autification-button">подтвердить</button>
-                </form>
-
-                <div class="button_cart-wrapper">
-                    <button class="save_cart_button">оформить заказ</button>
-                </div>
+                    <form class="autification-form-cart">
+                        <label class="name-label">
+                            <span>Ваше имя</span>
+                            <input class="name-input" type="text">
+                            <div class="error-maessage name-error"></div>
+                        </label>
+                        <label class="phone-label">
+                            <span>Телефон</span>
+                            <input class="phone-input" type="text">
+                            <div class="error-maessage phone-error"></div>
+                        </label>
+                        <label class="password-label">
+                            <span>Введите пароль из SMS</span>
+                            <input class="password-input" type="text">
+                            <div class="error-maessage pin-error"></div>
+                        </label>
+                        <button class="autification-button">подтвердить</button>
+                    </form>
+                    <div class="button_cart-wrapper">
+                        <button class="save_cart_button">оформить заказ</button>
+                    </div>
                 {% endif %}
-                
                 {% comment %} <div class="button_cart-wrapper">
                     <button class="save_cart_button">оформить заказ</button>
                 </div> {% endcomment %}
-            {% else %} 
+            {% else %}
                 <div>Корзина пока пуста</div>
             {% endif %}
         </div>
     </div>
-{% endblock %}
+{% endblock content %}

@@ -3,7 +3,6 @@
 {% load my_document_link %}
 {% load my_order_link %}
 {% block content %}
-    
     <div class="lc-container">
         <div class="title-container">
             <div class="bread-crumbs">
@@ -20,7 +19,6 @@
                 {% else %}
                     <a href={% url "client:my_orders" %} class="nav-elem">мои заказы</a>
                 {% endif %} {% endcomment %}
-
                 {% my_document_link %}
                 {% comment %} {% url 'client:my_documents' as my_documents_url %}
                 {% if request.get_full_path == my_documents_url or type_url == "/my_documents" %}
@@ -28,7 +26,6 @@
                 {% else %}
                     <a href={% url "client:my_documents" %} class="nav-elem">мои документы</a>
                 {% endif %} {% endcomment %}
-
                 {% url 'client:my_details' as my_details_url %}
                 {% if request.get_full_path == my_details_url or type_url == "/my_details" %}
                     <span class="nav-elem active">мои реквизиты</span>

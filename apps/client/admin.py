@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from apps.client.models import AccountRequisites, Client, Requisites
 from project.admin import website_admin
 from django.template.loader import get_template
+
 # Register your models here.
 
 
@@ -15,7 +16,11 @@ class RequisitesInlineWeb(admin.StackedInline):
 
 class ClientAdminWeb(admin.ModelAdmin):
 
-    fields = ("contact_name", "email", "phone", )
+    fields = (
+        "contact_name",
+        "email",
+        "phone",
+    )
     list_display = [
         "phone",
         "contact_name",
@@ -28,8 +33,7 @@ class ClientAdminWeb(admin.ModelAdmin):
     #     return False
     # def has_delete_permission(self, request,obj=None):
     #     return False
-    
-    
+
 
 # class AccountRequisitesAdminInline(admin.TabularInline):
 #     extra = 1
@@ -66,12 +70,12 @@ class ClientAdminWeb(admin.ModelAdmin):
 #         formset = super().get_formset(*args, **kwargs)
 #         formset.form.modeladmin = self.modeladmin
 #         return formset
-    
+
 
 # class ClientAdminWeb(admin.ModelAdmin):
 #     inlines = RequisitesInline,
 #     fields = 'contact_name',
-    
+
 #     def render_change_form(self, request, *args, **kwargs):
 #         self.request = request
 #         response = self.response = super().render_change_form(request, *args, **kwargs)
@@ -80,10 +84,6 @@ class ClientAdminWeb(admin.ModelAdmin):
 #     def get_inline_instances(self, *args, **kwargs):
 #         yield from ((inline, vars(inline).update(modeladmin=self))[0] for inline in super().get_inline_instances(*args, **kwargs))
 
-    
-website_admin.register(Client,ClientAdminWeb)  
-# website_admin.register(Requisites,RequisitesAdmin)  
 
-
-
-
+website_admin.register(Client, ClientAdminWeb)
+# website_admin.register(Requisites,RequisitesAdmin)

@@ -41,8 +41,6 @@ urlpatterns = [
         name="product_one",
     ),
     url("product_ajax", views.catalog, name="catalog_ajax"),
-    
-    
     # АВТОЗАПОЛНЕНИЕ для бека
     url(
         r"^vendor-autocomplete/$",

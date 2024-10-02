@@ -3,19 +3,8 @@ import {
   getCookie,
   setCookie,
   deleteCookie,
+  getClosestInteger,
 } from "/static/core/js/functions.js";
-
-let getClosestInteger = (a, b, x = Math.trunc(a / b)) => {
-  //х - сколько раз b содержится в а
-  if (a > b) {
-    //защита от дурака
-    if (!(a % b))
-      //если а делится на b без остатка
-      return a; //значит а это и есть ответ
-    return b * x == 1000 ? b * x - b : b * x; //иначе выбираем между b * x
-  }
-  return "Некорректный ввод данных";
-};
 
 //Класс для разделения чила на разряды
 class NumberParser {

@@ -1,6 +1,5 @@
 {% extends "core/base.html" %}
 {% block content %}
-    
        <div class="head-page-container">
               <div class="promo-slider">промо-слайдер</div>
               <div class="products">
@@ -26,7 +25,7 @@
               <div class="projects">
                      <div class="title-container">
                             <div class="title">Реализованные проекты</div>
-                            <a href="{% url 'projects_web:projects'%}" class="title-link">все проекты</a>
+                            <a href="{% url 'projects_web:projects' %}" class="title-link">все проекты</a>
                      </div>
                      <div class="projects-slider">
                             <div class="swiper-wrapper">
@@ -34,14 +33,12 @@
                                           <div class="swiper-slide project-elem">
                                                  <div class="content">
                                                         <a href="{% url 'projects_web:project' project.slug %}">
-                                                                
-                                                        <p class="">{{project.name}} </p>
-                                                        <img src="{{project.image_main.url}}" alt="">
-                                                        
+                                                               <p class="">{{ project.name }}</p>
+                                                               <img src="{{ project.image_main.url }}" alt="">
                                                         </a>
                                                         Проект 2
                                                  </div>
-                                          </div> 
+                                          </div>
                                    {% endfor %}
                                    <div class="swiper-slide project-elem">
                                           <div class="content">Проект 1</div>
@@ -65,5 +62,4 @@
                      <div class="promo">блок с краткой презентацией компании</div>
               </div>
        </div>
-       
 {% endblock content %}

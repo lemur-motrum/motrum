@@ -10,11 +10,13 @@ app_name = "client"
 
 router = routers.DefaultRouter()
 router.register(r"v1/client", view_sets.ClientViewSet)
-router.register(r"v1/client-requisites",view_sets.ClientRequisitesAccountViewSet, basename="client-requisites")
-router.register(r"v1/requisites",view_sets.RequisitesViewSet)
-router.register(r"v1/order",view_sets.OrderViewSet)
-
-
+router.register(
+    r"v1/client-requisites",
+    view_sets.ClientRequisitesAccountViewSet,
+    basename="client-requisites",
+)
+router.register(r"v1/requisites", view_sets.RequisitesViewSet)
+router.register(r"v1/order", view_sets.OrderViewSet)
 
 
 urlpatterns = [

@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ) {
       let data = {
         count: !pagintaionFn ? productCount : 10,
-        sort: "+",
+        sort: "?",
         page: pageCount,
         category: category,
         group: !group ? "" : group,
@@ -97,6 +97,7 @@ window.addEventListener("DOMContentLoaded", () => {
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
           }
+
           if (data.next) {
             catalogButton.disabled = false;
             nextBtn.classList.add("show");

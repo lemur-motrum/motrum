@@ -33,17 +33,17 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
+        print(count)
         count_last = 10
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
-            vendor_get = vendor_get.split(",")
-            print(vendor_get)
+            vendor_get = vendor_get.split(",") 
         else:
             vendor_get = None
-
+            
         category_get = request.query_params.get("category")
 
         if request.query_params.get("group"):
@@ -53,7 +53,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if page_get:
             count = int(count) * int(page_get)
-
+            
+        print(count)
+        
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True)
@@ -83,19 +85,26 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # сортировка по цене
         if sort_price:
-            sort = "price__rub_price_supplier"
-            ordering_filter = OrderBy(
-                F(sort.lstrip("-")),
-                descending=sort_price.startswith("-"),
-                nulls_last=True,
-            )
-        else:
-            sort = "price__rub_price_supplier"
-            ordering_filter = OrderBy(
-                F(sort.lstrip("-")),
-                descending="-".startswith("-"),
-                nulls_last=True,
-            )
+            if sort_price == "?":
+                sorting = "?"
+            elif sort_price == "ASC":
+                sorting = F("price__rub_price_supplier").asc(nulls_last=True)
+            else:
+                sorting = F("price__rub_price_supplier").desc(nulls_last=True)
+        # if sort_price:
+        #     sort = "price__rub_price_supplier"
+        #     ordering_filter = OrderBy(
+        #         F(sort.lstrip("-")),
+        #         descending=sort_price.startswith("-"),
+        #         nulls_last=True,
+        #     )
+        # else:
+        #     sort = "price__rub_price_supplier"
+        #     ordering_filter = OrderBy(
+        #         F(sort.lstrip("-")),
+        #         descending="-".startswith("-"),
+        #         nulls_last=True,
+        #     )
 
         queryset = (
             Product.objects.select_related(
@@ -108,7 +117,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             )
             .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"))
             .filter(q_object)
-            .order_by("-id")[count : count + count_last]
+            .order_by(sorting)[count : count + count_last]
         )
         # .order_by(ordering_filter)
         # проверка есть ли еще данные для след запроса

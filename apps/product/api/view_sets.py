@@ -42,7 +42,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             vendor_get = vendor_get.split(",")
         else:
             vendor_get = None
-            
+
         category_get = request.query_params.get("category")
          
         

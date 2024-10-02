@@ -87,9 +87,9 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then(function (data) {
           lastPage = +data.count;
-          console.log(lastPage)
+          console.log(lastPage);
           paginationLastElem.textContent = `... ${lastPage}`;
-          console.log(lastPage)
+          console.log(lastPage);
           loader.style.display = "none";
           endContent.classList.add("show");
           smallLoader.classList.remove("show");
@@ -105,13 +105,15 @@ window.addEventListener("DOMContentLoaded", () => {
             nextBtn.classList.remove("show");
           }
           const pagintationArray = [];
-
+          if (data.small) {
+            nextBtn.classList.remove("show");
+          }
           for (
             let i = pageCount == 0 ? pageCount : pageCount - 1;
-            !data.small ? i < pageCount + 2 : i <= pageCount;
+            !data.small ? i < pageCount + 2 : i <= pageCount + 1;
             i++
           ) {
-            console.log(pagintationArray)
+            console.log(pagintationArray);
             pagintationArray.push(i);
           }
           if (cleanArray) {

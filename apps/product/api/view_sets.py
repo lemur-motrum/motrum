@@ -40,6 +40,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
             vendor_get = vendor_get.split(",")
+            print(vendor_get)
         else:
             vendor_get = None
 
@@ -58,7 +59,16 @@ class ProductViewSet(viewsets.ModelViewSet):
         q_object &= Q(check_to_order=True)
 
         if vendor_get is not None:
-            q_object &= Q(vendor__slug__in=vendor_get)
+            if "None" in vendor_get:
+                if len(vendor_get) > 1:
+                    vendor_get.remove("None")
+                    q_object &= Q(vendor__slug=None,vendor__slug__in=vendor_get)
+                else:
+                    q_object &= Q(vendor__slug=None)    
+                
+                
+            else:
+                q_object &= Q(vendor__slug__in=vendor_get)   
 
         if category_get is not None:
             if category_get == "all":
@@ -118,7 +128,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             count = page_count / 10
         else:
             count = math.trunc(page_count / 10) + 1
-        print(count)
+        
         if page_count <= 20:
             small = True
         else:
@@ -141,7 +151,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             "page": page_get,
             "small": small,
         }
-        print(data_response)
+        
         return Response(data=data_response, status=status.HTTP_200_OK)
 
 

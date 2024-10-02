@@ -66,12 +66,16 @@ def catalog_group(request, category):
         q_object &= Q(check_to_order=True)
         
         if category is not None:
-            q_object &= Q(category__slug=category)
-        elif category == "other":
-            q_object &= Q(category=None)
-        elif category == "all":
-            q_object &= Q(article__isnull=False)
-
+            # q_object &= Q(category__slug=category)
+            if category == "other":
+                q_object &= Q(category=None)
+            elif category == "all":
+                q_object &= Q(article__isnull=False)
+            else:
+                q_object &= Q(category__slug=category) 
+            
+        print(category)
+        print(q_object)
         product_vendor = (
             Product.objects.select_related(
                 "vendor",
@@ -81,7 +85,7 @@ def catalog_group(request, category):
             .distinct("vendor")
             .values("vendor", "vendor__name", "vendor__slug")
         )
-        
+        print(product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except: 

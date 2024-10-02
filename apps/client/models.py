@@ -2,9 +2,8 @@ import datetime
 from pyexpat import model
 from django.db import models
 from django.db.models import Case, Value, When
+
 # Create your models here.
-
-
 
 
 from apps.specification.models import Specification
@@ -65,8 +64,7 @@ class Client(CustomUser):
                 print(admin)
 
     # def send_email_notification(self,text_email):
-       
-        
+
 
 class Requisites(models.Model):
     client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE)
@@ -196,15 +194,22 @@ STATUS_ORDER_INT = (
 
 class Order(models.Model):
     client = models.ForeignKey(
-        Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
+        Client,
+        verbose_name="Клиент",
+        on_delete=models.PROTECT,
+        blank=True,
         null=True,
     )
     name = models.PositiveIntegerField(
         "номер заказа",
     )
-    date_order = models.DateField(default=datetime.date.today,verbose_name="Дата создания заказа", blank=True,
-        null=True,)
-    
+    date_order = models.DateField(
+        default=datetime.date.today,
+        verbose_name="Дата создания заказа",
+        blank=True,
+        null=True,
+    )
+
     status = models.CharField(
         max_length=100, choices=STATUS_ORDER, default="PROCESSING"
     )
@@ -237,63 +242,72 @@ class Order(models.Model):
         null=True,
     )
     # is_status_notification_counter = models.BooleanField("Уведомления по статусц", default=False)
-    
+
     bill_file = models.FileField(
         "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
     )
-    bill_date_start = models.DateField(verbose_name="Дата создания счета", blank=True,
-        null=True,)
-    bill_date_stop = models.DateField(verbose_name="Дата окончания счета", blank=True,
-        null=True,) 
-    bill_sum = models.FloatField("Сумма счета", blank=True,
-        null=True,)
-    bill_sum_paid = models.FloatField("Оплаченная сумма", blank=True,
-        null=True,default=0)
-    
+    bill_date_start = models.DateField(
+        verbose_name="Дата создания счета",
+        blank=True,
+        null=True,
+    )
+    bill_date_stop = models.DateField(
+        verbose_name="Дата окончания счета",
+        blank=True,
+        null=True,
+    )
+    bill_sum = models.FloatField(
+        "Сумма счета",
+        blank=True,
+        null=True,
+    )
+    bill_sum_paid = models.FloatField(
+        "Оплаченная сумма", blank=True, null=True, default=0
+    )
+
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
-    
-    
+
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
 
     def __str__(self):
         return str(self.id)
-    
-    
+
     def create_bill(self):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
+
         self.bill_date_start = datetime.date.today()
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
         print(self.id)
         pdf = crete_pdf_bill(self.specification.id)
         self.bill_file = pdf
-        
+
         self.bill_sum = self.specification.total_amount
-        self.status = "PAYMENT" 
+        self.status = "PAYMENT"
         if self.client:
-            Notification.add_notification(self.id, "DOCUMENT_BILL")  
-             
+            Notification.add_notification(self.id, "DOCUMENT_BILL")
+
         self.save()
-        
+
     def get_status_name(self):
-            for choice in STATUS_ORDER:
-                if choice[0] == self.status:
-                    return choice[1]
-            return ''
-        
-        
-   
-                
-        
+        for choice in STATUS_ORDER:
+            if choice[0] == self.status:
+                return choice[1]
+        return ""
+
+
 class Document(models.Model):
     client = models.ForeignKey(
-        Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True,
+        Client,
+        verbose_name="Клиент",
+        on_delete=models.PROTECT,
+        blank=True,
         null=True,
     )
     order = models.ForeignKey(
@@ -303,8 +317,4 @@ class Document(models.Model):
         blank=True,
         null=True,
     )
-    date = models.DateField(
-        default=datetime.date.today, verbose_name="Дата добавления"
-    )
-     
-    
+    date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")

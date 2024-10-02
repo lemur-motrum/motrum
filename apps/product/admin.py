@@ -490,7 +490,7 @@ class ProductImageInline(admin.TabularInline):
     )
 
     def preview(self, obj):
-     
+
         img = mark_safe('<img src="{}" height="100"  />'.format(obj.photo.url))
         return img
 
@@ -513,7 +513,7 @@ class ProductImageInline(admin.TabularInline):
         ]
 
     def get_fields(self, request, obj=None):
-     
+
         if obj:
             return [
                 "preview",
@@ -595,7 +595,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "article_supplier",
                         "additional_article_supplier",
                     ),
-                    ("check_to_order","promote"),
+                    ("check_to_order", "promote"),
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -776,7 +776,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 parent_id = id_table
 
             item = Product.objects.get(id=parent_id)
-           
+
             if db_field.name == "vendor":
                 kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
             if item.autosave_tag == False:
@@ -813,27 +813,24 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def save_model(self, request, obj, form, change):
         obj._change_reason = "Ручное"
-    
+
         if obj.pk:
             pass
         else:
             obj.autosave_tag = False
         promote_product_slider(obj)
         super().save_model(request, obj, form, change)
-     
-    
 
     def save_formset(self, request, form, formset, change):
 
         instances = formset.save()
-     
+
         for instance in instances:
             # if instance.is_one_sale == True or instance.is_one_sale == False:
             instance.data_update = datetime.datetime.now()
             instance._change_reason = "Ручное"
             # update_change_reason(instance, "Ручное")
             instance.save()
-
 
     # история изменений
     def history_view(self, request, object_id, extra_context=None):
@@ -1034,14 +1031,14 @@ class GroupProductInline(admin.TabularInline):
 
 
 class CategoryProductAdmin(admin.ModelAdmin):
-    fields = ("name", "article_name",
-            
-            )
+    fields = (
+        "name",
+        "article_name",
+    )
     list_display = [
         "name",
         "article_name",
         "get_name",
-        
     ]
     # exclude = ["get_name"]
 
@@ -1069,13 +1066,13 @@ class GroupProductInlineWeb(admin.TabularInline):
 
 
 class CategoryProductAdminWeb(admin.ModelAdmin):
-    fields = ("name", "article_home_web","article_name", "image", "is_view_home_web")
+    fields = ("name", "article_home_web", "article_name", "image", "is_view_home_web")
     list_display = [
         "name",
         "article_home_web",
         "article_name",
         "get_name",
-        "is_view_home_web"
+        "is_view_home_web",
     ]
 
     inlines = [

@@ -1,4 +1,8 @@
-import { setCookie, getCookie } from "/static/core/js/functions.js";
+import {
+  setCookie,
+  getCookie,
+  getClosestInteger,
+} from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
 
@@ -19,6 +23,8 @@ window.addEventListener("DOMContentLoaded", () => {
           const buttonContainer = procductItem.querySelector(
             ".item-buttons_container"
           );
+          const productMultiplicity =
+            +procductItem.getAttribute("order-multiplicity");
           if (buttonContainer) {
             const minusButton = buttonContainer.querySelector(".minus-button");
             const plusButton = buttonContainer.querySelector(".plus-button");
@@ -27,12 +33,28 @@ window.addEventListener("DOMContentLoaded", () => {
               ".add-specification-button"
             );
 
-            let countQuantity = countInput.value;
+            let countQuantity = +countInput.value;
 
-            countInput.onkeyup = () => {
+            countInput.addEventListener("keyup", function () {
+              if (productMultiplicity) {
+                let val = parseInt(this.value) || 0;
+                while (val % +productMultiplicity) {
+                  val++;
+                  if (val % +productMultiplicity == 0) {
+                    break;
+                  }
+                }
+                this.value = val;
+                countQuantity = val;
+              } else {
+                countQuantity = +countInput.value;
+              }
+
               countQuantity = countInput.value;
               if (countQuantity >= 999) {
-                countInput.value = 999;
+                countInput.value = productMultiplicity
+                  ? getClosestInteger(999, +productMultiplicity)
+                  : 999;
                 minusButton.disabled = false;
                 plusButton.disabled = true;
                 cartButton.disabled = false;
@@ -45,15 +67,21 @@ window.addEventListener("DOMContentLoaded", () => {
                 plusButton.disabled = false;
                 cartButton.disabled = false;
               }
-            };
+            });
 
             plusButton.onclick = () => {
-              countQuantity++;
+              if (productMultiplicity) {
+                countQuantity += +productMultiplicity;
+              } else {
+                countQuantity++;
+              }
               countInput.value = countQuantity;
               minusButton.disabled = false;
               cartButton.disabled = false;
               if (countQuantity >= 999) {
-                countInput.value = 999;
+                countInput.value = productMultiplicity
+                  ? getClosestInteger(999, +productMultiplicity)
+                  : 999;
                 minusButton.disabled = false;
                 plusButton.disabled = true;
               } else {
@@ -62,7 +90,11 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             };
             minusButton.onclick = () => {
-              countQuantity--;
+              if (productMultiplicity) {
+                countQuantity -= +productMultiplicity;
+              } else {
+                countQuantity--;
+              }
               countInput.value = countQuantity;
               minusButton.disabled = false;
               if (countQuantity <= 0) {
@@ -76,9 +108,9 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             };
             cartButton.onclick = () => {
-              console.log(getCookie("cart"))
+              console.log(getCookie("cart"));
               if (!getCookie("cart")) {
-                console.log(111)
+                console.log(111);
                 fetch("/api/v1/cart/add-cart/", {
                   method: "GET",
                   headers: {
@@ -122,7 +154,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   })
                   .catch((error) => console.error(error));
               } else {
-                console.log(22)
+                console.log(22);
                 const cart_id = getCookie("cart");
                 const dataObj = {
                   product: product_id,
@@ -167,6 +199,8 @@ window.addEventListener("DOMContentLoaded", () => {
       ".item-buttons_container"
     );
     const productId = productOneContainer.getAttribute("product-id");
+    const productMultiplicity =
+      +productOneContainer.getAttribute("order-multiplicity");
     if (buttonContainer) {
       const minusButton = buttonContainer.querySelector(".minus-button");
       const plusButton = buttonContainer.querySelector(".plus-button");
@@ -174,12 +208,28 @@ window.addEventListener("DOMContentLoaded", () => {
       const cartButton = buttonContainer.querySelector(
         ".add-specification-button"
       );
-      let countQuantity = countInput.value;
+      let countQuantity = +countInput.value;
 
-      countInput.onkeyup = () => {
+      countInput.addEventListener("keyup", function () {
+        if (productMultiplicity) {
+          let val = parseInt(this.value) || 0;
+          while (val % +productMultiplicity) {
+            val++;
+            if (val % +productMultiplicity == 0) {
+              break;
+            }
+          }
+          this.value = val;
+          countQuantity = val;
+        } else {
+          countQuantity = +countInput.value;
+        }
+
         countQuantity = countInput.value;
         if (countQuantity >= 999) {
-          countInput.value = 999;
+          countInput.value = productMultiplicity
+            ? getClosestInteger(999, +productMultiplicity)
+            : 999;
           minusButton.disabled = false;
           plusButton.disabled = true;
           cartButton.disabled = false;
@@ -192,15 +242,21 @@ window.addEventListener("DOMContentLoaded", () => {
           plusButton.disabled = false;
           cartButton.disabled = false;
         }
-      };
+      });
 
       plusButton.onclick = () => {
-        countQuantity++;
+        if (productMultiplicity) {
+          countQuantity += +productMultiplicity;
+        } else {
+          countQuantity++;
+        }
         countInput.value = countQuantity;
         minusButton.disabled = false;
         cartButton.disabled = false;
         if (countQuantity >= 999) {
-          countInput.value = 999;
+          countInput.value = productMultiplicity
+            ? getClosestInteger(999, +productMultiplicity)
+            : 999;
           minusButton.disabled = false;
           plusButton.disabled = true;
         } else {
@@ -209,7 +265,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       };
       minusButton.onclick = () => {
-        countQuantity--;
+        if (productMultiplicity) {
+          countQuantity -= +productMultiplicity;
+        } else {
+          countQuantity--;
+        }
         countInput.value = countQuantity;
         minusButton.disabled = false;
         if (countQuantity <= 0) {

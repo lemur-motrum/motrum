@@ -1,18 +1,18 @@
 {% extends "core/base.html" %}
 {% block content %}
-<div class="admin_login">
-    <div class="admin_login_wrapper">
-        <h1>Вход для сотрудников</h1>
-        <p>Данные для входа вы можете узнать у вашего руководства </p>
-        <p style=color:red;>{{context.error}}</p>
-   
-        <form  method="post" action="./?next={{ redirect_to }}">
-            {{ form.as_p }}
-            {% csrf_token %}
-            
-            <p id="login_admin_btn"><input  type="submit" value="Войти"></p>
-            <input type="hidden" name="next" value="{{request.GET.next}}" />
-        </form>
+    <div class="admin_login">
+        <div class="admin_login_wrapper">
+            <h1>Вход для сотрудников</h1>
+            <p>Данные для входа вы можете узнать у вашего руководства</p>
+            <p style=color:red;>{{ context.error }}</p>
+            <form method="post" action="./?next={{ redirect_to }}">
+                {{ form.as_p }}
+                {% csrf_token %}
+                <p id="login_admin_btn">
+                    <input type="submit" value="Войти">
+                </p>
+                <input type="hidden" name="next" value="{{ request.GET.next }}" />
+            </form>
+        </div>
     </div>
-</div>
 {% endblock content %}

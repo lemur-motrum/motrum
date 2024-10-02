@@ -161,7 +161,7 @@ def crete_pdf_bill(specification):
             2 * cm,
             7 * cm,
         ],
-        rowHeights=0.5* cm,
+        rowHeights=0.5 * cm,
         hAlign="LEFT",
     )
     table_bank.setStyle(
@@ -173,7 +173,6 @@ def crete_pdf_bill(specification):
                 ("BOX", (0, -3), (-3, -3), 0.25, colors.black),
                 ("BOX", (1, 0), (-1, -1), 0.25, colors.black),
                 ("BOX", (2, 0), (-1, -1), 0.25, colors.black),
-                
                 # ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 # # ("GRID", (0, 0), (-1, -1), 0.25, colors.black),

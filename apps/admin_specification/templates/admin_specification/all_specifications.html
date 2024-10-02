@@ -24,9 +24,9 @@
                             <div class="table_item_value">
                                 <a href="{% if specification.file %}{{ specification.file.url }}{% endif %} "
                                    target="_blank"
-                                   data-cart-id = "{{ specification.cart}}"
+                                   data-cart-id="{{ specification.cart }}"
                                    class="table_item_value">{{ specification.pk }}</a>
-                                   <input class="cart_id" type="hidden" value={{ specification.cart}}>
+                                <input class="cart_id" type="hidden" value={{ specification.cart }}>
                                 {% if request.user.is_superuser %}
                                     <br>
                                     <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
@@ -38,18 +38,14 @@
                             </div>
                             <div class="table_item_value">Статус</div>
                             <div class="table_item_value">Договор</div>
-                            
                             <button class="change-specification-button">Редактировать</button>
-                            {% if specification.get_order_bill %}
-                            <a href="{{specification.get_order_bill.url}}">    Счет ссылка</a>
-                            {% endif %}
-                            <button class="create-bill-button">   Создать счет</button>
-                            
+                            {% if specification.get_order_bill %}<a href="{{ specification.get_order_bill.url }}">Счет ссылка</a>{% endif %}
+                            <button class="create-bill-button">Создать счет</button>
                         </div>
                     {% else %}
                         <div data-status='{{ specification.tag_stop }}'
                              class="table_item disabled">
-                            <div data-cart-id = "{{ specification.cart}}" class="table_item_value">{{ specification.pk }}</div>
+                            <div data-cart-id = "{{ specification.cart }}" class="table_item_value">{{ specification.pk }}</div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">
                                 <span class="price">{{ specification.total_amount }}</span> ₽

@@ -156,7 +156,7 @@ def get_avangard_file(new_file, obj):
                             group_supplier=None,
                             category_supplier=category_item,
                         )
-                        
+
                         article.save()
                         update_change_reason(article, "Автоматическое")
                     print(article)
@@ -177,7 +177,7 @@ def get_avangard_file(new_file, obj):
                             lot=lot,
                             stock_motrum=stock_motrum,
                             stock_supplier=stock_supplier,
-                            data_update = datetime.datetime.now()
+                            data_update=datetime.datetime.now(),
                         )
                         stock_prod._change_reason = "Автоматическое"
                         stock_prod.save()

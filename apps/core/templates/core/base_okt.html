@@ -1,5 +1,4 @@
 {% load static %}
-
 {% load js_templates %}
 <!DOCTYPE html>
 <html lang="ru">
@@ -12,7 +11,6 @@
     </head>
     <body>
         <div class="wrapper">
-           
             <div class="site-content">
                 <div class="site-description-content">
                     <input id="user_id"
@@ -21,12 +19,10 @@
                     <input id="client_id"
                            type="hidden"
                            data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
-                    
-                    {% block content %}{% endblock content %}
+                    {% block content %}
+                    {% endblock content %}
                 </div>
-               
             </div>
-           
             {% include "core/includes/overlay-modal.html" %}
             {% include "core/includes/overlay_new_product_in_specification.html" %}
         </div>

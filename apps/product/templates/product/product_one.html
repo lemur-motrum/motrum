@@ -1,8 +1,9 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-   
-    <div class="product_one_container" product-id="{{ product.pk }}">
+    <div class="product_one_container"
+         product-id="{{ product.pk }}"
+         order-multiplicity="{{ product.stock.order_multiplicity }}">
         <div class="title_content">
             <div class="bread_crumbs">
                 <a href="{% url "core:index" %}">главная</a> <a href="{% url "product:catalog" %}">каталог</a> <a href="{% url "product:group" current_category.slug %}">{{ current_category.name }}</a>

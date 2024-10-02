@@ -24,7 +24,7 @@ from apps.supplier.models import (
 
 # форма добавления нового продукта
 class ProductForm(forms.ModelForm):
-    
+
     supplier = forms.ModelChoiceField(
         queryset=Supplier.objects.all(), label="Поставщик"
     )
@@ -91,7 +91,6 @@ class ProductForm(forms.ModelForm):
                 }
             ),
         }
-      
 
 
 # форма обновления продукта добавленного автоматически
@@ -156,7 +155,7 @@ class ProductChangeForm(forms.ModelForm):
                 }
             ),
         }
-     
+
     # def __init__(self, *args, **kwargs):
     #     super(ProductChangeForm, self).__init__(*args, **kwargs)
 

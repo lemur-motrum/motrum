@@ -27,8 +27,6 @@ def my_orders(request):
 
     # client = Client.objects.get(pk=current_user)
 
-    
-    
     context = {
         "title": "Личный кабинет | мои заказы",
     }
@@ -39,11 +37,11 @@ def my_orders(request):
 def my_documents(request):
     current_user = request.user.id
     client = Client.objects.get(pk=current_user)
-    
+
     # notifications = Notification.objects.filter(
     #     client_id=current_user, is_viewed=False
     # ).exclude(type_notification="STATUS_ORDERING").update(is_viewed=True)
-    
+
     context = {
         "title": "Личный кабинет | мои документы",
     }

@@ -35,15 +35,19 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = int(request.query_params.get("count"))
         print(count)
         count_last = 10
+        # page_btn = request.query_params.get("addMoreBtn")
+        page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
+
+        print(page_btn)
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
-            vendor_get = vendor_get.split(",") 
+            vendor_get = vendor_get.split(",")
         else:
             vendor_get = None
-            
+
         category_get = request.query_params.get("category")
 
         if request.query_params.get("group"):
@@ -51,11 +55,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             groupe_get = None
 
-        if page_get:
+        if page_btn == False:
             count = int(count) * int(page_get)
-            
-        print(count)
-        
+
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True)
@@ -64,14 +66,13 @@ class ProductViewSet(viewsets.ModelViewSet):
             if "None" in vendor_get:
                 if len(vendor_get) > 1:
                     vendor_get.remove("None")
-                    q_object &= Q(vendor__slug=None,vendor__slug__in=vendor_get)
+                    q_object &= Q(vendor__slug=None,)|Q(vendor__slug__in=vendor_get)
                 else:
-                    q_object &= Q(vendor__slug=None)    
-                
-                
+                    q_object &= Q(vendor__slug=None)
             else:
-                q_object &= Q(vendor__slug__in=vendor_get)   
-
+                q_object &= Q(vendor__slug__in=vendor_get)
+                
+        print(q_object)
         if category_get is not None:
             if category_get == "all":
                 q_object &= Q(article__isnull=False)
@@ -124,43 +125,33 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset_next = Product.objects.filter(q_object)[
             count + count_last + 1 : count + count_last + 2
         ].exists()
-        
+
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
         # page_count = queryset.count()
 
         page_count = Product.objects.filter(q_object).count()
-       
 
         if page_count % 10 == 0:
             count = page_count / 10
         else:
             count = math.trunc(page_count / 10) + 1
-        
+
         if page_count <= 20:
             small = True
         else:
             small = False
-        # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
-        # group = GroupProduct.objects.filter(slug=kwargs['group'])
-       
+      
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
             "count": math.ceil(page_count / 10),
-            # "count": math.ceil(
-            #     len(
-            #         Product.objects
-            #         .filter(q_object)
-            #         .order_by(ordering_filter)
-            #     )
-            #     / 10
-            # ),
+         
             "page": page_get,
             "small": small,
         }
-        
+
         return Response(data=data_response, status=status.HTTP_200_OK)
 
 

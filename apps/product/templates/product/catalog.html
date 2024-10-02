@@ -73,9 +73,22 @@
                 <div class="catalog_wrapper" catalog-elem="wrapper">
                     <div class="loader">loading</div>
                     <div class="site_catalog_container" catalog-elem="container">
-                        {% for product in product_list %}
-                            {% include "product/includes/product_item.html" with product=product %}
-                        {% endfor %}
+                        {% if product_list %}
+                            {% for product in product_list %}
+                                {% include "product/includes/product_item.html" with product=product %}
+                            {% endfor %}
+                        {% else %}
+                        <div class="none-products">
+                            Товаров в разделе "
+                            {% if current_group %}
+                            {{ current_group.name }}
+                        {% else %}
+                            {{ current_category.name }}
+                        {% endif %}
+                            " пока нет
+                        </div>
+                        {% endif %}
+                        
                     </div>
                     <div class="small_loader">loading</div>
                     <div class="end_content">

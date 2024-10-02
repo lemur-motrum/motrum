@@ -23,16 +23,27 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 from pytils import translit
 from django.utils.text import slugify
+from simple_history.utils import update_change_reason
 
 
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
+    def background_task():
+            # Долгосрочная фоновая задача
+            prod = Product.objects.filter(slug=None)
+            for pro in prod:
+                pro.save()
+
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
     
-    prod = Product.objects.filter(slug=None)
+    # prod = Product.objects.filter(slug=None)
     
-    for pro in prod:
-        pro.save()
+    # for pro in prod:
+    #     pro.save()
     title = "Услуги"
 
     responsets = ["233", "2131"]

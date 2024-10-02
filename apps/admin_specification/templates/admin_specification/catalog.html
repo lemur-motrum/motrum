@@ -40,7 +40,7 @@
                         <div class="item_value">{{ item.name }}</div>
                         <div class="item_value">{{ item.article }}</div>
                         <div class="item_value">{{ item.article_supplier }}</div>
-                        {% if item.price.rub_price_supplier == 0 %}
+                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None %}
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>

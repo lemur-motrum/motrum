@@ -4,7 +4,7 @@ from django.db.models import Q
 from dal_select2.views import Select2ViewMixin
 from dal.views import BaseQuerySetView
 from regex import P
-
+from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
 from apps.product.models import (
@@ -41,7 +41,7 @@ def catalog_group(request, category):
     group = GroupProduct.objects.filter(category__slug=category).order_by(
         "article_name"
     )
-  
+
     if len(group) > 0:
         all_categories = CategoryProduct.objects.all()
         cat = CategoryProduct.objects.get(slug=category)
@@ -64,7 +64,7 @@ def catalog_group(request, category):
         # vendor = Vendor.objects.filter()
         q_object = Q()
         q_object &= Q(check_to_order=True)
-        
+
         if category is not None:
             # q_object &= Q(category__slug=category)
             if category == "other":
@@ -72,8 +72,8 @@ def catalog_group(request, category):
             elif category == "all":
                 q_object &= Q(article__isnull=False)
             else:
-                q_object &= Q(category__slug=category) 
-            
+                q_object &= Q(category__slug=category)
+
         print(category)
         print(q_object)
         product_vendor = (
@@ -88,18 +88,14 @@ def catalog_group(request, category):
         print(product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
-        except: 
+        except:
             if category == "all":
-                current_category =  {
-                    "name":"Все товары",
-                    "slug" : category
+                current_category = {"name": "Все товары", "slug": category}
+            elif category == "other":
+                current_category = {
+                    "name": "Товары без категории",
+                    "slug": category,
                 }
-            elif category =="other":
-                current_category =  {
-                    "name":"Товары без категории",
-                    "slug" : category,
-                    
-                }      
 
         context = {
             "current_category": current_category,
@@ -112,7 +108,7 @@ def catalog_group(request, category):
 def products_items(request, category, group):
     print("products_items")
     print(9999999999)
-   
+
     q_object = Q()
     q_object &= Q(check_to_order=True)
     if category is not None:
@@ -158,12 +154,27 @@ def products_items(request, category, group):
 
 
 # страница отдельного продукта
-def product_one(request,category, group, article):
+def product_one(request, category, group, article):
     print("product_one")
     product = Product.objects.get(article=article)
-    product_properties = ProductProperty.objects.filter(product=product.pk)
-    product_lot = Stock.objects.get(prod=product.pk)
-    
+    product = (
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+            )
+            .prefetch_related(Prefetch("stock__lot"),
+                            Prefetch("productproperty_set"),
+                            Prefetch("productimage_set"),
+                            )
+            .get(article=article)
+        )
+    # product_properties = ProductProperty.objects.filter(product=product.pk)
+    # product_lot = Stock.objects.get(prod=product.pk)
+
     # current_category = CategoryProduct.objects.get(slug=category)
     # current_group = GroupProduct.objects.get(slug=group)
 
@@ -172,55 +183,71 @@ def product_one(request,category, group, article):
         "current_category": product.category,
         "current_group": product.group,
         "title": product.name,
-        "product_properties": product_properties,
-        "product_lot": product_lot,
+        # "product_properties": product_properties,
+        # "product_lot": product_lot,
     }
     return render(request, "product/product_one.html", context)
+
 
 # страница отдельного продукта без с категорией но без группы
 def product_one_without_group(request, category, article):
     if category == "other":
-        current_category =  {
-                    "name":"Товары без категории",
-                    "slug" : category,
-                    
-                }
-    else:    
+        current_category = {
+            "name": "Товары без категории",
+            "slug": category,
+        }
+    else:
         current_category = CategoryProduct.objects.get(slug=category)
-    product = Product.objects.get(article=article)
-    product_properties = ProductProperty.objects.filter(product=product.pk)
-    product_lot = Stock.objects.get(prod=product.pk)
+
+    product = (
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
+        )
+        .prefetch_related(Prefetch("stock__lot"),
+                          Prefetch("productproperty_set"),
+                          Prefetch("productimage_set"),
+                          )
+        .get(article=article)
+    )
+    # product = Product.objects.get(article=article)
+    # product_properties = ProductProperty.objects.filter(product=product.pk)
+    # product_lot = Stock.objects.get(prod=product.pk)
 
     context = {
         "product": product,
         "current_category": current_category,
         "title": product.name,
-        "product_properties": product_properties,
-        "product_lot": product_lot,
+        # "product_properties": product_properties,
+        # "product_lot": product_lot,
     }
     return render(request, "product/product_one.html", context)
 
 
-# юрина вьюха каталога
-def catalog(request):
+# # юрина вьюха каталога
+# def catalog(request):
 
-    product_list = Product.objects.select_related(
-        "supplier",
-        "vendor",
-        "category_supplier_all",
-        "group_supplier",
-        "category_supplier",
-        "category",
-        "group",
-        "price",
-        "stock",
-    ).filter(check_to_order=True)[0:10]
+#     product_list = Product.objects.select_related(
+#         "supplier",
+#         "vendor",
+#         "category_supplier_all",
+#         "group_supplier",
+#         "category_supplier",
+#         "category",
+#         "group",
+#         "price",
+#         "stock",
+#     ).filter(check_to_order=True)[0:10]
 
-    context = {
-        "product_list": product_list,
-    }
+#     context = {
+#         "product_list": product_list,
+#     }
 
-    return render(request, "product/catalog.html", context)
+#     return render(request, "product/catalog.html", context)
 
 
 # АВТОЗАПОЛНЕНИЯ для админки БЕК ОКТ

@@ -106,10 +106,14 @@ def get_price_motrum(
             percent = get_percent(discount_all)
             sale = discount_all
         # нет скидки
-
-    motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
-    # обрезать цены
-    motrum_price = round(motrum_price, 2)
+    if rub_price_supplier:
+        
+        motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
+        # обрезать цены
+        motrum_price = round(motrum_price, 2)
+    else:
+        motrum_price = None
+    
 
     return motrum_price, sale[0]
 

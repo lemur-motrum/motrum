@@ -378,9 +378,12 @@ class Price(models.Model):
             or self.price_supplier == None
         ):
             self.extra_price = True
-            self.price_supplier = 0
-            self.rub_price_supplier = 0
-            self.price_motrum = 0
+            # self.price_supplier = 0
+            # self.rub_price_supplier = 0
+            # self.price_motrum = 0
+            self.price_supplier = None
+            self.rub_price_supplier = None
+            self.price_motrum = None
 
         #  если цена есть
         elif self.price_supplier != 0:
@@ -417,7 +420,7 @@ class Price(models.Model):
         request = RequestMiddleware(get_response=None)
         request = request.thread_local.current_request
      
-
+        
         if request.user:
             if request.user.is_staff == False:
                 client = Client.objects.get(id=request.user.id)
@@ -526,9 +529,9 @@ class Price(models.Model):
                 sale = discount_all
             # нет скидки
         
-        motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
-        # обрезать цены
-        motrum_price = round(motrum_price, 2)
+        # motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
+        # # обрезать цены
+        # motrum_price = round(motrum_price, 2)
         if sale[0]:
             return sale[0].percent
         else:

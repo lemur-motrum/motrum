@@ -29,15 +29,19 @@ from apps.specification.models import ProductSpecification, Specification
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
-from django.db.models import Q
+from django.db.models import Q, F, OrderBy
 
 
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
-    print(1111111111111)
+    print("all_categories")
     title = "Каталог"
-    categories = CategoryProduct.objects.all().order_by("article_name")
+    categories = (
+        CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
+        .all()
+        .order_by("article_name")
+    )
     vendor = Vendor.objects.filter()
     q_object = Q()
     q_object &= Q(check_to_order=True)
@@ -51,18 +55,20 @@ def all_categories(request):
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
-    print(product_vendor)
+
     product_list = (
         Product.objects.select_related(
             "supplier",
             "vendor",
-            "category_supplier_all",
-            "group_supplier",
-            "category_supplier",
             "category",
             "group",
             "price",
             "stock",
+        )
+        .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
         )
         .filter(check_to_order=True)
         .order_by("pk")
@@ -86,8 +92,19 @@ def all_categories(request):
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
         vendor_get = vendor_urls.split(",")
-        print(vendor_urls)
-        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        if "None" in vendor_get:
+            if len(vendor_get) > 1:
+                vendor_get.remove("None")
+                product_list = product_list.filter(
+                    Q(
+                        vendor__slug=None,
+                    )
+                    | Q(vendor__slug__in=vendor_get)
+                )
+            else:
+                product_list = product_list.filter(vendor__slug=None)
+        else:
+            product_list = product_list.filter(vendor__slug__in=vendor_get)
         vendor_url = vendor_urls
     else:
         vendor_url = False
@@ -95,9 +112,13 @@ def all_categories(request):
     if request.GET.get("price") != None:
         price_url = request.GET.get("price")
         if price_url == "up":
-            product_list = product_list.order_by("price__rub_price_supplier")
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").asc(nulls_last=True)
+            )
         else:
-            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").desc(nulls_last=True)
+            )
 
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
@@ -123,7 +144,11 @@ def all_categories(request):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def group_product(request, cat):
     print(2222222222)
-    categoryes = CategoryProduct.objects.all().order_by("article_name")
+    categoryes = (
+        CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
+        .all()
+        .order_by("article_name")
+    )
     groups = (
         GroupProduct.objects.select_related("category")
         .filter(category=cat)
@@ -138,14 +163,14 @@ def group_product(request, cat):
     product_vendor = (
         Product.objects.select_related(
             "vendor",
-            "category"
+            "category",
+            "group",
         )
         .filter(q_object)
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
-    
-    
+
     product_list = (
         Product.objects.select_related(
             "supplier",
@@ -156,9 +181,10 @@ def group_product(request, cat):
             "stock",
         )
         .prefetch_related(
-                Prefetch('stock__lot'))
-        .prefetch_related(
-                Prefetch('productproperty_set'))
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
+        )
         .filter(category=cat, check_to_order=True)
         .order_by("pk")
     )
@@ -180,7 +206,19 @@ def group_product(request, cat):
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
         vendor_get = vendor_urls.split(",")
-        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        if "None" in vendor_get:
+            if len(vendor_get) > 1:
+                vendor_get.remove("None")
+                product_list = product_list.filter(
+                    Q(
+                        vendor__slug=None,
+                    )
+                    | Q(vendor__slug__in=vendor_get)
+                )
+            else:
+                product_list = product_list.filter(vendor__slug=None)
+        else:
+            product_list = product_list.filter(vendor__slug__in=vendor_get)
         vendor_url = vendor_urls
     else:
         vendor_url = False
@@ -188,9 +226,13 @@ def group_product(request, cat):
     if request.GET.get("price") != None:
         price_url = request.GET.get("price")
         if price_url == "up":
-            product_list = product_list.order_by("price__rub_price_supplier")
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").asc(nulls_last=True)
+            )
         else:
-            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").desc(nulls_last=True)
+            )
 
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
@@ -230,7 +272,11 @@ def group_product(request, cat):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def specifications(request, cat, gr):
     print(33333333)
-    categoryes = CategoryProduct.objects.all().order_by("article_name")
+    categoryes = (
+        CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
+        .all()
+        .order_by("article_name")
+    )
     product_list = (
         Product.objects.select_related(
             "supplier",
@@ -243,8 +289,12 @@ def specifications(request, cat, gr):
             "price",
             "stock",
         )
-        .filter(check_to_order=True,category=cat, group=gr)
-        # .filter(check_to_order=True)
+        .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
+        )
+        .filter(check_to_order=True, category=cat, group=gr)
         .order_by("pk")
     )
 
@@ -270,8 +320,19 @@ def specifications(request, cat, gr):
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
         vendor_get = vendor_urls.split(",")
-        print(vendor_urls)
-        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        if "None" in vendor_get:
+            if len(vendor_get) > 1:
+                vendor_get.remove("None")
+                product_list = product_list.filter(
+                    Q(
+                        vendor__slug=None,
+                    )
+                    | Q(vendor__slug__in=vendor_get)
+                )
+            else:
+                product_list = product_list.filter(vendor__slug=None)
+        else:
+            product_list = product_list.filter(vendor__slug__in=vendor_get)
         vendor_url = vendor_urls
     else:
         vendor_url = False
@@ -279,9 +340,13 @@ def specifications(request, cat, gr):
     if request.GET.get("price") != None:
         price_url = request.GET.get("price")
         if price_url == "up":
-            product_list = product_list.order_by("price__rub_price_supplier")
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").asc(nulls_last=True)
+            )
         else:
-            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").desc(nulls_last=True)
+            )
 
     groups = (
         GroupProduct.objects.select_related("category").all().order_by("article_name")
@@ -357,7 +422,7 @@ def specifications(request, cat, gr):
 def create_specification(request):
     cart = request.COOKIES.get("cart")
     if cart != None:
-        
+
         cart_qs = Cart.objects.get(id=cart)
 
         discount_client = 0
@@ -367,14 +432,14 @@ def create_specification(request):
         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
             "product__id"
         )
-      
+
         product_cart = ProductCart.objects.filter(cart=cart)
         try:
             specification = Specification.objects.get(cart=cart)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-            print(product_specification)
+
         except Specification.DoesNotExist:
             specification = None
             product_specification = ProductSpecification.objects.filter(
@@ -393,13 +458,15 @@ def create_specification(request):
                 "group",
                 "price",
                 "stock",
-                "stock__lot",
+                "category_supplier_all",
+                "group_supplier",
+                "category_supplier",
+                # "stock__lot",
             )
             .prefetch_related(
-                Prefetch(
-                    "productproperty_set",
-                    queryset=prefetch_queryset_property,
-                )
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+                Prefetch("price__sale"),
             )
             .annotate(
                 quantity=product_cart.filter(product=OuterRef("pk")).values(
@@ -470,7 +537,7 @@ def save_specification_view_admin(request):
     received_data = json.loads(request.body)
 
     # сохранение спецификации
-    save_specification(received_data,request)
+    save_specification(received_data, request)
 
     out = {"status": "ok", "data": received_data}
     return JsonResponse(out)
@@ -491,7 +558,7 @@ def get_all_specifications(request):
         .order_by("tag_stop", "pk")
         .reverse()
     )
-    
+
     # фильтрация по админу
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type
@@ -516,7 +583,7 @@ def get_all_specifications(request):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def instruments(request, cat):
 
-    category = CategoryProduct.objects.filter(pk=cat).order_by("article_name")
+    category = CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set")).filter(pk=cat).order_by("article_name")
 
     vendor = Vendor.objects.filter()
     q_object = Q()
@@ -538,18 +605,20 @@ def instruments(request, cat):
         Product.objects.select_related(
             "supplier",
             "vendor",
-            "category_supplier_all",
-            "group_supplier",
-            "category_supplier",
             "category",
             "group",
             "price",
             "stock",
         )
-        .filter(
-            category=cat,
+        .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
         )
-        .filter(check_to_order=True)
+        .filter(
+            check_to_order=True, category=cat,
+        )
+        # .filter(check_to_order=True)
         .order_by("pk")
     )
     title = category[0].name
@@ -568,11 +637,30 @@ def instruments(request, cat):
     else:
         form = SearchForm()
 
+    # if request.GET.get("vendor") != None:
+    #     vendor_urls = request.GET.get("vendor")
+    #     vendor_get = vendor_urls.split(",")
+    #     print(vendor_urls)
+    #     product_list = product_list.filter(vendor__slug__in=vendor_get)
+    #     vendor_url = vendor_urls
+    # else:
+    #     vendor_url = False
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
         vendor_get = vendor_urls.split(",")
-        print(vendor_urls)
-        product_list = product_list.filter(vendor__slug__in=vendor_get)
+        if "None" in vendor_get:
+            if len(vendor_get) > 1:
+                vendor_get.remove("None")
+                product_list = product_list.filter(
+                    Q(
+                        vendor__slug=None,
+                    )
+                    | Q(vendor__slug__in=vendor_get)
+                )
+            else:
+                product_list = product_list.filter(vendor__slug=None)
+        else:
+            product_list = product_list.filter(vendor__slug__in=vendor_get)
         vendor_url = vendor_urls
     else:
         vendor_url = False
@@ -580,10 +668,13 @@ def instruments(request, cat):
     if request.GET.get("price") != None:
         price_url = request.GET.get("price")
         if price_url == "up":
-            product_list = product_list.order_by("price__rub_price_supplier")
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").asc(nulls_last=True)
+            )
         else:
-            product_list = product_list.order_by("price__rub_price_supplier").reverse()
-
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").desc(nulls_last=True)
+            )
     supplers = []
 
     for product in product_list:
@@ -653,10 +744,12 @@ def search_product(request):
     else:
         product_list = (
             Product.objects.select_related(
-                "supplier",
-                "vendor",
-                "category",
-                "group",
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
             )
             .filter(category=cat, group=gr)
             .filter(check_to_order=True)
@@ -700,14 +793,16 @@ def load_products(request):
             Product.objects.prefetch_related(
                 "supplier",
                 "vendor",
-                "category_supplier_all",
-                "group_supplier",
-                "category_supplier",
                 "category",
                 "group",
                 "price",
                 "stock",
             )
+                    .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
+        )
             .filter(check_to_order=True)
             .order_by("pk")
         )
@@ -717,29 +812,38 @@ def load_products(request):
             Product.objects.prefetch_related(
                 "supplier",
                 "vendor",
-                "category_supplier_all",
-                "group_supplier",
-                "category_supplier",
                 "category",
                 "group",
                 "price",
                 "stock",
             )
-            .filter(category=cat)
-            .filter(check_to_order=True)
+            .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
+        )
+            .filter(check_to_order=True,category=cat)
+            # .filter(check_to_order=True)
             .order_by("pk")
         )
 
     else:
         product_list = (
             Product.objects.select_related(
-                "supplier",
-                "vendor",
-                "category",
-                "group",
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
             )
-            .filter(category=cat, group=gr)
-            .filter(check_to_order=True)
+                    .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("price__sale"),
+        )
+            .filter(check_to_order=True,category=cat, group=gr)
+            # .filter(check_to_order=True)
             .order_by("pk")
         )
 
@@ -748,9 +852,13 @@ def load_products(request):
 
     if price_url != None:
         if price_url == "up":
-            product_list = product_list.order_by("price__rub_price_supplier")
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").asc(nulls_last=True)
+            )
         else:
-            product_list = product_list.order_by("price__rub_price_supplier").reverse()
+            product_list = product_list.order_by(
+                F("price__rub_price_supplier").desc(nulls_last=True)
+            )
 
     items = product_list[start_point:endpoint_product]
 

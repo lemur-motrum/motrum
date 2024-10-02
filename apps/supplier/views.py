@@ -1,4 +1,5 @@
 import datetime
+from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
 from dal import autocomplete
@@ -7,7 +8,7 @@ from django.db.models import Q
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification
-from apps.product.models import CurrencyRate, GroupProduct
+from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.one_c import one_c_price
@@ -20,13 +21,18 @@ from apps.user.utils import upgrade_permission
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
+from pytils import translit
+from django.utils.text import slugify
 
 
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
-
-    iek_api()
+    
+    prod = Product.objects.filter(slug=None)
+    
+    for pro in prod:
+        pro.save()
     title = "Услуги"
 
     responsets = ["233", "2131"]

@@ -1,4 +1,5 @@
 import math
+from django.db.models import Prefetch
 from unicodedata import category
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
@@ -32,7 +33,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-        print(count)
+        count_last = 10
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
@@ -41,7 +42,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             vendor_get = vendor_get.split(",")
         else:
             vendor_get = None
+            
         category_get = request.query_params.get("category")
+         
+        
         if request.query_params.get("group"):
             groupe_get = request.query_params.get("group")
         else:
@@ -53,10 +57,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True)
+        
         if vendor_get is not None:
             q_object &= Q(vendor__slug__in=vendor_get)
+            
         if category_get is not None:
-            q_object &= Q(category__id=category_get)
+            if category_get == "all":
+                q_object &= Q(article__isnull=False)
+            elif category_get == "other":
+                q_object &= Q(category=None)
+            else:
+                q_object &= Q(category__id=category_get)
+            
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
 
@@ -85,68 +97,60 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "group",
                 "price",
                 "stock",
-            )
+            ).prefetch_related(
+                Prefetch('stock__lot'),Prefetch('productproperty_set'))
+            
             .filter(q_object)
-            .order_by(ordering_filter)[count + 1 : count + 11]
+            .order_by(ordering_filter)[count  : count + count_last]
         )
-
+   
+   
         # проверка есть ли еще данные для след запроса
         queryset_next = (
-            Product.objects.select_related()
-            .filter(q_object)[count + 11 : count + 12]
+            Product.objects
+            .filter(q_object)[count: count_last + 1]
             .exists()
         )
-
+        for i in queryset:
+            print(i.id)
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
-
-        page_count = len(
-            Product.objects.select_related(
-                "supplier",
-                "vendor",
-                "category",
-                "group",
-                "price",
-                "stock",
-            )
-            .filter(q_object)
-            .order_by(ordering_filter)
-        )
+        # page_count = queryset.count()
+        
+        page_count =  Product.objects.filter(q_object).count()
+        print(page_count)
 
         if page_count % 10 == 0:
             count = page_count / 10
         else:
             count = math.trunc(page_count / 10) + 1
-
+        print(count)
         if page_count <= 20:
             small = True
         else:
             small = False
         # category =  CategoryProduct.objects.filter(slug=kwargs['category'])
         # group = GroupProduct.objects.filter(slug=kwargs['group'])
-
+        print(math.ceil(page_count/10),)
+        print(page_get)
+        print(small)
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
-            "count": math.ceil(
-                len(
-                    Product.objects.select_related(
-                        "supplier",
-                        "vendor",
-                        "category",
-                        "group",
-                        "price",
-                        "stock",
-                    )
-                    .filter(q_object)
-                    .order_by(ordering_filter)
-                )
-                / 10
-            ),
+            "count": math.ceil(page_count/10),
+            # "count": math.ceil(
+            #     len(
+            #         Product.objects
+            #         .filter(q_object)
+            #         .order_by(ordering_filter)
+            #     )
+            #     / 10
+            # ),
             "page": page_get,
             "small": small,
         }
+        print(data_response)
         return Response(data=data_response, status=status.HTTP_200_OK)
 
 

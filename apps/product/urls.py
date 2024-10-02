@@ -28,21 +28,23 @@ router.register(r"v1/cart", CartViewSet)
 
 urlpatterns = [
     path("", views.catalog_all, name="catalog"),
+  
     path("<slug:category>", views.catalog_group, name="group"),
     path("<slug:category>/<slug:group>", views.products_items, name="products_items"),
+    
     path(
         "<slug:category>/none_group/<slug:article>",
         views.product_one_without_group,
         name="product_one_without_group",
     ),
+ 
     path(
         "<slug:category>/<slug:group>/<slug:article>",
         views.product_one,
         name="product_one",
     ),
+    
     url("product_ajax", views.catalog, name="catalog_ajax"),
-    
-    
     # АВТОЗАПОЛНЕНИЕ для бека
     url(
         r"^vendor-autocomplete/$",

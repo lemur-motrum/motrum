@@ -87,7 +87,9 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then(function (data) {
           lastPage = +data.count;
+          console.log(lastPage)
           paginationLastElem.textContent = `... ${lastPage}`;
+          console.log(lastPage)
           loader.style.display = "none";
           endContent.classList.add("show");
           smallLoader.classList.remove("show");
@@ -109,6 +111,7 @@ window.addEventListener("DOMContentLoaded", () => {
             !data.small ? i < pageCount + 2 : i <= pageCount;
             i++
           ) {
+            console.log(pagintationArray)
             pagintationArray.push(i);
           }
           if (cleanArray) {

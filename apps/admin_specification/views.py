@@ -35,6 +35,7 @@ from django.db.models import Q
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
+    print(1111111111111)
     title = "Каталог"
     categories = CategoryProduct.objects.all().order_by("article_name")
     vendor = Vendor.objects.filter()
@@ -50,6 +51,7 @@ def all_categories(request):
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    print(product_vendor)
     product_list = (
         Product.objects.select_related(
             "supplier",
@@ -120,6 +122,7 @@ def all_categories(request):
 # Рендер страницы групп товаров с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def group_product(request, cat):
+    print(2222222222)
     categoryes = CategoryProduct.objects.all().order_by("article_name")
     groups = (
         GroupProduct.objects.select_related("category")
@@ -135,25 +138,27 @@ def group_product(request, cat):
     product_vendor = (
         Product.objects.select_related(
             "vendor",
-            "category",
-            "group",
+            "category"
         )
         .filter(q_object)
         .distinct("vendor")
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    
+    
     product_list = (
         Product.objects.select_related(
             "supplier",
             "vendor",
-            "category_supplier_all",
-            "group_supplier",
-            "category_supplier",
             "category",
             "group",
             "price",
             "stock",
         )
+        .prefetch_related(
+                Prefetch('stock__lot'))
+        .prefetch_related(
+                Prefetch('productproperty_set'))
         .filter(category=cat, check_to_order=True)
         .order_by("pk")
     )
@@ -175,7 +180,6 @@ def group_product(request, cat):
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
         vendor_get = vendor_urls.split(",")
-        print(vendor_urls)
         product_list = product_list.filter(vendor__slug__in=vendor_get)
         vendor_url = vendor_urls
     else:
@@ -225,6 +229,7 @@ def group_product(request, cat):
 # Рендер страницы подгрупп с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def specifications(request, cat, gr):
+    print(33333333)
     categoryes = CategoryProduct.objects.all().order_by("article_name")
     product_list = (
         Product.objects.select_related(
@@ -238,8 +243,8 @@ def specifications(request, cat, gr):
             "price",
             "stock",
         )
-        .filter(category=cat, group=gr)
-        .filter(check_to_order=True)
+        .filter(check_to_order=True,category=cat, group=gr)
+        # .filter(check_to_order=True)
         .order_by("pk")
     )
 

@@ -61,7 +61,7 @@
                 </div>
                 <input id="category-product"
                        type="hidden"
-                       data-category-id="{{ current_category.pk }}" />
+                       data-category-id="{% if current_category.pk %}{{current_category.pk}}{% else %}{{current_category.slug}}{% endif %}" />
                 <input id="group-product"
                        type="hidden"
                        data-group-id="{{ current_group.pk }}" />

@@ -1,5 +1,5 @@
-from click import group
-from django.forms import ValidationError
+import re
+import unicodedata
 from django.urls import reverse
 from django.utils import timezone
 from django.db import models
@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
 from middlewares.middlewares import RequestMiddleware
-from apps.core.models import Currency, SliderMain, Vat
+from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
     get_file_path_add,
@@ -20,7 +20,7 @@ from apps.core.utils import (
 from simple_history.signals import (
     post_create_historical_record,
 )
-from apps.core.utils_web import get_file_path_catalog_web, promote_product_slider
+from apps.core.utils_web import get_file_path_catalog_web
 from apps.supplier.models import (
     Discount,
     Supplier,
@@ -32,7 +32,7 @@ from apps.supplier.models import (
 from pytils import translit
 from django.utils.text import slugify
 
-from project.settings import BASE_DIR
+
 
 
 TYPE_DOCUMENT = (
@@ -113,7 +113,8 @@ class Product(models.Model):
     )
 
     name = models.CharField("Название товара", max_length=600)
-
+    slug = models.SlugField(null=True, max_length=600)
+    
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -132,6 +133,7 @@ class Product(models.Model):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
 
     def save(self, *args, **kwargs):
+        
         # если товара нет бд сделать артикул
         if self.article == "":
             article = create_article_motrum(self.supplier.id)
@@ -158,7 +160,12 @@ class Product(models.Model):
         if self.description != None:
             self.description = self.description.strip()
             self.description = " ".join(self.description.split())
-
+            
+        if self.slug == None:
+            slug_text = f"{self.name}-{self.article}"
+            slugish = re.sub("[^A-Za-z0-9,А-ЯЁа-яё,\s,.]", "", slug_text)
+            slugish = translit.translify(slugish)
+            self.slug = slugify(slugish)
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
@@ -170,24 +177,33 @@ class Product(models.Model):
             pass
 
     def get_absolute_url(self):
-        if self.group is not None:
-            return reverse(
-                "product:product_one",
-                kwargs={
-                    "category": self.category.slug,
-                    "group": self.group.slug,
-                    "article": self.article,
-                },
-            )
+        if self.category is not None:
+            if self.group is not None:
+                return reverse(
+                    "product:product_one",
+                    kwargs={
+                        "category": self.category.slug,
+                        "group": self.group.slug,
+                        "article": self.article,
+                    },
+                )
+            else:
+                return reverse(
+                    "product:product_one_without_group",
+                    kwargs={
+                        "category": self.category.slug,
+                        "article": self.article,
+                    },
+                )
         else:
             return reverse(
                 "product:product_one_without_group",
                 kwargs={
-                    "category": self.category.slug,
+                    "category": "other",
                     "article": self.article,
                 },
             )
-    
+            
     def get_url_document(self):
         category = self.category.slug
         product = str(self.article)
@@ -257,6 +273,7 @@ class CategoryProduct(models.Model):
 
     def save(self, *args, **kwargs):
         slug_text = self.name
+        
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)

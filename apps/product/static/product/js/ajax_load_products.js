@@ -69,7 +69,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let data = {
         count: !pagintaionFn ? productCount : 10,
         sort: "+",
-        page: !pagintaionFn ? "1" : pageCount,
+        page: !pagintaionFn ? "0" : pageCount,
         category: category,
         group: !group ? "" : group,
         vendor: !vendor ? "" : vendor,
@@ -228,14 +228,14 @@ window.addEventListener("DOMContentLoaded", () => {
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
-                  pageCount = "1";
+                  pageCount = 0;
                   loadItems(false, false, paramsArray);
                 } else {
                   currentUrl.searchParams.set("vendor", paramsArray.join(","));
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
-                  pageCount = "1";
+                  pageCount = 0;
                   loadItems(false, false, paramsArray);
                 }
               } else {
@@ -248,7 +248,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 loader.style.display = "block";
                 catalogContainer.innerHTML = "";
                 endContent.classList.remove("show");
-                pageCount = "1";
+                pageCount = 0;
                 loadItems(false, true, paramsArray);
                 if (filteredParamsArray.length == 0) {
                   searchParams.delete("vendor", paramsArray.join());
@@ -271,14 +271,14 @@ window.addEventListener("DOMContentLoaded", () => {
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
-              pageCount = 1;
+              pageCount = 0;
               loadItems(false, false, paramsArray);
             } else {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
               loader.style.display = "block";
               catalogContainer.innerHTML = "";
               endContent.classList.remove("show");
-              pageCount = 1;
+              pageCount = 0;
               loadItems(false, false, paramsArray);
             }
           } else {
@@ -291,7 +291,7 @@ window.addEventListener("DOMContentLoaded", () => {
             loader.style.display = "block";
             catalogContainer.innerHTML = "";
             endContent.classList.remove("show");
-            pageCount = 1;
+            pageCount = 0;
 
             if (filteredParamsArray.length == 0) {
               searchParams.delete("vendor", paramsArray.join());

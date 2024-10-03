@@ -1,18 +1,16 @@
-.admin_login{
-   display: flex;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   margin-top: 100px;
-   & input{
-        width: 100%;
-
-   }
-    
+.admin_login {
+  display: flex;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  & input {
+    width: 100%;
+  }
 }
-#login_admin_btn{
-    width: 30%;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+#login_admin_btn {
+  width: 30%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }

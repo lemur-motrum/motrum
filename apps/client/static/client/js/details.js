@@ -12,10 +12,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (detailsContainer) {
       const newLegalEntityContainer =
         detailsContainer.querySelector(".new_legal_entity");
+      const newLegalEntityContainerWrapper = detailsContainer.querySelector(
+        ".new_legal_entity_wrapper"
+      );
       const addLegalEntity =
         detailsContainer.querySelector(".add_legal_entity");
       addLegalEntity.onclick = () => {
-        newLegalEntityContainer.classList.add("show");
+        newLegalEntityContainerWrapper.classList.add("show");
       };
       const newLegalEntityForm =
         newLegalEntityContainer.querySelector(".legal_entity_form");
@@ -313,8 +316,9 @@ window.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    const legalEntities =
-      personalAccountContent.querySelectorAll(".legal_entity");
+    const legalEntities = personalAccountContent.querySelectorAll(
+      ".legal_entity_wrapper"
+    );
 
     legalEntities.forEach((legalEntity) => {
       const countContainer = legalEntity.querySelector(

@@ -48,7 +48,6 @@ class PersonForm(forms.ModelForm):
         css = {
             "all": ("specification/css/admin_price_exclusive.css",),
         }
-        
 
     def __init__(self, *args, **kwargs):
         super(PersonForm, self).__init__(*args, **kwargs)

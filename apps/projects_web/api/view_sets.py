@@ -22,29 +22,30 @@ class ProjectViewSet(viewsets.ModelViewSet):
         count = int(request.query_params.get("count"))
         count_last = 10
         print(request.query_params)
-        
+
         if request.query_params.get("category_project"):
             category_project_get = request.query_params.get("category_project")
         else:
             category_project_get = None
-            
+
         if request.query_params.get("client_category_project"):
-            client_category_project_get = request.query_params.get("client_category_project")
+            client_category_project_get = request.query_params.get(
+                "client_category_project"
+            )
         else:
-            client_category_project_get = None    
-            
+            client_category_project_get = None
+
         q_object = Q()
         if category_project_get is not None:
             q_object &= Q(category_project__slug=category_project_get)
         if client_category_project_get is not None:
             q_object &= Q(client_category_project__slug=client_category_project_get)
-            
 
         queryset = Project.objects.select_related(
             "category_project",
             "client_category_project",
         ).filter(q_object)[count : count + count_last]
-        
+
         serializer = ProjectSerializer(
             queryset, context={"request": request}, many=True
         )

@@ -17,12 +17,10 @@ window.addEventListener("DOMContentLoaded", () => {
     let paramsArray = [];
 
     const loader = catalogWrapper.querySelector(".loader");
-    const btn = catalogWrapper.querySelector(".add_more");
     const catalogContainer = catalogWrapper.querySelector(
       '[catalog-elem="container"]'
     );
 
-    // // let productsVendorId = "1";
     const smallLoader = catalogWrapper.querySelector(".small_loader");
     const endContent = catalogWrapper.querySelector(".end_content");
     const catalogButton = endContent.querySelector('[catalog-elem="button"]');

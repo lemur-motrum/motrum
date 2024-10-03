@@ -9,24 +9,66 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('client', '0037_document'),
+        ("client", "0037_document"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now_add=True, verbose_name='Дата и время')),
-                ('type_notification', models.CharField(choices=[('DOCUMENT_SPECIFICATION', 'DOCUMENT_SPECIFICATION'), ('DOCUMENT_BILL', 'DOCUMENT_BILL'), ('DOCUMENT_ACT', 'DOCUMENT_ACT'), ('STATUS_ORDERING', 'STATUS_ORDERING')], default='STATUS_ORDERING', max_length=100)),
-                ('is_viewed', models.BooleanField(default=False, verbose_name='Прочитано')),
-                ('client', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='client.client', verbose_name='Клиент')),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='client.order', verbose_name='Заказ')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Дата и время"
+                    ),
+                ),
+                (
+                    "type_notification",
+                    models.CharField(
+                        choices=[
+                            ("DOCUMENT_SPECIFICATION", "DOCUMENT_SPECIFICATION"),
+                            ("DOCUMENT_BILL", "DOCUMENT_BILL"),
+                            ("DOCUMENT_ACT", "DOCUMENT_ACT"),
+                            ("STATUS_ORDERING", "STATUS_ORDERING"),
+                        ],
+                        default="STATUS_ORDERING",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "is_viewed",
+                    models.BooleanField(default=False, verbose_name="Прочитано"),
+                ),
+                (
+                    "client",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="client.client",
+                        verbose_name="Клиент",
+                    ),
+                ),
+                (
+                    "order",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="client.order",
+                        verbose_name="Заказ",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Уведомление',
-                'verbose_name_plural': 'Уведомления',
-                'ordering': ('is_viewed', '-date'),
+                "verbose_name": "Уведомление",
+                "verbose_name_plural": "Уведомления",
+                "ordering": ("is_viewed", "-date"),
             },
         ),
     ]

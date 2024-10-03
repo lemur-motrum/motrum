@@ -19,9 +19,7 @@ class Project(models.Model):
         max_length=255,
         null=True,
     )
-    is_view_home_web = models.BooleanField(
-        "Показывать на главной сайта", default=True
-    )
+    is_view_home_web = models.BooleanField("Показывать на главной сайта", default=True)
     category_project = models.ForeignKey(
         "CategoryProject",
         verbose_name="Решение",
@@ -47,15 +45,14 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-        
-      
+
         is_project = Project.objects.filter(name=self.name).exists()
         if is_project:
             project_id = Project.objects.filter(name=self.name).count()
             project_id = int(project_id) + 1
             name = f"{self.name} {project_id}"
         else:
-            name = self.name  
+            name = self.name
 
         slug_text = name
         slugish = translit.translify(slug_text)
@@ -69,7 +66,8 @@ class Project(models.Model):
                 "project": self.slug,
             },
         )
-        
+
+
 class ProjectImage(models.Model):
     project = models.ForeignKey(
         Project,
@@ -112,8 +110,7 @@ class CategoryProject(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-       
-            
+
         slug_text = self.name
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)

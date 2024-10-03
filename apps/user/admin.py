@@ -29,6 +29,7 @@ class AdminUserAdmin(admin.ModelAdmin):
         ),
     )
 
+
 class ClientAdminWeb(admin.ModelAdmin):
     pass
     # fields = ("contact_name", "email", "phone", )
@@ -41,5 +42,3 @@ class ClientAdminWeb(admin.ModelAdmin):
 admin.site.register(AdminUser, AdminUserAdmin)
 
 admin.site.unregister(Group)
- 
-

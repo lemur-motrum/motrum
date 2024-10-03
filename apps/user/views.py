@@ -12,37 +12,39 @@ def login_admin(request):
     form = LoginAdminForm()
     next_url = request.POST.get("next")
     id_bitrix = request.GET.get("id_bitrix")
-  
+
     # если логин через битрикс
     if id_bitrix:
-        redirects = login_bitrix(request,next_url,id_bitrix)
+        redirects = login_bitrix(request, next_url, id_bitrix)
         return redirects
-    
-    
+
     # если вход не через битрикс
     else:
         if request.method == "POST":
-             # после войти в форме входа
-            redirects = login_clear(request,next_url,form)
+            # после войти в форме входа
+            redirects = login_clear(request, next_url, form)
             return redirects
         # форма входа
         else:
             context = {
                 "error": "",
             }
-            return form_login(request,context,form)
+            return form_login(request, context, form)
+
 
 # разлогин админа
 def logout_admin(request):
     logout(request)
     return redirect(reverse("user:login_admin") + "?next=/admin_specification/")
 
-# форма для логина 
-def form_login(request,context,form):
+
+# форма для логина
+def form_login(request, context, form):
     return render(request, "user/login_admin.html", {"form": form, "context": context})
 
-def login_clear(request,next_url,form):
-   
+
+def login_clear(request, next_url, form):
+
     form = LoginAdminForm(request.POST)
     if form.is_valid():
         cd = form.cleaned_data
@@ -55,12 +57,12 @@ def login_clear(request,next_url,form):
                 is_groups_user = user.groups.filter(
                     name__in=["Полный доступ", "Базовый доступ"]
                 ).exists()
-                
+
                 # если есть право на просмотр спецификаций
                 if is_groups_user == True:
                     print(12312312312)
                     return HttpResponseRedirect(next_url)
-                
+
                 # нет права на спецификации
                 else:
                     request.GET._mutable = True
@@ -73,7 +75,7 @@ def login_clear(request,next_url,form):
                         "user/login_admin.html",
                         {"form": form, "context": context},
                     )
-            
+
             # заблокирован пользователь
             else:
                 request.GET._mutable = True
@@ -97,19 +99,18 @@ def login_clear(request,next_url,form):
                 request, "user/login_admin.html", {"form": form, "context": context}
             )
 
-            
-def login_bitrix(request,next_url,id_bitrix):
+
+def login_bitrix(request, next_url, id_bitrix):
 
     next_url = request.GET.get("next")
 
-    if id_bitrix == '2':
+    if id_bitrix == "2":
         user = AdminUser.objects.get(username="admin")
         login(request, user)
         return HttpResponseRedirect(next_url)
-    else: 
+    else:
         form = LoginAdminForm()
         context = {
-                "error": "Ошибка доступа из Битрикс. Пожалуйста авторизуйтесь заново",
-            }
-        return form_login(request,context,form)
-           
+            "error": "Ошибка доступа из Битрикс. Пожалуйста авторизуйтесь заново",
+        }
+        return form_login(request, context, form)

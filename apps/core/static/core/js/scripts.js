@@ -10,6 +10,7 @@ import "/static/core/js/scripts/manager-popup-logic.js";
 import "/static/core/js/scripts/get-client-id.js";
 import "/static/client/js/contacts.js";
 import "/static/client/js/details.js";
+import "/static/client/js/updateDetails.js";
 import "/static/product/js/sliders.js";
 import "/static/product/js/filters_logic.js";
 import "/static/product/js/ajax_load_products.js";

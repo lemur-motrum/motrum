@@ -28,9 +28,9 @@ from django.utils.text import slugify
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
-    
+
     prod = Product.objects.filter(slug=None)
-    
+
     for pro in prod:
         pro.save()
     title = "Услуги"

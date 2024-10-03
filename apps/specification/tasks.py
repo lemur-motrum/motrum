@@ -1,7 +1,8 @@
 import datetime
 from apps.logs.utils import error_alert
-from apps.specification.models import  Specification
+from apps.specification.models import Specification
 from project.celery import app
+
 
 @app.task(
     bind=True,
@@ -13,7 +14,7 @@ def specification_date_stop(self):
         for specification_item in specification:
             now = datetime.date.today()
             date = specification_item.date_stop
-            
+
             if now >= date:
                 specification_item.tag_stop = False
                 specification_item.save()
@@ -25,4 +26,3 @@ def specification_date_stop(self):
             info = f"Отслеживание дат спецификаций не удалось"
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=5)
-            

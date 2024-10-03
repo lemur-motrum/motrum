@@ -41,7 +41,7 @@ def catalog_group(request, category):
     group = GroupProduct.objects.filter(category__slug=category).order_by(
         "article_name"
     )
-  
+
     if len(group) > 0:
         all_categories = CategoryProduct.objects.all()
         cat = CategoryProduct.objects.get(slug=category)
@@ -64,7 +64,7 @@ def catalog_group(request, category):
         # vendor = Vendor.objects.filter()
         q_object = Q()
         q_object &= Q(check_to_order=True)
-        
+
         if category is not None:
             q_object &= Q(category__slug=category)
         elif category == "other":
@@ -81,21 +81,17 @@ def catalog_group(request, category):
             .distinct("vendor")
             .values("vendor", "vendor__name", "vendor__slug")
         )
-        
+
         try:
             current_category = CategoryProduct.objects.get(slug=category)
-        except: 
+        except:
             if category == "all":
-                current_category =  {
-                    "name":"Все товары",
-                    "slug" : category
+                current_category = {"name": "Все товары", "slug": category}
+            elif category == "other":
+                current_category = {
+                    "name": "Товары без категории",
+                    "slug": category,
                 }
-            elif category =="other":
-                current_category =  {
-                    "name":"Товары без категории",
-                    "slug" : category,
-                    
-                }      
 
         context = {
             "current_category": current_category,
@@ -107,7 +103,7 @@ def catalog_group(request, category):
 # страница всех продуктов в категории\группе
 def products_items(request, category, group):
     print("products_items")
-   
+
     q_object = Q()
     q_object &= Q(check_to_order=True)
     if category is not None:
@@ -153,12 +149,12 @@ def products_items(request, category, group):
 
 
 # страница отдельного продукта
-def product_one(request,category, group, article):
+def product_one(request, category, group, article):
     print("product_one")
     product = Product.objects.get(article=article)
     product_properties = ProductProperty.objects.filter(product=product.pk)
     product_lot = Stock.objects.get(prod=product.pk)
-    
+
     # current_category = CategoryProduct.objects.get(slug=category)
     # current_group = GroupProduct.objects.get(slug=group)
 
@@ -172,15 +168,15 @@ def product_one(request,category, group, article):
     }
     return render(request, "product/product_one.html", context)
 
+
 # страница отдельного продукта без с категорией но без группы
 def product_one_without_group(request, category, article):
     if category == "other":
-        current_category =  {
-                    "name":"Товары без категории",
-                    "slug" : category,
-                    
-                }
-    else:    
+        current_category = {
+            "name": "Товары без категории",
+            "slug": category,
+        }
+    else:
         current_category = CategoryProduct.objects.get(slug=category)
     product = Product.objects.get(article=article)
     product_properties = ProductProperty.objects.filter(product=product.pk)

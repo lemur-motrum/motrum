@@ -3,7 +3,7 @@ from django.db import models
 
 
 from apps.core.models import Currency
-from apps.product.models import  Price, Product
+from apps.product.models import Price, Product
 from apps.specification.utils import get_document_path
 from simple_history.models import HistoricalRecords
 from apps.user.models import AdminUser
@@ -12,12 +12,13 @@ from apps.user.models import AdminUser
 
 
 class Specification(models.Model):
-    
-    id_bitrix = models.PositiveIntegerField("Номер сделки битрикс", null=True,)
-    date = models.DateField(
-        default=datetime.date.today, verbose_name="Дата добавления"
+
+    id_bitrix = models.PositiveIntegerField(
+        "Номер сделки битрикс",
+        null=True,
     )
-    date_update = models.DateField(auto_now=True,verbose_name="Дата обновления")
+    date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
+    date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     # date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
     date_stop = models.DateField(verbose_name="Дата окончания")
     # currency_product = models.BooleanField(
@@ -35,7 +36,7 @@ class Specification(models.Model):
     file = models.FileField(
         "Фаил", upload_to=get_document_path, null=True, default=None
     )
-    is_prepay =  models.BooleanField("Предоплата", default=False)
+    is_prepay = models.BooleanField("Предоплата", default=False)
     cart = models.ForeignKey(
         "product.Cart",
         on_delete=models.PROTECT,
@@ -43,7 +44,7 @@ class Specification(models.Model):
         null=True,
     )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-    
+
     class Meta:
         verbose_name = "Спецификация"
         verbose_name_plural = "Спецификации"
@@ -53,23 +54,23 @@ class Specification(models.Model):
 
     def save(self, *args, **kwargs):
         from apps.core.utils import create_time_stop_specification
-        
+
         data_stop = create_time_stop_specification()
         self.date_stop = data_stop
         self.tag_stop = True
-        
+
         super().save(*args, **kwargs)
-        
+
     def get_order_bill(self):
         from apps.client.models import Order
+
         try:
-            
-            order = Order.objects.get(specification = self)
+
+            order = Order.objects.get(specification=self)
             print(order.bill_file)
             return order.bill_file
         except Order.DoesNotExist:
-            return None    
-        
+            return None
 
 
 class ProductSpecification(models.Model):
@@ -123,15 +124,18 @@ class ProductSpecification(models.Model):
         null=True,
     )
     price_exclusive = models.BooleanField("Цена по запросу", default=False)
-    extra_discount = models.FloatField("Процент дополнительной скидки",blank=True,
-        null=True,)
-    date_delivery  = models.DateField(verbose_name="Дата поставки товара",null=True)
+    extra_discount = models.FloatField(
+        "Процент дополнительной скидки",
+        blank=True,
+        null=True,
+    )
+    date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+
     class Meta:
         verbose_name = "Спецификация продукт"
         verbose_name_plural = "Спецификации Продукты"
-        
-    
+
     def __str__(self):
         return f"{self.product}"
 
@@ -159,8 +163,9 @@ class ProductSpecification(models.Model):
     #     #     total = total_init + self.price_all
     #     #     spec.total_amount = total
     #     #     spec.save()
-        
+
     #     super().save(*args, **kwargs)
+
 
 # @receiver(post_save)
 # def my_callback(sender, instance, *args, **kwargs):
@@ -170,4 +175,3 @@ class ProductSpecification(models.Model):
 #     spes.save()
 #     print(sender)
 #     print(instance.id)
-

@@ -58,7 +58,7 @@ class Vendor(models.Model):
         blank=True,
         null=True,
     )
-    
+
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"
@@ -134,20 +134,19 @@ class SupplierCategoryProduct(models.Model):
             slugish = translit.translify(slug_text)
             self.slug = slugify(slugish)
 
-       
         super().save(*args, **kwargs)
         from apps.product.models import Product
 
         # обновление категорий связанных продукты
         product = Product.objects.filter(category_supplier=self.id)
-     
+
         def background_task():
             # Долгосрочная фоновая задача
             for product_one in product:
                 product_one.category = self.category_catalog
                 if self.group_catalog:
                     product_one.group = self.group_catalog
-               
+
                 product_one._change_reason = "Автоматическое"
                 product_one.save()
                 # update_change_reason(product_one, "Автоматическое")
@@ -226,7 +225,7 @@ class SupplierGroupProduct(models.Model):
                 product_one.category = self.category_catalog
                 if self.group_catalog:
                     product_one.group = self.group_catalog
-                    
+
                 # добавление производителя из групп вендора если нет своего для дельта и оптимус
                 if (
                     product_one.supplier.slug == "delta"
@@ -235,7 +234,7 @@ class SupplierGroupProduct(models.Model):
                     if product_one.group_supplier is not None:
                         if product_one.group_supplier.vendor is not None:
                             product_one.vendor = product_one.group_supplier.vendor
-                    
+
                 product_one._change_reason = "Автоматическое"
                 product_one.save()
                 # update_change_reason(product_one, "Автоматически из групп поставщика")
@@ -440,7 +439,6 @@ class Discount(models.Model):
                     print(price_one)
                     price_one._change_reason = "Автоматическое"
                     price_one.save()
-                    
 
             daemon_thread = threading.Thread(target=background_task)
             daemon_thread.setDaemon(True)

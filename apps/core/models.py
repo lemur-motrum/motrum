@@ -1,9 +1,12 @@
+import threading
 from django.db import models
 
 
 from apps.core.utils_web import  get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
+
+
 
 
 # Create your models here.
@@ -30,6 +33,24 @@ class CurrencyPercent(models.Model):
 
     def __str__(self):
         return f"Процент умножения валютных цен: {self.percent}%"
+    
+    def save(self, *args, **kwargs):
+        from apps.product.models import Price
+
+        super().save(*args, **kwargs)
+        price = Price.objects.exclude(
+                currency__words_code="RUB"
+            )
+        def background_task():
+                # Долгосрочная фоновая задача
+                for price_one in price:
+               
+                    price_one._change_reason = "Автоматическое"
+                    price_one.save()
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
 
 
 class Vat(models.Model):

@@ -406,6 +406,9 @@ class Price(models.Model):
         elif self.price_supplier != 0:
             self.extra_price == False
             # получить рублевую цену
+            
+            print("old",self.rub_price_supplier)
+            
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -413,7 +416,7 @@ class Price(models.Model):
                 self.price_supplier,
             )
             self.rub_price_supplier = rub_price_supplier
-
+            print("new",self.rub_price_supplier)
         # получить скидки
         price_motrum_all = get_price_motrum(
             self.prod.category_supplier,

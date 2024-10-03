@@ -78,7 +78,7 @@
                                 {% include "product/includes/product_item.html" with product=product %}
                             {% endfor %}
                         {% else %}
-                        <div class="none-products">
+                        {% comment %} <div class="none-products">
                             Товаров в разделе "
                             {% if current_group %}
                             {{ current_group.name }}
@@ -86,7 +86,7 @@
                             {{ current_category.name }}
                         {% endif %}
                             " пока нет
-                        </div>
+                        </div> {% endcomment %}
                         {% endif %}
                         
                     </div>

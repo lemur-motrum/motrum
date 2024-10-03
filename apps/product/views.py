@@ -75,8 +75,7 @@ def catalog_group(request, category):
             else:
                 q_object &= Q(category__slug=category)
 
-        print(category)
-        print(q_object)
+    
         product_vendor = (
             Product.objects.select_related(
                 "vendor",
@@ -90,14 +89,7 @@ def catalog_group(request, category):
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
-        except:
             if category == "all":
-                current_category = {"name": "Все товары", "slug": category}
-            elif category == "other":
-                current_category = {
-                    "name": "Товары без категории",
-                    "slug": category,
-                }
                 current_category = {"name": "Все товары", "slug": category}
             elif category == "other":
                 current_category = {
@@ -115,8 +107,6 @@ def catalog_group(request, category):
 # страница всех продуктов в категории\группе
 def products_items(request, category, group):
     print("products_items")
-
-    print(9999999999)
 
     q_object = Q()
     q_object &= Q(check_to_order=True)
@@ -163,7 +153,7 @@ def products_items(request, category, group):
 
 
 # страница отдельного продукта
-def product_one(request, category, group, article):
+
 def product_one(request, category, group, article):
     print("product_one")
     product = Product.objects.get(article=article)
@@ -207,11 +197,11 @@ def product_one_without_group(request, category, article):
             "name": "Товары без категории",
             "slug": category,
         }
-    else:
-        current_category = {
-            "name": "Товары без категории",
-            "slug": category,
-        }
+    # else:
+    #     current_category = {
+    #         "name": "Товары без категории",
+    #         "slug": category,
+    #     }
     else:
         current_category = CategoryProduct.objects.get(slug=category)
 

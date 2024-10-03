@@ -2,6 +2,7 @@ import datetime
 from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
+from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
 
@@ -31,9 +32,19 @@ def add_iek(request):
     from django.db.models import Prefetch
     def background_task():
             # Долгосрочная фоновая задача
-            prod = Product.objects.filter(slug=None)
-            for pro in prod:
-                pro.save()
+            try:
+                prod = Product.objects.filter(slug=None)
+                for pro in prod:
+                    
+                    pro.save()
+            except Exception as e:
+                print(e)
+                error = "file_error"
+                location = "Обновление слагов"
+
+                info = f"Обновление слагов"
+                e = error_alert(error, location, info)
+       
 
 
     daemon_thread = threading.Thread(target=background_task)

@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.dispatch import receiver
+from apps.logs.utils import error_alert
 from simple_history.models import HistoricalRecords
 from django.dispatch import receiver
 from middlewares.middlewares import RequestMiddleware
@@ -160,12 +161,21 @@ class Product(models.Model):
         if self.description != None:
             self.description = self.description.strip()
             self.description = " ".join(self.description.split())
-            
-        if self.slug == None:
-            slug_text = f"{self.name}-{self.article}"
-            slugish = re.sub("[^A-Za-z0-9,А-ЯЁа-яё,\s,.]", "", slug_text)
-            slugish = translit.translify(slugish)
-            self.slug = slugify(slugish)
+        try:    
+            if self.slug == None:
+                slug_text = f"{self.name}-{self.article}"
+                slugish = re.sub(r"[^A-Za-z0-9,А-ЯЁа-яё,\s,-.]", "", slug_text)
+                slugish = translit.translify(slugish)
+                self.slug = slugify(slugish)
+                print(self.slug)
+        except Exception as e:
+            print(e)
+            error = "file_error"
+            location = "Обновление слагов"
+
+            info = f"Обновление слагов"
+            e = error_alert(error, location, info)   
+                 
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки

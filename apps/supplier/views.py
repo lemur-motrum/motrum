@@ -30,6 +30,9 @@ from simple_history.utils import update_change_reason
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
+    # veda_api()
+    prod = Product.objects.filter(slug=None)
+  
     def background_task():
             # Долгосрочная фоновая задача
             try:
@@ -47,9 +50,9 @@ def add_iek(request):
        
 
 
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
+    # daemon_thread = threading.Thread(target=background_task)
+    # daemon_thread.setDaemon(True)
+    # daemon_thread.start()
     
     # prod = Product.objects.filter(slug=None)
     

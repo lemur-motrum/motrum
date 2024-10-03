@@ -164,10 +164,11 @@ class Product(models.Model):
         try:    
             if self.slug == None:
                 slug_text = f"{self.name}-{self.article}"
-                slugish = re.sub(r"[^A-Za-z0-9,А-ЯЁа-яё,\s,-.]", "", slug_text)
+                regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+                slugish = re.sub(regex, "", slug_text)
                 slugish = translit.translify(slugish)
                 self.slug = slugify(slugish)
-                print(self.slug)
+                
         except Exception as e:
             print(e)
             error = "file_error"

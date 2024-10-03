@@ -49,8 +49,7 @@ class DiscountForm(forms.ModelForm):
         label="Категория приходящая поставщика",
         widget=autocomplete.ModelSelect2(
             url="supplier:category-all-autocomplete",
-            forward=["supplier", "vendor", "category_supplier","group_supplier"],
-
+            forward=["supplier", "vendor", "category_supplier", "group_supplier"],
         ),
     )
 
@@ -62,18 +61,19 @@ class DiscountForm(forms.ModelForm):
         #         url="supplier:category-autocomplete", forward=["supplier", "vendor"]
         #     )
         # }
+
     # def __init__(self, *args, **kwargs):
     #     super(DiscountForm, self).__init__(*args, **kwargs)
 
     #     # self.fields['is_tag_pre_sale'].label = 'My new label'
-    #     self.fields['is_tag_pre_sale'].widget = forms.CheckboxInput()    
+    #     self.fields['is_tag_pre_sale'].widget = forms.CheckboxInput()
 
-        
+
 class SupplierCategoryProductAllAdminForm(forms.ModelForm):
-    
+
     category_catalog = forms.ModelChoiceField(
-    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
-)
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+    )
 
     group_catalog = forms.ModelChoiceField(
         queryset=GroupProduct.objects.all(),
@@ -81,36 +81,38 @@ class SupplierCategoryProductAllAdminForm(forms.ModelForm):
         label="Группа Motrum",
         widget=autocomplete.ModelSelect2(
             url="supplier:group_catalog-autocomplete",
-            forward=["category_catalog",],
+            forward=[
+                "category_catalog",
+            ],
         ),
     )
-    
 
     class Meta:
         model = SupplierCategoryProductAll
         fields = "__all__"
 
+
 class SupplierGroupProductAdminForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(
         queryset=Supplier.objects.all(), label="Поставщик"
     )
-    vendor = forms.ModelChoiceField(
-        queryset=Vendor.objects.all(), label="Вендор"
-    )
-    
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), label="Вендор")
+
     category_supplier = forms.ModelChoiceField(
         queryset=SupplierCategoryProduct.objects.all(),
         required=False,
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="supplier:category-autocomplete",
-            forward=["supplier",],
+            forward=[
+                "supplier",
+            ],
         ),
     )
-    
+
     category_catalog = forms.ModelChoiceField(
-    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
-)
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+    )
 
     group_catalog = forms.ModelChoiceField(
         queryset=GroupProduct.objects.all(),
@@ -118,20 +120,22 @@ class SupplierGroupProductAdminForm(forms.ModelForm):
         label="Группа Motrum",
         widget=autocomplete.ModelSelect2(
             url="supplier:group_catalog-autocomplete",
-            forward=["category_catalog",],
+            forward=[
+                "category_catalog",
+            ],
         ),
     )
-    
 
     class Meta:
         model = SupplierGroupProduct
-        fields = "__all__"     
- 
+        fields = "__all__"
+
+
 class SupplierCategoryProductAdminForm(forms.ModelForm):
-    
+
     category_catalog = forms.ModelChoiceField(
-    queryset=CategoryProduct.objects.all(), label="Категория Motrum"
-)
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+    )
 
     group_catalog = forms.ModelChoiceField(
         queryset=GroupProduct.objects.all(),
@@ -139,12 +143,12 @@ class SupplierCategoryProductAdminForm(forms.ModelForm):
         label="Группа Motrum",
         widget=autocomplete.ModelSelect2(
             url="supplier:group_catalog-autocomplete",
-            forward=["category_catalog",],
+            forward=[
+                "category_catalog",
+            ],
         ),
     )
-    
 
     class Meta:
         model = SupplierCategoryProduct
-        fields = "__all__"     
-                        
+        fields = "__all__"

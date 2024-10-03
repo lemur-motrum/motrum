@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
-    
+
     class Meta:
         verbose_name = "Администратор"
         verbose_name_plural = "Администраторы"
@@ -75,12 +75,12 @@ class Roles(Group):
 # 7.4. Полный доступ
 # Позволяет просматривать историю изменений и предоставлять права доступа и корректировать условия скидок поставщиков.
 
+
 class ManagerWebUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
 
-
     class Meta:
-        verbose_name ="Менеджер сайта"
+        verbose_name = "Менеджер сайта"
         verbose_name_plural = "Менеджер сайта"
 
     def save(self, *args, **kwargs):
@@ -97,4 +97,3 @@ class ManagerWebUser(CustomUser):
         self.is_staff = True
 
         super().save(*args, **kwargs)
-

@@ -283,7 +283,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         spes.save()
         requisites = None
         account_requisites = None
-        pdf = crete_pdf_specification(id_sec,requisites,account_requisites,request)
+        pdf = crete_pdf_specification(id_sec, requisites, account_requisites, request)
         Specification.objects.filter(id=form.instance.id).update(file=pdf)
 
     def save_model(self, request, obj, form, change):
@@ -342,7 +342,9 @@ class SpecificationAdmin(SimpleHistoryAdmin):
                         )
                     )
 
-        deleted_prod = ProductSpecification.history.filter(history_type="-", specification_id=object_id)
+        deleted_prod = ProductSpecification.history.filter(
+            history_type="-", specification_id=object_id
+        )
 
         historical_records_product2 = []
         id_old_prod = []
@@ -361,8 +363,6 @@ class SpecificationAdmin(SimpleHistoryAdmin):
                         item_list,
                     )
                 )
-        
-        
 
         historical_records = self.get_history_queryset(
             request, history, pk_name, object_id

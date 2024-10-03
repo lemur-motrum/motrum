@@ -14,7 +14,11 @@ from apps.supplier.forms import (
 )
 from apps.supplier.get_utils.avangard import get_avangard_file
 from apps.supplier.get_utils.delta import add_delta_product, add_file_delta
-from apps.supplier.get_utils.emas import add_file_emas, add_group_emas, add_props_emas_product
+from apps.supplier.get_utils.emas import (
+    add_file_emas,
+    add_group_emas,
+    add_props_emas_product,
+)
 from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
 
 # Register your models here.
@@ -27,6 +31,7 @@ from .models import (
     Vendor,
 )
 from django.utils.html import mark_safe
+
 
 class VendorInline(admin.TabularInline):
     model = Vendor
@@ -70,7 +75,7 @@ class SupplierAdmin(admin.ModelAdmin):
                 or obj.slug == "avangard"
             ):
                 return fields_add
-          
+
             else:
                 return fields
         else:
@@ -100,22 +105,26 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
                 if old_supplier.slug == "emas":
+
                     def new_task():
                         add_file_emas(new_file, obj)
+
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
                     # add_file_emas(new_file, obj) # добавление прайса
                     # add_group_emas(new_file) # добавление групп
                     # add_props_emas_product() # добавленеи пропсов
-                    
+
                 if old_supplier.slug == "avangard":
+
                     def new_task():
                         get_avangard_file(new_file, obj)
+
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
-                    
+
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
@@ -338,9 +347,7 @@ class DiscountAdmin(admin.ModelAdmin):
         "category_supplier_all",
         "percent",
         "is_tag_pre_sale",
-        
     )
-    
 
     def delete_model(self, request, obj):
         id_sec = obj.id
@@ -352,7 +359,6 @@ class DiscountAdmin(admin.ModelAdmin):
             for price_one in price:
                 price_one._change_reason = "Автоматическое"
                 price_one.save()
-              
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)

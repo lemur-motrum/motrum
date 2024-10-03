@@ -40,7 +40,6 @@ class ProductAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Vendor.objects.all()

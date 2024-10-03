@@ -68,7 +68,7 @@ class MyCanvas(canvas.Canvas):
 #             specification_item.save()
 
 
-def crete_pdf_specification(specification, requisites, account_requisites,request):
+def crete_pdf_specification(specification, requisites, account_requisites, request):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -142,7 +142,7 @@ def crete_pdf_specification(specification, requisites, account_requisites,reques
     if requisites:
         to_address = requisites.legal_entity
     else:
-        to_address = ""    
+        to_address = ""
 
     story.append(
         Paragraph(
@@ -180,20 +180,25 @@ def crete_pdf_specification(specification, requisites, account_requisites,reques
         if date_delivery and date_delivery > date_ship:
             date_ship = date_delivery
         if product.product:
-            
+
             if IS_TESTING:
                 link = product.product.get_url_document_test()
             else:
                 link = product.product.get_url_document()
-                
-            url_absolute = request.build_absolute_uri('/').strip("/")
-            link = f'{url_absolute}/{link}'
+
+            url_absolute = request.build_absolute_uri("/").strip("/")
+            link = f"{url_absolute}/{link}"
             product_name_str = str(product.product.name)
-            product_name = Paragraph(f'<a href="{link}">{product_name_str}</a><br></br><a href="{link}">ссылка</a>', bold_style_center),
+            product_name = (
+                Paragraph(
+                    f'<a href="{link}">{product_name_str}</a><br></br><a href="{link}">ссылка</a>',
+                    bold_style_center,
+                ),
+            )
 
         else:
             product_name = product.product_new
-            product_name = Paragraph(f'{product_name}', bold_style_center),
+            product_name = (Paragraph(f"{product_name}", bold_style_center),)
 
         product_price = product.price_one
         product_price = "{0:,}".format(product_price).replace(",", " ")
@@ -386,6 +391,7 @@ def crete_pdf_specification(specification, requisites, account_requisites,reques
 
     return file_path
 
+
 # путь до спецификаций пдф
 def get_document_path(instance, filename):
     directory = check_spesc_directory_exist(
@@ -394,6 +400,7 @@ def get_document_path(instance, filename):
     name_specification = f"спецификация_{instance.id}.pdf"
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
+
 
 # путь до счета пдф
 def get_document_bill_path(instance, filename):

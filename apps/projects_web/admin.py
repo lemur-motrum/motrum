@@ -1,14 +1,21 @@
 from django.contrib import admin
 
-from apps.projects_web.models import CategoryProject, ClientCategoryProject, Project, ProjectImage
+from apps.projects_web.models import (
+    CategoryProject,
+    ClientCategoryProject,
+    Project,
+    ProjectImage,
+)
 from project.admin import website_admin
+
 
 # Register your models here.
 class ProjectImageInlineWeb(admin.TabularInline):
     model = ProjectImage
     extra = 1
     fields = ("image",)
-    
+
+
 class ProjectWebAdmin(admin.ModelAdmin):
     list_display = [
         "name",
@@ -18,7 +25,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
     inlines = [
         ProjectImageInlineWeb,
     ]
-   
+
 
 class CategoryProjectWebAdmin(admin.ModelAdmin):
     list_display = [
@@ -27,17 +34,13 @@ class CategoryProjectWebAdmin(admin.ModelAdmin):
     ]
     exclude = ["slug"]
 
+
 class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "article",
     ]
     exclude = ["slug"]
-    
-
-
-
-
 
 
 website_admin.register(Project, ProjectWebAdmin)

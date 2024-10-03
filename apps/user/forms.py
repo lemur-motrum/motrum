@@ -12,7 +12,7 @@ class PasswordForm(forms.ModelForm):
         }
 
     # def __init__(self, *args, **kwargs):
-   
+
     #     super(PasswordForm, self).__init__(*args, **kwargs)
     #     self.fields["password"].required = False
 
@@ -21,21 +21,20 @@ class PasswordForm(forms.ModelForm):
     #     item = self.cleaned_data
     #     # id_item = item.get("id")
     #     password = item.get("password")
-     
 
     #     if password == "":
     #         print (1)
     #         raise forms.ValidationError(
     #             "Введите пароль"
     #         )
-    #     else:    
+    #     else:
     #         return item
+
 
 class LoginAdminForm(forms.Form):
     username = forms.CharField(label="Имя пользователя")
-    password = forms.CharField(widget=forms.PasswordInput,label="Пароль")
-    
+    password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
+
     class Meta:
         model = AdminUser
         fields = "__all__"
-        

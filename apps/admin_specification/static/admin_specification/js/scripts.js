@@ -139,10 +139,10 @@ function catalogLogic(elems) {
         countQuantity = +countQuantityZone.value;
       }
 
-      if (countQuantity >= 999) {
+      if (countQuantity >= 99999) {
         countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(999, +productMultiplicityQuantity)
-          : 999;
+          ? getClosestInteger(9999, +productMultiplicityQuantity)
+          : 99999;
         minusButton.disabled = false;
         plusButton.disabled = true;
         addSpecificationButton.disabled = false;
@@ -166,10 +166,10 @@ function catalogLogic(elems) {
       countQuantityZone.value = countQuantity;
       minusButton.disabled = false;
       addSpecificationButton.disabled = false;
-      if (countQuantity >= 999) {
+      if (countQuantity >= 99999) {
         countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(999, +productMultiplicityQuantity)
-          : 999;
+          ? getClosestInteger(99999, +productMultiplicityQuantity)
+          : 99999;
         plusButton.disabled = true;
         minusButton.disabled = false;
       } else {
@@ -693,8 +693,8 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity = +quantity.value;
           }
-          if (countQuantity >= 999) {
-            quantity.value = 999;
+          if (countQuantity >= 99999) {
+            quantity.value = 99999;
             minusButton.disabled = false;
             plusButton.disabled = true;
           } else if (countQuantity <= 1) {
@@ -724,7 +724,7 @@ window.addEventListener("DOMContentLoaded", () => {
             +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
-          if (countQuantity >= 999) {
+          if (countQuantity >= 99999) {
             minusButton.disabled = false;
             plusButton.disabled = true;
           }
@@ -751,7 +751,7 @@ window.addEventListener("DOMContentLoaded", () => {
             +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
-          if (countQuantity >= 999) {
+          if (countQuantity >= 99999) {
             minusButton.disabled = false;
             plusButton.disabled = true;
           } else {
@@ -790,10 +790,10 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             quantity.value = countQuantity;
             minusButton.disabled = false;
-            if (countQuantity >= 999) {
+            if (countQuantity >= 99999) {
               quantity.value = multiplicity
-                ? getClosestInteger(999, +multiplicity)
-                : 999;
+                ? getClosestInteger(99999, +multiplicity)
+                : 99999;
               plusButton.disabled = true;
               minusButton.disabled = false;
             } else {

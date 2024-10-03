@@ -60,7 +60,7 @@ def login_clear(request, next_url, form):
 
                 # если есть право на просмотр спецификаций
                 if is_groups_user == True:
-                    print(12312312312)
+                   
                     return HttpResponseRedirect(next_url)
 
                 # нет права на спецификации

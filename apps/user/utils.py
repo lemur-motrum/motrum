@@ -27,7 +27,7 @@ def upgrade_permission():
                 "view_productspecification",
             ]
             permissions = Permission.objects.filter(codename__in=codenames)
-            print(permissions)
+           
 
             for permission in permissions.all():
                 # group.permissions.clear()
@@ -61,7 +61,7 @@ def upgrade_permission():
                 "delete_productdocument",
             ]
             permissions = Permission.objects.filter(codename__in=codenames)
-            print(permissions)
+        
             for permission in permissions.all():
                 # group.permissions.clear()
                 group.permissions.add(permission)

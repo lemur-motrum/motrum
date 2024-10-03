@@ -216,13 +216,19 @@ class Product(models.Model):
             )
             
     def get_url_document(self):
-        category = self.category.slug
-        product = str(self.article)
+        if self.category is not None:
+            category = self.category.slug
+        else:
+            category = "other"
+            
         if self.group is not None:
             
             groupe =  self.group.slug
         else:
-            groupe = "none_group"
+            groupe = "none_group"       
+            
+        product = str(self.article)
+        
             
         url = "{0}/{1}/{2}/{3}".format(
         "product",

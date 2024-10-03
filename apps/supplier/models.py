@@ -436,7 +436,7 @@ class Discount(models.Model):
             def background_task():
                 # Долгосрочная фоновая задача
                 for price_one in price:
-                    print(price_one)
+               
                     price_one._change_reason = "Автоматическое"
                     price_one.save()
 

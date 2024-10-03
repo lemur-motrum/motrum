@@ -38,7 +38,7 @@ def crete_pdf_bill(specification):
     from reportlab.platypus import ListFlowable, ListItem
 
     directory = check_spesc_directory_exist(
-        "specification",
+        "bill",
     )
     specifications = Specification.objects.get(id=specification)
     product_specification = ProductSpecification.objects.filter(
@@ -503,8 +503,9 @@ def crete_pdf_bill(specification):
 
     pdf = doc
     pdf.build(story, canvasmaker=MyCanvas)
-    file_path = "{0}/{1}".format(
-        "specification",
+    file_path = "{0}/{1}/{2}".format(
+        "documents",
+        "bill",
         name_bill,
     )
 

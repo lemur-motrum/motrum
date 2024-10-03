@@ -43,7 +43,7 @@ class Client(CustomUser):
     def add_manager(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
-            print(old_user)
+          
             old_user_manager = old_user.manager
             if old_user_manager:
                 admin = (
@@ -54,14 +54,14 @@ class Client(CustomUser):
                 )
                 self.manager = admin
                 self.save()
-                print(admin)
+                
             else:
                 admin = (
                     AdminUser.objects.filter(admin_type="BASE").order_by("?").first()
                 )
                 self.manager = admin
                 self.save()
-                print(admin)
+              
 
     # def send_email_notification(self,text_email):
 
@@ -284,7 +284,7 @@ class Order(models.Model):
         self.bill_date_start = datetime.date.today()
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
-        print(self.id)
+        
         pdf = crete_pdf_bill(self.specification.id)
         self.bill_file = pdf
 

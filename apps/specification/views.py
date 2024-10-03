@@ -57,7 +57,7 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
 class PriceOneAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_value(self, result):
         """Return the value of a result."""
-        print(result.rub_price_supplier)
+    
         return str(result.rub_price_supplier)
 
     def get_queryset(self):

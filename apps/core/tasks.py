@@ -85,8 +85,7 @@ def currency_chek(current, now_rate):
     difference_count = old_rate_count - new_rate_count
 
     count_percent = old_rate_count / 100 * 3
-    print(difference_count)
-    print(count_percent)
+    
     if difference_count > count_percent:
        
         try:

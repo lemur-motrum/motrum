@@ -35,7 +35,7 @@ from django.db.models import Q, F, OrderBy
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
-    print("all_categories")
+  
     title = "Каталог"
     categories = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
@@ -143,7 +143,7 @@ def all_categories(request):
 # Рендер страницы групп товаров с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def group_product(request, cat):
-    print(2222222222)
+    
     categoryes = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
         .all()
@@ -271,7 +271,7 @@ def group_product(request, cat):
 # Рендер страницы подгрупп с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def specifications(request, cat, gr):
-    print(33333333)
+    
     categoryes = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
         .all()
@@ -496,14 +496,14 @@ def create_specification(request):
                     "id",
                 ),
             )
-            print(product_new)
+           
             update_spesif = True
 
         else:
             product_new = ProductCart.objects.filter(cart=cart, product=None)
             update_spesif = False
 
-        print(product_new)
+       
         if id_specification:
             title = f"Cпецификация № {id_specification}"
         else:
@@ -553,6 +553,11 @@ def get_all_specifications(request):
     all_specifications = (
         Specification.objects.select_related(
             "admin_creator",
+            "cart"
+        )
+             .prefetch_related(
+            Prefetch("order"),
+            
         )
         .all()
         .order_by("tag_stop", "pk")
@@ -1011,7 +1016,7 @@ def update_specification(request):
                 product_price_extra_old_before = product.price_one / (
                     1 - float(product_individual_sale) / 100
                 )
-                print(product_price_extra_old_before)
+                
             else:
                 product_price_extra_old_before = product.price_one
 

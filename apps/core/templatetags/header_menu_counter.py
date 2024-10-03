@@ -20,7 +20,7 @@ def header_menu_counter(context):
         count_cart = len(cart)
     else:
         count_cart = 0
-    print(count_cart)
+  
     count_notifications_all = notifications.count() 
     count_notifications_order = notifications_order.count()    
     return {

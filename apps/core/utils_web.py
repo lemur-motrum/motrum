@@ -54,7 +54,7 @@ def get_file_path_project_web(instance, filename):
 
         type_dir = f"{instance.project.slug}"
         filenames = f"{instance.project.slug}__{number_image}"
-        print(filenames)
+      
     elif isinstance(instance, CategoryProject) or isinstance(
         instance, ClientCategoryProject
     ):
@@ -65,8 +65,7 @@ def get_file_path_project_web(instance, filename):
     images_last_list = filename.split(".")
     type_file = "." + images_last_list[-1]
     filename = f"{filenames}{type_file}"
-    print(type_file)
-    print(filename)
+    
 
     check_media_directory_exist_web(base_dir, type_dir)
     return "{0}/{1}/{2}".format(
@@ -78,7 +77,7 @@ def get_file_path_project_web(instance, filename):
 
 # загрузка катринок для слайдера
 def get_file_path_slider_web(instance, filename):
-    print(instance.slug)
+   
     base_dir = "website/slider"
     filenames = f"{instance.slug}"
     type_dir = f"{instance.slug}"
@@ -181,7 +180,7 @@ def send_email_message_html(subject, message, to_email, html_message):
 def promote_product_slider(product):
     from apps.core.models import SliderMain
 
-    print(product.promote)
+    
     if product.promote:
         name = f"Товар {product.name}"
         try:
@@ -198,7 +197,7 @@ def promote_product_slider(product):
             slider.save()
 
     else:
-        print(product.promote)
+       
         try:
             slider = SliderMain.objects.get(
                 product_promote=product, type_slider="PROMOTE"

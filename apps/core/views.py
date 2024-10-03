@@ -169,7 +169,7 @@ def server_error(request):
 def email_callback(request):
     if request.method == "POST":
         body = json.loads(request.body)
-        print(body)
+       
         user_name = body["name"]
         user_phone = body["phone"]
         to_manager = os.environ.get("EMAIL_MANAGER_CALLBACK")
@@ -191,7 +191,7 @@ def email_callback(request):
 def email_manager(request):
     if request.method == "POST":
         body = json.loads(request.body)
-        print(body)
+      
         client_id = body["client_id"]
         text_message = body["text_message"]
         client = Client.objects.get(id=int(client_id))

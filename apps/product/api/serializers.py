@@ -96,7 +96,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "url",
         )
 
-    print(url)
+   
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

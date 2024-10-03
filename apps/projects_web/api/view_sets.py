@@ -21,7 +21,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
         count_last = 10
-        print(request.query_params)
+       
 
         if request.query_params.get("category_project"):
             category_project_get = request.query_params.get("category_project")

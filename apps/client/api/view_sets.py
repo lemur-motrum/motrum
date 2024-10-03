@@ -449,7 +449,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             sorting = request.query_params.get("sort")
         if request.query_params.get("direction"):
             direction = request.query_params.get("direction")
-        print(request.query_params)
+      
         
         if sorting == "date_order":
             if direction == "ASC":
@@ -595,8 +595,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             .order_by(sorting, "-id")[count : count + count_last]
         )
        
-        for o in orders:
-            print(o.notification_count)
+        
            
 # [count : count + count_last]
         serializer = serializer_class(orders, many=True)

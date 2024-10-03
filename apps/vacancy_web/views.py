@@ -7,7 +7,7 @@ from apps.vacancy_web.models import Vacancy
 def vacancy(request):
     title = "Вакансии"
     vacancy = Vacancy.objects.filter(is_actual=True)
-    print(vacancy)
+ 
     context = {"title": title, "vacancy": vacancy}
     return render(request, "vacancy_web/vacancy_index.html", context)
 

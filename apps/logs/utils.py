@@ -6,7 +6,7 @@ def error_alert(error, location, info):
     t = TYPE_LOGS_ERROR
     if error == "file structure":
         type_error = t[0]
-        print(type_error)
+      
         error_alert = LogsError.objects.create(
             type_error="type_error", location=location, info=info
         )
@@ -14,13 +14,13 @@ def error_alert(error, location, info):
         return error_alert
     elif error == "file api":
         type_error = t[1]
-        print(type_error)
+        
         error_alert = LogsError.objects.create(
             type_error="type_error", location=location, info=info
         )
     elif error == "file_api_error":
         type_error = t[1]
-        print(type_error)
+       
         error_alert = LogsError.objects.create(
             type_error="type_error", location=location, info=info
         )    

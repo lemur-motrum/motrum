@@ -67,7 +67,7 @@ class Specification(models.Model):
         try:
 
             order = Order.objects.get(specification=self)
-            print(order.bill_file)
+          
             return order.bill_file
         except Order.DoesNotExist:
             return None

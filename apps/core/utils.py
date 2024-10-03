@@ -297,8 +297,10 @@ def check_media_directory_exist(
 def check_spesc_directory_exist(
     base_dir,
 ):
-    new_dir = "{0}/{1}".format(
+    doc = "document"
+    new_dir = "{0}/{1}/{2}".format(
         MEDIA_ROOT,
+        "documents",
         base_dir,
     )
 
@@ -772,8 +774,8 @@ def save_specification(received_data, request):
             price_pre_sale = get_presale_discount(product)
 
             # если цена по запросу взять ее если нет взять цену из бд
-            print(product_item["price_exclusive"])
-            print(type(product_item["price_exclusive"]))
+            # print(product_item["price_exclusive"])
+            # print(type(product_item["price_exclusive"]))
 
             if (
                 product_item["price_exclusive"] != "0"
@@ -809,7 +811,7 @@ def save_specification(received_data, request):
             else:
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
-                print(price_one)
+              
 
             # если есть доп скидка отнять от цены поставщика
 
@@ -951,7 +953,7 @@ def get_presale_discount(product):
 
 
 def transform_date(date):
-    print(date)
+   
     months = [
         "января",
         "февраля",
@@ -995,16 +997,16 @@ def pens_words(n):
 
     if n[-2:] in ("11", "12", "13", "14"):
         return f"копеек"
-        print(n, "копеек")
+       
     elif n[-1] == "1":
         return f"копейка"
-        print(n, "копейка")
+       
     elif n[-1] in ("2", "3", "4"):
         return f"копейки"
-        print(n, "копейки")
+        
     else:
         return f"копеек"
-        print(n, "копеек")
+      
 
 
 # общая функция кешировани

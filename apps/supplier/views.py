@@ -37,8 +37,8 @@ def add_iek(request):
             # Долгосрочная фоновая задача
             try:
                 prod = Product.objects.filter(slug=None)
+                
                 for pro in prod:
-                    
                     pro.save()
             except Exception as e:
                 print(e)
@@ -50,9 +50,9 @@ def add_iek(request):
        
 
 
-    # daemon_thread = threading.Thread(target=background_task)
-    # daemon_thread.setDaemon(True)
-    # daemon_thread.start()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
     
     # prod = Product.objects.filter(slug=None)
     
@@ -93,7 +93,7 @@ def test(request):
 def add_one_c(request):
     one_c_price()
     title = "Услуги"
-    print(124)
+   
 
     responsets = ["233", "2131"]
 

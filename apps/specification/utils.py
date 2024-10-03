@@ -384,7 +384,8 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     pdf = doc
     pdf.build(story, canvasmaker=MyCanvas)
 
-    file_path = "{0}/{1}".format(
+    file_path = "{0}/{1}/{2}".format(
+        "documents",
         "specification",
         name_specification,
     )
@@ -405,7 +406,7 @@ def get_document_path(instance, filename):
 # путь до счета пдф
 def get_document_bill_path(instance, filename):
     directory = check_spesc_directory_exist(
-        "specification",
+        "bill",
     )
     name_specification = f"счет_{instance.id}.pdf"
     file_last_list = filename.split(".")

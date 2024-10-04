@@ -60,8 +60,14 @@ def login_clear(request, next_url, form):
 
                 # если есть право на просмотр спецификаций
                 if is_groups_user == True:
-                   
-                    return HttpResponseRedirect(next_url)
+                    cookie = request.COOKIES.get("client_id")
+                    if cookie:
+                        response = redirect(next_url) # replace redirect with HttpResponse or render
+                        response.set_cookie('client_id', cookie, max_age=-1)
+                        
+                        return response
+                    else:
+                        return HttpResponseRedirect(next_url)
 
                 # нет права на спецификации
                 else:

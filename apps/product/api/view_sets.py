@@ -87,7 +87,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по цене
         if sort_price:
             if sort_price == "?":
-                sorting = "?"
+                # sorting = "?"
+                sorting = F("id").asc(nulls_last=True)
             elif sort_price == "ASC":
                 sorting = F("price__rub_price_supplier").asc(nulls_last=True)
             else:

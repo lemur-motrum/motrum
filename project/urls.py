@@ -44,6 +44,7 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('admin/', admin.site.urls),
+    # path('admin/', include("apps.user.urls", namespace="user")),
     path('website_admin/', website_admin.urls),
    
     path("", include("apps.core.urls", namespace="core")),

@@ -88,7 +88,9 @@
                 {% endif %}
                 {% if client %}
                     <div class="">
+                        {% if requisites %}
                         <select class="select_account_requisites">
+                            
                             {% for requisit in  requisites %}
                                 <option data-requisites-id="{{ requisit.id }}"
                                         data-account-requisites-id="{{ requisit.accountrequisit }}">
@@ -96,10 +98,16 @@
                                 </option>
                             {% endfor %}
                         </select>
+                        <div class="button_cart-wrapper">
+                            <button class="save_cart_button">оформить заказ</button>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'client:my_details' %}">
+                        Сcылка на добавление реквизитов </a>
+                        {% endif %}
+                       
                     </div>
-                    <div class="button_cart-wrapper">
-                        <button class="save_cart_button">оформить заказ</button>
-                    </div>
+                    
                 {% else %}
                     <form class="autification-form-cart">
                         <label class="name-label">

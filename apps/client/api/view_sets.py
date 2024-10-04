@@ -54,6 +54,7 @@ from apps.core.utils_web import (
     send_email_message_html,
     send_pin,
 )
+from apps.product.api.serializers import ProductCartSerializer
 from apps.product.models import Cart, Lot, Price, Product, ProductCart
 from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
@@ -109,9 +110,48 @@ class ClientViewSet(viewsets.ModelViewSet):
                     # логин старого пользователя
                     if client.last_login:
                         login(request, client)
-                        if cart_id:
+
+                        try:
+                            cart = Cart.objects.get(client=client, is_active=False)
+                            if cart_id is None:
+                                response = Response()
+                                response.data = serializer.data["id"]
+                                response.status = status.HTTP_200_OK
+                                response.set_cookie("cart", cart.id, max_age=2629800)
+                                return response
+                            else:
+
+                                product_cart_no_user = ProductCart.objects.filter(
+                                    cart=cart_id
+                                )
+                                for products_no_user in product_cart_no_user:
+                                    products_no_user.cart = cart
+                                    products_no_user.save()
+
+                                product_cart_no_user.delete()
+                                response = Response()
+                                response.data = serializer.data["id"]
+                                response.status = status.HTTP_200_OK
+                                response.set_cookie("cart", cart.id, max_age=2629800)
+                                return response
+                                # return Response(serializer.data, status=status.HTTP_200_OK)
+
+                        except Cart.DoesNotExist:
                             Cart.objects.filter(id=cart_id).update(client=client)
-                        return Response(serializer.data, status=status.HTTP_200_OK)
+                            return Response(serializer.data, status=status.HTTP_200_OK)
+                        # if cart_id:
+                        #     Cart.objects.filter(id=cart_id).update(client=client)
+
+                        # if  Cart.objects.get(client=client,is_active=False) :
+                        #     response = Response()
+                        #     response.data = serializer.data["id"]
+                        #     response.status = status.HTTP_200_OK
+                        #     response.set_cookie("cart", Cart.id, max_age=2629800)
+                        #     return response
+                        # else:
+                        #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+                        # return Response(serializer.data, status=status.HTTP_200_OK)
                     # логин нового пользоваеля
                     else:
 
@@ -794,7 +834,6 @@ class EmailsViewSet(viewsets.ModelViewSet):
     serializer_class = EmailsCallBackSerializer
     http_method_names = ["get", "post", "put", "update"]
 
-
     @action(detail=False, methods=["post"], url_path=r"call-back-email")
     def send_email_callback(self, request, *args, **kwargs):
         data = request.data
@@ -817,7 +856,6 @@ class EmailsViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     @action(detail=False, methods=["post"], url_path=r"manager-email")
     def send_manager_email(self, request, *args, **kwargs):

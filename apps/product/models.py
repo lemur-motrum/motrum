@@ -740,6 +740,7 @@ class Cart(models.Model):
     is_active = models.BooleanField("корзина сохранена", default=False)
     session_key = models.CharField(max_length=100, blank=True, null=True)
 
+    
     class Meta:
         verbose_name = "Корзина"
         verbose_name_plural = "Корзины"
@@ -751,7 +752,7 @@ class Cart(models.Model):
 class ProductCart(models.Model):
     cart = models.ForeignKey(
         Cart,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     product = models.ForeignKey(
         Product,

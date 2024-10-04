@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.template.response import TemplateResponse
 
 # админка бд
 class DatabaseAdminSite(admin.AdminSite):
@@ -46,7 +47,40 @@ class DatabaseAdminSite(admin.AdminSite):
             app["models"].sort(key=lambda x: ordering[x["name"]])
 
         return app_list
+    def index(self, request, extra_context=None):
+        """
+        Display the main admin index page, which lists all of the installed
+        apps that have been registered in this site.
+        """
+        app_list = self.get_app_list(request)
 
+        context = {
+            **self.each_context(request),
+            "title": self.index_title,
+            "subtitle": None,
+            "app_list": app_list,
+            **(extra_context or {}),
+        }
+
+        request.current_app = self.name
+        
+        # УДАЛЕНИЕ КУК С КАРТ И КЛИЕНТ ПРИ ЛОГИНЕ АДМИНА 
+        
+        current_user = request.user
+        if current_user.is_staff:
+            cookie = request.COOKIES.get("client_id")
+            if cookie:
+                response = TemplateResponse(
+            request, self.index_template or "admin/index.html", context
+        )
+            response.set_cookie('client_id', max_age=-1)
+            response.set_cookie('cart', max_age=-1)        
+            return response
+        else:
+            return TemplateResponse(
+                request, self.index_template or "admin/index.html", context
+            )
+        
 # админка сайта
 class WebsiteAdminSite(admin.AdminSite):
     def log_addition(self, request, object, message):

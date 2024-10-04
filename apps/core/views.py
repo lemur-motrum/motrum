@@ -57,6 +57,7 @@ def index(request):
 def cart(request):
 
     cart = request.COOKIES.get("cart")
+    
     if cart:
         cart_qs = Cart.objects.get(id=cart)
         discount_client = 0

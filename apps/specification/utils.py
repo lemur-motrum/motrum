@@ -57,17 +57,6 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-# def specification_date_stop():
-#     from apps.specification.models import  Specification
-#     specification = Specification.objects.filter(tag_stop=False)
-#     for specification_item in specification:
-#         now = datetime.datetime.now()
-#         date = specification_item.date_stop
-#         if now == date:
-#             specification_item.tag_stop = True
-#             specification_item.save()
-
-
 def crete_pdf_specification(specification, requisites, account_requisites, request):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
@@ -201,9 +190,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             product_name = (Paragraph(f"{product_name}", bold_style_center),)
 
         product_price = product.price_one
-        product_price = "{0:,}".format(product_price).replace(",", " ")
+        product_price = "{0:.2f}".format(product_price).replace(",", " ")
         product_price_all = product.price_all
-        product_price_all = "{0:,}".format(product_price_all).replace(",", " ")
+        product_price_all = "{0:.2f}".format(product_price_all).replace(",", " ")
         product_quantity = product.quantity
         data.append(
             (

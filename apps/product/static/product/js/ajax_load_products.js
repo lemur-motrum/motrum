@@ -67,7 +67,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ) {
       let data = {
         count: !pagintaionFn ? productCount : 10,
-        sort: "ASC",
+        sort: "?",
         page: pageCount,
         category: category,
         group: !group ? "" : group,

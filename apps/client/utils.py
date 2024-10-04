@@ -83,10 +83,34 @@ def crete_pdf_bill(specification):
     )
     styles.add(
         ParagraphStyle(
+            name="Roboto-right",
+            fontName="Roboto",
+            fontSize=7,
+            alignment=TA_RIGHT,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
             name="Roboto-Center-Gray-6",
             fontName="Roboto",
             fontSize=6,
             alignment=TA_CENTER,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="Roboto-Center-Gray-6-left",
+            fontName="Roboto",
+            fontSize=6,
+            alignment=TA_LEFT,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="Roboto-Center-Gray-6-right",
+            fontName="Roboto",
+            fontSize=6,
+            alignment=TA_RIGHT,
         )
     )
     styles.add(
@@ -100,7 +124,10 @@ def crete_pdf_bill(specification):
 
     bold_style = styles["Roboto-Bold"]
     normal_style = styles["Roboto"]
+    
+    normal_style_right = styles["Roboto-right"]
     normal_style_6 = styles["Roboto-Center-Gray-6"]
+    normal_style_6_right = styles["Roboto-Center-Gray-6-right"]
     bold_style_center = styles["Roboto-Bold-Center"]
     normal_style_8 = styles["Roboto-8"]
     title_style_14 = styles["Roboto-Title"]
@@ -270,7 +297,8 @@ def crete_pdf_bill(specification):
 
     i = 0
     date_ship = datetime.date.today()
-
+    is_none_date_delivery = False
+    total_product_quantity = 0
     for product in product_specification:
         i += 1
         try:
@@ -280,8 +308,13 @@ def crete_pdf_bill(specification):
             product_stock = "шт"
 
         date_delivery = product.date_delivery
-        if date_delivery and date_delivery > date_ship:
-            date_ship = date_delivery
+        if date_delivery :
+            if date_delivery > date_ship:
+                date_ship = date_delivery
+        else: 
+            is_none_date_delivery = True         
+            
+            
         if product.product:
             product_name = str(product.product.name)
             # product_name = str(product)
@@ -292,12 +325,16 @@ def crete_pdf_bill(specification):
             product_code = "000"
 
         product_price = product.price_one
-        product_price = "{0:,}".format(product_price).replace(",", " ")
+        product_price = "{0:.2f}".format(product_price).replace(",", " ")
         product_price_all = product.price_all
-        product_price_all = "{0:,}".format(product_price_all).replace(",", " ")
+        product_price_all = "{0:.2f}".format(product_price_all).replace(",", " ")
         product_quantity = product.quantity
-        product_data = str(product.date_delivery)
-
+        product_data = product.date_delivery
+        if product_data:
+            product_data = str(product_data.strftime('%d.%m.%Y'))
+        else:    
+            product_data = str("-")
+        total_product_quantity += product_quantity
         data.append(
             (
                 i,
@@ -310,17 +347,21 @@ def crete_pdf_bill(specification):
                 product_data,
             )
         )
-    total_amount_str = "{0:,}".format(specifications.total_amount).replace(",", " ")
+    total_amount_str = "{0:.2f}".format(specifications.total_amount).replace(",", " ")
+    if is_none_date_delivery:
+        final_date_ship = "-"
+    else:
+        final_date_ship = str(date_ship.strftime('%d.%m.%Y')) 
     data.append(
         (
             None,
             None,
             None,
-            None,
+            total_product_quantity,
             None,
             None,
             total_amount_str,
-            str(date_ship),
+            final_date_ship,
         )
     )
 
@@ -362,9 +403,9 @@ def crete_pdf_bill(specification):
     total_amount_nds = round(total_amount_nds, 2)
     total_amount_no_nds = round(total_amount_no_nds, 2)
 
-    total_amount = "{0:,}".format(specifications.total_amount).replace(",", " ")
-    total_amount_no_nds = "{0:,}".format(total_amount_no_nds).replace(",", " ")
-    total_amount_nds = "{0:,}".format(total_amount_nds).replace(",", " ")
+    total_amount = "{0:.2f}".format(specifications.total_amount).replace(",", " ")
+    total_amount_no_nds = "{0:.2f}".format(total_amount_no_nds).replace(",", " ")
+    total_amount_nds = "{0:.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
         (

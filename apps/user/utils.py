@@ -1,4 +1,6 @@
 from django.contrib.auth.models import Group, User, Permission
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
 
 
 def upgrade_permission():
@@ -70,3 +72,26 @@ def upgrade_permission():
             pass
         elif group.name == "Полный доступ":
             pass
+
+
+def perform_some_action_on_login(sender, user,request, **kwargs):
+    """
+    A signal receiver which performs some actions for
+    the user logging in.
+    """
+    ...
+    # your code here
+    current_user = request.user
+    if current_user.is_staff:
+        cookie = request.COOKIES.get("client_id")
+        if cookie:
+            print
+            # response = receiver(sender=sender)
+            # response.set_cookie('client_id', domain="cookie_domain", max_age_seconds=1)
+            # # response = django_logout(
+            # #                     request,
+            # #                     next_page=reverse("logout-confirmation")
+            # #                 )
+            
+            # return response
+            

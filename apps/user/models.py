@@ -6,9 +6,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import signals, Sum, Q
 from django.dispatch import receiver
+from django.contrib.auth.signals import user_logged_in
 
 
-from apps.user.signals import update_group
+from apps.user.signals import update_group, user_admin_logged_in
+from apps.user.utils import perform_some_action_on_login
 
 # Create your models here.
 ADMIN_TYPE = (
@@ -54,7 +56,7 @@ class AdminUser(CustomUser):
 
 
 signals.post_save.connect(update_group, sender=AdminUser)
-
+user_logged_in.connect(perform_some_action_on_login,)
 
 class Roles(Group):
     class Meta:

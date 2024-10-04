@@ -152,6 +152,13 @@ class AccountRequisites(models.Model):
         return self.account_requisites
 
 
+class EmailsCallBack(models.Model):
+    name = models.CharField(
+        "Контактное лицо", max_length=40, blank=True, null=True
+    )
+    phone = models.CharField("Номер телефона", max_length=40,)
+
+
 # class ClientDiscount(models.Model):
 #     requisites = models.OneToOneField(Requisites,verbose_name="Юр.лицо", on_delete=models.CASCADE)
 #     percent = models.FloatField(

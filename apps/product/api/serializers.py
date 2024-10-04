@@ -100,23 +100,24 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if self.context["request"].user:
-            if self.context["request"].user.is_staff == False:
-                try:
-                    client = Client.objects.get(id=self.context["request"].user.id)
-                    if client.percent:
-                        discount = client.percent
-                    else:
+        if data["price"]["rub_price_supplier"]:
+            if self.context["request"].user:
+                if self.context["request"].user.is_staff == False:
+                    try:
+                        client = Client.objects.get(id=self.context["request"].user.id)
+                        if client.percent:
+                            discount = client.percent
+                        else:
+                            discount = 100
+                    except Client.DoesNotExist:
+                        client = None
                         discount = 100
-                except Client.DoesNotExist:
-                    client = None
-                    discount = 100
-                price = data["price"]["rub_price_supplier"]
-                if discount == 100:
-                    price_discount = price
-                else:
-                    price_discount = price - (price / 100 * float(discount))
-                data["price"]["rub_price_supplier"] = round(price_discount, 2)
+                    price = data["price"]["rub_price_supplier"]
+                    if discount == 100:
+                        price_discount = price
+                    else:
+                        price_discount = price - (price / 100 * float(discount))
+                    data["price"]["rub_price_supplier"] = round(price_discount, 2)
 
         return data
 

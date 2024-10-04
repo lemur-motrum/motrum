@@ -98,11 +98,12 @@
                 <span class="price_item">
                     
                     {% if product.price.rub_price_supplier  and product.price.rub_price_supplier != 0 %}
-                        <span class="price">{{ product.price.rub_price_supplier }}</span> ₽</span>
+                        <span class="price">{{ product.price.price_sale_personal }}</span> ₽</span>
+                        / <span class="lot">1 {{ product.stock.lot.name_shorts }}</span>
                     {% else %}
                         <span>По запросу</span>
                     {% endif %}
-                    / <span class="lot">1 {{ product.stock.lot.name_shorts }}</span>
+                    
                 </div>
                 <div class="item-buttons_container">
                     <div class="quantity-buttons">

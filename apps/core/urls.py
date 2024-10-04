@@ -6,11 +6,10 @@ from django.views.generic.base import TemplateView
 from rest_framework import routers
 from django.urls import re_path as url
 
-# router.register(r'accounts', AccountViewSet)
 app_name = "core"
 
 router = routers.DefaultRouter()
-# router.register(r"v1/email-callback", view_sets.ApiClient)
+
 
 urlpatterns = [
     path("", views.index, name="index"),  # главная
@@ -56,6 +55,6 @@ urlpatterns = [
     # личный кабинет   в  app client  namespace="lk"
     # EMAILS
     # EMAILS
-    path("send_email_callback", views.email_callback, name="send_email_callback"),
-    path("send_email_manager", views.email_manager, name="send_email_manager"),
+    # path("send_email_callback", views.email_callback, name="send_email_callback"),
+    # path("send_email_manager", views.email_manager, name="send_email_manager"),
 ]

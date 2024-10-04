@@ -17,6 +17,127 @@
                                 <div>
                                     <div class="legal_entity">
                                         <div class="head_legal_entity_details">
+                                            <div class="detail">{{ detail.legal_entity }}</div>
+                                            <div class="detail">ИНН {{ detail.inn }}</div>
+                                            <div class="detail">КПП {{ detail.kpp }}</div>
+                                            <div class="detail">ОГРН {{ detail.ogrn }}</div>
+                                            <div class="detail">Договор №{{ detail.contract }}</div>
+                                            <button class="change_button">Редактировать</button>
+                                        </div>
+                                        <div class="addresses">
+                                            <div class="address">
+                                                <div class="title">Юридический адрес</div>
+                                                <div class="legal_adress_form">
+                                                    <label>
+                                                        <span>Индекс</span>
+                                                        <input value={{ detail.legal_post_code }} class="current_legal_adress_index" type="text" />
+                                                        <div class="error current_legal_adress_index_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Город</span>
+                                                        <input value={{ detail.legal_city }} class="current_legal_adress_city" type="text" />
+                                                        <div class="error current_legal_adress_city_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Адрес</span>
+                                                        <input value="{{ detail.legal_address }}"
+                                                               class="current_legal_adress_adress"
+                                                               type="text" />
+                                                        <div class="error current_legal_adress_adress_error"></div>
+                                                    </label>
+                                                    <button class="change-legal-adress-button">Изменить</button>
+                                                </div>
+                                            </div>
+                                            <div class="address">
+                                                <div class="title">Почтовый адрес</div>
+                                                <div class="post_adress_form">
+                                                    <label>
+                                                        <span>Индекс</span>
+                                                        <input value={{ detail.postal_post_code }} class="current_post_adress_index" type="text" />
+                                                        <div class="error current_post_adress_index_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Город</span>
+                                                        <input value={{ detail.postal_city }} class="current_post_adress_city" type="text" />
+                                                        <div class="error current_post_adress_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Адрес</span>
+                                                        <input value="{{ detail.postal_address }}"
+                                                               class="current_post_adress_adress"
+                                                               type="text" />
+                                                        <div class="error current_post_adress_adress_error"></div>
+                                                    </label>
+                                                    <button class="change-post-adress-button">Изменить</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="bank-details-container">
+                                            <div class="title">Расчётный счёт</div>
+                                            <div class="bank-details">
+                                                {% for bank_detail in detail.accountrequisites_set.all %}
+                                                    <div class="bank_detail">
+                                                        <label>
+                                                            <span>Расчётный счёт {{ forloop.counter }}:</span>
+                                                            <input value="{{ bank_detail.account_requisites }}"
+                                                                   class="bank_detail-current_account"
+                                                                   type="text" />
+                                                            <div class="error bank_detail-current_account_error"></div>
+                                                        </label>
+                                                        <label>
+                                                            <span>Банк:</span>
+                                                            <input value="{{ bank_detail.bank }}" class="bank_detail-bank" type="text" />
+                                                            <div class="error bank_detail-bank_error"></div>
+                                                        </label>
+                                                        <label>
+                                                            <span>Корреспондентский счёт:</span>
+                                                            <input value="{{ bank_detail.kpp }}"
+                                                                   class="bank_detail-correspondent_account"
+                                                                   type="text" />
+                                                            <div class="error bank_detail-correspondent_account_error"></div>
+                                                        </label>
+                                                        <label>
+                                                            <span>БИК:</span>
+                                                            <input value="{{ bank_detail.bic }}" class="bank_detail-bic" type="text" />
+                                                            <div class="error bank_detail-bic"></div>
+                                                        </label>
+                                                        <button class="bank-detail-button">Изменить</button>
+                                                    </div>
+                                                {% endfor %}
+                                                <div class="new_bank_detail">
+                                                    <label>
+                                                        <span>Расчётный счёт <span class="new_bank_detail_counter"></span>:</span>
+                                                        <input class="bank_detail-current_account" type="text" />
+                                                        <div class="error bank_detail-current_account_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Банк:</span>
+                                                        <input class="bank_detail-bank" type="text" />
+                                                        <div class="error bank_detail-bank_error"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>Корреспондентский счёт:</span>
+                                                        <input class="bank_detail-correspondent_account" type="text" />
+                                                        <div class="error bank_detail-correspondent_account"></div>
+                                                    </label>
+                                                    <label>
+                                                        <span>БИК:</span>
+                                                        <input class="bank_detail-bic" type="text" />
+                                                        <div class="error bank_detail-bic"></div>
+                                                    </label>
+                                                    <button class="bank-detail-button">Добавить</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% comment %} {% for detail in details %}
+                            <div class="legal_entity_wrapper">
+                                <div>
+                                    <div class="legal_entity">
+                                        <div class="head_legal_entity_details">
                                             <div class="detail">{{ detail.name }}</div>
                                             <div class="detail">ИНН {{ detail.inn }}</div>
                                             <div class="detail">КПП {{ detail.kpp }}</div>
@@ -132,7 +253,7 @@
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
+                        {% endfor %} {% endcomment %}
                     </div>
                 {% endif %}
             </div>

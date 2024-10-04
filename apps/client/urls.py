@@ -17,6 +17,7 @@ router.register(
 )
 router.register(r"v1/requisites", view_sets.RequisitesViewSet)
 router.register(r"v1/order", view_sets.OrderViewSet)
+router.register(r"v1/emails", view_sets.EmailsViewSet)
 
 
 urlpatterns = [

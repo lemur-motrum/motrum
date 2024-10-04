@@ -445,12 +445,12 @@ class Price(models.Model):
             if request.user.is_staff == False:
                 client = Client.objects.get(id=request.user.id)
                 discount = client.percent
-          
+                print(discount)
                 price = self.rub_price_supplier
-              
+                print(price)
                 price_discount = price - (price / 100 * float(discount))
-              
-                return price_discount
+                print(price_discount)
+                return round(price_discount, 2)
             else:
                 return self.rub_price_supplier
         else:

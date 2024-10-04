@@ -6,7 +6,10 @@ from itertools import chain
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
-from regex import F
+
+# from regex import F
+from django.template import loader
+from django.template.loader import render_to_string
 from rest_framework import routers, serializers, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -21,6 +24,7 @@ from apps.client.api.serializers import (
     ClientRequisitesSerializer,
     ClientSerializer,
     DocumentSerializer,
+    EmailsCallBackSerializer,
     LkOrderDocumentSerializer,
     LkOrderSerializer,
     OrderSerializer,
@@ -32,6 +36,7 @@ from apps.client.models import (
     STATUS_ORDER_INT,
     AccountRequisites,
     Client,
+    EmailsCallBack,
     Order,
     Requisites,
 )
@@ -46,6 +51,7 @@ from apps.core.utils_web import (
     _verify_pin,
     get_product_item_data,
     send_email_message,
+    send_email_message_html,
     send_pin,
 )
 from apps.product.models import Cart, Lot, Price, Product, ProductCart
@@ -449,8 +455,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             sorting = request.query_params.get("sort")
         if request.query_params.get("direction"):
             direction = request.query_params.get("direction")
-      
-        
+
         if sorting == "date_order":
             if direction == "ASC":
                 sorting = F("date_order").asc(nulls_last=True)
@@ -564,7 +569,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         # ordering = {k:v for k,v in ordering.items() if v is not None}
         # ordering = list(ordering.values())
         # lot = Lot.objects.all()
-       
+
         orders = (
             Order.objects.filter(client=client)
             .select_related(
@@ -572,7 +577,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "cart",
                 "requisites",
                 "account_requisites",
-
             )
             # .prefetch_related(
             #     Prefetch(
@@ -583,30 +587,39 @@ class OrderViewSet(viewsets.ModelViewSet):
             #         to_attr="filtered_notification_items",
             #     )
             # )
+            .prefetch_related(Prefetch("specification__productspecification_set"))
             .prefetch_related(
-                Prefetch('specification__productspecification_set'))
-            .prefetch_related(
-                Prefetch('specification__productspecification_set__product'))
+                Prefetch("specification__productspecification_set__product")
+            )
             # .prefetch_related(
             #     Prefetch('specification__productspecification_set__product__stock'))
             # .prefetch_related(
             #     Prefetch('specification__productspecification_set__product__stock__lot'))
-            .annotate(notification_count=Count("notification", filter=Q(notification__is_viewed=False,notification__type_notification="STATUS_ORDERING")))
+            .annotate(
+                notification_count=Count(
+                    "notification",
+                    filter=Q(
+                        notification__is_viewed=False,
+                        notification__type_notification="STATUS_ORDERING",
+                    ),
+                )
+            )
             .order_by(sorting, "-id")[count : count + count_last]
         )
-       
-        
-           
-# [count : count + count_last]
+
+        # [count : count + count_last]
         serializer = serializer_class(orders, many=True)
         data = serializer.data
         # прочитать уведомления только выведенные ордеры
         for data_order in data:
             if int(data_order["notification_count"]) > 0:
-                Notification.objects.filter(order=data_order["id"],
-                client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
-            ).update(is_viewed=True)
-            
+                Notification.objects.filter(
+                    order=data_order["id"],
+                    client_id=current_user,
+                    type_notification="STATUS_ORDERING",
+                    is_viewed=False,
+                ).update(is_viewed=True)
+
         # прочитать уведомления всех ордеров
         # notifications = Notification.objects.filter(
         #     client_id=current_user, type_notification="STATUS_ORDERING", is_viewed=False
@@ -660,7 +673,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
         serializer = serializer_class(orders, many=True)
-    
+
         # формирование отдельных документов из сериализированных заказов
         documents = []
         for order in serializer.data:
@@ -680,7 +693,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "data_stop": order["specification_list"]["date_stop"],
                     "amount": order["specification_list"]["total_amount"],
                     "notification_set": [],
-                    "type_notification":"DOCUMENT_SPECIFICATION",
+                    "type_notification": "DOCUMENT_SPECIFICATION",
                 }
 
                 for notification_set in order["notification_set"]:
@@ -707,7 +720,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "data_stop": order["bill_date_stop"],
                     "amount": order["bill_sum"],
                     "notification_set": [],
-                    "type_notification":"DOCUMENT_BILL",
+                    "type_notification": "DOCUMENT_BILL",
                 }
 
                 for notification_set in order["notification_set"]:
@@ -761,7 +774,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         #         Notification.objects.filter(order=data_order["order"],
         #         client_id=current_user, type_notification=data_order["type_notification"], is_viewed=False
         #     ).update(is_viewed=True)
-                
+
         notifications = (
             Notification.objects.filter(client_id=current_user, is_viewed=False)
             .exclude(type_notification="STATUS_ORDERING")
@@ -774,3 +787,61 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)
+
+
+class EmailsViewSet(viewsets.ModelViewSet):
+    queryset = EmailsCallBack.objects.none()
+    serializer_class = EmailsCallBackSerializer
+    http_method_names = ["get", "post", "put", "update"]
+
+
+    @action(detail=False, methods=["post"], url_path=r"call-back-email")
+    def send_email_callback(self, request, *args, **kwargs):
+        data = request.data
+        serializer = self.serializer_class(data=data, many=False)
+
+        if serializer.is_valid():
+            email_obj = serializer.save()
+            user_name = serializer.data["name"]
+            user_phone = serializer.data["phone"]
+
+            to_manager = os.environ.get("EMAIL_MANAGER_CALLBACK")
+            send_code = send_email_message(
+                "Обратный звонок",
+                f"Имя: {user_name}. Телефон: {user_phone}",
+                to_manager,
+            )
+            if send_code:
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    @action(detail=False, methods=["post"], url_path=r"manager-email")
+    def send_manager_email(self, request, *args, **kwargs):
+        data = request.data
+        print(data)
+        client_id = data["client_id"]
+        text_message = data["text_message"]
+        client = Client.objects.get(id=int(client_id))
+        print(client_id)
+        title_email = "Сообщение с сайта от клиента"
+        text_email = f"Клиент: {client.contact_name}Телефон: {client.phone}Сообщение{text_message}"
+        to_manager = client.manager.email
+        html_message = loader.render_to_string(
+            "core/emails/email.html",
+            {
+                "client_name": client.contact_name,
+                "client_phone": client.phone,
+                "text": text_message,
+            },
+        )
+        send_code = send_email_message_html(
+            title_email, text_email, to_manager, html_message=html_message
+        )
+        if send_code:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)

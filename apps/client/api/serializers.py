@@ -1,4 +1,4 @@
-from apps.client.models import Client, Order
+from apps.client.models import Client, EmailsCallBack, Order
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -169,3 +169,9 @@ class DocumentSerializer(serializers.Serializer):
     date_created = serializers.DateField()
     data_stop = serializers.DateField()
     amount = serializers.FloatField()
+    
+    
+class EmailsCallBackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailsCallBack
+        fields = "__all__" 

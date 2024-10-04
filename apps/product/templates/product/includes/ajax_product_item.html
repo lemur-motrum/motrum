@@ -13,10 +13,12 @@
     </div>
     <div class="lot">{{ stock.lot_complect }} {{ stock.lot }}</div>
     <div class="price">
-        {% if price.rub_price_supplier == 0 %}
-            по запросу
+        
+        
+        {% if price.rub_price_supplier   and price.rub_price_supplier != 0 %}
+           <span class="price_item">{{ price.rub_price_supplier }}</span> ₽
         {% else %}
-            <span class="price_item">{{ price.rub_price_supplier }}</span> ₽
+            по запросу  
         {% endif %}
     </div>
     <div class="item-buttons_container">

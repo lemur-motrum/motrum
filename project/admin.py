@@ -70,12 +70,14 @@ class DatabaseAdminSite(admin.AdminSite):
         if current_user.is_staff:
             cookie = request.COOKIES.get("client_id")
             if cookie:
-                response = TemplateResponse(
-            request, self.index_template or "admin/index.html", context
-        )
-            response.set_cookie('client_id', max_age=-1)
-            response.set_cookie('cart', max_age=-1)        
-            return response
+                response = TemplateResponse(request, self.index_template or "admin/index.html", context)
+                response.set_cookie('client_id', max_age=-1)
+                response.set_cookie('cart', max_age=-1)        
+                return response
+            else:
+                return TemplateResponse(
+                request, self.index_template or "admin/index.html", context
+            )
         else:
             return TemplateResponse(
                 request, self.index_template or "admin/index.html", context

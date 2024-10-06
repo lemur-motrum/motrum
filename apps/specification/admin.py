@@ -307,6 +307,8 @@ class SpecificationAdmin(SimpleHistoryAdmin):
 
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
+        # print(self)
+        print(type(self))
         request.current_app = self.admin_site.name
 
         model = self.model
@@ -314,8 +316,10 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         app_label = opts.app_label
         pk_name = opts.pk.attname
         history = getattr(model, model._meta.simple_history_manager_attribute)
-
+        print(object_id)
+        print()
         object_id = unquote(object_id)
+        print(type(object_id))
 
         try:
             product_id_ex = ProductSpecification.objects.filter(
@@ -411,6 +415,141 @@ class SpecificationAdmin(SimpleHistoryAdmin):
             content_type.app_label,
             content_type.model,
         )
+        print(object_id)
+        context = {
+            "title": self.history_view_title(request, obj),
+            "object_history_list_template": self.object_history_list_template,
+            "historical_records": result_list,
+            "module_name": capfirst(force_str(opts.verbose_name_plural)),
+            "object": obj,
+            "root_path": getattr(self.admin_site, "root_path", None),
+            "app_label": app_label,
+            "opts": opts,
+            "admin_user_view": admin_user_view,
+            "history_list_display": history_list_display,
+            "revert_disabled": self.revert_disabled(request, obj),
+        }
+        context.update(self.admin_site.each_context(request))
+
+        context.update(extra_context or {})
+        extra_kwargs = {}
+        print(request)
+        print( self.object_history_template)
+        return self.render_history_view(
+            request, self.object_history_template, context, **extra_kwargs
+        )
+
+    def has_add_permission(self, request):
+        return False
+    
+    def get_admin_history(self, request, object_id, extra_context=None):
+        """The 'history' admin view for this model."""
+        print(self)
+        print(type(self))
+        request.current_app = self.admin_site.name
+
+        model = self.model
+        opts = model._meta
+        app_label = opts.app_label
+        pk_name = opts.pk.attname
+        history = getattr(model, model._meta.simple_history_manager_attribute)
+
+        object_id = unquote(object_id)
+
+        try:
+            product_id_ex = ProductSpecification.objects.filter(
+                specification=object_id
+            ).last()
+            product_id = ProductSpecification.objects.filter(specification=object_id)
+
+        except ProductSpecification.DoesNotExist:
+            product_id = None
+
+        historical_records_product = []
+        if product_id != None:
+            for item in product_id:
+                item_list = ProductSpecificationAdmin.history_view(
+                    ProductSpecification, request, item.id, extra_context=None
+                )
+                if historical_records_product == []:
+                    historical_records_product = item_list
+                else:
+                    historical_records_product = list(
+                        chain(
+                            historical_records_product,
+                            item_list,
+                        )
+                    )
+
+        deleted_prod = ProductSpecification.history.filter(
+            history_type="-", specification_id=object_id
+        )
+
+        historical_records_product2 = []
+        id_old_prod = []
+        for item2 in deleted_prod:
+            id_old_prod.append(item2.id)
+            item_list = ProductSpecificationAdmin.history_view(
+                ProductSpecification, request, item2.id, extra_context=None
+            )
+
+            if historical_records_product2 == []:
+                historical_records_product2 = item_list
+            else:
+                historical_records_product2 = list(
+                    chain(
+                        historical_records_product2,
+                        item_list,
+                    )
+                )
+
+        historical_records = self.get_history_queryset(
+            request, history, pk_name, object_id
+        )
+        print(object_id)
+        history_list_display = self.get_history_list_display(request)
+
+        # If no history was found, see whether this object even exists.
+        try:
+            obj = self.get_queryset(request).get(**{pk_name: object_id})
+        except model.DoesNotExist:
+            try:
+                obj = historical_records.latest("history_date").instance
+            except historical_records.model.DoesNotExist:
+                raise http.Http404
+
+        if not self.has_view_history_or_change_history_permission(request, obj):
+            raise PermissionDenied
+
+        # Set attribute on each historical record from admin methods
+        for history_list_entry in history_list_display:
+            value_for_entry = getattr(self, history_list_entry, None)
+            if value_for_entry and callable(value_for_entry):
+                for record in historical_records:
+                    setattr(record, history_list_entry, value_for_entry(record))
+
+        self.set_history_delta_changes(request, historical_records)
+
+        result_list = list(
+            chain(
+                historical_records,
+                historical_records_product,
+                historical_records_product2,
+            )
+        )
+
+        def get_date(element):
+            return element.history_date
+
+        result_list_sorted = result_list.sort(key=get_date, reverse=True)
+
+        content_type = self.content_type_model_cls.objects.get_for_model(
+            get_user_model()
+        )
+        admin_user_view = "admin:{}_{}_change".format(
+            content_type.app_label,
+            content_type.model,
+        )
 
         context = {
             "title": self.history_view_title(request, obj),
@@ -432,9 +571,5 @@ class SpecificationAdmin(SimpleHistoryAdmin):
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )
-
-    def has_add_permission(self, request):
-        return False
-
 
 admin.site.register(Specification, SpecificationAdmin)

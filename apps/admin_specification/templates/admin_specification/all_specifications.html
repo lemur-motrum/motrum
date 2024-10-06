@@ -30,6 +30,11 @@
                                 {% if request.user.is_superuser %}
                                     <br>
                                     <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
+                                    <br>
+                                    <span class="table_item_value_span">
+                                        <a href="{% url "admin_specification:history_admin" specification.pk %}">История: </a>
+                                        
+                                        </span>
                                 {% endif %}
                             </div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>

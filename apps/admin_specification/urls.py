@@ -29,4 +29,8 @@ urlpatterns = [
     path(
         "update_specification/", views.update_specification, name="update_specification"
     ),
+    path(
+        "history_admin/<int:pk>", views.history_admin, name="history_admin"
+    ),
 ]
+

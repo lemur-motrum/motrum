@@ -137,7 +137,10 @@ class ProductSpecification(models.Model):
         verbose_name_plural = "Спецификации Продукты"
 
     def __str__(self):
-        return f"{self.product}"
+        if self.product:
+            return f"{self.product}"
+        else:
+            return f"{self.product_new}"
 
     # def save(self, *args, **kwargs):
     #     # если с админки сохранение(работало правильно до отделения сборки спецификаций на фронте)

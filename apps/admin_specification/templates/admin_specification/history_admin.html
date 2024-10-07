@@ -13,14 +13,15 @@
         
     </div>
 
-
+    <p style="font-size: 2vw;padding: 0 3.125rem;    margin: auto;">История изменений спецификации № {{specification.id}}</p>
 {% load i18n %}
 {% load url from simple_history_compat %}
 {% load admin_urls %}
 {% load getattribute from getattributes %}
 {% load verbose_names %}
-<table id="change-history" class="table table-bordered table-striped">
-  <thead>
+
+<table style="padding: 0 3.125rem; border-collapse: collapse;    margin: auto;" id="change-history" class="table table-bordered table-striped">
+  <thead >
     <tr>
       <th scope="col">{% trans 'Object' %}</th>
       {% for column in history_list_display %}
@@ -36,7 +37,7 @@
   <tbody>
     {% for record in historical_records %}
       {% with total=record.history_delta_changes|length %}
-        {% comment %} record.history_object.product {% endcomment %}
+
         {% comment %} or record.history_delta_change != "[]" {% endcomment %}
         {% if total >= 1 or record.history_object.product %}
           <tr style="border-bottom:1px solid black" >
@@ -110,9 +111,83 @@
                   </ul>
                 {% endif %}
               {% endblock %}
+          </td>
+     
+        {% elif  total >= 1 or record.history_object.product_new %}  
+            <tr style="border-bottom:1px solid black" >
+              <td >{% get_verbose_field_name object "name" record.history_object %}
+                <p style="width:350px">{{ record.history_object.product_new }}</p></td>
+              {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
+              <td>{{ record.history_date }}</td>
+              <td>{{ record.get_history_type_display }}</td>
+              <td>
+                {% if record.history_user %}
+                  {% url admin_user_view record.history_user_id as admin_user_url %}
+                  {% if admin_user_url %}
+                    <a href="{{ admin_user_url }}">{{ record.history_user }}</a>
+                  {% else %}
+                    {{ record.history_user }}
+                  {% endif %}
+                {% else %}
+                  {% trans "Auto" %}
+                {% endif %}
+              </td>
+              <td>{{ record.history_change_reason }}</td>
+              <td>
+                {% block history_delta_changes_new %}
+                
+                  {% if record.history_delta_changes %}
+                    
+                    <ul>
+                      {% for change in record.history_delta_changes %}
+                        <li>
+                          <strong>{{ change.field }}:</strong>
+                          {% if change.field == "Удалить" %}
+                            {% get_verbose_field_name object "name" record.history_object %}
+                            {{ record.history_object }}
+                          {% endif %}
+                          {% if change.old == "None" %}
+                          нет
+                          {% else %}
+                         
+                          {{ change.old }}
+                          {% endif %}
+                          {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
+                          &nbsp;&rarr;&nbsp;&nbsp;
+                          {% if change.new == "None" %}
+                          нет
+                          {% else %}
+                          {{ change.new }}
+                          {% endif %}
+                           
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                 
+                    <ul>
+                      <li>
+                        {{ record.history_type }}
+                        {% if record.history_type == "-" %}
+                          <strong>Удалено:</strong>
+                          <p >{{ record.history_object.product_new }}</p>
+                          {% get_verbose_field_name object "name" record.history_object %}
+                        {% elif record.history_type == "~" %}
+                          {% if record.history_object.product_new %}{% endif %}
+                          <strong>Изменено:</strong>
+                          <p >{{ record.history_object.product_new }}</p>
+                          {% get_verbose_field_name object "name" record.history_object %}
+                        {% elif record.history_type == "+" %}
+                          <strong>Добавленно:</strong>
+                          <p style="width:550px">{{ record.history_object.product_new }}</p>
+                          {% get_verbose_field_name object "name" record.history_object %}
+                        {% endif %}
+                      </li>
+                    </ul>
+                  {% endif %}
+                {% endblock %}
             </td>
-          </tr>
-        {% endif %}
+        {% endif %} 
       {% endwith %}
     {% endfor %}
   </tbody>

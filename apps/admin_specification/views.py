@@ -1291,7 +1291,7 @@ def history_admin(request, pk):
     from django.contrib.admin.utils import unquote
     from itertools import chain
 
-    sp = Specification.objects.get(pk=pk)
+    specification = Specification.objects.get(pk=pk)
     model = Specification
     opts = model._meta
     app_label = opts.app_label
@@ -1395,6 +1395,7 @@ def history_admin(request, pk):
     # )
     print(object_id)
     context = {
+        "specification":specification,
         # "title": SpecificationAdmin.history_view_title(request, obj),
         # "object_history_list_template": self.object_history_list_template,
         "historical_records": result_list,

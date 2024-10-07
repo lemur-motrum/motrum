@@ -566,4 +566,4 @@ class SpecificationAdmin(SimpleHistoryAdmin):
     #         request, self.object_history_template, context, **extra_kwargs
     #     )
 
-admin.site.register(Specification, SpecificationAdmin)
+# admin.site.register(Specification, SpecificationAdmin)

@@ -19,7 +19,16 @@ class CurrencyPercentAdmin(admin.ModelAdmin):
         
     def has_delete_permission(self, request,obj=None):
         return False
+    
+class CurrencyAdmin(admin.ModelAdmin):
+
+    def has_delete_permission(self, request,obj=None):
+        return False    
          
+class VatAdmin(admin.ModelAdmin):
+
+    def has_delete_permission(self, request,obj=None):
+        return False            
 # АДМИНКА ДЛЯ ВЕБСАЙТА            
 class SliderMainAdminWeb(admin.ModelAdmin):
     list_display = [
@@ -36,13 +45,14 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                 return ["product_promote","slug"]
         else:
             return ["product_promote","slug"]
-
+    def has_delete_permission(self, request,obj=None):
+        return False
 # Register your models here.
 
 
-admin.site.register(Currency)
+admin.site.register(Currency,CurrencyAdmin)
 admin.site.register(CurrencyPercent,CurrencyPercentAdmin)
-admin.site.register(Vat)
+admin.site.register(Vat,VatAdmin)
 
 website_admin.register(SliderMain,SliderMainAdminWeb)
 

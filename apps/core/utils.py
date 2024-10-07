@@ -752,8 +752,8 @@ def save_specification(received_data, request):
         specification = Specification(
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
         )
-
-        specification._change_reason = "Ручное"
+        specification.skip_history_when_saving = True
+        # specification._change_reason = "Ручное"
         specification.save()
 
     # сохранение продуктов для спецификации
@@ -935,6 +935,7 @@ def save_specification(received_data, request):
         specification.id, requisites, account_requisites, request
     )
     specification.file = pdf
+    specification._change_reason = "Ручное"
     specification.save()
     # Specification.objects.filter(id=specification.id).update(file=pdf)
 

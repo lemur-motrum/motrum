@@ -190,9 +190,11 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             product_name = (Paragraph(f"{product_name}", bold_style_center),)
 
         product_price = product.price_one
-        product_price = "{0:.2f}".format(product_price).replace(",", " ")
+        product_price = "{0:,.2f}".format(product_price).replace(",", " ")
         product_price_all = product.price_all
-        product_price_all = "{0:.2f}".format(product_price_all).replace(",", " ")
+ 
+        product_price_all = "{0:,.2f}".format(product_price_all,'.2f').replace(",", " ")
+   
         product_quantity = product.quantity
         data.append(
             (
@@ -223,9 +225,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     total_amount_nds = round(total_amount_nds, 2)
     total_amount_no_nds = round(total_amount_no_nds, 2)
 
-    total_amount = "{0:,}".format(specifications.total_amount).replace(",", " ")
-    total_amount_no_nds = "{0:,}".format(total_amount_no_nds).replace(",", " ")
-    total_amount_nds = "{0:,}".format(total_amount_nds).replace(",", " ")
+    total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
+    total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
+    total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
         (

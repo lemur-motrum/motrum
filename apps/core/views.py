@@ -50,12 +50,6 @@ def index(request):
     return render(request, "core/index.html", context)
 
 
-# ссылки внутренней работы
-# def okt(request):
-#     context = {}
-#     return render(request, "core/okt.html", context)
-
-
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
 def cart(request):
 
@@ -148,6 +142,17 @@ def cart(request):
 
     return render(request, "core/cart.html", context)
 
+def company(request):
+    context = {
+        
+    }
+    return render(request, "core/company.html", context)
+
+def company_about(request):
+    context = {
+        
+    }
+    return render(request, "core/about.html", context)
 
 # политика конфиденциальности
 def privacy_policy(request):
@@ -158,22 +163,22 @@ def privacy_policy(request):
 
 
 def csrf_failure(request, reason=""):
-    return render(request, "core/403csrf.html")
+    return render(request, "core/error_pages/403csrf.html")
 
 
 def permission_denied(request, exception):
     print(403)
-    return render(request, "core/403.html", status=403)
+    return render(request, "core/error_pages/403.html", status=403)
 
 
 def page_not_found(request, exception):
     print(404)
-    return render(request, "core/404.html", status=404)
+    return render(request, "core/error_pages/404.html", status=404)
 
 
 def server_error(request):
     print(500)
-    return render(request, "core/500.html", status=500)
+    return render(request, "core/error_pages/500.html", status=500)
 
 
 # EMAIL SEND

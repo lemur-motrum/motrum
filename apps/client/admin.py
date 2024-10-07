@@ -85,5 +85,5 @@ class ClientAdminWeb(admin.ModelAdmin):
 #         yield from ((inline, vars(inline).update(modeladmin=self))[0] for inline in super().get_inline_instances(*args, **kwargs))
 
 
-website_admin.register(Client, ClientAdminWeb)
+# website_admin.register(Client, ClientAdminWeb)
 # website_admin.register(Requisites,RequisitesAdmin)

@@ -25,6 +25,8 @@ class ProjectWebAdmin(admin.ModelAdmin):
     inlines = [
         ProjectImageInlineWeb,
     ]
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 
 class CategoryProjectWebAdmin(admin.ModelAdmin):
@@ -33,6 +35,8 @@ class CategoryProjectWebAdmin(admin.ModelAdmin):
         "article",
     ]
     exclude = ["slug"]
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 
 class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
@@ -41,6 +45,8 @@ class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
         "article",
     ]
     exclude = ["slug"]
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 
 website_admin.register(Project, ProjectWebAdmin)

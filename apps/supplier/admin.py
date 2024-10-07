@@ -125,6 +125,8 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
 
+    def has_delete_permission(self, request,obj=None):
+        return False   
 
 class SupplierVendor(admin.ModelAdmin):
     list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
@@ -137,6 +139,9 @@ class SupplierVendor(admin.ModelAdmin):
     list_display_links = [
         "name",
     ]
+    
+    def has_delete_permission(self, request,obj=None):
+        return False   
 
 
 class CategoryProductInline(admin.TabularInline):
@@ -226,7 +231,8 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 class SupplierCategoryProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
@@ -269,7 +275,8 @@ class SupplierCategoryProductAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 class SupplierGroupProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
@@ -326,7 +333,9 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-
+   
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 class DiscountAdmin(admin.ModelAdmin):
     form = DiscountForm

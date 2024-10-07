@@ -1015,6 +1015,9 @@ class ProductAdmin(SimpleHistoryAdmin):
             return False
         else:
             return True
+        
+    def has_delete_permission(self, request,obj=None):
+        return False    
 
 
 class LotAdmin(admin.ModelAdmin):
@@ -1022,6 +1025,8 @@ class LotAdmin(admin.ModelAdmin):
         "name",
         "name_shorts",
     )
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 
 class GroupProductInline(admin.TabularInline):
@@ -1054,7 +1059,9 @@ class CategoryProductAdmin(admin.ModelAdmin):
             item = f"{item}{item_one}"
 
         return mark_safe("<ul>{}</ul>".format(item))
-
+    
+    def has_delete_permission(self, request,obj=None):
+        return False
 
 # АДМИНКА ДЛЯ ВЕБСАЙТА
 
@@ -1089,6 +1096,8 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
         return mark_safe("<ul>{}</ul>".format(item))
 
     def has_add_permission(self, request):
+        return False
+    def has_delete_permission(self, request,obj=None):
         return False
 
 

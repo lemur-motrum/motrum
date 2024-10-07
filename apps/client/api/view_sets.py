@@ -320,7 +320,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data_stop = create_time_stop_specification()
             data_specification = {
                 "cart": cart.id,
-                "admin_creator": client.manager.id,
+                "admin_creator": None,
                 "id_bitrix": None,
                 "date_stop": data_stop,
             }
@@ -329,6 +329,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 data=data_specification, partial=True
             )
             if serializer.is_valid():
+                # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
 
@@ -349,7 +350,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                         data=item_data, partial=True
                     )
                     if serializer_prod.is_valid():
-                        serializer_prod.skip_history_when_saving = True
+                        serializer_prod._change_reason = "Клиент с сайта"
+                        # serializer_prod.skip_history_when_saving = True
                         specification_product = serializer_prod.save()
 
                     else:
@@ -362,14 +364,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # # обновить спецификацию пдф
 
                 specification.total_amount = total_amount
-                specification.skip_history_when_saving = True
+                specification._change_reason = "Клиент с сайта"
+                # specification.skip_history_when_saving = True
                 specification.save()
 
                 pdf = crete_pdf_specification(
                     specification.id, requisites, account_requisites, request
                 )
                 specification.file = pdf
-                specification.skip_history_when_saving = True
+                specification._change_reason = "Клиент с сайта"
+                # specification.skip_history_when_saving = True
                 specification.save()
                 specification = specification.id
                 requisites = data["requisites"]

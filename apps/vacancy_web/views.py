@@ -9,7 +9,7 @@ def vacancy(request):
     vacancy = Vacancy.objects.filter(is_actual=True)
  
     context = {"title": title, "vacancy": vacancy}
-    return render(request, "vacancy_web/vacancy_index.html", context)
+    return render(request, "vacancy_web/vacancy_all.html", context)
 
 
 def vacancy_item(request, slug):
@@ -20,4 +20,4 @@ def vacancy_item(request, slug):
         "vacancy": vacancy,
     }
 
-    return render(request, "vacancy_web/vacancy_item.html", context)
+    return render(request, "vacancy_web/vacancy_one.html", context)

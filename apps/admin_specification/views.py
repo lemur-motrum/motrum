@@ -561,7 +561,7 @@ def save_specification_view_admin(request):
 def get_all_specifications(request):
 
     all_specifications = (
-        Specification.objects.select_related("admin_creator", "cart")
+        Specification.objects.filter(admin_creator__isnull=False).select_related("admin_creator", "cart")
         .prefetch_related(
             Prefetch("order"),
         )

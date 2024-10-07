@@ -19,8 +19,8 @@ urlpatterns = [
         name="okt",
     ), # окт
 
-    path("company/", views.index, name="about"),  # компания общая
-    path("company/about", views.index, name="about_company"),  # компания
+    path("company/", views.company, name="about"),  # компания общая
+    path("company/about", views.company_about, name="about_company"),  # компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
     # остальное по вакансии  в app vacancy_web
     path(

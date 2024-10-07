@@ -45,12 +45,12 @@ window.addEventListener("DOMContentLoaded", () => {
                   }
                 }
                 this.value = val;
-                countQuantity = val;
+                countQuantity = +val;
               } else {
                 countQuantity = +countInput.value;
               }
 
-              countQuantity = countInput.value;
+              countQuantity = +countInput.value;
               if (countQuantity >= 999) {
                 countInput.value = productMultiplicity
                   ? getClosestInteger(999, +productMultiplicity)
@@ -75,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
               } else {
                 countQuantity++;
               }
-              countInput.value = countQuantity;
+              countInput.value = +countQuantity;
               minusButton.disabled = false;
               cartButton.disabled = false;
               if (countQuantity >= 999) {
@@ -95,7 +95,7 @@ window.addEventListener("DOMContentLoaded", () => {
               } else {
                 countQuantity--;
               }
-              countInput.value = countQuantity;
+              countInput.value = +countQuantity;
               minusButton.disabled = false;
               if (countQuantity <= 0) {
                 countInput.value = 0;
@@ -225,7 +225,7 @@ window.addEventListener("DOMContentLoaded", () => {
           countQuantity = +countInput.value;
         }
 
-        countQuantity = countInput.value;
+        countQuantity = +countInput.value;
         if (countQuantity >= 999) {
           countInput.value = productMultiplicity
             ? getClosestInteger(999, +productMultiplicity)
@@ -250,7 +250,7 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
           countQuantity++;
         }
-        countInput.value = countQuantity;
+        countInput.value = +countQuantity;
         minusButton.disabled = false;
         cartButton.disabled = false;
         if (countQuantity >= 999) {
@@ -270,7 +270,7 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
           countQuantity--;
         }
-        countInput.value = countQuantity;
+        countInput.value = +countQuantity;
         minusButton.disabled = false;
         if (countQuantity <= 0) {
           countInput.value = 0;

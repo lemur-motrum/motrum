@@ -20,7 +20,7 @@
             <div class="all_specifications_table">
                 {% for specification in specifications %}
                     {% if specification.tag_stop == True %}
-                        <div data-status='{{ specification.tag_stop }}' class="table_item">
+                        <div data-status="{{ specification.tag_stop }}" class="table_item">
                             <div class="table_item_value">
                                 <a href="{% if specification.file %}{{ specification.file.url }}{% endif %} "
                                    target="_blank"
@@ -43,9 +43,9 @@
                             <button class="create-bill-button">Создать счет</button>
                         </div>
                     {% else %}
-                        <div data-status='{{ specification.tag_stop }}'
+                        <div data-status="{{ specification.tag_stop }}"
                              class="table_item disabled">
-                            <div data-cart-id = "{{ specification.cart }}" class="table_item_value">{{ specification.pk }}</div>
+                            <div data-cart-id="{{ specification.cart }}" class="table_item_value">{{ specification.pk }}</div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">
                                 <span class="price">{{ specification.total_amount }}</span> ₽

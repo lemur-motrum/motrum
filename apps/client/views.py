@@ -56,6 +56,7 @@ def my_details(request):
     bank_obj = []
     for detail in details:
         my_details = {
+            "id": detail.pk,
             "name": detail.legal_entity,
             "inn": detail.inn,
             "kpp": detail.kpp,
@@ -76,6 +77,7 @@ def my_details(request):
                 "bank": bank_detail.bank,
                 "kpp": bank_detail.kpp,
                 "bic": bank_detail.bic,
+                "id": bank_detail.pk,
             }
             my_details["bank_details"].append(bank_object)
 

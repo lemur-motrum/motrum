@@ -38,14 +38,17 @@ def index(request):
     # categories = list(CategoryProduct.objects.all())
     # random.shuffle(categories)
     # cat = categories[0:7]
-    categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by("article_home_web")[0:7]
+    categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
+        "article_home_web"
+    )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-    
+
     context = {
         "categories": categories,
-        "projects":projects,
+        "projects": projects,
     }
     return render(request, "core/index.html", context)
+
 
 # ссылки внутренней работы
 # def okt(request):
@@ -53,7 +56,7 @@ def index(request):
 #     return render(request, "core/okt.html", context)
 
 
-#КОРЗИНА ПОЛЬЗОВАТЕЛЯ
+# КОРЗИНА ПОЛЬЗОВАТЕЛЯ
 def cart(request):
 
     cart = request.COOKIES.get("cart")
@@ -65,25 +68,30 @@ def cart(request):
             discount_client = client.percent
             if discount_client is None:
                 discount_client = 0
-                
-            requisites = Requisites.objects.filter(client=client).prefetch_related("accountrequisites_set").annotate(accountrequisit=F('accountrequisites__account_requisites'))
-                
-                # .prefetch_related("accountrequisites_set")
+
+            requisites = (
+                Requisites.objects.filter(client=client)
+                .prefetch_related("accountrequisites_set")
+                .annotate(accountrequisit=F("accountrequisites__account_requisites"))
+            )
+
+            # .prefetch_related("accountrequisites_set")
             # for requisit in requisites:
             #      print(requisit.accountrequisit)
-                #    print(requisit.accountrequisites_set.all())
+            #    print(requisit.accountrequisites_set.all())
         else:
-            requisites = None 
-            client = None       
-                 
+            requisites = None
+            client = None
 
-        product_cart_list = ProductCart.objects.filter(cart=cart).values_list("product__id")
+        product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+            "product__id"
+        )
         product_cart = ProductCart.objects.filter(cart=cart)
 
         prefetch_queryset_property = ProductProperty.objects.filter(
             product__in=product_cart_list
         )
-        
+
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -109,37 +117,43 @@ def cart(request):
                     "id",
                 ),
                 # sale_price_total=ArrayAgg('price__rub_price_supplier')
-                sale_price=Round(F('price__rub_price_supplier')* 0.01 * (100-float(discount_client)), 2),
-  
+                sale_price=Round(
+                    F("price__rub_price_supplier")
+                    * 0.01
+                    * (100 - float(discount_client)),
+                    2,
+                ),
             )
         )
-        
+
     else:
-        product = None 
+        product = None
         cart = None
-        account_requisites = None  
-        discount_client = None 
-        requisites = None  
+        account_requisites = None
+        discount_client = None
+        requisites = None
         client = None
-    
+
     context = {
-        "client" : client, 
+        "client": client,
         "product": product,
         "cart": cart,
         "request": request,
         "title": "Корзина",
-        "discount_client":discount_client,
-        "requisites":requisites,
+        "discount_client": discount_client,
+        "requisites": requisites,
         # "account_requisites":account_requisites,
     }
 
     return render(request, "core/cart.html", context)
 
 
-#политика конфиденциальности
+# политика конфиденциальности
 def privacy_policy(request):
-    return render(request, "core/privacy_policy.html")
-
+    context = {
+        "privacy_policy": True,
+    }
+    return render(request, "core/privacy_policy.html", context)
 
 
 def csrf_failure(request, reason=""):
@@ -159,10 +173,6 @@ def page_not_found(request, exception):
 def server_error(request):
     print(500)
     return render(request, "core/500.html", status=500)
-
-
-
-
 
 
 # EMAIL SEND

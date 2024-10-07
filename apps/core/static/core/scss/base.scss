@@ -18,9 +18,8 @@ ul[class],
 ol[class] {
   padding: 0;
 }
-a{
+a {
   text-decoration: none;
-  
 }
 .wrapper {
   display: flex;
@@ -228,6 +227,49 @@ a{
       }
     }
   }
+  div[window-elem="cookie"] {
+    width: 100%;
+    height: 6.688rem;
+    background-color: #d9d9d9;
+    position: -webkit-sticky;
+    position: sticky;
+    right: 0;
+    bottom: 0;
+    z-index: 400;
+    padding-left: 3.125rem;
+    padding-right: 3.125rem;
+    box-sizing: border-box;
+    display: none;
+    transition: 0.6s;
+    opacity: 0;
+    &.visible {
+      display: flex;
+      align-items: center;
+      opacity: 1;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .text {
+        width: 80%;
+        font-size: 1.25rem;
+      }
+      .cookie_button {
+        height: 3.125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        font-size: 1.125rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #a4a4a4;
+        cursor: pointer;
+        width: 15%;
+      }
+    }
+  }
 }
 
 .header {
@@ -296,7 +338,7 @@ a{
   }
   li {
     list-style-type: none; /* Убираем маркеры */
-   }
+  }
 }
 
 .footer {

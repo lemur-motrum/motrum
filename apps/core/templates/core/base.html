@@ -25,6 +25,10 @@
           {% endblock content %}
         </div>
         {% manager_client %}
+        {% if privacy_policy %}
+        {% else %}
+          {% include "core/includes/cookie.html" %}
+        {% endif %}
       </div>
 
       {% include "core/includes/footer.html" %}
@@ -39,7 +43,7 @@
         let theEvent = evt || window.event;
         let key = theEvent.keyCode || theEvent.which;
         key = String.fromCharCode(key);
-        const regex = /[^\d.]/gi;
+        const regex = /[0-9]|\./;
         if (!regex.test(key)) {
           theEvent.returnValue = false;
           if (theEvent.preventDefault) theEvent.preventDefault();

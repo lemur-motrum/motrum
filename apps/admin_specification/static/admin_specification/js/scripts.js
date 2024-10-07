@@ -134,14 +134,14 @@ function catalogLogic(elems) {
           }
         }
         this.value = val;
-        countQuantity = val;
+        countQuantity = +val;
       } else {
         countQuantity = +countQuantityZone.value;
       }
 
       if (countQuantity >= 99999) {
         countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(9999, +productMultiplicityQuantity)
+          ? getClosestInteger(99999, +productMultiplicityQuantity)
           : 99999;
         minusButton.disabled = false;
         plusButton.disabled = true;
@@ -245,7 +245,7 @@ function catalogLogic(elems) {
         const dataObj = {
           product: +productId,
           cart: +cart_id,
-          quantity: countQuantityZone.value,
+          quantity: +countQuantityZone.value,
         };
 
         const data = JSON.stringify(dataObj);
@@ -542,7 +542,6 @@ window.addEventListener("DOMContentLoaded", () => {
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
-          // const cartItemID = item.getAttribute("data-product-id-cart");
           const nameProductNew = item.getAttribute("data-product-name-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
@@ -606,12 +605,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
       function exitSpecification(elems) {
-        // localStorage.removeItem("specificationValues");
-
         const endpoint = `/api/v1/order/exit-order-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
-          // body: data,
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -619,7 +615,6 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-            // deleteCookie("key", "/", window.location.hostname);
             deleteCookie("specificationId", "/", window.location.hostname);
             deleteCookie("cart", "/", window.location.hostname);
 
@@ -718,7 +713,6 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity++;
           }
-
           quantity.value = countQuantity;
           const currentPrice =
             +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
@@ -742,7 +736,6 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity--;
           }
-
           quantity.value = countQuantity;
           if (quantity.value <= 1) {
             quantity.value = 1;
@@ -773,7 +766,6 @@ window.addEventListener("DOMContentLoaded", () => {
             countQuantity = quantity.value;
             const currentPrice =
               new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
-
             // getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
           };
@@ -1068,13 +1060,11 @@ window.addEventListener("DOMContentLoaded", () => {
       changeButton.onclick = () => {
         console.log(specificationId);
         console.log(cartId);
-        // setCookie("cart", cartId,)
         document.cookie = `cart=${cartId};path=/`;
         document.cookie = `specificationId=${specificationId};path=/`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
-          // body: data,
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1131,7 +1121,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".create-bill-button");
-
       const link = item.querySelector("a");
       const specificationId = +link.textContent;
       const cartId = +link.dataset.cartId;
@@ -1143,18 +1132,15 @@ window.addEventListener("DOMContentLoaded", () => {
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
-          // body: data,
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        })
-          // .then((response) => response.json())
-          .then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
-            }
-          });
+        }).then((response) => {
+          if (response.status == 200) {
+            window.location.reload();
+          }
+        });
 
         // const objData = {
         //   specification_id: specificationId,
@@ -1193,7 +1179,6 @@ window.addEventListener("DOMContentLoaded", () => {
     overdueSpecifications.forEach((item) => {
       const updatingBtn = item.querySelector(".uptate-specification-button");
       showButton(item, updatingBtn);
-      // const link = item.querySelector("a")
       const specificationId =
         +item.querySelectorAll(".table_item_value")[0].textContent;
       let cartId = item.querySelectorAll(".table_item_value")[0];
@@ -1208,7 +1193,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
-          // body: data,
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1265,6 +1249,7 @@ window.addEventListener("DOMContentLoaded", () => {
     priceDiscountInput.forEach((el) => {
       el.addEventListener("input", function (e) {
         const currentValue = this.value
+          .replace(",", ".")
           .replace(/[^.\d]+/g, "")
           .replace(/^([^\.]*\.)|\./g, "$1");
         el.value = currentValue;

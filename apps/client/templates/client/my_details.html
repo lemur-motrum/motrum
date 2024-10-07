@@ -15,7 +15,7 @@
                         {% for detail in details %}
                             <div class="legal_entity_wrapper">
                                 <div>
-                                    <div class="legal_entity">
+                                    <div legal-entity-adress="{{ detail.id }}" class="legal_entity">
                                         <div class="head_legal_entity_details">
                                             <div class="detail">{{ detail.legal_entity }}</div>
                                             <div class="detail">ИНН {{ detail.inn }}</div>
@@ -197,7 +197,7 @@
                                             <div class="title">Расчётный счёт</div>
                                             <div class="bank-details">
                                                 {% for bank_detail in detail.bank_details %}
-                                                    <div class="bank_detail">
+                                                    <div bank-details-id="{{ bank_detail.id }}" class="bank_detail">
                                                         <label>
                                                             <span>Расчётный счёт {{ forloop.counter }}:</span>
                                                             <input value="{{ bank_detail.account_requisites }}"
@@ -220,7 +220,7 @@
                                                         <label>
                                                             <span>БИК:</span>
                                                             <input value="{{ bank_detail.bic }}" class="bank_detail-bic" type="text" />
-                                                            <div class="error bank_detail-bic"></div>
+                                                            <div class="error bank_detail-bic_error"></div>
                                                         </label>
                                                         <button class="bank-detail-button">Изменить</button>
                                                     </div>

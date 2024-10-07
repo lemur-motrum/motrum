@@ -8,6 +8,7 @@ import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
 import "/static/core/js/scripts/manager-popup-logic.js";
 import "/static/core/js/scripts/get-client-id.js";
+import "/static/core/js/scripts/cookie_popup.js";
 import "/static/client/js/contacts.js";
 import "/static/client/js/details.js";
 import "/static/client/js/updateDetails.js";

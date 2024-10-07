@@ -61,7 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
           product_new: nameInput.value,
           product_new_price: +priceInput.value,
           cart: +cart_id,
-          quantity: +quantityInput.value
+          quantity: +quantityInput.value,
         };
 
         const data = JSON.stringify(dataObj);
@@ -77,9 +77,6 @@ window.addEventListener("DOMContentLoaded", () => {
             if (response.status == 200) {
               location.reload();
               return response.json();
-              
-              
-
             } else {
               throw new Error("Ошибка");
             }

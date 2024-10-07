@@ -1,4 +1,8 @@
-import { setCookie, getCookie, deleteCookie } from "/static/core/js/functions.js";
+import {
+  setCookie,
+  getCookie,
+  deleteCookie,
+} from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
 
@@ -7,12 +11,13 @@ window.addEventListener("DOMContentLoaded", () => {
   if (cartContainer) {
     const productContainer = cartContainer.querySelector(".products");
     if (productContainer) {
-      const personalDiscount = cartContainer.querySelector(".personal_discount");
+      const personalDiscount =
+        cartContainer.querySelector(".personal_discount");
 
-      let totalSumCart = 0
-      let totalSumSaleCart = 0
-      let totalSalePriceCart = 0
-      let itemNotPrice = 0
+      let totalSumCart = 0;
+      let totalSumSaleCart = 0;
+      let totalSalePriceCart = 0;
+      let itemNotPrice = 0;
 
       const productItems = productContainer.querySelectorAll(".product_item");
       productItems.forEach((productItem) => {
@@ -22,10 +27,14 @@ window.addEventListener("DOMContentLoaded", () => {
         const minusButton = productItem.querySelector(".minus-button");
         const deleteBtn = productItem.querySelector(".delete_cart_button");
         const priceOnce = productItem.querySelector(".cart_price");
-        let priceOnceNoSale = productItem.querySelector(".cart_price_one_no_sale");
+        let priceOnceNoSale = productItem.querySelector(
+          ".cart_price_one_no_sale"
+        );
         priceOnceNoSale = priceOnceNoSale.getAttribute("data-cart-one-no-sale");
         const priceAll = productItem.querySelector(".all_cart_price");
-        const priceAllNoSale = productItem.querySelector(".all_cart_no_sale_price");
+        const priceAllNoSale = productItem.querySelector(
+          ".all_cart_no_sale_price"
+        );
 
         function getAllProductSumm() {
           if (priceOnce) {
@@ -38,41 +47,33 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         }
         getAllProductSumm();
-       
+
         function getAllProductSummNoSale() {
-         
           if (priceOnce) {
             priceAllNoSale.textContent = (
               +priceOnceNoSale.replace(",", ".") * +inputCount.value
             ).toFixed(2);
-            
           } else {
             return;
           }
         }
-        
 
         if (personalDiscount.dataset.personalDiscount != "0") {
-          getAllProductSummNoSale()
+          getAllProductSummNoSale();
         }
 
         function getTotalSum() {
-          if (priceAll  ) {
-            
-            totalSumSaleCart += +priceAll.textContent
-            if (personalDiscount.dataset.personalDiscount != "0" ) {
-             
-              totalSumCart += Number.parseFloat(priceAllNoSale.textContent)
-              totalSalePriceCart = totalSumCart - totalSumSaleCart
+          if (priceAll) {
+            totalSumSaleCart += +priceAll.textContent;
+            if (personalDiscount.dataset.personalDiscount != "0") {
+              totalSumCart += Number.parseFloat(priceAllNoSale.textContent);
+              totalSalePriceCart = totalSumCart - totalSumSaleCart;
             }
+          } else {
+            itemNotPrice += 1;
           }
-          else {
-            itemNotPrice += 1
-          }
-
-
         }
-        getTotalSum()
+        getTotalSum();
 
         function updateProduct() {
           setTimeout(() => {
@@ -90,7 +91,6 @@ window.addEventListener("DOMContentLoaded", () => {
             })
               .then((response) => {
                 if (response.status == 200) {
-                  
                   console.log(
                     `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
                   );
@@ -100,10 +100,10 @@ window.addEventListener("DOMContentLoaded", () => {
           }, 1500);
         }
 
-        let countQuantity = inputCount.value;
+        let countQuantity = +inputCount.value;
 
         inputCount.onkeyup = () => {
-          countQuantity = inputCount.value;
+          countQuantity = +inputCount.value;
           if (countQuantity >= 999) {
             inputCount.value = 999;
             minusButton.disabled = false;
@@ -117,13 +117,13 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           getAllProductSumm();
           if (personalDiscount.dataset.personalDiscount != "0") {
-            getAllProductSummNoSale()
+            getAllProductSummNoSale();
           }
           updateProduct();
         };
         plusButton.onclick = () => {
           countQuantity++;
-          inputCount.value = countQuantity;
+          inputCount.value = +countQuantity;
           minusButton.disabled = false;
           if (countQuantity >= 999) {
             inputCount.value = 999;
@@ -135,15 +135,14 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           getAllProductSumm();
           if (personalDiscount.dataset.personalDiscount != "0") {
-            getAllProductSummNoSale()
+            getAllProductSummNoSale();
           }
 
-         
           updateProduct();
         };
         minusButton.onclick = () => {
           countQuantity--;
-          inputCount.value = countQuantity;
+          inputCount.value = +countQuantity;
           minusButton.disabled = false;
           if (countQuantity == 1) {
             inputCount.value = 1;
@@ -155,7 +154,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           getAllProductSumm();
           if (personalDiscount.dataset.personalDiscount != "0") {
-            getAllProductSummNoSale()
+            getAllProductSummNoSale();
           }
           updateProduct();
         };
@@ -177,55 +176,49 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       function addTotalSum() {
-        
-        let totalSalePriceCartItem = cartContainer.querySelector(".cart_total_price");
-        totalSalePriceCartItem.textContent = (
-          totalSumSaleCart
-        ).toFixed(2);
+        let totalSalePriceCartItem =
+          cartContainer.querySelector(".cart_total_price");
+        totalSalePriceCartItem.textContent = totalSumSaleCart.toFixed(2);
 
         if (itemNotPrice > 0) {
           let totalSumItem = cartContainer.querySelector(".total_sum_all");
-       
-          let div_message_price = document.createElement('div');
+
+          let div_message_price = document.createElement("div");
           div_message_price.className = "alert_total_sum_all";
           div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
-          // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`; 
+          // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
           totalSumItem.append(div_message_price);
         }
 
         if (personalDiscount.dataset.personalDiscount != "0") {
-          let totalSumCartItem = cartContainer.querySelector(".cart_total_price_all");
-          let totalSumSaleCartItem = cartContainer.querySelector(".cart_total_price_sale");
-          totalSumCartItem.textContent = (
-            totalSumCart
-          ).toFixed(2);
-          totalSumSaleCartItem.textContent = (
-            totalSalePriceCart
-          ).toFixed(2);
+          let totalSumCartItem = cartContainer.querySelector(
+            ".cart_total_price_all"
+          );
+          let totalSumSaleCartItem = cartContainer.querySelector(
+            ".cart_total_price_sale"
+          );
+          totalSumCartItem.textContent = totalSumCart.toFixed(2);
+          totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
         }
       }
-      addTotalSum()
-
+      addTotalSum();
     }
   }
 
   // сохранение корзины сайт
   const saveCartBtn = document.querySelector(".save_cart_button");
   if (saveCartBtn) {
-    const user = document.querySelector('#client_id').getAttribute("data-user-id")
+    const user = document
+      .querySelector("#client_id")
+      .getAttribute("data-user-id");
     saveCartBtn.onclick = () => {
-      if (user == "None"){
-        saveCartNoAuthentication()
+      if (user == "None") {
+        saveCartNoAuthentication();
+      } else {
+        saveCart();
       }
-      else{
-        saveCart()
-      }
-      
-      
-    }
+    };
   }
-
-
 });
 
 function saveCart() {
@@ -234,21 +227,21 @@ function saveCart() {
   const cart_id = getCookie("cart");
 
   if (validate == true) {
-    const select = document.querySelector('.select_account_requisites')
-    const selected = select.options[select.selectedIndex]
+    const select = document.querySelector(".select_account_requisites");
+    const selected = select.options[select.selectedIndex];
     const requisites = selected.getAttribute("data-requisites-id");
-    const account_requisites_name = selected.getAttribute("data-account-requisites-id");
-    
+    const account_requisites_name = selected.getAttribute(
+      "data-account-requisites-id"
+    );
 
-    const dataObj =
-    {
+    const dataObj = {
       cart: +cart_id,
       requisites: +requisites,
       account_requisites: account_requisites_name,
-    }
+    };
 
     const data = JSON.stringify(dataObj);
-    let endpoint = "/api/v1/order/add_order/"
+    let endpoint = "/api/v1/order/add_order/";
     fetch(endpoint, {
       method: "POST",
       body: data,
@@ -259,35 +252,29 @@ function saveCart() {
     })
       .then((response) => response.json())
       .then((response) => {
-
         deleteCookie("cart", "/", window.location.hostname);
 
         // window.location.href =
         //   "/lk/my_orders";
-
       })
       .catch((error) => console.error(error));
   }
 }
 
-function saveCartNoAuthentication (){
+function saveCartNoAuthentication() {
   let validate = true;
   const products = [];
   const cart_id = getCookie("cart");
 
   if (validate == true) {
-    const select = document.querySelector('.select_account_requisites')
-    
-    
+    const select = document.querySelector(".select_account_requisites");
 
-    const dataObj =
-    {
+    const dataObj = {
       cart: +cart_id,
-      
-    }
+    };
 
     const data = JSON.stringify(dataObj);
-    let endpoint = "/api/v1/order/add_order/"
+    let endpoint = "/api/v1/order/add_order/";
     fetch(endpoint, {
       method: "POST",
       body: data,
@@ -298,12 +285,10 @@ function saveCartNoAuthentication (){
     })
       .then((response) => response.json())
       .then((response) => {
-
         deleteCookie("cart", "/", window.location.hostname);
 
         // window.location.href =
         //   "/lk/my_orders";
-
       })
       .catch((error) => console.error(error));
   }

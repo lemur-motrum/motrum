@@ -9,24 +9,42 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0007_remove_text2_testtest_delete_historicaltext1_and_more'),
-        ('user', '0007_managerwebuser'),
+        ("client", "0007_remove_text2_testtest_delete_historicaltext1_and_more"),
+        ("user", "0007_managerwebuser"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Clients',
+            name="Clients",
             fields=[
-                ('customuser_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('phone', models.CharField(blank=True, max_length=40, null=True, verbose_name='Номер телефона')),
+                (
+                    "customuser_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True,
+                        max_length=40,
+                        null=True,
+                        verbose_name="Номер телефона",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Клиент',
-                'verbose_name_plural': 'Клиенты',
+                "verbose_name": "Клиент",
+                "verbose_name_plural": "Клиенты",
             },
-            bases=('user.customuser',),
+            bases=("user.customuser",),
             managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
+                ("objects", django.contrib.auth.models.UserManager()),
             ],
         ),
     ]

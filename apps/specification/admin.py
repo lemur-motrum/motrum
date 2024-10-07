@@ -307,20 +307,14 @@ class SpecificationAdmin(SimpleHistoryAdmin):
 
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
-        # print(self)
-        print(type(self))
         request.current_app = self.admin_site.name
-
         model = self.model
         opts = model._meta
         app_label = opts.app_label
         pk_name = opts.pk.attname
         history = getattr(model, model._meta.simple_history_manager_attribute)
-        print(object_id)
-        print()
         object_id = unquote(object_id)
-        print(type(object_id))
-
+      
         try:
             product_id_ex = ProductSpecification.objects.filter(
                 specification=object_id
@@ -433,8 +427,7 @@ class SpecificationAdmin(SimpleHistoryAdmin):
 
         context.update(extra_context or {})
         extra_kwargs = {}
-        print(request)
-        print( self.object_history_template)
+
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )

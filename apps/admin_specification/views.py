@@ -36,14 +36,10 @@ from .forms import SearchForm
 from django.db.models import Q, F, OrderBy
 
 
-
-
-
-
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
-  
+
     title = "Каталог"
     categories = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
@@ -151,7 +147,7 @@ def all_categories(request):
 # Рендер страницы групп товаров с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def group_product(request, cat):
-    
+
     categoryes = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
         .all()
@@ -279,7 +275,7 @@ def group_product(request, cat):
 # Рендер страницы подгрупп с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def specifications(request, cat, gr):
-    
+
     categoryes = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
         .all()
@@ -493,6 +489,7 @@ def create_specification(request):
 
         id_specification = request.COOKIES.get("specificationId")
         if id_specification:
+            # product_new = ProductCart.objects.filter(cart=cart,product=None,)
             product_new = ProductSpecification.objects.filter(
                 # id__in=product_cart_list,
                 specification=specification,
@@ -504,14 +501,17 @@ def create_specification(request):
                     "id",
                 ),
             )
+            product_new_value_id = product_new.values_list("id_product_cart")
+            product_new_more = ProductCart.objects.filter(cart=cart, product=None).exclude(id__in=product_new_value_id)
+            
            
             update_spesif = True
 
         else:
             product_new = ProductCart.objects.filter(cart=cart, product=None)
+            product_new_more = None
             update_spesif = False
 
-       
         if id_specification:
             title = f"Cпецификация № {id_specification}"
         else:
@@ -523,6 +523,7 @@ def create_specification(request):
         product_new = None
         cart = None
         update_spesif = False
+        product_new_more = None
 
     current_date = datetime.date.today().isoformat()
     context = {
@@ -533,6 +534,7 @@ def create_specification(request):
         "request": request,
         "current_date": current_date,
         "update_spesif": update_spesif,
+        "product_new_more":product_new_more,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -559,13 +561,9 @@ def save_specification_view_admin(request):
 def get_all_specifications(request):
 
     all_specifications = (
-        Specification.objects.select_related(
-            "admin_creator",
-            "cart"
-        )
-             .prefetch_related(
+        Specification.objects.select_related("admin_creator", "cart")
+        .prefetch_related(
             Prefetch("order"),
-            
         )
         .all()
         .order_by("tag_stop", "pk")
@@ -596,7 +594,11 @@ def get_all_specifications(request):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def instruments(request, cat):
 
-    category = CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set")).filter(pk=cat).order_by("article_name")
+    category = (
+        CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
+        .filter(pk=cat)
+        .order_by("article_name")
+    )
 
     vendor = Vendor.objects.filter()
     q_object = Q()
@@ -629,7 +631,8 @@ def instruments(request, cat):
             Prefetch("price__sale"),
         )
         .filter(
-            check_to_order=True, category=cat,
+            check_to_order=True,
+            category=cat,
         )
         # .filter(check_to_order=True)
         .order_by("pk")
@@ -757,12 +760,12 @@ def search_product(request):
     else:
         product_list = (
             Product.objects.select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
             )
             .filter(category=cat, group=gr)
             .filter(check_to_order=True)
@@ -811,11 +814,11 @@ def load_products(request):
                 "price",
                 "stock",
             )
-                    .prefetch_related(
-            Prefetch("stock__lot"),
-            Prefetch("productproperty_set"),
-            Prefetch("price__sale"),
-        )
+            .prefetch_related(
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+                Prefetch("price__sale"),
+            )
             .filter(check_to_order=True)
             .order_by("pk")
         )
@@ -831,11 +834,11 @@ def load_products(request):
                 "stock",
             )
             .prefetch_related(
-            Prefetch("stock__lot"),
-            Prefetch("productproperty_set"),
-            Prefetch("price__sale"),
-        )
-            .filter(check_to_order=True,category=cat)
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+                Prefetch("price__sale"),
+            )
+            .filter(check_to_order=True, category=cat)
             # .filter(check_to_order=True)
             .order_by("pk")
         )
@@ -843,19 +846,19 @@ def load_products(request):
     else:
         product_list = (
             Product.objects.select_related(
-            "supplier",
-            "vendor",
-            "category",
-            "group",
-            "price",
-            "stock",
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
             )
-                    .prefetch_related(
-            Prefetch("stock__lot"),
-            Prefetch("productproperty_set"),
-            Prefetch("price__sale"),
-        )
-            .filter(check_to_order=True,category=cat, group=gr)
+            .prefetch_related(
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+                Prefetch("price__sale"),
+            )
+            .filter(check_to_order=True, category=cat, group=gr)
             # .filter(check_to_order=True)
             .order_by("pk")
         )
@@ -1024,7 +1027,7 @@ def update_specification(request):
                 product_price_extra_old_before = product.price_one / (
                     1 - float(product_individual_sale) / 100
                 )
-                
+
             else:
                 product_price_extra_old_before = product.price_one
 
@@ -1284,9 +1287,10 @@ def update_specification(request):
 
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
-    from apps.specification.admin import  SpecificationAdmin
+    from apps.specification.admin import SpecificationAdmin
     from django.contrib.admin.utils import unquote
     from itertools import chain
+
     sp = Specification.objects.get(pk=pk)
     model = Specification
     opts = model._meta
@@ -1294,16 +1298,14 @@ def history_admin(request, pk):
     pk_name = opts.pk.attname
     history = getattr(model, model._meta.simple_history_manager_attribute)
     object_id = str(pk)
-    
+
     try:
-        product_id_ex = ProductSpecification.objects.filter(
-            specification=pk
-        ).last()
+        product_id_ex = ProductSpecification.objects.filter(specification=pk).last()
         product_id = ProductSpecification.objects.filter(specification=pk)
-    
+
     except ProductSpecification.DoesNotExist:
-        product_id = None    
-    
+        product_id = None
+
     historical_records_product = []
     if product_id != None:
         for item in product_id:
@@ -1340,34 +1342,35 @@ def history_admin(request, pk):
                     item_list,
                 )
             )
-    print(historical_records_product2)
-    print(pk)
+
     historical_records = SpecificationAdmin.get_history_queryset(
-            SpecificationAdmin,request, history, pk_name, object_id
-        )
+        SpecificationAdmin, request, history, pk_name, object_id
+    )
+    print(historical_records)
+    history_list_display = SpecificationAdmin.get_history_list_display(
+        SpecificationAdmin, request
+    )
 
-    history_list_display = SpecificationAdmin.get_history_list_display(SpecificationAdmin,request)
-    
-            # If no history was found, see whether this object even exists.
-    # try:
-    #     obj = SpecificationAdmin.get_queryset(request).get(**{pk_name: object_id})
-    # except model.DoesNotExist:
-    #     try:
-    #         obj = historical_records.latest("history_date").instance
-    #     except historical_records.model.DoesNotExist:
-    #         raise http.Http404
-
-    # if not SpecificationAdmin.has_view_history_or_change_history_permission(SpecificationAdmin,request, obj):
-    #     raise PermissionDenied
-
-    # Set attribute on each historical record from admin methods
     for history_list_entry in history_list_display:
         value_for_entry = getattr(SpecificationAdmin, history_list_entry, None)
         if value_for_entry and callable(value_for_entry):
             for record in historical_records:
                 setattr(record, history_list_entry, value_for_entry(record))
 
-    SpecificationAdmin.set_history_delta_changes(SpecificationAdmin,request, historical_records)
+    from simple_history.template_utils import HistoricalRecordContextHelper
+
+    previous = None
+    for current in historical_records:
+        if previous is None:
+            previous = current
+            continue
+
+        delta = previous.diff_against(current, foreign_keys_are_objs=True)
+
+        helper = HistoricalRecordContextHelper(Specification, previous)
+        previous.history_delta_changes = helper.context_for_delta_changes(delta)
+
+        previous = current
 
     result_list = list(
         chain(
@@ -1377,6 +1380,7 @@ def history_admin(request, pk):
         )
     )
     print(result_list)
+
     def get_date(element):
         return element.history_date
 
@@ -1408,23 +1412,18 @@ def history_admin(request, pk):
     # context.update(extra_context or {})
     extra_kwargs = {}
     print(request)
-    print( context)
+    print(context)
     return SpecificationAdmin.render_history_view(
-        SpecificationAdmin,request,  "admin_specification/history_admin.html", context, **extra_kwargs
+        SpecificationAdmin,
+        request,
+        "admin_specification/history_admin.html",
+        context,
+        **extra_kwargs,
     )
 
-
-
-    
-    
-    
-    
-    
     # context = {
     #         "title": "dsdfsd",
-            
-    #     }
 
-     
+    #     }
 
     # return render(request, "admin_specification/history_admin.html", context)

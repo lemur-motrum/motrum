@@ -1,6 +1,8 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
     <div class="logout_btn">
+        {% if request.user.is_superuser  == True %}        <a class="admin-link"
+        href="{% url 'admin:index' %}">Административная панель </a>{% endif %}
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
@@ -101,9 +103,11 @@
                         </div>
                     </div>
                 {% endfor %}
+                <!--товары без записи в бд при аплдете уже есть в спецификации-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                        <div class="item_container"
+          
+                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id_product_cart }}"
@@ -161,10 +165,7 @@
                                        placeholder="% скидки"
                                        maxlength="2"
                                        value="" />
-                                {% comment %}<label for="price-input-discount">
-                            {% if item.product_individual_sale %}{{ item.product_individual_sale }}{% endif %}
-                            %
-                                </label> {% endcomment %}
+                          
                             </div>
                             <div class="item_value">
                                 <label>
@@ -172,8 +173,9 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div>
-                    {% else %}
+                        </div> 
+                    
+                        {% else %}
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -245,6 +247,85 @@
                         </div>
                     {% endif %}
                 {% endfor %}
+
+
+                {% for item in product_new_more %}
+                    {% if update_spesif %}
+          
+                         <div class="item_container"
+                             data-product-pk=""
+                             data-product-name-new="{{ item.product_new }}"
+                             data-product-id-cart="{{ item.cart }}"
+                             data-id="{{ item.id}}"
+                             data-price="{{ item.product_new_price }}"
+                             data-price-exclusive="1"
+                             data-product-specification-id="">
+                            <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+                            <div class="item_value">{{ item.product_new }}</div>
+                            <div class="item_value">{{ item.article }}</div>
+                            <div class="item_value">{{ item.article_supplier }}</div>
+                            {% if item.price.rub_price_supplier == 0 %}
+                                <div class="item_value input_quantity quantity">
+                                    <div class="input-container">
+                                        <button class="minus-button">-</button>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <button class="plus-button">+</button>
+                                    </div>
+                                </div>
+                                <div class="item_value">
+                                    <input class="price-input"
+                                           name="price-input-extra"
+                                           type="text"
+                                           onkeypress='validate(event)'
+                                           placeholder="Введите цену по запросу"
+                                           maxlength="10" />
+                                    <label for="price-input-extra">
+                                        {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
+                                    </label>
+                                </div>
+                                <div class="item_value input_totla-cost total_cost price">0</div>
+                            {% else %}
+                                <div class="item_value quantity">
+                                    <div class="input-container">
+                                        <button class="minus-button">-</button>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <button class="plus-button">+</button>
+                                    </div>
+                                </div>
+                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
+                                <div class="item_value total_cost price"></div>
+                            {% endif %}
+                            <div class="item_value">
+                                {% if item.discount == "" or item.discount == None %}
+                                    Нет
+                                {% else %}
+                                    {{ item.discount }} %
+                                {% endif %}
+                            </div>
+                            <div class="item_value">
+                                <input class="discount-input"
+                                       type="hidden"
+                                       name="price-input-discount"
+                                       onkeypress='validate(event)'
+                                       placeholder="% скидки"
+                                       maxlength="2"
+                                       value="" />
+                          
+                            </div>
+                            <div class="item_value">
+                                <label>
+                                    <span>Срок поставки</span>
+                                    <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                </label>
+                            </div>
+                        </div> 
+                    
+                      
+                        
+                    {% endif %}
+                {% endfor %}
+
+
                 <div class="add_new_product">Добавить новый товар</div>
                 <div class="submit-container">
                     <div class="price_description">

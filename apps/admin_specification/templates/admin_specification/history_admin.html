@@ -39,8 +39,9 @@
         {% comment %} record.history_object.product {% endcomment %}
         {% comment %} or record.history_delta_change != "[]" {% endcomment %}
         {% if total >= 1 or record.history_object.product %}
-          <tr>
-            <td>{% get_verbose_field_name object "name" record.history_object %}</td>
+          <tr style="border-bottom:1px solid black" >
+            <td >{% get_verbose_field_name object "name" record.history_object %}
+              <p style="width:350px">{{ record.history_object.product }}</p></td>
             {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
             <td>{{ record.history_date }}</td>
             <td>{{ record.get_history_type_display }}</td>
@@ -60,7 +61,7 @@
             <td>
               {% block history_delta_changes %}
                 {% if record.history_delta_changes %}
-                  <p style="width:550px">{{ record.history_object.product }}</p>
+                  {% comment %} <p >22222{{ record.history_object.product }}</p> {% endcomment %}
                   <ul>
                     {% for change in record.history_delta_changes %}
                       <li>
@@ -69,24 +70,36 @@
                           {% get_verbose_field_name object "name" record.history_object %}
                           {{ record.history_object }}
                         {% endif %}
+                        {% if change.old == "None" %}
+                        нет
+                        {% else %}
+                       
                         {{ change.old }}
+                        {% endif %}
                         {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
-                        &nbsp;&rarr;&nbsp;&nbsp;{{ change.new }}
+                        &nbsp;&rarr;&nbsp;&nbsp;
+                        {% if change.new == "None" %}
+                        нет
+                        {% else %}
+                        {{ change.new }}
+                        {% endif %}
+                         
                       </li>
                     {% endfor %}
                   </ul>
                 {% else %}
+               
                   <ul>
                     <li>
                       {{ record.history_type }}
                       {% if record.history_type == "-" %}
                         <strong>Удалено:</strong>
-                        <p style="width:550px">{{ record.history_object.product }}</p>
+                        <p >{{ record.history_object.product }}</p>
                         {% get_verbose_field_name object "name" record.history_object %}
                       {% elif record.history_type == "~" %}
                         {% if record.history_object.product %}{% endif %}
                         <strong>Изменено:</strong>
-                        <p style="width:550px">{{ record.history_object.product }}</p>
+                        <p >{{ record.history_object.product }}</p>
                         {% get_verbose_field_name object "name" record.history_object %}
                       {% elif record.history_type == "+" %}
                         <strong>Добавленно:</strong>

@@ -3,6 +3,7 @@ from django import forms
 
 
 from apps.product.models import (
+    TYPE_DOCUMENT,
     CategoryProduct,
     GroupProduct,
     Price,
@@ -92,7 +93,15 @@ class ProductForm(forms.ModelForm):
             ),
         }
 
+class DocumentForm(forms.ModelForm):
+    # type_doc = forms.ChoiceField(choices = TYPE_DOCUMENT) 
+    # document =  forms.FileField()
+    class Meta:
+        model = ProductDocument
+        # fields = "__all__"
 
+        fields = ["document", "type_doc", "name",]
+   
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
     group = forms.ModelChoiceField(

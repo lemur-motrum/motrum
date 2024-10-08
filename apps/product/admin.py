@@ -1,6 +1,8 @@
+# from audioop import reverse
 import datetime
 from django.contrib import admin
-from django.forms import BaseInlineFormSet
+
+from django.shortcuts import redirect
 from django.utils.html import mark_safe
 from regex import D
 from apps.core.utils_web import promote_product_slider
@@ -555,7 +557,20 @@ class ProductPropertyInline(admin.TabularInline):
 
         return qs.filter(hide=False)
 
+@admin.action(description="Добавить документы для выбранных товаров")
+def add_documents(ProductAdmin, request, queryset):
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse 
+    selected = queryset.values("pk")
 
+    id_selected = [(object.id) for object in queryset]
+    id_selected = str(id_selected)
+    
+    url = reverse('product:add_document_admin') + f'?context={id_selected}'
+    return HttpResponseRedirect(url)
+
+
+    
 class ProductAdmin(SimpleHistoryAdmin):
     show_facets = admin.ShowFacets.ALWAYS
     # form = ProductChangeForm
@@ -568,7 +583,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         "name",
     ]
     search_help_text = "Поиск может осуществляться по: Артикулу Motrum, Артикулу поставщика,Дополнительному артикулу, Названию товара"
-    list_filter = ["supplier", "vendor", "category", "group"]
+    list_filter = ["supplier", "vendor", "category", "group","category_supplier","group_supplier","category_supplier_all"]
     list_display = [
         "article",
         "article_supplier",
@@ -605,7 +620,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             },
         ),
     ]
-
+    actions = [add_documents]
     # def get_actions(self, request):
     #     actions = super().get_actions(request)
     #     if request.user.username[0].upper() != "J":
@@ -1015,9 +1030,11 @@ class ProductAdmin(SimpleHistoryAdmin):
             return False
         else:
             return True
-        
-    def has_delete_permission(self, request,obj=None):
-        return False    
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 
 
 class LotAdmin(admin.ModelAdmin):
@@ -1025,7 +1042,8 @@ class LotAdmin(admin.ModelAdmin):
         "name",
         "name_shorts",
     )
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 
@@ -1059,9 +1077,10 @@ class CategoryProductAdmin(admin.ModelAdmin):
             item = f"{item}{item_one}"
 
         return mark_safe("<ul>{}</ul>".format(item))
-    
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
+
 
 # АДМИНКА ДЛЯ ВЕБСАЙТА
 
@@ -1097,7 +1116,8 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 

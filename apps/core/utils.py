@@ -107,13 +107,12 @@ def get_price_motrum(
             sale = discount_all
         # нет скидки
     if rub_price_supplier:
-        
+
         motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
         # обрезать цены
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    
 
     return motrum_price, sale[0]
 
@@ -383,19 +382,170 @@ def save_file_emas_product(link, image_path):
 
 # сохранение изображений и докуметов из админки и общее
 def get_file_path_add(instance, filename):
+    print(7777777777777)
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
+    from middlewares.middlewares import RequestMiddleware
+    from pytils import translit
+
+    # First we need create an instance of that and later get the current_request assigned
+    request = RequestMiddleware(get_response=None)
+    request = request.thread_local.current_request
+
+    if request.path_info == "/product/add_document_admin/":
+        base_dir = "products"
+        path_name = "document_group"
+        base_dir_supplier = instance.product.supplier.slug
+        if instance.product.vendor:
+            base_dir_vendor = instance.product.vendor.slug
+        else:
+            base_dir_vendor = "vendor-name"
+
+        if instance.product.category:
+            base_dir_vendor = instance.product.category.slug
+        else:
+            base_dir_vendor = "category-name"
+
+        type_doc = instance.type_doc
+
+        new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+            MEDIA_ROOT,
+            base_dir,
+            base_dir_supplier,
+            base_dir_vendor,
+            path_name,
+            type_doc,
+        )
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+
+        slug_text = str(filename)
+        regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+        slugish = re.sub(regex, "", slug_text)
+        slugish = translit.translify(slugish)
+
+        link_file = f"{new_dir}/{slugish}"
+
+        if os.path.isfile(link_file):
+            print("Файл существует")
+        else:
+            print("Файл нет-существует")
+            return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+                base_dir,
+                base_dir_supplier,
+                base_dir_vendor,
+                path_name,
+                type_doc,
+                f"{slugish}",
+            )
+
+        # doc_list_name = doc_link.split("/")
+        # doc_name = doc_list_name[-1]
+        # images_last_list = doc_link.split(".")
+        # type_file = "." + images_last_list[-1]
+        # link_file = f"{new_dir}/{doc_name}"
+
+    else:
+
+        s = str(instance.product.article_supplier)
+        item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
+
+        base_dir = "products"
+        base_dir_supplier = instance.product.supplier.slug
+
+        if instance.product.vendor:
+            base_dir_vendor = instance.product.vendor.slug
+        else:
+            base_dir_vendor = ""
+
+        images_last_list = filename.split(".")
+        type_file = "." + images_last_list[-1]
+
+        if isinstance(instance, ProductDocument):
+            print(9090909090909)
+            path_name = "document"
+            try:
+                images_last = ProductDocument.objects.filter(
+                    product=instance.product
+                ).latest("id")
+                item_count = ProductDocument.objects.filter(
+                    product=instance.product
+                ).count()
+            except ProductDocument.DoesNotExist:
+                item_count = 1
+
+            filenames = create_name_file_downloading(item_instanse_name, item_count)
+            filename = f"{filenames}_{instance.type_doc}{type_file}"
+
+        elif isinstance(instance, ProductImage):
+            path_name = "img"
+            try:
+                images_last = ProductImage.objects.filter(
+                    product=instance.product
+                ).latest("id")
+                item_count = ProductImage.objects.filter(
+                    product=instance.product
+                ).count()
+            except ProductImage.DoesNotExist:
+                item_count = 1
+
+            filenames = create_name_file_downloading(item_instanse_name, item_count)
+
+            filename = filenames + type_file
+
+        check_media_directory_exist(
+            base_dir,
+            base_dir_supplier,
+            base_dir_vendor,
+            item_instanse_name,
+            path_name,
+        )
+        return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+            base_dir,
+            base_dir_supplier,
+            base_dir_vendor,
+            item_instanse_name,
+            path_name,
+            filename,
+        )
+
+
+# сохранение изображений и докуметов из админки и общее
+def doc_file_mass_upload(instance, filename):
+    from apps.product.models import ProductDocument
+
+    base_dir = "products"
+    path_name = "document_group"
+    base_dir_supplier = instance.product.supplier.slug
+    base_dir_vendor = instance.product.vendor.slug
+    group_name = instance.product.category_supplier.slug
 
     s = str(instance.product.article_supplier)
     item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
+    new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        MEDIA_ROOT,
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        path_name,
+        group_name,
+    )
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+    dir_no_path = "{0}/{1}/{2}/{3}/{4}".format(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        path_name,
+        group_name,
+    )
+    # base_dir = "products"
+    # base_dir_supplier = instance.product.supplier.slug
 
-    base_dir = "products"
-    base_dir_supplier = instance.product.supplier.slug
-
-    if instance.product.vendor:
-        base_dir_vendor = instance.product.vendor.slug
-    else:
-        base_dir_vendor = ""
+    # if instance.product.vendor:
+    #     base_dir_vendor = instance.product.vendor.slug
+    # else:
+    #     base_dir_vendor = ""
 
     images_last_list = filename.split(".")
     type_file = "." + images_last_list[-1]
@@ -415,27 +565,13 @@ def get_file_path_add(instance, filename):
         filenames = create_name_file_downloading(item_instanse_name, item_count)
         filename = f"{filenames}_{instance.type_doc}{type_file}"
 
-    elif isinstance(instance, ProductImage):
-        path_name = "img"
-        try:
-            images_last = ProductImage.objects.filter(product=instance.product).latest(
-                "id"
-            )
-            item_count = ProductImage.objects.filter(product=instance.product).count()
-        except ProductImage.DoesNotExist:
-            item_count = 1
-
-        filenames = create_name_file_downloading(item_instanse_name, item_count)
-
-        filename = filenames + type_file
-
-    check_media_directory_exist(
-        base_dir,
-        base_dir_supplier,
-        base_dir_vendor,
-        item_instanse_name,
-        path_name,
-    )
+    # check_media_directory_exist(
+    #     base_dir,
+    #     base_dir_supplier,
+    #     base_dir_vendor,
+    #     item_instanse_name,
+    #     path_name,
+    # )
     return "{0}/{1}/{2}/{3}/{4}/{5}".format(
         base_dir,
         base_dir_supplier,
@@ -487,7 +623,7 @@ def create_time_stop_specification():
     while day_need <= 3:
         i += 1
         date = now + datetime.timedelta(days=i)
-   
+
         if date.year > year_date:
             data_bd = CalendarHoliday.objects.get(year=date.year)
             data_bd_holidays = data_bd.json_date
@@ -508,7 +644,6 @@ def create_time_stop_specification():
                 holidays_day_need += holidays_day_need_nowork
 
         if holidays_day_need == 0:
-            
 
             day_need += 1
 
@@ -811,7 +946,6 @@ def save_specification(received_data, request):
             else:
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
-              
 
             # если есть доп скидка отнять от цены поставщика
 
@@ -954,7 +1088,7 @@ def get_presale_discount(product):
 
 
 def transform_date(date):
-   
+
     months = [
         "января",
         "февраля",
@@ -998,16 +1132,15 @@ def pens_words(n):
 
     if n[-2:] in ("11", "12", "13", "14"):
         return f"копеек"
-       
+
     elif n[-1] == "1":
         return f"копейка"
-       
+
     elif n[-1] in ("2", "3", "4"):
         return f"копейки"
-        
+
     else:
         return f"копеек"
-      
 
 
 # общая функция кешировани
@@ -1017,6 +1150,7 @@ def loc_mem_cache(key, function, timeout=300):
         cache_data = function()
         cache.set(key, cache_data, timeout)
     return cache_data
+
 
 #  def orders_cache():
 #             def cache_function():
@@ -1057,7 +1191,7 @@ def loc_mem_cache(key, function, timeout=300):
 #                             ),
 #                         )
 #                     )
-                    
+
 #                 )
 #                 return orders
 

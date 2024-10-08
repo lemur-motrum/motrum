@@ -1,7 +1,7 @@
 from locale import currency
 from django.contrib import admin
 
-from apps.core.models import Currency, CurrencyPercent, SliderMain, Vat
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites, Currency, CurrencyPercent, SliderMain, Vat
 from apps.product.admin import LotAdmin
 from apps.product.models import Lot
 from project.admin import website_admin
@@ -29,6 +29,22 @@ class VatAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request,obj=None):
         return False            
+
+
+class BaseInfoAccountRequisitesInline(admin.TabularInline):
+    model = BaseInfoAccountRequisites
+    
+class BaseInfoAdmin(admin.ModelAdmin):
+    inlines = [
+        BaseInfoAccountRequisitesInline,
+    ]
+    def has_delete_permission(self, request,obj=None):
+        return False            
+
+
+
+
+
 # АДМИНКА ДЛЯ ВЕБСАЙТА            
 class SliderMainAdminWeb(admin.ModelAdmin):
     list_display = [
@@ -49,7 +65,7 @@ class SliderMainAdminWeb(admin.ModelAdmin):
         return False
 # Register your models here.
 
-
+admin.site.register(BaseInfo, BaseInfoAdmin)
 admin.site.register(Currency,CurrencyAdmin)
 admin.site.register(CurrencyPercent,CurrencyPercentAdmin)
 admin.site.register(Vat,VatAdmin)

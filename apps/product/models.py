@@ -696,12 +696,20 @@ class ProductDocument(models.Model):
 
     def __str__(self):
         return f"{self.document}"
+    
+    # def pre_save(self, model_instance, add):
+    #     file = super().pre_save(model_instance, add)
+    #     if file and not file._committed:
+    #         print(7676767666666666666)
+    #         # Commit the file to storage prior to saving the model
+    #         file.save(file.name, file.file, save=False)
+    #     return file
 
     # def save(self, *args, **kwargs):
-
+    #     # self.document
     #     super().save(*args, **kwargs)
-    #     product = self.product
-    #     product.save
+        
+
 
 
 class ProductProperty(models.Model):

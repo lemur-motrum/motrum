@@ -2,11 +2,9 @@ import threading
 from django.db import models
 
 
-from apps.core.utils_web import  get_file_path_slider_web
+from apps.core.utils_web import get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
-
-
 
 
 # Create your models here.
@@ -14,7 +12,6 @@ class Currency(models.Model):
     name = models.CharField("Название валюты", max_length=30)
     words_code = models.CharField("Букв. код", max_length=30)
     code = models.SmallIntegerField("Цифр. код")
-    
 
     class Meta:
         verbose_name = "Валюта"
@@ -33,20 +30,19 @@ class CurrencyPercent(models.Model):
 
     def __str__(self):
         return f"Процент умножения валютных цен: {self.percent}%"
-    
+
     def save(self, *args, **kwargs):
         from apps.product.models import Price
 
         super().save(*args, **kwargs)
-        price = Price.objects.exclude(
-                currency__words_code="RUB"
-            )
+        price = Price.objects.exclude(currency__words_code="RUB")
+
         def background_task():
-                # Долгосрочная фоновая задача
-                for price_one in price:
-               
-                    price_one._change_reason = "Автоматическое"
-                    price_one.save()
+            # Долгосрочная фоновая задача
+            for price_one in price:
+
+                price_one._change_reason = "Автоматическое"
+                price_one.save()
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -55,7 +51,6 @@ class CurrencyPercent(models.Model):
 
 class Vat(models.Model):
     name = models.SmallIntegerField("Процент ндс")
-
 
     class Meta:
         verbose_name = "НДС"
@@ -136,3 +131,85 @@ class SliderMain(models.Model):
                 Product.objects.filter(id=self.product_promote.id).update(promote=False)
 
         super().save(*args, **kwargs)
+
+
+class BaseInfo(models.Model):
+    full_name_legal_entity = models.CharField(
+        "Название компании полностью",
+        max_length=300,
+    )
+    short_name_legal_entity = models.CharField(
+        "Название компании кратко",
+        max_length=300,
+    )
+    inn = models.CharField(
+        "ИНН",
+        max_length=12,
+    )
+    kpp = models.CharField(
+        "КПП",
+        max_length=10,
+    )
+    ogrn = models.CharField(
+        "ОГРН",
+        max_length=15, blank=True, null=True
+    )
+    legal_post_code = models.PositiveIntegerField(
+        "Юридический адрес :индекс",
+    )
+    legal_city = models.CharField(
+        "Юридический адрес : город",
+        max_length=50,
+    )
+    legal_address = models.CharField(
+        "Юридический адрес : адрес",
+        max_length=200,
+    )
+    postal_post_code = models.CharField(
+        "Почтовый адрес :индекс",
+        max_length=10,
+    )
+    postal_city = models.CharField(
+        "Почтовый адрес : город",
+        max_length=50,
+    )
+    postal_address = models.CharField(
+        "Почтовый адрес : адрес",
+        max_length=200,
+    )
+    tel = models.CharField(
+        "Телефон",
+        max_length=200,
+    )
+    
+    class Meta:
+        verbose_name = "Юридическое лицо"
+        verbose_name_plural = "Юридические лица"
+        
+    def __str__(self):
+            return self.short_name_legal_entity
+
+class BaseInfoAccountRequisites(models.Model):
+    is_active = models.BooleanField("Активно", default=True)
+    requisites = models.ForeignKey(
+        BaseInfo, verbose_name="Реквизиты", on_delete=models.CASCADE
+    )
+    account_requisites = models.CharField(
+        "Расчётный счёт",
+        max_length=30,
+    )
+    bank = models.CharField(
+        "Банк",
+        max_length=200,
+    )
+    kpp = models.CharField(
+        "Корреспондентский счет (к/с)",
+        max_length=20,
+    )
+    bic = models.CharField(
+        "БИК",
+        max_length=10,
+    )
+    class Meta:
+        verbose_name = "Расчётный счёт"
+        verbose_name_plural = "Расчётные счёта"

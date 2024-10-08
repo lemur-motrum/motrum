@@ -1,4 +1,6 @@
-from django.shortcuts import render
+import os
+import re
+from django.shortcuts import redirect, render
 from dal import autocomplete
 from django.db.models import Q
 from dal_select2.views import Select2ViewMixin
@@ -7,10 +9,13 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
+from apps.product.forms import DocumentForm
 from apps.product.models import (
+    TYPE_DOCUMENT,
     CategoryProduct,
     GroupProduct,
     Product,
+    ProductDocument,
     ProductProperty,
     Stock,
 )
@@ -20,6 +25,8 @@ from apps.supplier.models import (
     SupplierGroupProduct,
     Vendor,
 )
+from apps.user import forms
+from project.settings import MEDIA_ROOT
 
 
 # все категории
@@ -233,7 +240,49 @@ def product_one_without_group(request, category, article):
     }
     return render(request, "product/product_one.html", context)
 
-
+def add_document_admin(request):
+    from pytils import translit
+    
+    id_selected = request.GET.get('context')
+    id_selected = list(map(int,id_selected[1:-1].split(', '))) # No need for list call in Py2
+    form = DocumentForm()
+        
+    if request.method == "POST":
+        file_path = None
+        for id_select in id_selected:
+            form = DocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                product = Product.objects.get(id=id_select)
+                profile = form.save(commit=False)
+            
+                if file_path:
+                    document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
+                else:
+                    profile.product = product
+                    profile.save()
+                    file_path = profile.document
+                
+            
+                    
+            else:
+                print(form.errors) 
+            context = {
+            "type_document":TYPE_DOCUMENT,
+            "form": form,
+            "create": "ok"
+        }        
+        return render(request, "admin/add_doc.html",context)
+    else:
+        form = DocumentForm()
+        context = {
+            "type_document":TYPE_DOCUMENT,
+            "form": form,
+            "create": None
+        }
+        return render(request, "admin/add_doc.html", context)
+    
+    
+    
 # # юрина вьюха каталога
 # def catalog(request):
 

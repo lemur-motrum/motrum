@@ -436,24 +436,26 @@ class Price(models.Model):
 
     def price_sale_personal(self):
         from apps.client.models import Client
-
+        print(123123)
         request = RequestMiddleware(get_response=None)
         request = request.thread_local.current_request
-     
+        print(request.user)
         
-        if request.user:
+        if request.user.is_authenticated :
+            print(33333)
             if request.user.is_staff == False:
                 client = Client.objects.get(id=request.user.id)
                 discount = client.percent
-                print(discount)
+                
                 price = self.rub_price_supplier
-                print(price)
+                
                 price_discount = price - (price / 100 * float(discount))
-                print(price_discount)
+                
                 return round(price_discount, 2)
             else:
                 return self.rub_price_supplier
         else:
+            print(22222)
             return self.rub_price_supplier
    
     def get_sale_price_motrum(

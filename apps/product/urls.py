@@ -40,11 +40,7 @@ urlpatterns = [
         views.product_one,
         name="product_one",
     ),
-    # path(
-    #     "<slug:category>/<slug:group>/<slug:article>",
-    #     views.product_one,
-    #     name="product_one",
-    # ),
+
     
     # url("product_ajax", views.catalog, name="catalog_ajax"),
     

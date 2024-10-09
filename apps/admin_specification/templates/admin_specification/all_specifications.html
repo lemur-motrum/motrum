@@ -34,12 +34,27 @@
                                     <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
                                     <br>
                                     <span class="table_item_value_span">
+                                        <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию </a>
+                                        
+                                        </span>  <br>
+                                    <span class="table_item_value_span">
                                         <a href="{% url "admin_specification:history_admin" specification.pk %}">История </a>
                                         
                                         </span>
+  
                                 {% endif %}
                             </div>
-                            <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
+                            <div class="table_item_value">{{ specification.date|date:"d.m.Y" }} 
+                                <br> 
+                                {% if specification.date < specification.date_update %}
+                                <span style="
+                                font-size: 0.8vw;
+                                color: gray;
+                            " >Обновленна {{ specification.date_update|date:"d.m.Y" }}</span>
+                                {% else %}
+                                {% endif %}
+                            </div>
+                            
                             <div class="table_item_value ">
                                 <span class="price">{{ specification.total_amount }}</span> ₽
                             </div>

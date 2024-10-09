@@ -223,14 +223,14 @@ class Order(models.Model):
     specification = models.OneToOneField(
         Specification,
         verbose_name="Спецификация",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
     cart = models.OneToOneField(
         "product.Cart",
         verbose_name="Корзина",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
     )

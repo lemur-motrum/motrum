@@ -4,6 +4,7 @@ from enum import auto
 import itertools
 import os
 from re import T
+from apps.core.models import BaseInfo
 from apps.core.utils import check_spesc_directory_exist, transform_date
 from PIL import Image
 import io
@@ -21,7 +22,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from django.conf import settings
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
-
+from django.db.models import Prefetch, OuterRef
 
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL
 
@@ -69,11 +70,14 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     directory = check_spesc_directory_exist(
         "specification",
     )
-
     specifications = Specification.objects.get(id=specification)
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
+    motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
+    
+    motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
+    
 
     name_specification = f"specification_{specification}.pdf"
     fileName = os.path.join(directory, name_specification)
@@ -140,7 +144,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     )
     story.append(Paragraph(f"К договору № {to_contract}", normal_style))
     story.append(Paragraph(f"На поставку продукции в адрес {to_address}", normal_style))
-    story.append(Paragraph(f'от ООО "Мотрум" <br></br><br></br>', normal_style))
+    story.append(Paragraph(f'от {motrum_info.short_name_legal_entity} <br></br><br></br>', normal_style))
 
     data = [
         (
@@ -192,9 +196,11 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         product_price = product.price_one
         product_price = "{0:,.2f}".format(product_price).replace(",", " ")
         product_price_all = product.price_all
- 
-        product_price_all = "{0:,.2f}".format(product_price_all,'.2f').replace(",", " ")
-   
+
+        product_price_all = "{0:,.2f}".format(product_price_all, ".2f").replace(
+            ",", " "
+        )
+
         product_quantity = product.quantity
         data.append(
             (
@@ -286,9 +292,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             Paragraph("Покупатель:", bold_style),
         )
     ]
-    text_motrum_ur = 'ООО "МОТРУМ"<br />Юридический адрес: 443011, г. Самара, ул.22 Партсъезда, д.207, оф.2<br></br><br></br>'
-    text_motrum_post = "Почтовый адрес: 443011, г. Самара, ул.22 Партсъезда, д.207, оф.2<br></br><br></br>"
-    text_motrum_inn = 'ИНН 6312174204 КПП 631901001<br />Р/с 40702810029390001332<br />ФИЛИАЛ "НИЖЕГОРОДСКИЙ" АО "АЛЬФА-БАНК"<br />БИК 042202824<br />К/с 30101810200000000824<br></br><br></br>'
+    text_motrum_ur = f'{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>'
+    text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
+    text_motrum_inn = f'ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>'
     if requisites:
         text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {requisites.legal_post_code}, г. {requisites.legal_city}, {requisites.legal_address}<br></br><br></br>"
         text_buyer_post = f"Почтовый адрес: {requisites.postal_post_code}, г. {requisites.postal_city}, {requisites.postal_address}<br></br><br></br>"

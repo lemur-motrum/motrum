@@ -8,7 +8,7 @@ from django.db.models import Prefetch, OuterRef
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
-from apps.client.models import Client
+from apps.client.models import Client, Order
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
@@ -566,7 +566,7 @@ def get_all_specifications(request):
             Prefetch("order"),
         )
         .all()
-        .order_by("tag_stop", "pk")
+        .order_by("tag_stop", "date_update","id")
         .reverse()
     )
 
@@ -589,6 +589,24 @@ def get_all_specifications(request):
 
     return render(request, "admin_specification/all_specifications.html", context)
 
+@permission_required(
+    "specification.add_specification",
+    login_url="/user/login_admin/",
+)
+def one_specifications(request, pk):
+    specification = Specification.objects.get(pk=pk)
+    product_specification = ProductSpecification.objects.filter(specification=specification)
+    order =  Order.objects.get(specification =specification )
+
+    title = "Просмотр спецификации"
+    context = {
+        "title": title,
+        "specification": specification,
+        "product_specification":product_specification,
+        "order": order,
+    }
+
+    return render(request, "admin_specification/one_specifications.html", context)
 
 # рендер страницы товаров у которых есть категория, но нет групп
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -1285,6 +1303,8 @@ def update_specification(request):
 #     return JsonResponse(out)
 
 
+
+# исторические записи для страниц история 
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
     from apps.specification.admin import SpecificationAdmin

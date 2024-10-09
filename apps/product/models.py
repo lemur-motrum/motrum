@@ -790,7 +790,7 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
-
+    
     class Meta:
         verbose_name = "Корзина продукт"
         verbose_name_plural = "Корзина Продукты"

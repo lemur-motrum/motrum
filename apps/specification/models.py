@@ -67,7 +67,7 @@ class Specification(models.Model):
         try:
 
             order = Order.objects.get(specification=self)
-          
+
             return order.bill_file
         except Order.DoesNotExist:
             return None
@@ -76,7 +76,7 @@ class Specification(models.Model):
 class ProductSpecification(models.Model):
     specification = models.ForeignKey(
         Specification,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Товар",
         blank=True,
         null=True,
@@ -88,6 +88,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+
     product_new = models.CharField(
         "Название товара нового без добавления в бд",
         default=None,
@@ -95,6 +96,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+
     product_currency = models.ForeignKey(
         Currency,
         verbose_name="Валюта",
@@ -102,11 +104,13 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+
     quantity = models.IntegerField(
         "количество товара",
         blank=True,
         null=True,
     )
+
     price_one = models.FloatField("Цена одного на момент формирования")
     price_all = models.FloatField(
         "Цена всего товара на момент формирования",

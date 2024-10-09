@@ -1,6 +1,6 @@
 {% if request.user.username and request.user.is_staff == False %}
     <a href={% url 'client:my_orders' %} class="cart-elem">
-        Заказы <span class="">
+        Заказы <span>
         {% if notifications_order %}{{ notifications_order }}{% endif %}
     </span>
 </a>
@@ -10,7 +10,7 @@
 </span>
 </a>
 <a href={% url 'client:my_orders' %} class="cart-elem">
-    Л.К <span class="">
+    Л.К <span>
     {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
 </span>
 </a>

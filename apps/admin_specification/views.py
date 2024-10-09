@@ -123,6 +123,8 @@ def all_categories(request):
             product_list = product_list.order_by(
                 F("price__rub_price_supplier").desc(nulls_last=True)
             )
+    else:
+        price_url = False
 
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
@@ -137,6 +139,7 @@ def all_categories(request):
         "form": form,
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
+        "price_url": price_url,
     }
 
     renders = "admin_specification/categories.html"
@@ -237,6 +240,8 @@ def group_product(request, cat):
             product_list = product_list.order_by(
                 F("price__rub_price_supplier").desc(nulls_last=True)
             )
+    else:
+        price_url = False
 
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
@@ -267,6 +272,7 @@ def group_product(request, cat):
         "category": get_category(),
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
+        "price_url": price_url,
     }
 
     return render(request, "admin_specification/group.html", context)
@@ -351,6 +357,8 @@ def specifications(request, cat, gr):
             product_list = product_list.order_by(
                 F("price__rub_price_supplier").desc(nulls_last=True)
             )
+    else:
+        price_url = False
 
     groups = (
         GroupProduct.objects.select_related("category").all().order_by("article_name")
@@ -417,6 +425,7 @@ def specifications(request, cat, gr):
         "supplers": get_unique_supplers(),
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
+        "price_url": price_url,
     }
     return render(request, "admin_specification/specification_page.html", context)
 
@@ -502,9 +511,10 @@ def create_specification(request):
                 ),
             )
             product_new_value_id = product_new.values_list("id_product_cart")
-            product_new_more = ProductCart.objects.filter(cart=cart, product=None).exclude(id__in=product_new_value_id)
-            
-           
+            product_new_more = ProductCart.objects.filter(
+                cart=cart, product=None
+            ).exclude(id__in=product_new_value_id)
+
             update_spesif = True
 
         else:
@@ -534,7 +544,7 @@ def create_specification(request):
         "request": request,
         "current_date": current_date,
         "update_spesif": update_spesif,
-        "product_new_more":product_new_more,
+        "product_new_more": product_new_more,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -1415,7 +1425,7 @@ def history_admin(request, pk):
     # )
     print(object_id)
     context = {
-        "specification":specification,
+        "specification": specification,
         # "title": SpecificationAdmin.history_view_title(request, obj),
         # "object_history_list_template": self.object_history_list_template,
         "historical_records": result_list,

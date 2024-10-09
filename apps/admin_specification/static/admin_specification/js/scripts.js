@@ -1,41 +1,12 @@
 import "/static/core/js/slider.js";
 import {
+  NumberParser,
   getCookie,
   setCookie,
   deleteCookie,
   getClosestInteger,
+  getDigitsNumber,
 } from "/static/core/js/functions.js";
-
-//Класс для разделения чила на разряды
-class NumberParser {
-  constructor(locale) {
-    const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
-    const numerals = [
-      ...new Intl.NumberFormat(locale, { useGrouping: false }).format(
-        9876543210
-      ),
-    ].reverse();
-    const index = new Map(numerals.map((d, i) => [d, i]));
-    this._group = new RegExp(
-      `[${parts.find((d) => d.type === "group").value}]`,
-      "g"
-    );
-    this._decimal = new RegExp(
-      `[${parts.find((d) => d.type === "decimal").value}]`
-    );
-    this._numeral = new RegExp(`[${numerals.join("")}]`, "g");
-    this._index = (d) => index.get(d);
-  }
-  parse(string) {
-    return (string = string
-      .trim()
-      .replace(this._group, "")
-      .replace(this._decimal, ".")
-      .replace(this._numeral, this._index))
-      ? +string
-      : NaN;
-  }
-}
 
 // const setURLParams = (url, updates, defaults) => {
 //   let searchParams = new URL(url).searchParams;
@@ -61,13 +32,6 @@ function getCurrentPrice(p) {
   const price = p.replace(",", ".");
   return price;
 }
-
-// функция сохранения продукта в localstorage
-
-// форматирования числового значения с разрядом, для отображения
-const getDigitsNumber = (container, value) => {
-  container.textContent = new Intl.NumberFormat("ru").format(+value);
-};
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -638,11 +602,10 @@ window.addEventListener("DOMContentLoaded", () => {
         const productID = item.getAttribute("data-id");
         const productCartID = item.getAttribute("data-product-id-cart");
         if (itemPriceOnce) {
-          console.log(+getCurrentPrice(itemPriceOnce.textContent));
-        }
-        if (itemPriceOnce) {
-          const currentPrice =
-            +getCurrentPrice(itemPriceOnce.textContent) * +quantity.value;
+          const currnetPriceOne = +itemPriceOnce.textContent.replace(",", ".");
+          getDigitsNumber(itemPriceOnce, currnetPriceOne);
+          const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
+          console.log("dasdsa", currentPrice);
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
         }
@@ -841,7 +804,7 @@ window.addEventListener("DOMContentLoaded", () => {
               100;
             inputPrice.value = curentPrice.toFixed(2);
             const allPrice = curentPrice * countQuantity;
-            getDigitsNumber(productTotalPrice, allPrice);
+            getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
             getResult();
           };
           saveButton.onclick = () => saveSpecification();

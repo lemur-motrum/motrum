@@ -68,8 +68,8 @@ window.addEventListener("DOMContentLoaded", () => {
     if (productCatalogArticles) {
       const arrowPrice = productCatalogArticles.querySelector(".price_arrow");
       const arrowPriceParam = arrowPrice.getAttribute("param");
-      const urlParams = new URL(document.location).searchParams;
       let urlsParam;
+      const urlParams = new URL(document.location).searchParams;
       if (urlParams.get("price")) {
         urlsParam = urlParams.get("price");
       }
@@ -81,6 +81,9 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
           urlsParam = "down";
         }
+        if (window.location.href.includes("price")) {
+          currentUrl.searchParams.set("price", urlsParam);
+        }
         currentUrl.searchParams.set("price", urlsParam);
         history.pushState({}, "", currentUrl);
         window.location.reload();
@@ -91,30 +94,5 @@ window.addEventListener("DOMContentLoaded", () => {
         arrowPrice.classList.add("up");
       }
     }
-
-    // const checkboxes = priceFilters.querySelectorAll(".checked");
-    // filterValues.forEach((filterValue) => {
-    //   const checkbox = filterValue.querySelector(".checked");
-    //   const priceParam = filterValue.getAttribute("param");
-    //   if (urlsParam) {
-    //     if (priceParam == urlsParam) {
-    //       checkbox.classList.add("show");
-    //     }
-    //   }
-
-    //   filterValue.onclick = () => {
-    //     if (checkbox.classList.contains("show")) {
-    //       currentUrl.searchParams.delete("price", priceParam);
-    //       checkbox.classList.remove("show");
-    //     } else {
-    //       checkboxes.forEach((el) => el.classList.remove("show"));
-    //       currentUrl.searchParams.set("price", priceParam);
-    //       checkbox.classList.add("show");
-    //     }
-
-    //     history.pushState({}, "", currentUrl);
-    //     window.location.reload();
-    //   };
-    // });
   }
 });

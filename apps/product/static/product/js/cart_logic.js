@@ -2,6 +2,9 @@ import {
   setCookie,
   getCookie,
   getClosestInteger,
+  NumberParser,
+  getDigitsNumber,
+  getCurrentPrice,
 } from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
@@ -15,6 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const productContainer = filtersAndProductContainer.querySelector(
       ".site_catalog_container"
     );
+
     setInterval(() => {
       if (productContainer) {
         const products = document.querySelectorAll(".product_item");
@@ -209,6 +213,8 @@ window.addEventListener("DOMContentLoaded", () => {
         ".add-specification-button"
       );
       let countQuantity = +countInput.value;
+      const price = productOneContainer.querySelector(".price");
+      getDigitsNumber(price, getCurrentPrice(price.textContent));
 
       countInput.addEventListener("keyup", function () {
         if (productMultiplicity) {
@@ -360,5 +366,163 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       };
     }
+  }
+
+  const cartContainer = document.querySelector(".cart_container");
+  if (cartContainer) {
+    const allPriceContainer = cartContainer.querySelector(".cart_total_price");
+    const cartTotalPriceAll = cartContainer.querySelector(
+      ".cart_total_price_all"
+    );
+    const cartTotalPriceSale = cartContainer.querySelector(
+      ".cart_total_price_sale"
+    );
+    const products = cartContainer.querySelectorAll(".product_item");
+    let allPriceWithoutDiscount = 0;
+    let allPrice = 0;
+    const personalDiscountInput =
+      cartContainer.querySelector(".personal_discount");
+    const personalDiscount = +getCurrentPrice(
+      personalDiscountInput.getAttribute("data-personal-discount")
+    );
+    products.forEach((product) => {
+      const priceOne = product.querySelector(".cart_price");
+      const productMultiplicity = +product.getAttribute("order-multiplicity");
+      const cartMinusButton = product.querySelector(".minus-button");
+      const cartPlusButton = product.querySelector(".plus-button");
+      const cartCountInput = product.querySelector(".quantity");
+      let cartCountQuantity = +cartCountInput.value;
+      const priceQuantity = product.querySelector(".all_cart_price");
+      const priceWithoutDiscontContainer = product.querySelector(
+        ".all_cart_no_sale_price"
+      );
+
+      getDigitsNumber(priceOne, getCurrentPrice(priceOne.textContent));
+
+      setInterval(() => {
+        if (!+new NumberParser("ru").parse(priceQuantity.textContent)) {
+          allPriceWithoutDiscount = 0;
+          allPrice = 0;
+          getDigitsNumber(
+            priceQuantity,
+            new NumberParser("ru").parse(priceOne.textContent) *
+              +cartCountInput.value
+          );
+          getDigitsNumber(
+            priceWithoutDiscontContainer,
+            ((new NumberParser("ru").parse(priceOne.textContent) *
+              (100 + personalDiscount)) /
+              100) *
+              +cartCountInput.value
+          );
+          for (
+            let i = 0;
+            i < cartContainer.querySelectorAll(".all_cart_price").length;
+            i++
+          ) {
+            allPrice += new NumberParser("ru").parse(
+              cartContainer.querySelectorAll(".all_cart_price")[i].textContent
+            );
+          }
+          getDigitsNumber(allPriceContainer, allPrice);
+
+          for (
+            let i = 0;
+            i <
+            cartContainer.querySelectorAll(".all_cart_no_sale_price").length;
+            i++
+          ) {
+            allPriceWithoutDiscount += new NumberParser("ru").parse(
+              cartContainer.querySelectorAll(".all_cart_no_sale_price")[i]
+                .textContent
+            );
+          }
+          getDigitsNumber(cartTotalPriceAll, allPriceWithoutDiscount);
+
+          getDigitsNumber(
+            cartTotalPriceSale,
+            new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
+              new NumberParser("ru").parse(allPriceContainer.textContent)
+          );
+        } else {
+          clearInterval();
+        }
+      });
+
+      cartCountInput.addEventListener("keyup", function () {
+        allPrice = 0;
+        allPriceWithoutDiscount = 0;
+        if (productMultiplicity) {
+          let val = parseInt(this.value) || 0;
+          while (val % +productMultiplicity) {
+            val++;
+            if (val % +productMultiplicity == 0) {
+              break;
+            }
+          }
+          this.value = val;
+          cartCountQuantity = +val;
+        } else {
+          cartCountQuantity = +cartCountInput.value;
+        }
+
+        cartCountQuantity = +cartCountInput.value;
+        if (cartCountQuantity >= 999) {
+          cartCountInput.value = productMultiplicity
+            ? getClosestInteger(999, +productMultiplicity)
+            : 999;
+          cartMinusButton.disabled = false;
+          cartPlusButton.disabled = true;
+        } else if (cartCountQuantity <= 0) {
+          cartCountInput.value = 0;
+          cartPlusButton.disabled = false;
+        } else {
+          cartMinusButton.disabled = false;
+          cartPlusButton.disabled = false;
+        }
+      });
+
+      cartPlusButton.onclick = () => {
+        allPrice = 0;
+        allPriceWithoutDiscount = 0;
+        if (productMultiplicity) {
+          cartCountQuantity += +productMultiplicity;
+        } else {
+          cartCountQuantity++;
+        }
+        cartCountInput.value = +cartCountQuantity;
+        cartMinusButton.disabled = false;
+
+        if (cartCountQuantity >= 999) {
+          cartCountInput.value = productMultiplicity
+            ? getClosestInteger(999, +productMultiplicity)
+            : 999;
+          cartMinusButton.disabled = false;
+          cartPlusButton.disabled = true;
+        } else {
+          cartPlusButton.disabled = false;
+          cartMinusButton.disabled = false;
+        }
+      };
+      cartMinusButton.onclick = () => {
+        allPrice = 0;
+        allPriceWithoutDiscount = 0;
+        if (productMultiplicity) {
+          cartCountQuantity -= +productMultiplicity;
+        } else {
+          cartCountQuantity--;
+        }
+        cartCountInput.value = +cartCountQuantity;
+        cartMinusButton.disabled = false;
+        if (cartCountQuantity <= 0) {
+          cartCountInput.value = 0;
+          cartMinusButton.disabled = true;
+          cartPlusButton.disabled = false;
+        } else {
+          cartMinusButton.disabled = false;
+          cartPlusButton.disabled = false;
+        }
+      };
+    });
   }
 });

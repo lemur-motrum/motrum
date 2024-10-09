@@ -2,6 +2,9 @@ import {
   setCookie,
   getCookie,
   deleteCookie,
+  NumberParser,
+  getDigitsNumber,
+  getCurrentPrice,
 } from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");
@@ -42,6 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
             priceAll.textContent = (
               +priceOnce.textContent.replace(",", ".") * +inputCount.value
             ).toFixed(2);
+            getDigitsNumber(priceAll, priceAll.textContent);
           } else {
             return;
           }
@@ -201,7 +205,7 @@ window.addEventListener("DOMContentLoaded", () => {
           totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
         }
       }
-      addTotalSum();
+      // addTotalSum();
     }
   }
 

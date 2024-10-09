@@ -47,7 +47,7 @@ a {
     justify-content: center;
     opacity: 0;
     transition: 1s;
-    z-index: 100;
+    z-index: 900;
     &.visible {
       opacity: 1;
     }

@@ -185,10 +185,10 @@
                         {% else %}
                             {% if search_input %}
                                 <a class="first-elem"
-                                   href="?page=1&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>1</span></a>
+                                   href="?page=1&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>1</span></a>
                             {% else %}
                                 <a class="first-elem"
-                                   href="?page=1{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>1</span></a>
+                                   href="?page=1{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>1</span></a>
                             {% endif %}
                         {% endif %}
                         {% for p in products.paginator.page_range %}
@@ -198,9 +198,9 @@
                                 </div>
                             {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
                                 {% if search_input %}
-                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% else %}
-                                    <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -208,10 +208,10 @@
                         {% else %}
                             {% if search_input %}
                                 <a class="last-elem"
-                                   href="?page={{ num_of_pages }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
+                                   href="?page={{ num_of_pages }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% else %}
                                 <a class="last-elem"
-                                   href="?page={{ num_of_pages }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
+                                   href="?page={{ num_of_pages }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% endif %}
                         {% endif %}
                     </div>

@@ -27,7 +27,6 @@
                         {% else %}
                         
                         {% endif %}  {% endcomment %}
-
                         <div class="small_img"></div>
                         <div class="small_img"></div>
                         <div class="small_img"></div>
@@ -60,24 +59,23 @@
             </div>
             <div class="technical_specifications">
                 <div class="title">Технические характеристики</div>
-             <div class="properties">
-               {% if product.productproperty_set.all  %}
-                {% for product_property in product.productproperty_set.all %}
-                        <div class="property">
-                            <div class="property_name">{{ product_property.name }}</div>
-                            <div class="property_description">
-                                {% if product_property.value %}
-                                    {{ product_property.value }}
-                                {% else %}
-                                    -
-                                {% endif %}
+                <div class="properties">
+                    {% if product.productproperty_set.all %}
+                        {% for product_property in product.productproperty_set.all %}
+                            <div class="property">
+                                <div class="property_name">{{ product_property.name }}</div>
+                                <div class="property_description">
+                                    {% if product_property.value %}
+                                        {{ product_property.value }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                -
-                {% endif %} 
-                
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
                     {% comment %} {% for product_property in product.productproperty_set %}
                         <div class="property">
                             <div class="property_name">{{ product_property.name }}</div>
@@ -90,20 +88,18 @@
                             </div>
                         </div>
                     {% endfor %} {% endcomment %}
-                </div> 
+                </div>
             </div>
         </div>
         <div class="rigth_container">
             <div class="price_container">
                 <span class="price_item">
-                   
-                    {% if product.price.rub_price_supplier  and product.price.rub_price_supplier != 0 %}
-                        <span class="price">{{ product.price.price_sale_personal }}</span> ₽</span>
+                    {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
+                        <span class="price">{{ product.price.rub_price_supplier }}</span> ₽</span>
                         / <span class="lot">1 {{ product.stock.lot.name_shorts }}</span>
                     {% else %}
                         <span>По запросу</span>
                     {% endif %}
-                    
                 </div>
                 <div class="item-buttons_container">
                     <div class="quantity-buttons">

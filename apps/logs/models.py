@@ -71,3 +71,27 @@ class LogsError(models.Model):
 
     def __str__(self):
         return f"Тип ошибки: {self.type_error},{self.date} "
+
+
+class LogsAddProduct(models.Model):
+
+    date = models.DateField(auto_now=True, verbose_name="Дата добавления")
+    product = models.ForeignKey(
+        Product,
+        verbose_name="Товар",
+        on_delete=models.CASCADE,
+    )
+
+    info = models.CharField(
+        "Инфо",
+        max_length=400,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Лог добавления товара"
+        verbose_name_plural = "Логи добавления товара"
+
+    def __str__(self):
+        return f"Товар: {self.product} "

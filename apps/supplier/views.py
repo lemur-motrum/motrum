@@ -54,6 +54,11 @@ def add_iek(request):
     daemon_thread.setDaemon(True)
     daemon_thread.start()
     
+    price_supplier_rub =  (259.0 * 96.1079 * 1.03)
+    price_supplier_rub_round =  round(price_supplier_rub, 2)   
+    print(price_supplier_rub)
+    print(price_supplier_rub_round)
+    
     # prod = Product.objects.filter(slug=None)
     
     # for pro in prod:

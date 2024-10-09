@@ -139,7 +139,7 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
-
+            
             return round(price_supplier_rub, 2)
     else:
         return None

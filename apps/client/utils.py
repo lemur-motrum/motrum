@@ -5,6 +5,8 @@ import itertools
 import os
 from pickle import NONE
 from re import T
+from apps.client.models import Order
+from apps.core.models import BaseInfo
 from apps.core.utils import check_spesc_directory_exist, transform_date, rub_words
 from PIL import Image
 import io
@@ -26,6 +28,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 from apps.specification.utils import MyCanvas
 from project.settings import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
+from django.db.models import Prefetch, OuterRef
 
 
 def crete_pdf_bill(specification):
@@ -44,10 +47,17 @@ def crete_pdf_bill(specification):
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
+    
+    motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
+    
+    motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
 
     date_now = transform_date(datetime.date.today().isoformat())
 
     name_bill = f"bill_{specification}.pdf"
+    last_bill_order = Order.objects.filter().exclude(bill_file = None).order_by("bill_date_start").last()
+    print(last_bill_order.bill_file)
+    # number_bill = 
     fileName = os.path.join(directory, name_bill)
     story = []
 
@@ -147,16 +157,16 @@ def crete_pdf_bill(specification):
     data_bank = [
         (
             Paragraph(
-                f'ФИЛИАЛ "НИЖЕГОРОДСКИЙ" АО "АЛЬФА-БАНК" г. Нижний Новгород',
+                f"{motrum_info_req.bank}",
                 normal_style,
             ),
             Paragraph("БИК", normal_style),
-            Paragraph("042202824", normal_style),
+            Paragraph(f"{motrum_info_req.bic}", normal_style),
         ),
         (
             None,
             Paragraph("Сч. №", normal_style),
-            Paragraph("30101810200000000824", normal_style),
+            Paragraph(f"{motrum_info_req.kpp}", normal_style),
         ),
         (
             Paragraph("Банк получателя", normal_style_8),
@@ -164,13 +174,13 @@ def crete_pdf_bill(specification):
             None,
         ),
         (
-            Paragraph("ИНН 6312174204 &nbsp &nbsp &nbsp  KПП 631901001 ", normal_style),
+            Paragraph(f"ИНН {motrum_info.inn} &nbsp &nbsp &nbsp  KПП {motrum_info.kpp} ", normal_style),
             Paragraph("Сч. №", normal_style),
-            Paragraph("40702810029390001332", normal_style),
+            Paragraph(f"{motrum_info_req.account_requisites}", normal_style),
         ),
         (
             Paragraph(
-                'Общество с ограниченной ответственностью "МОТРУМ"', normal_style
+                f'{motrum_info.full_name_legal_entity}', normal_style
             ),
             None,
             None,
@@ -235,7 +245,7 @@ def crete_pdf_bill(specification):
                 normal_style,
             ),
             Paragraph(
-                f'Общество с ограниченной ответственностью "МОТРУМ", ИНН 6312174204, КПП 631901001, 443011, Самарская обл, Самара г, 22 Партсъезда ул, дом 207, офис 2, тел.: (846) 300-41-17<br></br>',
+                f'{motrum_info.full_name_legal_entity}, ИНН {motrum_info.inn}, КПП {motrum_info.kpp}, {motrum_info.legal_post_code}, {motrum_info.legal_city}, {motrum_info.legal_address}, тел.: {motrum_info.tel}<br></br>',
                 bold_style,
             ),
         )

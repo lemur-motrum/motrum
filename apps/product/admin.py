@@ -830,10 +830,10 @@ class ProductAdmin(SimpleHistoryAdmin):
         obj._change_reason = "Ручное"
 
         if obj.pk:
-            pass
+            promote_product_slider(obj)
         else:
             obj.autosave_tag = False
-        promote_product_slider(obj)
+        
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):

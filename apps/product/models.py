@@ -5,9 +5,10 @@ from django.utils import timezone
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.dispatch import receiver
+
 from apps.logs.utils import error_alert
 from simple_history.models import HistoricalRecords
-from django.dispatch import receiver
+
 from middlewares.middlewares import RequestMiddleware
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -32,7 +33,8 @@ from apps.supplier.models import (
 )
 from pytils import translit
 from django.utils.text import slugify
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 
@@ -134,7 +136,10 @@ class Product(models.Model):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
 
     def save(self, *args, **kwargs):
-        
+        print(77777777777777777777)
+        print(self.id)
+        if self.id is None:
+            pass
         # если товара нет бд сделать артикул
         if self.article == "":
             article = create_article_motrum(self.supplier.id)
@@ -259,7 +264,14 @@ class Product(models.Model):
             if delta.changed_fields == []:
                 history_instance.delete()
 
-
+@receiver(post_save, sender=Product)
+def add_logs_created(sender, instance, created, **kwargs):
+    from apps.logs.models import LogsAddProduct
+    if created:
+        log = LogsAddProduct.objects.create(product=instance)
+        print(f'New deal with pk: {instance.pk} was created.')
+        
+        
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
@@ -598,7 +610,7 @@ class Stock(models.Model):
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
     to_order = models.BooleanField("Товар под заказ", default=False)
-    data_update = models.DateField(verbose_name="Дата обновления поставщика")
+    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления поставщика")
     # data_update_motrum = models.DateField(auto_now=True, verbose_name="Дата обновления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     transit_count = models.PositiveIntegerField(
@@ -790,7 +802,7 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
-    
+
     class Meta:
         verbose_name = "Корзина продукт"
         verbose_name_plural = "Корзина Продукты"

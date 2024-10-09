@@ -1,4 +1,9 @@
-import { getCookie } from "/static/core/js/functions.js";
+import {
+  getCookie,
+  NumberParser,
+  getDigitsNumber,
+  getCurrentPrice,
+} from "/static/core/js/functions.js";
 
 let currentUrl = new URL(window.location.href);
 
@@ -89,7 +94,6 @@ window.addEventListener("DOMContentLoaded", () => {
           lastPage = +data.count;
           const pagintationArray = [];
           paginationLastElem.textContent = `... ${lastPage}`;
-
           loader.style.display = "none";
           endContent.classList.add("show");
           smallLoader.classList.remove("show");
@@ -132,6 +136,15 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           });
           getActivePaginationElem();
+
+          const products = document.querySelectorAll(".product_item");
+          products.forEach((procductItem) => {
+            const priceItem = procductItem.querySelector(".price_item");
+            const currentPrice = +getCurrentPrice(priceItem.textContent);
+            if (!isNaN(currentPrice)) {
+              getDigitsNumber(priceItem, currentPrice);
+            }
+          });
         });
     }
 
@@ -182,7 +195,6 @@ window.addEventListener("DOMContentLoaded", () => {
       elem.onclick = () => {
         pageCount = +elem.textContent - 1;
         endContent.classList.remove("show");
-        catalogContainer.innerHTML = "";
         loader.style.display = "block";
         loadItems(
           true,
@@ -264,7 +276,6 @@ window.addEventListener("DOMContentLoaded", () => {
                   loader.style.display = "block";
                   catalogContainer.innerHTML = "";
                   endContent.classList.remove("show");
-
                   pageCount = 0;
                   loadItems(false, false, paramsArray, false);
                 }
@@ -278,7 +289,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 loader.style.display = "block";
                 catalogContainer.innerHTML = "";
                 endContent.classList.remove("show");
-
                 pageCount = 0;
                 loadItems(false, true, paramsArray);
                 if (filteredParamsArray.length == 0) {

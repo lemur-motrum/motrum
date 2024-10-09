@@ -1,4 +1,4 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% block content %}
     <div class="cart_container">
         <input class="personal_discount"
@@ -47,7 +47,7 @@
                                 {% endif %}
                             </div>
                             <div class="price_once">
-                                {% if  product_item.price.rub_price_supplier %}
+                                {% if product_item.price.rub_price_supplier %}
                                     <span> <span class="cart_price">{{ product_item.sale_price }}</span> ₽/ {{ product_item.stock.lot.name_shorts }}</span>
                                 {% else %}
                                     <span>по запросу</span>
@@ -69,10 +69,10 @@
                 </div>
                 {% if discount_client %}
                     <div class="total_sum">
-                        <div class="">
+                        <div>
                             розничная цена: <span> <span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
-                        <div class="">
+                        <div>
                             персональная скидка: <span> <span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
                         <div class="total_sum_all">
@@ -87,27 +87,23 @@
                     </div>
                 {% endif %}
                 {% if client %}
-                    <div class="">
+                    <div>
                         {% if requisites %}
-                        <select class="select_account_requisites">
-                            
-                            {% for requisit in  requisites %}
-                                <option data-requisites-id="{{ requisit.id }}"
-                                        data-account-requisites-id="{{ requisit.accountrequisit }}">
-                                    Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <div class="button_cart-wrapper">
-                            <button class="save_cart_button">оформить заказ</button>
-                        </div>
+                            <select class="select_account_requisites">
+                                {% for requisit in requisites %}
+                                    <option data-requisites-id="{{ requisit.id }}"
+                                            data-account-requisites-id="{{ requisit.accountrequisit }}">
+                                        Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="button_cart-wrapper">
+                                <button class="save_cart_button">оформить заказ</button>
+                            </div>
                         {% else %}
-                        <a href="{% url 'client:my_details' %}">
-                        Сcылка на добавление реквизитов </a>
+                            <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
                         {% endif %}
-                       
                     </div>
-                    
                 {% else %}
                     <form class="autification-form-cart">
                         <label class="name-label">

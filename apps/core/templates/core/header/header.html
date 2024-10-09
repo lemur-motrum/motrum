@@ -4,7 +4,7 @@
 {% url 'core:index' as index_url %}
 <header class="header">
   <div class="logo-container">
-    {% if request.get_full_path  == index_url %}
+    {% if request.get_full_path == index_url %}
       <img src={% static "core/images/logo.png" %} alt="logo" />
     {% else %}
       <a class="navbar_menu_item_link" href="/">

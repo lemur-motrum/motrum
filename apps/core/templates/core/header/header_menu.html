@@ -4,35 +4,35 @@
 {% url 'core:about' as company_url %}
 {% url 'core:contact' as contact_url %}
 <li class="nav-elem">
-  {% if namespace  == 'product' %}
+  {% if namespace == 'product' %}
     <span class="navbar_menu_item_text active">Товары</span>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ catalog_url }}">Товары</a>
   {% endif %}
 </li>
 <li class="nav-elem">
-  {% if view_name  == 'core:solutions' %}
+  {% if view_name == 'core:solutions' %}
     <span class="navbar_menu_item_text active">Решения</span>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ solutions_url }}">Решения</a>
   {% endif %}
 </li>
 <li class="nav-elem">
-  {% if view_name  == 'project:projects' %}
+  {% if view_name == 'project:projects' %}
     <span class="navbar_menu_item_text active">Реализованные проекты</span>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ projects_url }}">Реализованные проекты</a>
   {% endif %}
 </li>
 <li class="nav-elem">
-  {% if view_name  == 'core:about' or view_name  == 'core:about_company' or view_name  == 'core:vacancy' %}
+  {% if view_name == 'core:about' or view_name == 'core:about_company' or view_name == 'core:vacancy' %}
     <span class="navbar_menu_item_text active">Компания</span>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ company_url }}">Компания</a>
   {% endif %}
 </li>
 <li class="nav-elem">
-  {% if view_name  == 'core:contact' %}
+  {% if view_name == 'core:contact' %}
     <span class="navbar_menu_item_text active">Контакты</span>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ contact_url }}">Контакты</a>

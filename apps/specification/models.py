@@ -37,7 +37,7 @@ class Specification(models.Model):
         "Фаил", upload_to=get_document_path, null=True, default=None
     )
     is_prepay = models.BooleanField("Предоплата", default=False)
-    cart = models.ForeignKey(
+    cart = models.OneToOneField(
         "product.Cart",
         on_delete=models.PROTECT,
         verbose_name="корзина",

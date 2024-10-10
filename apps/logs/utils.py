@@ -25,3 +25,10 @@ def error_alert(error, location, info):
             type_error="type_error", location=location, info=info
         )    
         
+    elif error == "error":
+        type_error = t[1]
+       
+        error_alert = LogsError.objects.create(
+            type_error="type_error", location=location, info=info
+        )        
+        

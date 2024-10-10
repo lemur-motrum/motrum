@@ -17,6 +17,7 @@ from django.core.cache import cache
 from django.contrib.auth import authenticate, login
 from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
+from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
 
 from apps.client.api.serializers import (
@@ -422,38 +423,47 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
-        cart.is_active = True
-        cart.save()
+        # cart.is_active = True
+        # cart.save()
 
         # client = cart.client
         client = None
+
         specification = save_specification(data, request)
+        print(specification)
+        if specification:
+            data_order = {
+                "client": client,
+                "name": 123131,
+                "specification": specification.id,
+                "status": "PROCESSING",
+            }
+            
 
-        data_order = {
-            "client": client,
-            "name": 123131,
-            "specification": specification.id,
-            "status": "PROCESSING",
-        }
+            try:
+                order = Order.objects.get(specification=specification)
+                serializer = self.serializer_class(order, data=data_order, many=False)
+                if serializer.is_valid():
+                    order = serializer.save()
+                    cart.is_active = True
+                    cart.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            order = Order.objects.get(specification=specification)
-            serializer = self.serializer_class(order, data=data_order, many=False)
-            if serializer.is_valid():
-                order = serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Order.DoesNotExist:
-            serializer = self.serializer_class(data=data_order, many=False)
-            if serializer.is_valid():
-                order = serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            except Order.DoesNotExist:
+                serializer = self.serializer_class(data=data_order, many=False)
+                if serializer.is_valid():
+                    order = serializer.save()
+                    cart.is_active = True
+                    cart.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
     # создание счета к заказу
+   
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
 

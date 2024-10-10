@@ -1074,6 +1074,13 @@ def save_specification(received_data, request):
         )
         specification.file = pdf
         specification._change_reason = "Ручное"
+        
+        from apps.core.utils import create_time_stop_specification
+
+        data_stop = create_time_stop_specification()
+        specification.date_stop = data_stop
+        specification.tag_stop = True
+        
         specification.save()
         # Specification.objects.filter(id=specification.id).update(file=pdf)
 

@@ -2,6 +2,7 @@ import datetime
 from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
+from apps.client.models import Order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -10,6 +11,7 @@ from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
+from apps.specification.models import Specification
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.one_c import one_c_price
@@ -53,16 +55,18 @@ def add_iek(request):
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
-    price_supplier_rub =  (259.0 * 96.1079 * 1.03)
-    price_supplier_rub_round =  round(price_supplier_rub, 2)   
-    print(price_supplier_rub)
-    print(price_supplier_rub_round)
-    
-    # prod = Product.objects.filter(slug=None)
-    
-    # for pro in prod:
-    #     pro.save()
+
+    specification = Specification.objects.filter(tag_stop=True)
+
+    for specification_item in specification:
+        now = datetime.date.today()
+        date = specification_item.date_stop
+
+        if now >= date:
+            specification_item.tag_stop = False
+            specification_item.save()
+            order = Order.objects.filter(specification=specification_item).update(status="CANCELED")
+
     title = "Услуги"
 
     responsets = ["233", "2131"]

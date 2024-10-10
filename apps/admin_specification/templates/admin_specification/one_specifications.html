@@ -70,7 +70,8 @@
         
                 <div class="item_value">
                     {% if specif_prod.product %}
-                    {{ specif_prod.product.name }}
+                    <a href="{{ specif_prod.product.get_absolute_url }}"> {{ specif_prod.product.name }}</a>
+                    
                     {% else %}
                     {{ specif_prod.product_new }}
                     {% endif %}</div>

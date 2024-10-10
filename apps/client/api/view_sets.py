@@ -374,6 +374,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 specification.file = pdf
                 specification._change_reason = "Клиент с сайта"
+                data_stop = create_time_stop_specification()
+                specification.date_stop = data_stop
+                specification.tag_stop = True
                 # specification.skip_history_when_saving = True
                 specification.save()
                 specification = specification.id

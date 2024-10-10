@@ -53,11 +53,11 @@ class Specification(models.Model):
         return f"{self.id_bitrix}"
 
     def save(self, *args, **kwargs):
-        from apps.core.utils import create_time_stop_specification
+        # from apps.core.utils import create_time_stop_specification
 
-        data_stop = create_time_stop_specification()
-        self.date_stop = data_stop
-        self.tag_stop = True
+        # data_stop = create_time_stop_specification()
+        # self.date_stop = data_stop
+        # self.tag_stop = True
 
         super().save(*args, **kwargs)
 

@@ -785,7 +785,18 @@ window.addEventListener("DOMContentLoaded", () => {
             updateProduct();
           };
 
-          inputPrice.onkeyup = () => {
+          inputPrice.addEventListener("input", function (e) {
+            const currentValue = this.value
+              .replace(",", ".")
+              .replace(/[^.\d]+/g, "")
+              .replace(/^([^\.]*\.)|\./g, "$1")
+              .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+                return a + b + c.slice(0, 2);
+              });
+            inputPrice.value = currentValue;
+            if (inputPrice.value == ".") {
+              e.target.value = "";
+            }
             let price = +inputPrice.value * quantity.value;
             totalPrice.textContent = price.toFixed(2);
             item.setAttribute("data-price", inputPrice.value);
@@ -797,7 +808,11 @@ window.addEventListener("DOMContentLoaded", () => {
               // getDigitsNumber(itemPrice, itemPrice.textContent);
             });
             updateProduct();
-          };
+          });
+
+          // inputPrice.onkeyup = () => {
+
+          // };
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
               discountInput.value == 100;

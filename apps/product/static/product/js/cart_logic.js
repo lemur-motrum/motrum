@@ -408,13 +408,15 @@ window.addEventListener("DOMContentLoaded", () => {
             new NumberParser("ru").parse(priceOne.textContent) *
               +cartCountInput.value
           );
-          getDigitsNumber(
-            priceWithoutDiscontContainer,
-            ((new NumberParser("ru").parse(priceOne.textContent) *
-              (100 + personalDiscount)) /
-              100) *
-              +cartCountInput.value
-          );
+          if (priceWithoutDiscontContainer) {
+            getDigitsNumber(
+              priceWithoutDiscontContainer,
+              ((new NumberParser("ru").parse(priceOne.textContent) *
+                (100 + personalDiscount)) /
+                100) *
+                +cartCountInput.value
+            );
+          }
           for (
             let i = 0;
             i < cartContainer.querySelectorAll(".all_cart_price").length;
@@ -424,7 +426,9 @@ window.addEventListener("DOMContentLoaded", () => {
               cartContainer.querySelectorAll(".all_cart_price")[i].textContent
             );
           }
-          getDigitsNumber(allPriceContainer, allPrice);
+          if (allPriceContainer) {
+            getDigitsNumber(allPriceContainer, allPrice);
+          }
 
           for (
             let i = 0;
@@ -437,13 +441,17 @@ window.addEventListener("DOMContentLoaded", () => {
                 .textContent
             );
           }
-          getDigitsNumber(cartTotalPriceAll, allPriceWithoutDiscount);
+          if (cartTotalPriceAll) {
+            getDigitsNumber(cartTotalPriceAll, allPriceWithoutDiscount);
+          }
 
-          getDigitsNumber(
-            cartTotalPriceSale,
-            new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
-              new NumberParser("ru").parse(allPriceContainer.textContent)
-          );
+          if (cartTotalPriceSale) {
+            getDigitsNumber(
+              cartTotalPriceSale,
+              new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
+                new NumberParser("ru").parse(allPriceContainer.textContent)
+            );
+          }
         } else {
           clearInterval();
         }

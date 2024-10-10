@@ -1065,7 +1065,13 @@ def save_specification(received_data, request):
         # обновить спецификацию пдф
         total_amount = round(total_amount, 2)
         specification.total_amount = total_amount
+        
         specification._change_reason = "Ручное"
+        from apps.core.utils import create_time_stop_specification
+        data_stop = create_time_stop_specification()
+        specification.date_stop = data_stop
+        specification.tag_stop = True
+        
         specification.save()
         requisites = None
         account_requisites = None
@@ -1075,11 +1081,11 @@ def save_specification(received_data, request):
         specification.file = pdf
         specification._change_reason = "Ручное"
         
-        from apps.core.utils import create_time_stop_specification
+        
 
-        data_stop = create_time_stop_specification()
-        specification.date_stop = data_stop
-        specification.tag_stop = True
+        # data_stop = create_time_stop_specification()
+        # specification.date_stop = data_stop
+        # specification.tag_stop = True
         
         specification.save()
         # Specification.objects.filter(id=specification.id).update(file=pdf)

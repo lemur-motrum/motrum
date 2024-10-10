@@ -434,8 +434,9 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
+    print(111111111111111)
     if cart != None:
-
+        print(cart)
         cart_qs = Cart.objects.get(id=cart)
 
         discount_client = 0
@@ -449,6 +450,7 @@ def create_specification(request):
         product_cart = ProductCart.objects.filter(cart=cart)
         try:
             specification = Specification.objects.get(cart=cart)
+            print(specification)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )

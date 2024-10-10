@@ -529,12 +529,14 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: deliveryDate,
             product_name_new: nameProductNew,
           };
-          if (product.price_one == 0) {
-            validate = false;
-            inputPrice.style.border = "1px solid red";
-            inputPrice.style.borderRadius = "10px";
-          } else {
-            products.push(product);
+          if (inputPrice) {
+            if (!inputPrice.value) {
+              validate = false;
+              inputPrice.style.border = "1px solid red";
+              inputPrice.style.borderRadius = "10px";
+            } else {
+              products.push(product);
+            }
           }
         });
 

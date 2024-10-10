@@ -537,6 +537,8 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
               products.push(product);
             }
+          } else {
+            products.push(product);
           }
         });
 

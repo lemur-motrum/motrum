@@ -892,6 +892,10 @@ def save_specification(received_data, request):
                 id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
             )
             specification.skip_history_when_saving = True
+            from apps.core.utils import create_time_stop_specification
+            data_stop = create_time_stop_specification()
+            specification.date_stop = data_stop
+            specification.tag_stop = True
             # specification._change_reason = "Ручное"
             specification.save()
 
@@ -1067,10 +1071,11 @@ def save_specification(received_data, request):
         specification.total_amount = total_amount
         
         specification._change_reason = "Ручное"
-        from apps.core.utils import create_time_stop_specification
-        data_stop = create_time_stop_specification()
-        specification.date_stop = data_stop
-        specification.tag_stop = True
+        
+        # from apps.core.utils import create_time_stop_specification
+        # data_stop = create_time_stop_specification()
+        # specification.date_stop = data_stop
+        # specification.tag_stop = True
         
         specification.save()
         requisites = None

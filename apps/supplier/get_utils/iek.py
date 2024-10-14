@@ -1317,7 +1317,7 @@ def iek_api():
                 e = error_alert(error, location, info)
                 stock = 0
                 to_order = True
-                 
+                
                 return (stock,to_order)
             
         except Exception as e: 

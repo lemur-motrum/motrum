@@ -371,35 +371,42 @@ def iek_api():
                     
                         # основная инфа
                         # получение или добавление вендора
-                        if data_item["TM"] == None:
-                            break
-                        else:    
-                            vendor_add = Vendor.objects.get_or_create(
-                                supplier=supplier,
-                                name=data_item["TM"],
-                                defaults={
-                                    "vat_catalog": None,
-                                    "currency_catalog": currency,
-                                },
-                            )
+                        try:
+                            if data_item["TM"] == None:
+                                break
+                            else:    
+                                vendor_add = Vendor.objects.get_or_create(
+                                    supplier=supplier,
+                                    name=data_item["TM"],
+                                    defaults={
+                                        "vat_catalog": None,
+                                        "currency_catalog": currency,
+                                    },
+                                )
 
-                            article_suppliers = data_item["art"]
-                            category = data_item["groupId"]
-                    
-                            categ_names = SupplierCategoryProductAll.objects.filter(
-                                supplier=supplier, article_name=category
-                            )
+                                article_suppliers = data_item["art"]
+                                category = data_item["groupId"]
+                        
+                                categ_names = SupplierCategoryProductAll.objects.filter(
+                                    supplier=supplier, article_name=category
+                                )
 
-                            item_category_all = get_category(
-                                supplier, vendor_add[0], categ_names[0].name
-                            )
+                                item_category_all = get_category(
+                                    supplier, vendor_add[0], categ_names[0].name
+                                )
 
-                            item_category = item_category_all[0]
-                            item_group = item_category_all[1]
-                            item_group_all = item_category_all[2]
+                                item_category = item_category_all[0]
+                                item_group = item_category_all[1]
+                                item_group_all = item_category_all[2]
 
-                            name = data_item["name"]
+                                name = data_item["name"]
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 1 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)    
                             
+                        try:                            
                             # цены
                             if  "price" in  data_item:
                                 saleprice = data_item["saleprice"]
@@ -429,7 +436,14 @@ def iek_api():
                             else:
                                 vat_catalog = Vat.objects.get(name=20)
                                 vat_include = True
+                                
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 2 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)  
                             
+                        try:                                 
                             # описание
                             if "Description" in data_item:
                                 description_arr = data_item["Description"]
@@ -497,7 +511,11 @@ def iek_api():
                                     else:
                                         pass       
                                     
-
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 3 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)                           
                             # def saves_doc(
                             #     item,
                             #     article,
@@ -622,7 +640,7 @@ def iek_api():
                             # lot = lots[0]
                             # stock_supplier_unit = lots[1]
                             
-
+                        try:
                             stock_motrum = 0
                             
                             if "order_multiplicity" in data_item:
@@ -635,7 +653,13 @@ def iek_api():
                             else: 
                                 order_multiplicity = 1
                                 is_one_sale = True
-                        
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 4 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info) 
+                            
+                        try:                              
                             # основной товар
                             print(article_suppliers)
                             try:
@@ -669,6 +693,17 @@ def iek_api():
                                 update_change_reason(article, "Автоматическое")        
                                 save_image(article)
                                 # save_all_doc(data_item,article)
+                            
+                            
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 5 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)                               
+
+                        
+                        
+                        try:
                             # цены товара
                             print(article)
                             try:
@@ -687,79 +722,102 @@ def iek_api():
                                 price_product.save()
                                 
                                 # update_change_reason(price_product, "Автоматическое")
-
-                            # остатки
-                            # остатки
-                            param = "шт"
-                            lot = None
-                            logistic_parametr_quantity = 1
-                            if "LogisticParameters" in data_item:
-                                i = 0
-                                for logistic_param in data_item["LogisticParameters"]:
-                                    i+= 1
-                                    if i == 1:
-                                        param = logistic_param
-                                
-                                if "individual" in data_item["LogisticParameters"]:
-                                    logistic_parametr_quantity = data_item["LogisticParameters"]["individual"]["quantity"]
-                                elif "group" in data_item["LogisticParameters"]:
-                                    logistic_parametr_quantity = data_item["LogisticParameters"]["group"]["quantity"]
-                                elif "transport" in data_item["LogisticParameters"]:
-                                    logistic_parametr_quantity = data_item["LogisticParameters"]["transport"]["quantity"]    
-                                         
-                                if logistic_parametr_quantity == None:
-                                       logistic_parametr_quantity = 1     
-                                        
-
-                                lot_short_name = data_item["LogisticParameters"][param]["unit"]          
-                                lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 6 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)   
                             
                             
-                                if  lot_short_name == "шт":
-                                    lot_short = "штука"
-                                    lot = Lot.objects.get(name_shorts="шт")
-                                    lot_complect = int(logistic_parametr_quantity)
-                                    stock_supplier = 0
-                                    stock_supplier_unit = 0
-                                else:
-                                    try:
-                                        lot = Lot.objects.get(name_shorts=lot_short_name)
-                                    except Lot.DoesNotExist:
-                                        lot = lot_chek(lot_short_name)
+                        try:    
+                            # остатки
+                            # остатки
+                            try:
+                                param = "шт"
+                                lot = None
+                                logistic_parametr_quantity = 1
+                                if "LogisticParameters" in data_item:
+                                    i = 0
+                                    for logistic_param in data_item["LogisticParameters"]:
+                                        i+= 1
+                                        if i == 1:
+                                            param = logistic_param
+                                    
+                                    if "individual" in data_item["LogisticParameters"]:
+                                        logistic_parametr_quantity = data_item["LogisticParameters"]["individual"]["quantity"]
+                                    elif "group" in data_item["LogisticParameters"]:
+                                        logistic_parametr_quantity = data_item["LogisticParameters"]["group"]["quantity"]
+                                    elif "transport" in data_item["LogisticParameters"]:
+                                        logistic_parametr_quantity = data_item["LogisticParameters"]["transport"]["quantity"]    
                                             
-                                    lot_complect = int(logistic_parametr_quantity)
-                                    stock_supplier = 0                       
+                                    if logistic_parametr_quantity == None:
+                                        logistic_parametr_quantity = 1     
+                                            
+
+                                    lot_short_name = data_item["LogisticParameters"][param]["unit"]          
+                                    lot_quantity = data_item["LogisticParameters"][param]["quantity"] 
+                                
+                                
+                                    if  lot_short_name == "шт":
+                                        lot_short = "штука"
+                                        lot = Lot.objects.get(name_shorts="шт")
+                                        lot_complect = int(logistic_parametr_quantity)
+                                        stock_supplier = 0
+                                        stock_supplier_unit = 0
+                                    else:
+                                        try:
+                                            lot = Lot.objects.get(name_shorts=lot_short_name)
+                                        except Lot.DoesNotExist:
+                                            lot = lot_chek(lot_short_name)
+                                                
+                                        lot_complect = int(logistic_parametr_quantity)
+                                        stock_supplier = 0     
+                                                          
+                            except Exception as e:
+                                error = "file_api_error"
+                                location = "Загрузка фаилов IEK"
+                                info = f"ошибка доступа 7.1 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                                e = error_alert(error, location, info)                      
+                                
+                                
+                            try:    
+                                stock_supplier = get_iek_stock_one(article)
+                                stock_prod_stock_supplier = stock_supplier[0] / int(order_multiplicity)
+                                if lot:
+                                    try:
+                                        stock_prod = Stock.objects.get(prod=article)
                                     
-                                
-                                
-                                
-                            stock_supplier = get_iek_stock_one(article)
-                            stock_prod_stock_supplier = stock_supplier[0] / int(order_multiplicity)
-                            if lot:
-                                try:
-                                    stock_prod = Stock.objects.get(prod=article)
-                                
-                                except Stock.DoesNotExist:
-                                    stock_prod = Stock(
-                                        prod=article,
-                                        # lot=lot,
-                                        # stock_motrum = stock_motrum
-                                    )
-                                    
-                                finally:
-                                    stock_prod.lot = lot
-                                    stock_prod.stock_supplier = stock_prod_stock_supplier
-                                    stock_prod.stock_supplier_unit = stock_supplier[0]
-                                    stock_prod.to_order = stock_supplier[1]
-                                    stock_prod.lot_complect = lot_complect
-                                    stock_prod.order_multiplicity = order_multiplicity
-                                    stock_prod.is_one_sale = is_one_sale
-                                    stock_prod.data_update = datetime.datetime.now()
-                                    stock_prod._change_reason = 'Автоматическое'
-                                    stock_prod.save()
+                                    except Stock.DoesNotExist:
+                                        stock_prod = Stock(
+                                            prod=article,
+                                            # lot=lot,
+                                            # stock_motrum = stock_motrum
+                                        )
+          
+                                    finally:
+                                        stock_prod.lot = lot
+                                        stock_prod.stock_supplier = stock_prod_stock_supplier
+                                        stock_prod.stock_supplier_unit = stock_supplier[0]
+                                        stock_prod.to_order = stock_supplier[1]
+                                        stock_prod.lot_complect = lot_complect
+                                        stock_prod.order_multiplicity = order_multiplicity
+                                        stock_prod.is_one_sale = is_one_sale
+                                        stock_prod.data_update = datetime.datetime.now()
+                                        stock_prod._change_reason = 'Автоматическое'
+                                        stock_prod.save()
+                            except Exception as e:
+                                error = "file_api_error"
+                                location = "Загрузка фаилов IEK"
+                                info = f"ошибка доступа 7.2 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                                e = error_alert(error, location, info)   
+                                 
                                     
                                     # update_change_reason(stock_prod, "Автоматическое")
-            
+                        except Exception as e:
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"ошибка доступа 7/3 штука: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                            e = error_alert(error, location, info)   
                     except Exception as e: 
                         print(e)
                         error = "file_api_error"
@@ -772,7 +830,7 @@ def iek_api():
             else:
                 error = "file_api_error"
                 location = "Загрузка фаилов IEK"
-                info = f"ошибка доступа к дата: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                info = f"ошибка доступа к дата: {url_params}.{traceback.print_exc()} Тип ошибки:{e}"
                 e = error_alert(error, location, info)
                 # for data_item in data:
                 #     try:
@@ -1179,7 +1237,7 @@ def iek_api():
         else:    
             error = "file_api_error"
             location = "Загрузка фаилов IEK"
-            info = f"ошибка доступа к ответу: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+            info = f"ошибка доступа к ответу:.{traceback.print_exc()} Тип ошибки:{e}"
             e = error_alert(error, location, info)
     # def get_iek_stock():
     #     products = Product.objects.filter(supplier=supplier, vendor=vendor_items)
@@ -1267,7 +1325,7 @@ def iek_api():
                 error = "file_api_error"
                 location = "Загрузка фаилов IEK"
           
-                info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content}{data} Артикул{prod.article_supplier}"
+                info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}"
                 e = error_alert(error, location, info)
     
   
@@ -1336,15 +1394,16 @@ def iek_api():
             pass       
      
 
-
+    get_iek_product("products", f"groupId=01.01.01")
+    # get_iek_product("products", f"art=AR-M06N-1-D002")
     # get_iek_property("etim",  f"art=MKP12-V-04-40-20-U")
     
-    # категории 
-    get_iek_category("ddp", None)
-    # запись продуктов и пропсовдля каждого по категориям 
-    for item_iek_save_categ in iek_save_categ:
-        get_iek_product("products", f"groupId={item_iek_save_categ}")
-        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    # # категории 
+    # get_iek_category("ddp", None)
+    # # запись продуктов и пропсовдля каждого по категориям 
+    # for item_iek_save_categ in iek_save_categ:
+    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
+    #     get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
 
 

@@ -1,8 +1,9 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
     <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}        <a class="admin-link"
-        href="{% url 'admin:index' %}">Административная панель </a>{% endif %}
+        {% if request.user.is_superuser  == True %}
+            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
+        {% endif %}
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
@@ -32,42 +33,41 @@
                                 {% if request.user.is_superuser %}
                                     <br>
                                     <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
-                                    
                                     {% comment %} <span class="table_item_value_span">
                                         <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию </a>
                                         </span>  <br>
                                     <span class="table_item_value_span">
                                         <a href="{% url "admin_specification:history_admin" specification.pk %}">История </a>
-                                        </span> {% endcomment %}
-  
+                                    </span> {% endcomment %}
                                 {% endif %}
                                 <br>
                                 <span class="table_item_value_span">
-                                    <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию </a>
-                                    </span>  <br>
+                                    <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию</a>
+                                </span>
+                                <br>
                                 <span class="table_item_value_span">
-                                    <a href="{% url "admin_specification:history_admin" specification.pk %}">История </a>
-                                    </span>
+                                    <a href="{% url "admin_specification:history_admin" specification.pk %}">История</a>
+                                </span>
                             </div>
-                            <div class="table_item_value">{{ specification.date|date:"d.m.Y" }} 
-                                <br> 
+                            <div class="table_item_value">
+                                {{ specification.date|date:"d.m.Y" }}
+                                <br>
                                 {% if specification.date < specification.date_update %}
-                                <span style="
-                                font-size: 0.8vw;
-                                color: gray;
-                            " >Обновленна {{ specification.date_update|date:"d.m.Y" }}</span>
+                                    <span style="font-size: 0.8vw; color: gray; ">Обновленна {{ specification.date_update|date:"d.m.Y" }}</span>
                                 {% else %}
                                 {% endif %}
                             </div>
-                            
                             <div class="table_item_value ">
                                 <span class="price">{{ specification.total_amount }}</span> ₽
                             </div>
-                            <div class="table_item_value">Статус: 
-                                <br> {{ specification.order.get_status_name }} 
-                                <br>до 
+                            <div class="table_item_value">
+                                Статус:
+                                <br>
+                                {{ specification.order.get_status_name }}
+                                <br>
+                                до
                                 {% if specification.order.bill_date_stop %}
-                                    {{ specification.order.bill_date_stop|date:"d.m.Y" }} 
+                                    {{ specification.order.bill_date_stop|date:"d.m.Y" }}
                                 {% else %}
                                     {{ specification.date_stop|date:"d.m.Y" }}
                                 {% endif %}
@@ -80,17 +80,16 @@
                     {% else %}
                         <div data-status="{{ specification.tag_stop }}"
                              class="table_item disabled">
-                            <div data-cart-id="{{ specification.cart }}" class="table_item_value">{{ specification.pk }}
-
-                            </div>
-                            
+                            <div data-cart-id="{{ specification.cart }}" class="table_item_value">{{ specification.pk }}</div>
                             <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
                             <div class="table_item_value ">
                                 <span class="price">{{ specification.total_amount }}</span> ₽
                             </div>
-                            <div class="table_item_value">Статус
-                                 <br>
-                                {{ specification.order.get_status_name }} </div>
+                            <div class="table_item_value">
+                                Статус
+                                <br>
+                                {{ specification.order.get_status_name }}
+                            </div>
                             <div class="table_item_value"></div>
                             <button class="uptate-specification-button">Актуализировать</button>
                         </div>

@@ -1,8 +1,9 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
     <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}        <a class="admin-link"
-        href="{% url 'admin:index' %}">Административная панель </a>{% endif %}
+        {% if request.user.is_superuser == True %}
+            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
+        {% endif %}
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
@@ -54,7 +55,9 @@
                                 <input class="price-input"
                                        name="price-input-extra"
                                        type="text"
-                                       {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                       {% comment %}
+                                       onkeypress='validate(event)'
+                                       {% endcomment %}
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                                 <label for="price-input-extra">
@@ -106,7 +109,7 @@
                 <!--товары без записи в бд при аплдете уже есть в спецификации-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                         <div class="item_container"
+                        <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id_product_cart }}"
@@ -130,7 +133,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -171,8 +176,8 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div>                     
-                        {% else %}
+                        </div>
+                    {% else %}
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -196,7 +201,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -246,11 +253,11 @@
                 {% endfor %}
                 {% for item in product_new_more %}
                     {% if update_spesif %}
-                         <div class="item_container"
+                        <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.cart }}"
-                             data-id="{{ item.id}}"
+                             data-id="{{ item.id }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
                              data-product-specification-id="">
@@ -270,7 +277,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -304,7 +313,6 @@
                                        placeholder="% скидки"
                                        maxlength="2"
                                        value="" />
-                          
                             </div>
                             <div class="item_value">
                                 <label>
@@ -312,7 +320,7 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div> 
+                        </div>
                     {% endif %}
                 {% endfor %}
                 <div class="add_new_product">Добавить новый товар</div>

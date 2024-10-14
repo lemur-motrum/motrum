@@ -33,12 +33,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-       
+
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
 
-        
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
@@ -66,13 +65,14 @@ class ProductViewSet(viewsets.ModelViewSet):
             if "None" in vendor_get:
                 if len(vendor_get) > 1:
                     vendor_get.remove("None")
-                    q_object &= Q(vendor__slug=None,)|Q(vendor__slug__in=vendor_get)
+                    q_object &= Q(
+                        vendor__slug=None,
+                    ) | Q(vendor__slug__in=vendor_get)
                 else:
                     q_object &= Q(vendor__slug=None)
             else:
                 q_object &= Q(vendor__slug__in=vendor_get)
-                
-       
+
         if category_get is not None:
             if category_get == "all":
                 q_object &= Q(article__isnull=False)
@@ -143,12 +143,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             small = True
         else:
             small = False
-      
+
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
             "count": math.ceil(page_count / 10),
-         
             "page": page_get,
             "small": small,
         }
@@ -251,7 +250,7 @@ class CartViewSet(viewsets.ModelViewSet):
             else:
                 try:
                     cart = Cart.objects.get(client=request.user, is_active=False)
-                   
+
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
@@ -259,14 +258,12 @@ class CartViewSet(viewsets.ModelViewSet):
                     return response
 
                 except Cart.DoesNotExist:
-                   
 
                     data = {
                         "session_key": session,
                         "save_cart": False,
                         "client": request.user,
                     }
-                   
 
                     serializer = self.serializer_class(data=data, many=False)
 
@@ -291,7 +288,6 @@ class CartViewSet(viewsets.ModelViewSet):
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
-     
 
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
@@ -303,7 +299,7 @@ class CartViewSet(viewsets.ModelViewSet):
         # обновление товара
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-           
+
             data["id"] = product.id
 
             serializer = serializer_class(product, data=data, many=False)

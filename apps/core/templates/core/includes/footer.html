@@ -1,12 +1,9 @@
 {% load static %}
 {% load current_year %}
-
 {% url 'core:index' as index_url %}
-
 <div class="footer">
     <div class="motrum-footer">
         <div class="motrum-logo-container">
-            
             {% if request.get_full_path == index_url %}
                 <img src={% static "core/images/footer-logo.png" %} alt="logo" />
             {% else %}

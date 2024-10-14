@@ -1,105 +1,92 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-<div class="logout_btn">
-    {% if request.user.is_superuser  == True %}        
-    <a class="admin-link"
-    href="{% url 'admin:index' %}">Административная панель </a>
-    {% endif %}
-    <p>Пользователь: {{ request.user.username }}</p>
-    <a href="{% url "user:logout_admin" %}">Выход</a>
-</div>
-<div class="specification-container">
-    <div class="bread-crumbs">
-        <a href="{% url "admin_specification:categories" %}">Каталог</a>
-        <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
-    </div>
-    <h1 class="title">{{ title }} {{specification.id}}</h1>
-    <div class="">
-        <h2 class="title">Информация</h2>
-        <div class="">Действительно:
-            {% if specification.tag_stop %}
-           до {{specification.date_stop}}
-            {% else %}
-             Недействительно 
-            {% endif %}
-        </div>
-        {% if specification.id_bitrix %}
-        <div class="">Номер сделки битрикс: {{specification.id_bitrix}}</div>
+    <div class="logout_btn">
+        {% if request.user.is_superuser  == True %}
+            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
         {% endif %}
-        <div class="">Дата создания:{{specification.date}}</div>
-        {% if specification.date_update %}
-            <div class="">Дата обновления:{{specification.date_update}}</div>
-        {% endif %}
-        
-        <div class="">Документ спецификации:
-            <a href="{{specification.file.url}}">скачать</a>
-            </div>
-        {% if order.bill_file %}
-             <div class="">Документ счета:
-                <a href="{{order.bill_file.url}}">скачать</a>
-             </div>
-   
-        {% endif %}    
-        <span class="table_item_value_span">
-            <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений</a>
-            
-            </span>
+        <p>Пользователь: {{ request.user.username }}</p>
+        <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
-    <h2 class="title">Список товаров на общую сумму: {{specification.total_amount}}₽ </h2>
     <div class="specification-container">
+        <div class="bread-crumbs">
+            <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
+        </div>
+        <h1 class="title">{{ title }} {{ specification.id }}</h1>
         <div class="">
-            <div class="spetification_table">
-                <div class="spetification_titles">
-                    <div class="title_item">Название:</div>
-                    <div class="title_item">Артикул Motrum:</div>
-                    <div class="title_item">
-                        Ар.
-                        Поставщика:
+            <h2 class="title">Информация</h2>
+            <div class="">
+                Действительно:
+                {% if specification.tag_stop %}
+                    до {{ specification.date_stop }}
+                {% else %}
+                    Недействительно
+                {% endif %}
+            </div>
+            {% if specification.id_bitrix %}<div class="">Номер сделки битрикс: {{ specification.id_bitrix }}</div>{% endif %}
+            <div class="">Дата создания:{{ specification.date }}</div>
+            {% if specification.date_update %}<div class="">Дата обновления:{{ specification.date_update }}</div>{% endif %}
+            <div class="">
+                Документ спецификации:
+                <a href="{{ specification.file.url }}">скачать</a>
+            </div>
+            {% if order.bill_file %}
+                <div class="">
+                    Документ счета:
+                    <a href="{{ order.bill_file.url }}">скачать</a>
+                </div>
+            {% endif %}
+            <span class="table_item_value_span">
+                <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений</a>
+            </span>
+        </div>
+        <h2 class="title">Список товаров на общую сумму: {{ specification.total_amount }}₽</h2>
+        <div class="specification-container">
+            <div class="">
+                <div class="spetification_table">
+                    <div class="spetification_titles">
+                        <div class="title_item">Название:</div>
+                        <div class="title_item">Артикул Motrum:</div>
+                        <div class="title_item">
+                            Ар.
+                            Поставщика:
+                        </div>
+                        <div class="title_item">Количество:</div>
+                        <div class="title_item">Цена за шт. в ₽:</div>
+                        <div class="title_item">Стоимость:</div>
+                        <div class="title_item">Цена Motrum:</div>
+                        <div class="title_item">Доп.Скидка %:</div>
+                        <div class="title_item">Срок поставки:</div>
                     </div>
-                    <div class="title_item">Количество:</div>
-                    <div class="title_item">Цена за шт. в ₽:</div>
-                    <div class="title_item">Стоимость:</div>
-                    <div class="title_item">Цена Motrum:</div>
-                    <div class="title_item">Доп.Скидка %:</div>
-                    <div class="title_item">Срок поставки:</div>
+                    {% for specif_prod in product_specification %}
+                        <div class="item_container">
+                            <div class="item_value">
+                                {% if specif_prod.product %}
+                                    <a href="{{ specif_prod.product.get_absolute_url }}">{{ specif_prod.product.name }}</a>
+                                {% else %}
+                                    {{ specif_prod.product_new }}
+                                {% endif %}
+                            </div>
+                            <div class="item_value">
+                                {% if specif_prod.product %}{{ specif_prod.product.article }}{% endif %}
+                            </div>
+                            <div class="item_value">
+                                {% if specif_prod.product %}{{ specif_prod.product.article_supplier }}{% endif %}
+                            </div>
+                            <div class="item_value">{{ specif_prod.quantity }}</div>
+                            <div class="item_value">{{ specif_prod.price_one }}</div>
+                            <div class="item_value">{{ specif_prod.price_all }}</div>
+                            <div class="item_value">{{ specif_prod.price_all_motrum }}</div>
+                            <div class="item_value">
+                                {% if specif_prod.extra_discount %}{{ specif_prod.extra_discount }}{% endif %}
+                            </div>
+                            <div class="item_value">
+                                {% if specif_prod.date_delivery %}{{ specif_prod.date_delivery }}{% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% for specif_prod in product_specification %}
-                <div class="item_container">       
-                <div class="item_value">
-                    {% if specif_prod.product %}
-                    <a href="{{ specif_prod.product.get_absolute_url }}"> {{ specif_prod.product.name }}</a>
-                    
-                    {% else %}
-                    {{ specif_prod.product_new }}
-                    {% endif %}</div>
-                <div class="item_value">
-                    {% if specif_prod.product %}
-                    {{ specif_prod.product.article }}
-                    {% endif %}
-                </div>
-                <div class="item_value">
-                    {% if specif_prod.product %}
-                    {{ specif_prod.product.article_supplier }}
-                    {% endif %}
-                </div>
-                <div class="item_value">{{ specif_prod.quantity }}</div>
-                <div class="item_value">{{ specif_prod.price_one }}</div>
-                <div class="item_value">{{ specif_prod.price_all }}</div>
-                <div class="item_value">{{ specif_prod.price_all_motrum }}</div>
-                <div class="item_value">
-                    {% if specif_prod.extra_discount %}
-                    {{ specif_prod.extra_discount }}
-                    {% endif %}
-                    </div>
-                <div class="item_value">
-                {% if specif_prod.date_delivery %}
-                {{ specif_prod.date_delivery }}
-                   {% endif %}
-                </div>
-                </div>
-            {% endfor %}
-            </div> 
+            </div>
         </div>
     </div>
-</div>
 {% endblock content %}

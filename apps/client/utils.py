@@ -47,17 +47,26 @@ def crete_pdf_bill(specification):
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
-    
-    motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
-    
+
+    motrum_info = (
+        BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set"))
+        .all()
+        .first()
+    )
+
     motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
 
     date_now = transform_date(datetime.date.today().isoformat())
 
     name_bill = f"bill_{specification}.pdf"
-    last_bill_order = Order.objects.filter().exclude(bill_file = None).order_by("bill_date_start").last()
+    last_bill_order = (
+        Order.objects.filter()
+        .exclude(bill_file=None)
+        .order_by("bill_date_start")
+        .last()
+    )
     print(last_bill_order.bill_file)
-    # number_bill = 
+    # number_bill =
     fileName = os.path.join(directory, name_bill)
     story = []
 
@@ -134,7 +143,7 @@ def crete_pdf_bill(specification):
 
     bold_style = styles["Roboto-Bold"]
     normal_style = styles["Roboto"]
-    
+
     normal_style_right = styles["Roboto-right"]
     normal_style_6 = styles["Roboto-Center-Gray-6"]
     normal_style_6_right = styles["Roboto-Center-Gray-6-right"]
@@ -174,14 +183,15 @@ def crete_pdf_bill(specification):
             None,
         ),
         (
-            Paragraph(f"ИНН {motrum_info.inn} &nbsp &nbsp &nbsp  KПП {motrum_info.kpp} ", normal_style),
+            Paragraph(
+                f"ИНН {motrum_info.inn} &nbsp &nbsp &nbsp  KПП {motrum_info.kpp} ",
+                normal_style,
+            ),
             Paragraph("Сч. №", normal_style),
             Paragraph(f"{motrum_info_req.account_requisites}", normal_style),
         ),
         (
-            Paragraph(
-                f'{motrum_info.full_name_legal_entity}', normal_style
-            ),
+            Paragraph(f"{motrum_info.full_name_legal_entity}", normal_style),
             None,
             None,
         ),
@@ -245,7 +255,7 @@ def crete_pdf_bill(specification):
                 normal_style,
             ),
             Paragraph(
-                f'{motrum_info.full_name_legal_entity}, ИНН {motrum_info.inn}, КПП {motrum_info.kpp}, {motrum_info.legal_post_code}, {motrum_info.legal_city}, {motrum_info.legal_address}, тел.: {motrum_info.tel}<br></br>',
+                f"{motrum_info.full_name_legal_entity}, ИНН {motrum_info.inn}, КПП {motrum_info.kpp}, {motrum_info.legal_post_code}, {motrum_info.legal_city}, {motrum_info.legal_address}, тел.: {motrum_info.tel}<br></br>",
                 bold_style,
             ),
         )
@@ -318,13 +328,12 @@ def crete_pdf_bill(specification):
             product_stock = "шт"
 
         date_delivery = product.date_delivery
-        if date_delivery :
+        if date_delivery:
             if date_delivery > date_ship:
                 date_ship = date_delivery
-        else: 
-            is_none_date_delivery = True         
-            
-            
+        else:
+            is_none_date_delivery = True
+
         if product.product:
             product_name = str(product.product.name)
             # product_name = str(product)
@@ -341,8 +350,8 @@ def crete_pdf_bill(specification):
         product_quantity = product.quantity
         product_data = product.date_delivery
         if product_data:
-            product_data = str(product_data.strftime('%d.%m.%Y'))
-        else:    
+            product_data = str(product_data.strftime("%d.%m.%Y"))
+        else:
             product_data = str("-")
         total_product_quantity += product_quantity
         data.append(
@@ -361,7 +370,7 @@ def crete_pdf_bill(specification):
     if is_none_date_delivery:
         final_date_ship = "-"
     else:
-        final_date_ship = str(date_ship.strftime('%d.%m.%Y')) 
+        final_date_ship = str(date_ship.strftime("%d.%m.%Y"))
     data.append(
         (
             None,

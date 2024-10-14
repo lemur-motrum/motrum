@@ -734,16 +734,15 @@ window.addEventListener("DOMContentLoaded", () => {
             const currentPrice =
               new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
-            getResult();
             let price = +inputPrice.value * quantity.value;
-            totalPrice.textContent = price.toFixed(2);
+            getDigitsNumber(totalPrice, price);
+            getResult();
           };
 
           plusButton.onclick = () => {
             const currentPrice =
               +item.getAttribute("data-price") * +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
-            getResult();
             if (multiplicity) {
               countQuantity += +multiplicity;
             } else {
@@ -763,14 +762,15 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             updateProduct();
             let price = +inputPrice.value * quantity.value;
-            totalPrice.textContent = price.toFixed(2);
+            getDigitsNumber(totalPrice, price);
+            getResult();
           };
 
           minusButton.onclick = () => {
             const currentPrice =
               +item.getAttribute("data-price") * +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
-            getResult();
+
             if (multiplicity) {
               countQuantity -= +multiplicity;
             } else {
@@ -788,7 +788,8 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             updateProduct();
             let price = +inputPrice.value * quantity.value;
-            totalPrice.textContent = price.toFixed(2);
+            getDigitsNumber(totalPrice, price);
+            getResult();
           };
 
           inputPrice.addEventListener("input", function (e) {
@@ -807,21 +808,15 @@ window.addEventListener("DOMContentLoaded", () => {
               e.target.value = "";
             }
             let price = +inputPrice.value * quantity.value;
-            totalPrice.textContent = price.toFixed(2);
+            getDigitsNumber(totalPrice, price);
             item.setAttribute("data-price", inputPrice.value);
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
             }
-            getResult();
-            itemPrices.forEach((itemPrice) => {
-              // getDigitsNumber(itemPrice, itemPrice.textContent);
-            });
             updateProduct();
+            getResult();
           });
 
-          // inputPrice.onkeyup = () => {
-
-          // };
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
               discountInput.value == 100;
@@ -838,9 +833,6 @@ window.addEventListener("DOMContentLoaded", () => {
           saveButton.onclick = () => saveSpecification();
         } else {
           getResult();
-          itemPrices.forEach((itemPrice) => {
-            // getDigitsNumber(itemPrice, itemPrice.textContent);
-          });
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
               discountInput.value == 100;
@@ -1066,39 +1058,6 @@ window.addEventListener("DOMContentLoaded", () => {
             window.location.href =
               "/admin_specification/current_specification/";
           });
-
-        // const objData = {
-        //   specification_id: specificationId,
-        // };
-        // console.log(objData)
-        // const data = JSON.stringify(objData);
-        // fetch("/admin_specification/update_specification/", {
-        //   method: "POST",
-        //   body: data,
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "X-CSRFToken": csrfToken,
-        //   },
-        // })
-        //   .then((response) => response.json())
-        //   .then((response) => {
-        //     if (response.status == "ok") {
-        //       const products = JSON.parse(response.products);
-        //       localStorage.setItem(
-        //         "specificationValues",
-        //         JSON.stringify(products)
-        //       );
-        //       document.cookie = `key=${JSON.stringify(products)};path=/`;
-
-        //       products.forEach((product) => {
-        //         document.cookie = `specificationId=${JSON.stringify(
-        //           product.specificationId
-        //         )}; path=/`;
-        //       });
-        //     }
-        //     window.location.href =
-        //       "/admin_specification/current_specification/";
-        //   });
       };
     });
     //
@@ -1132,39 +1091,6 @@ window.addEventListener("DOMContentLoaded", () => {
             window.location.reload();
           }
         });
-
-        // const objData = {
-        //   specification_id: specificationId,
-        // };
-        // console.log(objData)
-        // const data = JSON.stringify(objData);
-        // fetch("/admin_specification/update_specification/", {
-        //   method: "POST",
-        //   body: data,
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "X-CSRFToken": csrfToken,
-        //   },
-        // })
-        //   .then((response) => response.json())
-        //   .then((response) => {
-        //     if (response.status == "ok") {
-        //       const products = JSON.parse(response.products);
-        //       localStorage.setItem(
-        //         "specificationValues",
-        //         JSON.stringify(products)
-        //       );
-        //       document.cookie = `key=${JSON.stringify(products)};path=/`;
-
-        //       products.forEach((product) => {
-        //         document.cookie = `specificationId=${JSON.stringify(
-        //           product.specificationId
-        //         )}; path=/`;
-        //       });
-        //     }
-        //     window.location.href =
-        //       "/admin_specification/current_specification/";
-        //   });
       };
     });
     overdueSpecifications.forEach((item) => {
@@ -1195,40 +1121,6 @@ window.addEventListener("DOMContentLoaded", () => {
               "/admin_specification/current_specification/";
           });
       };
-      // const specificationId =
-      //   +item.querySelectorAll(".table_item_value")[0].textContent;
-      // updatingBtn.onclick = () => {
-      //   const objData = {
-      //     specification_id: specificationId,
-      //   };
-      //   const data = JSON.stringify(objData);
-      //   fetch("/admin_specification/update_specification/", {
-      //     method: "POST",
-      //     body: data,
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "X-CSRFToken": csrfToken,
-      //     },
-      //   })
-      //     .then((response) => response.json())
-      //     .then((response) => {
-      //       if (response.status == "ok") {
-      //         const products = JSON.parse(response.products);
-      //         localStorage.setItem(
-      //           "specificationValues",
-      //           JSON.stringify(products)
-      //         );
-      //         document.cookie = `key=${JSON.stringify(products)};path=/`;
-      //         products.forEach((product) => {
-      //           document.cookie = `specificationId=${JSON.stringify(
-      //             product.specificationId
-      //           )}; path=/`;
-      //         });
-      //       }
-      //       window.location.href =
-      //         "/admin_specification/current_specification/";
-      //     });
-      // };
     });
     //
   }

@@ -15,12 +15,12 @@
                        data-category="category_item.id"><span>{{ category_item.name }}</span></a>
                 {% endfor %}
                 <a href="{% url "product:group" "other" %}"
-                       class="category"
-                       data-category="category_item.id"><span>Товары без категории</span></a>
+                   class="category"
+                   data-category="category_item.id"><span>Товары без категории</span></a>
             {% endif %}
             <a href="{% url "product:group" "all" %}"
-                       class="category"
-                       data-category="category_item.id"><span>Все товары</span></a>
+               class="category"
+               data-category="category_item.id"><span>Все товары</span></a>
         </div>
     </div>
 {% endblock content %}

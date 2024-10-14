@@ -43,7 +43,7 @@ class Client(CustomUser):
     def add_manager(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
-          
+
             old_user_manager = old_user.manager
             if old_user_manager:
                 admin = (
@@ -54,14 +54,13 @@ class Client(CustomUser):
                 )
                 self.manager = admin
                 self.save()
-                
+
             else:
                 admin = (
                     AdminUser.objects.filter(admin_type="BASE").order_by("?").first()
                 )
                 self.manager = admin
                 self.save()
-              
 
     # def send_email_notification(self,text_email):
 
@@ -153,10 +152,11 @@ class AccountRequisites(models.Model):
 
 
 class EmailsCallBack(models.Model):
-    name = models.CharField(
-        "Контактное лицо", max_length=40, blank=True, null=True
+    name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
+    phone = models.CharField(
+        "Номер телефона",
+        max_length=40,
     )
-    phone = models.CharField("Номер телефона", max_length=40,)
 
 
 # class ClientDiscount(models.Model):
@@ -291,7 +291,7 @@ class Order(models.Model):
         self.bill_date_start = datetime.date.today()
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
-        
+
         pdf = crete_pdf_bill(self.specification.id)
         self.bill_file = pdf
 

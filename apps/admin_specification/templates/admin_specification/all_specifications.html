@@ -32,7 +32,7 @@
                                 {% if request.user.is_superuser %}
                                     <br>
                                     <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
-                                    <br>
+                                    
                                     {% comment %} <span class="table_item_value_span">
                                         <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию </a>
                                         </span>  <br>
@@ -41,6 +41,7 @@
                                         </span> {% endcomment %}
   
                                 {% endif %}
+                                <br>
                                 <span class="table_item_value_span">
                                     <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию </a>
                                     </span>  <br>

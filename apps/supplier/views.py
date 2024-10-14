@@ -32,40 +32,29 @@ from simple_history.utils import update_change_reason
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
-    # veda_api()
-    prod = Product.objects.filter(slug=None)
+    iek_api()
+    # prod = Product.objects.filter(slug=None)
   
-    def background_task():
-            # Долгосрочная фоновая задача
-            try:
-                prod = Product.objects.filter(slug=None)
+    # def background_task():
+    #         # Долгосрочная фоновая задача
+    #         try:
+    #             prod = Product.objects.filter(slug=None)
                 
-                for pro in prod:
-                    pro.save()
-            except Exception as e:
-                print(e)
-                error = "file_error"
-                location = "Обновление слагов"
+    #             for pro in prod:
+    #                 pro.save()
+    #         except Exception as e:
+    #             print(e)
+    #             error = "file_error"
+    #             location = "Обновление слагов"
 
-                info = f"Обновление слагов"
-                e = error_alert(error, location, info)
+    #             info = f"Обновление слагов"
+    #             e = error_alert(error, location, info)
        
 
 
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-
-    specification = Specification.objects.filter(tag_stop=True)
-
-    for specification_item in specification:
-        now = datetime.date.today()
-        date = specification_item.date_stop
-
-        if now >= date:
-            specification_item.tag_stop = False
-            specification_item.save()
-            order = Order.objects.filter(specification=specification_item).update(status="CANCELED")
+    # daemon_thread = threading.Thread(target=background_task)
+    # daemon_thread.setDaemon(True)
+    # daemon_thread.start()
 
     title = "Услуги"
 

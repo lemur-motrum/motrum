@@ -47,7 +47,6 @@
     </div>
     <h2 class="title">Список товаров на общую сумму: {{specification.total_amount}}₽ </h2>
     <div class="specification-container">
-        
         <div class="">
             <div class="spetification_table">
                 <div class="spetification_titles">
@@ -64,10 +63,8 @@
                     <div class="title_item">Доп.Скидка %:</div>
                     <div class="title_item">Срок поставки:</div>
                 </div>
-            
             {% for specif_prod in product_specification %}
-                <div class="item_container">
-        
+                <div class="item_container">       
                 <div class="item_value">
                     {% if specif_prod.product %}
                     {{ specif_prod.product.name }}
@@ -83,7 +80,6 @@
                     {% if specif_prod.product %}
                     {{ specif_prod.product.article_supplier }}
                     {% endif %}
-
                 </div>
                 <div class="item_value">{{ specif_prod.quantity }}</div>
                 <div class="item_value">{{ specif_prod.price_one }}</div>
@@ -92,26 +88,17 @@
                 <div class="item_value">
                     {% if specif_prod.extra_discount %}
                     {{ specif_prod.extra_discount }}
-                
                     {% endif %}
                     </div>
-            
-            
                 <div class="item_value">
                 {% if specif_prod.date_delivery %}
                 {{ specif_prod.date_delivery }}
-             
-                {% endif %}
+                   {% endif %}
                 </div>
-           
                 </div>
-            
             {% endfor %}
             </div> 
-            
         </div>
     </div>
 </div>
-
-
 {% endblock content %}

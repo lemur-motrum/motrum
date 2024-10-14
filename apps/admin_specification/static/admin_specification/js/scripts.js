@@ -733,8 +733,10 @@ window.addEventListener("DOMContentLoaded", () => {
             countQuantity = quantity.value;
             const currentPrice =
               new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
-            // getDigitsNumber(productTotalPrice, currentPrice);
+            getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
+            let price = +inputPrice.value * quantity.value;
+            totalPrice.textContent = price.toFixed(2);
           };
 
           plusButton.onclick = () => {
@@ -760,6 +762,8 @@ window.addEventListener("DOMContentLoaded", () => {
               minusButton.disabled = false;
             }
             updateProduct();
+            let price = +inputPrice.value * quantity.value;
+            totalPrice.textContent = price.toFixed(2);
           };
 
           minusButton.onclick = () => {
@@ -783,6 +787,8 @@ window.addEventListener("DOMContentLoaded", () => {
               plusButton.disabled = false;
             }
             updateProduct();
+            let price = +inputPrice.value * quantity.value;
+            totalPrice.textContent = price.toFixed(2);
           };
 
           inputPrice.addEventListener("input", function (e) {
@@ -795,6 +801,9 @@ window.addEventListener("DOMContentLoaded", () => {
               });
             inputPrice.value = currentValue;
             if (inputPrice.value == ".") {
+              e.target.value = "";
+            }
+            if (inputPrice.value == "0") {
               e.target.value = "";
             }
             let price = +inputPrice.value * quantity.value;
@@ -1233,12 +1242,18 @@ window.addEventListener("DOMContentLoaded", () => {
         const currentValue = this.value
           .replace(",", ".")
           .replace(/[^.\d]+/g, "")
-          .replace(/^([^\.]*\.)|\./g, "$1");
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
         el.value = currentValue;
         if (+el.value > 99.99) {
           el.value = el.value.slice(0, 2);
         }
         if (el.value == ".") {
+          e.target.value = "";
+        }
+        if (el.value == "0") {
           e.target.value = "";
         }
       });

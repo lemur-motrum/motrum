@@ -106,7 +106,6 @@
                 <!--товары без записи в бд при аплдете уже есть в спецификации-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-          
                          <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -165,7 +164,6 @@
                                        placeholder="% скидки"
                                        maxlength="2"
                                        value="" />
-                          
                             </div>
                             <div class="item_value">
                                 <label>
@@ -173,8 +171,7 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div> 
-                    
+                        </div>                     
                         {% else %}
                         <div class="item_container"
                              data-product-pk=""
@@ -247,11 +244,8 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-
-
                 {% for item in product_new_more %}
                     {% if update_spesif %}
-          
                          <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -319,13 +313,8 @@
                                 </label>
                             </div>
                         </div> 
-                    
-                      
-                        
                     {% endif %}
                 {% endfor %}
-
-
                 <div class="add_new_product">Добавить новый товар</div>
                 <div class="submit-container">
                     <div class="price_description">

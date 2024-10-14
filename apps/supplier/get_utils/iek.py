@@ -1336,15 +1336,15 @@ def iek_api():
             pass       
      
 
-    get_iek_product("products", f"TM=ONI")
+
     # get_iek_property("etim",  f"art=MKP12-V-04-40-20-U")
     
-    # # категории 
-    # get_iek_category("ddp", None)
-    # # запись продуктов и пропсовдля каждого по категориям 
-    # for item_iek_save_categ in iek_save_categ:
-    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
-    #     get_iek_property("etim",  f"groupId={item_iek_save_categ}")
+    # категории 
+    get_iek_category("ddp", None)
+    # запись продуктов и пропсовдля каждого по категориям 
+    for item_iek_save_categ in iek_save_categ:
+        get_iek_product("products", f"groupId={item_iek_save_categ}")
+        get_iek_property("etim",  f"groupId={item_iek_save_categ}")
     
 
 

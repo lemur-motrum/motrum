@@ -1,7 +1,7 @@
 # from audioop import reverse
 import datetime
 from django.contrib import admin
-
+from django.db.models import Prefetch
 from django.shortcuts import redirect
 from django.utils.html import mark_safe
 from regex import D
@@ -657,12 +657,12 @@ class ProductAdmin(SimpleHistoryAdmin):
 
             product_blank = f"{product_blank}{product_blank_local}"
             return product_blank
-
+        # print(obj.productdocument_set.all())
         product = Product.objects.filter(id=obj.id).values()
         product_blank_new = get_blank(product, Product, product_blank)
 
         try:
-            price = Price.objects.get(prod=obj.id)
+            price = obj.price
             if price.price_supplier == None or price.price_supplier < 0.1:
                 item_one = f"<li>Цена</li>"
                 product_blank_new = f"{product_blank_new}{item_one}"
@@ -671,7 +671,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             product_blank_new = f"{product_blank_new}{item_one}"
 
         try:
-            stock = Stock.objects.get(prod=obj.id)
+            stock = obj.stock
             if stock.stock_supplier == None:
                 item_one = f"<li>Остаток</li>"
                 product_blank_new = f"{product_blank_new}{item_one}"
@@ -679,23 +679,49 @@ class ProductAdmin(SimpleHistoryAdmin):
             item_one = f"<li>Остаток</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        props = ProductProperty.objects.filter(product=obj.id).exists()
+        props = obj.productproperty_set.all().exists()
         if props == False:
             item_one = f"<li>Характеристики</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        img = ProductImage.objects.filter(product=obj.id).exists()
+        img = obj.productimage_set.all().exists()
         if img == False:
             item_one = f"<li>Изображения</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
-        doc = ProductDocument.objects.filter(product=obj.id).exists()
+        doc = obj.productdocument_set.all().exists()
         if doc == False:
             item_one = f"<li>Документы</li>"
             product_blank_new = f"{product_blank_new}{item_one}"
 
         return mark_safe("<ul    >{}</ul>".format(product_blank_new))
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "category_supplier_all",
+                "group_supplier",
+                "category_supplier",
+            ).prefetch_related(Prefetch("stock"),Prefetch("price"),
+                            Prefetch("productproperty_set"),
+                            Prefetch("productimage_set"),
+                            Prefetch("productdocument_set")
+                            )
+        # qs = qs.select_related(
+        #         "supplier",
+        #         "vendor",
+        #         "category",
+        #         "group",
+        #         "category_supplier_all",
+        #         "group_supplier",
+        #         "category_supplier",
+        #     )
+        return qs
+  
+    
     def delete_queryset(self, request, queryset):
         for obj in queryset.all():
             obj.delete()

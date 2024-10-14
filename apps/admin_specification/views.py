@@ -502,7 +502,6 @@ def create_specification(request):
         if id_specification:
             # product_new = ProductCart.objects.filter(cart=cart,product=None,)
             product_new = ProductSpecification.objects.filter(
-                # id__in=product_cart_list,
                 specification=specification,
                 product=None,
             ).annotate(
@@ -512,10 +511,15 @@ def create_specification(request):
                     "id",
                 ),
             )
+          
+        
             product_new_value_id = product_new.values_list("id_product_cart")
             product_new_more = ProductCart.objects.filter(
                 cart=cart, product=None
             ).exclude(id__in=product_new_value_id)
+            
+            
+            
 
             update_spesif = True
 

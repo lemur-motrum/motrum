@@ -383,7 +383,7 @@ def save_file_emas_product(link, image_path):
 
 # сохранение изображений и докуметов из админки и общее
 def get_file_path_add(instance, filename):
-    print(7777777777777)
+
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
     from middlewares.middlewares import RequestMiddleware
@@ -463,7 +463,7 @@ def get_file_path_add(instance, filename):
         type_file = "." + images_last_list[-1]
 
         if isinstance(instance, ProductDocument):
-            print(9090909090909)
+            
             path_name = "document"
             try:
                 images_last = ProductDocument.objects.filter(
@@ -1027,6 +1027,7 @@ def save_specification(received_data, request):
             else:
 
                 price_one = product_item["price_one"]
+                
                 price_all = float(price_one) * int(product_item["quantity"])
                 price_all = round(price_all, 2)
                 currency = Currency.objects.get(words_code="RUB")
@@ -1051,11 +1052,11 @@ def save_specification(received_data, request):
                 product_spes.price_all = price_all
                 product_spes.price_one = price_one
                 product_spes.extra_discount = None
-                product_spes.price_one_motrum = None
-                product_spes.price_all_motrum = None
+                product_spes.price_one_motrum = price_one
+                product_spes.price_all_motrum = price_all
                 product_spes.product_new = product_item["product_name_new"]
                 product_spes._change_reason = "Ручное"
-
+                # product_spes.product_in_cart =
                 date_delivery = product_item["date_delivery"]
                 if date_delivery != "":
                     product_spes.date_delivery = datetime.datetime.strptime(

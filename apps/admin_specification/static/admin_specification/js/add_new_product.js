@@ -65,7 +65,7 @@ window.addEventListener("DOMContentLoaded", () => {
         };
 
         const data = JSON.stringify(dataObj);
-        fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+        fetch(`/api/v1/cart/${cart_id}/save-product-new/`, {
           method: "POST",
           body: data,
           headers: {
@@ -77,7 +77,12 @@ window.addEventListener("DOMContentLoaded", () => {
             if (response.status == 200) {
               location.reload();
               return response.json();
-            } else {
+            }
+            if (response.status == 409) {
+              showErrorValidation("Товар с таким названием в корзине уже есть ", nameInputError);
+              nameInput.style.border = "1px solid red";
+            }
+            else {
               throw new Error("Ошибка");
             }
           })

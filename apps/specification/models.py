@@ -88,6 +88,13 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    # product_in_cart = models.ForeignKey(
+    #     "product.ProductCart",
+    #     verbose_name="Продукт в корзине",
+    #     on_delete=models.PROTECT,
+    #     blank=True,
+    #     null=True,
+    # )
 
     product_new = models.CharField(
         "Название товара нового без добавления в бд",

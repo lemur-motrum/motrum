@@ -506,6 +506,7 @@ window.addEventListener("DOMContentLoaded", () => {
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
+          // const itemCartID = item.getAttribute("data-product-id-cart");
           const nameProductNew = item.getAttribute("data-product-name-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
@@ -519,6 +520,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
           const product = {
             product_id: +itemID,
+            // product_cart_id: +itemCartID,
             quantity: +itemQuantity,
             price_exclusive: +itemPriceStatus,
             price_one: +getCurrentPrice(itemPrice),

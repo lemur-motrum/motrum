@@ -699,6 +699,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related(
                 "supplier",
+              
                 "vendor",
                 "category",
                 "group",
@@ -708,7 +709,12 @@ class ProductAdmin(SimpleHistoryAdmin):
             ).prefetch_related(Prefetch("stock"),Prefetch("price"),
                             Prefetch("productproperty_set"),
                             Prefetch("productimage_set"),
-                            Prefetch("productdocument_set")
+                            Prefetch("productdocument_set"),
+                     
+                            # Prefetch("supplier__suppliergroupproduct"),
+                            # Prefetch("supplier__vendor"),
+                            # Prefetch("supplier__supplier"),
+                            # Prefetch("supplier__suppliercategoryproductall"),
                             )
         # qs = qs.select_related(
         #         "supplier",

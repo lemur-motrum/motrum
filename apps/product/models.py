@@ -809,3 +809,8 @@ class ProductCart(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+    def save(self, *args, **kwargs):
+       
+       
+        super().save(*args, **kwargs)

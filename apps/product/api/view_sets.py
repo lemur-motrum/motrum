@@ -20,6 +20,8 @@ from apps.product.models import (
 )
 from django.db.models import Q, F, OrderBy
 
+from apps.specification.models import ProductSpecification
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
@@ -289,6 +291,7 @@ class CartViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
 
+        cart = Cart.objects.filter(cart_id=kwargs["cart"])
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
@@ -311,6 +314,32 @@ class CartViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
+        except ProductCart.DoesNotExist:
+
+            serializer = serializer_class(data=data, many=False)
+            if serializer.is_valid():
+                cart_product = serializer.save()
+                cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
+                data["cart_len"] = cart_len
+                return Response(data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # добавить товар не из  бд в корзину
+    @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")
+    def add_product_cart_new(self, request, *args, **kwargs):
+
+        queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
+        serializer_class = ProductCartSerializer
+        data = request.data
+        product_new = data["product_new"]
+
+        try:
+            product_new = ProductCart.objects.get(
+                cart_id=kwargs["cart"], product_new=product_new
+            )
+            return Response(None, status=status.HTTP_409_CONFLICT)
+
         except ProductCart.DoesNotExist:
             serializer = serializer_class(data=data, many=False)
             if serializer.is_valid():
@@ -340,7 +369,14 @@ class CartViewSet(viewsets.ModelViewSet):
     # удалить товар ИЗ корзине
     @action(detail=True, methods=["delete"], url_path=r"delete-product")
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
+
         queryset = ProductCart.objects.get(pk=pk)
+        if queryset.product_new:
+            prod_spes = ProductSpecification.objects.get(
+                specification__cart=queryset.cart, product_new=queryset.product_new
+            )
+            prod_spes.delete()
+
         queryset.delete()
         return Response(None, status=status.HTTP_200_OK)
 

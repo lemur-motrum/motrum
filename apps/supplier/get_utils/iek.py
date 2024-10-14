@@ -1230,6 +1230,11 @@ def iek_api():
                     for data_item in data["shopItems"]:
                         if data_item["zakaz"] == 1:
                             to_order = True
+                            error = "file_api_error"
+                            location = "Загрузка фаилов IEK"
+                            info = f"[zakaz] == 1{prod.article_supplier}"
+                            e = error_alert(error, location, info)
+                            print(f"[zakaz] == 1{prod.article_supplier}")
                         else:
                             to_order = False
                             
@@ -1331,7 +1336,7 @@ def iek_api():
             pass       
      
 
-    # get_iek_product("products", f"art=MKP12-V-04-40-20-U")
+
     # get_iek_property("etim",  f"art=MKP12-V-04-40-20-U")
     
     # категории 

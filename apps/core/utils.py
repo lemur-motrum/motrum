@@ -846,6 +846,8 @@ def save_specification(received_data, request):
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
+    from apps.core.utils import create_time_stop_specification
+    
     try:
        
         # сохранение спецификации
@@ -860,7 +862,10 @@ def save_specification(received_data, request):
 
         try:
             specification = Specification.objects.get(id=id_specification)
-
+            data_stop = create_time_stop_specification()
+            specification.date_stop = data_stop
+            specification.tag_stop = True
+            
             product_old = ProductSpecification.objects.filter(specification=specification)
 
             # удалить продукты если удалили из спецификации
@@ -899,7 +904,7 @@ def save_specification(received_data, request):
                 id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
             )
             specification.skip_history_when_saving = True
-            from apps.core.utils import create_time_stop_specification
+            
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True

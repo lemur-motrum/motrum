@@ -1287,55 +1287,62 @@ def iek_api():
             responset = response_request(response.status_code, "IEK получение товаров")
             
             if responset and response.headers["content-type"].strip().startswith("application/json"):
-                print(22222222222)
-                data = response.json()
-                
-                if data:
-                    print(data)
-                    if len(data["shopItems"]) > 0 :
-                        for data_item in data["shopItems"]:
-                            if data_item["zakaz"] == 1:
-                                to_order = True
-                                error = "file_api_error"
-                                location = "Загрузка фаилов IEK"
-                                info = f"[zakaz] == 1{prod.article_supplier}"
-                                e = error_alert(error, location, info)
-                                print(f"[zakaz] == 1{prod.article_supplier}")
-                            else:
-                                to_order = False
-                                
-                            stock = 0
-                            
-                            # product = data_item["sku"]
-                            
-                            for a in data_item["residues"].values():
-                                stock += a
-                            
-                                
-                        return (stock,to_order)    
-                    else:
-                        stock = 0
-                        to_order = False
+                try:
+                    data = response.json()
                     
+                    if data:
+                        print(data)
+                        if len(data["shopItems"]) > 0 :
+                            for data_item in data["shopItems"]:
+                                if data_item["zakaz"] == 1:
+                                    to_order = True
+                                    error = "file_api_error"
+                                    location = "Загрузка фаилов IEK"
+                                    info = f"[zakaz] == 1{prod.article_supplier}"
+                                    e = error_alert(error, location, info)
+                                    print(f"[zakaz] == 1{prod.article_supplier}")
+                                else:
+                                    to_order = False
+                                    
+                                stock = 0
+                                
+                                # product = data_item["sku"]
+                                
+                                for a in data_item["residues"].values():
+                                    stock += a
+                                
+                                    
+                            return (stock,to_order)    
+                        else:
+                            stock = 0
+                            to_order = False
+                        
+                            return (stock,to_order)
+                    else:
+                        error = "file_api_error"
+                        location = "Загрузка фаилов IEK"
+                        info = f"ошибка при чтении остатков Тип ошибки:if data else Артикул{prod.article_supplier}"
+                        e = error_alert(error, location, info)
+                        stock = 0
+                        to_order = True
+                        
                         return (stock,to_order)
-                else:
+                except Exception as e: 
+         
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении остатков Тип ошибки:if data else Артикул{prod.article_supplier}"
-                    e = error_alert(error, location, info)
-                    stock = 0
-                    to_order = True
-                    
-                    return (stock,to_order)
+            
+                    info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}"
+                    e = error_alert(error, location, info)    
             else:
-                print(e)
+                
                 error = "file_api_error"
                 location = "Загрузка фаилов IEK"
           
-                info = f"ошибка при чтении остатков - ответ апи неверный Тип ошибки:{e} Артикул{prod.article_supplier}"
+                info = f"ошибка при чтении остатков - ответ апи неверный Тип ошибки: Артикул{prod.article_supplier}"
                 e = error_alert(error, location, info)
         except Exception as e: 
-                print(e)
+         
                 error = "file_api_error"
                 location = "Загрузка фаилов IEK"
           

@@ -294,7 +294,7 @@ class CartViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
      
-        cart = Cart.objects.filter(cart_id=kwargs["cart"])
+      
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data

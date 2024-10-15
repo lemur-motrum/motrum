@@ -970,7 +970,7 @@ def load_products(request):
         if stock_item != None:
             stock = 1
             stok_to_order = stock_item.to_order
-            stock_supplier = stock_item.stock_supplier
+            stock_supplier = stock_item.stock_supplier_unit
             stock_motrum = stock_item.stock_motrum
             data_update = str(price_all.data_update)
             transit_count = stock_item.transit_count

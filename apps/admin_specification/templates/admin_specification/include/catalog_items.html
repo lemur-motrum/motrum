@@ -97,7 +97,7 @@
                                                 Под заказ
                                             {% else %}
                                                 {% if product.stock.stock_supplier != None %}
-                                                    Поставщик: {{ product.stock.stock_supplier_unit }}
+                                                    Поставщик: {{ product.stock.stock_supplier_unit }} шт
                                                 {% else %}
                                                     Поставщик: -
                                                 {% endif %}
@@ -119,6 +119,7 @@
                                 <div class="lot">
                                     {% if product.stock %}
                                         {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
+                                       
                                             <span class="span-min">Заказ по {{ product.stock.order_multiplicity }}
                                             {{ product.stock.lot.name_shorts }}</span>
                                         {% endif %}

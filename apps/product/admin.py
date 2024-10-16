@@ -1063,8 +1063,8 @@ class ProductAdmin(SimpleHistoryAdmin):
         else:
             return True
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 

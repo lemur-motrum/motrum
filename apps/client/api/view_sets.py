@@ -426,6 +426,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
+        print(999999999999999999999999)
         # cart.is_active = True
         # cart.save()
 

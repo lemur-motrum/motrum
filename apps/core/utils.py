@@ -802,35 +802,42 @@ def save_update_product_attr(
     description,
     name,
 ):
-    if product.supplier == None or product.supplier == "":
-        product.supplier = supplier
+    try:
+        if product.supplier == None or product.supplier == "":
+            product.supplier = supplier
 
-    if product.vendor == None or product.vendor == "":
-        product.vendor = vendor
+        if product.vendor == None or product.vendor == "":
+            product.vendor = vendor
 
-    if (
-        product.additional_article_supplier == None
-        or product.additional_article_supplier == ""
-    ):
-        product.additional_article_supplier = additional_article_supplier
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
 
-    if product.category_supplier_all == None or product.category_supplier_all == "":
-        product.category_supplier_all = category_supplier_all
+        if product.category_supplier_all == None or product.category_supplier_all == "":
+            product.category_supplier_all = category_supplier_all
 
-    if product.group_supplier == None or product.group_supplier == "":
-        product.group_supplier = group_supplier
+        if product.group_supplier == None or product.group_supplier == "":
+            product.group_supplier = group_supplier
 
-    if product.category_supplier == None or product.category_supplier == "":
-        product.category_supplier = category_supplier
+        if product.category_supplier == None or product.category_supplier == "":
+            product.category_supplier = category_supplier
 
-    if product.description == None or product.description == "":
-        product.description = description
+        if product.description == None or product.description == "":
+            product.description = description
 
-    if product.name == None or product.name == "":
-        product.name = name
+        if product.name == None or product.name == "":
+            product.name = name
 
-    product._change_reason = "Автоматическое"
-    product.save()
+        product._change_reason = "Автоматическое"
+        product.save()
+    except Exception as e: 
+        print(e)
+        error = "file_api_error"
+        location = "Загрузка фаилов IEK"
+        info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}"
+        e = error_alert(error, location, info)    
     # update_change_reason(product, "Автоматическое")
 
 
@@ -839,6 +846,8 @@ def save_specification(received_data, request):
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
+    from apps.core.utils import create_time_stop_specification
+    
     try:
        
         # сохранение спецификации
@@ -853,7 +862,10 @@ def save_specification(received_data, request):
 
         try:
             specification = Specification.objects.get(id=id_specification)
-
+            data_stop = create_time_stop_specification()
+            specification.date_stop = data_stop
+            specification.tag_stop = True
+            
             product_old = ProductSpecification.objects.filter(specification=specification)
 
             # удалить продукты если удалили из спецификации
@@ -892,7 +904,7 @@ def save_specification(received_data, request):
                 id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
             )
             specification.skip_history_when_saving = True
-            from apps.core.utils import create_time_stop_specification
+            
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True

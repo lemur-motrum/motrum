@@ -262,9 +262,9 @@ def add_group_emas():
 
 def add_props_emas_product():
     from bs4 import BeautifulSoup
-
+    print("9090")
     try:
-
+        print("0909")
         supplier = Supplier.objects.get(slug="emas")
         vendor = Vendor.objects.get(slug="emas")
         product = Product.objects.filter(supplier=supplier)
@@ -280,6 +280,7 @@ def add_props_emas_product():
         non_props = 0
         yes_props = 0
         for product_item in product:
+            print("121")
 
             name_art = product_item.article_supplier
             product_soup = soup.Товары.find_all("Значение", string=name_art)

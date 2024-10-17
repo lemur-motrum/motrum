@@ -758,10 +758,12 @@ def iek_api():
 
 
                         stock_supplier = get_iek_stock_one(article)
-                        # if stock_supplier is False:
-                        stock_prod_stock_supplier = stock_supplier[0] / int(
-                            order_multiplicity
-                        )
+                        if stock_supplier is not False:
+                            stock_prod_stock_supplier = stock_supplier[0] / int(
+                                order_multiplicity
+                            )
+                        else:
+                            stock_prod_stock_supplier = False    
                         if stock_prod_stock_supplier:
                             if lot:
                                 try:
@@ -799,10 +801,12 @@ def iek_api():
                         continue
 
             else:
-                error = "file_api_error"
-                location = "Загрузка фаилов IEK"
-                info = f"ошибка доступа к дата: {url_params}{responset}{response}"
-                e = error_alert(error, location, info)
+                # пустая группа
+                pass
+                # error = "file_api_error"
+                # location = "Загрузка фаилов IEK"
+                # info = f"ошибка доступа к дата: {url_params}{responset}{response}"
+                # e = error_alert(error, location, info)
                 # for data_item in data:
                 #     try:
 

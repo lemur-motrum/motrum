@@ -868,7 +868,12 @@ def save_update_product_attr(
     try:
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
+    try:
+        if product.supplier == None or product.supplier == "":
+            product.supplier = supplier
 
+        if product.vendor == None or product.vendor == "":
+            product.vendor = vendor
         if product.vendor == None or product.vendor == "":
             product.vendor = vendor
 
@@ -877,19 +882,34 @@ def save_update_product_attr(
             or product.additional_article_supplier == ""
         ):
             product.additional_article_supplier = additional_article_supplier
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
 
+        if product.category_supplier_all == None or product.category_supplier_all == "":
+            product.category_supplier_all = category_supplier_all
         if product.category_supplier_all == None or product.category_supplier_all == "":
             product.category_supplier_all = category_supplier_all
 
         if product.group_supplier == None or product.group_supplier == "":
             product.group_supplier = group_supplier
+        if product.group_supplier == None or product.group_supplier == "":
+            product.group_supplier = group_supplier
 
+        if product.category_supplier == None or product.category_supplier == "":
+            product.category_supplier = category_supplier
         if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
 
         if product.description == None or product.description == "":
             product.description = description
+        if product.description == None or product.description == "":
+            product.description = description
 
+        if product.name == None or product.name == "":
+            product.name = name
         if product.name == None or product.name == "":
             product.name = name
 

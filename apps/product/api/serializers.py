@@ -96,8 +96,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "url",
         )
 
-   
-
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if data["price"]["rub_price_supplier"]:

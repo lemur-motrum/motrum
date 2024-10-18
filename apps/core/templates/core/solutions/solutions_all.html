@@ -1,11 +1,7 @@
 {% extends "core/base.html" %}
 {% block content %}
-
-<!-- Страница для ссылок на все решения -->
-
-<a href="{% url 'core:marking' %}">решения маркировка</a>
-<a href="{% url 'core:cobots' %}">решения коботы</a>
-<a href="{% url 'core:shkaf-upravleniya' %}">сборка шкафов управления</a>
-
-
+    <!-- Страница для ссылок на все решения -->
+    <a href="{% url 'core:marking' %}">решения маркировка</a>
+    <a href="{% url 'core:cobots' %}">решения коботы</a>
+    <a href="{% url 'core:shkaf-upravleniya' %}">сборка шкафов управления</a>
 {% endblock content %}

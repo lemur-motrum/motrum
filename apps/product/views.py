@@ -35,9 +35,11 @@ def catalog_all(request):
     print("catalog_all")
     category = CategoryProduct.objects.all().order_by("article_name")
 
+    print(category)
+
     context = {
         "category": category,
-        "title": "Каталог",
+        "title": "Товары",
     }
 
     return render(request, "product/product_catalog.html", context)
@@ -73,7 +75,6 @@ def catalog_group(request, category):
         q_object = Q()
         q_object &= Q(check_to_order=True)
 
-
         if category is not None:
             # q_object &= Q(category__slug=category)
             if category == "other":
@@ -83,7 +84,6 @@ def catalog_group(request, category):
             else:
                 q_object &= Q(category__slug=category)
 
-    
         product_vendor = (
             Product.objects.select_related(
                 "vendor",
@@ -162,24 +162,26 @@ def products_items(request, category, group):
 
 # страница отдельного продукта
 
+
 def product_one(request, category, group, article):
     print("product_one")
     product = Product.objects.get(article=article)
     product = (
-            Product.objects.select_related(
-                "supplier",
-                "vendor",
-                "category",
-                "group",
-                "price",
-                "stock",
-            )
-            .prefetch_related(Prefetch("stock__lot"),
-                            Prefetch("productproperty_set"),
-                            Prefetch("productimage_set"),
-                            )
-            .get(article=article)
+        Product.objects.select_related(
+            "supplier",
+            "vendor",
+            "category",
+            "group",
+            "price",
+            "stock",
         )
+        .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("productimage_set"),
+        )
+        .get(article=article)
+    )
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)
 
@@ -195,7 +197,6 @@ def product_one(request, category, group, article):
         # "product_lot": product_lot,
     }
     return render(request, "product/product_one.html", context)
-
 
 
 # страница отдельного продукта без с категорией но без группы
@@ -222,10 +223,11 @@ def product_one_without_group(request, category, article):
             "price",
             "stock",
         )
-        .prefetch_related(Prefetch("stock__lot"),
-                          Prefetch("productproperty_set"),
-                          Prefetch("productimage_set"),
-                          )
+        .prefetch_related(
+            Prefetch("stock__lot"),
+            Prefetch("productproperty_set"),
+            Prefetch("productimage_set"),
+        )
         .get(article=article)
     )
     # product = Product.objects.get(article=article)
@@ -241,13 +243,16 @@ def product_one_without_group(request, category, article):
     }
     return render(request, "product/product_one.html", context)
 
+
 def add_document_admin(request):
     from pytils import translit
-    
-    id_selected = request.GET.get('context')
-    id_selected = list(map(int,id_selected[1:-1].split(', '))) # No need for list call in Py2
+
+    id_selected = request.GET.get("context")
+    id_selected = list(
+        map(int, id_selected[1:-1].split(", "))
+    )  # No need for list call in Py2
     form = DocumentForm()
-        
+
     if request.method == "POST":
         file_path = None
         for id_select in id_selected:
@@ -255,7 +260,7 @@ def add_document_admin(request):
             if form.is_valid():
                 product = Product.objects.get(id=id_select)
                 profile = form.save(commit=False)
-            
+
                 if file_path:
                     document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
                 
@@ -265,28 +270,17 @@ def add_document_admin(request):
                     profile.product = product
                     profile.save()
                     file_path = profile.document
-                
-            
-                    
+
             else:
-                print(form.errors) 
-            context = {
-            "type_document":TYPE_DOCUMENT,
-            "form": form,
-            "create": "ok"
-        }        
-        return render(request, "admin/add_doc.html",context)
+                print(form.errors)
+            context = {"type_document": TYPE_DOCUMENT, "form": form, "create": "ok"}
+        return render(request, "admin/add_doc.html", context)
     else:
         form = DocumentForm()
-        context = {
-            "type_document":TYPE_DOCUMENT,
-            "form": form,
-            "create": None
-        }
+        context = {"type_document": TYPE_DOCUMENT, "form": form, "create": None}
         return render(request, "admin/add_doc.html", context)
-    
-    
-    
+
+
 # # юрина вьюха каталога
 # def catalog(request):
 

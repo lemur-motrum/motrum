@@ -35,12 +35,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-       
+
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
 
-        
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
@@ -68,13 +67,14 @@ class ProductViewSet(viewsets.ModelViewSet):
             if "None" in vendor_get:
                 if len(vendor_get) > 1:
                     vendor_get.remove("None")
-                    q_object &= Q(vendor__slug=None,)|Q(vendor__slug__in=vendor_get)
+                    q_object &= Q(
+                        vendor__slug=None,
+                    ) | Q(vendor__slug__in=vendor_get)
                 else:
                     q_object &= Q(vendor__slug=None)
             else:
                 q_object &= Q(vendor__slug__in=vendor_get)
-                
-       
+
         if category_get is not None:
             if category_get == "all":
                 q_object &= Q(article__isnull=False)
@@ -145,12 +145,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             small = True
         else:
             small = False
-      
+
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
             "count": math.ceil(page_count / 10),
-         
             "page": page_get,
             "small": small,
         }
@@ -253,7 +252,7 @@ class CartViewSet(viewsets.ModelViewSet):
             else:
                 try:
                     cart = Cart.objects.get(client=request.user, is_active=False)
-                   
+
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
@@ -261,14 +260,12 @@ class CartViewSet(viewsets.ModelViewSet):
                     return response
 
                 except Cart.DoesNotExist:
-                   
 
                     data = {
                         "session_key": session,
                         "save_cart": False,
                         "client": request.user,
                     }
-                   
 
                     serializer = self.serializer_class(data=data, many=False)
 
@@ -305,7 +302,7 @@ class CartViewSet(viewsets.ModelViewSet):
         # обновление товара
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-           
+
             data["id"] = product.id
 
             serializer = serializer_class(product, data=data, many=False)
@@ -318,7 +315,7 @@ class CartViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
         except ProductCart.DoesNotExist:
-            
+
             serializer = serializer_class(data=data, many=False)
             if serializer.is_valid():
                 cart_product = serializer.save()
@@ -327,13 +324,11 @@ class CartViewSet(viewsets.ModelViewSet):
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-            
+
     # добавить товар не из  бд в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")
     def add_product_cart_new(self, request, *args, **kwargs):
-     
-       
+
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
@@ -342,8 +337,8 @@ class CartViewSet(viewsets.ModelViewSet):
         try:
             product_new_article = ProductCart.objects.get(cart_id=kwargs["cart"],product_new_article = product_new_article)
             return Response(None, status=status.HTTP_409_CONFLICT)
-            
-        except ProductCart.DoesNotExist:       
+
+        except ProductCart.DoesNotExist:
             serializer = serializer_class(data=data, many=False)
             if serializer.is_valid():
                 cart_product = serializer.save()
@@ -351,8 +346,7 @@ class CartViewSet(viewsets.ModelViewSet):
                 data["cart_len"] = cart_len
                 return Response(data, status=status.HTTP_200_OK)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
-
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # изменить колличство товаров в корзине
     @action(detail=True, methods=["update"], url_path=r"update-product")
@@ -373,7 +367,7 @@ class CartViewSet(viewsets.ModelViewSet):
     # удалить товар ИЗ корзине
     @action(detail=True, methods=["delete"], url_path=r"delete-product")
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
-        
+
         queryset = ProductCart.objects.get(pk=pk)
         if queryset.product_new:
             try:

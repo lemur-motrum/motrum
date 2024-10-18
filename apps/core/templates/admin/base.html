@@ -1,4 +1,4 @@
-{% extends 'admin/base.html' %}
+{% extends "admin/base.html" %}
 {% block extrastyle %}
   {{ block.super }}
   {% if request.current_app == "website_admin" %}
@@ -15,4 +15,4 @@
     </style>
   {% else %}
   {% endif %}
-{% endblock %}
+{% endblock extrastyle %}

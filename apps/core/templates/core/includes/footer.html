@@ -1,12 +1,9 @@
 {% load static %}
 {% load current_year %}
-
 {% url 'core:index' as index_url %}
-
 <div class="footer">
     <div class="motrum-footer">
         <div class="motrum-logo-container">
-            
             {% if request.get_full_path == index_url %}
                 <img src={% static "core/images/footer-logo.png" %} alt="logo" />
             {% else %}
@@ -17,10 +14,12 @@
         </div>
         <div class="description">
             <div>
-                ©
+                {% comment %} ©
                 {% current_year %}
-                ООО "ПМН Мотрум". Все права защищены.
+                ООО "ПМН Мотрум". Все права защищены. {% endcomment %}
+                Самара, ул. 22 Партсъезда, 207 оф. 3, 1 этаж
             </div>
+            <a href="tel:+78463004117">+7 (846) 300-41-17</a>
             <a href="{% url "core:privacy-policy" %}">политика конфиденциальности</a>
         </div>
     </div>

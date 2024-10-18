@@ -1,8 +1,9 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
     <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}        <a class="admin-link"
-        href="{% url 'admin:index' %}">Административная панель </a>{% endif %}
+        {% if request.user.is_superuser == True %}
+            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
+        {% endif %}
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
@@ -60,7 +61,9 @@
                                 <input class="price-input"
                                        name="price-input-extra"
                                        type="text"
-                                       {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                       {% comment %}
+                                       onkeypress='validate(event)'
+                                       {% endcomment %}
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                                 <label for="price-input-extra">
@@ -113,7 +116,7 @@
                 {% for item in product_new %}
                 <!--когда аптейдейт-->
                     {% if update_spesif %}
-                         <div class="item_container"
+                        <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"
@@ -142,7 +145,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -216,7 +221,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -268,7 +275,7 @@
                  <!--товары без записи в бд при аплдете добавленные новые которых езе нет в спецификации-->
                 {% for item in product_new_more %}
                     {% if update_spesif %}
-                         <div class="item_container"
+                        <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"
@@ -297,7 +304,9 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %} onkeypress='validate(event)' {% endcomment %}
+                                           {% comment %}
+                                           onkeypress='validate(event)'
+                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -331,7 +340,6 @@
                                        placeholder="% скидки"
                                        maxlength="2"
                                        value="" />
-                          
                             </div>
                             <div class="item_value">
                                 <label>
@@ -339,7 +347,7 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div> 
+                        </div>
                     {% endif %}
                 {% endfor %}
                 

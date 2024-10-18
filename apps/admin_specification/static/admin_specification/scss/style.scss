@@ -445,6 +445,50 @@ h1 {
       .price_description {
         font-size: 0.938rem;
       }
+      .serch-client {
+        display: flex;
+        gap: 1rem;
+        position: relative;
+        input {
+          width: 10rem;
+          height: 1.2rem;
+          border-radius: 0.4rem;
+          border: 1px solid black;
+          box-sizing: border-box;
+          padding: 0.5rem;
+          &:focus {
+            outline: none;
+          }
+        }
+        .clients {
+          position: absolute;
+          border-bottom-left-radius: 0.4rem;
+          border-bottom-right-radius: 0.4rem;
+          border: 1px solid black;
+          box-sizing: border-box;
+          max-height: 3rem;
+          width: 10rem;
+          background-color: #fff;
+          top: 1.1rem;
+          left: 4.4rem;
+          display: none;
+          padding: 0.5rem;
+          overflow: hidden;
+          overflow-y: scroll;
+          &.show {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          .client {
+            font-size: 0.875rem;
+            cursor: pointer;
+            &.active {
+              background-color: #bdbdbd;
+            }
+          }
+        }
+      }
       .prepayment {
         display: flex;
         gap: 0.5rem;
@@ -472,6 +516,12 @@ h1 {
         padding: 0.5rem 0.875rem;
         width: 20%;
       }
+      .save_button {
+        display: none;
+        &.show {
+          display: flex;
+        }
+      }
     }
   }
 }
@@ -491,11 +541,9 @@ h1 {
         }
         &:nth-of-type(3) {
           margin-left: 9.5rem;
-          
         }
         &:nth-of-type(4) {
           margin-left: 4.5rem;
-          
         }
         &:nth-of-type(5) {
           margin-left: 7.563rem;
@@ -522,7 +570,8 @@ h1 {
           color: lightgray;
         }
         &.bill_notpayment {
-          border: 1px solid #dd5454;}
+          border: 1px solid #dd5454;
+        }
         .table_item_value {
           font-size: 0.813rem;
           &:nth-of-type(1) {

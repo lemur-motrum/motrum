@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-
 import environ
 import os
 from pathlib import Path
@@ -41,9 +40,8 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-IS_TESTING = os.environ.get("IS_TESTING", 'False').lower() in ('true', '1', 't')
-
-
+IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
+IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
 
 
 # ALLOWED_HOSTS = []
@@ -76,7 +74,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "simple_history",
     "sass_processor",
-    'rest_framework',
+    "rest_framework",
 ]
 
 STATICFILES_FINDERS = [
@@ -95,7 +93,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
-    'middlewares.middlewares.RequestMiddleware',
+    "middlewares.middlewares.RequestMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -113,7 +111,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                'django.template.context_processors.media'
+                "django.template.context_processors.media",
             ],
         },
     },
@@ -227,21 +225,12 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 
-
-
-
-
-
-
 # CSRF_FAILURE_VIEW = "apps.core.views.csrf_failure"
 
 
-
-
-
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")

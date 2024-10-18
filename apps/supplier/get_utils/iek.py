@@ -401,13 +401,13 @@ def iek_api():
                                 supplier=supplier, article_name=category
                             )
 
-                                item_category_all = get_category(
-                                    supplier, vendor_add[0], categ_names[0].name
-                                )
+                            item_category_all = get_category(
+                                supplier, vendor_add[0], categ_names[0].name
+                            )
 
-                                item_category = item_category_all[0]
-                                item_group = item_category_all[1]
-                                item_group_all = item_category_all[2]
+                            item_category = item_category_all[0]
+                            item_group = item_category_all[1]
+                            item_group_all = item_category_all[2]
 
                             name = data_item["name"]
 

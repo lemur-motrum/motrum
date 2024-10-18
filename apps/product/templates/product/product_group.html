@@ -12,11 +12,14 @@
                     {% for category in another_categories %}
                         <a href="{% url "product:group" category.slug %}"
                            class="swiper-slide category">
-                            <span>{{ category.name }}</span>
+                            <div class="img-container">
+                                {% if category.image %}<img src="{{ category.image.url }}" alt="img">{% endif %}
+                            </div>
+                            <div class="name">{{ category.name }}</div>
                         </a>
                     {% endfor %}
                 </div>
-                <div class="slider-arrow">></div>
+                {% comment %} <div class="slider-arrow">></div> {% endcomment %}
             </div>
         </div>
         <div class="group_container">

@@ -1,28 +1,41 @@
+{% load static %}
 {% if request.user.username and request.user.is_staff == False %}
     <a href={% url 'client:my_orders' %} class="cart-elem">
-        Заказы <span>
-        {% if notifications_order %}{{ notifications_order }}{% endif %}
-    </span>
-</a>
-<a href={% url "core:cart" %} class="cart-elem">
-    Корзина <span class="global_cart_count">
-    {% if count_cart %}{{ count_cart }}{% endif %}
-</span>
-</a>
-<a href={% url 'client:my_orders' %} class="cart-elem">
-    Л.К <span>
-    {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
-</span>
-</a>
+        <div class="img-container">
+            <img src={% static "core/images/header_orders.png" %} />
+        </div>
+        <span>
+            {% if notifications_order %}{{ notifications_order }}{% endif %}
+        </span>
+    </a>
+    <a href={% url "core:cart" %} class="cart-elem">
+        <div class="img-container">
+            <img src={% static "core/images/header_bascet.png" %} />
+        </div>
+        <span class="global_cart_count">
+            {% if count_cart %}{{ count_cart }}{% endif %}
+        </span>
+    </a>
+    <a href={% url 'client:my_orders' %} class="cart-elem">
+        <div class="img-container">
+            <img src={% static "core/images/header_account.png" %} />
+        </div>
+        <span>
+            {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
+        </span>
+    </a>
 {% elif request.user.is_staff %}
-<div class="cart-elem enter-in-site">вход</div>
+    <div class="cart-elem enter-in-site">вход</div>
 {% else %}
-<a href={% url "core:cart" %} class="cart-elem">
-    Корзина <span class="global_cart_count">
-    {% if count_cart %}{{ count_cart }}{% endif %}
-</span>
-</a>
-<div class="cart-elem enter-in-site">вход</div>
+    <a href={% url "core:cart" %} class="cart-elem">
+        <div class="img-container">
+            <img src={% static "core/images/header_bascet.png" %} />
+        </div>
+        <span class="global_cart_count">
+            {% if count_cart %}{{ count_cart }}{% endif %}
+        </span>
+    </a>
+    <div class="cart-elem enter-in-site">вход</div>
 {% endif %}
 {% comment %} {% if request.user.username and request.user.is_staff == False %}
         {% order_link %}

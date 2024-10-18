@@ -6,6 +6,7 @@ import "/static/admin_specification/js/filters.js";
 import "/static/admin_specification/js/add_new_product.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
+import "/static/core/js/scripts/motrum-in-numbers-script.js";
 import "/static/core/js/scripts/manager-popup-logic.js";
 import "/static/core/js/scripts/get-client-id.js";
 import "/static/core/js/scripts/cookie_popup.js";

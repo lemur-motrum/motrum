@@ -1,65 +1,247 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
        <div class="head-page-container">
               <div class="promo-slider">промо-слайдер</div>
               <div class="products">
                      <div class="title-container">
                             <div class="title">товары</div>
-                            <a href="{% url "product:catalog" %}" class="title-link">весь каталог</a>
+                            <div class="description">
+                                   широкий выбор продукции
+                                   <br>
+                                   под любые задачи
+                            </div>
+                            <a href="{% url "product:catalog" %}" class="title-link">
+                                   <div class="title-link-description">весь каталог</div>
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                                   </div>
+                            </a>
                      </div>
-                     <div class="products-categories">
-                            {% for category in categories %}
-                                   {% comment %} КАРТИНКА КАТЕГОРИИ<img src="{{category.image.url}}" alt=""> {% endcomment %}
-                                   <a class="category-elem" href="{% url "product:group" category.slug %}"><span>{{ category.name }}</span></a>
-                            {% endfor %}
-                            <a class="category-elem" href="{% url "product:catalog" %}"><span>весь каталог</span></a>
-                     </div>
+                     {% for category in categories %}
+                            <a class="category-elem" href="{% url "product:group" category.slug %}">
+                                   <img src="{{ category.image.url }}" alt="img">
+                                   <div class="background-container"></div>
+                                   <div class="hover_container"></div>
+                                   <span class="name">{{ category.name }}</span>
+                            </a>
+                     {% endfor %}
               </div>
               <div class="solutions">
-                     <div class="title">Решения</div>
-                     <div class="solutions-container">
-                            <div class="solution">Маркировка</div>
-                            <div class="solution">Коллаборативные роботы</div>
+                     <div class="description-container">
+                            <div class="title">Решения</div>
+                            <div class="description">комплексный подход для наиболее востребованных запросов</div>
+                     </div>
+                     <div class="content-container">
+                            <div class="content-elem">
+                                   <div class="first_item_content">
+                                          <div class="title">маркировка</div>
+                                   </div>
+                                   <div class="second_item_content">
+                                          <div class="description">
+                                                 Оборудование для маркировки
+                                                 <br>
+                                                 Честный знак.
+                                                 <br>
+                                                 <br>
+                                                 Поставка программно-аппаратных
+                                                 комплексов для решения задач
+                                                 по маркеровке и прослеживаемости продукции.
+                                          </div>
+                                   </div>
+                                   <div class="img-container marking-img-container">
+                                          <img src="{% static "core/images/solutions/marking.png" %}" alt="vector">
+                                   </div>
+                            </div>
+                            <div class="content-elem">
+                                   <div class="first_item_content">
+                                          <div class="title">КОЛЛАБОРАТИВНЫЕ РОБОТЫ</div>
+                                   </div>
+                                   <div class="second_item_content">
+                                          <div class="description">
+                                                 Готовое решение по роботизации
+                                                 <br>
+                                                 паллетирования.
+                                                 <br>
+                                                 <br>
+                                                 Поставляем готовое решение на базе
+                                                 коллаборативного робота для захвата гофро-
+                                                 коробов и укладки на паллет с возможностью
+                                                 интеграции в существующую линию.
+                                          </div>
+                                   </div>
+                                   <div class="img-container cobots-img-container">
+                                          <img src="{% static "core/images/solutions/robots.png" %}" alt="vector">
+                                   </div>
+                            </div>
                      </div>
               </div>
               <div class="projects">
                      <div class="title-container">
                             <div class="title">Реализованные проекты</div>
-                            <a href="{% url 'projects_web:projects' %}" class="title-link">все проекты</a>
+                            <div class="description">
+                                   реальные примеры с производств
+                                   <br>
+                                   различного масштаба
+                            </div>
+                            <a href="{% url 'projects_web:projects' %}" class="title-link">
+                                   <div class="title-link-description">весь каталог</div>
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                                   </div>
+                            </a>
                      </div>
-                     <div class="projects-slider">
-                            <div class="swiper-wrapper">
-                                   {% for project in projects %}
-                                          <div class="swiper-slide project-elem">
-                                                 <div class="content">
-                                                        <a href="{% url 'projects_web:project' project.slug %}">
-                                                               <p class="">{{ project.name }}</p>
-                                                               <img src="{{ project.image_main.url }}" alt="">
-                                                        </a>
-                                                        Проект 2
-                                                 </div>
-                                          </div>
-                                   {% endfor %}
-                                   <div class="swiper-slide project-elem">
-                                          <div class="content">Проект 1</div>
+                     {% for project in projects %}
+                            <a class="project" href="{% url 'projects_web:project' project.slug %}">
+                                   <div class="img-container">
+                                          <img src="{{ project.image_main.url }}" alt="img">
                                    </div>
-                                   <div class="swiper-slide project-elem">
-                                          <div class="content">Проект 2</div>
+                                   <div class="project_name">{{ project.name }}</div>
+                            </a>
+                     {% endfor %}
+              </div>
+              <div class="direction-container">
+                     <div class="container">
+                            <div class="we_instal_contaner">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
                                    </div>
-                                   <div class="swiper-slide project-elem">
-                                          <div class="content">Проект 3</div>
+                                   <div class="title">Монтируем</div>
+                                   <div class="content">
+                                          Собираем шкафы
+                                          и пульты
+                                          управления
                                    </div>
-                                   <div class="swiper-slide project-elem">
-                                          <div class="content">Проект 4</div>
+                                   <div class="img-container">
+                                          <img src="{% static "core/images/direction/wee_instal_img.png" %}" alt="vector" />
                                    </div>
                             </div>
-                            <div class="swiper-button-prev"></div>
-                            <div class="swiper-button-next"></div>
+                            <div class="head_container">
+                                   <div class="title">Направления Мотрум</div>
+                            </div>
+                            <div class="we_supported_container">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
+                                   </div>
+                                   <div class="title">Поддерживаем</div>
+                                   <div class="content">Делаем сервисное обслуживание.</div>
+                                   <div class="img-container">
+                                          <img src="{% static "core/images/direction/we_supported.png" %}" alt="vector" />
+                                   </div>
+                            </div>
+                     </div>
+                     <div class="container">
+                            <div class="wee_adjusting_container">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
+                                   </div>
+                                   <div class="title">Регулируем</div>
+                                   <div class="content">
+                                          Выполняем наладку сложного промышленного оборудования:
+                                          <ul>
+                                                 <li>станков</li>
+                                                 <li>производственных линий</li>
+                                                 <li>комплексных систем автоматики.</li>
+                                          </ul>
+                                          <div class="img-container">
+                                                 <img src="{% static "core/images/direction/we_adjusting.png" %}" alt="vector" />
+                                          </div>
+                                   </div>
+                            </div>
+                            <div class="wee_programming_container">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
+                                   </div>
+                                   <div class="title">Программируем</div>
+                                   <div class="content">
+                                          Программируем и настраиваем:
+                                          <ul>
+                                                 <li>логические контроллеры</li>
+                                                 <li>операторские панели</li>
+                                                 <li>частотные преобразователи</li>
+                                                 <li>сервосистемы</li>
+                                                 <li>промышленных роботов</li>
+                                          </ul>
+                                          <div class="img-container">
+                                                 <img src="{% static "core/images/direction/we_programming.png" %}" alt="vector" />
+                                          </div>
+                                   </div>
+                            </div>
+                     </div>
+                     <div class="container">
+                            <div class="we_controling_container">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
+                                   </div>
+                                   <div class="title">Контролируем</div>
+                                   <div class="content">Диспетчеризация, SCADAсистемы.</div>
+                                   <div class="img-container">
+                                          <img src="{% static "core/images/direction/we_controlling.png" %}" alt="vector" />
+                                   </div>
+                            </div>
+                            <div class="we_bring_container">
+                                   <div class="arrow-container">
+                                          <img src="{% static "core/images/direction/arrow.png" %}" />
+                                   </div>
+                                   <div class="title">Привозим</div>
+                                   <div class="content">Поставляем компоненты промышленной автоматизации.</div>
+                                   <div class="img-container">
+                                          <img src="{% static "core/images/direction/we_brng.png" %}" alt="vector" />
+                                   </div>
+                            </div>
                      </div>
               </div>
-              <div class="company-promo">
-                     <div class="title">компания мотрум</div>
-                     <div class="promo">блок с краткой презентацией компании</div>
+              <div class="motrum_in_numbers-container">
+                     <div class="description-container">
+                            <div class="title">
+                                   МОТРУМ
+                                   <br>
+                                   В ЦИФРАХ
+                            </div>
+                            <div class="content">за каждой цифрой стоит высокий профессиональный уровень и слаженный труд</div>
+                     </div>
+                     <div class="dynamics_content-container">
+                            <div class="dynamics_content-elem">
+                                   <div class="number_container">
+                                          <span data-quantity="55" class="quantity">0</span>
+                                   </div>
+                                   <div class="content">
+                                          реализованных проектов
+                                          <br>
+                                          технического зрения
+                                   </div>
+                            </div>
+                            <div class="dynamics_content-elem">
+                                   <div class="number_container">
+                                          <span data-quantity="26" class="quantity">0</span>
+                                   </div>
+                                   <div class="content">
+                                          модернизировано
+                                          <br>
+                                          установок
+                                   </div>
+                            </div>
+                            <div class="dynamics_content-elem">
+                                   <div class="content short_content">
+                                          изготовлено шкафов
+                                          <br>
+                                          управления
+                                   </div>
+                                   <div class="number_container long_number">
+                                          <span data-quantity="353" class="quantity">0</span>
+                                   </div>
+                            </div>
+                            <div class="dynamics_content-elem">
+                                   <div class="content short_content">
+                                          запущенных
+                                          <br>
+                                          установок
+                                   </div>
+                                   <div class="number_container long_number">
+                                          <span data-quantity="113" class="quantity">0</span>
+                                   </div>
+                            </div>
+                     </div>
               </div>
        </div>
 {% endblock content %}

@@ -917,6 +917,7 @@ def save_specification(received_data, request):
         id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
         admin_creator_id = received_data["admin_creator_id"]
         id_specification = received_data["id_specification"]
+        specification_comment = received_data["comment"]
         is_pre_sale = received_data["is_pre_sale"]
         products = received_data["products"]
         # products = "sdfsdf"
@@ -1092,6 +1093,7 @@ def save_specification(received_data, request):
                 product_spes.price_one_motrum = price_one_motrum
                 product_spes.price_all_motrum = price_all_motrum
                 product_spes._change_reason = "Ручное"
+                product_spes.comment = product_item["comment"]
 
                 date_delivery = product_item["date_delivery"]
 
@@ -1136,6 +1138,7 @@ def save_specification(received_data, request):
                 product_spes.product_new = product_item["product_name_new"]
                 product_spes.product_new_article = product_item["product_new_article"]
                 product_spes._change_reason = "Ручное"
+                product_spes.comment = product_item["comment"]
                 # product_spes.product_in_cart =
                 date_delivery = product_item["date_delivery"]
                 if date_delivery != "":
@@ -1150,6 +1153,7 @@ def save_specification(received_data, request):
         # обновить спецификацию пдф
         total_amount = round(total_amount, 2)
         specification.total_amount = total_amount
+        specification.comment = specification_comment
 
         specification._change_reason = "Ручное"
 

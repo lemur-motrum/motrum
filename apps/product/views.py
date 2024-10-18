@@ -257,9 +257,9 @@ def add_document_admin(request):
                 profile = form.save(commit=False)
             
                 if file_path:
-                    document = ProductDocument.objects.create(product=product,type_doc=profile.type_doc,name=profile.name, )
+                    document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
                 
-                    document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
+                    # document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
                 
                 else:
                     profile.product = product

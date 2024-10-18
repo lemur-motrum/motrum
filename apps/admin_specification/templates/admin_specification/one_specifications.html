@@ -46,8 +46,20 @@
             </span>
     </div>
     <h2 class="title">Список товаров на общую сумму: {{specification.total_amount}}₽ </h2>
+    <div class="comment_all">
+        {% if specification.comment %}
+        <p>Общий комментарий:{{ specification.comment }}</p>
+        {% endif %}
+
+    </div>
     <div class="specification-container">
         <div class="">
+            {% comment %} <div class="comment_all">
+                {% if specification.comment %}
+                <p>Общий комментарий:{{ specification.comment }}</p>
+                {% endif %}
+
+            </div> {% endcomment %}
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
@@ -71,7 +83,15 @@
                     
                     {% else %}
                     {{ specif_prod.product_new }}
-                    {% endif %}</div>
+                    {% endif %}
+                    {% if specif_prod.comment %}
+                        <br>
+                        
+                        <textarea style="border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" disabled>{{ specif_prod.comment }}</textarea>
+                    
+                    {% endif %}
+                     
+                </div>
                 <div class="item_value">
                     {% if specif_prod.product %}
                     {{ specif_prod.product.article }}

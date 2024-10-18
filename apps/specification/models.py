@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from django.urls import reverse
 
 
 from apps.core.models import Currency
@@ -7,7 +8,7 @@ from apps.product.models import Price, Product
 from apps.specification.utils import get_document_path
 from simple_history.models import HistoricalRecords
 from apps.user.models import AdminUser
-
+import uuid
 # Create your models here.
 
 
@@ -16,6 +17,13 @@ class Specification(models.Model):
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
         null=True,
+    )
+    number = models.CharField(
+        "Номер спецификации",
+        default=uuid.uuid4,
+        max_length=1000,
+        null=True,
+
     )
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -41,6 +49,13 @@ class Specification(models.Model):
         "product.Cart",
         on_delete=models.PROTECT,
         verbose_name="корзина",
+        null=True,
+    )
+    comment = models.CharField(
+        "Комментарий",
+        default=None,
+        max_length=1000,
+        blank=True,
         null=True,
     )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
@@ -71,6 +86,24 @@ class Specification(models.Model):
             return order.bill_file
         except Order.DoesNotExist:
             return None
+        
+    def get_absolute_url(self):
+
+            return reverse(
+                "admin_specification:one_specifications",
+                kwargs={
+                    "pk": self.pk,
+                },
+            )   
+            
+    def get_history_url(self):
+
+        return reverse(
+            "admin_specification:history_admin",
+            kwargs={
+                "pk": self.pk,
+            },
+        )           
 
 
 class ProductSpecification(models.Model):
@@ -99,7 +132,15 @@ class ProductSpecification(models.Model):
     product_new = models.CharField(
         "Название товара нового без добавления в бд",
         default=None,
-        max_length=1000,
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+    
+    product_new_article = models.CharField(
+        "Артикул товара нового без добавления в бд",
+        default=None,
+        max_length=500,
         blank=True,
         null=True,
     )
@@ -111,6 +152,14 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    comment = models.CharField(
+        "Комментарий",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
+
 
     quantity = models.IntegerField(
         "количество товара",
@@ -141,6 +190,13 @@ class ProductSpecification(models.Model):
         null=True,
     )
     date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
+    text_delivery = models.CharField(
+        "Дата поставки товара текстом для счета",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:

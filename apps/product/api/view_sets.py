@@ -337,10 +337,10 @@ class CartViewSet(viewsets.ModelViewSet):
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
-        product_new = data["product_new"]
+        product_new_article = data["product_new_article"]
 
         try:
-            product_new = ProductCart.objects.get(cart_id=kwargs["cart"],product_new = product_new)
+            product_new_article = ProductCart.objects.get(cart_id=kwargs["cart"],product_new_article = product_new_article)
             return Response(None, status=status.HTTP_409_CONFLICT)
             
         except ProductCart.DoesNotExist:       
@@ -376,8 +376,11 @@ class CartViewSet(viewsets.ModelViewSet):
         
         queryset = ProductCart.objects.get(pk=pk)
         if queryset.product_new:
-            prod_spes =  ProductSpecification.objects.get(specification__cart=queryset.cart,product_new=queryset.product_new)
-            prod_spes.delete()
+            try:
+                prod_spes =  ProductSpecification.objects.get(specification__cart=queryset.cart,product_new=queryset.product_new)
+                prod_spes.delete()
+            except ProductSpecification.DoesNotExist:
+                pass
             
         queryset.delete()
         return Response(None, status=status.HTTP_200_OK)

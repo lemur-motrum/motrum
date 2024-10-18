@@ -18,7 +18,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     ]
 
     @action(detail=False, url_path=r"load-ajax-project-list")
-    def load_ajax_match_list(self, request, *args, **kwargs):
+    def load_ajax_project_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
         count_last = 10
        

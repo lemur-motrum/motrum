@@ -499,7 +499,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
-
+        const commentAll = document.querySelector('textarea[name="comment-input-name-all"]').value
         let validate = true;
         const products = [];
 
@@ -508,6 +508,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemID = item.getAttribute("data-product-pk");
           // const itemCartID = item.getAttribute("data-product-id-cart");
           const nameProductNew = item.getAttribute("data-product-name-new");
+          const articleProductNew = item.getAttribute("data-product-article-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
           const extraDiscount = item.querySelector(".discount-input");
@@ -515,9 +516,9 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-product-specification-id"
           );
           const deliveryDate = item.querySelector(".delivery_date").value;
-
+          const commentItem = item.querySelector('textarea[name="comment-input-name"]').value
           const inputPrice = item.querySelector(".price-input");
-
+          console.log(commentItem)
           const product = {
             product_id: +itemID,
             // product_cart_id: +itemCartID,
@@ -530,7 +531,12 @@ window.addEventListener("DOMContentLoaded", () => {
             extra_discount: extraDiscount.value,
             date_delivery: deliveryDate,
             product_name_new: nameProductNew,
+            product_new_article: nameProductNew,
+            comment: commentItem
+            ? commentItem
+            : null,
           };
+          console.log(product)
           if (inputPrice) {
             if (!inputPrice.value) {
               validate = false;
@@ -545,6 +551,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
 
         if (validate == true) {
+          console.log(21231231231)
           const dataObj = {
             id_bitrix: 22,
             admin_creator_id: adminCreatorId,
@@ -552,10 +559,15 @@ window.addEventListener("DOMContentLoaded", () => {
             is_pre_sale: checkbox.checked ? true : false,
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
+            comment: commentAll
+            ? commentAll
+            : null,
+
           };
 
           const data = JSON.stringify(dataObj);
-          fetch("/api/v1/order/add-order-admin/", {
+          let endpoint = "/api/v1/order/add-order-admin/" 
+          fetch(endpoint, {
             method: "POST",
             body: data,
             headers: {
@@ -1114,13 +1126,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".create-bill-button");
+      console.log(changeButton)
       const link = item.querySelector("a");
+     
       const specificationId = +link.textContent;
       const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
         console.log(specificationId);
         console.log(cartId);
+
 
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
@@ -1261,4 +1276,93 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  // аякс загрузка списка спецификаций
+  const specificationWrapper = document.querySelector('[specification-elem="wrapper"]');
+  if (specificationWrapper) {
+      let paramsArray = [];
+      const btn = specificationWrapper.querySelector(".add_more");
+      const specificationContainer = specificationWrapper.querySelector(
+          '[specification-elem="container"]'
+      );
+      let specificationCount = 0;
+
+      function loadItems(
+      ) {
+          let data = {
+              count: specificationCount,
+          };
+      
+      let params = new URLSearchParams(data);
+      let csrfToken = getCookie("csrftoken");
+      fetch(`/api/v1/order/load-ajax-specification-list/?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+        })
+        .then((response) => response.json()) 
+        .then(function (data) {
+          console.log(data)
+          for (let i in data.data) {
+              console.log(data.data[i])
+              addAjaxCatalogItem(data.data[i]);
+            }
+        })
+      } 
+      
+      window.onload = () => {
+        
+          loadItems();
+        };
+
+
+      function renderCatalogItem(orderData) {
+          let ajaxTemplateWrapper = document.querySelector(
+            '[template-elem="wrapper"]'
+          );
+          let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
+            '[specification-elem="specification-item"]'
+          ).innerText;
+    
+          return nunjucks.renderString(ajaxCatalogElementTemplate, orderData);
+        }
+    
+      function addAjaxCatalogItem(ajaxElemData) {
+          let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
+          specificationContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+        }
+  }
+  
+
+  // поиск клиентов по инн имени в корзине
+  const searhClientForm = document.querySelector(".serch-client");
+  if (searhClientForm) {
+    const searchClientInput = searhClientForm.querySelector(['[name="serch-client_input"]']);
+    const searchEndpoint = "/api/v1/client/get-client-requisites/";
+    searchClientInput.onkeyup = () => {
+      console.log(searchClientInput.value)
+      const objData = {
+        client: searchClientInput.value,
+      };
+      if (searchClientInput.value.length > 2) {
+       
+ 
+        const data = JSON.stringify(objData);
+        fetch(searchEndpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        }).then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+        })
+      }
+    }
+  }
 });
+
+;

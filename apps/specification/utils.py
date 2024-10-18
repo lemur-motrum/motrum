@@ -227,12 +227,12 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     story.append(table)
 
     total_amount_nds = float(specifications.total_amount) / 100 * 20
-    total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
+    # total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
     total_amount_nds = round(total_amount_nds, 2)
-    total_amount_no_nds = round(total_amount_no_nds, 2)
+    # total_amount_no_nds = round(total_amount_no_nds, 2)
 
     total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-    total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
+    # total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
     total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
@@ -241,7 +241,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             None,
             None,
             Paragraph("<br></br>Итого:", bold_left_style),
-            Paragraph(f"{total_amount_no_nds}  руб.", bold_left_style),
+            Paragraph(f"{total_amount}  руб.", bold_left_style),
         )
     ]
     table = Table(

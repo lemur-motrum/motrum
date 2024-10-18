@@ -2,13 +2,14 @@ from apps.client.models import Client, EmailsCallBack, Order
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
-
+from datetime import date
 from apps.notifications.api.serializers import NotificationOrderSerializer, NotificationSerializer
 from apps.specification.api.serializers import (
     ListProductSpecificationSerializer,
     ListsProductSpecificationSerializer,
     ListsSpecificationSerializer,
     ProductSpecificationSerializer,
+    SpecificationSerializer,
 )
 
 
@@ -19,6 +20,7 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class RequisitesSerializer(serializers.ModelSerializer):
+    type_payment_full = serializers.CharField(source="get_type_payment")
     class Meta:
         model = Requisites
         fields = "__all__"
@@ -32,6 +34,7 @@ class AccountRequisitesSerializer(serializers.ModelSerializer):
 
 
 class AllAccountRequisitesSerializer(serializers.ModelSerializer):
+    type_payment_full = serializers.CharField(source="get_type_payment")
     accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
 
     class Meta:
@@ -156,6 +159,34 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
         return representation    
     
 
+
+class OrderOktSerializer(serializers.ModelSerializer):
+    specification_list = SpecificationSerializer(source="specification", read_only=True)
+    bill_status = serializers.SerializerMethodField()
+    status_full = serializers.CharField(source="get_status_display")
+    requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
+    
+    class Meta:
+        model = Order
+        fields = "__all__"
+    
+    def get_bill_status(self, obj):
+        
+        if obj.bill_date_stop:
+            if date.today() > obj.bill_date_stop:
+                return False
+            else:
+                return True
+        else:
+            return None  
+        
+    def to_representation(self, instance):
+        representation = super(
+            OrderOktSerializer, self
+        ).to_representation(instance)
+        if instance.bill_date_stop:
+            representation["bill_date_stop"] = instance.bill_date_stop.strftime("%d.%m.%Y")
+        return representation      
 
 class DocumentSerializer(serializers.Serializer):
     """Your data serializer, define your fields here."""

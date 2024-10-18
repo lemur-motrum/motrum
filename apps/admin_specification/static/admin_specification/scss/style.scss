@@ -490,10 +490,12 @@ h1 {
           margin-left: 7.375rem;
         }
         &:nth-of-type(3) {
-          margin-left: 2.5rem;
+          margin-left: 9.5rem;
+          
         }
         &:nth-of-type(4) {
-          margin-left: 5.938rem;
+          margin-left: 4.5rem;
+          
         }
         &:nth-of-type(5) {
           margin-left: 7.563rem;
@@ -519,6 +521,8 @@ h1 {
         &.disabled {
           color: lightgray;
         }
+        &.bill_notpayment {
+          border: 1px solid #dd5454;}
         .table_item_value {
           font-size: 0.813rem;
           &:nth-of-type(1) {
@@ -527,15 +531,16 @@ h1 {
           &:nth-of-type(2) {
             text-align: left;
             margin-left: 2.175rem;
-            width: 4.375rem;
+            width: 10rem;
           }
           &:nth-of-type(3) {
             text-align: left;
-            margin-left: 7rem;
+            margin-left: 4rem;
             width: 7rem;
           }
           &:nth-of-type(4) {
             margin-left: 2.938rem;
+            width: 15rem;
           }
           &:nth-of-type(5) {
             margin-left: 8.563rem;
@@ -546,26 +551,26 @@ h1 {
         }
 
         .uptate-specification-button {
-          opacity: 0;
+          opacity: 1;
           transition: 0.6s;
           position: absolute;
           z-index: 20;
           right: 2rem;
           cursor: pointer;
-          &.show {
-            opacity: 1;
-          }
+          // &.show {
+          //   opacity: 1;
+          // }
         }
         .change-specification-button {
-          opacity: 0;
+          opacity: 1;
           transition: 0.6s;
           position: absolute;
           z-index: 20;
           right: 2rem;
           cursor: pointer;
-          &.show {
-            opacity: 1;
-          }
+          // &.show {
+          //   opacity: 1;
+          // }
         }
       }
     }

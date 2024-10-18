@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
 from apps.client.models import Client, Order
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
@@ -434,9 +435,9 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
-    print(111111111111111)
+
     if cart != None:
-        print(cart)
+        
         cart_qs = Cart.objects.get(id=cart)
 
         discount_client = 0
@@ -454,13 +455,18 @@ def create_specification(request):
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
+            mortum_req = BaseInfo.objects.all().prefetch_related(
+                Prefetch("BaseInfoAccountRequisites"),
+                
+            )
 
         except Specification.DoesNotExist:
             specification = None
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-
+            mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
+            print(mortum_req)
         prefetch_queryset_property = ProductProperty.objects.filter(
             product__in=product_cart_list
         )
@@ -495,6 +501,11 @@ def create_specification(request):
                 ).values(
                     "id",
                 ),
+                comment=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "comment",
+                ),
             )
         )
 
@@ -511,13 +522,14 @@ def create_specification(request):
                     "id",
                 ),
             )
-          
+            print(product_new)
         
             product_new_value_id = product_new.values_list("id_product_cart")
+            print(product_new_value_id)
             product_new_more = ProductCart.objects.filter(
                 cart=cart, product=None
             ).exclude(id__in=product_new_value_id)
-            
+            print(product_new_more)
             
             
 
@@ -534,12 +546,14 @@ def create_specification(request):
             title = "Новая спецификация"
 
     else:
+        mortum_req = None
         title = "Новая спецификация"
         product = None
         product_new = None
         cart = None
         update_spesif = False
         product_new_more = None
+        specification = None
 
     current_date = datetime.date.today().isoformat()
     context = {
@@ -551,6 +565,8 @@ def create_specification(request):
         "current_date": current_date,
         "update_spesif": update_spesif,
         "product_new_more": product_new_more,
+        "specification" : specification,
+        "mortum_req":mortum_req
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -959,7 +975,7 @@ def load_products(request):
 
         name = product_elem.name
         pk = product_elem.pk
-        article = product_elem.article
+        article = product_elem.article_supplier
         saler_article = product_elem.article_supplier
         supplier_name = product_elem.supplier.name
         if product_elem.vendor != None:

@@ -81,7 +81,7 @@
                                     {% endif %}
                                     {{ product.name }}
                                 </div>
-                                <div class="article-motrum">{{ product.article }}</div>
+                                <div class="article-motrum">{{ product.article_supplier }}</div>
                                 <div class="charactiristics">
                                     {% for char in product.productproperty_set.all %}
                                         {{ char.value }}

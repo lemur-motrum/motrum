@@ -1,13 +1,16 @@
 import datetime
 from pyexpat import model
+from token import TYPE_COMMENT
 from django.db import models
 from django.db.models import Case, Value, When
+from django.urls import reverse
 
 # Create your models here.
 
 
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path
+from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 
 
@@ -64,16 +67,50 @@ class Client(CustomUser):
               
 
     # def send_email_notification(self,text_email):
-
+TYPE_PAYMENT = (
+    ("100% prepay", "100% предоплата"),
+    ("payment in installments", "Оплата частями"),
+    ("100% postpay", "100% постоплата"),
+)
 
 class Requisites(models.Model):
-    client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE,null=True,blank=True,)
     contract = models.CharField(
         "Договор",
         max_length=50,
         null=True,
     )
+    discount = models.FloatField(
+        "Процент скидки",
+        blank=True,
+        null=True,
+    )
+    type_payment = models.CharField(
+        "Тип оплаты",
+        max_length=100,
+        choices=TYPE_PAYMENT,
+        default="100% prepay"
 
+    )
+    prepay_persent = models.FloatField(
+        "Процент предоплаты",
+        blank=True,
+        null=True,
+    )
+    
+    postpay_persent = models.FloatField(
+        "Процент постоплаты",
+        blank=True,
+        null=True,
+    )
+    
+    type_delivery = models.CharField(
+        "Тип доставки",
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
+    
     legal_entity = models.CharField(
         "Юридическое лицо",
         max_length=150,
@@ -90,6 +127,8 @@ class Requisites(models.Model):
     ogrn = models.CharField(
         "ОГРН",
         max_length=15,
+        blank=True,
+        null=True,
     )
     legal_post_code = models.PositiveIntegerField(
         "Юридический адрес :индекс",
@@ -121,6 +160,11 @@ class Requisites(models.Model):
 
     # def __str__(self):
     #     return self.name
+    def get_type_payment(self):
+        for choice in TYPE_PAYMENT:
+            if choice[0] == self.type_payment:
+                return choice[1]
+        return ""
 
 
 class AccountRequisites(models.Model):
@@ -197,7 +241,7 @@ STATUS_ORDER_INT = (
     (6, "CANCELED"),
     (7, "COMPLETED"),
 )
-
+import random
 
 class Order(models.Model):
     client = models.ForeignKey(
@@ -248,8 +292,11 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    # is_status_notification_counter = models.BooleanField("Уведомления по статусц", default=False)
 
+    bill_name = models.CharField(
+        max_length=1000,  default=random.randint(0, 9999),blank=True,
+        null=True,
+    )
     bill_file = models.FileField(
         "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
     )
@@ -307,6 +354,8 @@ class Order(models.Model):
             if choice[0] == self.status:
                 return choice[1]
         return ""
+    
+
 
 
 class Document(models.Model):

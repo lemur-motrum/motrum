@@ -865,9 +865,7 @@ def save_update_product_attr(
     description,
     name,
 ):
-    try:
-        if product.supplier == None or product.supplier == "":
-            product.supplier = supplier
+
     try:
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier

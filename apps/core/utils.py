@@ -140,7 +140,7 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
-            
+
             return round(price_supplier_rub, 2)
     else:
         return None
@@ -390,10 +390,12 @@ def get_file_path_add(instance, filename):
     from pytils import translit
 
     # First we need create an instance of that and later get the current_request assigned
-    request = RequestMiddleware(get_response=None)
-    request = request.thread_local.current_request
+    # request = RequestMiddleware(get_response=None)
+    # print(instance)
+    # print(filename)
 
-    if request.path_info == "/product/add_document_admin/":
+    if instance == None:
+
         base_dir = "products"
         path_name = "document_group"
         base_dir_supplier = instance.product.supplier.slug
@@ -440,11 +442,11 @@ def get_file_path_add(instance, filename):
                 f"{slugish}",
             )
 
-        # doc_list_name = doc_link.split("/")
-        # doc_name = doc_list_name[-1]
-        # images_last_list = doc_link.split(".")
-        # type_file = "." + images_last_list[-1]
-        # link_file = f"{new_dir}/{doc_name}"
+        doc_list_name = doc_link.split("/")
+        doc_name = doc_list_name[-1]
+        images_last_list = doc_link.split(".")
+        type_file = "." + images_last_list[-1]
+        link_file = f"{new_dir}/{doc_name}"
 
     else:
 
@@ -463,7 +465,7 @@ def get_file_path_add(instance, filename):
         type_file = "." + images_last_list[-1]
 
         if isinstance(instance, ProductDocument):
-            
+
             path_name = "document"
             try:
                 images_last = ProductDocument.objects.filter(
@@ -508,6 +510,67 @@ def get_file_path_add(instance, filename):
             item_instanse_name,
             path_name,
             filename,
+        )
+
+
+# сохранение изображений и докуметов из админки и общее
+def get_file_path_add_more_doc(product, type_doc, instance, filename):
+
+    from apps.product.models import ProductDocument
+    from apps.product.models import ProductImage
+    from middlewares.middlewares import RequestMiddleware
+    from pytils import translit
+
+    base_dir = "products"
+    path_name = "document_group"
+    base_dir_supplier = product.supplier.slug
+    if product.vendor:
+        base_dir_vendor = product.vendor.slug
+    else:
+        base_dir_vendor = "vendor-name"
+
+    if product.category:
+        base_dir_vendor = product.category.slug
+    else:
+        base_dir_vendor = "category-name"
+
+    type_doc = type_doc
+
+    new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        MEDIA_ROOT,
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        path_name,
+        type_doc,
+    )
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+
+    slug_text = str(filename)
+    regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+    slugish = re.sub(regex, "", slug_text)
+    slugish = translit.translify(slugish)
+
+    link_file = f"{new_dir}/{slugish}"
+
+    if os.path.isfile(link_file):
+        print("Файл существует")
+    else:
+        print("Файл нет-существует")
+        from django.core.files import File
+
+        # Open an existing file using Python's built-in open()
+        
+        myfile = File(instance)
+
+        return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+            base_dir,
+            base_dir_supplier,
+            base_dir_vendor,
+            path_name,
+            type_doc,
+            f"{slugish}",
         )
 
 
@@ -849,15 +912,16 @@ def save_specification(received_data, request):
     from apps.core.utils import create_time_stop_specification
     
     try:
-       
+
         # сохранение спецификации
         id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
         admin_creator_id = received_data["admin_creator_id"]
         id_specification = received_data["id_specification"]
+        specification_comment = received_data["comment"]
         is_pre_sale = received_data["is_pre_sale"]
         products = received_data["products"]
         # products = "sdfsdf"
-    
+
         id_cart = received_data["id_cart"]
 
         try:
@@ -992,7 +1056,9 @@ def save_specification(received_data, request):
 
                 price_all = float(price_one) * int(product_item["quantity"])
                 price_all = round(price_all, 2)
-                price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+                price_all_motrum = float(price_one_motrum) * int(
+                    product_item["quantity"]
+                )
                 price_all_motrum = round(price_all_motrum, 2)
 
                 if (
@@ -1025,6 +1091,7 @@ def save_specification(received_data, request):
                 product_spes.price_one_motrum = price_one_motrum
                 product_spes.price_all_motrum = price_all_motrum
                 product_spes._change_reason = "Ручное"
+                product_spes.comment = product_item["comment"]
 
                 date_delivery = product_item["date_delivery"]
 
@@ -1039,7 +1106,7 @@ def save_specification(received_data, request):
             else:
 
                 price_one = product_item["price_one"]
-                
+
                 price_all = float(price_one) * int(product_item["quantity"])
                 price_all = round(price_all, 2)
                 currency = Currency.objects.get(words_code="RUB")
@@ -1067,7 +1134,9 @@ def save_specification(received_data, request):
                 product_spes.price_one_motrum = price_one
                 product_spes.price_all_motrum = price_all
                 product_spes.product_new = product_item["product_name_new"]
+                product_spes.product_new_article = product_item["product_new_article"]
                 product_spes._change_reason = "Ручное"
+                product_spes.comment = product_item["comment"]
                 # product_spes.product_in_cart =
                 date_delivery = product_item["date_delivery"]
                 if date_delivery != "":
@@ -1082,14 +1151,15 @@ def save_specification(received_data, request):
         # обновить спецификацию пдф
         total_amount = round(total_amount, 2)
         specification.total_amount = total_amount
-        
+        specification.comment = specification_comment
+
         specification._change_reason = "Ручное"
-        
+
         # from apps.core.utils import create_time_stop_specification
         # data_stop = create_time_stop_specification()
         # specification.date_stop = data_stop
         # specification.tag_stop = True
-        
+
         specification.save()
         requisites = None
         account_requisites = None
@@ -1098,30 +1168,31 @@ def save_specification(received_data, request):
         )
         specification.file = pdf
         specification._change_reason = "Ручное"
-        
-        
 
         # data_stop = create_time_stop_specification()
         # specification.date_stop = data_stop
         # specification.tag_stop = True
-        
+
         specification.save()
         # Specification.objects.filter(id=specification.id).update(file=pdf)
 
         return specification
     except Exception as e:
-            product_spes = ProductSpecification.objects.filter( specification=specification,)
-            if product_spes :
-                for prod in product_spes:
-                    prod.delete()
-            else:
-                specification.delete()        
-            print(e.args[0])
-            print( str(traceback.extract_stack()[-1][1]))
-            error = "error"
-            location = "Сохранение спецификации админам окт"
-            info = f"Сохранение спецификации админам окт ошибка {e}"
-            e = error_alert(error, location, info)
+        product_spes = ProductSpecification.objects.filter(
+            specification=specification,
+        )
+        if product_spes:
+            for prod in product_spes:
+                prod.delete()
+        else:
+            specification.delete()
+        print(e.args[0])
+        print(str(traceback.extract_stack()[-1][1]))
+        error = "error"
+        location = "Сохранение спецификации админам окт"
+        info = f"Сохранение спецификации админам окт ошибка {e}"
+        e = error_alert(error, location, info)
+
 
 def get_presale_discount(product):
     from apps.supplier.models import Discount
@@ -1188,7 +1259,6 @@ def pens_words(n):
 
     else:
         return f"копеек"
-
 
 
 # общая функция кешировани

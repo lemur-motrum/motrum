@@ -29,6 +29,12 @@ def js_templates():
             'name': 'project-item',
             'template': 'projects_web/includes/ajax_project_item.html',
         }
+                ,
+        {
+            'module': 'specification',
+            'name': 'specification-item',
+            'template': 'admin_specification/include/ajax_specification_item.html',
+        }
     ]
 
     for template_item in template_list:

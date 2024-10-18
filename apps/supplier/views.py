@@ -32,8 +32,20 @@ from simple_history.utils import update_change_reason
 # тестовая страница скриптов
 def add_iek(request):
     from django.db.models import Prefetch
-    iek_api()
-    # prod = Product.objects.filter(slug=None)
+    # iek_api()
+    specification = Specification.objects.filter(tag_stop=True)
+
+    for specification_item in specification:
+        now = datetime.date.today()
+        date = specification_item.date_stop
+
+        if now >= date:
+            specification_item.tag_stop = False
+            specification_item._change_reason = "Автоматическое"
+            specification_item.save()
+            order = Order.objects.filter(specification=specification_item).update(status="CANCELED")
+
+# prod = Product.objects.filter(slug=None)
   
     # def background_task():
     #         # Долгосрочная фоновая задача
@@ -107,7 +119,7 @@ def save_emas_props(request):
 
     def background_task():
         # Долгосрочная фоновая задача
-        add_group_emas()
+        # add_group_emas()
         add_props_emas_product()
 
     daemon_thread = threading.Thread(target=background_task)

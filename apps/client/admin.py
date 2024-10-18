@@ -29,25 +29,30 @@ class ClientAdminWeb(admin.ModelAdmin):
     inlines = [
         RequisitesInlineWeb,
     ]
-    # def has_add_permission(self, request):
-    #     return False
-    # def has_delete_permission(self, request,obj=None):
-    #     return False
+#     # def has_add_permission(self, request):
+#     #     return False
+#     # def has_delete_permission(self, request,obj=None):
+#     #     return False
 
 
-# class AccountRequisitesAdminInline(admin.TabularInline):
-#     extra = 1
-#     model = AccountRequisites
+class AccountRequisitesAdminInline(admin.TabularInline):
+    extra = 1
+    model = AccountRequisites
 
-# class RequisitesAdmin(admin.ModelAdmin):
-#     inlines = AccountRequisitesAdminInline,
-#     fields = 'legal_entity','image_inline',
-#     readonly_fields= 'image_inline',
+class RequisitesAdmin(admin.ModelAdmin):
+    list_display = [
+        "legal_entity",
+        "client"
+    ]
+    inlines = AccountRequisitesAdminInline,
+    # fields = 'legal_entity'
 
-#     def image_inline(self, *args, **kwargs):
-#         context = getattr(self.response, 'context_data', None) or {} # somtimes context.copy() is better
-#         inline = context['inline_admin_formset'] = context['inline_admin_formsets'].pop(0)
-#         return get_template(inline.opts.template).render(context, self.request)
+
+
+    # def image_inline(self, *args, **kwargs):
+    #     context = getattr(self.response, 'context_data', None) or {} # somtimes context.copy() is better
+    #     inline = context['inline_admin_formset'] = context['inline_admin_formsets'].pop(0)
+    #     return get_template(inline.opts.template).render(context, self.request)
 
 #     def render_change_form(self, request, *args, **kwargs):
 #         self.request = request
@@ -85,5 +90,5 @@ class ClientAdminWeb(admin.ModelAdmin):
 #         yield from ((inline, vars(inline).update(modeladmin=self))[0] for inline in super().get_inline_instances(*args, **kwargs))
 
 
-# website_admin.register(Client, ClientAdminWeb)
-# website_admin.register(Requisites,RequisitesAdmin)
+admin.site.register(Client, ClientAdminWeb)
+admin.site.register(Requisites,RequisitesAdmin)

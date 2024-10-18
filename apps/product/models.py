@@ -786,7 +786,14 @@ class ProductCart(models.Model):
     product_new = models.CharField(
         "Название товара нового без добавления в бд",
         default=None,
-        max_length=1000,
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+    product_new_article = models.CharField(
+        "Артикул товара нового без добавления в бд",
+        default=None,
+        max_length=500,
         blank=True,
         null=True,
     )

@@ -13,9 +13,21 @@ class SpecificationSerializer(serializers.ModelSerializer):
     # date = serializers.DateField(format="%Y-%m-%d")
     # date_update = serializers.DateField(format="%Y-%m-%d")
     # date_stop = serializers.DateField(format="%Y-%m-%d")
+    url = serializers.CharField(source="get_absolute_url", read_only=True)
+    url_history = serializers.CharField(source="get_history_url", read_only=True)
+    admin_creator_name = serializers.CharField(source="admin_creator")
     class Meta:
         model = Specification
         fields = "__all__"
+        
+    def to_representation(self, instance):
+        representation = super(
+            SpecificationSerializer, self
+        ).to_representation(instance)
+        
+        representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
+        representation["total_amount"] = '{0:,}'.format(instance.total_amount).replace(',', ' ')
+        return representation      
 
 
 class ProductSpecificationSerializer(serializers.ModelSerializer):

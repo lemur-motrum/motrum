@@ -9,6 +9,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
+from apps.core.utils import get_file_path_add_more_doc
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -261,12 +262,10 @@ def add_document_admin(request):
                 profile = form.save(commit=False)
 
                 if file_path:
-                    document = ProductDocument.objects.create(
-                        product=product,
-                        document=file_path,
-                        type_doc=profile.type_doc,
-                        name=profile.name,
-                    )
+                    document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
+                
+                    # document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
+                
                 else:
                     profile.product = product
                     profile.save()

@@ -13,6 +13,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const form = modalWindow.querySelector("form");
     const nameInput = modalWindow.querySelector(".name");
     const nameInputError = modalWindow.querySelector(".name-error");
+    const articleInput = modalWindow.querySelector(".article");
+    const articleInputError = modalWindow.querySelector(".article-error");
     const priceInput = modalWindow.querySelector(".price");
     const priceInputError = modalWindow.querySelector(".price-error");
     const quantityInput = modalWindow.querySelector(".quantity");
@@ -53,18 +55,23 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!quantityInput.value) {
         showErrorValidation("Обязательное поле", quantityInputError);
       }
+      if (!articleInput.value) {
+        showErrorValidation("Обязательное поле", articleInputError);
+      }
       if (nameInput.value && priceInput.value && quantityInput.value) {
         console.log("Ура, товар добавлен в корзину");
         const cart_id = getCookie("cart");
         const dataObj = {
           product: null,
           product_new: nameInput.value,
+          product_new_article: articleInput.value,
           product_new_price: +priceInput.value,
           cart: +cart_id,
           quantity: +quantityInput.value,
         };
 
         const data = JSON.stringify(dataObj);
+        
         fetch(`/api/v1/cart/${cart_id}/save-product-new/`, {
           method: "POST",
           body: data,
@@ -79,7 +86,7 @@ window.addEventListener("DOMContentLoaded", () => {
               return response.json();
             }
             if (response.status == 409) {
-              showErrorValidation("Товар с таким названием в корзине уже есть ", nameInputError);
+              showErrorValidation("Товар с таким артикулом в корзине уже есть ", articleInputError);
               nameInput.style.border = "1px solid red";
             }
             else {

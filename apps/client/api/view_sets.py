@@ -17,17 +17,20 @@ from django.core.cache import cache
 from django.contrib.auth import authenticate, login
 from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
+from apps import specification
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
 
 from apps.client.api.serializers import (
     AccountRequisitesSerializer,
+    AllAccountRequisitesSerializer,
     ClientRequisitesSerializer,
     ClientSerializer,
     DocumentSerializer,
     EmailsCallBackSerializer,
     LkOrderDocumentSerializer,
     LkOrderSerializer,
+    OrderOktSerializer,
     OrderSerializer,
     RequisitesSerializer,
 )
@@ -61,6 +64,7 @@ from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
     SpecificationSerializer,
 )
+from apps.specification.models import ProductSpecification
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -168,6 +172,16 @@ class ClientViewSet(viewsets.ModelViewSet):
             else:
                 return Response(pin, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=["post"], url_path=r"get-client-requisites")
+    def get_client_requisites(self, request, *args, **kwargs):
+        serializer_class = AccountRequisitesSerializer
+        data = request.data
+        requisites_serch = data["client"]
+        queryset = Requisites.objects.filter(
+            Q(legal_entity__icontains=requisites_serch) | Q(inn__icontains=requisites_serch)
+        )
+        serializer = AllAccountRequisitesSerializer(queryset,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -441,8 +455,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "name": 123131,
                 "specification": specification.id,
                 "status": "PROCESSING",
+                "bill_name": None,
+                "bill_file":None,
+                "bill_date_start":None,
+                "bill_date_stop":None,
+                "bill_sum":None,
+                
             }
-            
 
             try:
                 order = Order.objects.get(specification=specification)
@@ -453,7 +472,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     cart.save()
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
 
             except Order.DoesNotExist:
                 serializer = self.serializer_class(data=data_order, many=False)
@@ -463,16 +484,31 @@ class OrderViewSet(viewsets.ModelViewSet):
                     cart.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
     # создание счета к заказу
-   
+
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
-
+        serializer_class = ProductSpecificationSerializer
+        serializer = self.serializer_class(order, data=data_order, many=False)
+        data = {
+            "id": id,
+            "text_delivery": "text_delivery"
+        }
+        data = request.data
+        for obj in data:
+            serializer_prod = serializer_class(
+                        data=obj, partial=True)
+            if serializer_prod.is_valid():
+                serializer_prod.save()
+            
+        
         order = Order.objects.get(specification_id=pk)
-
         order.create_bill()
 
         return Response(None, status=status.HTTP_200_OK)
@@ -494,6 +530,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(cart, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["get"], url_path=r"get_specification_product")
+    def get_specification_product(self, request, pk=None, *args, **kwargs):
+        
+        product_specification = ProductSpecification.objects.filter(specification=pk)
+        if product_specification.exists():
+            serializer = ProductSpecificationSerializer(product_specification, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+    
     # страница мои заказов аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
@@ -846,6 +892,28 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(data=data_response, status=status.HTTP_200_OK)
 
+    @action(detail=False, url_path=r"load-ajax-specification-list")
+    def load_ajax_specification_list(self, request, *args, **kwargs):
+        count = int(request.query_params.get("count"))
+        count_last = 30
+        if request.user.is_superuser:
+            superadmin = True
+        else:
+            superadmin = False    
+            
+        now_date = datetime.datetime.now()
+        print(now_date)
+        queryset = Order.objects.select_related(
+        ).filter().order_by("-id")[count : count + count_last]
+
+        serializer = OrderOktSerializer(
+            queryset, many=True
+        )
+        data_response = {
+            "data": serializer.data,
+            "superadmin":superadmin,
+        }
+        return Response(data=data_response, status=status.HTTP_200_OK)
 
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()

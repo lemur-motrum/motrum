@@ -178,10 +178,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         data = request.data
         requisites_serch = data["client"]
         queryset = Requisites.objects.filter(
-            Q(legal_entity__icontains=requisites_serch) | Q(inn__icontains=requisites_serch)
+            Q(legal_entity__icontains=requisites_serch)
+            | Q(inn__icontains=requisites_serch)
         )
-        serializer = AllAccountRequisitesSerializer(queryset,many=True)
+        serializer = AllAccountRequisitesSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -440,27 +442,36 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
-        print(999999999999999999999999)
-        # cart.is_active = True
-        # cart.save()
+        account_requisites_data = int(data["client_requisites"])
+        account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
+        requisites = account_requisites.requisites
+        if requisites.prepay_persent == 100:
+            pre_sale = True
+        else:
+            pre_sale = False
 
-        # client = cart.client
-        client = None
+        if requisites.client:
+            client = requisites.client
 
-        specification = save_specification(data, request)
+        else:
+            client = None
+
+        specification = save_specification(data, pre_sale, request)
         print(specification)
         if specification:
             data_order = {
                 "client": client,
                 "name": 123131,
                 "specification": specification.id,
+                "requisites": requisites,
+                "account_requisites": account_requisites,
                 "status": "PROCESSING",
+                "cart": cart,
                 "bill_name": None,
-                "bill_file":None,
-                "bill_date_start":None,
-                "bill_date_stop":None,
-                "bill_sum":None,
-                
+                "bill_file": None,
+                "bill_date_start": None,
+                "bill_date_stop": None,
+                "bill_sum": None,
             }
 
             try:
@@ -495,19 +506,14 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         serializer_class = ProductSpecificationSerializer
-        serializer = self.serializer_class(order, data=data_order, many=False)
-        data = {
-            "id": id,
-            "text_delivery": "text_delivery"
-        }
+        # serializer = self.serializer_class(order, data=data_order, many=False)
+        data = {"id": id, "text_delivery": "text_delivery"}
         data = request.data
         for obj in data:
-            serializer_prod = serializer_class(
-                        data=obj, partial=True)
+            serializer_prod = serializer_class(data=obj, partial=True)
             if serializer_prod.is_valid():
                 serializer_prod.save()
-            
-        
+
         order = Order.objects.get(specification_id=pk)
         order.create_bill()
 
@@ -532,14 +538,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], url_path=r"get_specification_product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
-        
+
         product_specification = ProductSpecification.objects.filter(specification=pk)
         if product_specification.exists():
-            serializer = ProductSpecificationSerializer(product_specification, many=True)
+            serializer = ProductSpecificationSerializer(
+                product_specification, many=True
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # страница мои заказов аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
@@ -892,6 +900,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(data=data_response, status=status.HTTP_200_OK)
 
+    # страница все спецификации окт аякс загрузка
     @action(detail=False, url_path=r"load-ajax-specification-list")
     def load_ajax_specification_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
@@ -899,21 +908,46 @@ class OrderViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             superadmin = True
         else:
-            superadmin = False    
-            
+            superadmin = False
+
         now_date = datetime.datetime.now()
         print(now_date)
-        queryset = Order.objects.select_related(
-        ).filter().order_by("-id")[count : count + count_last]
-
-        serializer = OrderOktSerializer(
-            queryset, many=True
+        queryset = (
+            Order.objects.select_related(
+                "specification",
+                "cart",
+                "client",
+                "requisites",
+                "account_requisites"
+            )
+            .prefetch_related(Prefetch("specification__admin_creator"),)
+            .filter()
+            .order_by("-id")[count : count + count_last]
         )
+
+        serializer = OrderOktSerializer(queryset, many=True)
         data_response = {
             "data": serializer.data,
-            "superadmin":superadmin,
+            "superadmin": superadmin,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
+
+    @action(detail=True,methods=["post"], url_path=r"save-payment")
+    def save_payment(self, request,pk=None, *args, **kwargs):
+        order = Order.objects.filter(id=pk)
+        data = request.data
+        bill_sum_paid = data["bill_sum_paid"]
+        order.bill_sum_paid = float(bill_sum_paid)
+        
+        ssum_prepay = order.bill_sum - (order.bill_sum /100*order.requisites.prepay_persent)
+        
+        if order.requisites.prepay_persent == 100:
+            pass
+        elif order.requisites.prepay_persent !=0:
+            pass
+        else:
+            pass
+
 
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()

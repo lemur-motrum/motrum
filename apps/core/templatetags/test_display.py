@@ -1,13 +1,15 @@
 from django import template
-from project.settings import IS_TESTING
+from project.settings import IS_WEB
 
 register = template.Library()
 
 
-@register.inclusion_tag('core/base_okt.html', takes_context=True)
-def test_display(context):
-    if IS_TESTING:
-        return f"style='display: none;'"
+@register.simple_tag
+def test_display():
+    if IS_WEB :
+        pass
     else:
-         return f""
+        text = 'style=display:none;'
+        return text
+    
     

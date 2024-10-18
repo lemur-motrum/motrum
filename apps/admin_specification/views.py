@@ -435,11 +435,10 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
-
+    # если есть корзина
     if cart != None:
         
         cart_qs = Cart.objects.get(id=cart)
-
         discount_client = 0
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
@@ -449,9 +448,10 @@ def create_specification(request):
         )
 
         product_cart = ProductCart.objects.filter(cart=cart)
+        # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-            print(specification)
+           
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -459,17 +459,49 @@ def create_specification(request):
                 Prefetch("BaseInfoAccountRequisites"),
                 
             )
-
+            title = f"Cпецификация № {specification.id}"
+            order = Order.objects.get(specification=specification)
+            
+            # список товаров без щаписи в окт которые были в спецификации
+            product_new = ProductSpecification.objects.filter(
+                specification=specification,
+                product=None,
+            ).annotate(
+                id_product_cart=product_cart.filter(
+                    product_new=OuterRef("product_new")
+                ).values(
+                    "id",
+                ),
+            )
+            product_new_value_id = product_new.values_list("id_product_cart")
+            
+            # список товаров без щаписи в окт которые новые еще на записанны
+            product_new_more = ProductCart.objects.filter(
+                cart=cart, product=None
+            ).exclude(id__in=product_new_value_id)
+            update_spesif = True
+            
+            
+        # новая спецификация 
         except Specification.DoesNotExist:
             specification = None
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
-            print(mortum_req)
-        prefetch_queryset_property = ProductProperty.objects.filter(
-            product__in=product_cart_list
-        )
+            title = "Новая спецификация"
+            order = None
+            
+            # товары без записи в окт
+            product_new = ProductCart.objects.filter(cart=cart, product=None)
+            product_new_more = None
+            update_spesif = False
+            
+        # prefetch_queryset_property = ProductProperty.objects.filter(
+        #     product__in=product_cart_list
+        # )
+        
+        # продукты которые есть в окт в корзине
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -509,42 +541,34 @@ def create_specification(request):
             )
         )
 
-        id_specification = request.COOKIES.get("specificationId")
-        if id_specification:
-            # product_new = ProductCart.objects.filter(cart=cart,product=None,)
-            product_new = ProductSpecification.objects.filter(
-                specification=specification,
-                product=None,
-            ).annotate(
-                id_product_cart=product_cart.filter(
-                    product_new=OuterRef("product_new")
-                ).values(
-                    "id",
-                ),
-            )
-            print(product_new)
-        
-            product_new_value_id = product_new.values_list("id_product_cart")
-            print(product_new_value_id)
-            product_new_more = ProductCart.objects.filter(
-                cart=cart, product=None
-            ).exclude(id__in=product_new_value_id)
-            print(product_new_more)
-            
-            
+        # id_specification = request.COOKIES.get("specificationId")
+        # if id_specification:
+        #     # product_new = ProductCart.objects.filter(cart=cart,product=None,)
+        #     product_new = ProductSpecification.objects.filter(
+        #         specification=specification,
+        #         product=None,
+        #     ).annotate(
+        #         id_product_cart=product_cart.filter(
+        #             product_new=OuterRef("product_new")
+        #         ).values(
+        #             "id",
+        #         ),
+        #     )
+        #     product_new_value_id = product_new.values_list("id_product_cart")
+        #     product_new_more = ProductCart.objects.filter(
+        #         cart=cart, product=None
+        #     ).exclude(id__in=product_new_value_id)
+        #     update_spesif = True
 
-            update_spesif = True
+        # else:
+            # product_new = ProductCart.objects.filter(cart=cart, product=None)
+            # product_new_more = None
+            # update_spesif = False
 
-        else:
-            product_new = ProductCart.objects.filter(cart=cart, product=None)
-            product_new_more = None
-            update_spesif = False
-
-        if id_specification:
-            title = f"Cпецификация № {id_specification}"
-        else:
-            title = "Новая спецификация"
-
+     
+    
+    
+    # корзины нет
     else:
         mortum_req = None
         title = "Новая спецификация"
@@ -554,8 +578,10 @@ def create_specification(request):
         update_spesif = False
         product_new_more = None
         specification = None
+        order = None
 
     current_date = datetime.date.today().isoformat()
+    
     context = {
         "title": title,
         "product": product,
@@ -566,7 +592,8 @@ def create_specification(request):
         "update_spesif": update_spesif,
         "product_new_more": product_new_more,
         "specification" : specification,
-        "mortum_req":mortum_req
+        "mortum_req":mortum_req,
+        "order":order
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -1480,3 +1507,144 @@ def history_admin(request, pk):
     #     }
 
     # return render(request, "admin_specification/history_admin.html", context)
+
+
+
+# рендер страницы корзины до переверстки
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def create_specification(request):
+#     cart = request.COOKIES.get("cart")
+#     # если есть корзина
+#     if cart != None:
+        
+#         cart_qs = Cart.objects.get(id=cart)
+#         discount_client = 0
+#         if cart_qs.client:
+#             discount_client = Client.objects.filter(id=cart_qs.client.id)
+
+#         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+#             "product__id"
+#         )
+
+#         product_cart = ProductCart.objects.filter(cart=cart)
+#         # изменение спецификации
+#         try:
+#             specification = Specification.objects.get(cart=cart)
+           
+#             product_specification = ProductSpecification.objects.filter(
+#                 specification=specification
+#             )
+#             mortum_req = BaseInfo.objects.all().prefetch_related(
+#                 Prefetch("BaseInfoAccountRequisites"),
+                
+#             )
+#         # новая спецификация 
+#         except Specification.DoesNotExist:
+#             specification = None
+#             product_specification = ProductSpecification.objects.filter(
+#                 specification=specification
+#             )
+#             mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
+            
+#         prefetch_queryset_property = ProductProperty.objects.filter(
+#             product__in=product_cart_list
+#         )
+        
+#         # продукты которые есть в окт в корзине
+#         product = (
+#             Product.objects.filter(id__in=product_cart_list)
+#             .select_related(
+#                 "supplier",
+#                 "vendor",
+#                 "category",
+#                 "group",
+#                 "price",
+#                 "stock",
+#                 "category_supplier_all",
+#                 "group_supplier",
+#                 "category_supplier",
+#                 # "stock__lot",
+#             )
+#             .prefetch_related(
+#                 Prefetch("stock__lot"),
+#                 Prefetch("productproperty_set"),
+#                 Prefetch("price__sale"),
+#             )
+#             .annotate(
+#                 quantity=product_cart.filter(product=OuterRef("pk")).values(
+#                     "quantity",
+#                 ),
+#                 id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+#                     "id",
+#                 ),
+#                 id_product_spesif=product_specification.filter(
+#                     product=OuterRef("pk")
+#                 ).values(
+#                     "id",
+#                 ),
+#                 comment=product_specification.filter(
+#                     product=OuterRef("pk")
+#                 ).values(
+#                     "comment",
+#                 ),
+#             )
+#         )
+
+#         id_specification = request.COOKIES.get("specificationId")
+#         if id_specification:
+#             # product_new = ProductCart.objects.filter(cart=cart,product=None,)
+#             product_new = ProductSpecification.objects.filter(
+#                 specification=specification,
+#                 product=None,
+#             ).annotate(
+#                 id_product_cart=product_cart.filter(
+#                     product_new=OuterRef("product_new")
+#                 ).values(
+#                     "id",
+#                 ),
+#             )
+#             product_new_value_id = product_new.values_list("id_product_cart")
+#             product_new_more = ProductCart.objects.filter(
+#                 cart=cart, product=None
+#             ).exclude(id__in=product_new_value_id)
+#             update_spesif = True
+
+#         else:
+#             product_new = ProductCart.objects.filter(cart=cart, product=None)
+#             product_new_more = None
+#             update_spesif = False
+
+#         if id_specification:
+#             title = f"Cпецификация № {id_specification}"
+#         else:
+#             title = "Новая спецификация"
+    
+    
+#     # корзины нет
+#     else:
+#         mortum_req = None
+#         title = "Новая спецификация"
+#         product = None
+#         product_new = None
+#         cart = None
+#         update_spesif = False
+#         product_new_more = None
+#         specification = None
+#         order = None
+
+#     current_date = datetime.date.today().isoformat()
+    
+#     context = {
+#         "title": title,
+#         "product": product,
+#         "product_new": product_new,
+#         "cart": cart,
+#         "request": request,
+#         "current_date": current_date,
+#         "update_spesif": update_spesif,
+#         "product_new_more": product_new_more,
+#         "specification" : specification,
+#         "mortum_req":mortum_req,
+#         "order":order
+#     }
+#     return render(request, "admin_specification/catalog.html", context)

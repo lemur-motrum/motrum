@@ -922,7 +922,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data, request):
+def save_specification(received_data,pre_sale, request):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -938,6 +938,7 @@ def save_specification(received_data, request):
         specification_comment = received_data["comment"]
         is_pre_sale = received_data["is_pre_sale"]
         products = received_data["products"]
+        
         # products = "sdfsdf"
 
         id_cart = received_data["id_cart"]
@@ -997,23 +998,18 @@ def save_specification(received_data, request):
         # перебор продуктов и сохранение
         total_amount = 0.00
         date_ship = datetime.date.today().isoformat()
-
         currency_product = False
+        
         for product_item in products:
-            if product_item["price_exclusive"] == "0":
-                price_exclusive = False
-            else:
-                price_exclusive = True
-
+            # if product_item["price_exclusive"] == "0":
+            #     price_exclusive = False
+            # else:
+            #     price_exclusive = True
+            # продукты которые есть в окт
             if product_item["product_id"] != 0:
                 product = Product.objects.get(id=product_item["product_id"])
                 price = Price.objects.get(prod=product)
-                price_pre_sale = get_presale_discount(product)
-
                 # если цена по запросу взять ее если нет взять цену из бд
-                # print(product_item["price_exclusive"])
-                # print(type(product_item["price_exclusive"]))
-
                 if (
                     product_item["price_exclusive"] != "0"
                     and product_item["price_exclusive"] != ""
@@ -1063,9 +1059,8 @@ def save_specification(received_data, request):
                     price_one = round(price_one_sale, 2)
 
                 # если есть предоплата найти скидку по предоплате мотрум
-                # print(price_one)
-
-                if is_pre_sale != "False" and is_pre_sale != False:
+                if is_pre_sale:
+                    price_pre_sale = get_presale_discount(product)
                     persent_pre_sale = price_pre_sale.percent
                     price_one_motrum = price_one_motrum - (
                         price_one_motrum / 100 * float(persent_pre_sale)
@@ -1079,6 +1074,7 @@ def save_specification(received_data, request):
                 )
                 price_all_motrum = round(price_all_motrum, 2)
 
+                # выбор продукт из спецификации или заспись нового
                 if (
                     product_item["product_specif_id"] != "None"
                     and product_item["product_specif_id"] != None
@@ -1111,8 +1107,8 @@ def save_specification(received_data, request):
                 product_spes._change_reason = "Ручное"
                 product_spes.comment = product_item["comment"]
 
+                # запись дат 
                 date_delivery = product_item["date_delivery"]
-
                 if date_delivery != "":
                     product_spes.date_delivery = datetime.datetime.strptime(
                         date_delivery, "%Y-%m-%d"
@@ -1120,7 +1116,12 @@ def save_specification(received_data, request):
                     product_spes.date_delivery = date_delivery
 
                 product_spes.save()
+                
                 total_amount = total_amount + price_all
+            
+            
+            
+            # продукты без записи в окт
             else:
 
                 price_one = product_item["price_one"]
@@ -1195,6 +1196,7 @@ def save_specification(received_data, request):
         # Specification.objects.filter(id=specification.id).update(file=pdf)
 
         return specification
+    
     except Exception as e:
         product_spes = ProductSpecification.objects.filter(
             specification=specification,
@@ -1204,8 +1206,7 @@ def save_specification(received_data, request):
                 prod.delete()
         else:
             specification.delete()
-        print(e.args[0])
-        print(str(traceback.extract_stack()[-1][1]))
+            
         error = "error"
         location = "Сохранение спецификации админам окт"
         info = f"Сохранение спецификации админам окт ошибка {e}"

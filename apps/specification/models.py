@@ -27,11 +27,7 @@ class Specification(models.Model):
     )
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
-    # date_stop = models.DateField(default=create_time(), verbose_name="Дата окончания")
     date_stop = models.DateField(verbose_name="Дата окончания")
-    # currency_product = models.BooleanField(
-    #     "Валютные товары в спецификации", default=False
-    # )
     tag_stop = models.BooleanField("Действительно", default=True)
     total_amount = models.FloatField("Сумма спецификации", null=True, default=None)
     admin_creator = models.ForeignKey(
@@ -48,7 +44,7 @@ class Specification(models.Model):
     cart = models.OneToOneField(
         "product.Cart",
         on_delete=models.PROTECT,
-        verbose_name="корзина",
+        verbose_name="Корзина",
         null=True,
     )
     comment = models.CharField(

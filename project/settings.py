@@ -42,7 +42,7 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 DEBUG = True
 
 IS_TESTING = os.environ.get("IS_TESTING", 'False').lower() in ('true', '1', 't')
-
+IS_WEB = os.environ.get("IS_WEB", 'False').lower() in ('true', '1', 't')
 
 
 

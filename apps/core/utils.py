@@ -915,12 +915,12 @@ def save_update_product_attr(
 
         product._change_reason = "Автоматическое"
         product.save()
-    except Exception as e:
+    except Exception as e: 
         print(e)
         error = "file_api_error"
         location = "Загрузка фаилов IEK"
         info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}"
-        e = error_alert(error, location, info)
+        e = error_alert(error, location, info)    
     # update_change_reason(product, "Автоматическое")
 
 
@@ -930,7 +930,7 @@ def save_specification(received_data, request):
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
     from apps.core.utils import create_time_stop_specification
-
+    
     try:
 
         # сохранение спецификации
@@ -949,10 +949,8 @@ def save_specification(received_data, request):
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True
-
-            product_old = ProductSpecification.objects.filter(
-                specification=specification
-            )
+            
+            product_old = ProductSpecification.objects.filter(specification=specification)
 
             # удалить продукты если удалили из спецификации
             for product_item_for_old in product_old:
@@ -990,7 +988,7 @@ def save_specification(received_data, request):
                 id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
             )
             specification.skip_history_when_saving = True
-
+            
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True

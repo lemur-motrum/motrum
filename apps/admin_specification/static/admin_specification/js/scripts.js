@@ -1306,6 +1306,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButton = document.querySelector(".save_button");
+
     searchClientInput.onkeyup = () => {
       console.log(searchClientInput.value);
       const objData = {

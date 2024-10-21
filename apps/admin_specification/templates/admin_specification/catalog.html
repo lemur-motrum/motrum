@@ -385,7 +385,8 @@
                             <span>Клиент</span>
                             <input type="text" name="serch-client_input">
                             <div class="clients"></div>
-                            <select class="select-client-requsits"></select>
+                            <select class="select-client-requsits" name="client-requisit"></select>
+                            <div class="client-info"></div>
                         </label>
                     </div>
                     <div class="motrum-info">
@@ -393,7 +394,8 @@
                         <select class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;
-                                       border-radius: 10px">
+                                       border-radius: 10px"
+                                       name="mortum_req">
                             {% for requisit in mortum_req %}
                                 <option data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
@@ -401,10 +403,10 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="prepayment">
+                    {% comment %} <div class="prepayment">
                         <input type="checkbox" id="prepayment-checkbox" />
                         <label for="prepayment-checkbox">Предоплата</label>
-                    </div>
+                    </div> {% endcomment %}
                     <div class="button_specification-wrapper">
                         <button class="save_button">Сохранить спецификацию</button>
                         <button class="exit_button">Выйти без изменений</button>

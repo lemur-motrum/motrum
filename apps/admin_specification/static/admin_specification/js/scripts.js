@@ -524,6 +524,12 @@ window.addEventListener("DOMContentLoaded", () => {
             'textarea[name="comment-input-name"]'
           ).value;
           const inputPrice = item.querySelector(".price-input");
+          const motrumRequsits = document
+            .querySelector("[name='mortum_req']")
+            .getAttribute("value");
+          const clientRequsits = document
+            .querySelector("[name='client-requisit']")
+            .getAttribute("value");
           console.log(commentItem);
           const product = {
             product_id: +itemID,
@@ -539,6 +545,8 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
+            motrum_requisites: motrumRequsits,
+            client_requisites: clientRequsits,
           };
           console.log(product);
           if (inputPrice) {
@@ -1241,7 +1249,23 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = searhClientForm.querySelector(
       ".select-client-requsits"
     );
+
+    const motrumRequsits = document.querySelector(".select_motrum_requisites");
+    const clientOptions = motrumRequsits.querySelectorAll("option");
+    motrumRequsits.setAttribute(
+      "value",
+      clientOptions[0].getAttribute("data-account-requisites-id")
+    );
+    clientOptions.forEach((el) => {
+      motrumRequsits.addEventListener("change", function () {
+        if (el.selected) {
+          motrumRequsits.setAttribute("value", el.getAttribute("value"));
+        }
+      });
+    });
+    const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
+    const saveButton = document.querySelector(".save_button");
     searchClientInput.onkeyup = () => {
       console.log(searchClientInput.value);
       const objData = {
@@ -1265,6 +1289,7 @@ window.addEventListener("DOMContentLoaded", () => {
               data.forEach((el) => {
                 clientsContainer.innerHTML += `<div data-client-id="${el.id}" class="client">${el.legal_entity}</div>`;
                 const clients = clientsContainer.querySelectorAll(".client");
+
                 clients.forEach((client) => {
                   if (client) {
                     client.onmouseover = () => {
@@ -1274,12 +1299,13 @@ window.addEventListener("DOMContentLoaded", () => {
                       client.classList.remove("active");
                     };
                     client.onclick = () => {
+                      clientInfo.innerHTML = "";
                       searchClientInput.value = client.textContent;
                       searchClientInput.setAttribute(
                         "client-id",
                         client.getAttribute("data-client-id")
                       );
-                      if (el.accountrequisites_set.length > 1) {
+                      if (el.accountrequisites_set.length > 0) {
                         clientRequsitsSelect.innerHTML = "";
                         el.accountrequisites_set.forEach((elem) => {
                           if (
@@ -1289,12 +1315,37 @@ window.addEventListener("DOMContentLoaded", () => {
                             clientRequsitsSelect.innerHTML += `<option class="client-option" value="${elem.id}">${elem.account_requisites}</option>`;
                           }
                         });
-                        console.log("есть массив");
+
+                        if (clientRequsitsSelect) {
+                          const clientOptions =
+                            clientRequsitsSelect.querySelectorAll("option");
+                          clientRequsitsSelect.setAttribute(
+                            "value",
+                            clientOptions[0].getAttribute("value")
+                          );
+                          clientOptions.forEach((el) => {
+                            clientRequsitsSelect.addEventListener(
+                              "change",
+                              function () {
+                                if (el.selected) {
+                                  clientRequsitsSelect.setAttribute(
+                                    "value",
+                                    el.getAttribute("value")
+                                  );
+                                }
+                              }
+                            );
+                          });
+                        }
                       } else {
                         clientRequsitsSelect.innerHTML = "";
-                        console.log("нет массива");
                       }
+                      clientInfo.innerHTML = `
+                        <div>Предоплата: <input class="prepay-persent" type='text' value='${el.prepay_persent}'/> %</div>
+                        <div>Доставка: ${el.type_delivery}</div>
+                        `;
                       clientsContainer.classList.remove("show");
+                      saveButton.classList.add("show");
                     };
                   }
                 });
@@ -1307,6 +1358,8 @@ window.addEventListener("DOMContentLoaded", () => {
           });
       } else {
         clientsContainer.classList.remove("show");
+        saveButton.classList.remove("show");
+        searchClientInput.setAttribute("client-id", "");
       }
     };
   }

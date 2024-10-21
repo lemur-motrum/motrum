@@ -488,6 +488,10 @@ h1 {
             }
           }
         }
+        .client-info {
+          display: flex;
+          gap: 0.5rem;
+        }
       }
       .prepayment {
         display: flex;
@@ -801,7 +805,6 @@ h1 {
                   width: 5.375rem;
                   position: relative;
                 }
-
                 &.price-count {
                   white-space: nowrap;
                 }

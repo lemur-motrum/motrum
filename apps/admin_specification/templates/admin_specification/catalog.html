@@ -403,13 +403,14 @@
                     </div>
                     <div class="motrum-info">
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
+                     
                         <select class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;
                                        border-radius: 10px"
                                        name="mortum_req"  >
                             {% for requisit in mortum_req %}
-                                <option data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
+                                <option {% if order and requisit.id == order.motrum_requisites.id %}select{% endif %} data-requisites-id="{{ requisit.requisites.id }} " data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                 </option>
                             {% endfor %}

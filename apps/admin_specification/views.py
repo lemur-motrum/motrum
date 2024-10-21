@@ -466,6 +466,7 @@ def create_specification(request):
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
+            
             title = f"Cпецификация № {specification.id}"
             order = Order.objects.get(specification=specification)
 
@@ -506,6 +507,7 @@ def create_specification(request):
             update_spesif = False
             client_req =None
             client_req_all = None
+            
 
         # prefetch_queryset_property = ProductProperty.objects.filter(
         #     product__in=product_cart_list
@@ -575,7 +577,8 @@ def create_specification(request):
 
     # корзины нет
     else:
-        client_req_none_check = None
+       
+        client_req_all = None
         client_req = None
         mortum_req = None
         title = "Новая спецификация"
@@ -602,7 +605,8 @@ def create_specification(request):
         "mortum_req": mortum_req,
         "order": order,
         "client_req": client_req,
-        "client_req_all" : client_req_all
+        "client_req_all" : client_req_all,
+        
     }
     return render(request, "admin_specification/catalog.html", context)
 

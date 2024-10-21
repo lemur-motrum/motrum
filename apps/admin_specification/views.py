@@ -455,8 +455,11 @@ def create_specification(request):
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-            mortum_req = BaseInfo.objects.all().prefetch_related(
-                Prefetch("BaseInfoAccountRequisites"),
+            # mortum_req = BaseInfo.objects.all().prefetch_related(
+            #     Prefetch("BaseInfoAccountRequisites"),
+            # ) 
+            mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
+                "requisites"
             )
             title = f"Cпецификация № {specification.id}"
             order = Order.objects.get(specification=specification)

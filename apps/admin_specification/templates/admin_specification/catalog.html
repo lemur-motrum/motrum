@@ -40,12 +40,15 @@
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
-                        <div class="item_value">{{ item.name }}
-                           
+                        <div class="item_value">
+                            {{ item.name }}
                             <br>
-                            
-                            <textarea style="width: 200px;height: 15px;border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий"  >{% if item.comment %}{{ item.comment }}{% endif %}</textarea> 
-
+                            <textarea style="width: 200px;
+                                             height: 15px;
+                                             border-radius: 5px"
+                                      class="comment-input"
+                                      name="comment-input-name"
+                                      placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                         </div>
                         {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                         <div class="item_value">{{ item.article_supplier }}</div>
@@ -114,7 +117,7 @@
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
-                <!--когда аптейдейт-->
+                    <!--когда аптейдейт-->
                     {% if update_spesif %}
                         <div class="item_container"
                              data-product-pk=""
@@ -126,10 +129,15 @@
                              data-price-exclusive="1"
                              data-product-specification-id="{{ item.id }}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
-                            <div class="item_value">{{ item.product_new }}
+                            <div class="item_value">
+                                {{ item.product_new }}
                                 <br>
-                                <textarea style="width: 200px;height: 15px;border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" >{% if item.comment %}{{ item.comment }}{% endif %}</textarea> 
-    
+                                <textarea style="width: 200px;
+                                                 height: 15px;
+                                                 border-radius: 5px"
+                                          class="comment-input"
+                                          name="comment-input-name"
+                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
                             {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
@@ -188,10 +196,9 @@
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
                             </div>
-                        </div>                     
-                <!--когда новая спецификация-->
+                        </div>
+                        <!--когда новая спецификация-->
                     {% else %}
-                    
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -202,10 +209,15 @@
                              data-price-exclusive="1"
                              data-product-specification-id="">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
-                            <div class="item_value">{{ item.product_new }}
+                            <div class="item_value">
+                                {{ item.product_new }}
                                 <br>
-                                <textarea style="width: 200px;height: 15px;border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" >{% if item.comment %}{{ item.comment }}{% endif %}</textarea> 
-    
+                                <textarea style="width: 200px;
+                                                 height: 15px;
+                                                 border-radius: 5px"
+                                          class="comment-input"
+                                          name="comment-input-name"
+                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
                             {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
@@ -269,10 +281,9 @@
                                 </label>
                             </div>
                         </div>
-                    
                     {% endif %}
                 {% endfor %}
-                 <!--товары без записи в бд при аплдете добавленные новые которых езе нет в спецификации-->
+                <!--товары без записи в бд при аплдете добавленные новые которых езе нет в спецификации-->
                 {% for item in product_new_more %}
                     {% if update_spesif %}
                         <div class="item_container"
@@ -280,15 +291,20 @@
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"
                              data-product-id-cart="{{ item.id }}"
-                             data-id="{{ item.id}}"
+                             data-id="{{ item.id }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
                              data-product-specification-id="">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
-                            <div class="item_value">{{ item.product_new }}
+                            <div class="item_value">
+                                {{ item.product_new }}
                                 <br>
-                                <textarea style="width: 200px;height: 15px;border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" >{% if item.comment %}{{ item.comment }}{% endif %}</textarea> 
-    
+                                <textarea style="width: 200px;
+                                                 height: 15px;
+                                                 border-radius: 5px"
+                                          class="comment-input"
+                                          name="comment-input-name"
+                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
                             {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
@@ -350,48 +366,52 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                
                 <div class="add_new_product">Добавить новый товар</div>
-               <div class="coment_all_spesif">
+                <div class="coment_all_spesif">
                     <br>
-                    <textarea style="width: 400px;height: 50px;border-radius: 10px;"class="comment-input-all"  name="comment-input-name-all" placeholder="Комментарий к всему заказу"  >{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea> 
-                </div> 
+                    <textarea style="width: 400px;
+                                     height: 50px;
+                                     border-radius: 10px"
+                              class="comment-input-all"
+                              name="comment-input-name-all"
+                              placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
+                </div>
                 <div class="submit-container">
                     <div class="price_description">
                         Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
                     </div>
-                     <div class="client">
-                        <div class="serch-client">
+                    <div class="client">
+                        <label class="serch-client">
+                            <span>Клиент</span>
                             <input type="text" name="serch-client_input">
-                        </div>
-
-                    </div> 
+                            <div class="clients"></div>
+                            <select class="select-client-requsits" name="client-requisit"></select>
+                            <div class="client-info"></div>
+                        </label>
+                    </div>
                     <div class="motrum-info">
-                    
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-                        <select class="select_motrum_requisites" id="motrum-select" style="
-                        height: 25px;
-                        border-radius: 10px;"
-                    >
+                        <select class="select_motrum_requisites"
+                                id="motrum-select"
+                                style="height: 25px;
+                                       border-radius: 10px"
+                                       name="mortum_req">
                             {% for requisit in mortum_req %}
-                                <option data-requisites-id="{{ requisit.requisites.id }}"
-                                        data-account-requisites-id="{{ requisit.id }}"
-                                        value={{ requisit.id }}>
+                                <option data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="prepayment">
+                    {% comment %} <div class="prepayment">
                         <input type="checkbox" id="prepayment-checkbox" />
                         <label for="prepayment-checkbox">Предоплата</label>
-                    </div>
+                    </div> {% endcomment %}
                     <div class="button_specification-wrapper">
                         <button class="save_button">Сохранить спецификацию</button>
                         <button class="exit_button">Выйти без изменений</button>
                     </div>
                 </div>
-
             </div>
         {% else %}
             <div class="no_content-container">

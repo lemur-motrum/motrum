@@ -644,6 +644,30 @@ def doc_file_mass_upload(instance, filename):
         filename,
     )
 
+def get_file_path_add_motrum_base(instance, filename):
+    from pytils import translit
+    
+    new_dir = "{0}/{1}".format(
+        MEDIA_ROOT,
+        "documents"
+    )
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+
+    slug_text = str(filename)
+    regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+    slugish = re.sub(regex, "", slug_text)
+    slugish = translit.translify(slugish)
+
+    link_file = f"{new_dir}/{slugish}"
+
+    
+
+    return "{0}/{1}".format(
+        "documents",
+        f"{slugish}",
+    )
+
 
 # проверка есть ли такой тип лота шт комп
 def lot_chek(lot):

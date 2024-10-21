@@ -337,7 +337,8 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         )
     )
     table_address = Table(data_address)
-    name_image = f"{MEDIA_ROOT}/documents/skript.png"
+    # name_image = f"{MEDIA_ROOT}/documents/skript.png"
+    name_image = request.build_absolute_uri(motrum_info.signature.url)
 
     signature_motrum = Paragraph(
         f'<br /><img width="100" height="30" src="{name_image}" valign="middle"/>&nbsp Старостина В. П.<br /><font  size="8"> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка</font>',
@@ -369,7 +370,8 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         )
     )
 
-    name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+    # name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+    name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
     press_motrum = Paragraph(
         f'<br /><br /><br /><br /><br />М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
         normal_style,

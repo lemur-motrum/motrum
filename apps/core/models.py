@@ -2,6 +2,7 @@ import threading
 from django.db import models
 
 
+
 from apps.core.utils_web import get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
@@ -134,6 +135,10 @@ class SliderMain(models.Model):
 
 
 class BaseInfo(models.Model):
+    from apps.core.utils import get_file_path_add_motrum_base
+    
+    stamp = models.ImageField("Печать", upload_to=get_file_path_add_motrum_base, null=True)
+    signature = models.ImageField("Подпись в документах", upload_to=get_file_path_add_motrum_base, null=True)
     full_name_legal_entity = models.CharField(
         "Название компании полностью",
         max_length=300,
@@ -191,6 +196,8 @@ class BaseInfo(models.Model):
 
 class BaseInfoAccountRequisites(models.Model):
     is_active = models.BooleanField("Активно", default=True)
+    # stamp = models.ImageField("Печать", upload_to=get_file_path_add, null=True)
+    # signature = models.ImageField("Подпись в документах", upload_to=get_file_path_add, null=True)
     requisites = models.ForeignKey(
         BaseInfo, verbose_name="Реквизиты", on_delete=models.CASCADE
     )
@@ -213,3 +220,13 @@ class BaseInfoAccountRequisites(models.Model):
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
+
+
+class BaseImage(models.Model):
+    from apps.core.utils import get_file_path_add_motrum_base
+    logo = models.ImageField("Логотип", upload_to=get_file_path_add_motrum_base, null=True)
+    vendors = models.ImageField("Поставщики", upload_to=get_file_path_add_motrum_base, null=True)
+    
+    class Meta:
+        verbose_name = "Базовые изображения для документов "
+        verbose_name_plural = "Базовые изображения для документов" 

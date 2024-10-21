@@ -504,6 +504,12 @@ window.addEventListener("DOMContentLoaded", () => {
         ).value;
         let validate = true;
         const products = [];
+        const motrumRequsits = document
+          .querySelector("[name='mortum_req']")
+          .getAttribute("value");
+        const clientRequsits = document
+          .querySelector("[name='client-requisit']")
+          .getAttribute("value");
 
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -524,13 +530,7 @@ window.addEventListener("DOMContentLoaded", () => {
             'textarea[name="comment-input-name"]'
           ).value;
           const inputPrice = item.querySelector(".price-input");
-          const motrumRequsits = document
-            .querySelector("[name='mortum_req']")
-            .getAttribute("value");
-          const clientRequsits = document
-            .querySelector("[name='client-requisit']")
-            .getAttribute("value");
-          console.log(commentItem);
+
           const product = {
             product_id: +itemID,
             // product_cart_id: +itemCartID,
@@ -545,8 +545,6 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
-            motrum_requisites: motrumRequsits,
-            client_requisites: clientRequsits,
           };
           console.log(product);
           if (inputPrice) {
@@ -568,10 +566,12 @@ window.addEventListener("DOMContentLoaded", () => {
             id_bitrix: 22,
             admin_creator_id: adminCreatorId,
             products: products,
-            is_pre_sale: checkbox.checked ? true : false,
+            // is_pre_sale: checkbox.checked ? true : false,
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll ? commentAll : null,
+            motrum_requisites: +motrumRequsits,
+            client_requisites: +clientRequsits,
           };
 
           const data = JSON.stringify(dataObj);

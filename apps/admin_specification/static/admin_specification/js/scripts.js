@@ -1228,7 +1228,7 @@ window.addEventListener("DOMContentLoaded", () => {
               );
               showButton(item, changeButton);
               const link = item.querySelector("a");
-              const specificationId = +link.textContent;
+              const specificationId = item.getAttribute("specification-id");
               const cartId = +link.dataset.cartId;
 
               changeButton.onclick = () => {

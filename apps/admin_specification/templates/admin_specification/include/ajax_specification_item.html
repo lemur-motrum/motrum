@@ -1,4 +1,4 @@
-<div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %} {% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %} "
+<div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
      specification-id="{{ specification_list.id }}"
      order-id="{{ id }}"
      status="{{ status }}"

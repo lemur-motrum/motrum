@@ -541,7 +541,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(cart, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"], url_path=r"get_specification_product")
+    @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
 
         product_specification = ProductSpecification.objects.filter(specification=pk)
@@ -937,6 +937,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
+    # сохранение суммы оплаты счета
     @action(detail=True,methods=["post"], url_path=r"save-payment")
     def save_payment(self, request,pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
@@ -944,14 +945,60 @@ class OrderViewSet(viewsets.ModelViewSet):
         bill_sum_paid = data["bill_sum_paid"]
         order.bill_sum_paid = float(bill_sum_paid)
         
-        ssum_prepay = order.bill_sum - (order.bill_sum /100*order.requisites.prepay_persent)
+        sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
+        # sum_postpay = order.bill_sum - sum_prepay
+        # if order.bill_sum_paid >=  sum_prepay:
+        #     sum_prepay_fact = order.bill_sum_paid
+        #     sum_postpay_fact = order.bill_sum_paid - sum_prepay_fact
+        # else:    
+        #     sum_prepay_fact = sum_prepay - order.bill_sum_paid
+        #     sum_postpay_fact = 0
+            
+            
+        # data = {
+        #     "sum_prepay": sum_prepay,
+        #     "sum_postpay": sum_postpay,
+        #     "bill_sum": order.bill_sum,
+        #     "bill_sum_paid":order.bill_sum_paid,
+        #     "sum_prepay_fact": sum_prepay_fact,
+        #     "sum_postpay_fact":sum_postpay_fact
+           
+            
+             
+        # }
+        # if order.requisites.prepay_persent == 100:
+        #     pass
+        # elif order.requisites.prepay_persent !=0:
+        #     pass
+        # else:
+        #     pass
         
-        if order.requisites.prepay_persent == 100:
-            pass
-        elif order.requisites.prepay_persent !=0:
-            pass
-        else:
-            pass
+    @action(detail=True,methods=["get"], url_path=r"view-payment")
+    def view_payment(self, request,pk=None, *args, **kwargs):
+        order = Order.objects.filter(id=pk)
+        # data = request.data
+        # bill_sum_paid = data["bill_sum_paid"]
+        # order.bill_sum_paid = float(bill_sum_paid)
+        print(order)
+        sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
+        sum_postpay = order.bill_sum - sum_prepay
+        if order.bill_sum_paid >=  sum_prepay:
+            sum_prepay_fact = order.bill_sum_paid
+            sum_postpay_fact = order.bill_sum_paid - sum_prepay_fact
+        else:    
+            sum_prepay_fact = sum_prepay - order.bill_sum_paid
+            sum_postpay_fact = 0
+            
+            
+        data = {
+            "sum_prepay": sum_prepay,
+            "sum_postpay": sum_postpay,
+            "bill_sum": order.bill_sum,
+            "bill_sum_paid":order.bill_sum_paid,
+            "sum_prepay_fact": sum_prepay_fact,
+            "sum_postpay_fact":sum_postpay_fact  
+        } 
+        return Response(data, status=status.HTTP_200_OK) 
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

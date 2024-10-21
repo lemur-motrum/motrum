@@ -230,7 +230,8 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     )
     story.append(table)
 
-    total_amount_nds = float(specifications.total_amount) / 100 * 20
+    # total_amount_nds = float(specifications.total_amount) / 100 * 20
+    total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
     # total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
     total_amount_nds = round(total_amount_nds, 2)
     # total_amount_no_nds = round(total_amount_no_nds, 2)

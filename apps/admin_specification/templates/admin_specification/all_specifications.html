@@ -12,15 +12,15 @@
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
         </div>
         <h1 class="title">{{ title }}</h1>
-        <div class="all_specifications_content">
+        {% comment %} <div class="all_specifications_content">
             <div class="table-titles">
                 <div class="table-title">№Документа</div>
                 <div class="table-title">Дата создания</div>
                 <div class="table-title">Сумма</div>
                 <div class="table-title">Статус</div>
                 <div class="table-title">Договор</div>
-            </div>
-            {% comment %} <div class="all_specifications_table">
+            </div> 
+            <div class="all_specifications_table">
                 {% for specification in specifications %}
                     {% if specification.tag_stop == True %}
                         <div data-status="{{ specification.tag_stop }}" class="table_item">
@@ -93,15 +93,8 @@
                     {% endif %}
                     
                 {% endfor %}
-            
-            
-     
-            
-            
-            </div> {% endcomment %}
-
-            
-        </div>
+            </div> 
+        </div> {% endcomment %}
 
         <div class="specification_container all_specifications_content">
             <div class="table-titles">

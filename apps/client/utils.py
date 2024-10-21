@@ -417,13 +417,14 @@ def crete_pdf_bill(specification):
     )
     story.append(table_product)
 
-    total_amount_nds = float(specifications.total_amount) / 100 * 20
-    total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
+    # total_amount_nds = float(specifications.total_amount) / 100 * 20
+    total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
+    # total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
     total_amount_nds = round(total_amount_nds, 2)
-    total_amount_no_nds = round(total_amount_no_nds, 2)
+    # total_amount_no_nds = round(total_amount_no_nds, 2)
 
     total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-    total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
+    # total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
     total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
@@ -434,7 +435,7 @@ def crete_pdf_bill(specification):
             None,
             Paragraph("<br></br>Итого:", bold_left_style),
             None,
-            Paragraph(f"{total_amount_no_nds}", bold_left_style),
+            Paragraph(f"{total_amount}", bold_left_style),
             None,
         )
     ]

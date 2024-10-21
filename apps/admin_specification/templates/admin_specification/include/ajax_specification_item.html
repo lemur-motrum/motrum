@@ -6,7 +6,8 @@
 
         {% endif %} 
   "
-  specification-id="{{ id }}"
+  specification-id="{{ specification_list.id }}"
+  order-id="{{ id }}"
   specification-elem="specification-item">
 
         <div class="table_item_value">
@@ -74,14 +75,14 @@
                 {% if bill_status == None and specification_list.tag_stop == true %}
                         <button data-specication-id-to-bill="{{specification}}" class="create-bill-button">Создать счет</button>
                 {% elif bill_status == None and specification_list.tag_stop == false %} 
-                        <span class="table_item_value_span">срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
+                        <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
                          
 
                 {% elif bill_status == true %}
                         <a href="{{ bill_file}}">Счет ссылка</a>
                        
                 {% elif bill_status == false %}
-                        <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию</span>
+                        <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выствить новый счет </span>
                         
                 {% endif %}
          

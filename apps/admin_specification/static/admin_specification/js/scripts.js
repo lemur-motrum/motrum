@@ -1218,8 +1218,39 @@ window.addEventListener("DOMContentLoaded", () => {
         .then(function (data) {
           console.log(data);
           for (let i in data.data) {
-            console.log(data.data[i]);
             addAjaxCatalogItem(data.data[i]);
+            const currentSpecificatons = allSpecifications.querySelectorAll(
+              "div[status='PROCESSING']"
+            );
+            currentSpecificatons.forEach((item) => {
+              const changeButton = item.querySelector(
+                ".change-specification-button"
+              );
+              showButton(item, changeButton);
+              const link = item.querySelector("a");
+              const specificationId = +link.textContent;
+              const cartId = +link.dataset.cartId;
+
+              changeButton.onclick = () => {
+                console.log(specificationId);
+                console.log(cartId);
+                document.cookie = `cart=${cartId};path=/`;
+                document.cookie = `specificationId=${specificationId};path=/`;
+                const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
+                fetch(endpoint, {
+                  method: "UPDATE",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                  },
+                })
+                  .then((response) => response.json())
+                  .then((response) => {
+                    window.location.href =
+                      "/admin_specification/current_specification/";
+                  });
+              };
+            });
           }
         });
     }

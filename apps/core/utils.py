@@ -1065,11 +1065,12 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 # если есть предоплата найти скидку по предоплате мотрум
                 if pre_sale:
                     price_pre_sale = get_presale_discount(product)
-                    persent_pre_sale = price_pre_sale.percent
-                    price_one_motrum = price_one_motrum - (
-                        price_one_motrum / 100 * float(persent_pre_sale)
-                    )
-                    price_one_motrum = round(price_one_motrum, 2)
+                    if price_pre_sale:
+                        persent_pre_sale = price_pre_sale.percent
+                        price_one_motrum = price_one_motrum - (
+                            price_one_motrum / 100 * float(persent_pre_sale)
+                        )
+                        price_one_motrum = round(price_one_motrum, 2)
 
                 price_all = float(price_one) * int(product_item["quantity"])
                 price_all = round(price_all, 2)

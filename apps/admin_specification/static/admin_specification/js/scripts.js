@@ -697,7 +697,8 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           if (itemPriceOnce) {
             const currentPrice =
-              +getCurrentPrice(itemPriceOnce.textContent) * +quantity.value;
+              +getCurrentPrice(item.getAttribute("data-price")) *
+              +quantity.value;
             getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
           }
@@ -759,6 +760,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const quantity = item.querySelector(".input-quantity");
 
           quantity.onkeyup = () => {
+            console.log("da");
             countQuantity = quantity.value;
             const currentPrice =
               new NumberParser("ru").parse(inputPrice.value) * +quantity.value;

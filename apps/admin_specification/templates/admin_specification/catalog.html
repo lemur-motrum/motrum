@@ -17,7 +17,6 @@
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
-                    {% comment %} <div class="title_item">Артикул Motrum:</div> {% endcomment %}
                     <div class="title_item">
                         Ар.
                         Поставщика:
@@ -50,13 +49,12 @@
                                       name="comment-input-name"
                                       placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                         </div>
-                        {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                         <div class="item_value">{{ item.article_supplier }}</div>
                         {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None %}
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
@@ -64,9 +62,6 @@
                                 <input class="price-input"
                                        name="price-input-extra"
                                        type="text"
-                                       {% comment %}
-                                       onkeypress='validate(event)'
-                                       {% endcomment %}
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                                 <label for="price-input-extra">
@@ -78,7 +73,7 @@
                             <div class="item_value quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
@@ -96,9 +91,6 @@
                             <input class="discount-input"
                                    type="text"
                                    name="price-input-discount"
-                                   {% comment %}
-                                   onkeypress='validate(event)'
-                                   {% endcomment %}
                                    placeholder="% скидки"
                                    maxlength="5"
                                    value="" />
@@ -139,13 +131,12 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -153,9 +144,6 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %}
-                                           onkeypress='validate(event)'
-                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -167,7 +155,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -219,13 +207,12 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -233,9 +220,6 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %}
-                                           onkeypress='validate(event)'
-                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -247,7 +231,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -269,10 +253,6 @@
                                        placeholder="% скидки"
                                        maxlength="2"
                                        value="" />
-                                {% comment %}<label for="price-input-discount">
-                            {% if item.product_individual_sale %}{{ item.product_individual_sale }}{% endif %}
-                            %
-                                </label> {% endcomment %}
                             </div>
                             <div class="item_value">
                                 <label>
@@ -306,7 +286,6 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            {% comment %} <div class="item_value">{{ item.article }}</div> {% endcomment %}
                             <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
@@ -320,9 +299,6 @@
                                     <input class="price-input"
                                            name="price-input-extra"
                                            type="text"
-                                           {% comment %}
-                                           onkeypress='validate(event)'
-                                           {% endcomment %}
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
@@ -334,7 +310,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>

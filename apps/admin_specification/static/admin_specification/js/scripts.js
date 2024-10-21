@@ -565,8 +565,6 @@ window.addEventListener("DOMContentLoaded", () => {
             validate = false;
             bitrixInput.style.border = "1px solid red";
             bitrixInput.style.borderRadius = "10px";
-          } else {
-            validate = true;
           }
         }
 
@@ -617,7 +615,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((response) => {
             deleteCookie("specificationId", "/", window.location.hostname);
             deleteCookie("cart", "/", window.location.hostname);
-
             window.location.href = "/admin_specification/all_specifications/";
           });
       }

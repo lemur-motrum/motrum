@@ -385,9 +385,15 @@
                     <div class="client">
                         <label class="serch-client">
                             <span>Клиент</span>
-                            <input type="text" name="serch-client_input">
+                            <input type="text" name="serch-client_input"  value="{% if client_req %}{{client_req.requisites.legal_entity}}{% endif %}">
                             <div class="clients"></div>
-                            <select class="select-client-requsits" name="client-requisit"></select>
+                            <select class="select-client-requsits" name="client-requisit">
+                                {% if client_req %}
+                                {% for recusits in  %}
+                                
+                                {% endfor %}
+                                {%endif%}
+                            </select>
                             <div class="client-info"></div>
                         </label>
                         <label class="bitrix-id-label">

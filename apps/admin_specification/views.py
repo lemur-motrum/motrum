@@ -8,7 +8,7 @@ from django.db.models import Prefetch, OuterRef
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
-from apps.client.models import Client, Order
+from apps.client.models import AccountRequisites, Client, Order
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
@@ -453,7 +453,10 @@ def create_specification(request):
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
-            client_req_none_check = order.requisites.accountrequisites_set.exclude(id = client_req.id)
+            requisites = order.requisites
+          
+            client_req_none_check = AccountRequisites.objects.filter(requisites=requisites).exclude(id = client_req.id)
+            print(client_req_none_check)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )

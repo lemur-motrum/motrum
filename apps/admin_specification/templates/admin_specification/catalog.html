@@ -389,10 +389,10 @@
                             <div class="clients"></div>
                             <select class="select-client-requsits" name="client-requisit">
                                 {% if client_req %}
-                                {% for recusits in  %}
+                                {% comment %} {% for recusits in  %}
                                 
-                                {% endfor %}
-                                {%endif%}
+                                {% endfor %} {% endcomment %}
+                                {% endif %}
                             </select>
                             <div class="client-info"></div>
                         </label>

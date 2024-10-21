@@ -1306,7 +1306,28 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButton = document.querySelector(".save_button");
-
+    window.onload = () => {
+      if (searchClientInput.value) {
+        saveButton.classList.add("show");
+        if (clientRequsitsSelect) {
+          const clientOptions = clientRequsitsSelect.querySelectorAll("option");
+          clientRequsitsSelect.setAttribute(
+            "value",
+            clientOptions[0].getAttribute("value")
+          );
+          clientOptions.forEach((el) => {
+            clientRequsitsSelect.addEventListener("change", function () {
+              if (el.selected) {
+                clientRequsitsSelect.setAttribute(
+                  "value",
+                  el.getAttribute("value")
+                );
+              }
+            });
+          });
+        }
+      }
+    };
     searchClientInput.onkeyup = () => {
       console.log(searchClientInput.value);
       const objData = {

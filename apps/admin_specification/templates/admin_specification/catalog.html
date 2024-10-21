@@ -29,7 +29,6 @@
                     <div class="title_item">Доп.Скидка %:</div>
                     <div class="title_item">Срок поставки:</div>
                 </div>
-                
                 {% for item in product %}
                     <div class="item_container"
                          data-product-name-new=""
@@ -254,7 +253,6 @@
                                 </div>
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value total_cost price"></div>
-                             
                             {% endif %}
                             <div class="item_value">
                                 {% if item.discount == "" or item.discount == None %}
@@ -385,41 +383,47 @@
                     <div class="client">
                         <label class="serch-client">
                             <span>Клиент</span>
-                            <input type="text" name="serch-client_input"  value="{% if client_req %}{{client_req.requisites.legal_entity}}{% endif %}">
+                            <input type="text"
+                                   name="serch-client_input"
+                                   value="{% if client_req %}{{ client_req.requisites.legal_entity }}{% endif %}">
                             <div class="clients"></div>
-                            <select class="select-client-requsits" name="client-requisit">
+                            <select class="select-client-requsits"
+                                    {% if client_req %}value="{{ client_req.id }}"{% endif %}
+                                    name="client-requisit">
                                 {% if client_req %}
-                                
-                             {% for recusits in client_req_all %}
-                                <option class="client-option" {% if client_req.requisites.id == recusits.id %}selected{% endif %} value="{{recusits.id}}">{{recusits.account_requisites}}</option>
-                                {% endfor %}
+                                    {% for recusits in client_req_all %}
+                                        <option class="client-option"
+                                                {% if client_req.id == recusits.id %}selected{% endif %}
+                                                value="{{ recusits.id }}">{{ recusits.account_requisites }}</option>
+                                    {% endfor %}
                                 {% endif %}
                             </select>
                             <div class="client-info">
                                 {% if client_req %}
-                                <div>Предоплата: {{client_req.requisites.prepay_persent}}%</div>
-                                <div>Доставка: {{client_req.requisites.type_delivery}}</div>
+                                    <div>Предоплата: {{ client_req.requisites.prepay_persent }}%</div>
+                                    <div>Доставка: {{ client_req.requisites.type_delivery }}</div>
                                 {% endif %}
                             </div>
                         </label>
                         <label class="bitrix-id-label">
                             <span>Номер сделки Bitrix</span>
-                            <input class="bitrix-input" type="text" onkeypress='validate(event)'  value="{% if order %}{{specification.id_bitrix}}{% endif %}"/>
+                            <input class="bitrix-input"
+                                   type="text"
+                                   onkeypress='validate(event)'
+                                   value="{% if order %}{{ specification.id_bitrix }}{% endif %}" />
                         </label>
                     </div>
                     <div class="motrum-info">
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-              
                         <select class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;
                                        border-radius: 10px"
-                                       name="mortum_req" value="1" value="1" >
+                                name="mortum_req"
+                                value="1"
+                                value="1">
                             {% for requisit in mortum_req %}
-                                <option {% if order and requisit.id == order.motrum_requisites.id %} selected {% endif %}
-                                 data-requisites-id="{{ requisit.requisites.id }} " 
-                                 data-account-requisites-id="{{ requisit.id }}" 
-                                 value={{ requisit.id }}>
+                                <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %} data-requisites-id="{{ requisit.requisites.id }} " data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                 </option>
                             {% endfor %}

@@ -253,6 +253,7 @@
                                 </div>
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value total_cost price"></div>
+                             
                             {% endif %}
                             <div class="item_value">
                                 {% if item.discount == "" or item.discount == None %}
@@ -388,6 +389,10 @@
                             <select class="select-client-requsits" name="client-requisit"></select>
                             <div class="client-info"></div>
                         </label>
+                        <label class="bitrix-id-label">
+                            <span>Номер сделки Bitrix</span>
+                            <input class="bitrix-input" type="text" onkeypress='validate(event)' />
+                        </label>
                     </div>
                     <div class="motrum-info">
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
@@ -403,10 +408,6 @@
                             {% endfor %}
                         </select>
                     </div>
-                    {% comment %} <div class="prepayment">
-                        <input type="checkbox" id="prepayment-checkbox" />
-                        <label for="prepayment-checkbox">Предоплата</label>
-                    </div> {% endcomment %}
                     <div class="button_specification-wrapper">
                         <button class="save_button">Сохранить спецификацию</button>
                         <button class="exit_button">Выйти без изменений</button>

@@ -253,13 +253,18 @@
     gap: 0.5rem;
     .bread_crumbs {
       display: flex;
-      gap: 3.063rem;
+      gap: 3.125rem;
       a {
         text-transform: lowercase;
         color: black;
         text-decoration: none;
-        font-size: 0.813rem;
+        font-size: 0.938rem;
+        font-weight: 300;
       }
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
     }
     .site_groups_container {
       overflow: hidden;
@@ -270,26 +275,28 @@
       position: relative;
       .swiper-wrapper {
         .group {
-          height: 4rem;
+          height: 3.563rem;
           display: flex;
           align-items: center;
           justify-content: center;
           box-sizing: border-box;
-          padding: 0.633rem;
-          border-radius: 10px;
-          background-color: #f5f5f5;
+          padding: 0.938rem 2.063rem;
+          border-radius: 2rem;
+          border: 0.094rem solid black;
+          background-color: #fff;
           width: -webkit-max-content;
           width: -moz-max-content;
           width: max-content;
-          margin-left: 0.313rem;
+          margin-left: 1rem;
           text-decoration: none;
           &:first-of-type {
             margin-left: 0;
           }
           span {
-            font-weight: bold;
-            font-size: 0.938rem;
-            color: #bdbdbd;
+            font-weight: 300;
+            font-size: 1.313rem;
+            color: #000;
+            text-transform: lowercase;
           }
         }
       }

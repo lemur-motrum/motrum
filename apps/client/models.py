@@ -256,6 +256,10 @@ class Order(models.Model):
     name = models.PositiveIntegerField(
         "номер заказа",
     )
+    id_bitrix = models.PositiveIntegerField(
+        "Номер сделки битрикс",
+        null=True,
+    )
     date_order = models.DateField(
         default=datetime.date.today,
         verbose_name="Дата создания заказа",

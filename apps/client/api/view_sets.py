@@ -445,6 +445,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["id_cart"])
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
+        id_bitrix = int(data["id_bitrix"])
         
         print(account_requisites_data)
         print(motrum_requisites_data)
@@ -463,7 +464,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             client = None
 
-        specification = save_specification(data, pre_sale, request, motrum_requisites,account_requisites,requisites)
+        specification = save_specification(data, pre_sale, request, motrum_requisites,account_requisites,requisites,id_bitrix)
         print("=====================")
         print(specification.id)
         if specification:
@@ -481,6 +482,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_date_stop": None,
                 "bill_sum": None,
                 "motrum_requisites":motrum_requisites.id,
+                "id_bitrix": id_bitrix
             }
             print(data_order)
 

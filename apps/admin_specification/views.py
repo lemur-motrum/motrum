@@ -453,6 +453,7 @@ def create_specification(request):
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
+            client_req_none_check = order.requisites.account_requisites.exclude(id = client_req.id)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -500,6 +501,8 @@ def create_specification(request):
             product_new = ProductCart.objects.filter(cart=cart, product=None)
             product_new_more = None
             update_spesif = False
+            client_req =None
+            client_req_none_check = None
 
         # prefetch_queryset_property = ProductProperty.objects.filter(
         #     product__in=product_cart_list
@@ -569,6 +572,7 @@ def create_specification(request):
 
     # корзины нет
     else:
+        client_req_none_check = None
         client_req = None
         mortum_req = None
         title = "Новая спецификация"
@@ -595,6 +599,7 @@ def create_specification(request):
         "mortum_req": mortum_req,
         "order": order,
         "client_req": client_req,
+        "client_req_none_check" : client_req_none_check
     }
     return render(request, "admin_specification/catalog.html", context)
 

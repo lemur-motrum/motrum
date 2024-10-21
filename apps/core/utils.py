@@ -945,7 +945,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites):
+def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -1214,6 +1214,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
             specification.id, requisites, account_requisites, request,motrum_requisites
         )
         specification.file = pdf
+        specification.id_bitrix = id_bitrix
         specification._change_reason = "Ручное"
 
         # data_stop = create_time_stop_specification()

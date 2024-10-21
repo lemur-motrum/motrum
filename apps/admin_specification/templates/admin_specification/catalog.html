@@ -392,7 +392,7 @@
                         </label>
                         <label class="bitrix-id-label">
                             <span>Номер сделки Bitrix</span>
-                            <input class="bitrix-input" type="text" onkeypress='validate(event)' />
+                            <input class="bitrix-input" type="text" onkeypress='validate(event)'  value="{% if order %}{{specification.id_bitrix}}{% endif %}"/>
                         </label>
                     </div>
                     <div class="motrum-info">
@@ -401,7 +401,7 @@
                                 id="motrum-select"
                                 style="height: 25px;
                                        border-radius: 10px"
-                                       name="mortum_req">
+                                       name="mortum_req" value="1" value="1" >
                             {% for requisit in mortum_req %}
                                 <option data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}

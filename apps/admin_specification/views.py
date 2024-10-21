@@ -453,7 +453,7 @@ def create_specification(request):
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
-            client_req_none_check = order.requisites.account_requisites.exclude(id = client_req.id)
+            client_req_none_check = order.requisites.accountrequisites_set.exclude(id = client_req.id)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )

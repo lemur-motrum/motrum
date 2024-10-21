@@ -437,7 +437,7 @@ def create_specification(request):
     cart = request.COOKIES.get("cart")
     # если есть корзина
     if cart != None:
-        
+
         cart_qs = Cart.objects.get(id=cart)
         discount_client = 0
         if cart_qs.client:
@@ -451,17 +451,16 @@ def create_specification(request):
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-           
+
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
             mortum_req = BaseInfo.objects.all().prefetch_related(
                 Prefetch("BaseInfoAccountRequisites"),
-                
             )
             title = f"Cпецификация № {specification.id}"
             order = Order.objects.get(specification=specification)
-            
+
             # список товаров без щаписи в окт которые были в спецификации
             product_new = ProductSpecification.objects.filter(
                 specification=specification,
@@ -474,33 +473,34 @@ def create_specification(request):
                 ),
             )
             product_new_value_id = product_new.values_list("id_product_cart")
-            
+
             # список товаров без щаписи в окт которые новые еще на записанны
             product_new_more = ProductCart.objects.filter(
                 cart=cart, product=None
             ).exclude(id__in=product_new_value_id)
             update_spesif = True
-            
-            
-        # новая спецификация 
+
+        # новая спецификация
         except Specification.DoesNotExist:
             specification = None
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-            mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
+            mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
+                "requisites"
+            )
             title = "Новая спецификация"
             order = None
-            
+
             # товары без записи в окт
             product_new = ProductCart.objects.filter(cart=cart, product=None)
             product_new_more = None
             update_spesif = False
-            
+
         # prefetch_queryset_property = ProductProperty.objects.filter(
         #     product__in=product_cart_list
         # )
-        
+
         # продукты которые есть в окт в корзине
         product = (
             Product.objects.filter(id__in=product_cart_list)
@@ -533,9 +533,7 @@ def create_specification(request):
                 ).values(
                     "id",
                 ),
-                comment=product_specification.filter(
-                    product=OuterRef("pk")
-                ).values(
+                comment=product_specification.filter(product=OuterRef("pk")).values(
                     "comment",
                 ),
             )
@@ -561,13 +559,10 @@ def create_specification(request):
         #     update_spesif = True
 
         # else:
-            # product_new = ProductCart.objects.filter(cart=cart, product=None)
-            # product_new_more = None
-            # update_spesif = False
+        # product_new = ProductCart.objects.filter(cart=cart, product=None)
+        # product_new_more = None
+        # update_spesif = False
 
-     
-    
-    
     # корзины нет
     else:
         mortum_req = None
@@ -581,7 +576,7 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-    
+
     context = {
         "title": title,
         "product": product,
@@ -591,9 +586,9 @@ def create_specification(request):
         "current_date": current_date,
         "update_spesif": update_spesif,
         "product_new_more": product_new_more,
-        "specification" : specification,
-        "mortum_req":mortum_req,
-        "order":order
+        "specification": specification,
+        "mortum_req": mortum_req,
+        "order": order,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -620,12 +615,13 @@ def save_specification_view_admin(request):
 def get_all_specifications(request):
 
     all_specifications = (
-        Specification.objects.filter(admin_creator__isnull=False).select_related("admin_creator", "cart")
+        Specification.objects.filter(admin_creator__isnull=False)
+        .select_related("admin_creator", "cart")
         .prefetch_related(
             Prefetch("order"),
         )
         .all()
-        .order_by("tag_stop", "date_update","id")
+        .order_by("tag_stop", "date_update", "id")
         .reverse()
     )
 
@@ -648,24 +644,28 @@ def get_all_specifications(request):
 
     return render(request, "admin_specification/all_specifications.html", context)
 
+
 @permission_required(
     "specification.add_specification",
     login_url="/user/login_admin/",
 )
 def one_specifications(request, pk):
     specification = Specification.objects.get(pk=pk)
-    product_specification = ProductSpecification.objects.filter(specification=specification)
-    order =  Order.objects.get(specification =specification )
+    product_specification = ProductSpecification.objects.filter(
+        specification=specification
+    )
+    order = Order.objects.get(specification=specification)
 
     title = "Просмотр спецификации"
     context = {
         "title": title,
         "specification": specification,
-        "product_specification":product_specification,
+        "product_specification": product_specification,
         "order": order,
     }
 
     return render(request, "admin_specification/one_specifications.html", context)
+
 
 # рендер страницы товаров у которых есть категория, но нет групп
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -1362,8 +1362,7 @@ def update_specification(request):
 #     return JsonResponse(out)
 
 
-
-# исторические записи для страниц история 
+# исторические записи для страниц история
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
     from apps.specification.admin import SpecificationAdmin
@@ -1425,7 +1424,7 @@ def history_admin(request, pk):
     historical_records = SpecificationAdmin.get_history_queryset(
         SpecificationAdmin, request, history, pk_name, object_id
     )
-    print(historical_records)
+ 
     history_list_display = SpecificationAdmin.get_history_list_display(
         SpecificationAdmin, request
     )
@@ -1458,41 +1457,24 @@ def history_admin(request, pk):
             historical_records_product2,
         )
     )
-    print(result_list)
+
 
     def get_date(element):
         return element.history_date
 
     result_list_sorted = result_list.sort(key=get_date, reverse=True)
 
-    # content_type = SpecificationAdmin.content_type_model_cls.objects.get_for_model(
-    #     get_user_model()
-    # )
-    # admin_user_view = "admin:{}_{}_change".format(
-    #     content_type.app_label,
-    #     content_type.model,
-    # )
     print(object_id)
     context = {
         "specification": specification,
-        # "title": SpecificationAdmin.history_view_title(request, obj),
-        # "object_history_list_template": self.object_history_list_template,
         "historical_records": result_list,
-        # "module_name": capfirst(force_str(opts.verbose_name_plural)),
-        # "object": obj,
-        # "root_path": getattr(SpecificationAdmin.admin_site, "root_path", None),
         "app_label": app_label,
         "opts": opts,
-        # "admin_user_view": admin_user_view,
         "history_list_display": history_list_display,
-        # "revert_disabled": SpecificationAdmin.revert_disabled(SpecificationAdmin,request, obj),
     }
-    # context.update(self.admin_site.each_context(request))
-
-    # context.update(extra_context or {})
+   
     extra_kwargs = {}
-    print(request)
-    print(context)
+
     return SpecificationAdmin.render_history_view(
         SpecificationAdmin,
         request,
@@ -1509,14 +1491,13 @@ def history_admin(request, pk):
     # return render(request, "admin_specification/history_admin.html", context)
 
 
-
 # рендер страницы корзины до переверстки
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 # def create_specification(request):
 #     cart = request.COOKIES.get("cart")
 #     # если есть корзина
 #     if cart != None:
-        
+
 #         cart_qs = Cart.objects.get(id=cart)
 #         discount_client = 0
 #         if cart_qs.client:
@@ -1530,26 +1511,26 @@ def history_admin(request, pk):
 #         # изменение спецификации
 #         try:
 #             specification = Specification.objects.get(cart=cart)
-           
+
 #             product_specification = ProductSpecification.objects.filter(
 #                 specification=specification
 #             )
 #             mortum_req = BaseInfo.objects.all().prefetch_related(
 #                 Prefetch("BaseInfoAccountRequisites"),
-                
+
 #             )
-#         # новая спецификация 
+#         # новая спецификация
 #         except Specification.DoesNotExist:
 #             specification = None
 #             product_specification = ProductSpecification.objects.filter(
 #                 specification=specification
 #             )
 #             mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
-            
+
 #         prefetch_queryset_property = ProductProperty.objects.filter(
 #             product__in=product_cart_list
 #         )
-        
+
 #         # продукты которые есть в окт в корзине
 #         product = (
 #             Product.objects.filter(id__in=product_cart_list)
@@ -1618,8 +1599,8 @@ def history_admin(request, pk):
 #             title = f"Cпецификация № {id_specification}"
 #         else:
 #             title = "Новая спецификация"
-    
-    
+
+
 #     # корзины нет
 #     else:
 #         mortum_req = None
@@ -1633,7 +1614,7 @@ def history_admin(request, pk):
 #         order = None
 
 #     current_date = datetime.date.today().isoformat()
-    
+
 #     context = {
 #         "title": title,
 #         "product": product,

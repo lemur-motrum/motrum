@@ -386,7 +386,7 @@ def get_file_path_add(instance, filename):
 
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
-    from middlewares.middlewares import RequestMiddleware
+    # from middlewares.middlewares import RequestMiddleware
     from pytils import translit
 
     # First we need create an instance of that and later get the current_request assigned
@@ -394,126 +394,125 @@ def get_file_path_add(instance, filename):
     # print(instance)
     # print(filename)
 
-    if instance == None:
+    # if instance == None:
 
-        base_dir = "products"
-        path_name = "document_group"
-        base_dir_supplier = instance.product.supplier.slug
-        if instance.product.vendor:
-            base_dir_vendor = instance.product.vendor.slug
-        else:
-            base_dir_vendor = "vendor-name"
+    #     base_dir = "products"
+    #     path_name = "document_group"
+    #     base_dir_supplier = instance.product.supplier.slug
+    #     if instance.product.vendor:
+    #         base_dir_vendor = instance.product.vendor.slug
+    #     else:
+    #         base_dir_vendor = "vendor-name"
 
-        if instance.product.category:
-            base_dir_vendor = instance.product.category.slug
-        else:
-            base_dir_vendor = "category-name"
+    #     if instance.product.category:
+    #         base_dir_vendor = instance.product.category.slug
+    #     else:
+    #         base_dir_vendor = "category-name"
 
-        type_doc = instance.type_doc
+    #     type_doc = instance.type_doc
 
-        new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
-            MEDIA_ROOT,
-            base_dir,
-            base_dir_supplier,
-            base_dir_vendor,
-            path_name,
-            type_doc,
-        )
-        if not os.path.exists(new_dir):
-            os.makedirs(new_dir)
+    #     new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+    #         MEDIA_ROOT,
+    #         base_dir,
+    #         base_dir_supplier,
+    #         base_dir_vendor,
+    #         path_name,
+    #         type_doc,
+    #     )
+    #     if not os.path.exists(new_dir):
+    #         os.makedirs(new_dir)
 
-        slug_text = str(filename)
-        regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
-        slugish = re.sub(regex, "", slug_text)
-        slugish = translit.translify(slugish)
+    #     slug_text = str(filename)
+    #     regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+    #     slugish = re.sub(regex, "", slug_text)
+    #     slugish = translit.translify(slugish)
 
-        link_file = f"{new_dir}/{slugish}"
+    #     link_file = f"{new_dir}/{slugish}"
 
-        if os.path.isfile(link_file):
-            print("Файл существует")
-        else:
-            print("Файл нет-существует")
-            return "{0}/{1}/{2}/{3}/{4}/{5}".format(
-                base_dir,
-                base_dir_supplier,
-                base_dir_vendor,
-                path_name,
-                type_doc,
-                f"{slugish}",
-            )
+    #     if os.path.isfile(link_file):
+    #         print("Файл существует")
+    #     else:
+    #         print("Файл нет-существует")
+    #         return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+    #             base_dir,
+    #             base_dir_supplier,
+    #             base_dir_vendor,
+    #             path_name,
+    #             type_doc,
+    #             f"{slugish}",
+    #         )
 
-        doc_list_name = doc_link.split("/")
-        doc_name = doc_list_name[-1]
-        images_last_list = doc_link.split(".")
-        type_file = "." + images_last_list[-1]
-        link_file = f"{new_dir}/{doc_name}"
+    #     doc_list_name = doc_link.split("/")
+    #     doc_name = doc_list_name[-1]
+    #     images_last_list = doc_link.split(".")
+    #     type_file = "." + images_last_list[-1]
+    #     link_file = f"{new_dir}/{doc_name}"
 
+    # else:
+
+    s = str(instance.product.article_supplier)
+    item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
+
+    base_dir = "products"
+    base_dir_supplier = instance.product.supplier.slug
+
+    if instance.product.vendor:
+        base_dir_vendor = instance.product.vendor.slug
     else:
+        base_dir_vendor = ""
 
-        s = str(instance.product.article_supplier)
-        item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
+    images_last_list = filename.split(".")
+    type_file = "." + images_last_list[-1]
 
-        base_dir = "products"
-        base_dir_supplier = instance.product.supplier.slug
+    if isinstance(instance, ProductDocument):
 
-        if instance.product.vendor:
-            base_dir_vendor = instance.product.vendor.slug
-        else:
-            base_dir_vendor = ""
+        path_name = "document"
+        try:
+            images_last = ProductDocument.objects.filter(
+                product=instance.product
+            ).latest("id")
+            item_count = ProductDocument.objects.filter(
+                product=instance.product
+            ).count()
+        except ProductDocument.DoesNotExist:
+            item_count = 1
 
-        images_last_list = filename.split(".")
-        type_file = "." + images_last_list[-1]
+        filenames = create_name_file_downloading(item_instanse_name, item_count)
+        filename = f"{filenames}_{instance.type_doc}{type_file}"
 
-        if isinstance(instance, ProductDocument):
+    elif isinstance(instance, ProductImage):
+        path_name = "img"
+        try:
+            images_last = ProductImage.objects.filter(
+                product=instance.product
+            ).latest("id")
+            item_count = ProductImage.objects.filter(
+                product=instance.product
+            ).count()
+        except ProductImage.DoesNotExist:
+            item_count = 1
 
-            path_name = "document"
-            try:
-                images_last = ProductDocument.objects.filter(
-                    product=instance.product
-                ).latest("id")
-                item_count = ProductDocument.objects.filter(
-                    product=instance.product
-                ).count()
-            except ProductDocument.DoesNotExist:
-                item_count = 1
+        filenames = create_name_file_downloading(item_instanse_name, item_count)
 
-            filenames = create_name_file_downloading(item_instanse_name, item_count)
-            filename = f"{filenames}_{instance.type_doc}{type_file}"
+        filename = filenames + type_file
 
-        elif isinstance(instance, ProductImage):
-            path_name = "img"
-            try:
-                images_last = ProductImage.objects.filter(
-                    product=instance.product
-                ).latest("id")
-                item_count = ProductImage.objects.filter(
-                    product=instance.product
-                ).count()
-            except ProductImage.DoesNotExist:
-                item_count = 1
-
-            filenames = create_name_file_downloading(item_instanse_name, item_count)
-
-            filename = filenames + type_file
-
-        check_media_directory_exist(
-            base_dir,
-            base_dir_supplier,
-            base_dir_vendor,
-            item_instanse_name,
-            path_name,
-        )
-        return "{0}/{1}/{2}/{3}/{4}/{5}".format(
-            base_dir,
-            base_dir_supplier,
-            base_dir_vendor,
-            item_instanse_name,
-            path_name,
-            filename,
-        )
+    check_media_directory_exist(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        item_instanse_name,
+        path_name,
+    )
+    return "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        item_instanse_name,
+        path_name,
+        filename,
+    )
 
 
-# сохранение изображений и докуметов из админки и общее
 def get_file_path_add_more_doc(product, type_doc, instance, filename):
 
     from apps.product.models import ProductDocument
@@ -922,7 +921,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request):
+def save_specification(received_data,pre_sale, request,motrum_requisites):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -965,7 +964,8 @@ def save_specification(received_data,pre_sale, request):
                             having_items = True
 
                 if having_items == False:
-                    product_item_for_old._change_reason = "Ручное"
+                    
+                    specification._change_reason = "Ручное"
                     product_item_for_old.delete()
 
                 having_items = False
@@ -1183,7 +1183,7 @@ def save_specification(received_data,pre_sale, request):
         requisites = None
         account_requisites = None
         pdf = crete_pdf_specification(
-            specification.id, requisites, account_requisites, request
+            specification.id, requisites, account_requisites, request,motrum_requisites
         )
         specification.file = pdf
         specification._change_reason = "Ручное"

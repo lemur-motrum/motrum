@@ -58,7 +58,7 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request):
+def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -74,9 +74,13 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
-    motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
     
-    motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
+    motrum_requisites
+    motrum_info = motrum_requisites.requisites
+    motrum_info_req = motrum_requisites
+    
+    #  motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
+    # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
     
 
     name_specification = f"specification_{specification}.pdf"

@@ -1271,7 +1271,8 @@ def iek_api():
                 stock = None
                 to_order = True
 
-                return (stock, to_order)
+                # return (stock, to_order)
+                return False
                 # error = "file_api_error"
                 # location = "Загрузка фаилов IEK"
 

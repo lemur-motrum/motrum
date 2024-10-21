@@ -18,6 +18,7 @@ from django.contrib.auth import authenticate, login
 from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
 from apps import specification
+from apps.core.models import BaseInfoAccountRequisites
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
 
@@ -443,8 +444,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
         account_requisites_data = int(data["client_requisites"])
+        motrum_requisites_data = int(data["motrum_requisites"])
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
+        motrum_requisites = BaseInfoAccountRequisites.objects.get(id=account_requisites_data)
         requisites = account_requisites.requisites
+        
         if requisites.prepay_persent == 100:
             pre_sale = True
         else:
@@ -456,7 +460,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             client = None
 
-        specification = save_specification(data, pre_sale, request)
+        specification = save_specification(data, pre_sale, request, motrum_requisites)
         print(specification)
         if specification:
             data_order = {
@@ -472,6 +476,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_date_start": None,
                 "bill_date_stop": None,
                 "bill_sum": None,
+                "motrum_requisites":motrum_requisites,
             }
 
             try:

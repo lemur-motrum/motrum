@@ -8,6 +8,7 @@ from django.urls import reverse
 # Create your models here.
 
 
+from apps.core.models import BaseInfoAccountRequisites
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path
 from apps.supplier.models import Discount
@@ -288,6 +289,14 @@ class Order(models.Model):
     account_requisites = models.ForeignKey(
         AccountRequisites,
         verbose_name="Расчетный счет",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    
+    motrum_requisites = models.ForeignKey(
+        BaseInfoAccountRequisites,
+        verbose_name="Реквизиты мотрум для сделки",
         on_delete=models.CASCADE,
         blank=True,
         null=True,

@@ -921,7 +921,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request,motrum_requisites):
+def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -935,7 +935,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
         admin_creator_id = received_data["admin_creator_id"]
         id_specification = received_data["id_specification"]
         specification_comment = received_data["comment"]
-        is_pre_sale = received_data["is_pre_sale"]
+        # is_pre_sale = received_data["is_pre_sale"]
         products = received_data["products"]
         
         # products = "sdfsdf"
@@ -987,7 +987,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
                 id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
             )
             specification.skip_history_when_saving = True
-            
+            print(specification)
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True
@@ -1001,6 +1001,8 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
         currency_product = False
         
         for product_item in products:
+            print(22222222222222)
+            print(product_item)
             # if product_item["price_exclusive"] == "0":
             #     price_exclusive = False
             # else:
@@ -1028,7 +1030,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
                             1 - float(product_item["extra_discount"]) / 100
                         )
                         price_one = round(price_one, 2)
-
+                    print(4444444)
                     price_motrum_all = get_price_motrum(
                         price.prod.category_supplier,
                         price.prod.group_supplier,
@@ -1038,10 +1040,12 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
                         price.prod.category_supplier_all,
                         price.prod.supplier,
                     )
+                    print(123123123)
                     price_one_motrum = price_motrum_all[0]
                     sale = price_motrum_all[1]
 
                 else:
+                    print(77777777)
                     price_one = price.rub_price_supplier
                     price_one_motrum = price.price_motrum
 
@@ -1059,7 +1063,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
                     price_one = round(price_one_sale, 2)
 
                 # если есть предоплата найти скидку по предоплате мотрум
-                if is_pre_sale:
+                if pre_sale:
                     price_pre_sale = get_presale_discount(product)
                     persent_pre_sale = price_pre_sale.percent
                     price_one_motrum = price_one_motrum - (
@@ -1123,7 +1127,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
             
             # продукты без записи в окт
             else:
-
+                print(33333333333333)
                 price_one = product_item["price_one"]
 
                 price_all = float(price_one) * int(product_item["quantity"])
@@ -1178,10 +1182,9 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
         # data_stop = create_time_stop_specification()
         # specification.date_stop = data_stop
         # specification.tag_stop = True
-
+        print(999999999)
         specification.save()
-        requisites = None
-        account_requisites = None
+   
         pdf = crete_pdf_specification(
             specification.id, requisites, account_requisites, request,motrum_requisites
         )
@@ -1194,7 +1197,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites):
 
         specification.save()
         # Specification.objects.filter(id=specification.id).update(file=pdf)
-
+        print(f'specification {specification}')
         return specification
     
     except Exception as e:

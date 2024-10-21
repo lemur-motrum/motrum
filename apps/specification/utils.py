@@ -66,7 +66,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     from reportlab.lib.styles import ParagraphStyle, ListStyle
     from reportlab.platypus import SimpleDocTemplate, Paragraph
     from reportlab.platypus import ListFlowable, ListItem
-
+    print("crete_pdf_specification")
     directory = check_spesc_directory_exist(
         "specification",
     )
@@ -391,6 +391,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         "specification",
         name_specification,
     )
+    print(file_path)
 
     return file_path
 

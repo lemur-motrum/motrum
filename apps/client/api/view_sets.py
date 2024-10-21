@@ -445,8 +445,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["id_cart"])
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
+        
+        print(account_requisites_data)
+        print(motrum_requisites_data)
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
-        motrum_requisites = BaseInfoAccountRequisites.objects.get(id=account_requisites_data)
+        motrum_requisites = BaseInfoAccountRequisites.objects.get(id=motrum_requisites_data)
         requisites = account_requisites.requisites
         
         if requisites.prepay_persent == 100:
@@ -460,24 +463,26 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             client = None
 
-        specification = save_specification(data, pre_sale, request, motrum_requisites)
-        print(specification)
+        specification = save_specification(data, pre_sale, request, motrum_requisites,account_requisites,requisites)
+        print("=====================")
+        print(specification.id)
         if specification:
             data_order = {
                 "client": client,
                 "name": 123131,
                 "specification": specification.id,
-                "requisites": requisites,
-                "account_requisites": account_requisites,
+                "requisites": requisites.id,
+                "account_requisites": account_requisites.id,
                 "status": "PROCESSING",
-                "cart": cart,
+                "cart": cart.id,
                 "bill_name": None,
                 "bill_file": None,
                 "bill_date_start": None,
                 "bill_date_stop": None,
                 "bill_sum": None,
-                "motrum_requisites":motrum_requisites,
+                "motrum_requisites":motrum_requisites.id,
             }
+            print(data_order)
 
             try:
                 order = Order.objects.get(specification=specification)
@@ -493,13 +498,18 @@ class OrderViewSet(viewsets.ModelViewSet):
                     )
 
             except Order.DoesNotExist:
+                print(98989898)
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
-                    order = serializer.save()
                     cart.is_active = True
                     cart.save()
+                    order = serializer.save()
+                    
+                    
+                    print(serializer.data)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
+                    print(serializer.errors)
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )

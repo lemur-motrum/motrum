@@ -451,7 +451,8 @@ def create_specification(request):
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-
+            order = Order.objects.get(specification=specification)
+            client_req = order.account_requisites
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -568,6 +569,7 @@ def create_specification(request):
 
     # корзины нет
     else:
+        client_req = None
         mortum_req = None
         title = "Новая спецификация"
         product = None
@@ -592,6 +594,7 @@ def create_specification(request):
         "specification": specification,
         "mortum_req": mortum_req,
         "order": order,
+        "client_req": client_req,
     }
     return render(request, "admin_specification/catalog.html", context)
 

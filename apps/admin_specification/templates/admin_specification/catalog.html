@@ -389,12 +389,18 @@
                             <div class="clients"></div>
                             <select class="select-client-requsits" name="client-requisit">
                                 {% if client_req %}
-                                {% comment %} {% for recusits in  %}
                                 
-                                {% endfor %} {% endcomment %}
+                             {% for recusits in client_req_all %}
+                                <option class="client-option" {% if client_req.requisites.id == recusits.id %}selected{% endif %} value="{{recusits.id}}">{{recusits.account_requisites}}</option>
+                                {% endfor %}
                                 {% endif %}
                             </select>
-                            <div class="client-info"></div>
+                            <div class="client-info">
+                                {% if client_req %}
+                                <div>Предоплата: {{client_req.requisites.prepay_persent}}%</div>
+                                <div>Доставка: {{client_req.requisites.type_delivery}}</div>
+                                {% endif %}
+                            </div>
                         </label>
                         <label class="bitrix-id-label">
                             <span>Номер сделки Bitrix</span>
@@ -407,7 +413,7 @@
                                 id="motrum-select"
                                 style="height: 25px;
                                        border-radius: 10px"
-                                       name="mortum_req"  >
+                                       name="mortum_req" value="1" value="1" >
                             {% for requisit in mortum_req %}
                                 <option data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
                                     Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}

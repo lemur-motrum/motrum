@@ -530,7 +530,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 serializer_prod.save()
 
         order = Order.objects.get(specification_id=pk)
-        order.create_bill()
+        if order.requisites.contract:
+            order.create_bill(request,True)
+        else:  
+            order.create_bill(request,None)  
 
         return Response(None, status=status.HTTP_200_OK)
 

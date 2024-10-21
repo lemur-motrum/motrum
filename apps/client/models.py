@@ -242,6 +242,7 @@ STATUS_ORDER_INT = (
     (6, "CANCELED"),
     (7, "COMPLETED"),
 )
+
 import random
 
 class Order(models.Model):
@@ -339,7 +340,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self):
+    def create_bill(self, request,is_contract):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
@@ -348,7 +349,7 @@ class Order(models.Model):
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
 
-        pdf = crete_pdf_bill(self.specification.id)
+        pdf = crete_pdf_bill(self.specification.id,request,is_contract)
         self.bill_file = pdf
 
         self.bill_sum = self.specification.total_amount

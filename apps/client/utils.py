@@ -6,7 +6,7 @@ import os
 from pickle import NONE
 from re import T
 from apps.client.models import Order
-from apps.core.models import BaseInfo
+from apps.core.models import BaseImage, BaseInfo
 from apps.core.utils import check_spesc_directory_exist, transform_date, rub_words
 from PIL import Image
 import io
@@ -31,7 +31,7 @@ from project.settings import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 from django.db.models import Prefetch, OuterRef
 
 
-def crete_pdf_bill(specification):
+def crete_pdf_bill(specification,request,is_contract):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -47,14 +47,16 @@ def crete_pdf_bill(specification):
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
-
-    motrum_info = (
-        BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set"))
-        .all()
-        .first()
-    )
-
-    motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
+    order = Order.objects.get(specification=specification)
+    motrum_info = order.motrum_requisites.requisites
+    motrum_info_req = order.motrum_requisites
+    # motrum_info = (
+    #     BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set"))
+    #     .all()
+    #     .first()
+    # )
+ 
+    # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
 
     date_now = transform_date(datetime.date.today().isoformat())
 
@@ -65,6 +67,7 @@ def crete_pdf_bill(specification):
         .order_by("bill_date_start")
         .last()
     )
+    document_info = BaseImage.objects.filter().first()
     print(last_bill_order.bill_file)
     # number_bill =
     fileName = os.path.join(directory, name_bill)
@@ -156,11 +159,16 @@ def crete_pdf_bill(specification):
     doc_title.fontName = "Roboto-Bold"
     doc_title.fontSize = 7
 
-    name_image_logo = f"{MEDIA_ROOT}/documents/logo.png"
+    # name_image_logo = f"{MEDIA_ROOT}/documents/logo.png"
+    name_image_logo = request.build_absolute_uri(document_info.logo.url)
+    
+    
     logo_motrum = Paragraph(
         f'<img width="155" height="35"  src="{name_image_logo}" />',
         normal_style,
     )
+    
+    
     story.append(logo_motrum)
     # тут вставки бик корпоратив
     data_bank = [
@@ -236,7 +244,9 @@ def crete_pdf_bill(specification):
     )
     story.append(table_bank)
 
-    name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
+    # name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
+    name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
+    
     logo_supplier = Paragraph(
         f'<br></br><br></br><br></br><br></br><br></br><br></br><img width="555" height="63"  src="{name_image_logo_supplier}" /><br></br>',
         normal_style,
@@ -460,9 +470,16 @@ def crete_pdf_bill(specification):
         final_total_amount_no_nds,
     )
     story.append(table_product)
+    
+    if is_contract:
+        if order.requisites.prepay_persent == 100:
+            pay = Paragraph(f"100% предоплата", normal_style)
+        else:
+            pay = Paragraph(f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки", normal_style)
+                
     final_final_price_total = [
         (
-            None,
+            pay,
             None,
             None,
             None,
@@ -487,6 +504,15 @@ def crete_pdf_bill(specification):
         total_amount_pens = f"{total_amount_pens}0"
     rub_word = rub_words(int(specifications.total_amount))
 
+    # if is_contract:
+    #     if order.requisites.prepay_persent == 100:
+    #         story.append(
+    #             Paragraph(f"100% предоплата", normal_style))
+    #     else:
+    #         story.append(
+    #             Paragraph(f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки", normal_style))
+                
+    
     story.append(
         Paragraph(
             f"Всего наименований {i}, на сумму {total_amount_str} руб.", normal_style
@@ -497,33 +523,105 @@ def crete_pdf_bill(specification):
             f"{total_amount_word} {rub_word} {total_amount_pens} копеек", bold_style
         )
     )
-
-    story.append(
-        Paragraph(
-            f"<br></br><br></br>Оплата данного счета означает согласие с условиями поставки товара.",
-            normal_style,
+    if is_contract:
+        story.append(
+            Paragraph(
+                f"<br></br><br></br>Оплата данного счета означает согласие с условиями поставки товара.",
+                normal_style,
+            )
         )
-    )
-    story.append(
-        Paragraph(
-            f"Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе.",
-            normal_style,
+        story.append(
+            Paragraph(
+                f"Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе.",
+                normal_style,
+            )
         )
-    )
-    story.append(
-        Paragraph(
-            f"Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.",
-            normal_style,
+        story.append(
+            Paragraph(
+                f"Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.",
+                normal_style,
+            )
         )
-    )
+    else:
+        story.append(
+            Paragraph(
+                f"<br></br><br></br>1. Оплата данного счет-оферты означает полное и безоговорочное согласие (акцепт) с условиями поставки товара по наименованию, ассортименту, количеству и цене. Срок действия счета 3 банковских дня.",
+                normal_style,
+            )
+        )
+        story.append(
+            Paragraph(
+                f"2. Поставщик гарантирует отгрузку товара по ценам и в сроки, указанные в настоящем Счет-оферте, при условии зачисления денежных средств на расчетный счет Поставщика в течение 3 банковских дней с даты выставления счета.<br></br>При невыполнении Покупателем указанных условий оплаты, цена и сроки поставки товара могут измениться.
+",
+                normal_style,
+            )
+        )
+        story.append(
+            Paragraph(
+                f"3. Товар отгружается после полной оплаты счета-оферты Покупателем.",
+                normal_style,
+            )
+        ) 
+        story.append(
+            Paragraph(
+                f"5. Обязательства Поставщика по поставке Товара считаются выполненными с момента подписания УПД или товарной накладной представителями Поставщика и Покупателя или организации перевозчика.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"6. Каждая партия поставляемой продукции сопровождается Универсальным передаточным документом (УПД): на бумажном носителе в двух экземплярах (1 экз. Покупателя, 1 экз. Поставщика). После каждой поставки продукции с документами, Покупатель обязан вернуть Поставщику один экземпляр, верно оформленного УПД, не позднее 1 месяца с даты подтверждения получения товара. В случае задержки Покупателем возврата, верно оформленного со стороны Покупателя, оригинала УПД на бумажном носителе на срок более 1 (одного) календарного месяца, Поставщик вправе предъявить Покупателю штрафные санкции в размере 5 000 (Пять тысяч) рублей (НДС не облагается) за каждый факт не предоставления подписанного оригинала УПД.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"9. Претензии по п. 8 должны быть заявлены Сторонами в письменной форме в течение 5 дней с момента наступления, указанных в них событий. В случае не выставления претензии в указанный срок, это трактуется как освобождение Сторон от уплаты неустойки.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"10. Срок гарантии на поставляемую продукцию составляет не менее одного года с момента отгрузки.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"11. Правила гарантийного обслуживания оговариваются в гарантийных талонах на поставляемую продукцию.",
+                normal_style,
+            )
+        )  
+        story.append(
+            Paragraph(
+                f"12.  Стороны принимают необходимые меры к тому, чтобы спорные вопросы и разногласия, возникающие при исполнении и расторжении настоящего договора, были урегулированы путем переговоров. В случае если стороны не достигнут соглашения по спорным вопросам путем переговоров, то спор передается заинтересованной стороной в арбитражный суд.",
+                normal_style,
+            )
+        )  
+                                                
 
     name_image = f"{MEDIA_ROOT}/documents/skript.png"
+    name_image = request.build_absolute_uri(motrum_info.signature.url)
     signature_motrum = Paragraph(
         f'<br /><img width="100" height="30" src="{name_image}" valign="middle"/>',
         normal_style,
     )
     signature_motrum_name = Paragraph(f"Старостина В. П.", normal_style)
-    name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+    # name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+    name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
+    
     press_motrum = Paragraph(
         f'<br /><br /><br /><br /><br />М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
         normal_style,

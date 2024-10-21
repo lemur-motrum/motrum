@@ -510,7 +510,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const clientRequsits = document
           .querySelector("[name='client-requisit']")
           .getAttribute("value");
-
+        const bitrixInput = document.querySelector(".bitrix-input");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
@@ -560,10 +560,19 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
 
+        if (bitrixInput) {
+          if (!bitrixInput.value) {
+            validate = false;
+            bitrixInput.style.border = "1px solid red";
+            bitrixInput.style.borderRadius = "10px";
+          } else {
+            validate = true;
+          }
+        }
+
         if (validate == true) {
-          console.log(21231231231);
           const dataObj = {
-            id_bitrix: 22,
+            id_bitrix: +bitrixInput.value,
             admin_creator_id: adminCreatorId,
             products: products,
             // is_pre_sale: checkbox.checked ? true : false,
@@ -1341,7 +1350,7 @@ window.addEventListener("DOMContentLoaded", () => {
                         clientRequsitsSelect.innerHTML = "";
                       }
                       clientInfo.innerHTML = `
-                        <div>Предоплата: <input class="prepay-persent" type='text' value='${el.prepay_persent}'/> %</div>
+                        <div>Предоплата: ${el.prepay_persent}%</div>
                         <div>Доставка: ${el.type_delivery}</div>
                         `;
                       clientsContainer.classList.remove("show");

@@ -28,6 +28,7 @@ class CustomUser(AbstractUser):
 # юзер администратор
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
+    middle_name = models.CharField("Отчество", max_length=20,  null=True, blank=True)
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
 
     class Meta:

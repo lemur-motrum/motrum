@@ -6,7 +6,7 @@ from simple_history.utils import update_change_reason
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import get_file_price_path_add
-from middlewares.middlewares import RequestMiddleware
+# from middlewares.middlewares import RequestMiddleware
 
 
 # Create your models here.
@@ -316,13 +316,14 @@ class SupplierCategoryProductAll(models.Model):
         verbose_name_plural = "Подгруппы поставщиков"
 
     def __str__(self):
-        request = RequestMiddleware(get_response=None)
-        request = request.thread_local.current_request
+        return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+        # request = RequestMiddleware(get_response=None)
+        # request = request.thread_local.current_request
     
-        if request.path == "/admin/product/product/":
-            return f"{self.name}"
-        else:
-            return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+        # if request.path == "/admin/product/product/":
+        #     return f"{self.name}"
+        # else:
+        #     return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
   
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

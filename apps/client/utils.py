@@ -252,10 +252,14 @@ def crete_pdf_bill(specification,request,is_contract):
         normal_style,
     )
     story.append(logo_supplier)
-
-    story.append(
-        Paragraph(f"Счет на оплату № 1 от {date_now}<br></br><br></br>", title_style_14)
-    )
+    if is_contract:
+        story.append(
+            Paragraph(f"Счет на оплату № 1 от {date_now}<br></br><br></br>", title_style_14)
+        )
+    else:
+                story.append(
+            Paragraph(f"Счет-оферта № 1 от {date_now}<br></br><br></br>", title_style_14)
+        )    
 
     data_info = []
     data_info.append(

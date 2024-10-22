@@ -47,7 +47,7 @@
                 {% if account_requisites %}
                         <div class="paument_tupe">{{ requisites_set.type_payment_full }}</div>
                         <div class="paument_tupe">
-                                {% if requisites_set.postpay_persent != 0 or requisites_set.prepay_persent != 0 %}
+                                {% if requisites_set.postpay_persent != 0  %}
                                         Предоплата: {{ requisites_set.prepay_persent }}%
                                         Постоплата {{ requisites_set.postpay_persent }} %
                                 {% endif %}

@@ -386,69 +386,7 @@ def get_file_path_add(instance, filename):
 
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
-    # from middlewares.middlewares import RequestMiddleware
     from pytils import translit
-
-    # First we need create an instance of that and later get the current_request assigned
-    # request = RequestMiddleware(get_response=None)
-    # print(instance)
-    # print(filename)
-
-    # if instance == None:
-
-    #     base_dir = "products"
-    #     path_name = "document_group"
-    #     base_dir_supplier = instance.product.supplier.slug
-    #     if instance.product.vendor:
-    #         base_dir_vendor = instance.product.vendor.slug
-    #     else:
-    #         base_dir_vendor = "vendor-name"
-
-    #     if instance.product.category:
-    #         base_dir_vendor = instance.product.category.slug
-    #     else:
-    #         base_dir_vendor = "category-name"
-
-    #     type_doc = instance.type_doc
-
-    #     new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
-    #         MEDIA_ROOT,
-    #         base_dir,
-    #         base_dir_supplier,
-    #         base_dir_vendor,
-    #         path_name,
-    #         type_doc,
-    #     )
-    #     if not os.path.exists(new_dir):
-    #         os.makedirs(new_dir)
-
-    #     slug_text = str(filename)
-    #     regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
-    #     slugish = re.sub(regex, "", slug_text)
-    #     slugish = translit.translify(slugish)
-
-    #     link_file = f"{new_dir}/{slugish}"
-
-    #     if os.path.isfile(link_file):
-    #         print("Файл существует")
-    #     else:
-    #         print("Файл нет-существует")
-    #         return "{0}/{1}/{2}/{3}/{4}/{5}".format(
-    #             base_dir,
-    #             base_dir_supplier,
-    #             base_dir_vendor,
-    #             path_name,
-    #             type_doc,
-    #             f"{slugish}",
-    #         )
-
-    #     doc_list_name = doc_link.split("/")
-    #     doc_name = doc_list_name[-1]
-    #     images_last_list = doc_link.split(".")
-    #     type_file = "." + images_last_list[-1]
-    #     link_file = f"{new_dir}/{doc_name}"
-
-    # else:
 
     s = str(instance.product.article_supplier)
     item_instanse_name = re.sub("[^A-Za-z0-9]", "", s)
@@ -517,7 +455,7 @@ def get_file_path_add_more_doc(product, type_doc, instance, filename):
 
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
-    from middlewares.middlewares import RequestMiddleware
+ 
     from pytils import translit
 
     base_dir = "products"

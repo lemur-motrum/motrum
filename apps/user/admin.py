@@ -21,6 +21,7 @@ class AdminUserAdmin(admin.ModelAdmin):
                     "username",
                     "first_name",
                     "last_name",
+                    "middle_name",
                     "email",
                     "admin_type",
                     "password",

@@ -87,7 +87,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             if (response.status == 409) {
               showErrorValidation("Товар с таким артикулом в корзине уже есть ", articleInputError);
-              nameInput.style.border = "1px solid red";
+              // articleInputError.style.border = "1px solid red";
             }
             else {
               throw new Error("Ошибка");

@@ -188,7 +188,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             product_name_str = str(product.product.name)
             product_name = (
                 Paragraph(
-                    f'<a href="{link}">{product_name_str}</a><br></br><a href="{link}">ссылка</a>',
+                    f'<a href="{link}" color="blue">{product_name_str}</a>',
                     bold_style_center,
                 ),
             )

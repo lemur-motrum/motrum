@@ -187,168 +187,206 @@ def prompower_api():
         for data_item in data:
         
             try:
-            
-                # основная инфа
-                article_suppliers = data_item["article"]
-                name = data_item["title"]
-                description = data_item["description"]
-                
-                if "categoryId" in data_item:
-                
-                    category_all = data_item["categoryId"]
-                    if category_all != 35:
-                        categ = get_category_prompower(prompower, vendori, category_all)
-                    else:  
-                        categ = None  
-                else:
-                    categ = None
+                if data_item["article"] == "PDOUSB" :
+                    # основная инфа
+                    article_suppliers = data_item["article"]
+                    name = data_item["title"]
+                    description = data_item["description"]
                     
-
-                # цены
-                price_supplier = int(data_item["price"])
-                vat_include = True
-                # остатки
-                lot = Lot.objects.get(name="штука")
-                stock_supplier = data_item["instock"]
-                lot_complect = 1
-                stock_motrum = 0
-                
-                img_list = data_item["img"]
-                
-                def save_image(
-                    article,
-                ):
+                    if "categoryId" in data_item:
                     
-                    if len(img_list) > 0:
-                        for img_item in img_list:
-                            img = f"{base_adress}{img_item}"
-                            image = ProductImage.objects.create(product=article)
-                            update_change_reason(image, "Автоматическое")
-                            image_path = get_file_path_add(image, img)
-                            p = save_file_product(img, image_path)
-                            image.photo = image_path
-                            image.link = img
-                            image.save()
-                            update_change_reason(image, "Автоматическое")
+                        category_all = data_item["categoryId"]
+                        if category_all != 35:
+                            categ = get_category_prompower(prompower, vendori, category_all)
+                        else:  
+                            categ = None  
+                    else:
+                        categ = None
+                        
 
-                def save_document(categ,product):
-                    # документы категории
-                    base_dir = "products"
-                    path_name = "document_group"
-                    base_dir_supplier = product.supplier.slug
-                    base_dir_vendor = product.vendor.slug
-                    print(categ)
-                    if categ[1] != None:
-                        group_name = categ[1].slug
-                        url = f"https://prompower.ru/api/docfiles?dir={group_name}&filenameFilter"
-                        new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
-                            MEDIA_ROOT,
-                            base_dir,
-                            base_dir_supplier,
-                            base_dir_vendor,
-                            path_name,
-                            group_name,
-                        )
-                        if not os.path.exists(new_dir):
-                            os.makedirs(new_dir)
-                        dir_no_path = "{0}/{1}/{2}/{3}/{4}".format(
-                            base_dir,
-                            base_dir_supplier,
-                            base_dir_vendor,
-                            path_name,
-                            group_name,
-                        )
-                    if categ[0] != None:
-                        category_supplier=categ[0].slug
-                        url = f"https://prompower.ru/api/docfiles?dir={group_name}&subdir={category_supplier}&filenameFilter"
+                    # цены
+                    price_supplier = int(data_item["price"])
+                    vat_include = True
+                    # остатки
+                    lot = Lot.objects.get(name="штука")
+                    stock_supplier = data_item["instock"]
+                    lot_complect = 1
+                    stock_motrum = 0
+                    
+                    img_list = data_item["img"]
+                    
+                    def save_image(
+                        article,
+                    ):
                         
-                        new_dir = "{0}/{1}/{2}/{3}/{4}/{5}/{6}".format(
-                            MEDIA_ROOT,
-                            base_dir,
-                            base_dir_supplier,
-                            base_dir_vendor,
-                            path_name,
-                            group_name,
-                            category_supplier,
-                        )
-                        dir_no_path = "{0}/{1}/{2}/{3}/{4}/{5}".format(
-                            base_dir,
-                            base_dir_supplier,
-                            base_dir_vendor,
-                            path_name,
-                            group_name,
-                            category_supplier,
-                        )
-                        if not os.path.exists(new_dir):
-                            os.makedirs(new_dir)
-                    print(url)
-                    response = requests.request("GET", url,)
-                    data = response.json()
-                    for item_doc in data['data']:
-                        doc_item = item_doc['link']
-                        doc_link = f"{base_adress}{doc_item}"
+                        if len(img_list) > 0:
+                            for img_item in img_list:
+                                img = f"{base_adress}{img_item}"
+                                image = ProductImage.objects.create(product=article)
+                                update_change_reason(image, "Автоматическое")
+                                image_path = get_file_path_add(image, img)
+                                p = save_file_product(img, image_path)
+                                image.photo = image_path
+                                image.link = img
+                                image.save()
+                                update_change_reason(image, "Автоматическое")
+
+                    def save_document(categ,product):
+                        # документы категории
+                        base_dir = "products"
+                        path_name = "document_group"
+                        base_dir_supplier = product.supplier.slug
+                        base_dir_vendor = product.vendor.slug
+                        print(categ)
+                        if categ[1] != None:
+                            group_name = categ[1].slug
+                            url = f"https://prompower.ru/api/docfiles?dir={group_name}&filenameFilter"
+                            new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+                                MEDIA_ROOT,
+                                base_dir,
+                                base_dir_supplier,
+                                base_dir_vendor,
+                                path_name,
+                                group_name,
+                            )
+                            if not os.path.exists(new_dir):
+                                os.makedirs(new_dir)
+                            dir_no_path = "{0}/{1}/{2}/{3}/{4}".format(
+                                base_dir,
+                                base_dir_supplier,
+                                base_dir_vendor,
+                                path_name,
+                                group_name,
+                            )
+                        if categ[0] != None:
+                            category_supplier=categ[0].slug
+                            url = f"https://prompower.ru/api/docfiles?dir={group_name}&subdir={category_supplier}&filenameFilter"
+                            
+                            new_dir = "{0}/{1}/{2}/{3}/{4}/{5}/{6}".format(
+                                MEDIA_ROOT,
+                                base_dir,
+                                base_dir_supplier,
+                                base_dir_vendor,
+                                path_name,
+                                group_name,
+                                category_supplier,
+                            )
+                            dir_no_path = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+                                base_dir,
+                                base_dir_supplier,
+                                base_dir_vendor,
+                                path_name,
+                                group_name,
+                                category_supplier,
+                            )
+                            if not os.path.exists(new_dir):
+                                os.makedirs(new_dir)
+                        print(url)
+                        response = requests.request("GET", url,)
+                        data = response.json()
+                        for item_doc in data['data']:
+                            doc_item = item_doc['link']
+                            doc_link = f"{base_adress}{doc_item}"
+                            
+                            doc = ProductDocument.objects.create(product=article)
+                            update_change_reason(doc, "Автоматическое")
+                            doc_list_name = doc_link.split("/")
+                            doc_name = doc_list_name[-1]
+                            images_last_list = doc_link.split(".")
+                            type_file = "." + images_last_list[-1]
+                            link_file = f"{new_dir}/{doc_name}"
+                            
+                            print(link_file)
+                            
+                            if os.path.isfile(link_file):
+                                print("Файл существует")
+                            else:
+                                r = requests.get(doc_link, stream=True)
+                                with open(os.path.join(link_file), "wb") as ofile:
+                                    ofile.write(r.content)
+                                    
+                            type_doc = item_doc["type"].capitalize()  
+                            print(link_file)     
+                            doc.document = f"{dir_no_path}/{doc_name}"
+                            doc.link =doc_link
+                            doc.name = item_doc["title"]
+                            doc.type_doc =item_doc["type"].capitalize() 
+
+                            doc.save()
+                            update_change_reason(doc, "Автоматическое")       
                         
-                        doc = ProductDocument.objects.create(product=article)
-                        update_change_reason(doc, "Автоматическое")
-                        doc_list_name = doc_link.split("/")
-                        doc_name = doc_list_name[-1]
-                        images_last_list = doc_link.split(".")
-                        type_file = "." + images_last_list[-1]
-                        link_file = f"{new_dir}/{doc_name}"
-                        
-                        print(link_file)
-                        
-                        if os.path.isfile(link_file):
-                            print("Файл существует")
-                        else:
-                            r = requests.get(doc_link, stream=True)
-                            with open(os.path.join(link_file), "wb") as ofile:
-                                ofile.write(r.content)
+                        # документы индивидуальные
+                        doc_list = data_item["cad"]
+                        if len(doc_list) > 0:
+                            
+                            for doc_item_individual in doc_list:
                                 
-                        type_doc = item_doc["type"].capitalize()  
-                        print(link_file)     
-                        doc.document = f"{dir_no_path}/{doc_name}"
-                        doc.link =doc_link
-                        doc.name = item_doc["title"]
-                        doc.type_doc =item_doc["type"].capitalize() 
+                                img = f"{base_adress}/{doc_item_individual["filename"]}"
+                                image = ProductDocument.objects.create(product=article)
+                                update_change_reason(image, "Автоматическое")
+                                image_path = get_file_path_add(image, img)
+                                print(image_path)
+                                p = save_file_product(img, image_path)
+                                image.photo = image_path
+                                image.link = img
+                                image.document = image_path
+                                image.link =img
+                                image.name = doc_item_individual["title"]
+                                image.type_doc = "Models3d"
+                                image.save()
+                                update_change_reason(image, "Автоматическое")
+                                
+                    # если товар без категории и 0 цена не сохранять
+                    if price_supplier != "0" and categ != None :
+                        try:
+                            # если товар есть в бд
+                            article = Product.objects.get(
+                                supplier=prompower,
+                                vendor=vendori,
+                                article_supplier=article_suppliers,
+                            )
+                            
+                            # если у товара не было совсем дококв из пропсов
+                            props =  ProductProperty.objects.filter(product=article).exists()
+                            if props == False:
+                                for prop in data_item["props"]:
+                                    property_product = ProductProperty(
+                                        product=article,
+                                        name=prop["name"],
+                                        value=prop["value"],
+                                    )
+                                    property_product.save()
+                                    update_change_reason(property_product, "Автоматическое")
+                            
+                            image =  ProductImage.objects.filter(product=article).exists()    
+                            if image == False:
+                                save_image(article)
+                                
+                            doc =  ProductDocument.objects.filter(product=article).exists()    
+                            if doc == False:
+                                save_document(categ,article)  
+                                
+                            save_update_product_attr(article, supplier, vendori,None,categ[0],categ[1],categ[2],description, name)
 
-                        doc.save()
-                        update_change_reason(doc, "Автоматическое")       
-                    
-                    # документы индивидуальные
-                    doc_list = data_item["cad"]
-                    if len(doc_list) > 0:
-                        
-                        for doc_item_individual in doc_list:
-                            
-                            img = f"{base_adress}/{doc_item_individual["filename"]}"
-                            image = ProductDocument.objects.create(product=article)
-                            update_change_reason(image, "Автоматическое")
-                            image_path = get_file_path_add(image, img)
-                            print(image_path)
-                            p = save_file_product(img, image_path)
-                            image.photo = image_path
-                            image.link = img
-                            image.document = image_path
-                            image.link =img
-                            image.name = doc_item_individual["title"]
-                            image.type_doc = "Models3d"
-                            image.save()
-                            update_change_reason(image, "Автоматическое")
-                            
-                # если товар без категории и 0 цена не сохранять
-                if price_supplier != "0" and categ != None :
-                    try:
-                        # если товар есть в бд
-                        article = Product.objects.get(
-                            supplier=prompower,
-                            vendor=vendori,
-                            article_supplier=article_suppliers,
-                        )
-                        
-                        # если у товара не было совсем дококв из пропсов
-                        props =  ProductProperty.objects.filter(product=article).exists()
-                        if props == False:
+                        except Product.DoesNotExist:
+                            # если товара нет в бд 
+                            new_article = create_article_motrum(prompower.id)
+                            article = Product(
+                                article=new_article,
+                                supplier=prompower,
+                                vendor=vendor_item,
+                                article_supplier=article_suppliers,
+                                name=name,
+                                description=description,
+                                category_supplier_all=categ[0],
+                                group_supplier=categ[1],
+                                category_supplier=categ[2],
+                            )
+                            article.save()
+                            update_change_reason(article, "Автоматическое")
+                            save_image(article)
+                            save_document(categ,article)  
+
                             for prop in data_item["props"]:
                                 property_product = ProductProperty(
                                     product=article,
@@ -358,77 +396,39 @@ def prompower_api():
                                 property_product.save()
                                 update_change_reason(property_product, "Автоматическое")
                         
-                        image =  ProductImage.objects.filter(product=article).exists()    
-                        if image == False:
-                            save_image(article)
-                            
-                        doc =  ProductDocument.objects.filter(product=article).exists()    
-                        if doc == False:
-                            save_document(categ,article)  
-                            
-                        save_update_product_attr(article, supplier, vendori,None,categ[0],categ[1],categ[2],description, name)
+                        # цены товара
+                        try:
+                            price_product = Price.objects.get(prod=article)
 
-                    except Product.DoesNotExist:
-                        # если товара нет в бд 
-                        new_article = create_article_motrum(prompower.id)
-                        article = Product(
-                            article=new_article,
-                            supplier=prompower,
-                            vendor=vendor_item,
-                            article_supplier=article_suppliers,
-                            name=name,
-                            description=description,
-                            category_supplier_all=categ[0],
-                            group_supplier=categ[1],
-                            category_supplier=categ[2],
-                        )
-                        article.save()
-                        update_change_reason(article, "Автоматическое")
-                        save_image(article)
-                        save_document(categ,article)  
+                        except Price.DoesNotExist:
+                            price_product = Price(prod=article)
 
-                        for prop in data_item["props"]:
-                            property_product = ProductProperty(
-                                product=article,
-                                name=prop["name"],
-                                value=prop["value"],
+                        finally:
+                            price_product.currency = currency
+                            price_product.price_supplier = price_supplier
+                            price_product.vat = vat_catalog
+                            price_product.vat_include = vat_include
+                            price_product._change_reason = "Автоматическое"
+                            price_product.save()
+                            # update_change_reason(price_product, "Автоматическое")
+
+                        # остатки
+                        try:
+                            stock_prod = Stock.objects.get(prod=article)
+                        except Stock.DoesNotExist:
+                            stock_prod = Stock(
+                                prod=article, 
+                                lot=lot, 
+                                stock_motrum=stock_motrum
                             )
-                            property_product.save()
-                            update_change_reason(property_product, "Автоматическое")
+                        finally:
+                            stock_prod.stock_supplier = stock_supplier
+                            stock_prod.data_update = datetime.datetime.now()
+                            stock_prod._change_reason = "Автоматическое"
+                            stock_prod.save()
+                            # update_change_reason(stock_prod, "Автоматическое")
                     
-                    # цены товара
-                    try:
-                        price_product = Price.objects.get(prod=article)
-
-                    except Price.DoesNotExist:
-                        price_product = Price(prod=article)
-
-                    finally:
-                        price_product.currency = currency
-                        price_product.price_supplier = price_supplier
-                        price_product.vat = vat_catalog
-                        price_product.vat_include = vat_include
-                        price_product._change_reason = "Автоматическое"
-                        price_product.save()
-                        # update_change_reason(price_product, "Автоматическое")
-
-                    # остатки
-                    try:
-                        stock_prod = Stock.objects.get(prod=article)
-                    except Stock.DoesNotExist:
-                        stock_prod = Stock(
-                            prod=article, 
-                            lot=lot, 
-                            stock_motrum=stock_motrum
-                        )
-                    finally:
-                        stock_prod.stock_supplier = stock_supplier
-                        stock_prod.data_update = datetime.datetime.now()
-                        stock_prod._change_reason = "Автоматическое"
-                        stock_prod.save()
-                        # update_change_reason(stock_prod, "Автоматическое")
-                
-                
+                    
             except Exception as e: 
                 print(e)
                 error = "file_api_error"

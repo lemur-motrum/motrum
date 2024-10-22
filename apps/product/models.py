@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from apps.logs.utils import error_alert
 from simple_history.models import HistoricalRecords
 
-from middlewares.middlewares import RequestMiddleware
+# from middlewares.middlewares import RequestMiddleware
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -446,29 +446,29 @@ class Price(models.Model):
 
         super().save(*args, **kwargs)
 
-    def price_sale_personal(self):
-        from apps.client.models import Client
-        print(123123)
-        request = RequestMiddleware(get_response=None)
-        request = request.thread_local.current_request
-        print(request.user)
+    # def price_sale_personal(self):
+    #     from apps.client.models import Client
+    #     print(123123)
+    #     request = RequestMiddleware(get_response=None)
+    #     request = request.thread_local.current_request
+    #     print(request.user)
         
-        if request.user.is_authenticated :
-            print(33333)
-            if request.user.is_staff == False:
-                client = Client.objects.get(id=request.user.id)
-                discount = client.percent
+    #     if request.user.is_authenticated :
+    #         print(33333)
+    #         if request.user.is_staff == False:
+    #             client = Client.objects.get(id=request.user.id)
+    #             discount = client.percent
                 
-                price = self.rub_price_supplier
+    #             price = self.rub_price_supplier
                 
-                price_discount = price - (price / 100 * float(discount))
+    #             price_discount = price - (price / 100 * float(discount))
                 
-                return round(price_discount, 2)
-            else:
-                return self.rub_price_supplier
-        else:
-            print(22222)
-            return self.rub_price_supplier
+    #             return round(price_discount, 2)
+    #         else:
+    #             return self.rub_price_supplier
+    #     else:
+    #         print(22222)
+    #         return self.rub_price_supplier
    
     def get_sale_price_motrum(
         self

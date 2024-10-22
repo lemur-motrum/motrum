@@ -407,6 +407,7 @@ class Discount(models.Model):
 
     def __str__(self):
         # вывод примененной категории в название скидки в админку
+        
         name = ""
         if self.category_supplier_all:
             name = self.category_supplier_all.name

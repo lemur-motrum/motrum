@@ -903,7 +903,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         # products = "sdfsdf"
 
         id_cart = received_data["id_cart"]
-
+        # первичное создание/взятие спецификации
         try:
             specification = Specification.objects.get(id=id_specification)
             data_stop = create_time_stop_specification()
@@ -1086,8 +1086,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 
                 total_amount = total_amount + price_all
             
-            
-            
+
             # продукты без записи в окт
             else:
                 print(33333333333333)

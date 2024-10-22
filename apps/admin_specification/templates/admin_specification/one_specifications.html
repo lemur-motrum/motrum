@@ -15,6 +15,12 @@
         <h1 class="title">{{ title }} {{ specification.id }}</h1>
         <div class="">
             <h2 class="title">Информация</h2>
+            <div class="">Статус:{{order.get_status_name}} </div>
+            {% if specification.id_bitrix %}<div class="">Номер сделки битрикс: {{ specification.id_bitrix }}</div>{% endif %}
+            <br>
+
+            <div class="">Дата создания:{{ specification.date }}</div>
+
             <div class="">
                 Действительно:
                 {% if specification.tag_stop %}
@@ -23,9 +29,11 @@
                     Недействительно
                 {% endif %}
             </div>
-            {% if specification.id_bitrix %}<div class="">Номер сделки битрикс: {{ specification.id_bitrix }}</div>{% endif %}
-            <div class="">Дата создания:{{ specification.date }}</div>
+            
+            
             {% if specification.date_update %}<div class="">Дата обновления:{{ specification.date_update }}</div>{% endif %}
+
+            <br>
             <div class="">
                 Документ спецификации:
                 <a href="{{ specification.file.url }}">скачать</a>

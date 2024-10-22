@@ -481,6 +481,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_date_start": None,
                 "bill_date_stop": None,
                 "bill_sum": None,
+                "prepay_persent":requisites.prepay_persent,
+                "postpay_persent":requisites.postpay_persent,
                 "motrum_requisites":motrum_requisites.id,
                 "id_bitrix": id_bitrix
             }
@@ -522,22 +524,35 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
-        serializer_class = ProductSpecificationSerializer
-        # serializer = self.serializer_class(order, data=data_order, many=False)
-        data = {"id": id, "text_delivery": "text_delivery"}
-        data = request.data
-        for obj in data:
-            serializer_prod = serializer_class(data=obj, partial=True)
-            if serializer_prod.is_valid():
-                serializer_prod.save()
+        try:
+            serializer_class = ProductSpecificationSerializer
+            # serializer = self.serializer_class(order, data=data_order, many=False)
+            data = {"id": id, "text_delivery": "text_delivery"}
+            data = request.data
+            for obj in data:
+                serializer_prod = serializer_class(data=obj, partial=True)
+                if serializer_prod.is_valid():
+                    serializer_prod.save()
 
-        order = Order.objects.get(specification_id=pk)
-        if order.requisites.contract:
-            order.create_bill(request,True)
-        else:  
-            order.create_bill(request,None)  
+            order = Order.objects.get(specification_id=pk)
+            
+            if order.requisites.contract:
+                order.create_bill(request,True,order)
+            else:  
+                order.create_bill(request,False,order)  
+            pdf =  request.build_absolute_uri(order.bill_file.url)   
+            data ={
+                "pdf":pdf
+            }
+               
+                
+        except Exception as e: 
+            error = "error"
+            location = "Сохранение спецификации админам окт"
+            info = f"Сохранение спецификации админам окт ошибка {e}"
+            e = error_alert(error, location, info)
 
-        return Response(None, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
     # изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")

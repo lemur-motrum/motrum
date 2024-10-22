@@ -11,8 +11,15 @@
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
             <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
+            
         </div>
         <h1 class="title">{{ title }}</h1>
+        
+        {% if order.bill_sum %}
+        <div class=""><h4 style="
+            color: red;
+        ">ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЩИЙ СЧЕТ! ПРИ СОХРАНЕНИИ ИЗМЕНЕНИЙ В СПЕЦИФИКАЦИИ БУДЕТ НЕОБХОДИМО СОЗДАТЬ СЧЕТ ЗАНОВО </h4></div>
+        {% endif %}
         {% if product or product_new %}
             <div class="spetification_table">
                 <div class="spetification_titles">
@@ -81,8 +88,10 @@
                             <div class="item_value total_cost price"></div>
                         {% endif %}
                         <div class="item_value">
-                            {% if item.price.get_sale_price_motrum %}
-                                {{ item.price.get_sale_price_motrum }} %
+                            
+                            {% if item.price.sale %}
+                            {{ item.price.sale.percent }}%
+                                {% comment %} {{ item.price.get_sale_price_motrum }} % {% endcomment %}
                             {% else %}
                                 Нет
                             {% endif %}
@@ -416,6 +425,8 @@
                         </select>
                     </div>
                     <div class="button_specification-wrapper">
+                       
+                        
                         <div class="save_button-wrapper">
                             <button class="save_button">Сохранить спецификацию</button>
                             <div class="error"></div>

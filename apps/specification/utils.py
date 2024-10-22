@@ -134,8 +134,11 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     doc_title = copy.copy(styles["Heading1"])
     doc_title.fontName = "Roboto-Bold"
     doc_title.fontSize = 10
-
-    to_contract = 88775545
+    
+    if requisites.contract:
+        to_contract = requisites.contract
+    else:
+        to_contract = 88775545   
     if requisites:
         to_address = requisites.legal_entity
     else:
@@ -143,7 +146,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
     story.append(
         Paragraph(
-            f"<b>Спецификация № {specification}</b><br></br><br></br>", bold_left_style
+            f"<b>Спецификация {specification}</b><br></br><br></br>", bold_left_style
         )
     )
     story.append(Paragraph(f"К договору № {to_contract}", normal_style))
@@ -230,14 +233,10 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     )
     story.append(table)
 
-    # total_amount_nds = float(specifications.total_amount) / 100 * 20
     total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
-    # total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
     total_amount_nds = round(total_amount_nds, 2)
-    # total_amount_no_nds = round(total_amount_no_nds, 2)
 
     total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-    # total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
     total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
@@ -284,16 +283,47 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     print(date_ship)
 
     date_ship = transform_date(str(date_ship))
-    story.append(Paragraph(f"1. Срок поставки: {date_ship}", normal_style))
-    story.append(
-        Paragraph(
-            f"<br></br>2. Способ оплаты:<br></br><br></br><br></br>", normal_style
-        )
-    )
+    
+    i_dop_info = 1
+    if date_delivery_all:
+    
+        story.append(Paragraph(f"{i_dop_info}. Срок поставки: {date_delivery_all}", normal_style))
+        i_dop_info += 1
+        
+    if requisites.prepay_persent:
+        if requisites.prepay_persent == 100:
+            story.append(
+                Paragraph(
+                    f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.", normal_style
+                )
+            )
+        else:
+            story.append(
+                Paragraph(
+                    f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.", normal_style
+                )
+            ) 
+        i_dop_info += 1  
+    
+    if requisites.type_delivery:
+        if requisites.type_delivery == "Самовывоз" or requisites.type_delivery == "cамовывоз":
+            story.append(
+                    Paragraph(
+                        f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
+                    )
+                )
+        else:
+            story.append(
+                    Paragraph(
+                        f"<br></br>{i_dop_info}. {requisites.type_delivery}", normal_style
+                    )
+                )
+                
+            
 
     data_address = [
         (
-            Paragraph("Поставщик:", bold_style),
+            Paragraph("<br></br><br></br>Поставщик:", bold_style),
             Paragraph("Покупатель:", bold_style),
         )
     ]

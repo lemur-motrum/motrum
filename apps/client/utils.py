@@ -27,11 +27,11 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 
 from apps.specification.utils import MyCanvas
-from project.settings import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
+from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 from django.db.models import Prefetch, OuterRef
 
 
-def crete_pdf_bill(specification,request,is_contract):
+def crete_pdf_bill(specification,request,is_contract,order):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -54,6 +54,9 @@ def crete_pdf_bill(specification,request,is_contract):
     order = Order.objects.get(specification=specification)
     motrum_info = order.motrum_requisites.requisites
     motrum_info_req = order.motrum_requisites
+    
+    client_info = order.requisites
+    client_info_req = order.account_requisites
     # motrum_info = (
     #     BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set"))
     #     .all()
@@ -279,13 +282,14 @@ def crete_pdf_bill(specification,request,is_contract):
         )
     )
 
+    
     data_info.append(
         (
             Paragraph(
                 f'Покупатель<br></br><font  size="6">(заказчик):</font>', normal_style
             ),
             Paragraph(
-                f'ООО "ПМН МОТРУМ", ИНН 6312115720, КПП 631901001, 443011, Самарская обл, Самара г, 22 Партсъезда ул, дом 207, офис 3, тел.: (846) 300-41-17',
+                f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}',
                 bold_style,
             ),
         )
@@ -352,25 +356,33 @@ def crete_pdf_bill(specification,request,is_contract):
         else:
             is_none_date_delivery = True
 
+        if IS_TESTING:
+                link = product.product.get_url_document_test()
+        else:
+            link = product.product.get_url_document()
+            
+        url_absolute = request.build_absolute_uri("/").strip("/")
+        link = f"{url_absolute}/{link}"
+        
         if product.product:
-            product_name = str(product.product.name)
-            # product_name = str(product)
+            product_name = f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
+            # product_name = str(product.product.name)
             product_code = product.product.article
 
         else:
             product_name = product.product_new
-            product_code = "000"
+            product_code = product.product_new_article
 
         product_price = product.price_one
         product_price = "{0:,.2f}".format(product_price).replace(",", " ")
         product_price_all = product.price_all
         product_price_all = "{0:,.2f}".format(product_price_all).replace(",", " ")
         product_quantity = product.quantity
-        product_data = product.date_delivery
-        if product_data:
-            product_data = str(product_data.strftime("%d.%m.%Y"))
-        else:
-            product_data = str("-")
+        product_data = product.text_delivery
+        # if product_data:
+        #     product_data = str(product_data.strftime("%d.%m.%Y"))
+        # else:
+        #     product_data = str("-")
         total_product_quantity += product_quantity
         data.append(
             (
@@ -385,20 +397,33 @@ def crete_pdf_bill(specification,request,is_contract):
             )
         )
     total_amount_str = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-    if is_none_date_delivery:
-        final_date_ship = "-"
-    else:
-        final_date_ship = str(date_ship.strftime("%d.%m.%Y"))
+    # if is_none_date_delivery:
+    #     final_date_ship = "-"
+    # else:
+    #     final_date_ship = str(date_ship.strftime("%d.%m.%Y"))
+    
+    client_info =""
+        
+    if order.prepay_persent:
+        if order.prepay_persent == 100:
+            info_payment = f" Способ оплаты: 100% предоплата.", normal_style
+                
+            
+        else:
+            info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.", normal_style
+                
+            
+     
     data.append(
         (
-            None,
+            info_payment,
             None,
             None,
             total_product_quantity,
             None,
             None,
             total_amount_str,
-            final_date_ship,
+            None,
         )
     )
 
@@ -435,14 +460,10 @@ def crete_pdf_bill(specification,request,is_contract):
     )
     story.append(table_product)
 
-    # total_amount_nds = float(specifications.total_amount) / 100 * 20
     total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
-    # total_amount_no_nds = float(specifications.total_amount) - total_amount_nds
     total_amount_nds = round(total_amount_nds, 2)
-    # total_amount_no_nds = round(total_amount_no_nds, 2)
 
     total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-    # total_amount_no_nds = "{0:,.2f}".format(total_amount_no_nds).replace(",", " ")
     total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
 
     final_price_no_nds_table = [
@@ -479,15 +500,15 @@ def crete_pdf_bill(specification,request,is_contract):
     )
     story.append(table_product)
     
-    if is_contract:
-        if order.requisites.prepay_persent == 100:
-            pay = Paragraph(f"100% предоплата", normal_style)
-        else:
-            pay = Paragraph(f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки", normal_style)
+    # if is_contract:
+    #     if order.requisites.prepay_persent == 100:
+    #         pay = Paragraph(f"100% предоплата", normal_style)
+    #     else:
+    #         pay = Paragraph(f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки", normal_style)
                 
     final_final_price_total = [
         (
-            pay,
+            None,
             None,
             None,
             None,
@@ -620,7 +641,7 @@ def crete_pdf_bill(specification,request,is_contract):
         )  
                                                 
 
-    name_image = f"{MEDIA_ROOT}/documents/skript.png"
+    # name_image = f"{MEDIA_ROOT}/documents/skript.png"
     name_image = request.build_absolute_uri(motrum_info.signature.url)
     signature_motrum = Paragraph(
         f'<br /><img width="100" height="30" src="{name_image}" valign="middle"/>',
@@ -675,7 +696,7 @@ def crete_pdf_bill(specification,request,is_contract):
             )
         )
     
-    name_admin
+    
     
     
     pdf = doc

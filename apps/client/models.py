@@ -153,13 +153,21 @@ class Requisites(models.Model):
         "Почтовый адрес : адрес",
         max_length=200,
     )
+    tel = models.CharField(
+        "Телефон",
+        max_length=200,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Реквизиты"
         verbose_name_plural = "Реквизиты"
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.legal_entity
+    
+    
     def get_type_payment(self):
         for choice in TYPE_PAYMENT:
             if choice[0] == self.type_payment:
@@ -298,6 +306,17 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    prepay_persent = models.FloatField(
+        "Процент предоплаты",
+        blank=True,
+        null=True,
+    )
+    
+    postpay_persent = models.FloatField(
+        "Процент постоплаты",
+        blank=True,
+        null=True,
+    )
     
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,
@@ -344,7 +363,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self, request,is_contract):
+    def create_bill(self, request, is_contract,order):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
@@ -353,7 +372,7 @@ class Order(models.Model):
         data_stop = create_time_stop_specification()
         self.bill_date_stop = data_stop
 
-        pdf = crete_pdf_bill(self.specification.id,request,is_contract)
+        pdf = crete_pdf_bill(self.specification.id,request,is_contract,order,)
         self.bill_file = pdf
 
         self.bill_sum = self.specification.total_amount
@@ -362,6 +381,7 @@ class Order(models.Model):
             Notification.add_notification(self.id, "DOCUMENT_BILL")
 
         self.save()
+        return self.id
 
     def get_status_name(self):
         for choice in STATUS_ORDER:

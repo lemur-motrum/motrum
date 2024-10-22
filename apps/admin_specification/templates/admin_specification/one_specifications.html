@@ -1,5 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
+{% load number_into_digits %}
     <div class="logout_btn">
         {% if request.user.is_superuser  == True %}
             <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
@@ -29,11 +30,14 @@
                     Недействительно
                 {% endif %}
             </div>
-            
-            
             {% if specification.date_update %}<div class="">Дата обновления:{{ specification.date_update }}</div>{% endif %}
-
             <br>
+
+            <div class="">Клиент: {{order.requisites.legal_entity}} счет: {{order.account_requisites}} </div>
+            <div class="">Оплата: предоплата {{order.prepay_persent}}% {% if order.postpay_persent %}постоплата:{{order.postpay_persent}}%{% endif %}</div>
+            <div class=""></div>
+            
+            
             <div class="">
                 Документ спецификации:
                 <a href="{{ specification.file.url }}">скачать</a>
@@ -55,7 +59,8 @@
         {% endif %}
 
     </div>
-    <div class="specification-container">
+    <div class="specification-container " style="
+    padding: 0;">
         <div class="">
             {% comment %} <div class="comment_all">
                 {% if specification.comment %}
@@ -92,7 +97,7 @@
                     {% if specif_prod.comment %}
                         <br>
                         
-                        <textarea style="border-radius: 5px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" disabled>{{ specif_prod.comment }}</textarea>
+                        <textarea style="border-radius: 5px;width: 100px;"class="comment-input"  name="comment-input-name" placeholder="Комментарий" disabled>{{ specif_prod.comment }}</textarea>
                     
                     {% endif %}
                      
@@ -108,9 +113,9 @@
                     {% endif %}
                 </div>
                 <div class="item_value">{{ specif_prod.quantity }}</div>
-                <div class="item_value">{{ specif_prod.price_one }}</div>
-                <div class="item_value">{{ specif_prod.price_all }}</div>
-                <div class="item_value">{{ specif_prod.price_all_motrum }}</div>
+                <div class="item_value">{{ specif_prod.price_one|number_into_digits }}</div>
+                <div class="item_value">{{ specif_prod.price_all|number_into_digits }}</div>
+                <div class="item_value">{{ specif_prod.price_all_motrum|number_into_digits }}</div>
                 <div class="item_value">
                     
                     

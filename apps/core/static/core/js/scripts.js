@@ -5,6 +5,7 @@ import "/static/admin_specification/js/scripts.js";
 import "/static/admin_specification/js/invoice_elems.js";
 import "/static/admin_specification/js/filters.js";
 import "/static/admin_specification/js/add_new_product.js";
+import "/static/admin_specification/js/create_invoice.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
 import "/static/core/js/scripts/motrum-in-numbers-script.js";

@@ -1,7 +1,16 @@
 <div class="invoice-overlay">
     <div class="modal-window">
         <div class="title">Счет</div>
-        <div class="invoice_content"></div>
+        <div class="tables-titles">
+            <div class="table-title">Наименование</div>
+            <div class="table-title">Артикул</div>
+            <div class="table-title">Срок поставки</div>
+        </div>
+        <div class="invoice_content" invoice-elem="container">
+            {% for invoice in invoice_list %}
+                {% include "admin_specification/include/invoice_item.html" with invoice=invoice %}
+            {% endfor %}
+        </div>
         <div class="invoice-btn">Создать счет</div>
     </div>
 </div>

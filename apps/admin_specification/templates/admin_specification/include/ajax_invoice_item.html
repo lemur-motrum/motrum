@@ -1,1 +1,24 @@
-<div class="invoice-item"></div>
+<div class="invoice-item"
+     invoice-elem="invoice-item"
+     invoice-elem-id="{{ id }}">
+    <div class="name">
+        {% if product_new == None %}
+            {{ product_okt_name }}
+        {% else %}
+            {{ product_new }}
+        {% endif %}
+    </div>
+    <div class="article">
+        {% if product_new_article == None %}
+            {{ product_okt_article }}
+        {% else %}
+            {{ product_new_article }}
+        {% endif %}
+    </div>
+    <label>
+        <input placeholder="Укажите срок поставки"
+               class="invoice-data-input"
+               type="text" />
+        <div class="error"></div>
+    </label>
+</div>

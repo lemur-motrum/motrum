@@ -133,7 +133,7 @@ a {
     }
   }
   .overlay_new_product_in_specification {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
     background-color: rgba($color: #000000, $alpha: 0.6);
@@ -143,6 +143,7 @@ a {
     opacity: 0;
     transition: 1s;
     z-index: 100;
+
     &.visible {
       opacity: 1;
     }

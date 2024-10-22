@@ -6,6 +6,7 @@ import {
   deleteCookie,
   getClosestInteger,
   getDigitsNumber,
+  showErrorValidation,
 } from "/static/core/js/functions.js";
 
 // const setURLParams = (url, updates, defaults) => {
@@ -566,6 +567,13 @@ window.addEventListener("DOMContentLoaded", () => {
             bitrixInput.style.border = "1px solid red";
             bitrixInput.style.borderRadius = "10px";
           }
+        }
+        if (validate == false) {
+          const saveButtonContainer = document.querySelector(
+            ".save_button-wrapper"
+          );
+          const error = saveButtonContainer.querySelector(".error");
+          showErrorValidation("Заполните все поля", error);
         }
 
         if (validate == true) {
@@ -1304,10 +1312,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
-    const saveButton = document.querySelector(".save_button");
+    const saveButtonContainer = document.querySelector(".save_button-wrapper");
     window.onload = () => {
       if (searchClientInput.value) {
-        saveButton.classList.add("show");
+        saveButtonContainer.classList.add("show");
         if (clientRequsitsSelect) {
           const clientOptions = clientRequsitsSelect.querySelectorAll("option");
           clientRequsitsSelect.setAttribute(
@@ -1406,7 +1414,7 @@ window.addEventListener("DOMContentLoaded", () => {
                         <div>Доставка: ${el.type_delivery}</div>
                         `;
                       clientsContainer.classList.remove("show");
-                      saveButton.classList.add("show");
+                      saveButtonContainer.classList.add("show");
                     };
                   }
                 });
@@ -1419,7 +1427,7 @@ window.addEventListener("DOMContentLoaded", () => {
           });
       } else {
         clientsContainer.classList.remove("show");
-        saveButton.classList.remove("show");
+        saveButtonContainer.classList.remove("show");
         searchClientInput.setAttribute("client-id", "");
       }
     };

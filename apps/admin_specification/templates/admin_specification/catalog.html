@@ -223,7 +223,9 @@
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
-                                        {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
+                                        {% if item.product_price_extra_old %}
+                                            {{ item.data_old }} - {{ item.product_price_extra_old }}
+                                        {% endif %}
                                     </label>
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
@@ -406,7 +408,10 @@
                         </select>
                     </div>
                     <div class="button_specification-wrapper">
-                        <button class="save_button">Сохранить спецификацию</button>
+                        <div class="save_button-wrapper">
+                            <button class="save_button">Сохранить спецификацию</button>
+                            <div class="error"></div>
+                        </div>
                         <button class="exit_button">Выйти без изменений</button>
                     </div>
                 </div>

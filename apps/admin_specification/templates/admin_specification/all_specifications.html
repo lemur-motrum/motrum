@@ -12,90 +12,6 @@
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
         </div>
         <h1 class="title">{{ title }}</h1>
-        {% comment %} <div class="all_specifications_content">
-            <div class="table-titles">
-                <div class="table-title">№Документа</div>
-                <div class="table-title">Дата создания</div>
-                <div class="table-title">Сумма</div>
-                <div class="table-title">Статус</div>
-                <div class="table-title">Договор</div>
-            </div> 
-            <div class="all_specifications_table">
-                {% for specification in specifications %}
-                    {% if specification.tag_stop == True %}
-                        <div data-status="{{ specification.tag_stop }}" class="table_item">
-                            <div class="table_item_value">
-                                <a href="{% if specification.file %}{{ specification.file.url }}{% endif %} "
-                                   target="_blank"
-                                   data-cart-id="{{ specification.cart }}"
-                                   class="table_item_value">{{ specification.pk }}</a>
-                                <input class="cart_id" type="hidden" value={{ specification.cart }}>
-                                {% if request.user.is_superuser %}
-                                    <br>
-                                    <span class="table_item_value_span">Создал: {{ specification.admin_creator }}</span>
-                                    
-                         
-  
-                                {% endif %}
-                                <br>
-                                <span class="table_item_value_span">
-                                    <a href="{% url "admin_specification:one_specifications" specification.pk %}">Посмотреть спецификацию</a>
-                                </span>
-                                <br>
-                                <span class="table_item_value_span">
-                                    <a href="{% url "admin_specification:history_admin" specification.pk %}">История</a>
-                                </span>
-                            </div>
-                            <div class="table_item_value">
-                                {{ specification.date|date:"d.m.Y" }}
-                                <br>
-                                {% if specification.date < specification.date_update %}
-                                    <span style="font-size: 0.8vw; color: gray; ">Обновленна {{ specification.date_update|date:"d.m.Y" }}</span>
-                                {% else %}
-                                {% endif %}
-                            </div>
-                            <div class="table_item_value ">
-                                <span class="price">{{ specification.total_amount }}</span> ₽
-                            </div>
-                            <div class="table_item_value">
-                                Статус:
-                                <br>
-                                {{ specification.order.get_status_name }}
-                                <br>
-                                до
-                                {% if specification.order.bill_date_stop %}
-                                    {{ specification.order.bill_date_stop|date:"d.m.Y" }}
-                                {% else %}
-                                    {{ specification.date_stop|date:"d.m.Y" }}
-                                {% endif %}
-                            </div>
-                            <div class="table_item_value">Счет</div>
-                            <button class="change-specification-button">Редактировать</button>
-                            {% if specification.order.bill_file %}<a href="{{ specification.order.bill_file.url }}">Счет ссылка</a>{% endif %}
-                            <button class="create-bill-button">Создать счет</button>
-                        </div>
-                    {% else %}
-                        <div data-status="{{ specification.tag_stop }}"
-                             class="table_item disabled">
-                            <div data-cart-id="{{ specification.cart }}" class="table_item_value">{{ specification.pk }}</div>
-                            <div class="table_item_value">{{ specification.date|date:"d.m.Y" }}</div>
-                            <div class="table_item_value ">
-                                <span class="price">{{ specification.total_amount }}</span> ₽
-                            </div>
-                            <div class="table_item_value">
-                                Статус
-                                <br>
-                                {{ specification.order.get_status_name }}
-                            </div>
-                            <div class="table_item_value"></div>
-                            <button class="uptate-specification-button">Актуализировать</button>
-                        </div>
-                    {% endif %}
-                    
-                {% endfor %}
-            </div> 
-        </div> {% endcomment %}
-
         <div class="specification_container all_specifications_content">
             <div class="table-titles">
                 <div class="table-title">Спецификация</div>
@@ -103,8 +19,10 @@
                 <div class="table-title">Сумма</div>
                 <div class="table-title">Договор</div>
             </div>
+            <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">
-                <div class="specification_container all_specifications_table" specification-elem="container">
+                <div class="specification_container all_specifications_table"
+                     specification-elem="container">
                     {% for specification in specification_list %}
                         {% include "admin_specification/include/specification_item.html" with specification=specification %}
                     {% endfor %}
@@ -114,6 +32,5 @@
                 </div>
             </div>
         </div>
-
     </div>
 {% endblock content %}

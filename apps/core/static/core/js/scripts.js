@@ -2,6 +2,7 @@ import "/static/core/js/slider.js";
 import "/static/core/js/nunjucks.min.js";
 import "/static/core/js/inputmask.js";
 import "/static/admin_specification/js/scripts.js";
+import "/static/admin_specification/js/invoice_elems.js";
 import "/static/admin_specification/js/filters.js";
 import "/static/admin_specification/js/add_new_product.js";
 import "/static/core/js/scripts/web.js";

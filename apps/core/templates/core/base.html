@@ -2,7 +2,6 @@
 {% load manager_client %}
 {% load js_templates %}
 {% load test_display %}
-
 <!DOCTYPE html>
 <html lang="ru">
   <head>
@@ -13,7 +12,6 @@
     <title>{{ title }}</title>
   </head>
   <body {% test_display %}>
-   
     <div class="wrapper">
       {% include "core/header/header.html" %}
       <div class="site-content">
@@ -52,6 +50,5 @@
         }
       }
     </script>
-    
   </body>
 </html>

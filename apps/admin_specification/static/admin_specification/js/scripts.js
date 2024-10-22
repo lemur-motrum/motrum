@@ -1206,6 +1206,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let specificationCount = 0;
 
     function loadItems() {
+      const loader = document.querySelector(".loader");
       let data = {
         count: specificationCount,
       };
@@ -1223,7 +1224,7 @@ window.addEventListener("DOMContentLoaded", () => {
       )
         .then((response) => response.json())
         .then(function (data) {
-          console.log(data);
+          loader.classList.add("hide");
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
             const currentSpecificatons = allSpecifications.querySelectorAll(

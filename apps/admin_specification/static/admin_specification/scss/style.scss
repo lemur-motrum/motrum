@@ -588,6 +588,51 @@ h1 {
         }
       }
     }
+    .loader {
+      overflow: hidden;
+      font-size: 10px;
+      margin: 50px auto;
+      text-indent: -9999em;
+      width: 11rem;
+      height: 11rem;
+      border-radius: 50%;
+      background: #65abf8;
+      background: linear-gradient(
+        to right,
+        #bdbdbd 10%,
+        rgba(101, 171, 248, 0) 42%
+      );
+      position: relative;
+      -webkit-animation: load3 1.4s infinite linear;
+      animation: load3 1.4s infinite linear;
+      transform: translateZ(0);
+      &:before {
+        width: 50%;
+        height: 50%;
+        background: #bdbdbd;
+        border-radius: 100% 0 0 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: "";
+      }
+      &:after {
+        background: white;
+        width: 75%;
+        height: 75%;
+        border-radius: 50%;
+        content: "";
+        margin: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+      }
+      &.hide {
+        display: none;
+      }
+    }
     .all_specifications_table {
       margin-top: 1.25rem;
       display: flex;

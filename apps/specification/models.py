@@ -54,6 +54,13 @@ class Specification(models.Model):
         blank=True,
         null=True,
     )
+    date_delivery = models.CharField(
+        "Дата поставки",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:

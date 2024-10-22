@@ -897,6 +897,10 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         admin_creator_id = received_data["admin_creator_id"]
         id_specification = received_data["id_specification"]
         specification_comment = received_data["comment"]
+        
+        date_delivery_all = received_data["date_delivery"]
+        print(1111111111)
+        print(date_delivery_all)
         # is_pre_sale = received_data["is_pre_sale"]
         products = received_data["products"]
         
@@ -1137,6 +1141,9 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         total_amount = round(total_amount, 2)
         specification.total_amount = total_amount
         specification.comment = specification_comment
+        specification.date_delivery = date_delivery_all
+        print(date_delivery_all)
+        print(specification.date_delivery)
 
         specification._change_reason = "Ручное"
 
@@ -1148,7 +1155,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         specification.save()
    
         pdf = crete_pdf_specification(
-            specification.id, requisites, account_requisites, request,motrum_requisites
+            specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all
         )
         specification.file = pdf
         specification.id_bitrix = id_bitrix

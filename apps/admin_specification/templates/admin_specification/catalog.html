@@ -353,7 +353,15 @@
                               class="comment-input-all"
                               name="comment-input-name-all"
                               placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
+                    
+                    <textarea style="width: 200px;
+                            height: 50px;
+                            border-radius: 10px"
+                    class="delivery-date-all-input-all"
+                    name="delivery-date-all-input-name-all"
+                    placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
                 </div>
+
                 <div class="submit-container">
                     <div class="price_description">
                         Итого: <span class="price">0</span> <span class="total-price-description">₽</span>

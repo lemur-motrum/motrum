@@ -357,12 +357,32 @@ class DiscountAdmin(admin.ModelAdmin):
         "percent",
         "is_tag_pre_sale",
     )
+    def save_model(self, request, obj, form, change):
+        if change:
+            sale_old = Discount.objects.get(id=obj.id)
+        super().save_model(request, obj, form, change) 
+        if change:
+            
+            if sale_old.is_tag_pre_sale != obj.is_tag_pre_sale:
+                price = Price.objects.filter(sale=obj.id)
+                def background_task():
+                # Долгосрочная фоновая задача
+                    for price_one in price:
+                        price_one._change_reason = "Автоматическое"
+                        price_one.save()
+                           
 
+                daemon_thread = threading.Thread(target=background_task)
+                daemon_thread.setDaemon(True)
+                daemon_thread.start()
+            
+        # super().save_model(request, obj, form, change)
+        
     def delete_model(self, request, obj):
         id_sec = obj.id
         obj.delete()
         price = Price.objects.filter(sale__isnull=True)
-
+        # price = Price.objects.filter(sale=id_sec)
         def background_task():
             # Долгосрочная фоновая задача
             for price_one in price:
@@ -372,10 +392,10 @@ class DiscountAdmin(admin.ModelAdmin):
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
         daemon_thread.start()
-
+    
     def delete_queryset(self, request, queryset):
         queryset.delete()
-        price = Price.objects.filter(sale__isnull=True)
+        price = Price.objects.filter(sale__isnull=True).order_by("-id")
 
         def background_task():
             # Долгосрочная фоновая задача

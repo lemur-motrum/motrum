@@ -503,6 +503,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const commentAll = document.querySelector(
           'textarea[name="comment-input-name-all"]'
         ).value;
+        const dateDeliveryAll = document.querySelector(
+          'textarea[name="delivery-date-all-input-name-all"]'
+        ).value;
         let validate = true;
         const products = [];
         const motrumRequsits = document
@@ -546,6 +549,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
+            
           };
           console.log(product);
           if (inputPrice) {
@@ -577,6 +581,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (validate == true) {
+          
           const dataObj = {
             id_bitrix: +bitrixInput.value,
             admin_creator_id: adminCreatorId,
@@ -585,6 +590,7 @@ window.addEventListener("DOMContentLoaded", () => {
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll ? commentAll : null,
+            date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
           };

@@ -58,7 +58,7 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites):
+def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping

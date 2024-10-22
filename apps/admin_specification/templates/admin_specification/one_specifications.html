@@ -64,7 +64,8 @@
 
             </div> {% endcomment %}
             <div class="spetification_table">
-                <div class="spetification_titles">
+                <div style="position: sticky;top: 0px;z-index: 100;background: white;"
+                 class="spetification_titles">
                     <div class="title_item">Название:</div>
                     <div class="title_item">Артикул Motrum:</div>
                     <div class="title_item">
@@ -75,8 +76,9 @@
                     <div class="title_item">Цена за шт. в ₽:</div>
                     <div class="title_item">Стоимость:</div>
                     <div class="title_item">Цена Motrum:</div>
+                    <div class="title_item">Скидка Motrum %:</div>
                     <div class="title_item">Доп.Скидка %:</div>
-                    <div class="title_item">Срок поставки:</div>
+                    <div class="title_item">Срок поставки спецификация:</div>
                 </div>
             {% for specif_prod in product_specification %}
                 <div class="item_container">       
@@ -110,10 +112,17 @@
                 <div class="item_value">{{ specif_prod.price_all }}</div>
                 <div class="item_value">{{ specif_prod.price_all_motrum }}</div>
                 <div class="item_value">
+                    
+                    
+                    {% if specif_prod.product and specif_prod.product.price.sale %}
+                    {{specif_prod.product.price.sale.percent}}%
+                    {% endif %}
+                </div>
+                <div class="item_value">
                     {% if specif_prod.extra_discount %}
                     {{ specif_prod.extra_discount }}
                     {% endif %}
-                    </div>
+                </div>
                 <div class="item_value">
                 {% if specif_prod.date_delivery %}
                 {{ specif_prod.date_delivery }}

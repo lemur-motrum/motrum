@@ -44,6 +44,10 @@ def crete_pdf_bill(specification,request,is_contract):
         "bill",
     )
     specifications = Specification.objects.get(id=specification)
+    name_admin = f"{specifications.admin_creator.last_name}{specifications.admin_creator.first_name}"
+    if specifications.admin_creator.middle_name:
+        name_admin = f"{specifications.admin_creator.last_name}{specifications.admin_creator.first_name}{specifications.admin_creator.middle_name}"
+        
     product_specification = ProductSpecification.objects.filter(
         specification=specification
     )
@@ -663,7 +667,17 @@ def crete_pdf_bill(specification,request,is_contract):
         )
     )
     story.append(table_signature)
-
+    
+    story.append(
+            Paragraph(
+                f"{name_admin}",
+                normal_style,
+            )
+        )
+    
+    name_admin
+    
+    
     pdf = doc
     pdf.build(story, canvasmaker=MyCanvas)
     file_path = "{0}/{1}/{2}".format(

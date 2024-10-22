@@ -5,7 +5,7 @@ from apps.product.api.serializers import (
     ProductSpesifSerializer,
     StockSerializer,
 )
-from apps.product.models import Stock
+from apps.product.models import Product, Stock
 from apps.specification.models import ProductSpecification, Specification
 
 
@@ -31,9 +31,36 @@ class SpecificationSerializer(serializers.ModelSerializer):
 
 
 class ProductSpecificationSerializer(serializers.ModelSerializer):
+    product_okt_name = serializers.SerializerMethodField()
+    product_okt_article = serializers.SerializerMethodField()
     class Meta:
         model = ProductSpecification
-        fields = "__all__"
+        fields = (
+            "id",
+            "product_okt_name",
+            'product_okt_article',
+            "product_new",
+            "product_new_article",
+            "quantity",
+        )
+    
+    def get_product_okt_name(self, obj):
+        if obj.product:
+            product_okt_name = Product.objects.get(id=obj.product_id).name
+            # product_okt_name 
+
+            return product_okt_name
+        else:
+            return None  
+         
+    def get_product_okt_article(self, obj):
+        if obj.product:
+            article_supplier = Product.objects.get(id=obj.product_id).article_supplier
+            # product_okt_name 
+
+            return article_supplier
+        else:
+            return None      
 
 
 class ListProductSpecificationSerializer(serializers.ModelSerializer):

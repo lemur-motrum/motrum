@@ -228,6 +228,41 @@ a {
       }
     }
   }
+
+  .invoice-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 1s;
+    z-index: 100;
+    &.visible {
+      opacity: 1;
+    }
+    &.show {
+      display: flex;
+    }
+    .modal-window {
+      width: 31.375rem;
+      height: 33rem;
+      overflow-y: auto;
+      background-color: #fff;
+      box-sizing: border-box;
+      padding: 2.313rem 2.063rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.875rem;
+      .title {
+        font-size: 1.875rem;
+        text-align: center;
+        text-transform: uppercase;
+      }
+    }
+  }
   div[window-elem="cookie"] {
     width: 100%;
     height: 6.688rem;

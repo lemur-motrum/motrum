@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 
 
+
 from apps.core.models import Currency
 from apps.product.models import Price, Product
 from apps.specification.utils import get_document_path
@@ -71,11 +72,11 @@ class Specification(models.Model):
         return f"{self.id_bitrix}"
 
     def save(self, *args, **kwargs):
-        # from apps.core.utils import create_time_stop_specification
-
-        # data_stop = create_time_stop_specification()
-        # self.date_stop = data_stop
-        # self.tag_stop = True
+        # from apps.client.models import Order
+        # if self.id:
+        #     order = Order.objects.get(specification_id = self.id)
+        #     order.save()
+      
 
         super().save(*args, **kwargs)
 

@@ -545,6 +545,21 @@ def create_specification(request):
                 ).values(
                     "id",
                 ),
+                old_price_one=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "price_one",
+                ),
+                old_extra_discount=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "extra_discount",
+                ),
+                old_date=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "specification__date_update",
+                ),
                 comment=product_specification.filter(product=OuterRef("pk")).values(
                     "comment",
                 ),
@@ -668,6 +683,13 @@ def get_all_specifications(request):
     login_url="/user/login_admin/",
 )
 def one_specifications(request, pk):
+    user_admin = AdminUser.objects.get(user=request.user)
+    user_admin_type = user_admin.admin_type
+    if user_admin_type == "ALL":
+        admin_king = True
+    elif user_admin_type == "BASE":
+        admin_king = False
+        
     specification = Specification.objects.get(pk=pk)
     product_specification = ProductSpecification.objects.filter(
         specification=specification
@@ -680,6 +702,7 @@ def one_specifications(request, pk):
         "specification": specification,
         "product_specification": product_specification,
         "order": order,
+        'admin_king':admin_king,
     }
 
     return render(request, "admin_specification/one_specifications.html", context)
@@ -1083,103 +1106,234 @@ def load_products(request):
     return JsonResponse(out, safe=False)
 
 
-# Вьюха для редактирования актуальной спецификации и для актуализации недействительной
+# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def update_specification(request):
+#     if request.method == "POST":
+#         id_specification = json.loads(request.body)
+#         current_id = id_specification["specification_id"]
+
+#         products = []
+
+#         current_specification = Specification.objects.filter(pk=current_id)[0]
+
+#         get_products = ProductSpecification.objects.filter(
+#             specification=current_specification.pk
+#         )
+
+#         for product in get_products:
+#             product_id = product.product.pk
+#             product_pk = product.pk
+#             product_name = product.product.name
+#             product_prices = Price.objects.get(prod=product_id)
+#             product_price = product_prices.rub_price_supplier
+#             product_quantity = product.quantity
+#             product_totla_cost = int(product_quantity) * float(product_price)
+#             product_id_motrum = product.product.article
+#             product_id_suppler = product.product.article_supplier
+#             specification_id = current_specification.pk
+
+#             product_individual_sale = product.extra_discount
+
+#             product_price = str(product_price).replace(",", ".")
+
+#             if (
+#                 product_individual_sale != "0"
+#                 and product_individual_sale != ""
+#                 and product_individual_sale != None
+#             ):
+#                 product_price_extra_old_before = product.price_one / (
+#                     1 - float(product_individual_sale) / 100
+#                 )
+
+#             else:
+#                 product_price_extra_old_before = product.price_one
+
+#             product_price_extra_old = str(product_price_extra_old_before).replace(
+#                 ",", "."
+#             )
+#             product_totla_cost = str(product_totla_cost).replace(",", ".")
+#             product_multiplicity_item = Stock.objects.get(prod=product_id)
+#             if product_multiplicity_item.is_one_sale == True:
+#                 product_multiplicity = 1
+#             else:
+#                 product_multiplicity = Stock.objects.get(
+#                     prod=product_id
+#                 ).order_multiplicity
+#             discount_item = get_price_motrum(
+#                 product.product.category_supplier,
+#                 product.product.group_supplier,
+#                 product.product.vendor,
+#                 product_prices.rub_price_supplier,
+#                 product.product.category_supplier_all,
+#                 product.product.supplier,
+#             )[1]
+#             if discount_item == None:
+#                 discount = None
+#             else:
+#                 discount = discount_item.percent
+
+#             data_old = current_specification.date.strftime("%m.%d.%Y")
+
+#             product_item = {
+#                 "discount": discount,
+#                 "id": product_id,
+#                 "idMotrum": product_id_motrum,
+#                 "idSaler": product_id_suppler,
+#                 "name": product_name,
+#                 "price": product_price,
+#                 "quantity": product_quantity,
+#                 "totalCost": product_totla_cost,
+#                 "productSpecificationId": product_pk,
+#                 "specificationId": specification_id,
+#                 "multiplicity": product_multiplicity,
+#                 "product_price_extra_old": product_price_extra_old,
+#                 "data_old": data_old,
+#                 "product_individual_sale": product_individual_sale,
+#             }
+
+#             products.append(product_item)
+
+#     current_products = json.dumps(products)
+
+#     out = {
+#         "status": "ok",
+#         "products": current_products,
+#     }
+#     return JsonResponse(out)
+
+# исторические записи для страниц история
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
-def update_specification(request):
-    if request.method == "POST":
-        id_specification = json.loads(request.body)
-        current_id = id_specification["specification_id"]
+def history_admin(request, pk):
+    from apps.specification.admin import SpecificationAdmin
+    from django.contrib.admin.utils import unquote
+    from itertools import chain
 
-        products = []
+    specification = Specification.objects.get(pk=pk)
+    model = Specification
+    opts = model._meta
+    app_label = opts.app_label
+    pk_name = opts.pk.attname
+    history = getattr(model, model._meta.simple_history_manager_attribute)
+    object_id = str(pk)
 
-        current_specification = Specification.objects.filter(pk=current_id)[0]
+    try:
+        product_id_ex = ProductSpecification.objects.filter(specification=pk).last()
+        product_id = ProductSpecification.objects.filter(specification=pk)
 
-        get_products = ProductSpecification.objects.filter(
-            specification=current_specification.pk
+    except ProductSpecification.DoesNotExist:
+        product_id = None
+
+    historical_records_product = []
+    if product_id != None:
+        for item in product_id:
+            item_list = ProductSpecificationAdmin.history_view(
+                ProductSpecification, request, item.id, extra_context=None
+            )
+            if historical_records_product == []:
+                historical_records_product = item_list
+            else:
+                historical_records_product = list(
+                    chain(
+                        historical_records_product,
+                        item_list,
+                    )
+                )
+    deleted_prod = ProductSpecification.history.filter(
+        history_type="-", specification_id=pk
+    )
+
+    historical_records_product2 = []
+    id_old_prod = []
+    for item2 in deleted_prod:
+        id_old_prod.append(item2.id)
+        item_list = ProductSpecificationAdmin.history_view(
+            ProductSpecification, request, item2.id, extra_context=None
         )
 
-        for product in get_products:
-            product_id = product.product.pk
-            product_pk = product.pk
-            product_name = product.product.name
-            product_prices = Price.objects.get(prod=product_id)
-            product_price = product_prices.rub_price_supplier
-            product_quantity = product.quantity
-            product_totla_cost = int(product_quantity) * float(product_price)
-            product_id_motrum = product.product.article
-            product_id_suppler = product.product.article_supplier
-            specification_id = current_specification.pk
-
-            product_individual_sale = product.extra_discount
-
-            product_price = str(product_price).replace(",", ".")
-
-            if (
-                product_individual_sale != "0"
-                and product_individual_sale != ""
-                and product_individual_sale != None
-            ):
-                product_price_extra_old_before = product.price_one / (
-                    1 - float(product_individual_sale) / 100
+        if historical_records_product2 == []:
+            historical_records_product2 = item_list
+        else:
+            historical_records_product2 = list(
+                chain(
+                    historical_records_product2,
+                    item_list,
                 )
-
-            else:
-                product_price_extra_old_before = product.price_one
-
-            product_price_extra_old = str(product_price_extra_old_before).replace(
-                ",", "."
             )
-            product_totla_cost = str(product_totla_cost).replace(",", ".")
-            product_multiplicity_item = Stock.objects.get(prod=product_id)
-            if product_multiplicity_item.is_one_sale == True:
-                product_multiplicity = 1
-            else:
-                product_multiplicity = Stock.objects.get(
-                    prod=product_id
-                ).order_multiplicity
-            discount_item = get_price_motrum(
-                product.product.category_supplier,
-                product.product.group_supplier,
-                product.product.vendor,
-                product_prices.rub_price_supplier,
-                product.product.category_supplier_all,
-                product.product.supplier,
-            )[1]
-            if discount_item == None:
-                discount = None
-            else:
-                discount = discount_item.percent
 
-            data_old = current_specification.date.strftime("%m.%d.%Y")
+    historical_records = SpecificationAdmin.get_history_queryset(
+        SpecificationAdmin, request, history, pk_name, object_id
+    )
+ 
+    history_list_display = SpecificationAdmin.get_history_list_display(
+        SpecificationAdmin, request
+    )
 
-            product_item = {
-                "discount": discount,
-                "id": product_id,
-                "idMotrum": product_id_motrum,
-                "idSaler": product_id_suppler,
-                "name": product_name,
-                "price": product_price,
-                "quantity": product_quantity,
-                "totalCost": product_totla_cost,
-                "productSpecificationId": product_pk,
-                "specificationId": specification_id,
-                "multiplicity": product_multiplicity,
-                "product_price_extra_old": product_price_extra_old,
-                "data_old": data_old,
-                "product_individual_sale": product_individual_sale,
-            }
+    for history_list_entry in history_list_display:
+        value_for_entry = getattr(SpecificationAdmin, history_list_entry, None)
+        if value_for_entry and callable(value_for_entry):
+            for record in historical_records:
+                setattr(record, history_list_entry, value_for_entry(record))
 
-            products.append(product_item)
+    from simple_history.template_utils import HistoricalRecordContextHelper
 
-    current_products = json.dumps(products)
+    previous = None
+    for current in historical_records:
+        if previous is None:
+            previous = current
+            continue
 
-    out = {
-        "status": "ok",
-        "products": current_products,
+        delta = previous.diff_against(current, foreign_keys_are_objs=True)
+
+        helper = HistoricalRecordContextHelper(Specification, previous)
+        previous.history_delta_changes = helper.context_for_delta_changes(delta)
+
+        previous = current
+
+    result_list = list(
+        chain(
+            historical_records,
+            historical_records_product,
+            historical_records_product2,
+        )
+    )
+
+
+    def get_date(element):
+        return element.history_date
+
+    result_list_sorted = result_list.sort(key=get_date, reverse=True)
+
+    print(object_id)
+    context = {
+        "specification": specification,
+        "historical_records": result_list,
+        "app_label": app_label,
+        "opts": opts,
+        "history_list_display": history_list_display,
     }
-    return JsonResponse(out)
+   
+    extra_kwargs = {}
+
+    return SpecificationAdmin.render_history_view(
+        SpecificationAdmin,
+        request,
+        "admin_specification/history_admin.html",
+        context,
+        **extra_kwargs,
+    )
+
+    # context = {
+    #         "title": "dsdfsd",
+
+    #     }
+
+    # return render(request, "admin_specification/history_admin.html", context)
 
 
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def history_admin_bill(request, pk):
+    pass
 # def load_products(request):
 #     data = json.loads(request.body)
 #     cat = data["category"]
@@ -1379,134 +1533,6 @@ def update_specification(request):
 #     }
 #     return JsonResponse(out)
 
-
-# исторические записи для страниц история
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
-def history_admin(request, pk):
-    from apps.specification.admin import SpecificationAdmin
-    from django.contrib.admin.utils import unquote
-    from itertools import chain
-
-    specification = Specification.objects.get(pk=pk)
-    model = Specification
-    opts = model._meta
-    app_label = opts.app_label
-    pk_name = opts.pk.attname
-    history = getattr(model, model._meta.simple_history_manager_attribute)
-    object_id = str(pk)
-
-    try:
-        product_id_ex = ProductSpecification.objects.filter(specification=pk).last()
-        product_id = ProductSpecification.objects.filter(specification=pk)
-
-    except ProductSpecification.DoesNotExist:
-        product_id = None
-
-    historical_records_product = []
-    if product_id != None:
-        for item in product_id:
-            item_list = ProductSpecificationAdmin.history_view(
-                ProductSpecification, request, item.id, extra_context=None
-            )
-            if historical_records_product == []:
-                historical_records_product = item_list
-            else:
-                historical_records_product = list(
-                    chain(
-                        historical_records_product,
-                        item_list,
-                    )
-                )
-    deleted_prod = ProductSpecification.history.filter(
-        history_type="-", specification_id=pk
-    )
-
-    historical_records_product2 = []
-    id_old_prod = []
-    for item2 in deleted_prod:
-        id_old_prod.append(item2.id)
-        item_list = ProductSpecificationAdmin.history_view(
-            ProductSpecification, request, item2.id, extra_context=None
-        )
-
-        if historical_records_product2 == []:
-            historical_records_product2 = item_list
-        else:
-            historical_records_product2 = list(
-                chain(
-                    historical_records_product2,
-                    item_list,
-                )
-            )
-
-    historical_records = SpecificationAdmin.get_history_queryset(
-        SpecificationAdmin, request, history, pk_name, object_id
-    )
- 
-    history_list_display = SpecificationAdmin.get_history_list_display(
-        SpecificationAdmin, request
-    )
-
-    for history_list_entry in history_list_display:
-        value_for_entry = getattr(SpecificationAdmin, history_list_entry, None)
-        if value_for_entry and callable(value_for_entry):
-            for record in historical_records:
-                setattr(record, history_list_entry, value_for_entry(record))
-
-    from simple_history.template_utils import HistoricalRecordContextHelper
-
-    previous = None
-    for current in historical_records:
-        if previous is None:
-            previous = current
-            continue
-
-        delta = previous.diff_against(current, foreign_keys_are_objs=True)
-
-        helper = HistoricalRecordContextHelper(Specification, previous)
-        previous.history_delta_changes = helper.context_for_delta_changes(delta)
-
-        previous = current
-
-    result_list = list(
-        chain(
-            historical_records,
-            historical_records_product,
-            historical_records_product2,
-        )
-    )
-
-
-    def get_date(element):
-        return element.history_date
-
-    result_list_sorted = result_list.sort(key=get_date, reverse=True)
-
-    print(object_id)
-    context = {
-        "specification": specification,
-        "historical_records": result_list,
-        "app_label": app_label,
-        "opts": opts,
-        "history_list_display": history_list_display,
-    }
-   
-    extra_kwargs = {}
-
-    return SpecificationAdmin.render_history_view(
-        SpecificationAdmin,
-        request,
-        "admin_specification/history_admin.html",
-        context,
-        **extra_kwargs,
-    )
-
-    # context = {
-    #         "title": "dsdfsd",
-
-    #     }
-
-    # return render(request, "admin_specification/history_admin.html", context)
 
 
 # рендер страницы корзины до переверстки

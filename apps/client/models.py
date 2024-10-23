@@ -4,7 +4,7 @@ from token import TYPE_COMMENT
 from django.db import models
 from django.db.models import Case, Value, When
 from django.urls import reverse
-
+from simple_history.models import HistoricalRecords
 # Create your models here.
 
 
@@ -75,6 +75,7 @@ TYPE_PAYMENT = (
 
 class Requisites(models.Model):
     client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE,null=True,blank=True,)
+    phone = models.CharField("Номер телефона", max_length=40,null=True)
     contract = models.CharField(
         "Договор",
         max_length=50,
@@ -274,6 +275,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
 
     status = models.CharField(
         max_length=100, choices=STATUS_ORDER, default="PROCESSING"
@@ -355,7 +357,7 @@ class Order(models.Model):
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
-
+    # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"

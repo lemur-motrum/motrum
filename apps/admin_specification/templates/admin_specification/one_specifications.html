@@ -21,38 +21,62 @@
             <br>
 
             <div class="">Дата создания:{{ specification.date }}</div>
+            {% if specification.date_update %}
+            <div class="">Последнее обновление:{{ order.date_update }}</div>
+            {% endif %}
+
 
             <div class="">
-                Действительно:
-                {% if specification.tag_stop %}
-                    до {{ specification.date_stop }}
+                {% if bill_file == None %}
+                    Спецификация действительна:
+                    {% if specification.tag_stop %}
+                        до {{ specification.date_stop }}
+                    {% else %}
+                        Недействительно
+                    {% endif %}
+                       
                 {% else %}
-                    Недействительно
+                    {% if bill_sum == 0 %}
+                        Счет действителен до {{ order.bill_date_stop }}
+                    {% else %}
+
+                    {% endif %}
                 {% endif %}
+               
             </div>
-            {% if specification.date_update %}<div class="">Дата обновления:{{ specification.date_update }}</div>{% endif %}
+            
             <br>
 
             <div class="">Клиент: {{order.requisites.legal_entity}} счет: {{order.account_requisites}} </div>
             <div class="">Оплата: предоплата {{order.prepay_persent}}% {% if order.postpay_persent %}постоплата:{{order.postpay_persent}}%{% endif %}</div>
-            <div class=""></div>
+            {% if order.bill_sum_paid > 0 %}
+            <div class="">Оплаченно: {{order.bill_sum_paid|number_into_digits}} </div>
+            {% endif %}
             
             
+            <br>
             <div class="">
                 Документ спецификации:
                 <a href="{{ specification.file.url }}">скачать</a>
             </div>
+            {% if admin_king %}
+            <span class="table_item_value_span">
+                <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
+            </span>
+            {% endif %}
             {% if order.bill_file %}
                 <div class="">
                     Документ счета:
                     <a href="{{ order.bill_file.url }}">скачать</a>
                 </div>
+                
+                <span class="table_item_value_span">
+                  
+                </span>
             {% endif %}
-            <span class="table_item_value_span">
-                <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений</a>
-            </span>
+
     </div>
-    <h2 class="title">Список товаров на общую сумму: {{specification.total_amount}}₽ </h2>
+    <h2 class="title">Список товаров на общую сумму: {{specification.total_amount|number_into_digits}}₽ </h2>
     <div class="comment_all">
         {% if specification.comment %}
         <p>Общий комментарий:{{ specification.comment }}</p>
@@ -69,7 +93,7 @@
 
             </div> {% endcomment %}
             <div class="spetification_table">
-                <div style="position: sticky;top: 0px;z-index: 100;background: white;"
+                <div style="position: sticky;top: 0px;z-index: 100;background: white;border-bottom: 1px solid gray"
                  class="spetification_titles">
                     <div class="title_item">Название:</div>
                     <div class="title_item">Артикул Motrum:</div>
@@ -77,13 +101,14 @@
                         Ар.
                         Поставщика:
                     </div>
-                    <div class="title_item">Количество:</div>
+                    <div class="title_item"style=" width: 100px;white-space: nowrap;">Кол-во:</div>
                     <div class="title_item">Цена за шт. в ₽:</div>
                     <div class="title_item">Стоимость:</div>
-                    <div class="title_item">Цена Motrum:</div>
+                    <div class="title_item">Стоимость Motrum:</div>
                     <div class="title_item">Скидка Motrum %:</div>
                     <div class="title_item">Доп.Скидка %:</div>
                     <div class="title_item">Срок поставки спецификация:</div>
+                    <div class="title_item">Срок поставки счет:</div>
                 </div>
             {% for specif_prod in product_specification %}
                 <div class="item_container">       
@@ -112,7 +137,7 @@
                     {{ specif_prod.product.article_supplier }}
                     {% endif %}
                 </div>
-                <div class="item_value">{{ specif_prod.quantity }}</div>
+                <div class="item_value"style=" width: 100px;">{{ specif_prod.quantity }}</div>
                 <div class="item_value">{{ specif_prod.price_one|number_into_digits }}</div>
                 <div class="item_value">{{ specif_prod.price_all|number_into_digits }}</div>
                 <div class="item_value">{{ specif_prod.price_all_motrum|number_into_digits }}</div>
@@ -125,7 +150,7 @@
                 </div>
                 <div class="item_value">
                     {% if specif_prod.extra_discount %}
-                    {{ specif_prod.extra_discount }}
+                    {{ specif_prod.extra_discount }}%
                     {% endif %}
                 </div>
                 <div class="item_value">
@@ -133,6 +158,12 @@
                 {{ specif_prod.date_delivery }}
                    {% endif %}
                 </div>
+                <div class="item_value">
+                    {% if specif_prod.text_delivery %}
+                    {{ specif_prod.text_delivery }}
+                       {% endif %}
+                    </div>
+
                 </div>
             {% endfor %}
             </div> 

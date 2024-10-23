@@ -72,7 +72,8 @@
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" />
                                 <label for="price-input-extra">
-                                    {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
+                                    <br>
+                                    {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
                                 </label>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
@@ -103,9 +104,10 @@
                                    placeholder="% скидки"
                                    maxlength="5"
                                    value="" />
-                            <label for="price-input-discount">
-                                {% if item.product_individual_sale %}{{ item.product_individual_sale }}{% endif %}
-                                %
+                            <label for="price-input-discount">%
+                                <br>
+                                {% if item.old_extra_discount %}{{ item.old_extra_discount }}%{% endif %}
+                                
                             </label>
                         </div>
                         <div class="item_value">

@@ -3,12 +3,10 @@ django-debug-toolbar
 django-environ
 requests
 gunicorn
-# pymysql
 psycopg2
 Pytils 
 Pillow
 openpyxl
-# xlrd
 lxml
 django-autocomplete-light
 reportlab

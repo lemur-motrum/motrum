@@ -33,3 +33,32 @@ def specification_date_stop(self):
             info = f"Отслеживание дат спецификаций не удалось"
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=5)
+        
+        
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def bill_date_stop(self):
+    try:
+        bill = Order.objects.filter(bill_file__isnull=False, bill_sum_paid=0)
+
+        for bill_item in bill:
+            now = datetime.date.today()
+            date = bill_item.bill_date_stop
+
+            if now >= date:
+                bill_item.tag_stop = False
+                bill_item._change_reason = "Автоматическое"
+                bill_item.status = "CANCELED"
+                bill_item.save()
+
+                
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Отслеживание дат счетов"
+
+            info = f"Отслеживание дат счетов не удалось"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=5)        

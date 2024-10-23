@@ -336,6 +336,80 @@ a {
       }
     }
   }
+  .change_of_payment_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 1s;
+    z-index: 100;
+    &.visible {
+      opacity: 1;
+    }
+    &.show {
+      display: flex;
+    }
+    .modal-window {
+      width: 31.375rem;
+      overflow-y: auto;
+      background-color: #fff;
+      box-sizing: border-box;
+      padding: 2.313rem 2.063rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.875rem;
+      .title {
+        font-size: 1.875rem;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .payment_label {
+        position: relative;
+        .payment_input {
+          width: 100%;
+          height: 2rem;
+          border-radius: 0.7rem;
+          border: 1px solid #000;
+          box-sizing: border-box;
+          padding: 0.5rem;
+          font-size: 1rem;
+          &:focus {
+            outline: none;
+          }
+        }
+        .payment_error {
+          color: red;
+          font-size: 0.8rem;
+          position: absolute;
+          top: 102%;
+          left: 2%;
+          transition: 0.6s;
+          opacity: 0;
+          &.show {
+            opacity: 1;
+          }
+        }
+      }
+      .change-payment-btn {
+        font-size: 0.938rem;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: none;
+        background-color: #a4a4a4;
+        color: #000;
+        cursor: pointer;
+        padding: 0.5rem 0.875rem;
+        width: 100%;
+      }
+    }
+  }
   div[window-elem="cookie"] {
     width: 100%;
     height: 6.688rem;

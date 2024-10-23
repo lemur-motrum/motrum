@@ -35,38 +35,38 @@
         <div class="table_item_value ">
                 <span class="price">
                         Сумма:
-                        <span class="price_bill_sum_paid ">{% if requisites_set.bill_sum_paid %}
-                                {{ requisites_set.bill_sum_paid }}
-                        {% else %}
-                                0
-                        {% endif %}</span>
-                        
+                        <span class="price_bill_sum_paid ">
+                                {% if requisites_set.bill_sum_paid %}
+                                        {{ requisites_set.bill_sum_paid }}
+                                {% else %}
+                                        0
+                                {% endif %}
+                        </span>
                         / {{ specification_list.total_amount }}
                 </span> ₽
                 <br>
                 <br>
                 {% if prepay_persent %}
-                        
                         <div class="paument_tupe">
-                                {% if postpay_persent != 0  %}
+                                {% if postpay_persent != 0 %}
                                         Предоплата: {{ prepay_persent }}%
                                         Постоплата {{ postpay_persent }} %
                                 {% else %}
-                                        Предоплата: {{ prepay_persent }}%        
+                                        Предоплата: {{ prepay_persent }}%
                                 {% endif %}
                         </div>
                 {% endif %}
         </div>
-        <div class="table_item_value ">
+        <div class="table_item_value invoice-table_item_value">
                 {% if bill_status == None and specification_list.tag_stop == true %}
-
                         <button data-specication-id-to-bill="{{ specification }}"
                                 class="create-bill-button">Создать счет</button>
-
                 {% elif bill_status == None and specification_list.tag_stop == false %}
                         <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
                 {% elif bill_status == true %}
-                        <a href="{{ bill_file }}">Счет ссылка</a>
+                        <button data-specication-id-to-bill="{{ specification }}"
+                                class="create-bill-button">Обновить счет</button>
+                        <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>
                 {% elif bill_status == false %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выствить новый счет </span>
                 {% endif %}
@@ -79,18 +79,15 @@
         {% else %}
                 <button class="change-specification-button">Редактировать</button>
                 <br>
-
                 {% if bill_sum %}
-                <span class="table_item_value_span"style="
-                position: absolute;
-                z-index: 20;
-                right: -20px;
-                bottom: 20px;
-                width: 200px;
-                line-height: 0.8;
-                color: gray;
-            ">при редактировании будет необходимо создать счет заново </span>
-               
+                        <span class="table_item_value_span"
+                              style="position: absolute;
+                                     z-index: 20;
+                                     right: -20px;
+                                     bottom: 20px;
+                                     width: 200px;
+                                     line-height: 0.8;
+                                     color: gray">при редактировании будет необходимо создать счет заново</span>
                 {% endif %}
         {% endif %}
 </div>

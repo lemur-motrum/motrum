@@ -677,6 +677,14 @@ h1 {
           &:nth-of-type(5) {
             margin-left: 8.563rem;
           }
+          &.invoice-table_item_value {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            .create-bill-button {
+              width: 40%;
+            }
+          }
         }
         .table_item_value_span {
           font-size: 14px;

@@ -49,9 +49,15 @@ window.addEventListener("DOMContentLoaded", () => {
       if (specificationsItems.length > 0) {
         clearInterval(interval);
         specificationsItems.forEach((specificationItem) => {
-          const invoiceBtn = specificationItem.querySelector(
+          const createInvoiceContainer = specificationItem.querySelector(
+            ".invoice-table_item_value"
+          );
+          const invoiceBtn = createInvoiceContainer.querySelector(
             ".create-bill-button"
           );
+          const invoiceLink =
+            createInvoiceContainer.querySelector(".invoice-link");
+
           const specificationId =
             specificationItem.getAttribute("specification-id");
           if (invoiceBtn) {
@@ -109,8 +115,15 @@ window.addEventListener("DOMContentLoaded", () => {
                           },
                           body: data,
                         }
-                      ).then((response) => {
-                        if (response.status === 200) {
+                      )
+                        .then((response) => {
+                          if (response.status === 200) {
+                            return response.json();
+                          } else {
+                            throw new Error("Ошибка");
+                          }
+                        })
+                        .then((response) => {
                           invoiceOverlay.classList.remove("visible");
                           if (invoiceOverlay.classList.contains("show")) {
                             document.body.style.overflowY = "scroll";
@@ -119,29 +132,35 @@ window.addEventListener("DOMContentLoaded", () => {
                             invoiceOverlay.classList.remove("show");
                             invoiceContainer.innerHTML = "";
                           }, 600);
-                        }
-                      });
-                    } else {
-                      console.log("Ошибка");
+                          console.log(response);
+                          if (!invoiceLink) {
+                            invoiceBtn.textContent = "Обновить счет";
+                            createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                          } else {
+                            createInvoiceContainer.innerHTML = `<button data-specication-id-to-bill="${specificationId}"
+                            class="create-bill-button">Обновить счет</button>`;
+                            createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                          }
+                        });
                     }
                   };
                 }
               });
             };
+            invoiceOverlay.onclick = () => {
+              invoiceOverlay.classList.remove("visible");
+              if (invoiceOverlay.classList.contains("show")) {
+                document.body.style.overflowY = "scroll";
+              }
+              setTimeout(() => {
+                invoiceOverlay.classList.remove("show");
+                invoiceContainer.innerHTML = "";
+              }, 600);
+            };
+            modalWindow.onclick = (e) => {
+              e.stopPropagation();
+            };
           }
-          invoiceOverlay.onclick = () => {
-            invoiceOverlay.classList.remove("visible");
-            if (invoiceOverlay.classList.contains("show")) {
-              document.body.style.overflowY = "scroll";
-            }
-            setTimeout(() => {
-              invoiceOverlay.classList.remove("show");
-              invoiceContainer.innerHTML = "";
-            }, 600);
-          };
-          modalWindow.onclick = (e) => {
-            e.stopPropagation();
-          };
         });
       }
     });

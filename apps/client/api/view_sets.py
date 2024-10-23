@@ -984,15 +984,38 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
+     # сохранение суммы оплаты счета
+    
+    @action(detail=True,methods=["get"], url_path=r"get-payment")
+    def get_payment(self, request,pk=None, *args, **kwargs):
+        order = Order.objects.get(id=pk)
+        
+        
+        sum_prepay = float(order.bill_sum) - float(order.bill_sum_paid)
+        if sum_prepay:
+            return Response(sum_prepay, status=status.HTTP_200_OK) 
+        else:
+            return Response(None, status=status.HTTP_400_BAD_REQUEST) 
+    
     # сохранение суммы оплаты счета
     @action(detail=True,methods=["post"], url_path=r"save-payment")
     def save_payment(self, request,pk=None, *args, **kwargs):
-        order = Order.objects.filter(id=pk)
+        order = Order.objects.get(id=pk)
         data = request.data
         bill_sum_paid = data["bill_sum_paid"]
-        order.bill_sum_paid = float(bill_sum_paid)
+        old_sum = order.bill_sum_paid
+        new_sum = old_sum + float(bill_sum_paid)
+        order.bill_sum_paid = new_sum
+        order.save()
+        data = {
+            "all_bill_sum_paid":new_sum,
+        }
+        if new_sum:
+            return Response(data, status=status.HTTP_200_OK) 
+        else:
+            return Response(None, status=status.HTTP_400_BAD_REQUEST) 
         
-        sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
+        # sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
         # sum_postpay = order.bill_sum - sum_prepay
         # if order.bill_sum_paid >=  sum_prepay:
         #     sum_prepay_fact = order.bill_sum_paid

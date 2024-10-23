@@ -42,6 +42,7 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
             "product_new",
             "product_new_article",
             "quantity",
+            "text_delivery"
         )
     
     def get_product_okt_name(self, obj):

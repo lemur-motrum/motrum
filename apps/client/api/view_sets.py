@@ -527,23 +527,40 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             serializer_class = ProductSpecificationSerializer
             # serializer = self.serializer_class(order, data=data_order, many=False)
-            data = {"id": id, "text_delivery": "text_delivery"}
+            # data = {"id": id, "text_delivery": "text_delivery"}
             data = request.data
             for obj in data:
-                serializer_prod = serializer_class(data=obj, partial=True)
-                if serializer_prod.is_valid():
-                    serializer_prod.save()
+                # serializer_prod = serializer_class(data=obj, partial=True)
+                prod = ProductSpecification.objects.filter(id=obj["id"]).update(text_delivery=obj["text_delivery"])
+                
+                # prod = ProductSpecification.objects.get(id=obj["id"])
+                # serializer_prod = serializer_class(prod,data=obj, partial=True)
+                # print(serializer_prod)
+                # if serializer_prod.is_valid():
+                #     serializer_prod.save()
+                #     print(serializer_prod.data)
 
             order = Order.objects.get(specification_id=pk)
             
             if order.requisites.contract:
-                order.create_bill(request,True,order)
+                print("-----------")
+                order_pdf = order.create_bill(request,True,order)
+                print(order_pdf)
             else:  
-                order.create_bill(request,False,order)  
-            pdf =  request.build_absolute_uri(order.bill_file.url)   
-            data ={
-                "pdf":pdf
-            }
+                print("==========") 
+                order_pdf = order.create_bill(request,False,order) 
+                print(order_pdf) 
+                
+            if order_pdf:    
+                print(11111111111)
+                pdf =  request.build_absolute_uri(order.bill_file.url)   
+                data ={
+                    "pdf":pdf
+                }
+                return Response(data, status=status.HTTP_200_OK)
+            else: 
+                print(22222222222)
+                return Response(None, status=status.HTTP_400_BAD_REQUEST)    
                
                 
         except Exception as e: 
@@ -552,7 +569,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Сохранение спецификации админам окт ошибка {e}"
             e = error_alert(error, location, info)
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     # изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")

@@ -367,21 +367,25 @@ class Order(models.Model):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
-
+        print(is_contract,order)
         self.bill_date_start = datetime.date.today()
+        print(is_contract,order)
         data_stop = create_time_stop_specification()
+        print(data_stop)
         self.bill_date_stop = data_stop
 
         pdf = crete_pdf_bill(self.specification.id,request,is_contract,order,)
-        self.bill_file = pdf
-
-        self.bill_sum = self.specification.total_amount
-        self.status = "PAYMENT"
-        if self.client:
-            Notification.add_notification(self.id, "DOCUMENT_BILL")
-
-        self.save()
-        return self.id
+        if pdf:
+            self.bill_file = pdf
+            self.bill_sum = self.specification.total_amount
+            self.bill_name = self.specification.id
+            self.status = "PAYMENT"
+            if self.client:
+                Notification.add_notification(self.id, "DOCUMENT_BILL")
+            self.save()
+            return self.id
+        else:
+            return None
 
     def get_status_name(self):
         for choice in STATUS_ORDER:

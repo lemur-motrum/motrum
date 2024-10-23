@@ -416,8 +416,10 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     story.append(table_signature)
 
     pdf = doc
+    print(0000000000000000000000000000000000000)
+    print(pdf)
     pdf.build(story, canvasmaker=MyCanvas)
-
+    print(pdf)
     file_path = "{0}/{1}/{2}".format(
         "documents",
         "specification",

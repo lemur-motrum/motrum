@@ -240,15 +240,7 @@ function catalogLogic(elems) {
     };
   });
 }
-//логика пояаления кнопок "Актуализировать" и "Редактирорвать" на странице всех спецификаций
-function showButton(container, button) {
-  container.onmouseover = () => {
-    button.classList.add("show");
-  };
-  container.onmouseout = () => {
-    button.classList.remove("show");
-  };
-}
+
 function backendDataFormat(string) {
   const dateArray = string.split("-");
   const year = dateArray[0];
@@ -549,7 +541,6 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
-            
           };
           console.log(product);
           if (inputPrice) {
@@ -581,7 +572,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (validate == true) {
-          
           const dataObj = {
             id_bitrix: +bitrixInput.value,
             admin_creator_id: adminCreatorId,
@@ -1080,7 +1070,7 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".change-specification-button");
-      showButton(item, changeButton);
+
       const link = item.querySelector("a");
       const specificationId = +link.textContent;
       const cartId = +link.dataset.cartId;
@@ -1142,7 +1132,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     overdueSpecifications.forEach((item) => {
       const updatingBtn = item.querySelector(".uptate-specification-button");
-      showButton(item, updatingBtn);
+
       const specificationId =
         +item.querySelectorAll(".table_item_value")[0].textContent;
       let cartId = item.querySelectorAll(".table_item_value")[0];
@@ -1233,37 +1223,45 @@ window.addEventListener("DOMContentLoaded", () => {
           loader.classList.add("hide");
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
-            const currentSpecificatons = allSpecifications.querySelectorAll(
-              "div[status='PROCESSING']"
-            );
+            const currentSpecificatons =
+              allSpecifications.querySelectorAll(".table_item");
             currentSpecificatons.forEach((item) => {
               const changeButton = item.querySelector(
                 ".change-specification-button"
               );
-              showButton(item, changeButton);
+              const updateButton = item.querySelector(
+                ".uptate-specification-button"
+              );
               const link = item.querySelector("a");
               const specificationId = item.getAttribute("specification-id");
               const cartId = +link.dataset.cartId;
 
-              changeButton.onclick = () => {
-                console.log(specificationId);
-                console.log(cartId);
-                document.cookie = `cart=${cartId};path=/`;
-                document.cookie = `specificationId=${specificationId};path=/`;
-                const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
-                fetch(endpoint, {
-                  method: "UPDATE",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken,
-                  },
-                })
-                  .then((response) => response.json())
-                  .then((response) => {
-                    window.location.href =
-                      "/admin_specification/current_specification/";
-                  });
-              };
+              function uptadeOrChanegeSpecification(button) {
+                button.onclick = () => {
+                  document.cookie = `cart=${cartId};path=/`;
+                  document.cookie = `specificationId=${specificationId};path=/`;
+                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
+                  fetch(endpoint, {
+                    method: "UPDATE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRFToken": csrfToken,
+                    },
+                  })
+                    .then((response) => response.json())
+                    .then((response) => {
+                      window.location.href =
+                        "/admin_specification/current_specification/";
+                    });
+                };
+              }
+
+              if (changeButton) {
+                uptadeOrChanegeSpecification(changeButton);
+              }
+              if (updateButton) {
+                uptadeOrChanegeSpecification(updateButton);
+              }
             });
           }
         });

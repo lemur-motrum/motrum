@@ -346,22 +346,23 @@ def crete_pdf_bill(specification,request,is_contract,order):
             except Stock.DoesNotExist:
                 product_stock = "шт"
 
-            date_delivery = product.date_delivery
-            if date_delivery:
-                if date_delivery > date_ship:
-                    date_ship = date_delivery
-            else:
-                is_none_date_delivery = True
+            # date_delivery = product.date_delivery
+            # if date_delivery:
+            #     if date_delivery > date_ship:
+            #         date_ship = date_delivery
+            # else:
+            #     is_none_date_delivery = True
 
-            if IS_TESTING:
-                    link = product.product.get_url_document_test()
-            else:
-                link = product.product.get_url_document()
-                
-            url_absolute = request.build_absolute_uri("/").strip("/")
-            link = f"{url_absolute}/{link}"
+            
             
             if product.product:
+                if IS_TESTING:
+                    link = product.product.get_url_document_test()
+                else:
+                    link = product.product.get_url_document()
+                    
+                url_absolute = request.build_absolute_uri("/").strip("/")
+                link = f"{url_absolute}/{link}"
                 product_name = f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
                 # product_name = str(product.product.name)
                 product_code = product.product.article_supplier

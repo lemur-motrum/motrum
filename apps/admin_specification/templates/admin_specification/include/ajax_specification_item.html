@@ -36,8 +36,8 @@
                 <span class="price">
                         Сумма:
                         <span class="price_bill_sum_paid ">
-                                {% if requisites_set.bill_sum_paid %}
-                                        {{ requisites_set.bill_sum_paid }}
+                                {% if bill_sum_paid %}
+                                        {{ bill_sum_paid }}
                                 {% else %}
                                         0
                                 {% endif %}
@@ -69,6 +69,8 @@
                         <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>
                 {% elif bill_status == false %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выствить новый счет </span>
+                {% elif bill_sum_paid and bill_sum_paid > 0 %}
+                123123123
                 {% endif %}
         </div>
         {% if bill_sum_paid %}

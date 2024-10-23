@@ -991,9 +991,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         order = Order.objects.get(id=pk)
         
         
-        sum_prepay = float(order.bill_sum) - float(order.bill_sum_paid)
-        if sum_prepay:
-            return Response(sum_prepay, status=status.HTTP_200_OK) 
+        sum_pay = float(order.bill_sum) - float(order.bill_sum_paid)
+        data = {
+            "sum_pay":sum_pay,
+        }
+        if sum_pay:
+            return Response(data, status=status.HTTP_200_OK) 
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST) 
     

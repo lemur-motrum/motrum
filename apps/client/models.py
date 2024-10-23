@@ -396,19 +396,19 @@ class Order(models.Model):
 
 
 
-class Document(models.Model):
-    client = models.ForeignKey(
-        Client,
-        verbose_name="Клиент",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-    )
-    order = models.ForeignKey(
-        Order,
-        verbose_name="Заказ",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-    )
-    date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
+# class Document(models.Model):
+#     client = models.ForeignKey(
+#         Client,
+#         verbose_name="Клиент",
+#         on_delete=models.PROTECT,
+#         blank=True,
+#         null=True,
+#     )
+#     order = models.ForeignKey(
+#         Order,
+#         verbose_name="Заказ",
+#         on_delete=models.PROTECT,
+#         blank=True,
+#         null=True,
+#     )
+#     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")

@@ -61,7 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const specificationId =
             specificationItem.getAttribute("specification-id");
           if (invoiceBtn) {
-            invoiceBtn.onclick = () => {
+            function openInvoiceModal() {
               invoiceOverlay.classList.add("show");
               document.body.style.overflowY = "hidden";
               setTimeout(() => {
@@ -104,7 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       });
 
                       const data = JSON.stringify(dataArray);
-                      console.log(data);
+
                       fetch(
                         `/api/v1/order/${specificationId}/create-bill-admin/`,
                         {
@@ -132,21 +132,42 @@ window.addEventListener("DOMContentLoaded", () => {
                             invoiceOverlay.classList.remove("show");
                             invoiceContainer.innerHTML = "";
                           }, 600);
-                          console.log(response);
                           if (!invoiceLink) {
                             invoiceBtn.textContent = "Обновить счет";
+                            const links =
+                              document.querySelectorAll(".invoice-link");
+                            if (links.length > 0) {
+                              links.forEach((link) => link.remove());
+                            }
                             createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                            const btns = document.querySelectorAll(
+                              ".create-bill-button"
+                            );
+                            btns.forEach((btn) => {
+                              btn.onclick = () => openInvoiceModal();
+                            });
                           } else {
-                            createInvoiceContainer.innerHTML = `<button data-specication-id-to-bill="${specificationId}"
-                            class="create-bill-button">Обновить счет</button>`;
+                            invoiceBtn.textContent = "Обновить счет";
+                            const links =
+                              document.querySelectorAll(".invoice-link");
+                            if (links.length > 0) {
+                              links.forEach((link) => link.remove());
+                            }
                             createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                            const btns = document.querySelectorAll(
+                              ".create-bill-button"
+                            );
+                            btns.forEach((btn) => {
+                              btn.onclick = () => openInvoiceModal();
+                            });
                           }
                         });
                     }
                   };
                 }
               });
-            };
+            }
+            invoiceBtn.onclick = () => openInvoiceModal();
             invoiceOverlay.onclick = () => {
               invoiceOverlay.classList.remove("visible");
               if (invoiceOverlay.classList.contains("show")) {

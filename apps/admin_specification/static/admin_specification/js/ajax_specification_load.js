@@ -1,4 +1,6 @@
-import { getCookie } from "/static/core/js/functions.js";
+import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
+import { invoiceItem } from "../js/invoice_elems.js";
+import { changePayment } from "../js/change_payment.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const specificationWrapper = document.querySelector(
@@ -163,6 +165,8 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           });
           getActivePaginationElem();
+          invoiceItem(specificationContainer);
+          changePayment(specificationContainer, showErrorValidation);
         });
     }
 
@@ -175,7 +179,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
+      specificationCount = pageCount * 3;
       loadItems(true, true, false);
     };
     nextBtn.onclick = () => {
@@ -183,7 +187,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
+      specificationCount = pageCount * 3;
       loadItems(false, false, false);
     };
     paginationElems.forEach((elem) => {
@@ -192,7 +196,7 @@ window.addEventListener("DOMContentLoaded", () => {
         specificationContainer.innerHTML = "";
         endContent.classList.remove("show");
         loader.classList.remove("hide");
-        specificationCount = pageCount * 10;
+        specificationCount = pageCount * 3;
         loadItems(false, false, false);
       };
     });
@@ -207,13 +211,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
-      console.log("lastPage", lastPage);
-      console.log("pageCount", pageCount);
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
-      console.log("specificationCount", specificationCount);
+      specificationCount = pageCount * 3;
       loadItems(false, true, false);
     };
 

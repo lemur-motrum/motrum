@@ -965,7 +965,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-specification-list")
     def load_ajax_specification_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-        count_last = 10
+        count_last = 3
         page_get = request.query_params.get("page")
         if request.user.is_superuser:
             superadmin = True
@@ -990,12 +990,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             count + count_last + 1 : count + count_last + 2
         ].exists()
 
-        if page_count % 10 == 0:
-            count = page_count / 10
+        if page_count % 3 == 0:
+            count = page_count / 3
         else:
-            count = math.trunc(page_count / 10) + 1
+            count = math.trunc(page_count / 3) + 1
 
-        if page_count <= 20:
+        if page_count <= 3:
             small = True
         else:
             small = False

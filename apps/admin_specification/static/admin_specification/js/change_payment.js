@@ -61,6 +61,7 @@ export function changePayment(container, errorFn) {
                   }
                   paymentInput.value = currentValue;
                 });
+
                 paymentChangeButton.onclick = () => {
                   if (!paymentInput.value) {
                     errorFn("Поле не заполнено", paymentError);
@@ -111,8 +112,9 @@ export function changePayment(container, errorFn) {
               }
             });
           }
-
-          paymentBtn.onclick = () => changePayment();
+          if (paymentBtn) {
+            paymentBtn.onclick = () => changePayment();
+          }
 
           overlay.onclick = () => {
             overlay.classList.remove("visible");

@@ -18,6 +18,10 @@
             <h2 class="title">Информация</h2>
             <div class="">Статус:{{order.get_status_name}} </div>
             {% if specification.id_bitrix %}<div class="">Номер сделки битрикс: {{ specification.id_bitrix }}</div>{% endif %}
+            {% if admin_king %}
+            <div class="">Менеджер:{{specification.admin_creator.last_name}} {{specification.admin_creator.first_name}} {{specification.admin_creator.middle_name}}</div>
+                   
+            {% endif %}
             <br>
 
             <div class="">Дата создания:{{ specification.date }}</div>
@@ -50,7 +54,7 @@
             <div class="">Клиент: {{order.requisites.legal_entity}} счет: {{order.account_requisites}} </div>
             <div class="">Оплата: предоплата {{order.prepay_persent}}% {% if order.postpay_persent %}постоплата:{{order.postpay_persent}}%{% endif %}</div>
             {% if order.bill_sum_paid > 0 %}
-            <div class="">Оплаченно: {{order.bill_sum_paid|number_into_digits}} </div>
+            <div class="">Оплачено: {{order.bill_sum_paid|number_into_digits}} </div>
             {% endif %}
             
             
@@ -70,13 +74,17 @@
                     <a href="{{ order.bill_file.url }}">скачать</a>
                 </div>
                 
+                {% if admin_king %}
                 <span class="table_item_value_span">
-                  
+                    <a href="{% url "admin_specification:history_admin_bill" order.pk %}">История изменений счета</a>
                 </span>
+                {% endif %}
             {% endif %}
 
     </div>
-    <h2 class="title">Список товаров на общую сумму: {{specification.total_amount|number_into_digits}}₽ </h2>
+    <h2 class="title">Список товаров на общую сумму: {{specification.total_amount|number_into_digits}}₽ {% if order.bill_sum_paid > 0 %}
+        <div class="">Оплачено: {{order.bill_sum_paid|number_into_digits}}₽ </div>
+        {% endif %} </h2>
     <div class="comment_all">
         {% if specification.comment %}
         <p>Общий комментарий:{{ specification.comment }}</p>
@@ -86,12 +94,6 @@
     <div class="specification-container " style="
     padding: 0;">
         <div class="">
-            {% comment %} <div class="comment_all">
-                {% if specification.comment %}
-                <p>Общий комментарий:{{ specification.comment }}</p>
-                {% endif %}
-
-            </div> {% endcomment %}
             <div class="spetification_table">
                 <div style="position: sticky;top: 0px;z-index: 100;background: white;border-bottom: 1px solid gray"
                  class="spetification_titles">

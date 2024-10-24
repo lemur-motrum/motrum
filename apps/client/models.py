@@ -357,7 +357,7 @@ class Order(models.Model):
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
-    # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
@@ -384,7 +384,9 @@ class Order(models.Model):
             self.status = "PAYMENT"
             if self.client:
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
+            self._change_reason = "Админ"
             self.save()
+            
             return self.id
         else:
             return None

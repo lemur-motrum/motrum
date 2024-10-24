@@ -278,7 +278,10 @@ def crete_pdf_bill(specification,request,is_contract,order):
                 ),
             )
         )
-
+        if client_info.tel:
+            info_client = f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}'
+        else:
+            info_client = f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}'
         
         data_info.append(
             (
@@ -286,7 +289,7 @@ def crete_pdf_bill(specification,request,is_contract,order):
                     f'Покупатель<br></br><font  size="6">(заказчик):</font>', normal_style
                 ),
                 Paragraph(
-                    f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}',
+                    info_client,
                     bold_style,
                 ),
             )

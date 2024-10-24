@@ -454,7 +454,7 @@ def create_specification(request):
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
-          
+
             client_req_all = AccountRequisites.objects.filter(requisites=requisites)
 
             product_specification = ProductSpecification.objects.filter(
@@ -462,11 +462,11 @@ def create_specification(request):
             )
             # mortum_req = BaseInfo.objects.all().prefetch_related(
             #     Prefetch("BaseInfoAccountRequisites"),
-            # ) 
+            # )
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
-            
+
             title = f"Cпецификация № {specification.id}"
             order = Order.objects.get(specification=specification)
 
@@ -505,9 +505,8 @@ def create_specification(request):
             product_new = ProductCart.objects.filter(cart=cart, product=None)
             product_new_more = None
             update_spesif = False
-            client_req =None
+            client_req = None
             client_req_all = None
-            
 
         # prefetch_queryset_property = ProductProperty.objects.filter(
         #     product__in=product_cart_list
@@ -555,9 +554,7 @@ def create_specification(request):
                 ).values(
                     "extra_discount",
                 ),
-                old_date=product_specification.filter(
-                    product=OuterRef("pk")
-                ).values(
+                old_date=product_specification.filter(product=OuterRef("pk")).values(
                     "specification__date_update",
                 ),
                 comment=product_specification.filter(product=OuterRef("pk")).values(
@@ -592,7 +589,7 @@ def create_specification(request):
 
     # корзины нет
     else:
-       
+
         client_req_all = None
         client_req = None
         mortum_req = None
@@ -620,8 +617,7 @@ def create_specification(request):
         "mortum_req": mortum_req,
         "order": order,
         "client_req": client_req,
-        "client_req_all" : client_req_all,
-        
+        "client_req_all": client_req_all,
     }
     return render(request, "admin_specification/catalog.html", context)
 
@@ -689,7 +685,7 @@ def one_specifications(request, pk):
         admin_king = True
     elif user_admin_type == "BASE":
         admin_king = False
-        
+
     specification = Specification.objects.get(pk=pk)
     product_specification = ProductSpecification.objects.filter(
         specification=specification
@@ -702,7 +698,7 @@ def one_specifications(request, pk):
         "specification": specification,
         "product_specification": product_specification,
         "order": order,
-        'admin_king':admin_king,
+        "admin_king": admin_king,
     }
 
     return render(request, "admin_specification/one_specifications.html", context)
@@ -1202,6 +1198,7 @@ def load_products(request):
 #     }
 #     return JsonResponse(out)
 
+
 # исторические записи для страниц история
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
@@ -1264,7 +1261,7 @@ def history_admin(request, pk):
     historical_records = SpecificationAdmin.get_history_queryset(
         SpecificationAdmin, request, history, pk_name, object_id
     )
- 
+
     history_list_display = SpecificationAdmin.get_history_list_display(
         SpecificationAdmin, request
     )
@@ -1298,7 +1295,6 @@ def history_admin(request, pk):
         )
     )
 
-
     def get_date(element):
         return element.history_date
 
@@ -1312,7 +1308,7 @@ def history_admin(request, pk):
         "opts": opts,
         "history_list_display": history_list_display,
     }
-   
+
     extra_kwargs = {}
 
     return SpecificationAdmin.render_history_view(
@@ -1333,7 +1329,31 @@ def history_admin(request, pk):
 
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin_bill(request, pk):
-    pass
+    from simple_history.template_utils import HistoricalRecordContextHelper
+
+    order = Order.objects.get(pk=pk)
+    historical_records = order.history.all()
+    previous = None
+    for current in historical_records:
+        if previous is None:
+            previous = current
+            continue
+
+        delta = previous.diff_against(current, foreign_keys_are_objs=True)
+
+        helper = HistoricalRecordContextHelper(Order, previous)
+        previous.history_delta_changes = helper.context_for_delta_changes(delta)
+
+        previous = current
+
+    context = {
+        "historical_records": historical_records,
+        "history_list_display": None,
+    }
+
+    return render(request, "admin_specification/history_admin_bill.html", context)
+
+
 # def load_products(request):
 #     data = json.loads(request.body)
 #     cat = data["category"]
@@ -1532,7 +1552,6 @@ def history_admin_bill(request, pk):
 #         "products": current_products,
 #     }
 #     return JsonResponse(out)
-
 
 
 # рендер страницы корзины до переверстки

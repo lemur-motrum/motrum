@@ -38,5 +38,6 @@ urlpatterns = [
     path(
         "history_admin_bill/<int:pk>", views.history_admin_bill, name="history_admin_bill"
     ),
+   
 ]
 

@@ -51,6 +51,7 @@ def bill_date_stop(self):
                 bill_item.tag_stop = False
                 bill_item._change_reason = "Автоматическое"
                 bill_item.status = "CANCELED"
+                bill_item._change_reason = "Автоматическое"
                 bill_item.save()
 
                 

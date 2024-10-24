@@ -31,11 +31,10 @@ from simple_history.utils import update_change_reason
 
 # тестовая страница скриптов
 def add_iek(request):
-    from django.db.models import Prefetch
-    prompower_api()
+    
   
     title = "Услуги"
-
+    
     responsets = ["233", "2131"]
     # responsets = 0
     context = {

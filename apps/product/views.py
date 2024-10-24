@@ -261,15 +261,24 @@ def add_document_admin(request):
                 product = Product.objects.get(id=id_select)
                 profile = form.save(commit=False)
 
-                if file_path:
-                    document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
+                name = get_file_path_add_more_doc(product, profile.type_doc, profile.name)
+                print(name)
                 
-                    # document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
+                with open("some/file/name.txt", "wb+") as destination:
+                    for chunk in request.FILES["document"].chunks():
+                        destination.write(chunk)
+                # ProductDocument.image.save("image.jpg", File(img_temp), save=True)
                 
-                else:
-                    profile.product = product
-                    profile.save()
-                    file_path = profile.document
+                
+                # if file_path:
+                #     document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
+
+                #     # document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
+                
+                # else:
+                #     profile.product = product
+                #     profile.save()
+                #     file_path = profile.document
 
             else:
                 print(form.errors)

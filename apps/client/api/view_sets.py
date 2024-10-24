@@ -492,6 +492,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order = Order.objects.get(specification=specification)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
+                    serializer._change_reason = "Админ"
                     order = serializer.save()
                     cart.is_active = True
                     cart.save()
@@ -577,7 +578,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=False)
-
         return Response(cart, status=status.HTTP_200_OK)
 
     # выйти из изменения без сохранения спецификации дмин специф
@@ -585,9 +585,9 @@ class OrderViewSet(viewsets.ModelViewSet):
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
-
         return Response(cart, status=status.HTTP_200_OK)
 
+    # получить список товаров для создания счета с датами псотавки
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
 
@@ -986,6 +986,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
      # сохранение суммы оплаты счета
     
+    # добавление оплаты открыть получить отстаок суммы
     @action(detail=True,methods=["get"], url_path=r"get-payment")
     def get_payment(self, request,pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1009,6 +1010,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         old_sum = order.bill_sum_paid
         new_sum = old_sum + float(bill_sum_paid)
         order.bill_sum_paid = new_sum
+        order._change_reason = "Админ"
         order.save()
         data = {
             "all_bill_sum_paid":new_sum,

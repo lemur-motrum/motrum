@@ -35,6 +35,7 @@ def login_admin(request):
 # разлогин админа
 def logout_admin(request):
     logout(request)
+    
     return redirect(reverse("user:login_admin") + "?next=/admin_specification/")
 
 
@@ -46,6 +47,9 @@ def form_login(request, context, form):
 def login_clear(request, next_url, form):
 
     form = LoginAdminForm(request.POST)
+    if next_url == None:
+        next_url = "/admin_specification/"
+    print(next_url)
     if form.is_valid():
         cd = form.cleaned_data
         user = authenticate(username=cd["username"], password=cd["password"])
@@ -61,13 +65,19 @@ def login_clear(request, next_url, form):
                 # если есть право на просмотр спецификаций
                 if is_groups_user == True:
                     cookie = request.COOKIES.get("client_id")
-                    if cookie:
-                        response = redirect(next_url) # replace redirect with HttpResponse or render
-                        response.set_cookie('client_id', cookie, max_age=-1)
+                    response = redirect(next_url)
+                    response.set_cookie('client_id', max_age=-1)
+                    response.set_cookie('cart', max_age=-1)
+                   
+                    return response
+                    # if cookie:
+                    #     response = redirect(next_url) # replace redirect with HttpResponse or render
+                    #     response.set_cookie('client_id', cookie, max_age=-1)
                         
-                        return response
-                    else:
-                        return HttpResponseRedirect(next_url)
+                    #     return response
+                    # else:
+                    #     return response
+                        # return HttpResponseRedirect(next_url)
 
                 # нет права на спецификации
                 else:

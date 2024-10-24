@@ -451,7 +451,7 @@ def get_file_path_add(instance, filename):
     )
 
 
-def get_file_path_add_more_doc(product, type_doc, instance, filename):
+def get_file_path_add_more_doc(product, type_doc, filename):
 
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
@@ -491,25 +491,16 @@ def get_file_path_add_more_doc(product, type_doc, instance, filename):
 
     link_file = f"{new_dir}/{slugish}"
 
-    if os.path.isfile(link_file):
-        print("Файл существует")
-    else:
-        print("Файл нет-существует")
-        from django.core.files import File
+    link = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        base_dir,
+        base_dir_supplier,
+        base_dir_vendor,
+        path_name,
+        type_doc,
+        f"{slugish}",
+    )
 
-        # Open an existing file using Python's built-in open()
-        
-        myfile = File(instance)
-
-        return "{0}/{1}/{2}/{3}/{4}/{5}".format(
-            base_dir,
-            base_dir_supplier,
-            base_dir_vendor,
-            path_name,
-            type_doc,
-            f"{slugish}",
-        )
-
+    return (link,link_file,slugish)
 
 # сохранение изображений и докуметов из админки и общее
 def doc_file_mass_upload(instance, filename):

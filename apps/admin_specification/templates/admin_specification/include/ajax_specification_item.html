@@ -45,9 +45,11 @@
                         </span>
                         / {{ specification_list.total_amount }}
                 </span> ₽
-                <br>
-                <button class="add_payment_button">+</button>
-                <br>
+                {% if bill_file %}
+                        <br>
+                        <button class="add_payment_button">+</button>
+                        <br>
+                {% endif %}
                 {% if prepay_persent %}
                         <div class="paument_tupe">
                                 {% if postpay_persent != 0 %}

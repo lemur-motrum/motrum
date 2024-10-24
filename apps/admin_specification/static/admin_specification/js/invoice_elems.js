@@ -1,10 +1,7 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import { getCookie } from "/static/core/js/functions.js";
 
-window.addEventListener("DOMContentLoaded", () => {
-  const specificationContainer = document.querySelector(
-    ".specification_container"
-  );
-  if (specificationContainer) {
+export function invoiceItem(container) {
+  if (container) {
     const invoiceOverlay = document.querySelector(".invoice-overlay");
     const modalWindow = invoiceOverlay.querySelector(".modal-window");
     const invoiceContainer = modalWindow.querySelector(
@@ -42,9 +39,9 @@ window.addEventListener("DOMContentLoaded", () => {
       invoiceContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
     }
 
-    if (specificationContainer) {
+    if (container) {
       const interval = setInterval(() => {
-        const specificationsItems = specificationContainer.querySelectorAll(
+        const specificationsItems = container.querySelectorAll(
           ".specification_item"
         );
         if (specificationsItems.length > 0) {
@@ -187,4 +184,11 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const specificationContainer = document.querySelector(
+    ".specification_container"
+  );
+  invoiceItem(specificationContainer);
 });

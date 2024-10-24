@@ -1,11 +1,6 @@
 import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
-
-window.addEventListener("DOMContentLoaded", () => {
-  const specificationContainer = document.querySelector(
-    ".all_specifications_table"
-  );
-
-  if (specificationContainer) {
+export function changePayment(container, errorFn) {
+  if (container) {
     const overlay = document.querySelector(".change_of_payment_overlay");
     const modalWindow = overlay.querySelector(".modal-window");
     const paymentInput = modalWindow.querySelector(".payment_input");
@@ -15,8 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     const interval = setInterval(() => {
-      const specifications =
-        specificationContainer.querySelectorAll(".table_item");
+      const specifications = container.querySelectorAll(".table_item");
       if (specifications.length > 0) {
         clearInterval(interval);
         specifications.forEach((specification) => {
@@ -69,7 +63,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 });
                 paymentChangeButton.onclick = () => {
                   if (!paymentInput.value) {
-                    showErrorValidation("Поле не заполнено", paymentError);
+                    errorFn("Поле не заполнено", paymentError);
                   } else {
                     const objData = {
                       bill_sum_paid: paymentInput.value,
@@ -137,4 +131,11 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const specificationContainer = document.querySelector(
+    ".all_specifications_table"
+  );
+  changePayment(specificationContainer, showErrorValidation);
 });

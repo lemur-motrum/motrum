@@ -202,7 +202,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     catalogButton.onclick = () => {
-      specificationCount += 2;
+      specificationCount += 3;
       +pageCount++;
       endContent.classList.remove("show");
       //   smallLoader.classList.add("show");

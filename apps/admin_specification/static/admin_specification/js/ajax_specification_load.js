@@ -179,7 +179,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 3;
+      specificationCount = pageCount * 10;
       loadItems(true, true, false);
     };
     nextBtn.onclick = () => {
@@ -187,7 +187,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 3;
+      specificationCount = pageCount * 10;
       loadItems(false, false, false);
     };
     paginationElems.forEach((elem) => {
@@ -196,13 +196,13 @@ window.addEventListener("DOMContentLoaded", () => {
         specificationContainer.innerHTML = "";
         endContent.classList.remove("show");
         loader.classList.remove("hide");
-        specificationCount = pageCount * 3;
+        specificationCount = pageCount * 10;
         loadItems(false, false, false);
       };
     });
 
     catalogButton.onclick = () => {
-      specificationCount += 3;
+      specificationCount += 10;
       +pageCount++;
       endContent.classList.remove("show");
       //   smallLoader.classList.add("show");
@@ -214,7 +214,7 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
-      specificationCount = pageCount * 3;
+      specificationCount = pageCount * 10;
       loadItems(false, true, false);
     };
 

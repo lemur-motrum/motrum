@@ -1,6 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-{% load number_into_digits %}
+    {% load number_into_digits %}
     <div class="logout_btn">
         {% if request.user.is_superuser  == True %}
             <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
@@ -30,6 +30,14 @@
                 </div>
                 <div class="end_content">
                     <button class="add_more" project-elem="button">загрузить еще</button>
+                    <div class="pagination">
+                        <div class="first">1 ...</div>
+                        <div class="elem"></div>
+                        <div class="elem"></div>
+                        <div class="elem"></div>
+                        <div class="last">... 578</div>
+                        <div class="next">далее</div>
+                    </div>
                 </div>
             </div>
         </div>

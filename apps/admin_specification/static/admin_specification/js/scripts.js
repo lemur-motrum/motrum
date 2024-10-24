@@ -1188,109 +1188,6 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-
-  // аякс загрузка списка спецификаций
-  const specificationWrapper = document.querySelector(
-    '[specification-elem="wrapper"]'
-  );
-  if (specificationWrapper) {
-    let paramsArray = [];
-    const btn = specificationWrapper.querySelector(".add_more");
-    const specificationContainer = specificationWrapper.querySelector(
-      '[specification-elem="container"]'
-    );
-    let specificationCount = 0;
-
-    function loadItems() {
-      const loader = document.querySelector(".loader");
-      let data = {
-        count: specificationCount,
-      };
-
-      let params = new URLSearchParams(data);
-      let csrfToken = getCookie("csrftoken");
-      fetch(
-        `/api/v1/order/load-ajax-specification-list/?${params.toString()}`,
-        {
-          method: "GET",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-        }
-      )
-        .then((response) => response.json())
-        .then(function (data) {
-          loader.classList.add("hide");
-          for (let i in data.data) {
-            addAjaxCatalogItem(data.data[i]);
-            const currentSpecificatons =
-              allSpecifications.querySelectorAll(".table_item");
-            currentSpecificatons.forEach((item) => {
-              const changeButton = item.querySelector(
-                ".change-specification-button"
-              );
-              const updateButton = item.querySelector(
-                ".uptate-specification-button"
-              );
-              const link = item.querySelector("a");
-              const specificationId = item.getAttribute("specification-id");
-              const cartId = +link.dataset.cartId;
-
-              function uptadeOrChanegeSpecification(button) {
-                button.onclick = () => {
-                  document.cookie = `cart=${cartId};path=/`;
-                  document.cookie = `specificationId=${specificationId};path=/`;
-                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
-                  fetch(endpoint, {
-                    method: "UPDATE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "X-CSRFToken": csrfToken,
-                    },
-                  })
-                    .then((response) => response.json())
-                    .then((response) => {
-                      window.location.href =
-                        "/admin_specification/current_specification/";
-                    });
-                };
-              }
-
-              if (changeButton) {
-                uptadeOrChanegeSpecification(changeButton);
-              }
-              if (updateButton) {
-                uptadeOrChanegeSpecification(updateButton);
-              }
-            });
-          }
-        });
-    }
-
-    window.onload = () => {
-      loadItems();
-    };
-
-    function renderCatalogItem(orderData) {
-      let ajaxTemplateWrapper = document.querySelector(
-        '[template-elem="wrapper"]'
-      );
-      let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
-        '[specification-elem="specification-item"]'
-      ).innerText;
-
-      return nunjucks.renderString(ajaxCatalogElementTemplate, orderData);
-    }
-
-    function addAjaxCatalogItem(ajaxElemData) {
-      let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
-      specificationContainer.insertAdjacentHTML(
-        "beforeend",
-        renderCatalogItemHtml
-      );
-    }
-  }
-
   // поиск клиентов по инн имени в корзине
   const searhClientForm = document.querySelector(".serch-client");
   if (searhClientForm) {
@@ -1415,9 +1312,9 @@ window.addEventListener("DOMContentLoaded", () => {
                         clientRequsitsSelect.innerHTML = "";
                       }
                       clientInfo.innerHTML = `
-                        <div>Предоплата: ${el.prepay_persent}%</div>
-                        <div>Доставка: ${el.type_delivery}</div>
-                        `;
+                             <div>Предоплата: ${el.prepay_persent}%</div>
+                             <div>Доставка: ${el.type_delivery}</div>
+                             `;
                       clientsContainer.classList.remove("show");
                       saveButtonContainer.classList.add("show");
                     };

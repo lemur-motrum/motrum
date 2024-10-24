@@ -144,9 +144,7 @@ window.addEventListener("DOMContentLoaded", () => {
                                 link.remove();
                               }
                               createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
-                              const btns = document.querySelectorAll(
-                                ".create-bill-button"
-                              );
+
                               const btn =
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();

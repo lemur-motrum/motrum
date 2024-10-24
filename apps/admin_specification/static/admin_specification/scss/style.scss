@@ -633,6 +633,55 @@ h1 {
         display: none;
       }
     }
+    .specification_wrapper {
+      .end_content {
+        margin-top: 1rem;
+        display: none;
+        justify-content: space-between;
+        &.show {
+          display: flex;
+        }
+        .add_more {
+          font-size: 0.938rem;
+          background-color: inherit;
+          border: none;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+        .pagination {
+          display: flex;
+          gap: 0.75rem;
+          text-transform: uppercase;
+          .first {
+            display: none;
+            cursor: pointer;
+            &.show {
+              display: block;
+            }
+          }
+          .elem {
+            cursor: pointer;
+            &.active {
+              font-weight: bold;
+            }
+          }
+          .last {
+            cursor: pointer;
+            display: none;
+            &.show {
+              display: block;
+            }
+          }
+          .next {
+            cursor: pointer;
+            display: none;
+            &.show {
+              display: block;
+            }
+          }
+        }
+      }
+    }
     .all_specifications_table {
       margin-top: 1.25rem;
       display: flex;

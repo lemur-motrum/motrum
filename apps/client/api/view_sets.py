@@ -1,4 +1,5 @@
 import datetime
+import math
 from operator import itemgetter
 import os
 import re
@@ -446,13 +447,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
-        
+
         print(account_requisites_data)
         print(motrum_requisites_data)
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
-        motrum_requisites = BaseInfoAccountRequisites.objects.get(id=motrum_requisites_data)
+        motrum_requisites = BaseInfoAccountRequisites.objects.get(
+            id=motrum_requisites_data
+        )
         requisites = account_requisites.requisites
-        
+
         if requisites.prepay_persent == 100:
             pre_sale = True
         else:
@@ -464,7 +467,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             client = None
 
-        specification = save_specification(data, pre_sale, request, motrum_requisites,account_requisites,requisites,id_bitrix)
+        specification = save_specification(
+            data,
+            pre_sale,
+            request,
+            motrum_requisites,
+            account_requisites,
+            requisites,
+            id_bitrix,
+        )
         print("=====================")
         print(specification.id)
         if specification:
@@ -481,10 +492,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_date_start": None,
                 "bill_date_stop": None,
                 "bill_sum": None,
-                "prepay_persent":requisites.prepay_persent,
-                "postpay_persent":requisites.postpay_persent,
-                "motrum_requisites":motrum_requisites.id,
-                "id_bitrix": id_bitrix
+                "prepay_persent": requisites.prepay_persent,
+                "postpay_persent": requisites.postpay_persent,
+                "motrum_requisites": motrum_requisites.id,
+                "id_bitrix": id_bitrix,
             }
             print(data_order)
 
@@ -509,8 +520,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     cart.is_active = True
                     cart.save()
                     order = serializer.save()
-                    
-                    
+
                     print(serializer.data)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
@@ -532,8 +542,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             for obj in data:
                 # serializer_prod = serializer_class(data=obj, partial=True)
-                prod = ProductSpecification.objects.filter(id=obj["id"]).update(text_delivery=obj["text_delivery"])
-                
+                prod = ProductSpecification.objects.filter(id=obj["id"]).update(
+                    text_delivery=obj["text_delivery"]
+                )
+
                 # prod = ProductSpecification.objects.get(id=obj["id"])
                 # serializer_prod = serializer_class(prod,data=obj, partial=True)
                 # print(serializer_prod)
@@ -542,29 +554,26 @@ class OrderViewSet(viewsets.ModelViewSet):
                 #     print(serializer_prod.data)
 
             order = Order.objects.get(specification_id=pk)
-            
+
             if order.requisites.contract:
                 print("-----------")
-                order_pdf = order.create_bill(request,True,order)
+                order_pdf = order.create_bill(request, True, order)
                 print(order_pdf)
-            else:  
-                print("==========") 
-                order_pdf = order.create_bill(request,False,order) 
-                print(order_pdf) 
-                
-            if order_pdf:    
+            else:
+                print("==========")
+                order_pdf = order.create_bill(request, False, order)
+                print(order_pdf)
+
+            if order_pdf:
                 print(11111111111)
-                pdf =  request.build_absolute_uri(order.bill_file.url)   
-                data ={
-                    "pdf":pdf
-                }
+                pdf = request.build_absolute_uri(order.bill_file.url)
+                data = {"pdf": pdf}
                 return Response(data, status=status.HTTP_200_OK)
-            else: 
+            else:
                 print(22222222222)
-                return Response(None, status=status.HTTP_400_BAD_REQUEST)    
-               
-                
-        except Exception as e: 
+                return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
             error = "error"
             location = "Сохранение спецификации админам окт"
             info = f"Сохранение спецификации админам окт ошибка {e}"
@@ -956,7 +965,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-specification-list")
     def load_ajax_specification_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-        count_last = 30
+        count_last = 10
+        page_get = request.query_params.get("page")
         if request.user.is_superuser:
             superadmin = True
         else:
@@ -966,21 +976,38 @@ class OrderViewSet(viewsets.ModelViewSet):
         print(now_date)
         queryset = (
             Order.objects.select_related(
-                "specification",
-                "cart",
-                "client",
-                "requisites",
-                "account_requisites"
+                "specification", "cart", "client", "requisites", "account_requisites"
             )
-            .prefetch_related(Prefetch("specification__admin_creator"),)
+            .prefetch_related(
+                Prefetch("specification__admin_creator"),
+            )
             .filter()
             .order_by("-id")[count : count + count_last]
         )
+
+        page_count = Order.objects.all().count()
+        queryset_next = Order.objects.all()[
+            count + count_last + 1 : count + count_last + 2
+        ].exists()
+
+        if page_count % 10 == 0:
+            count = page_count / 10
+        else:
+            count = math.trunc(page_count / 10) + 1
+
+        if page_count <= 20:
+            small = True
+        else:
+            small = False
 
         serializer = OrderOktSerializer(queryset, many=True)
         data_response = {
             "data": serializer.data,
             "superadmin": superadmin,
+            "count": math.ceil(page_count / count_last),
+            "small": small,
+            "page": page_get,
+            "next": queryset_next,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
@@ -990,20 +1017,19 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True,methods=["get"], url_path=r"get-payment")
     def get_payment(self, request,pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
-        
-        
+
         sum_pay = float(order.bill_sum) - float(order.bill_sum_paid)
         data = {
-            "sum_pay":sum_pay,
+            "sum_pay": sum_pay,
         }
         if sum_pay:
-            return Response(data, status=status.HTTP_200_OK) 
+            return Response(data, status=status.HTTP_200_OK)
         else:
-            return Response(None, status=status.HTTP_400_BAD_REQUEST) 
-    
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
     # сохранение суммы оплаты счета
-    @action(detail=True,methods=["post"], url_path=r"save-payment")
-    def save_payment(self, request,pk=None, *args, **kwargs):
+    @action(detail=True, methods=["post"], url_path=r"save-payment")
+    def save_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
         data = request.data
         bill_sum_paid = data["bill_sum_paid"]
@@ -1013,23 +1039,22 @@ class OrderViewSet(viewsets.ModelViewSet):
         order._change_reason = "Админ"
         order.save()
         data = {
-            "all_bill_sum_paid":new_sum,
+            "all_bill_sum_paid": new_sum,
         }
         if new_sum:
-            return Response(data, status=status.HTTP_200_OK) 
+            return Response(data, status=status.HTTP_200_OK)
         else:
-            return Response(None, status=status.HTTP_400_BAD_REQUEST) 
-        
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
         # sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
         # sum_postpay = order.bill_sum - sum_prepay
         # if order.bill_sum_paid >=  sum_prepay:
         #     sum_prepay_fact = order.bill_sum_paid
         #     sum_postpay_fact = order.bill_sum_paid - sum_prepay_fact
-        # else:    
+        # else:
         #     sum_prepay_fact = sum_prepay - order.bill_sum_paid
         #     sum_postpay_fact = 0
-            
-            
+
         # data = {
         #     "sum_prepay": sum_prepay,
         #     "sum_postpay": sum_postpay,
@@ -1037,9 +1062,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         #     "bill_sum_paid":order.bill_sum_paid,
         #     "sum_prepay_fact": sum_prepay_fact,
         #     "sum_postpay_fact":sum_postpay_fact
-           
-            
-             
+
         # }
         # if order.requisites.prepay_persent == 100:
         #     pass
@@ -1047,33 +1070,34 @@ class OrderViewSet(viewsets.ModelViewSet):
         #     pass
         # else:
         #     pass
-        
-    @action(detail=True,methods=["get"], url_path=r"view-payment")
-    def view_payment(self, request,pk=None, *args, **kwargs):
+
+    @action(detail=True, methods=["get"], url_path=r"view-payment")
+    def view_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
         # data = request.data
         # bill_sum_paid = data["bill_sum_paid"]
         # order.bill_sum_paid = float(bill_sum_paid)
         print(order)
-        sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
+        sum_prepay = order.bill_sum - (
+            order.bill_sum / 100 * order.requisites.postpay_persent
+        )
         sum_postpay = order.bill_sum - sum_prepay
-        if order.bill_sum_paid >=  sum_prepay:
+        if order.bill_sum_paid >= sum_prepay:
             sum_prepay_fact = order.bill_sum_paid
             sum_postpay_fact = order.bill_sum_paid - sum_prepay_fact
-        else:    
+        else:
             sum_prepay_fact = sum_prepay - order.bill_sum_paid
             sum_postpay_fact = 0
-            
-            
+
         data = {
             "sum_prepay": sum_prepay,
             "sum_postpay": sum_postpay,
             "bill_sum": order.bill_sum,
-            "bill_sum_paid":order.bill_sum_paid,
+            "bill_sum_paid": order.bill_sum_paid,
             "sum_prepay_fact": sum_prepay_fact,
-            "sum_postpay_fact":sum_postpay_fact  
-        } 
-        return Response(data, status=status.HTTP_200_OK) 
+            "sum_postpay_fact": sum_postpay_fact,
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

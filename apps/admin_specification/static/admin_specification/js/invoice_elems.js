@@ -136,16 +136,14 @@ window.addEventListener("DOMContentLoaded", () => {
                             if (!invoiceLink) {
                               invoiceBtn.classList.add("changed");
                               invoiceBtn.textContent = "Обновить счет";
-
                               const link =
                                 specificationItem.querySelector(
                                   ".invoice-link"
                                 );
-                              link.remove();
+                              if (link) {
+                                link.remove();
+                              }
                               createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
-                              const btns = document.querySelectorAll(
-                                ".create-bill-button"
-                              );
 
                               const btn =
                                 specificationItem.querySelector(".changed");
@@ -153,14 +151,12 @@ window.addEventListener("DOMContentLoaded", () => {
                             } else {
                               invoiceBtn.classList.add("changed");
                               invoiceBtn.textContent = "Обновить счет";
-
                               const link =
                                 specificationItem.querySelector(
                                   ".invoice-link"
                                 );
                               link.remove();
                               createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
-
                               const btn =
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();

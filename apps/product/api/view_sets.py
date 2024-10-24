@@ -290,8 +290,7 @@ class CartViewSet(viewsets.ModelViewSet):
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
-     
-      
+
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
@@ -332,12 +331,14 @@ class CartViewSet(viewsets.ModelViewSet):
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
         serializer_class = ProductCartSerializer
         data = request.data
-        cart_id=data["cart"]
+        cart_id = data["cart"]
         product_new_article = data["product_new_article"]
         print(product_new_article)
         print(cart_id)
         try:
-            product_new_article = ProductCart.objects.get(cart_id=cart_id,product_new_article = product_new_article)
+            product_new_article = ProductCart.objects.get(
+                cart_id=cart_id, product_new_article=product_new_article
+            )
             print(product_new_article)
             return Response(None, status=status.HTTP_409_CONFLICT)
 
@@ -374,11 +375,13 @@ class CartViewSet(viewsets.ModelViewSet):
         queryset = ProductCart.objects.get(pk=pk)
         if queryset.product_new:
             try:
-                prod_spes =  ProductSpecification.objects.get(specification__cart=queryset.cart,product_new=queryset.product_new)
+                prod_spes = ProductSpecification.objects.get(
+                    specification__cart=queryset.cart, product_new=queryset.product_new
+                )
                 prod_spes.delete()
             except ProductSpecification.DoesNotExist:
                 pass
-            
+
         queryset.delete()
         return Response(None, status=status.HTTP_200_OK)
 

@@ -473,6 +473,14 @@ def get_file_path_add_more_doc(product, type_doc, filename):
 
     type_doc = type_doc
 
+    
+
+    slug_text = str(filename)
+    regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+    slugish = re.sub(regex, "", slug_text)
+    slugish = translit.translify(slugish)
+
+    # link_file = f"{new_dir}/{slugish}"
     new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
         MEDIA_ROOT,
         base_dir,
@@ -480,27 +488,22 @@ def get_file_path_add_more_doc(product, type_doc, filename):
         base_dir_vendor,
         path_name,
         type_doc,
+        
+        
     )
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
-
-    slug_text = str(filename)
-    regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
-    slugish = re.sub(regex, "", slug_text)
-    slugish = translit.translify(slugish)
-
-    link_file = f"{new_dir}/{slugish}"
-
-    link = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+        
+    link = "{0}/{1}/{2}/{3}/{4}".format(
         base_dir,
         base_dir_supplier,
         base_dir_vendor,
         path_name,
         type_doc,
-        f"{slugish}",
+        
     )
 
-    return (link,link_file,slugish)
+    return (link,slugish)
 
 # сохранение изображений и докуметов из админки и общее
 def doc_file_mass_upload(instance, filename):

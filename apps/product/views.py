@@ -246,13 +246,13 @@ def product_one_without_group(request, category, article):
 
 def add_document_admin(request):
     from pytils import translit
-
+    from django.core.files import File
     id_selected = request.GET.get("context")
     id_selected = list(
         map(int, id_selected[1:-1].split(", "))
     )  # No need for list call in Py2
     form = DocumentForm()
-
+    from django.core.files.storage import FileSystemStorage
     if request.method == "POST":
         file_path = None
         for id_select in id_selected:
@@ -260,13 +260,23 @@ def add_document_admin(request):
             if form.is_valid():
                 product = Product.objects.get(id=id_select)
                 profile = form.save(commit=False)
-
+                file_name = request.FILES["document"].name
+                images_last_list = file_name.split(".")
+                type_file = "." + images_last_list[-1]
+              
                 name = get_file_path_add_more_doc(product, profile.type_doc, profile.name)
-                print(name)
                 
-                with open("some/file/name.txt", "wb+") as destination:
-                    for chunk in request.FILES["document"].chunks():
-                        destination.write(chunk)
+                in_memory_file_obj = request.FILES["document"]
+                FileSystemStorage(location="/").save(in_memory_file_obj.name, in_memory_file_obj)
+                
+                
+                
+                    # for chunk in request.FILES["document"].chunks():
+                    #     dest.write(chunk)
+                
+                # with open(f"{name[0]}{type_file}", "wb+") as destination:
+                #     for chunk in request.FILES["document"].chunks():
+                #         destination.write(chunk)
                 # ProductDocument.image.save("image.jpg", File(img_temp), save=True)
                 
                 

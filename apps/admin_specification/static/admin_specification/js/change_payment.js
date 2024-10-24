@@ -23,6 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
+          const paymentBtn = specification.querySelector(".add_payment_button");
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {
@@ -53,13 +54,19 @@ window.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                   overlay.classList.add("visible");
                 }, 600);
-                paymentInput.onkeyup = () => {
-                  if (
-                    paymentInput.value > +paymentInput.getAttribute("summ-pay")
-                  ) {
-                    paymentInput.value = +paymentInput.getAttribute("summ-pay");
+                paymentInput.addEventListener("input", function () {
+                  let currentValue = this.value
+                    .replace(",", ".")
+                    .replace(/[^.\d]+/g, "")
+                    .replace(/^([^\.]*\.)|\./g, "$1")
+                    .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+                      return a + b + c.slice(0, 2);
+                    });
+                  if (currentValue > +paymentInput.getAttribute("summ-pay")) {
+                    currentValue = +paymentInput.getAttribute("summ-pay");
                   }
-                };
+                  paymentInput.value = currentValue;
+                });
                 paymentChangeButton.onclick = () => {
                   if (!paymentInput.value) {
                     showErrorValidation("Поле не заполнено", paymentError);
@@ -78,7 +85,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       body: data,
                     }).then((response) => {
                       if (response.status == 200) {
-                        paymentLink.classList.add("changed");
+                        paymentBtn.classList.add("changed");
                         if (paymentLink.textContent === "0") {
                           paymentLink.textContent = +paymentInput.value;
                         } else {
@@ -111,7 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
           }
 
-          paymentLink.onclick = () => changePayment();
+          paymentBtn.onclick = () => changePayment();
 
           overlay.onclick = () => {
             overlay.classList.remove("visible");

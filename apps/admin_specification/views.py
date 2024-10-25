@@ -446,11 +446,23 @@ def create_specification(request):
         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
             "product__id"
         )
+        print(product_cart_list)
+        
 
         product_cart = ProductCart.objects.filter(cart=cart)
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
+            product_spes_list = ProductSpecification.objects.filter(specification=specification).exclude(product_id__in=product_cart_list)
+            
+            print(product_spes_list)
+            if product_spes_list:
+                for product_spes_l in product_spes_list:
+                    print(product_spes_l)
+                    print(product_spes_l.product)
+                    print(product_spes_l.price_one)
+                    new = ProductCart(cart_id=cart,product=product_spes_l.product ,quantity = product_spes_l.quantity)
+                    new.save()
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
@@ -492,6 +504,9 @@ def create_specification(request):
         # новая спецификация
         except Specification.DoesNotExist:
             specification = None
+            product_spes_list = ProductSpecification.objects.filter(specification=specification).values_list(
+            "product__id"
+        )
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )

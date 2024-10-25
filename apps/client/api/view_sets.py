@@ -7,6 +7,7 @@ from itertools import chain
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
+from django.db import IntegrityError, transaction
 
 # from regex import F
 from django.template import loader
@@ -440,7 +441,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение спецификации дмин специф
+
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
+    # @transaction.atomic
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
@@ -448,8 +451,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
 
-        print(account_requisites_data)
-        print(motrum_requisites_data)
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
             id=motrum_requisites_data
@@ -466,18 +467,23 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         else:
             client = None
+        try:
+            with transaction.atomic():
+                specification = save_specification(
+                    data,
+                    pre_sale,
+                    request,
+                    motrum_requisites,
+                    account_requisites,
+                    requisites,
+                    id_bitrix,
+                )
+        except Exception as e:
+            error = "error"
+            location = "Сохранение спецификации админам окт"
+            info = f"Сохранение спецификации админам окт ошибка {e}"
+            e = error_alert(error, location, info)
 
-        specification = save_specification(
-            data,
-            pre_sale,
-            request,
-            motrum_requisites,
-            account_requisites,
-            requisites,
-            id_bitrix,
-        )
-        print("=====================")
-        print(specification.id)
         if specification:
             data_order = {
                 "client": client,
@@ -536,41 +542,27 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
-            serializer_class = ProductSpecificationSerializer
-            # serializer = self.serializer_class(order, data=data_order, many=False)
-            # data = {"id": id, "text_delivery": "text_delivery"}
+
             data = request.data
             for obj in data:
-                # serializer_prod = serializer_class(data=obj, partial=True)
+
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
 
-                # prod = ProductSpecification.objects.get(id=obj["id"])
-                # serializer_prod = serializer_class(prod,data=obj, partial=True)
-                # print(serializer_prod)
-                # if serializer_prod.is_valid():
-                #     serializer_prod.save()
-                #     print(serializer_prod.data)
-
             order = Order.objects.get(specification_id=pk)
 
             if order.requisites.contract:
-                print("-----------")
                 order_pdf = order.create_bill(request, True, order)
-                print(order_pdf)
-            else:
-                print("==========")
-                order_pdf = order.create_bill(request, False, order)
-                print(order_pdf)
 
+            else:
+                order_pdf = order.create_bill(request, False, order)
+                
             if order_pdf:
-                print(11111111111)
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf}
                 return Response(data, status=status.HTTP_200_OK)
             else:
-                print(22222222222)
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
@@ -1045,7 +1037,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
-
 
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):

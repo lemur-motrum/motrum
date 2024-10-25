@@ -187,7 +187,7 @@ def prompower_api():
         for data_item in data:
         
             try:
-                if data_item["article"] == "PDOUSB" :
+                if data_item["article"] !=  None :
                     # основная инфа
                     article_suppliers = data_item["article"]
                     name = data_item["title"]

@@ -479,6 +479,24 @@ class OrderViewSet(viewsets.ModelViewSet):
                     id_bitrix,
                 )
         except Exception as e:
+            #   добавление в козину удаленного товара при сохранении спецификации из апдейта 
+            product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+                "product__id"
+            )
+
+            product_spes_list = ProductSpecification.objects.filter(
+                specification_id=cart.specification.id
+            ).exclude(product_id__in=product_cart_list)
+
+            if product_spes_list:
+                for product_spes_l in product_spes_list:
+                    new = ProductCart(
+                        cart=cart,
+                        product=product_spes_l.product,
+                        quantity=product_spes_l.quantity,
+                    )
+                    new.save()
+
             error = "error"
             location = "Сохранение спецификации админам окт"
             info = f"Сохранение спецификации админам окт ошибка {e}"
@@ -557,7 +575,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             else:
                 order_pdf = order.create_bill(request, False, order)
-                
+
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf}

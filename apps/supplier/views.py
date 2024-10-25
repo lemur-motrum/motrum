@@ -31,24 +31,7 @@ from simple_history.utils import update_change_reason
 
 # тестовая страница скриптов
 def add_iek(request):
-    try:
-        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0)
-
-        for bill_item in bill:
-            
-            now = datetime.date.today()
-            date = bill_item.bill_date_stop
-
-            if now >= date:
-                bill_item.tag_stop = False
-                bill_item._change_reason = "Автоматическое"
-                bill_item.status = "CANCELED"
-                bill_item._change_reason = "Автоматическое"
-                bill_item.save()
-
-                
-    except Exception as exc:
-        print(exc)
+    prompower_api()
     title = "Услуги"
     
     responsets = ["233", "2131"]

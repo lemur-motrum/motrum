@@ -941,7 +941,6 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
         )
         specification.skip_history_when_saving = True
-        print(specification)
         data_stop = create_time_stop_specification()
         specification.date_stop = data_stop
         specification.tag_stop = True
@@ -955,12 +954,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     currency_product = False
     
     for product_item in products:
-        print(22222222222222)
-        print(product_item)
-        # if product_item["price_exclusive"] == "0":
-        #     price_exclusive = False
-        # else:
-        #     price_exclusive = True
+
         # продукты которые есть в окт
         if product_item["product_id"] != 0:
             product = Product.objects.get(id=product_item["product_id"])
@@ -1011,21 +1005,29 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 and product_item["extra_discount"] != ""
                 and product_item["extra_discount"] != 0
             ):
-
+                # если есть предоплата найти скидку по предоплате мотрум
+                persent_pre_sale = 0 
+                if pre_sale:
+                    price_pre_sale = get_presale_discount(product)
+                    if price_pre_sale:
+                        persent_pre_sale = price_pre_sale.percent
+                         
+                        
                 persent_sale = float(product_item["extra_discount"])
+                persent_sale = float(persent_sale) + float(persent_pre_sale)
+                
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
-
                 price_one = round(price_one_sale, 2)
 
-            # если есть предоплата найти скидку по предоплате мотрум
-            if pre_sale:
-                price_pre_sale = get_presale_discount(product)
-                if price_pre_sale:
-                    persent_pre_sale = price_pre_sale.percent
-                    price_one_motrum = price_one_motrum - (
-                        price_one_motrum / 100 * float(persent_pre_sale)
-                    )
-                    price_one_motrum = round(price_one_motrum, 2)
+            # # если есть предоплата найти скидку по предоплате мотрум
+            # if pre_sale:
+            #     price_pre_sale = get_presale_discount(product)
+            #     if price_pre_sale:
+            #         persent_pre_sale = price_pre_sale.percent
+            #         price_one_motrum = price_one_motrum - (
+            #             price_one_motrum / 100 * float(persent_pre_sale)
+            #         )
+            #         price_one_motrum = round(price_one_motrum, 2)
 
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
@@ -1135,7 +1137,6 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
     specification.save()
-
     pdf = crete_pdf_specification(
         specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all
     )
@@ -1239,6 +1240,10 @@ def loc_mem_cache(key, function, timeout=300):
         cache_data = function()
         cache.set(key, cache_data, timeout)
     return cache_data
+
+from django.utils.http import url_has_allowed_host_and_scheme
+import urllib
+
 
 
 #  def orders_cache():

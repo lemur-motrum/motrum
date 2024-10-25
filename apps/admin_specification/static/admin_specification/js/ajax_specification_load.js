@@ -19,6 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let pageCount = 0;
     let lastPage = 0;
     const loader = document.querySelector(".loader");
+    const smallLoader = specificationWrapper.querySelector(".small_loader");
     const endContent = specificationWrapper.querySelector(".end_content");
     const catalogButton = endContent.querySelector('[project-elem="button"]');
     const pagination = endContent.querySelector(".pagination");
@@ -83,6 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .then(function (data) {
           console.log(data);
           loader.classList.add("hide");
+          smallLoader.classList.remove("show");
           lastPage = +data.count;
           const pagintationArray = [];
           paginationLastElem.textContent = `... ${lastPage}`;
@@ -105,6 +107,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
               function uptadeOrChanegeSpecification(button) {
                 button.onclick = () => {
+                  button.setAttribute("text-content", button.textContent);
+                  button.disabled = true;
+                  button.textContent = "";
+                  button.innerHTML = "<div class='small_loader'></div>";
                   document.cookie = `cart=${cartId};path=/`;
                   document.cookie = `specificationId=${specificationId};path=/`;
                   const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
@@ -119,6 +125,12 @@ window.addEventListener("DOMContentLoaded", () => {
                     .then((response) => {
                       window.location.href =
                         "/admin_specification/current_specification/";
+                      setTimeout(() => {
+                        button.disabled = false;
+                        button.innerHTML = "";
+                        button.textContent =
+                          button.getAttribute("text-content");
+                      }, 3000);
                     });
                 };
               }
@@ -205,7 +217,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationCount += 10;
       +pageCount++;
       endContent.classList.remove("show");
-      //   smallLoader.classList.add("show");
+      smallLoader.classList.add("show");
       loadItems(false, false, true);
     };
 

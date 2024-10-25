@@ -1,4 +1,8 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  getDigitsNumber,
+} from "/static/core/js/functions.js";
 export function changePayment(container, errorFn) {
   if (container) {
     const overlay = document.querySelector(".change_of_payment_overlay");
@@ -17,10 +21,18 @@ export function changePayment(container, errorFn) {
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
+          getDigitsNumber(
+            paymentLink,
+            +paymentLink.getAttribute("bill-sum-paid")
+          );
           const paymentBtn = specification.querySelector(".add_payment_button");
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {
+            paymentBtn.disabled = true;
+            paymentBtn.textContent = "";
+            paymentBtn.innerHTML = "<div class='small_loader'></div>";
+
             let finishPromice = false;
             let csrfToken = getCookie("csrftoken");
             fetch(`/api/v1/order/${orderId}/get-payment/`, {
@@ -66,6 +78,10 @@ export function changePayment(container, errorFn) {
                   if (!paymentInput.value) {
                     errorFn("Поле не заполнено", paymentError);
                   } else {
+                    paymentChangeButton.disabled = true;
+                    paymentChangeButton.textContent = "";
+                    paymentChangeButton.innerHTML =
+                      "<div class='small_loader'></div>";
                     const objData = {
                       bill_sum_paid: paymentInput.value,
                     };
@@ -82,19 +98,37 @@ export function changePayment(container, errorFn) {
                       if (response.status == 200) {
                         paymentBtn.classList.add("changed");
                         if (paymentLink.textContent === "0") {
-                          paymentLink.textContent = +paymentInput.value;
+                          paymentLink.setAttribute(
+                            "bill-sum-paid",
+                            paymentInput.value
+                          );
+                          getDigitsNumber(
+                            paymentLink,
+                            +paymentLink.getAttribute("bill-sum-paid")
+                          );
                         } else {
-                          paymentLink.textContent =
-                            +paymentLink.textContent + +paymentInput.value;
+                          const count =
+                            +paymentLink.getAttribute("bill-sum-paid") +
+                            +paymentInput.value;
+                          paymentLink.setAttribute("bill-sum-paid", count);
+                          getDigitsNumber(
+                            paymentLink,
+                            +paymentLink.getAttribute("bill-sum-paid")
+                          );
                         }
                         overlay.classList.remove("visible");
                         if (overlay.classList.contains("show")) {
                           document.body.style.overflowY = "scroll";
                         }
+
                         setTimeout(() => {
                           overlay.classList.remove("show");
                           paymentInput.value = "";
                         }, 600);
+                        paymentChangeButton.disabled = false;
+                        paymentChangeButton.innerHTML = "";
+                        paymentChangeButton.textContent = "Изменить";
+
                         const intevalChangeBtn = setInterval(() => {
                           const changedBtn =
                             specification.querySelector("changed");
@@ -103,6 +137,9 @@ export function changePayment(container, errorFn) {
                             changedBtn.onclick = () => changePayment();
                           }
                         });
+                        paymentBtn.disabled = false;
+                        paymentBtn.innerHTML = "";
+                        paymentBtn.textContent = "Внести cумму";
                       } else {
                         throw new Error("Ошибка");
                       }
@@ -117,6 +154,11 @@ export function changePayment(container, errorFn) {
           }
 
           overlay.onclick = () => {
+            document.querySelectorAll(".add_payment_button").forEach((el) => {
+              el.disabled = false;
+              el.innerHTML = "";
+              el.textContent = "Внести cумму";
+            });
             overlay.classList.remove("visible");
             if (overlay.classList.contains("show")) {
               document.body.style.overflowY = "scroll";

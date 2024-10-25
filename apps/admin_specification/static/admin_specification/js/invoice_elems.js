@@ -60,6 +60,10 @@ export function invoiceItem(container) {
               specificationItem.getAttribute("specification-id");
             if (invoiceBtn) {
               function openInvoiceModal() {
+                invoiceBtn.setAttribute("text-content", invoiceBtn.textContent);
+                invoiceBtn.disabled = true;
+                invoiceBtn.textContent = "";
+                invoiceBtn.innerHTML = "<div class='small_loader'></div>";
                 invoiceOverlay.classList.add("show");
                 document.body.style.overflowY = "hidden";
                 setTimeout(() => {
@@ -86,6 +90,10 @@ export function invoiceItem(container) {
                         }
                       }
                       if (validate == true) {
+                        createInvoiceBtn.disabled = true;
+                        createInvoiceBtn.textContent = "";
+                        createInvoiceBtn.innerHTML =
+                          "<div class='small_loader'></div>";
                         const csrfToken = getCookie("csrftoken");
                         const dataArray = [];
                         invoiceItems.forEach((el) => {
@@ -122,6 +130,13 @@ export function invoiceItem(container) {
                             }
                           })
                           .then((response) => {
+                            invoiceBtn.disabled = false;
+                            invoiceBtn.innerHTML = "";
+                            invoiceBtn.textContent = "Обновите счет";
+                            invoiceBtn.setAttribute(
+                              "text-content",
+                              invoiceBtn.textContent
+                            );
                             invoiceOverlay.classList.remove("visible");
                             if (invoiceOverlay.classList.contains("show")) {
                               document.body.style.overflowY = "scroll";
@@ -158,6 +173,9 @@ export function invoiceItem(container) {
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();
                             }
+                            createInvoiceBtn.disabled = false;
+                            createInvoiceBtn.innerHTML = "";
+                            createInvoiceBtn.textContent = "Создать счет";
                           });
                       }
                     };
@@ -166,6 +184,15 @@ export function invoiceItem(container) {
               }
               invoiceBtn.onclick = () => openInvoiceModal();
               invoiceOverlay.onclick = () => {
+                document
+                  .querySelectorAll(".create-bill-button")
+                  .forEach((el) => {
+                    if (el.disabled) {
+                      el.innerHTML = "";
+                      el.textContent = el.getAttribute("text-content");
+                      el.disabled = false;
+                    }
+                  });
                 invoiceOverlay.classList.remove("visible");
                 if (invoiceOverlay.classList.contains("show")) {
                   document.body.style.overflowY = "scroll";

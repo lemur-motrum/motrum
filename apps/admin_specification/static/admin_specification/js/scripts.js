@@ -572,6 +572,10 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (validate == true) {
+          saveButton.disabled = true;
+          saveButton.textContent = "";
+          saveButton.innerHTML = `<div class="small_loader"></div>`;
+
           const dataObj = {
             id_bitrix: +bitrixInput.value,
             admin_creator_id: adminCreatorId,
@@ -601,6 +605,7 @@ window.addEventListener("DOMContentLoaded", () => {
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
               deleteCookie("cart", "/", window.location.hostname);
+
               window.location.href = "/admin_specification/all_specifications/";
             })
             .catch((error) => console.error(error));
@@ -1076,8 +1081,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
-        console.log(specificationId);
-        console.log(cartId);
         document.cookie = `cart=${cartId};path=/`;
         document.cookie = `specificationId=${specificationId};path=/`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;

@@ -1,4 +1,3 @@
-
 <div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
      specification-id="{{ specification_list.id }}"
      order-id="{{ id }}"
@@ -18,7 +17,6 @@
                         <br>
                         <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
                         <br>
-                        
                 {% endif %}
         </div>
         <div class="table_item_value">
@@ -32,13 +30,12 @@
                 {% endif %}
         </div>
         <div class="table_item_value ">
-                
                 <span class="price">
                         Сумма:
-                        
-                        <span class="price_bill_sum_paid">
+                        <span bill-sum-paid="{% if bill_sum_paid %}{{ bill_sum_paid }}{% else %}0{% endif %}"
+                              class="price_bill_sum_paid">
                                 {% if bill_sum_paid %}
-                                        {{ bill_sum_paid}}
+                                        {{ bill_sum_paid }}
                                 {% else %}
                                         0
                                 {% endif %}
@@ -75,7 +72,6 @@
                 {% elif bill_status == false %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выствить новый счет </span>
                 {% elif bill_sum_paid and bill_sum_paid > 0 %}
-                
                 {% endif %}
         </div>
         {% if bill_sum_paid %}

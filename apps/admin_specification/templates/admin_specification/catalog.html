@@ -11,14 +11,14 @@
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
             <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
-            
         </div>
         <h1 class="title">{{ title }}</h1>
-        
         {% if order.bill_sum %}
-        <div class=""><h4 style="
-            color: red;
-        ">ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! ПРИ СОХРАНЕНИИ ИЗМЕНЕНИЙ В СПЕЦИФИКАЦИИ БУДЕТ НЕОБХОДИМО СОЗДАТЬ СЧЕТ ЗАНОВО </h4></div>
+            <div class="">
+                <h4 style=" color: red; ">
+                    ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! ПРИ СОХРАНЕНИИ ИЗМЕНЕНИЙ В СПЕЦИФИКАЦИИ БУДЕТ НЕОБХОДИМО СОЗДАТЬ СЧЕТ ЗАНОВО
+                </h4>
+            </div>
         {% endif %}
         {% if product or product_new %}
             <div class="spetification_table">
@@ -89,9 +89,8 @@
                             <div class="item_value total_cost price"></div>
                         {% endif %}
                         <div class="item_value">
-                            
                             {% if item.price.sale %}
-                            {{ item.price.sale.percent }}%
+                                {{ item.price.sale.percent }}%
                                 {% comment %} {{ item.price.get_sale_price_motrum }} % {% endcomment %}
                             {% else %}
                                 Нет
@@ -104,10 +103,12 @@
                                    placeholder="% скидки"
                                    maxlength="5"
                                    value="" />
-                            <label for="price-input-discount">%
+                            <label for="price-input-discount">
+                                %
                                 <br>
-                                {% if item.old_extra_discount %}{{ item.old_extra_discount }}%{% endif %}
-                                
+                                {% if item.old_extra_discount %}
+                                    {{ item.old_extra_discount }}%
+                                {% endif %}
                             </label>
                         </div>
                         <div class="item_value">
@@ -364,15 +365,13 @@
                               class="comment-input-all"
                               name="comment-input-name-all"
                               placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
-                    
                     <textarea style="width: 200px;
-                            height: 50px;
-                            border-radius: 10px"
-                    class="delivery-date-all-input-all"
-                    name="delivery-date-all-input-name-all"
-                    placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
+                                     height: 50px;
+                                     border-radius: 10px"
+                              class="delivery-date-all-input-all"
+                              name="delivery-date-all-input-name-all"
+                              placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
                 </div>
-
                 <div class="submit-container">
                     <div class="price_description">
                         Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
@@ -427,8 +426,6 @@
                         </select>
                     </div>
                     <div class="button_specification-wrapper">
-                       
-                        
                         <div class="save_button-wrapper">
                             <button class="save_button">Сохранить спецификацию</button>
                             <div class="error"></div>

@@ -741,6 +741,10 @@ h1 {
           border: none;
           text-transform: uppercase;
           cursor: pointer;
+          &:disabled,
+          &[disabled] {
+            cursor: auto;
+          }
         }
         .pagination {
           display: flex;
@@ -943,7 +947,16 @@ h1 {
           }
         }
         .table_item_value_span {
-          font-size: 14px;
+          font-size: 0.65rem;
+          &.description {
+            position: absolute;
+            z-index: 20;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            width: 9.375rem;
+            line-height: 0.8;
+            color: gray;
+          }
         }
 
         .uptate-specification-button {

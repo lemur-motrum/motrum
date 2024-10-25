@@ -503,7 +503,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order = Order.objects.get(specification=specification)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
-                    serializer._change_reason = "Админ"
+                    serializer._change_reason = "Ручное"
                     order = serializer.save()
                     cart.is_active = True
                     cart.save()
@@ -1011,11 +1011,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-     # сохранение суммы оплаты счета
-    
+    # сохранение суммы оплаты счета
+
     # добавление оплаты открыть получить отстаок суммы
-    @action(detail=True,methods=["get"], url_path=r"get-payment")
-    def get_payment(self, request,pk=None, *args, **kwargs):
+    @action(detail=True, methods=["get"], url_path=r"get-payment")
+    def get_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
 
         sum_pay = float(order.bill_sum) - float(order.bill_sum_paid)
@@ -1036,7 +1036,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         old_sum = order.bill_sum_paid
         new_sum = old_sum + float(bill_sum_paid)
         order.bill_sum_paid = new_sum
-        order._change_reason = "Админ"
+        order._change_reason = "Ручное"
         order.save()
         data = {
             "all_bill_sum_paid": new_sum,
@@ -1046,30 +1046,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-        # sum_prepay = order.bill_sum - (order.bill_sum / 100 * order.requisites.postpay_persent)
-        # sum_postpay = order.bill_sum - sum_prepay
-        # if order.bill_sum_paid >=  sum_prepay:
-        #     sum_prepay_fact = order.bill_sum_paid
-        #     sum_postpay_fact = order.bill_sum_paid - sum_prepay_fact
-        # else:
-        #     sum_prepay_fact = sum_prepay - order.bill_sum_paid
-        #     sum_postpay_fact = 0
-
-        # data = {
-        #     "sum_prepay": sum_prepay,
-        #     "sum_postpay": sum_postpay,
-        #     "bill_sum": order.bill_sum,
-        #     "bill_sum_paid":order.bill_sum_paid,
-        #     "sum_prepay_fact": sum_prepay_fact,
-        #     "sum_postpay_fact":sum_postpay_fact
-
-        # }
-        # if order.requisites.prepay_persent == 100:
-        #     pass
-        # elif order.requisites.prepay_persent !=0:
-        #     pass
-        # else:
-        #     pass
 
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):

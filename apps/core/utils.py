@@ -982,14 +982,15 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                     price_one = product_item["price_one"]
 
                     # оригинальная цена без примененой скидки
-                    if (
-                        product_item["extra_discount"] != "0"
-                        and product_item["extra_discount"] != ""
-                    ):
-                        price_one = price_one_before / (
-                            1 - float(product_item["extra_discount"]) / 100
-                        )
-                        price_one = round(price_one, 2)
+                    # if (
+                    #     product_item["extra_discount"] != "0"
+                    #     and product_item["extra_discount"] != ""
+                    # ):
+                    #     price_one = price_one_before / (
+                    #         1 - float(product_item["extra_discount"]) / 100
+                    #     )
+                    #     price_one = round(price_one, 2)
+                    #     print(price_one)
                     print(4444444)
                     price_motrum_all = get_price_motrum(
                         price.prod.category_supplier,
@@ -1067,6 +1068,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                     product_spes.extra_discount = product_item["extra_discount"]
                 else:
                     product_spes.extra_discount = None
+                    
                 product_spes.price_one_motrum = price_one_motrum
                 product_spes.price_all_motrum = price_all_motrum
                 product_spes._change_reason = "Ручное"

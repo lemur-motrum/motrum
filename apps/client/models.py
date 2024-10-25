@@ -96,12 +96,14 @@ class Requisites(models.Model):
     )
     prepay_persent = models.FloatField(
         "Процент предоплаты",
+        default="100",
         blank=True,
         null=True,
     )
     
     postpay_persent = models.FloatField(
         "Процент постоплаты",
+        default="0",
         blank=True,
         null=True,
     )

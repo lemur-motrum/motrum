@@ -1641,7 +1641,26 @@ h1 {
     }
   }
 }
-
+.bread-crumbs{
+.specification-link-container {
+  font-size: 0.938rem;
+  position: relative;
+  a {
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.6s;
+    text-transform: uppercase;
+    color: black;
+  }
+  span {
+    position: absolute;
+    top: 0;
+    left: 4.3rem;
+    font-size: 0.7rem;
+    font-weight: bold;
+  }
+}
+}
 .logout_btn {
   font-size: 0.875rem;
   display: flex;

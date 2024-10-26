@@ -418,9 +418,7 @@ class Price(models.Model):
         elif self.price_supplier != 0:
             self.extra_price == False
             # получить рублевую цену
-            
-            print("old",self.rub_price_supplier)
-            
+  
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -428,7 +426,7 @@ class Price(models.Model):
                 self.price_supplier,
             )
             self.rub_price_supplier = rub_price_supplier
-            print("new",self.rub_price_supplier)
+
         # получить скидки
         price_motrum_all = get_price_motrum(
             self.prod.category_supplier,
@@ -611,8 +609,6 @@ class Stock(models.Model):
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
     to_order = models.BooleanField("Товар под заказ", default=False)
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления поставщика")
-    # data_update_motrum = models.DateField(auto_now=True, verbose_name="Дата обновления")
-    # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     transit_count = models.PositiveIntegerField(
         "Ближайшая поставка количество", blank=True, null=True
     )

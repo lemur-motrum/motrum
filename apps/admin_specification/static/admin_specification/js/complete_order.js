@@ -20,6 +20,7 @@ export function completeOrder(container) {
           const orderId = specification.getAttribute("order-id");
           completeBtn.onclick = () => {
             overlay.classList.add("show");
+            modalWindow.setAttribute("order-id", orderId);
             document.body.style.overflowY = "hidden";
             setTimeout(() => {
               overlay.classList.add("visible");
@@ -38,7 +39,8 @@ export function completeOrder(container) {
                 date_completed: calendar.value,
               };
               const data = JSON.stringify(objData);
-              fetch(`/api/v1/order/${orderId}/add-date-completed/`, {
+              const idOrder = modalWindow.getAttribute("order-id");
+              fetch(`/api/v1/order/${idOrder}/add-date-completed/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -51,6 +53,7 @@ export function completeOrder(container) {
                   if (overlay.classList.contains("show")) {
                     document.body.style.overflowY = "scroll";
                   }
+                  modalWindow.setAttribute("order-id", "");
                   setTimeout(() => {
                     overlay.classList.remove("show");
                     const currentDate = new Date().toISOString().slice(0, 10);
@@ -73,6 +76,7 @@ export function completeOrder(container) {
       if (overlay.classList.contains("show")) {
         document.body.style.overflowY = "scroll";
       }
+      modalWindow.setAttribute("order-id", "");
       setTimeout(() => {
         overlay.classList.remove("show");
         const currentDate = new Date().toISOString().slice(0, 10);

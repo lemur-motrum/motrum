@@ -1,7 +1,6 @@
 import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
 import { invoiceItem } from "../js/invoice_elems.js";
 import { changePayment } from "../js/change_payment.js";
-import { completeOrder } from "../js/complete_order.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const specificationWrapper = document.querySelector(
@@ -11,8 +10,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const allSpecifications = document.querySelector(
       ".all_specifications_table"
     );
-    let paramsArray = [];
-    const btn = specificationWrapper.querySelector(".add_more");
     const specificationContainer = specificationWrapper.querySelector(
       '[specification-elem="container"]'
     );
@@ -63,12 +60,14 @@ window.addEventListener("DOMContentLoaded", () => {
     function loadItems(
       pagintaionFn = false,
       cleanArray = false,
-      addMoreBtn = false
+      addMoreBtn = false,
+      specification = false
     ) {
       let data = {
         count: !pagintaionFn ? specificationCount : 0,
         page: pageCount,
         addMoreBtn: addMoreBtn ? true : false,
+        specification: specification ? "+" : null,
       };
       let params = new URLSearchParams(data);
 
@@ -180,12 +179,11 @@ window.addEventListener("DOMContentLoaded", () => {
           getActivePaginationElem();
           invoiceItem(specificationContainer);
           changePayment(specificationContainer, showErrorValidation);
-          completeOrder(specificationContainer);
         });
     }
 
     window.onload = () => {
-      loadItems(false, false, false);
+      loadItems(false, false, false, false);
     };
 
     paginationFirstElem.onclick = () => {
@@ -194,7 +192,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
       specificationCount = pageCount * 10;
-      loadItems(true, true, false);
+      loadItems(true, true, false, false);
     };
     nextBtn.onclick = () => {
       pageCount += 1;
@@ -202,7 +200,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
       specificationCount = pageCount * 10;
-      loadItems(false, false, false);
+      loadItems(false, false, false, false);
     };
     paginationElems.forEach((elem) => {
       elem.onclick = () => {
@@ -211,7 +209,7 @@ window.addEventListener("DOMContentLoaded", () => {
         endContent.classList.remove("show");
         loader.classList.remove("hide");
         specificationCount = pageCount * 10;
-        loadItems(false, false, false);
+        loadItems(false, false, false, false);
       };
     });
 
@@ -220,7 +218,7 @@ window.addEventListener("DOMContentLoaded", () => {
       +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
-      loadItems(false, false, true);
+      loadItems(false, false, true, false);
     };
 
     paginationLastElem.onclick = () => {
@@ -229,7 +227,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationContainer.innerHTML = "";
       loader.classList.remove("hide");
       specificationCount = pageCount * 10;
-      loadItems(false, true, false);
+      loadItems(false, true, false, false);
     };
 
     function renderCatalogItem(orderData) {
@@ -249,6 +247,55 @@ window.addEventListener("DOMContentLoaded", () => {
         "beforeend",
         renderCatalogItemHtml
       );
+    }
+    const allSpecificationsContainer = document.querySelector(
+      ".all_specifications_container"
+    );
+    if (allSpecificationsContainer) {
+      let currentUrl = new URL(window.location.href);
+
+      const titles = allSpecificationsContainer.querySelector(".title");
+      const allOrdersBtn = titles.querySelector(".all_orders");
+      const ordersWithoutSpecification = titles.querySelector(
+        ".orders_without_specifications"
+      );
+      const titleItems = titles.querySelectorAll("span");
+      const searchParams = currentUrl.searchParams;
+
+      for (let i = 0; i < titleItems.length; i++) {
+        titleItems[i].onclick = () => {
+          if (!titleItems[i].classList.contains("active")) {
+            titleItems[i].classList.add("active");
+            if (titleItems[i - 1]) {
+              titleItems[i - 1].classList.remove("active");
+            } else {
+              titleItems[i + 1].classList.remove("active");
+            }
+          } else {
+            return;
+          }
+
+          if (ordersWithoutSpecification.classList.contains("active")) {
+            searchParams.set("specification", "+");
+            history.pushState({}, "", currentUrl);
+            pageCount = 0;
+            endContent.classList.remove("show");
+            specificationContainer.innerHTML = "";
+            loader.classList.remove("hide");
+            specificationCount = pageCount * 10;
+            loadItems(false, false, false, true);
+          } else {
+            searchParams.delete("specification");
+            history.pushState({}, "", currentUrl);
+            pageCount = 0;
+            endContent.classList.remove("show");
+            specificationContainer.innerHTML = "";
+            loader.classList.remove("hide");
+            specificationCount = pageCount * 10;
+            loadItems(false, false, false, false);
+          }
+        };
+      }
     }
   }
 });

@@ -692,6 +692,15 @@ h1 {
 }
 .all_specifications_container {
   padding: 3.125rem;
+  .title {
+    span {
+      cursor: pointer;
+      &.active {
+        font-weight: bold;
+        cursor: auto;
+      }
+    }
+  }
   .all_specifications_content {
     .table-titles {
       display: flex;

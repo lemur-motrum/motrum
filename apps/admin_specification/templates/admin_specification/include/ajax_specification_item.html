@@ -27,11 +27,15 @@
         <div class="table_item_value">
                 Статус: {{ status_full }}
                 <br>
-                до
-                {% if bill_date_stop %}
-                        {{ bill_date_stop }}
+                
+                {% if date_completed %}
+                        {{date_completed}}
+                {% elif bill_date_stop %}
+                до {{ bill_date_stop }}
+                {% elif specification_list.date_stop %}
+                до {{ specification_list.date_stop }}
                 {% else %}
-                        {{ specification_list.date_stop }}
+                        
                 {% endif %}
         </div>
         <div class="table_item_value ">

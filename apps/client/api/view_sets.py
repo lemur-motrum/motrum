@@ -1201,6 +1201,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         date_completed = datetime.datetime.strptime(date_completed_data, '%Y-%m-%d').date()
         order = Order.objects.get(pk=pk)
         order.date_completed = date_completed
+        order.status = "COMPLETED"
         order.save()
         data = {
             

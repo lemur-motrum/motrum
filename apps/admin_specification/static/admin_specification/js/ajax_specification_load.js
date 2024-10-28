@@ -255,11 +255,14 @@ window.addEventListener("DOMContentLoaded", () => {
       let currentUrl = new URL(window.location.href);
 
       const titles = allSpecificationsContainer.querySelector(".title");
-      const allOrdersBtn = titles.querySelector(".all_orders");
       const ordersWithoutSpecification = titles.querySelector(
         ".orders_without_specifications"
       );
       const titleItems = titles.querySelectorAll("span");
+      const smallAllSpecificationTitles =
+        allSpecificationsContainer.querySelector(".all_specifications_titles");
+      const smallNoSpecificationTitles =
+        allSpecificationsContainer.querySelector(".no_specification_titles");
       const searchParams = currentUrl.searchParams;
 
       for (let i = 0; i < titleItems.length; i++) {
@@ -279,6 +282,8 @@ window.addEventListener("DOMContentLoaded", () => {
             searchParams.set("specification", "+");
             history.pushState({}, "", currentUrl);
             pageCount = 0;
+            smallAllSpecificationTitles.classList.remove("show");
+            smallNoSpecificationTitles.classList.add("show");
             endContent.classList.remove("show");
             specificationContainer.innerHTML = "";
             loader.classList.remove("hide");
@@ -288,6 +293,8 @@ window.addEventListener("DOMContentLoaded", () => {
             searchParams.delete("specification");
             history.pushState({}, "", currentUrl);
             pageCount = 0;
+            smallAllSpecificationTitles.classList.add("show");
+            smallNoSpecificationTitles.classList.remove("show");
             endContent.classList.remove("show");
             specificationContainer.innerHTML = "";
             loader.classList.remove("hide");

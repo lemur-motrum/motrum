@@ -1094,7 +1094,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         
         
         sort_specif = request.query_params.get("specification")
-        print(sort_specif)
+        
         if sort_specif == "+":
             q_object &= Q(specification__isnull=True)
         else:

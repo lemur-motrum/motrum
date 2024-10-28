@@ -520,7 +520,7 @@ def create_specification(request):
                     client_req = None    
                     
                 
-                title = "Новая спецификация"
+                title = "Новый заказ"
                 
                 
                 update_spesif = False
@@ -538,7 +538,7 @@ def create_specification(request):
                 mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                     "requisites"
                 )
-                title = "Новая спецификация"
+                title = "Новый заказ"
                 order = None
 
                 # товары без записи в окт
@@ -608,7 +608,7 @@ def create_specification(request):
         client_req_all = None
         client_req = None
         mortum_req = None
-        title = "Новая спецификация"
+        title = "Новый заказ"
         product = None
         product_new = None
         cart = None
@@ -680,7 +680,7 @@ def get_all_specifications(request):
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
-    title = "Все спецификации"
+    title = "Все заказы"
     
     sort_specif = request.GET.get("specification")
     if sort_specif:

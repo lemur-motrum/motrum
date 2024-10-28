@@ -222,7 +222,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 )
             )
 
-        table = Table(data, colWidths=[2 * cm, 7 * cm, 2 * cm, 2 * cm, 3 * cm, 3 * cm])
+        table = Table(data, colWidths=[2 * cm, 7 * cm, 2 * cm, 2 * cm, 3 * cm, 3 * cm],repeatRows=1,)
         table.setStyle(
             TableStyle(
                 [

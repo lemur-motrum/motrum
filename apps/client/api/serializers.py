@@ -163,6 +163,7 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
 class OrderOktSerializer(serializers.ModelSerializer):
     specification_list = SpecificationSerializer(source="specification", read_only=True)
     bill_status = serializers.SerializerMethodField()
+    name_req_full = serializers.CharField(source="requisites.legal_entity")
     status_full = serializers.CharField(source="get_status_display")
     requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
     

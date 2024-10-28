@@ -1084,6 +1084,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["post"], url_path=r"add-date-completed")
+    def date_completed(self, request, pk=None, *args, **kwargs):
+        data = request.data
+        date_completed_data = data["date_completed"]
+        data = {
+            
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()

@@ -1,6 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-{% load cart %}
+    {% load cart %}
     {% load number_into_digits %}
     <div class="logout_btn">
         {% if request.user.is_superuser  == True %}
@@ -14,8 +14,9 @@
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
             <div class="specification-link-container">{% cart %}</div>
         </div>
-        <h1 class="title">{{ title }}</h1>
-        {% comment %} <h1 class="title">Заказы без спецификаций</h1> {% endcomment %}
+        <h1 class="title">
+            <span class="all_orders active">{{ title }}</span> / <span class="orders_without_specifications">Заказы без спецификации</span>
+        </h1>
         <div class="specification_container all_specifications_content">
             {% if sort_specif %}
             <div class="table-titles">

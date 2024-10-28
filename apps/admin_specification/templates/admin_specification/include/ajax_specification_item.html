@@ -18,11 +18,11 @@
                         <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
                         <br>
                 {% endif %}
-                
-                
+                <button class="complete_order_button">Завершить</button>
+                <br>
         </div>
         <div class="table_item_value">
-                <div class="">Клиент: {{name_req_full}}</div>
+                <div class="">Клиент: {{ name_req_full }}</div>
         </div>
         <div class="table_item_value">
                 Статус: {{ status_full }}
@@ -47,7 +47,6 @@
                         </span>
                         / {{ specification_list.total_amount }}
                 </span> ₽
-                
                 {% if prepay_persent %}
                         <div class="paument_tupe">
                                 {% if postpay_persent != 0 %}
@@ -58,11 +57,7 @@
                                 {% endif %}
                         </div>
                 {% endif %}
-                {% if bill_file and bill_sum_paid < bill_sum %}
-                        
-                        <button class="add_payment_button">+</button>
-                        
-                {% endif %}
+                {% if bill_file and bill_sum_paid < bill_sum %}<button class="add_payment_button">+</button>{% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">
                 {% if bill_status == None and specification_list.tag_stop == true %}
@@ -88,14 +83,7 @@
                 <button class="change-specification-button">Редактировать</button>
                 <br>
                 {% if bill_sum %}
-                        <span class="table_item_value_span"
-                              style="position: absolute;
-                                     z-index: 20;
-                                     right: -20px;
-                                     bottom: 20px;
-                                     width: 200px;
-                                     line-height: 0.8;
-                                     color: gray">при редактировании будет необходимо создать счет заново</span>
+                        <span class="table_item_value_span description">при редактировании будет необходимо создать счет заново</span>
                 {% endif %}
         {% endif %}
 </div>

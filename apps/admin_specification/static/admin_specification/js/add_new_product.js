@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", () => {
         };
 
         const data = JSON.stringify(dataObj);
-        
+
         fetch(`/api/v1/cart/${cart_id}/save-product-new/`, {
           method: "POST",
           body: data,
@@ -86,10 +86,12 @@ window.addEventListener("DOMContentLoaded", () => {
               return response.json();
             }
             if (response.status == 409) {
-              showErrorValidation("Товар с таким артикулом в корзине уже есть ", articleInputError);
+              showErrorValidation(
+                "Товар с таким артикулом в корзине уже есть ",
+                articleInputError
+              );
               // articleInputError.style.border = "1px solid red";
-            }
-            else {
+            } else {
               throw new Error("Ошибка");
             }
           })

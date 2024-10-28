@@ -623,16 +623,16 @@ h1 {
         font-size: 0.938rem;
         text-transform: uppercase;
         &:nth-of-type(2) {
-          margin-left: 7.375rem;
+          margin-left: 11.87rem;
         }
         &:nth-of-type(3) {
-          margin-left: 9.5rem;
+          margin-left: 10rem;
         }
         &:nth-of-type(4) {
-          margin-left: 15rem;
+          margin-left: 10rem;
         }
         &:nth-of-type(5) {
-          margin-left: 7.563rem;
+          margin-left: 10.563rem;
         }
       }
     }
@@ -741,6 +741,10 @@ h1 {
           border: none;
           text-transform: uppercase;
           cursor: pointer;
+          &:disabled,
+          &[disabled] {
+            cursor: auto;
+          }
         }
         .pagination {
           display: flex;
@@ -814,14 +818,15 @@ h1 {
             width: 14rem;
           }
           &:nth-of-type(4) {
-            margin-left: 5rem;
-            width: 16rem;
+            margin-left: -0.5rem;
+            width: 9.5rem;
           }
           &:nth-of-type(5) {
-            margin-left: 8.563rem;
+            margin-left: 4.563rem;
+            width: 6rem;
           }
           .add_payment_button {
-            width: 40%;
+            width: 100%;
             font-size: 0.75rem;
             display: flex;
             align-items: center;
@@ -883,7 +888,7 @@ h1 {
             flex-direction: column;
             gap: 0.5rem;
             .create-bill-button {
-              width: 40%;
+              width: 100%;
               font-size: 0.75rem;
               display: flex;
               align-items: center;
@@ -941,9 +946,71 @@ h1 {
               }
             }
           }
+          .complete_order_button {
+            cursor: pointer;
+            &:disabled,
+            &[disabled] {
+              cursor: auto;
+              background-color: lightgray;
+              border-color: lightgray;
+              border: 1px solid gray;
+            }
+            .small_loader {
+              display: block;
+              overflow: hidden;
+              font-size: 10px;
+              text-indent: -9999em;
+              width: 1rem;
+              height: 1rem;
+              border-radius: 50%;
+              background: #65abf8;
+              margin: 0 auto;
+              background: linear-gradient(
+                to right,
+                #bdbdbd 10%,
+                rgba(101, 171, 248, 0) 42%
+              );
+              position: relative;
+              -webkit-animation: load3 1.4s infinite linear;
+              animation: load3 1.4s infinite linear;
+              transform: translateZ(0);
+              &:before {
+                width: 50%;
+                height: 50%;
+                background: #bdbdbd;
+                border-radius: 100% 0 0 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: "";
+              }
+              &:after {
+                background-color: lightgray;
+                width: 75%;
+                height: 75%;
+                border-radius: 50%;
+                content: "";
+                margin: auto;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+              }
+            }
+          }
         }
         .table_item_value_span {
-          font-size: 14px;
+          font-size: 0.65rem;
+          &.description {
+            position: absolute;
+            z-index: 20;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            width: 9.375rem;
+            line-height: 0.8;
+            color: gray;
+          }
         }
 
         .uptate-specification-button {
@@ -1641,25 +1708,25 @@ h1 {
     }
   }
 }
-.bread-crumbs{
-.specification-link-container {
-  font-size: 0.938rem;
-  position: relative;
-  a {
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.6s;
-    text-transform: uppercase;
-    color: black;
+.bread-crumbs {
+  .specification-link-container {
+    font-size: 0.938rem;
+    position: relative;
+    a {
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.6s;
+      text-transform: uppercase;
+      color: black;
+    }
+    span {
+      position: absolute;
+      top: 0;
+      left: 4.3rem;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
   }
-  span {
-    position: absolute;
-    top: 0;
-    left: 4.3rem;
-    font-size: 0.7rem;
-    font-weight: bold;
-  }
-}
 }
 .logout_btn {
   font-size: 0.875rem;

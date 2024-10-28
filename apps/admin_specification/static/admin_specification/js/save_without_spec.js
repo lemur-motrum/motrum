@@ -1,4 +1,8 @@
-import { getCookie,deleteCookie, getCurrentPrice } from "/static/core/js/functions.js";
+import {
+  getCookie,
+  deleteCookie,
+  getCurrentPrice,
+} from "/static/core/js/functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");
@@ -7,20 +11,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const specificationId = getCookie("specificationId");
     const adminCreator = document.querySelector("[data-user-id]");
     const adminCreatorId = adminCreator.getAttribute("data-user-id");
-    const commentAll = cartWrapper.querySelector(
-      'textarea[name="comment-input-name-all"]'
-    ).value;
-    const dateDeliveryAll = cartWrapper.querySelector(
-      'textarea[name="delivery-date-all-input-name-all"]'
-    ).value;
+
     const products = [];
-    const motrumRequsits = cartWrapper
-      .querySelector("[name='mortum_req']")
-      .getAttribute("value");
-    const clientRequsits = cartWrapper
-      .querySelector("[name='client-requisit']")
-      .getAttribute("value");
-    const bitrixInput = cartWrapper.querySelector(".bitrix-input");
+
     const saveWithoutSpecificationButton =
       cartWrapper.querySelector(".save_order_button");
 
@@ -59,6 +52,20 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     saveWithoutSpecificationButton.onclick = () => {
+      const bitrixInput = cartWrapper.querySelector(".bitrix-input");
+      const motrumRequsits = cartWrapper
+        .querySelector("[name='mortum_req']")
+        .getAttribute("value");
+      const clientRequsits = document
+        .querySelector("[name='client-requisit']")
+        .getAttribute("value");
+      const commentAll = cartWrapper.querySelector(
+        'textarea[name="comment-input-name-all"]'
+      ).value;
+      const dateDeliveryAll = cartWrapper.querySelector(
+        'textarea[name="delivery-date-all-input-name-all"]'
+      ).value;
+
       saveWithoutSpecificationButton.disabled = true;
       saveWithoutSpecificationButton.textContent = "";
       saveWithoutSpecificationButton.innerHTML = `<div class="small_loader"></div>`;
@@ -87,7 +94,8 @@ window.addEventListener("DOMContentLoaded", () => {
           deleteCookie("key", "/", window.location.hostname);
           deleteCookie("specificationId", "/", window.location.hostname);
           deleteCookie("cart", "/", window.location.hostname);
-          window.location.href = "/admin_specification/all_specifications/";
+          // window.location.href = "/admin_specification/all_specifications/";
+          console.log(data);
         } else {
           throw new Error("Ошибка");
         }

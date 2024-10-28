@@ -42,7 +42,7 @@ def get_currency(self):
                 date=date,
                 defaults={"value": v, "vunit_rate": vi, "count": int(count)},
             )
-            # update_currency_price(current, current_world_code)
+            update_currency_price(current, current_world_code)
             currency_chek(current, now_rate[0])
 
     except Exception as exc:

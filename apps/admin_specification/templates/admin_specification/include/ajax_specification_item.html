@@ -23,7 +23,7 @@
                         <br>
                 {% endif %}
                 {% if bill_sum_paid == bill_sum and date_completed == None %}
-                <button class="complete_order_button">Завершить</button>
+                <button class="complete_order_button">Завершить заказ</button>
                 {% endif %}
                 
                 <br>
@@ -123,7 +123,8 @@
      
         </div>
         <div class="table_item_value">
-                <div class="">Клиент: {{ name_req_full }}</div>
+                {% if name_req_full %} <div class="">Клиент: {{ name_req_full }}</div> {% endif %}
+               
         </div>
         <div class="table_item_value">
                 Статус: {{ status_full }}
@@ -134,7 +135,7 @@
         </div>
         <div class="table_item_value invoice-table_item_value">
         </div>
-        <button class="change-specification-button">продолжить оформиление заказа</button>
+        <button class="change-specification-button">продолжить оформление заказа</button>
         
 </div>
 {% endif %}

@@ -510,6 +510,7 @@ def create_specification(request):
       
                 
                 if  order.account_requisites:
+                    requisites = order.requisites
                     client_req_all = AccountRequisites.objects.filter(requisites=requisites)  
                 else:     
                     client_req_all = None

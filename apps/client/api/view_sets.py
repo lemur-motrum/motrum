@@ -1099,6 +1099,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             )
             .prefetch_related(
                 Prefetch("specification__admin_creator"),
+                Prefetch("cart__productcart_set"),
+                Prefetch("cart__productcart_set__product"),
+                Prefetch("requisites__accountrequisites_set"),
             )
             .filter(q_object)
             .order_by("-id")[count : count + count_last]

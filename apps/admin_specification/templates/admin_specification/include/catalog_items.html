@@ -104,7 +104,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="stock_item">Motrum:{{ product.stock.stock_motrum }}</div>
-                                        <span class="span-transit">{{ product.price.data_update|date:"d.m.Y" }}</span>
+                                        <span class="span-transit">{{ product.stock.data_update|date:"d.m.Y" }}</span>
                                         <br>
                                         <span class="span-transit">
                                             {% if product.stock.transit_count %}

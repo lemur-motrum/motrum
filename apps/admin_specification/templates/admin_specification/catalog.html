@@ -383,7 +383,8 @@
                                    name="serch-client_input"
                                    value="{% if client_req %}{{ client_req.requisites.legal_entity }}{% endif %}">
                             <div class="clients"></div>
-                            Расчетный счет <select class="select-client-requsits"
+                            Расчетный счет
+                            <select class="select-client-requsits"
                                     {% if client_req %}value="{{ client_req.id }}"{% endif %}
                                     name="client-requisit">
                                 {% if client_req %}
@@ -431,7 +432,10 @@
                             <div class="error"></div>
                         </div>
                         <button class="exit_button">Выйти без изменений</button>
-                        {% comment %} <button class="save_order_button">Сохранить корзину без спецификации</button> {% endcomment %}
+                        <div class="save_order_button-wrapper">
+                            <button class="save_order_button">Сохранить корзину без спецификации</button>
+                            <div class="save_order_button-error"></div>
+                        </div>
                     </div>
                 </div>
             </div>

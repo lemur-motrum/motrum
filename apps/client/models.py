@@ -280,7 +280,6 @@ class Order(models.Model):
         null=True,
     )
     date_completed = models.DateField(
-        default=datetime.date.today,
         verbose_name="Дата завершения",
         blank=True,
         null=True,

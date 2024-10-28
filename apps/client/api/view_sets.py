@@ -1197,7 +1197,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     def date_completed(self, request, pk=None, *args, **kwargs):
         data = request.data
         date_completed_data = data["date_completed"]
-        date_completed = datetime.strptime(date_completed_data, '%Y-%m-%d').date()
+        print(date_completed_data)
+        date_completed = datetime.datetime.strptime(date_completed_data, '%Y-%m-%d').date()
         order = Order.objects.get(pk=pk)
         order.date_completed = date_completed
         order.save()

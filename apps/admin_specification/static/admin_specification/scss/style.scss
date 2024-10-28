@@ -703,24 +703,42 @@ h1 {
   }
   .all_specifications_content {
     .table-titles {
-      display: flex;
+      display: none;
       margin-top: 1.813rem;
       margin-left: 1.875rem;
-      .table-title {
-        font-weight: bold;
-        font-size: 0.938rem;
-        text-transform: uppercase;
-        &:nth-of-type(2) {
-          margin-left: 11.87rem;
+      &.show {
+        display: flex;
+      }
+      &.all_specifications_titles {
+        .table-title {
+          font-weight: bold;
+          font-size: 0.938rem;
+          text-transform: uppercase;
+          &:nth-of-type(2) {
+            margin-left: 11.87rem;
+          }
+          &:nth-of-type(3) {
+            margin-left: 10rem;
+          }
+          &:nth-of-type(4) {
+            margin-left: 10rem;
+          }
+          &:nth-of-type(5) {
+            margin-left: 10.563rem;
+          }
         }
-        &:nth-of-type(3) {
-          margin-left: 10rem;
-        }
-        &:nth-of-type(4) {
-          margin-left: 10rem;
-        }
-        &:nth-of-type(5) {
-          margin-left: 10.563rem;
+      }
+      &.no_specification_titles {
+        .table-title {
+          font-weight: bold;
+          font-size: 0.938rem;
+          text-transform: uppercase;
+          &:nth-of-type(2) {
+            margin-left: 28.87rem;
+          }
+          &:nth-of-type(3) {
+            margin-left: 10rem;
+          }
         }
       }
     }

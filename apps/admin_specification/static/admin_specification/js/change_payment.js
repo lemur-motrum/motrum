@@ -21,10 +21,12 @@ export function changePayment(container, errorFn) {
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
-          getDigitsNumber(
-            paymentLink,
-            +paymentLink.getAttribute("bill-sum-paid")
-          );
+          if (paymentLink) {
+            getDigitsNumber(
+              paymentLink,
+              +paymentLink.getAttribute("bill-sum-paid")
+            );
+          }
           const paymentBtn = specification.querySelector(".add_payment_button");
           const orderId = specification.getAttribute("order-id");
 

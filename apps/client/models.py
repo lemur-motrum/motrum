@@ -237,6 +237,7 @@ class EmailsCallBack(models.Model):
 # COMPLETED = 7
 
 STATUS_ORDER = (
+    ('', '----'),
     ("PROCESSING", "В обработке"),
     ("PAYMENT", "Счёт на оплату"),
     ("IN_MOTRUM", "Заказ у поставщика"),
@@ -343,7 +344,7 @@ class Order(models.Model):
     )
     bill_file = models.FileField(
         "Фаил счета", upload_to=get_document_bill_path, blank=True,
-        null=True, default=None
+        null=True,
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",

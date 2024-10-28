@@ -36,6 +36,8 @@ from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from apps.user.models import AdminUser
+
 
 
 TYPE_DOCUMENT = (
@@ -757,6 +759,12 @@ class Cart(models.Model):
     )
     is_active = models.BooleanField("корзина сохранена", default=False)
     session_key = models.CharField(max_length=100, blank=True, null=True)
+    cart_admin =  models.ForeignKey(
+        AdminUser,
+        on_delete=models.PROTECT,
+        verbose_name="Администратор",
+        blank=True, null=True
+    )
 
     
     class Meta:

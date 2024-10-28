@@ -228,7 +228,7 @@ class CartViewSet(viewsets.ModelViewSet):
                     return response
 
                 except Cart.DoesNotExist:
-                    data = {"session_key": session, "save_cart": False, "client": None}
+                    data = {"session_key": session, "save_cart": False, "client": None, "cart_admin":request.user}
                     serializer = self.serializer_class(data=data, many=False)
                     if serializer.is_valid():
                         serializer.save()

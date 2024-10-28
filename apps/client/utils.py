@@ -70,8 +70,16 @@ def crete_pdf_bill(specification,request,is_contract,order):
         # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
 
         date_now = transform_date(datetime.date.today().isoformat())
+        bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
+        
+        if bill_last:
+            bill_last_name = bill_last.bill_file.name.split('_')
+            bill_last_name = bill_last_name[1].split('.')
 
-        name_bill = f"bill_{specification}.pdf"
+            bill_name = int(bill_last_name[0] )+1
+        else:
+            bill_name = 1   
+        name_bill = f"bill_{bill_name}.pdf"
         
         document_info = BaseImage.objects.filter().first()
         
@@ -261,11 +269,11 @@ def crete_pdf_bill(specification,request,is_contract,order):
         story.append(logo_supplier)
         if is_contract:
             story.append(
-                Paragraph(f"Счет на оплату № 1 от {date_now}<br></br><br></br>", title_style_14)
+                Paragraph(f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>", title_style_14)
             )
         else:
                     story.append(
-                Paragraph(f"Счет-оферта № 1 от {date_now}<br></br><br></br>", title_style_14)
+                Paragraph(f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>", title_style_14)
             )    
 
         data_info = []
@@ -300,7 +308,7 @@ def crete_pdf_bill(specification,request,is_contract,order):
         data_info.append(
             (
                 Paragraph(f"Основание:", normal_style),
-                Paragraph(f"Счет № 1 от {date_now}", bold_style),
+                Paragraph(f"Счет № {bill_name} от {date_now}", bold_style),
             )
         )
 

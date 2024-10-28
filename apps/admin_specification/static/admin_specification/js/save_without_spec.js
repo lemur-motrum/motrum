@@ -94,8 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
           deleteCookie("key", "/", window.location.hostname);
           deleteCookie("specificationId", "/", window.location.hostname);
           deleteCookie("cart", "/", window.location.hostname);
-          // window.location.href = "/admin_specification/all_specifications/";
-          console.log(data);
+          window.location.href = "/admin_specification/all_specifications/";
         } else {
           throw new Error("Ошибка");
         }

@@ -573,8 +573,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             requisites = account_requisites.requisites
             requisites_id = requisites.id
             account_requisites_id = account_requisites.id                
-            prepay_persent = requisites.prepay_persent,
-            postpay_persent = requisites.postpay_persent,    
+            prepay_persent = int(requisites.prepay_persent),
+            postpay_persent = int(requisites.postpay_persent),    
           
             
             if requisites.client:

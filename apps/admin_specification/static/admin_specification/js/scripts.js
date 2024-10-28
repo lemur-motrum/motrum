@@ -7,6 +7,7 @@ import {
   getClosestInteger,
   getDigitsNumber,
   showErrorValidation,
+  getCurrentPrice,
 } from "/static/core/js/functions.js";
 
 // const setURLParams = (url, updates, defaults) => {
@@ -27,12 +28,6 @@ import {
 //   // Обновляем URL в адресной строке без перезагрузки страницы
 //   window.history.replaceState(null, "", "?" + searchParams);
 // };
-
-// функция для форматирования цены, если с бэка значения возвращается с запятой по типу 0,000
-function getCurrentPrice(p) {
-  const price = p.replace(",", ".");
-  return price;
-}
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");

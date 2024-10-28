@@ -79,7 +79,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         motrum_requisites
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
-        
+        date_data = datetime.date.today().isoformat()
+        date = transform_date(date_data)
+        date_title = datetime.datetime.today().strftime("%d/%m/%Y")
         #  motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
         # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
         
@@ -147,7 +149,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
         story.append(
             Paragraph(
-                f"<b>Спецификация {specification}</b><br></br><br></br>", bold_left_style
+                f"<b>Спецификация №{specification} от {date_title}г.</b><br></br><br></br>", bold_left_style
             )
         )
         story.append(Paragraph(f"К договору № {to_contract}", normal_style))
@@ -391,8 +393,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 Paragraph(text_signature, normal_style_8),
             )
         )
-        date_data = datetime.date.today().isoformat()
-        date = transform_date(date_data)
+        
 
         data_signature.append(
             (

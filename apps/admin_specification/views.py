@@ -455,16 +455,7 @@ def create_specification(request):
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-            # product_spes_list = ProductSpecification.objects.filter(specification=specification).exclude(product_id__in=product_cart_list)
-            
-            # print(product_spes_list)
-            # if product_spes_list:
-            #     for product_spes_l in product_spes_list:
-            #         print(product_spes_l)
-            #         print(product_spes_l.product)
-            #         print(product_spes_l.price_one)
-            #         new = ProductCart(cart_id=cart,product=product_spes_l.product ,quantity = product_spes_l.quantity)
-            #         new.save()
+     
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
@@ -474,9 +465,7 @@ def create_specification(request):
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-            # mortum_req = BaseInfo.objects.all().prefetch_related(
-            #     Prefetch("BaseInfoAccountRequisites"),
-            # )
+  
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
@@ -505,29 +494,60 @@ def create_specification(request):
 
         # новая спецификация
         except Specification.DoesNotExist:
-            specification = None
-            product_spes_list = ProductSpecification.objects.filter(specification=specification).values_list(
-            "product__id"
-        )
-            product_specification = ProductSpecification.objects.filter(
-                specification=specification
-            )
-            mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
+            
+            
+            try:
+                order = Order.objects.get(cart=cart)
+                specification = None
+                product_new = ProductCart.objects.filter(cart=cart, product=None)
+                product_specification = ProductSpecification.objects.filter(
+                    specification=0
+                )
+              
+                mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
-            title = "Новая спецификация"
-            order = None
+      
+                
+                if  order.account_requisites:
+                    client_req_all = AccountRequisites.objects.filter(requisites=requisites)  
+                else:     
+                    client_req_all = None
+                
+                if  order.requisites:  
+                    client_req = order.account_requisites
+                else:    
+                    client_req = None    
+                    
+                
+                title = "Новая спецификация"
+                
+                
+                update_spesif = False
+                product_new_more = None
+                
+                
+            except Order.DoesNotExist:
+                specification = None
+                product_spes_list = ProductSpecification.objects.filter(specification=specification).values_list(
+                "product__id"
+            )
+                product_specification = ProductSpecification.objects.filter(
+                    specification=specification
+                )
+                mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
+                    "requisites"
+                )
+                title = "Новая спецификация"
+                order = None
 
-            # товары без записи в окт
-            product_new = ProductCart.objects.filter(cart=cart, product=None)
-            product_new_more = None
-            update_spesif = False
-            client_req = None
-            client_req_all = None
+                # товары без записи в окт
+                product_new = ProductCart.objects.filter(cart=cart, product=None)
+                product_new_more = None
+                update_spesif = False
+                client_req = None
+                client_req_all = None
 
-        # prefetch_queryset_property = ProductProperty.objects.filter(
-        #     product__in=product_cart_list
-        # )
 
         # продукты которые есть в окт в корзине
         product = (
@@ -580,29 +600,7 @@ def create_specification(request):
             )
         )
 
-        # id_specification = request.COOKIES.get("specificationId")
-        # if id_specification:
-        #     # product_new = ProductCart.objects.filter(cart=cart,product=None,)
-        #     product_new = ProductSpecification.objects.filter(
-        #         specification=specification,
-        #         product=None,
-        #     ).annotate(
-        #         id_product_cart=product_cart.filter(
-        #             product_new=OuterRef("product_new")
-        #         ).values(
-        #             "id",
-        #         ),
-        #     )
-        #     product_new_value_id = product_new.values_list("id_product_cart")
-        #     product_new_more = ProductCart.objects.filter(
-        #         cart=cart, product=None
-        #     ).exclude(id__in=product_new_value_id)
-        #     update_spesif = True
-
-        # else:
-        # product_new = ProductCart.objects.filter(cart=cart, product=None)
-        # product_new_more = None
-        # update_spesif = False
+    
 
     # корзины нет
     else:
@@ -636,6 +634,7 @@ def create_specification(request):
         "client_req": client_req,
         "client_req_all": client_req_all,
     }
+    print(context)
     return render(request, "admin_specification/catalog.html", context)
 
 

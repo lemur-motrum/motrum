@@ -618,7 +618,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_sum": None,
                 "prepay_persent": prepay_persent,
                 "postpay_persent": postpay_persent,
-                "motrum_requisites": None,
+                "motrum_requisites": motrum_requisites_id,
                 "id_bitrix": id_bitrix,
             }
         print(data_order)
@@ -649,7 +649,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     order = serializer.save()
 
                     print(serializer.data)
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     print(serializer.errors)
                     return Response(
@@ -1108,7 +1108,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             .prefetch_related(
                 Prefetch("specification__admin_creator"),
             )
-            .filter(q_object)
+            .filter(specification__isnull=True)
             .order_by("-id")[count : count + count_last]
         )
 

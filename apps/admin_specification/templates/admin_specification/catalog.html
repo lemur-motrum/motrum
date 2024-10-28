@@ -407,7 +407,7 @@
                             <input class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
-                                   value="{% if order %}{{ specification.id_bitrix }}{% endif %}" />
+                                   value="{% if order %}{{ order.id_bitrix }}{% endif %}" />
                         </label>
                     </div>
                     <div class="motrum-info">
@@ -431,11 +431,17 @@
                             <button class="save_button">Сохранить спецификацию</button>
                             <div class="error"></div>
                         </div>
+                     
                         <button class="exit_button">Выйти без изменений</button>
+                        {% if specification %}
+                        
+                        {% else %}
                         <div class="save_order_button-wrapper">
-                            <button class="save_order_button">Сохранить корзину без спецификации</button>
+                            <button class="save_order_button" >Сохранить корзину без спецификации</button>
                             <div class="save_order_button-error"></div>
                         </div>
+                        {% endif %}
+                        
                     </div>
                 </div>
             </div>

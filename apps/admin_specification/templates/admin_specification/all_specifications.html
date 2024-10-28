@@ -18,13 +18,7 @@
             <span class="all_orders active">{{ title }}</span> / <span class="orders_without_specifications">Корзины без заказа</span>
         </h1>
         <div class="specification_container all_specifications_content">
-            {% if sort_specif %}
-            <div class="table-titles">
-                <div class="table-title">Заказ</div>
-                <div class="table-title" style="margin-left: 25.87rem;">Клиент</div>
-                <div class="table-title">Статус</div>
-            </div>
-            {% else %}
+            
             <div class="table-titles">
                 <div class="table-title">Заказ</div>
                 <div class="table-title">Клиент</div>
@@ -32,7 +26,7 @@
                 <div class="table-title">Сумма</div>
                 <div class="table-title">Счет</div>
             </div>
-            {% endif %}
+            
             
             <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">

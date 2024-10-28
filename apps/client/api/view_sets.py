@@ -573,9 +573,11 @@ class OrderViewSet(viewsets.ModelViewSet):
             requisites = account_requisites.requisites
             requisites_id = requisites.id
             account_requisites_id = account_requisites.id                
-            prepay_persent = int(requisites.prepay_persent),
-            postpay_persent = int(requisites.postpay_persent),    
-          
+            prepay_persent = requisites.prepay_persent
+            postpay_persent = requisites.postpay_persent  
+
+            print(prepay_persent)
+            print(postpay_persent)
             
             if requisites.client:
                 client = requisites.client
@@ -589,20 +591,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             postpay_persent = None   
                   
         if data["motrum_requisites"] != None:
-            
-            print(data["motrum_requisites"])
             motrum_requisites_id = int(data["motrum_requisites"])
-            print(motrum_requisites_id)
-        #     motrum_requisites = BaseInfoAccountRequisites.objects.get(
-        #     id=motrum_requisites_data
-        # )
-        #     motrum_requisites_id = motrum_requisites.id,
-            
         else:
-       
             motrum_requisites_id = None
-                
-        print(motrum_requisites_id)
+
         data_order = {
                 "client": client,
                 "name": 123131,

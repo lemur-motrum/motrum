@@ -1,3 +1,4 @@
+{% if specification_list.id %}
 <div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
      specification-id="{{ specification_list.id }}"
      order-id="{{ id }}"
@@ -94,3 +95,45 @@
                 {% endif %}
         {% endif %}
 </div>
+{% else %}
+
+<div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
+     specification-id="{{ specification_list.id }}"
+     order-id="{{ id }}"
+     status="{{ status }}"
+     specification-elem="specification-item">
+        <div class="table_item_value" style="width: 30.875rem";>
+                <a data-cart-id="{{ cart }}"
+                   href=""></a>
+               <p>Корзина № {{ id }} </p>
+               <div class="">Товары:
+                {% for productcart in cart_list.productcart_set %}
+                
+                        {% if productcart.product_id_name %}
+                        <div class="">- {{productcart.product_id_name}}</div>
+                        {% else %}
+                        <div class="">- {{productcart.product_new_article}} {{productcart.product_new}}</div>
+                        {% endif %}       
+                {% endfor %}
+
+               </div>
+     
+        </div>
+        <div class="table_item_value">
+                <div class="">Клиент: {{ name_req_full }}</div>
+        </div>
+        <div class="table_item_value">
+                Статус: {{ status_full }}
+                <br>
+        </div>
+        <div class="table_item_value ">
+               
+        </div>
+        <div class="table_item_value invoice-table_item_value">
+        </div>
+      
+        <button class="change-order-button">Оформить заказ</button>
+</div>
+{% endif %}
+
+

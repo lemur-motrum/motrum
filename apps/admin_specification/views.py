@@ -682,10 +682,17 @@ def get_all_specifications(request):
     media_root = os.path.join(MEDIA_ROOT, "")
 
     title = "Все спецификации"
+    
+    sort_specif = request.GET.get("specification")
+    if sort_specif:
+        sort_specif = True
+    else:
+        sort_specif = False    
     context = {
         "title": title,
         "specifications": all_specifications,
         "media_root": media_root,
+        "sort_specif":sort_specif
     }
 
     return render(request, "admin_specification/all_specifications.html", context)

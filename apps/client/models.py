@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Case, Value, When
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
+
 # Create your models here.
 
 
@@ -67,15 +68,24 @@ class Client(CustomUser):
                 self.save()
 
     # def send_email_notification(self,text_email):
+
+
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
     ("100% postpay", "100% постоплата"),
 )
 
+
 class Requisites(models.Model):
-    client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE,null=True,blank=True,)
-    
+    client = models.ForeignKey(
+        Client,
+        verbose_name="Клиент",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     contract = models.CharField(
         "Договор",
         max_length=50,
@@ -88,11 +98,7 @@ class Requisites(models.Model):
         null=True,
     )
     type_payment = models.CharField(
-        "Тип оплаты",
-        max_length=100,
-        choices=TYPE_PAYMENT,
-        default="100% prepay"
-
+        "Тип оплаты", max_length=100, choices=TYPE_PAYMENT, default="100% prepay"
     )
     prepay_persent = models.FloatField(
         "Процент предоплаты",
@@ -100,21 +106,21 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
-    
+
     postpay_persent = models.FloatField(
         "Процент постоплаты",
         default="0",
         blank=True,
         null=True,
     )
-    
+
     type_delivery = models.CharField(
         "Тип доставки",
         max_length=1000,
         blank=True,
         null=True,
     )
-    
+
     legal_entity = models.CharField(
         "Юридическое лицо",
         max_length=150,
@@ -170,8 +176,7 @@ class Requisites(models.Model):
 
     def __str__(self):
         return self.legal_entity
-    
-    
+
     def get_type_payment(self):
         for choice in TYPE_PAYMENT:
             if choice[0] == self.type_payment:
@@ -237,7 +242,7 @@ class EmailsCallBack(models.Model):
 # COMPLETED = 7
 
 STATUS_ORDER = (
-    ('', '----'),
+    ("", "----"),
     ("PROCESSING", "В обработке"),
     ("PAYMENT", "Счёт на оплату"),
     ("IN_MOTRUM", "Заказ у поставщика"),
@@ -257,6 +262,7 @@ STATUS_ORDER_INT = (
 )
 
 import random
+
 
 class Order(models.Model):
     client = models.ForeignKey(
@@ -322,13 +328,13 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    
+
     postpay_persent = models.FloatField(
         "Процент постоплаты",
         blank=True,
         null=True,
     )
-    
+
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,
         verbose_name="Реквизиты мотрум для сделки",
@@ -338,11 +344,15 @@ class Order(models.Model):
     )
 
     bill_name = models.CharField(
-        max_length=1000,  default=random.randint(0, 9999),blank=True,
+        max_length=1000,
+        default=random.randint(0, 9999),
+        blank=True,
         null=True,
     )
     bill_file = models.FileField(
-        "Фаил счета", upload_to=get_document_bill_path, blank=True,
+        "Фаил счета",
+        upload_to=get_document_bill_path,
+        blank=True,
         null=True,
     )
     bill_date_start = models.DateField(
@@ -368,6 +378,7 @@ class Order(models.Model):
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
@@ -375,18 +386,24 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self, request, is_contract,order):
+    def create_bill(self, request, is_contract, order):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
-        print(is_contract,order)
+
+        print(is_contract, order)
         self.bill_date_start = datetime.date.today()
-        print(is_contract,order)
+        print(is_contract, order)
         data_stop = create_time_stop_specification()
         print(data_stop)
         self.bill_date_stop = data_stop
 
-        pdf = crete_pdf_bill(self.specification.id,request,is_contract,order,)
+        pdf = crete_pdf_bill(
+            self.specification.id,
+            request,
+            is_contract,
+            order,
+        )
         if pdf:
             self.bill_file = pdf
             self.bill_sum = self.specification.total_amount
@@ -396,7 +413,7 @@ class Order(models.Model):
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
             self._change_reason = "Ручное"
             self.save()
-            
+
             return self.id
         else:
             return None
@@ -406,8 +423,6 @@ class Order(models.Model):
             if choice[0] == self.status:
                 return choice[1]
         return ""
-    
-
 
 
 # class Document(models.Model):

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from apps.client.models import AccountRequisites, Requisites
 from datetime import date
 from apps.notifications.api.serializers import NotificationOrderSerializer, NotificationSerializer
+from apps.product.api.serializers import CartOktAllSerializer, ProductCartSerializer
 from apps.specification.api.serializers import (
     ListProductSpecificationSerializer,
     ListsProductSpecificationSerializer,
@@ -163,9 +164,10 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
 class OrderOktSerializer(serializers.ModelSerializer):
     specification_list = SpecificationSerializer(source="specification", read_only=True)
     bill_status = serializers.SerializerMethodField()
-    name_req_full = serializers.CharField(source="requisites.legal_entity")
+    name_req_full = serializers.CharField(source="requisites")
     status_full = serializers.CharField(source="get_status_display")
     requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
+    cart_list = CartOktAllSerializer(source="cart", read_only=False)
     
     class Meta:
         model = Order
@@ -189,7 +191,8 @@ class OrderOktSerializer(serializers.ModelSerializer):
             representation["bill_date_stop"] = instance.bill_date_stop.strftime("%d.%m.%Y")
         if instance.date_completed:
             representation["date_completed"] = instance.date_completed.strftime("%d.%m.%Y")
-       
+        if instance.requisites:
+            representation["name_req_full"] = instance.requisites.legal_entity
         
         return representation      
 

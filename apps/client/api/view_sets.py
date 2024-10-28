@@ -589,24 +589,27 @@ class OrderViewSet(viewsets.ModelViewSet):
             postpay_persent = None   
                   
         if data["motrum_requisites"] != None:
-            motrum_requisites_data = int(data["motrum_requisites"])
-            motrum_requisites = BaseInfoAccountRequisites.objects.get(
-            id=motrum_requisites_data
-        )
-            motrum_requisites_id = motrum_requisites.id,
+            
+            print(data["motrum_requisites"])
+            motrum_requisites_id = int(data["motrum_requisites"])
+            print(motrum_requisites_id)
+        #     motrum_requisites = BaseInfoAccountRequisites.objects.get(
+        #     id=motrum_requisites_data
+        # )
+        #     motrum_requisites_id = motrum_requisites.id,
             
         else:
-            motrum_requisites = None
+       
             motrum_requisites_id = None
                 
-        
+        print(motrum_requisites_id)
         data_order = {
                 "client": client,
                 "name": 123131,
                 "specification": None,
                 "requisites": requisites_id,
                 "account_requisites": account_requisites_id,
-                "status": None,
+                "status": "",
                 "cart": cart.id,
                 "bill_name": None,
                 "bill_file": None,
@@ -615,12 +618,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_sum": None,
                 "prepay_persent": prepay_persent,
                 "postpay_persent": postpay_persent,
-                "motrum_requisites": motrum_requisites_id,
+                "motrum_requisites": None,
                 "id_bitrix": id_bitrix,
             }
+        print(data_order)
         try:
+                print(0000000)
                 order = Order.objects.get(cart=cart)
+                print(order)
                 serializer = self.serializer_class(order, data=data_order, many=False)
+                print("]]]]]]]")
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
                     order = serializer.save()
@@ -628,12 +635,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                     cart.save()
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
+                    print(serializer.errors)
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
 
         except Order.DoesNotExist:
-             
+                print("hsdhfsjdfjh")
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
                     cart.is_active = True

@@ -127,6 +127,25 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
+    product_id_name = serializers.SerializerMethodField()
     class Meta:
         model = ProductCart
         fields = "__all__"
+    def get_product_id_name(self, obj):
+        
+        
+        if obj.product:
+            return f"{obj.product.article_supplier} {obj.product.name}"
+        else:
+            return None      
+
+class CartOktAllSerializer(serializers.ModelSerializer):
+    productcart_set = ProductCartSerializer(read_only=True, many=True)
+    class Meta:
+        model = Cart
+        fields = ( 
+            "id",
+            "productcart_set",
+            )
+        
+        

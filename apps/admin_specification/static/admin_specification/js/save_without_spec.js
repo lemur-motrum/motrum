@@ -1,4 +1,4 @@
-import { getCookie, getCurrentPrice } from "/static/core/js/functions.js";
+import { getCookie,deleteCookie, getCurrentPrice } from "/static/core/js/functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");

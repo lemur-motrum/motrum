@@ -18,7 +18,10 @@
                         <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
                         <br>
                 {% endif %}
+                {% if bill_sum_paid == bill_sum and date_completed == None %}
                 <button class="complete_order_button">Завершить</button>
+                {% endif %}
+                
                 <br>
         </div>
         <div class="table_item_value">

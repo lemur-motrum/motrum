@@ -1202,6 +1202,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         order = Order.objects.get(pk=pk)
         order.date_completed = date_completed
         order.status = "COMPLETED"
+        order._change_reason = "Ручное"
         order.save()
         data = {
             

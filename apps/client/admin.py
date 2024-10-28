@@ -26,9 +26,9 @@ class ClientAdminWeb(admin.ModelAdmin):
         "contact_name",
     ]
 
-    inlines = [
-        RequisitesInlineWeb,
-    ]
+    # inlines = [
+    #     RequisitesInlineWeb,
+    # ]
 #     # def has_add_permission(self, request):
 #     #     return False
 #     # def has_delete_permission(self, request,obj=None):
@@ -45,6 +45,7 @@ class RequisitesAdmin(admin.ModelAdmin):
         "client"
     ]
     inlines = AccountRequisitesAdminInline,
+    exclude = ["discount"]
     # fields = 'legal_entity'
 
 

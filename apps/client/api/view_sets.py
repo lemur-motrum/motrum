@@ -1108,7 +1108,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             .prefetch_related(
                 Prefetch("specification__admin_creator"),
             )
-            .filter(specification__isnull=True)
+            .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
 

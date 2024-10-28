@@ -75,10 +75,11 @@ TYPE_PAYMENT = (
 
 class Requisites(models.Model):
     client = models.ForeignKey(Client, verbose_name="Клиент", on_delete=models.CASCADE,null=True,blank=True,)
-    phone = models.CharField("Номер телефона", max_length=40,null=True)
+    
     contract = models.CharField(
         "Договор",
         max_length=50,
+        blank=True,
         null=True,
     )
     discount = models.FloatField(
@@ -95,12 +96,14 @@ class Requisites(models.Model):
     )
     prepay_persent = models.FloatField(
         "Процент предоплаты",
+        default="100",
         blank=True,
         null=True,
     )
     
     postpay_persent = models.FloatField(
         "Процент постоплаты",
+        default="0",
         blank=True,
         null=True,
     )
@@ -275,6 +278,12 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    date_completed = models.DateField(
+        default=datetime.date.today,
+        verbose_name="Дата завершения",
+        blank=True,
+        null=True,
+    )
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
 
     status = models.CharField(
@@ -333,7 +342,8 @@ class Order(models.Model):
         null=True,
     )
     bill_file = models.FileField(
-        "Фаил счета", upload_to=get_document_bill_path, null=True, default=None
+        "Фаил счета", upload_to=get_document_bill_path, blank=True,
+        null=True, default=None
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",
@@ -384,7 +394,7 @@ class Order(models.Model):
             self.status = "PAYMENT"
             if self.client:
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
-            self._change_reason = "Админ"
+            self._change_reason = "Ручное"
             self.save()
             
             return self.id

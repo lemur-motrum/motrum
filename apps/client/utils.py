@@ -2,9 +2,12 @@ import copy
 import datetime
 from enum import auto
 import itertools
+from locale import setlocale
 import os
 from pickle import NONE
 from re import T
+import re
+
 from apps.client.models import Order
 from apps.core.models import BaseImage, BaseInfo
 from apps.core.utils import check_spesc_directory_exist, transform_date, rub_words
@@ -367,12 +370,15 @@ def crete_pdf_bill(specification,request,is_contract,order):
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
                 product_name = f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
-                # product_name = str(product.product.name)
+                product_name = Paragraph(product_name, normal_style),
                 product_code = product.product.article_supplier
+                product_code = Paragraph(product_code, normal_style),
 
             else:
                 product_name = product.product_new
+                product_name = Paragraph(product_name, normal_style),
                 product_code = product.product_new_article
+                product_code = Paragraph(product_code, normal_style),
 
             product_price = product.price_one
             product_price = "{0:,.2f}".format(product_price).replace(",", " ")
@@ -380,6 +386,7 @@ def crete_pdf_bill(specification,request,is_contract,order):
             product_price_all = "{0:,.2f}".format(product_price_all).replace(",", " ")
             product_quantity = product.quantity
             product_data = product.text_delivery
+            product_data = (Paragraph(f"{product_data}", normal_style),)
             # if product_data:
             #     product_data = str(product_data.strftime("%d.%m.%Y"))
             # else:
@@ -388,7 +395,7 @@ def crete_pdf_bill(specification,request,is_contract,order):
             data.append(
                 (
                     i,
-                    Paragraph(product_name, normal_style),
+                    product_name,
                     product_code,
                     product_quantity,
                     product_stock,
@@ -452,6 +459,10 @@ def crete_pdf_bill(specification,request,is_contract,order):
             )
         )
         story.append(table_product)
+        
+        
+        
+        
         if order.prepay_persent:
             if order.prepay_persent == 100:
                 info_payment = f" Способ оплаты: 100% предоплата."
@@ -621,12 +632,27 @@ def crete_pdf_bill(specification,request,is_contract,order):
                     normal_style,
                 )
             )  
-            story.append(
+            type_delivery_client = str(client_info.type_delivery).lower()
+           
+            type_delivery_client_index = type_delivery_client.find("самовывоз")
+            
+            # 6
+           
+            if type_delivery_client_index >= 0:
+                story.append(
                 Paragraph(
-                    f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+                    f"7. Доставка товара осуществляется самовывозом со склада Поставщика",
                     normal_style,
                 )
             )  
+            else:
+
+                story.append(
+                    Paragraph(
+                        f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+                        normal_style,
+                    )
+                )  
             story.append(
                 Paragraph(
                     f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",

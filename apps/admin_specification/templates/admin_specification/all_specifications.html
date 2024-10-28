@@ -1,5 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
+{% load cart %}
     {% load number_into_digits %}
     <div class="logout_btn">
         {% if request.user.is_superuser  == True %}
@@ -11,11 +12,13 @@
     <div class="all_specifications_container">
         <div class="bread-crumbs">
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
+            <div class="specification-link-container">{% cart %}</div>
         </div>
         <h1 class="title">{{ title }}</h1>
         <div class="specification_container all_specifications_content">
             <div class="table-titles">
                 <div class="table-title">Спецификация</div>
+                <div class="table-title">Клиент</div>
                 <div class="table-title">Статус</div>
                 <div class="table-title">Сумма</div>
                 <div class="table-title">Договор</div>

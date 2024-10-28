@@ -1,10 +1,7 @@
 import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
 
-window.addEventListener("DOMContentLoaded", () => {
-  const specificationWrapper = document.querySelector(
-    ".all_specifications_table"
-  );
-  if (specificationWrapper) {
+export function completeOrder(container) {
+  if (container) {
     const overlay = document.querySelector(".overlay_modal_complete");
     const modalWindow = overlay.querySelector(".modal-window");
     const calendar = modalWindow.querySelector(".calendar");
@@ -13,9 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const csrfToken = getCookie("csrftoken");
     const interval = setInterval(() => {
-      const specifications = specificationWrapper.querySelectorAll(
-        ".specification_item"
-      );
+      const specifications = container.querySelectorAll(".specification_item");
       if (specifications.length > 0) {
         clearInterval(interval);
         specifications.forEach((specification) => {
@@ -88,4 +83,10 @@ window.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
     };
   }
+}
+window.addEventListener("DOMContentLoaded", () => {
+  const specificationWrapper = document.querySelector(
+    ".all_specifications_table"
+  );
+  completeOrder(specificationWrapper);
 });

@@ -1,6 +1,5 @@
 {% extends "core/base.html" %}
 {% block content %}
-
     <div class="products_wrapper">
         <div class="title_container">
             <div class="bread_crumbs">
@@ -56,7 +55,8 @@
                                                     {{ vendor.vendor__name }}
                                                 {% else %}
                                                     Неизвестный производитель
-                                                {% endif %}</div>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -66,7 +66,7 @@
                 </div>
                 <input id="category-product"
                        type="hidden"
-                       data-category-id="{% if current_category.pk %}{{current_category.pk}}{% else %}{{current_category.slug}}{% endif %}" />
+                       data-category-id="{% if current_category.pk %}{{ current_category.pk }}{% else %}{{ current_category.slug }}{% endif %}" />
                 <input id="group-product"
                        type="hidden"
                        data-group-id="{{ current_group.pk }}" />
@@ -78,7 +78,7 @@
                                 {% include "product/includes/product_item.html" with product=product %}
                             {% endfor %}
                         {% else %}
-                        {% comment %} <div class="none-products">
+                            {% comment %} <div class="none-products">
                             Товаров в разделе "
                             {% if current_group %}
                             {{ current_group.name }}
@@ -86,9 +86,8 @@
                             {{ current_category.name }}
                         {% endif %}
                             " пока нет
-                        </div> {% endcomment %}
+                            </div> {% endcomment %}
                         {% endif %}
-                        
                     </div>
                     <div class="small_loader">loading</div>
                     <div class="end_content">

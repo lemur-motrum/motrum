@@ -908,6 +908,9 @@ h1 {
         &.bill_notpayment {
           border: 1px solid #dd5454;
         }
+        &.completed_order {
+          opacity: 0.7;
+        }
         .table_item_value {
           font-size: 0.813rem;
           &:nth-of-type(1) {

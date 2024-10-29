@@ -41,7 +41,7 @@ def specification_date_stop(self):
 )
 def bill_date_stop(self):
     try:
-        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0)
+        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0).exclude(status="CANCELED").exclude(status="COMPLETED")
 
         for bill_item in bill:
             now = datetime.date.today()

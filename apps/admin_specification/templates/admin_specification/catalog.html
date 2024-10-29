@@ -407,7 +407,7 @@
                             <input class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
-                                   value="{% if order %}{{ order.id_bitrix }}{% endif %}" />
+                                   value="{% if order and order.id_bitrix  %}{{ order.id_bitrix }}{% endif %}" />
                         </label>
                     </div>
                     <div class="motrum-info">

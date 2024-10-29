@@ -1196,10 +1196,11 @@ def iek_api():
                 #     finally:
                 #         continue
         else:
-            error = "file_api_error"
-            location = "Загрузка фаилов IEK"
-            info = f"ошибка доступа к ответу {url_params}{responset}{response}"
-            e = error_alert(error, location, info)
+            pass
+            # error = "file_api_error"
+            # location = "Загрузка фаилов IEK"
+            # info = f"ошибка доступа к ответу {url_params}{responset}{response}"
+            # e = error_alert(error, location, info)
 
     # остатки на складах
     def get_iek_stock_one(prod):

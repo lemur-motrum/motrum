@@ -334,7 +334,13 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-
+    comment = models.CharField(
+        "Комментарий",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,
         verbose_name="Реквизиты мотрум для сделки",

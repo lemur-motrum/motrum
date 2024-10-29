@@ -248,6 +248,7 @@ window.addEventListener("DOMContentLoaded", () => {
           plusButton.disabled = false;
           cartButton.disabled = false;
         }
+        saveProductInCart();
       });
 
       plusButton.onclick = () => {
@@ -269,6 +270,7 @@ window.addEventListener("DOMContentLoaded", () => {
           plusButton.disabled = false;
           minusButton.disabled = false;
         }
+        saveProductInCart();
       };
       minusButton.onclick = () => {
         if (productMultiplicity) {
@@ -287,9 +289,10 @@ window.addEventListener("DOMContentLoaded", () => {
           minusButton.disabled = false;
           plusButton.disabled = false;
         }
+        saveProductInCart();
       };
 
-      cartButton.onclick = () => {
+      function saveProductInCart() {
         if (!getCookie("cart")) {
           fetch("/api/v1/cart/add-cart/", {
             method: "GET",
@@ -364,6 +367,11 @@ window.addEventListener("DOMContentLoaded", () => {
             )
             .catch((error) => console.error(error));
         }
+      }
+
+      cartButton.onclick = () => {
+        saveProductInCart();
+        cartButton.style.zIndex = "-2";
       };
     }
   }

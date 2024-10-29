@@ -1897,5 +1897,88 @@ a {
         }
       }
     }
+    .total_sum {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.125rem;
+      .total_sum_item {
+        display: flex;
+        align-items: flex-end;
+        width: 20.313rem;
+        justify-content: space-between;
+        font-weight: 300;
+        span {
+          &:nth-of-type(1) {
+            font-size: 1.125rem;
+          }
+          &:nth-of-type(2) {
+            span {
+              font-size: 1.5rem;
+            }
+            font-size: 1.5rem;
+          }
+        }
+        &.total_sum_all {
+          font-weight: bold;
+          font-size: 1.5rem;
+          span {
+            &:nth-of-type(1) {
+              font-size: 1.5rem;
+            }
+          }
+        }
+      }
+    }
+    .logout_container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.188rem;
+      .autification-form-cart {
+        display: flex;
+        gap: 1rem;
+        margin-right: 1rem;
+        label {
+          width: 13.938rem;
+          height: 3.563rem;
+          position: relative;
+          input {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border-radius: 2rem;
+            border: 0.094rem solid black;
+            padding: 1.125rem 1.938rem;
+            font-size: 1.125rem;
+            font-weight: 300;
+            font-family: "Nunito", sans-serif;
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+      }
+      .button_cart-wrapper {
+        width: 13.938rem;
+        height: 3.563rem;
+        button {
+          width: 100%;
+          height: 100%;
+          border-radius: 2rem;
+          border: none;
+          color: #fff;
+          background-color: #95bad4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.313rem;
+          text-transform: lowercase;
+          cursor: pointer;
+          transition: 0.6s;
+          &:hover {
+            background-color: #ff5b00;
+          }
+        }
+      }
+    }
   }
 }

@@ -4,7 +4,7 @@
         {% if status == "CANCELED" and bill_file %}bill_notpayment
         {% elif status == "COMPLETED" %}
          completed_order
-        {% endif %}
+        
         {% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
      specification-id="{{ specification_list.id }}"
      order-id="{{ id }}"
@@ -89,6 +89,7 @@
                                 {% endif %}
                         </div>
                 {% endif %}
+                
                 {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}<button class="add_payment_button">+</button>{% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">
@@ -103,13 +104,15 @@
                         <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>
                 {% elif status == "CANCELED" and bill_file  %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выставить новый счет </span>
+                {% elif status == "CANCELED" %}
+                        <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
                 {% elif bill_sum_paid and bill_sum_paid > 0 or status == "COMPLETED" %}
                 {% endif %}
         </div>
-        {% if bill_sum_paid %}
+        {% if bill_sum_paid > 0 %}
         {% elif status == "PROCESSING" and specification_list.tag_stop == false %}
                 <button class="uptate-specification-button">Актуализировать</button>
-        {% elif status == "CANCELED" and  bill_file  %}
+        {% elif status == "CANCELED"  %}
                 <button class="uptate-specification-button">Актуализировать</button>
         {% else %}
                 <button class="change-specification-button">Редактировать</button>

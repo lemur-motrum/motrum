@@ -24,22 +24,30 @@
                 </div>
             {% endif %}
             <br>
-            <div class="">Дата создания:{{ specification.date }}</div>
-            {% if specification.date_update %}<div class="">Последнее обновление:{{ order.date_update }}</div>{% endif %}
+            <div class="">Дата создания:{{ order.date_order }}</div>
+            {% if order.date_update %}<div class="">Последнее обновление:{{ order.date_update }}</div>{% endif %}
+            {% if order.date_completed %}<div class="">Дата завершения:{{ order.date_completed }}</div>{% endif %}
+            
+            
+            
             <div class="">
-                {% if bill_file == None %}
+                
+                {% if order.status  == "PROCESSING" %}
                     Спецификация действительна:
                     {% if specification.tag_stop %}
                         до {{ specification.date_stop }}
                     {% else %}
                         Недействительно
                     {% endif %}
-                {% else %}
-                    {% if bill_sum == 0 %}
+
+                {% elif order.status  == "PAYMENT" %}
+                    {% if order.bill_sum_paid == 0 %}
                         Счет действителен до {{ order.bill_date_stop }}
                     {% else %}
                     {% endif %}
                 {% endif %}
+
+
             </div>
             <br>
             <div class="">Клиент: {{ order.requisites.legal_entity }} счет: {{ order.account_requisites }}</div>

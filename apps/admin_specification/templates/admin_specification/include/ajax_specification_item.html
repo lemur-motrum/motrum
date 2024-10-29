@@ -108,6 +108,7 @@
                         <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
                 {% elif bill_sum_paid and bill_sum_paid > 0 or status == "COMPLETED" %}
                 {% endif %}
+                
         </div>
         {% if bill_sum_paid > 0 %}
         {% elif status == "PROCESSING" and specification_list.tag_stop == false %}

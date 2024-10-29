@@ -1104,6 +1104,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 Prefetch("specification__admin_creator"),
                 Prefetch("cart__productcart_set"),
                 Prefetch("cart__productcart_set__product"),
+                Prefetch("cart__cart_admin"),
+                
                 Prefetch("requisites__accountrequisites_set"),
             )
             .filter(q_object)

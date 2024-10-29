@@ -51,54 +51,56 @@ window.addEventListener("DOMContentLoaded", () => {
       products.push(product);
     });
 
-    saveWithoutSpecificationButton.onclick = () => {
-      const bitrixInput = cartWrapper.querySelector(".bitrix-input");
-      const motrumRequsits = cartWrapper
-        .querySelector("[name='mortum_req']")
-        .getAttribute("value");
-      const clientRequsits = document
-        .querySelector("[name='client-requisit']")
-        .getAttribute("value");
-      const commentAll = cartWrapper.querySelector(
-        'textarea[name="comment-input-name-all"]'
-      ).value;
-      const dateDeliveryAll = cartWrapper.querySelector(
-        'textarea[name="delivery-date-all-input-name-all"]'
-      ).value;
+    if (saveWithoutSpecificationButton) {
+      saveWithoutSpecificationButton.onclick = () => {
+        const bitrixInput = cartWrapper.querySelector(".bitrix-input");
+        const motrumRequsits = cartWrapper
+          .querySelector("[name='mortum_req']")
+          .getAttribute("value");
+        const clientRequsits = document
+          .querySelector("[name='client-requisit']")
+          .getAttribute("value");
+        const commentAll = cartWrapper.querySelector(
+          'textarea[name="comment-input-name-all"]'
+        ).value;
+        const dateDeliveryAll = cartWrapper.querySelector(
+          'textarea[name="delivery-date-all-input-name-all"]'
+        ).value;
 
-      saveWithoutSpecificationButton.disabled = true;
-      saveWithoutSpecificationButton.textContent = "";
-      saveWithoutSpecificationButton.innerHTML = `<div class="small_loader"></div>`;
-      const dataObj = {
-        id_bitrix: bitrixInput.value ? +bitrixInput.value : null,
-        admin_creator_id: adminCreatorId ? adminCreatorId : null,
-        products: products,
-        id_specification: specificationId ? specificationId : null,
-        id_cart: +getCookie("cart"),
-        comment: commentAll ? commentAll : null,
-        date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
-        motrum_requisites: motrumRequsits ? +motrumRequsits : null,
-        client_requisites: clientRequsits ? +clientRequsits : null,
+        saveWithoutSpecificationButton.disabled = true;
+        saveWithoutSpecificationButton.textContent = "";
+        saveWithoutSpecificationButton.innerHTML = `<div class="small_loader"></div>`;
+        const dataObj = {
+          id_bitrix: bitrixInput.value ? +bitrixInput.value : null,
+          admin_creator_id: adminCreatorId ? adminCreatorId : null,
+          products: products,
+          id_specification: specificationId ? specificationId : null,
+          id_cart: +getCookie("cart"),
+          comment: commentAll ? commentAll : null,
+          date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+          motrum_requisites: motrumRequsits ? +motrumRequsits : null,
+          client_requisites: clientRequsits ? +clientRequsits : null,
+        };
+        const data = JSON.stringify(dataObj);
+
+        fetch("/api/v1/order/add-order-no-spec-admin/", {
+          method: "POST",
+          body: data,
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json",
+          },
+        }).then((response) => {
+          if (response.status == 200) {
+            deleteCookie("key", "/", window.location.hostname);
+            deleteCookie("specificationId", "/", window.location.hostname);
+            deleteCookie("cart", "/", window.location.hostname);
+            window.location.href = "/admin_specification/all_specifications/";
+          } else {
+            throw new Error("Ошибка");
+          }
+        });
       };
-      const data = JSON.stringify(dataObj);
-
-      fetch("/api/v1/order/add-order-no-spec-admin/", {
-        method: "POST",
-        body: data,
-        headers: {
-          "X-CSRFToken": csrfToken,
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if (response.status == 200) {
-          deleteCookie("key", "/", window.location.hostname);
-          deleteCookie("specificationId", "/", window.location.hostname);
-          deleteCookie("cart", "/", window.location.hostname);
-          window.location.href = "/admin_specification/all_specifications/";
-        } else {
-          throw new Error("Ошибка");
-        }
-      });
-    };
+    }
   }
 });

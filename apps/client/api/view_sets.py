@@ -1082,9 +1082,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         user_admin = AdminUser.objects.get(user=request.user)
         user_admin_type = user_admin.admin_type
         if user_admin_type == "ALL":
-            pass
+            q_object &= Q(cart__cart_admin_id__isnull=False)
         elif user_admin_type == "BASE":
-            q_object &= Q(specification__admin_creator_id=request.user.id)
+            q_object &= Q(cart__cart_admin_id=request.user.id)
        
         
         

@@ -102,6 +102,9 @@
                         <button data-specication-id-to-bill="{{ specification }}"
                                 class="create-bill-button">Обновить счет</button>
                         <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>
+                {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
+
+                        <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>        
                 {% elif status == "CANCELED" and bill_file  %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выставить новый счет </span>
                 {% elif status == "CANCELED" %}
@@ -134,6 +137,11 @@
                 <a data-cart-id="{{ cart }}"
                    href=""></a>
                <p>Корзина № {{ id }} </p>
+               {% if superuser != false %}
+                        <br>
+                        <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
+                        <br>
+                {% endif %}
                <div class="">Товары:
                 {% for productcart in cart_list.productcart_set %}
                 

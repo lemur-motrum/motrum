@@ -675,9 +675,11 @@ def get_all_specifications(request):
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type
     if user_admin_type == "ALL":
-        pass
+        superuser = True
+      
     elif user_admin_type == "BASE":
         all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
+        superuser = False
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
@@ -692,7 +694,8 @@ def get_all_specifications(request):
         "title": title,
         "specifications": all_specifications,
         "media_root": media_root,
-        "sort_specif":sort_specif
+        "sort_specif":sort_specif,
+        "superuser":superuser,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)

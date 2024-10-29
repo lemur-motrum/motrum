@@ -15,7 +15,11 @@
                 <a data-cart-id="{{ specification_list.cart }}"
                    href="{{ specification_list.url }}">№ {{ specification_list.id }} просмотр</a>
                 <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
+                
+                {% if id_bitrix %}
                 <br>
+                <span class="table_item_value_span">Номер bitrix: {{id_bitrix}}</span><br>
+                {% endif %}
                 <span class="table_item_value_span">Дата создания: {{ specification_list.date }}</span>
 
                 {% if specification_list.date_update and specification_list.date != specification_list.date_update %}

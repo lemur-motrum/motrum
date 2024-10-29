@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
     <div class="cart_container">
         <input class="personal_discount"
@@ -12,55 +13,64 @@
         </div>
         <div class="cart_elems_container">
             {% if product %}
-                <div class="titles">
-                    <div class="small_title">товар</div>
-                    <div class="small_title">артикул</div>
-                    <div class="small_title">характеристики</div>
-                    <div class="small_title">упак.</div>
-                    <div class="small_title">цена</div>
-                </div>
                 <div class="products">
                     {% for product_item in product %}
                         <div class="product_item"
                              product-id="{{ product_item.id_product_cart }}"
                              order-multiplicity="{{ product_item.stock.order_multiplicity }}">
-                            <div class="name">{{ product_item.name }}</div>
-                            <div class="article">{{ product_item.article }}</div>
-                            <div class="chars">
-                                {{ products.productproperty_set }}
-                                {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
-                                    {{ product_item.productproperty_set }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </div>
-                            <div class="lot">{{ product_item.stock.lot_complect }} {{ product_item.stock.lot.name_shorts }}</div>
-                            <div class="price">
-                                {% if product_item.price.rub_price_supplier == 0 %}
-                                    <span>по запросу</span>
-                                {% else %}
-                                    <span class="all_cart_price">0</span> ₽
-                                    {% if discount_client %}
-                                        <span class="all_cart_no_sale_price">{{ product_item.price.rub_price_supplier }}</span> ₽ розничная цена
+                            <div class="img-contaner"></div>
+                            <div class="product_item-description">
+                                <div class="name">{{ product_item.name }}</div>
+                                <div class="article">Артикул: {{ product_item.article }}</div>
+                                <div class="chars">
+                                    {{ products.productproperty_set }}
+                                    {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
+                                        {% for productproperty in product_item.productproperty_set.all %}
+                                            <div class="char">
+                                                <span>{{ productproperty.name }}:</span>
+                                                <span>{{ productproperty.value }}</span>
+                                            </div>
+                                        {% endfor %}
                                     {% else %}
+                                        -
                                     {% endif %}
-                                {% endif %}
+                                </div>
                             </div>
-                            <div class="price_once">
-                                {% if product_item.price.rub_price_supplier %}
-                                    <span> <span class="cart_price">{{ product_item.sale_price }}</span> ₽/ {{ product_item.stock.lot.name_shorts }}</span>
-                                {% else %}
-                                    <span>по запросу</span>
-                                {% endif %}
-                                <input class="cart_price_one_no_sale"
-                                       type="hidden"
-                                       data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
+                            <div class="one-prce-container">
+                                <div class="lot">{{ product_item.stock.lot_complect }} {{ product_item.stock.lot.name_shorts }}</div>
+                                <div class="price_once">
+                                    {% if product_item.price.rub_price_supplier %}
+                                        <span> <span class="cart_price">{{ product_item.sale_price }}</span> ₽</span>
+                                    {% else %}
+                                        <span>по запросу</span>
+                                    {% endif %}
+                                    <input class="cart_price_one_no_sale"
+                                           type="hidden"
+                                           data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
+                                </div>
                             </div>
                             <div class="item-buttons_container">
-                                <div class="quantity-buttons">
-                                    <button class="minus-button">-</button>
-                                    <input class="quantity" type="number" value={{ product_item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                                <div class="cart_buttons_container">
+                                    <div class="quantity-buttons">
+                                        <button class="minus-button">
+                                            <img src={% static "core/images/minus.png" %} alt="icon" />
+                                        </button>
+                                        <input class="quantity" type="number" value={{ product_item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src={% static "core/images/plus.png" %} alt="icon" />
+                                        </button>
+                                    </div>
+                                    <div class="price">
+                                        {% if product_item.price.rub_price_supplier == 0 %}
+                                            <span>по запросу</span>
+                                        {% else %}
+                                            <span class="all_cart_price">0</span> ₽
+                                            {% if discount_client %}
+                                                <span class="all_cart_no_sale_price">{{ product_item.price.rub_price_supplier }}</span> ₽ розничная цена
+                                            {% else %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <button class="delete_cart_button">удалить</button>
                             </div>

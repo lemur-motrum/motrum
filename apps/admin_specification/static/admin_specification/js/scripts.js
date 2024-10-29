@@ -700,9 +700,14 @@ window.addEventListener("DOMContentLoaded", () => {
             plusButton.disabled = false;
           }
           if (itemPriceOnce) {
-            const currentPrice =
-              +getCurrentPrice(item.getAttribute("data-price")) *
-              +quantity.value;
+            const currentPrice = !discountInput.value
+              ? +getCurrentPrice(item.getAttribute("data-price")) *
+                +quantity.value
+              : (+getCurrentPrice(item.getAttribute("data-price")) *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
+
             getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
           }
@@ -715,8 +720,13 @@ window.addEventListener("DOMContentLoaded", () => {
             countQuantity++;
           }
           quantity.value = countQuantity;
-          const currentPrice =
-            +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
+          const currentPrice = !discountInput.value
+            ? +getCurrentPrice(item.getAttribute("data-price")) *
+              +quantity.value
+            : (+getCurrentPrice(item.getAttribute("data-price")) *
+                +quantity.value *
+                (100 - +discountInput.value)) /
+              100;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
           if (countQuantity >= 99999) {
@@ -741,8 +751,13 @@ window.addEventListener("DOMContentLoaded", () => {
           if (quantity.value <= 1) {
             quantity.value = 1;
           }
-          const currentPrice =
-            +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value;
+          const currentPrice = !discountInput.value
+            ? +getCurrentPrice(item.getAttribute("data-price")) *
+              +quantity.value
+            : (+getCurrentPrice(item.getAttribute("data-price")) *
+                +quantity.value *
+                (100 - +discountInput.value)) /
+              100;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
           if (countQuantity >= 99999) {
@@ -766,8 +781,12 @@ window.addEventListener("DOMContentLoaded", () => {
           quantity.onkeyup = () => {
             console.log("da");
             countQuantity = quantity.value;
-            const currentPrice =
-              new NumberParser("ru").parse(inputPrice.value) * +quantity.value;
+            const currentPrice = !discountInput.value
+              ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
+              : (new NumberParser("ru").parse(inputPrice.value) *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -775,8 +794,12 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           plusButton.onclick = () => {
-            const currentPrice =
-              +item.getAttribute("data-price") * +quantity.value;
+            const currentPrice = !discountInput.value
+              ? +item.getAttribute("data-price") * +quantity.value
+              : (+item.getAttribute("data-price") *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
             if (multiplicity) {
               countQuantity += +multiplicity;
@@ -802,8 +825,12 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           minusButton.onclick = () => {
-            const currentPrice =
-              +item.getAttribute("data-price") * +quantity.value;
+            const currentPrice = !discountInput.value
+              ? +item.getAttribute("data-price") * +quantity.value
+              : (+item.getAttribute("data-price") *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
 
             if (multiplicity) {
@@ -842,7 +869,12 @@ window.addEventListener("DOMContentLoaded", () => {
             if (inputPrice.value == "0") {
               e.target.value = "";
             }
-            let price = +inputPrice.value * quantity.value;
+            let price = !discountInput.value
+              ? +inputPrice.value * quantity.value
+              : (+inputPrice.value *
+                  quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(totalPrice, price);
             item.setAttribute("data-price", inputPrice.value);
             if (!inputPrice.value) {

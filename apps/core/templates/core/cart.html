@@ -81,20 +81,20 @@
                 </div>
                 {% if discount_client %}
                     <div class="total_sum">
-                        <div>
-                            розничная цена: <span> <span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
+                        <div class="total_sum_item">
+                            <span>розничная цена:</span><span><span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
-                        <div>
-                            персональная скидка: <span> <span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
+                        <div class="total_sum_item">
+                            <span>персональная скидка:</span><span><span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
-                        <div class="total_sum_all">
-                            стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        <div class="total_sum_item total_sum_all">
+                            <span>Итого:</span><span><span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
                     </div>
                 {% else %}
                     <div class="total_sum">
-                        <div class="total_sum_all">
-                            стоимость заказа: <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        <div class="total_sum_item total_sum_all">
+                            <span>Итого:</span> <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
                     </div>
                 {% endif %}
@@ -117,26 +117,20 @@
                         {% endif %}
                     </div>
                 {% else %}
-                    <form class="autification-form-cart">
-                        <label class="name-label">
-                            <span>Ваше имя</span>
-                            <input class="name-input" type="text">
-                            <div class="error-maessage name-error"></div>
-                        </label>
-                        <label class="phone-label">
-                            <span>Телефон</span>
-                            <input class="phone-input" type="text">
-                            <div class="error-maessage phone-error"></div>
-                        </label>
-                        <label class="password-label">
-                            <span>Введите пароль из SMS</span>
-                            <input class="password-input" type="text">
-                            <div class="error-maessage pin-error"></div>
-                        </label>
-                        <button class="autification-button">подтвердить</button>
-                    </form>
-                    <div class="button_cart-wrapper">
-                        <button class="save_cart_button">оформить заказ</button>
+                    <div class="logout_container">
+                        <form class="autification-form-cart">
+                            <label class="name-label">
+                                <input class="name-input" placeholder="Ваше имя" type="text">
+                                <div class="error-maessage name-error"></div>
+                            </label>
+                            <label class="phone-label">
+                                <input class="phone-input" placeholder="Ваш телефон" type="text">
+                                <div class="error-maessage phone-error"></div>
+                            </label>
+                        </form>
+                        <div class="button_cart-wrapper">
+                            <button class="save_cart_button">оформить заказ</button>
+                        </div>
                     </div>
                 {% endif %}
                 {% comment %} <div class="button_cart-wrapper">

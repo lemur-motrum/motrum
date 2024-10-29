@@ -525,7 +525,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             print(data_order)
 
             try:
-                order = Order.objects.get(specification=specification)
+                order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
@@ -539,6 +539,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     )
 
             except Order.DoesNotExist:
+                
                 print(98989898)
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():

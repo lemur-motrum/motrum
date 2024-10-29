@@ -118,7 +118,7 @@ def add_delta_product():
                     error = "file_error"
                     location = "Загрузка фаилов Delta"
 
-                    info = f"ошибка при чтении фаила{file_name}"
+                    info = f"ошибка при чтении фаила{file_name}{e}"
                     e = error_alert(error, location, info)
                 finally:
                     continue
@@ -416,6 +416,8 @@ def save_delta_props(row2, article):
                     name_props = name_props.replace("<br>", " ,")
 
                 if value_props != "" or value_props !=  " "  and value_props != "-":
+                        if "<br>" in value_props:
+                            value_props = name_props.replace("<br>", " ,")
                         props_product = ProductProperty(product=article)
                         props_product.name = name_props
 

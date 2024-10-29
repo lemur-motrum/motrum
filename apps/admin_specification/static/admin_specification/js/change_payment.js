@@ -28,6 +28,7 @@ export function changePayment(container, errorFn) {
             );
           }
           const paymentBtn = specification.querySelector(".add_payment_button");
+          
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {
@@ -118,6 +119,10 @@ export function changePayment(container, errorFn) {
                             +paymentLink.getAttribute("bill-sum-paid")
                           );
                         }
+                        const addBillBtn = specification.querySelector(
+                          ".create-bill-button"
+                        );
+                        addBillBtn.style.display = "none"
                         overlay.classList.remove("visible");
                         if (overlay.classList.contains("show")) {
                           document.body.style.overflowY = "scroll";

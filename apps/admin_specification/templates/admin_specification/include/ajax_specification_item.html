@@ -90,7 +90,11 @@
                         </div>
                 {% endif %}
 
-                {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}<button class="add_payment_button">+</button>{% endif %}
+                {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}
+                <button class="add_payment_button">Внести cумму</button>
+                {% else %}
+                <button style="display: none;" class="add_payment_button">Внести cумму</button>
+                {% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">
                 {% if status == "PROCESSING" and specification_list.tag_stop == true %}
@@ -139,7 +143,7 @@
                <p>Корзина № {{ id }} </p>
                {% if superuser != false %}
                         <br>
-                        <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
+                        <span class="table_item_value_span">Создал:{{cart_list.admin_creator_name}} </span>
                         <br>
                 {% endif %}
                <div class="">Товары:

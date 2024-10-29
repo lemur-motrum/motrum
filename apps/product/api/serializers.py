@@ -128,6 +128,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 class ProductCartSerializer(serializers.ModelSerializer):
     product_id_name = serializers.SerializerMethodField()
+    
     class Meta:
         model = ProductCart
         fields = "__all__"
@@ -141,10 +142,13 @@ class ProductCartSerializer(serializers.ModelSerializer):
 
 class CartOktAllSerializer(serializers.ModelSerializer):
     productcart_set = ProductCartSerializer(read_only=True, many=True)
+    admin_creator_name = serializers.CharField(source="cart_admin")
     class Meta:
         model = Cart
         fields = ( 
             "id",
+            "cart_admin",
+            "admin_creator_name",
             "productcart_set",
             )
         

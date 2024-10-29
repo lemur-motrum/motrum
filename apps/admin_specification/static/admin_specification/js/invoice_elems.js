@@ -176,6 +176,10 @@ export function invoiceItem(container) {
                             createInvoiceBtn.disabled = false;
                             createInvoiceBtn.innerHTML = "";
                             createInvoiceBtn.textContent = "Создать счет";
+                            const addPayBtn = specificationItem.querySelector(
+                              ".add_payment_button"
+                            );
+                            addPayBtn.style.display ="block"
                           });
                       }
                     };

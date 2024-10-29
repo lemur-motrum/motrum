@@ -4,7 +4,7 @@
         {% if status == "CANCELED" and bill_file %}bill_notpayment
         {% elif status == "COMPLETED" %}
          completed_order
-        
+        {% endif %}
         {% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
      specification-id="{{ specification_list.id }}"
      order-id="{{ id }}"
@@ -89,7 +89,7 @@
                                 {% endif %}
                         </div>
                 {% endif %}
-                
+
                 {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}<button class="add_payment_button">+</button>{% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">

@@ -442,7 +442,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение спецификации дмин специф
-
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
@@ -450,6 +449,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
+        type_delivery = data["type_delivery"]
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -462,11 +462,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             pre_sale = False
 
+        
         if requisites.client:
             client = requisites.client
-
         else:
             client = None
+        
         try:
             with transaction.atomic():
                 specification = save_specification(
@@ -477,9 +478,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                     account_requisites,
                     requisites,
                     id_bitrix,
+                    type_delivery,
                 )
+                
         except Exception as e:
-            #   добавление в козину удаленного товара при сохранении спецификации из апдейта 
+            #   добавление в козину удаленного товара при сохранении спецификации из апдейта
             product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
                 "product__id"
             )
@@ -516,11 +519,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bill_date_start": None,
                 "bill_date_stop": None,
                 "bill_sum": None,
-                "comment":data["comment"],
+                "comment": data["comment"],
                 "prepay_persent": requisites.prepay_persent,
                 "postpay_persent": requisites.postpay_persent,
                 "motrum_requisites": motrum_requisites.id,
                 "id_bitrix": id_bitrix,
+                "type_delivery": type_delivery,
             }
             print(data_order)
 
@@ -539,7 +543,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     )
 
             except Order.DoesNotExist:
-                
+
                 print(98989898)
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
@@ -557,102 +561,104 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
+    # сохранение заказа в корзины без документов для дальнейшего использования
     @action(detail=False, methods=["post"], url_path=r"add-order-no-spec-admin")
     def add_order_no_spec_admin(self, request, *args, **kwargs):
         data = request.data
         cart = Cart.objects.get(id=data["id_cart"])
-        
-        
-        
+
         if data["id_bitrix"] != None:
             id_bitrix = int(data["id_bitrix"])
         else:
             id_bitrix = None
-        
+
         if data["client_requisites"] != None:
             account_requisites_data = int(data["client_requisites"])
-            account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
+            account_requisites = AccountRequisites.objects.get(
+                id=account_requisites_data
+            )
             requisites = account_requisites.requisites
             requisites_id = requisites.id
-            account_requisites_id = account_requisites.id                
+            account_requisites_id = account_requisites.id
             prepay_persent = requisites.prepay_persent
-            postpay_persent = requisites.postpay_persent  
+            postpay_persent = requisites.postpay_persent
 
             print(prepay_persent)
             print(postpay_persent)
-            
+
             if requisites.client:
                 client = requisites.client
             else:
-                client = None  
-        else:  
-            account_requisites_id = None  
+                client = None
+        else:
+            account_requisites_id = None
             requisites_id = None
             client = None
             prepay_persent = None
-            postpay_persent = None   
-                  
+            postpay_persent = None
+
         if data["motrum_requisites"] != None:
             motrum_requisites_id = int(data["motrum_requisites"])
         else:
             motrum_requisites_id = None
-
+        
+        if data["type_delivery"] != None:
+            type_delivery = data["type_delivery"]
+        else:
+            type_delivery = None
+            
         data_order = {
-                "client": client,
-                "name": 123131,
-                "specification": None,
-                "requisites": requisites_id,
-                "account_requisites": account_requisites_id,
-                "status": "",
-                "cart": cart.id,
-                "bill_name": None,
-                "bill_file": None,
-                "bill_date_start": None,
-                "bill_date_stop": None,
-                "bill_sum": None,
-                "comment":data["comment"],
-                "prepay_persent": prepay_persent,
-                "postpay_persent": postpay_persent,
-                "motrum_requisites": motrum_requisites_id,
-                "id_bitrix": id_bitrix,
-            }
+            "client": client,
+            "name": 123131,
+            "specification": None,
+            "requisites": requisites_id,
+            "account_requisites": account_requisites_id,
+            "status": "",
+            "cart": cart.id,
+            "bill_name": None,
+            "bill_file": None,
+            "bill_date_start": None,
+            "bill_date_stop": None,
+            "bill_sum": None,
+            "comment": data["comment"],
+            "prepay_persent": prepay_persent,
+            "postpay_persent": postpay_persent,
+            "motrum_requisites": motrum_requisites_id,
+            "id_bitrix": id_bitrix,
+            "type_delivery":type_delivery,
+        }
         print(data_order)
         try:
-                print(0000000)
-                order = Order.objects.get(cart=cart)
-                print(order)
-                serializer = self.serializer_class(order, data=data_order, many=False)
-                print("]]]]]]]")
-                if serializer.is_valid():
-                    serializer._change_reason = "Ручное"
-                    order = serializer.save()
-                    cart.is_active = True
-                    cart.save()
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    print(serializer.errors)
-                    return Response(
-                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                    )
+            print(0000000)
+            order = Order.objects.get(cart=cart)
+            print(order)
+            serializer = self.serializer_class(order, data=data_order, many=False)
+            print("]]]]]]]")
+            if serializer.is_valid():
+                serializer._change_reason = "Ручное"
+                order = serializer.save()
+                cart.is_active = True
+                cart.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Order.DoesNotExist:
-                print("hsdhfsjdfjh")
-                serializer = self.serializer_class(data=data_order, many=False)
-                if serializer.is_valid():
-                    cart.is_active = True
-                    cart.save()
-                    order = serializer.save()
+            print("hsdhfsjdfjh")
+            serializer = self.serializer_class(data=data_order, many=False)
+            if serializer.is_valid():
+                cart.is_active = True
+                cart.save()
+                order = serializer.save()
 
-                    print(serializer.data)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    print(serializer.errors)
-                    return Response(
-                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                    )
+                print(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # создание счета к заказу
-
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
@@ -674,8 +680,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
-                data = {"pdf": pdf,
-                        "name_bill":order.bill_name}
+                data = {"pdf": pdf, "name_bill": order.bill_name}
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
@@ -1079,23 +1084,21 @@ class OrderViewSet(viewsets.ModelViewSet):
             superadmin = True
         else:
             superadmin = False
-            
+
         user_admin = AdminUser.objects.get(user=request.user)
         user_admin_type = user_admin.admin_type
         if user_admin_type == "ALL":
             q_object &= Q(cart__cart_admin_id__isnull=False)
         elif user_admin_type == "BASE":
             q_object &= Q(cart__cart_admin_id=request.user.id)
-       
-        
-        
+
         sort_specif = request.query_params.get("specification")
-        
+
         if sort_specif == "+":
             q_object &= Q(specification__isnull=True)
         else:
             q_object &= Q(specification__isnull=False)
-        
+
         now_date = datetime.datetime.now()
         queryset = (
             Order.objects.select_related(
@@ -1106,7 +1109,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 Prefetch("cart__productcart_set"),
                 Prefetch("cart__productcart_set__product"),
                 Prefetch("cart__cart_admin"),
-                
                 Prefetch("requisites__accountrequisites_set"),
             )
             .filter(q_object)
@@ -1139,8 +1141,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    # сохранение суммы оплаты счета
-
     # добавление оплаты открыть получить отстаок суммы
     @action(detail=True, methods=["get"], url_path=r"get-payment")
     def get_payment(self, request, pk=None, *args, **kwargs):
@@ -1169,16 +1169,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         if order.bill_sum_paid == order.bill_sum:
             is_all_sum = True
         else:
-            is_all_sum = False   
-        data = {
-            "all_bill_sum_paid": new_sum,
-            "is_all_sum":is_all_sum
-        }
+            is_all_sum = False
+        data = {"all_bill_sum_paid": new_sum, "is_all_sum": is_all_sum}
         if new_sum:
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
+    # получение суммы уже оплаченной при открытии модалки внесения оплаты
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
@@ -1207,21 +1205,23 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    # добавить дату завершения
     @action(detail=True, methods=["post"], url_path=r"add-date-completed")
     def date_completed(self, request, pk=None, *args, **kwargs):
         data = request.data
         date_completed_data = data["date_completed"]
         print(date_completed_data)
-        date_completed = datetime.datetime.strptime(date_completed_data, '%Y-%m-%d').date()
+        date_completed = datetime.datetime.strptime(
+            date_completed_data, "%Y-%m-%d"
+        ).date()
         order = Order.objects.get(pk=pk)
         order.date_completed = date_completed
         order.status = "COMPLETED"
         order._change_reason = "Ручное"
         order.save()
-        data = {
-            
-        }
+        data = {}
         return Response(data, status=status.HTTP_200_OK)
+
 
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()

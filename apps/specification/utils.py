@@ -59,7 +59,7 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all):
+def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -308,19 +308,21 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 ) 
             i_dop_info += 1  
         
-        if requisites.type_delivery:
-            if requisites.type_delivery == "Самовывоз" or requisites.type_delivery == "cамовывоз":
+        if type_delivery:
+            if type_delivery == "pickup":
                 story.append(
                         Paragraph(
                             f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
                         )
                     )
-            else:
+            elif  type_delivery == "paid_delivery":
                 story.append(
                         Paragraph(
-                            f"<br></br>{i_dop_info}. {requisites.type_delivery}", normal_style
+                            f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.", normal_style
                         )
                     )
+            else:
+                pass
                     
                 
 

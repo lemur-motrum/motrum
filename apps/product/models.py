@@ -813,6 +813,13 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    comment = models.CharField(
+        "Комментарий",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Корзина продукт"

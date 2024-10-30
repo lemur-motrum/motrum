@@ -35,7 +35,7 @@ from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 from django.db.models import Prefetch, OuterRef
 
 
-def crete_pdf_bill(specification,request,is_contract,order,bill_name):
+def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delivery):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -640,27 +640,31 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name):
                     normal_style,
                 )
             )  
-            type_delivery_client = str(client_info.type_delivery).lower()
+            # type_delivery_client = str(client_info.type_delivery).lower()
            
-            type_delivery_client_index = type_delivery_client.find("самовывоз")
+            # type_delivery_client_index = type_delivery_client.find("самовывоз")
             
             # 6
            
-            if type_delivery_client_index >= 0:
+            # if type_delivery_client_index >= 0:
+            if type_delivery == "pickup":
                 story.append(
                 Paragraph(
                     f"7. Доставка товара осуществляется самовывозом со склада Поставщика",
                     normal_style,
                 )
-            )  
-            else:
-
+            )
+            elif  type_delivery == "paid_delivery": 
                 story.append(
                     Paragraph(
                         f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
                         normal_style,
                     )
                 )  
+            else:
+                pass
+                
+                
             story.append(
                 Paragraph(
                     f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",

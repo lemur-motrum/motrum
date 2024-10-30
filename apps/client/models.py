@@ -341,6 +341,12 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    type_delivery = models.CharField(
+        "Тип доставки",
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,
         verbose_name="Реквизиты мотрум для сделки",
@@ -414,7 +420,8 @@ class Order(models.Model):
             request,
             is_contract,
             order,
-            bill_name
+            bill_name,
+            self.type_delivery,
         )
         if pdf[0]:
             self.bill_file = pdf[0]

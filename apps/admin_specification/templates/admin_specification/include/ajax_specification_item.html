@@ -62,7 +62,12 @@
                 {% elif status == "COMPLETED" %}   
                         {{date_completed}}   
                 {% elif status == "PAYMENT" %}
+                {% if bill_sum_paid %}
+                        от {{ bill_date_start }}
+                {% else %}
                         до {{ bill_date_stop }}
+                {% endif %}
+                        
                 {% elif status == "PROCESSING" %}        
                         до {{ specification_list.date_stop }}
                 {% endif %}

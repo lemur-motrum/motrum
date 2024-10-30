@@ -189,6 +189,8 @@ class OrderOktSerializer(serializers.ModelSerializer):
         ).to_representation(instance)
         if instance.bill_date_stop:
             representation["bill_date_stop"] = instance.bill_date_stop.strftime("%d.%m.%Y")
+        if instance.bill_date_start:
+            representation["bill_date_start"] = instance.bill_date_start.strftime("%d.%m.%Y")
         if instance.date_completed:
             representation["date_completed"] = instance.date_completed.strftime("%d.%m.%Y")
         if instance.requisites:

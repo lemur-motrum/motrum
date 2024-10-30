@@ -770,7 +770,7 @@ def crete_pdf_bill(specification,request,is_contract,order):
         )
         print(file_path)
 
-        return file_path
+        return (file_path,bill_name)
     except Exception as e:
           
             error = "error"

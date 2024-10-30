@@ -674,7 +674,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
-                data = {"pdf": pdf}
+                data = {"pdf": pdf,
+                        "name_bill":order.bill_name}
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
@@ -1165,8 +1166,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.bill_sum_paid = new_sum
         order._change_reason = "Ручное"
         order.save()
+        if order.bill_sum_paid == order.bill_sum:
+            is_all_sum = True
+        else:
+            is_all_sum = False   
         data = {
             "all_bill_sum_paid": new_sum,
+            "is_all_sum":is_all_sum
         }
         if new_sum:
             return Response(data, status=status.HTTP_200_OK)

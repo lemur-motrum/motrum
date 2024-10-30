@@ -122,7 +122,10 @@ export function changePayment(container, errorFn) {
                         const addBillBtn = specification.querySelector(
                           ".create-bill-button"
                         );
-                        addBillBtn.style.display = "none"
+                        if(addBillBtn){
+                          addBillBtn.style.display = "none"
+                        }
+                        
                         overlay.classList.remove("visible");
                         if (overlay.classList.contains("show")) {
                           document.body.style.overflowY = "scroll";
@@ -134,7 +137,7 @@ export function changePayment(container, errorFn) {
                         }, 600);
                         paymentChangeButton.disabled = false;
                         paymentChangeButton.innerHTML = "";
-                        paymentChangeButton.textContent = "Изменить";
+                        paymentChangeButton.textContent = "Внести";
 
                         const intevalChangeBtn = setInterval(() => {
                           const changedBtn =
@@ -146,7 +149,9 @@ export function changePayment(container, errorFn) {
                         });
                         paymentBtn.disabled = false;
                         paymentBtn.innerHTML = "";
-                        paymentBtn.textContent = "Внести cумму";
+                        paymentBtn.textContent = "Внести cумму оплаты";
+                        console.log(response.is_all_sum)
+                        
                       } else {
                         throw new Error("Ошибка");
                       }

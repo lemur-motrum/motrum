@@ -83,7 +83,12 @@
                                 <div class="article-motrum">{{ product.article_supplier }}</div>
                                 <div class="charactiristics">
                                     {% for char in product.productproperty_set.all %}
-                                        {{ char.value }}
+                                   
+                                        {% if forloop.counter < 4 %}
+                                        {{ char.name }}   {{ char.value }}
+                                        <br>
+                                        {% endif %}
+                                        {% comment %} {{ char.value }} {% endcomment %}
                                     {% empty %}
                                         -
                                     {% endfor %}

@@ -410,10 +410,10 @@ class Order(models.Model):
             is_contract,
             order,
         )
-        if pdf:
-            self.bill_file = pdf
+        if pdf[0]:
+            self.bill_file = pdf[0]
             self.bill_sum = self.specification.total_amount
-            self.bill_name = self.specification.id
+            self.bill_name = pdf[1]
             self.status = "PAYMENT"
             if self.client:
                 Notification.add_notification(self.id, "DOCUMENT_BILL")

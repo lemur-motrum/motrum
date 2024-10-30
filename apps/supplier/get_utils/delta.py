@@ -417,7 +417,7 @@ def save_delta_props(row2, article):
 
                 if value_props != "" or value_props !=  " "  and value_props != "-":
                         if "<br>" in value_props:
-                            value_props = name_props.replace("<br>", " ,")
+                            value_props = value_props.replace("<br>", " ,")
                         props_product = ProductProperty(product=article)
                         props_product.name = name_props
 

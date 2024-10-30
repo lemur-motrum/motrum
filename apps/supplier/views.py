@@ -13,6 +13,7 @@ from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
+from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.one_c import one_c_price
 from apps.supplier.get_utils.veda import veda_api
@@ -33,21 +34,7 @@ from simple_history.utils import update_change_reason
 def add_iek(request):
 
     title = "Услуги"
-    
-    bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0)
-
-    for bill_item in bill:
-       
-        bill_item.tag_stop = False
-        bill_item._change_reason = "Автоматическое"
-        bill_item.status = "CANCELED"
-        bill_item._change_reason = "Автоматическое"
-        bill_item.save()
-
-    
-    
-    
-    
+    get_motrum_storage()
     
     responsets = ["233", "2131"]
     # responsets = 0

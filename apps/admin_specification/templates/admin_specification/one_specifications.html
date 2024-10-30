@@ -61,17 +61,17 @@
             <br>
             <div class="">
                 Документ спецификации:
-                <a href="{{ specification.file.url }}">скачать</a>
+                <a target="_blank" href="{{ specification.file.url }}">скачать</a>
             </div>
             {% if admin_king %}
                 <span class="table_item_value_span">
-                    <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
+                    <a  href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
                 </span>
             {% endif %}
             {% if order.bill_file %}
                 <div class="">
                     Документ счета:
-                    <a href="{{ order.bill_file.url }}">скачать</a>
+                    <a target="_blank" href="{{ order.bill_file.url }}">скачать</a>
                 </div>
                 {% if admin_king %}
                     <span class="table_item_value_span">
@@ -115,7 +115,7 @@
                         <div class="item_container">
                             <div class="item_value">
                                 {% if specif_prod.product %}
-                                    <a href="{{ specif_prod.product.get_absolute_url }}">{{ specif_prod.product.name }}</a>
+                                    <a target="_blank" href="{{ specif_prod.product.get_absolute_url }}">{{ specif_prod.product.name }}</a>
                                 {% else %}
                                     {{ specif_prod.product_new }}
                                 {% endif %}

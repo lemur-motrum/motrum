@@ -15,7 +15,8 @@
                 <a data-cart-id="{{ specification_list.cart }}"
                    href="{{ specification_list.url }}">№ {{ specification_list.id }} просмотр</a>
                 <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
-                
+                <br>
+                <a target="_blank"  href="{{ specification_list.file}}">Скачать спецификацию  {{ specification_list.pdf.url }}</a>
                 {% if id_bitrix %}
                 <br>
                 <span class="table_item_value_span">Номер bitrix: {{id_bitrix}}</span><br>
@@ -95,9 +96,9 @@
                 {% endif %}
 
                 {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}
-                <button class="add_payment_button">Внести cумму</button>
+                <button class="add_payment_button">Внести cумму оплаты</button>
                 {% else %}
-                <button style="display: none;" class="add_payment_button">Внести cумму</button>
+                <button style="display: none;" class="add_payment_button">Внести cумму оплаты</button>
                 {% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">
@@ -109,15 +110,20 @@
                 {% elif status == "PAYMENT" and bill_sum_paid == 0 %}
                         <button data-specication-id-to-bill="{{ specification }}"
                                 class="create-bill-button">Обновить счет</button>
-                        <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>
+                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{bill_name}}</a>
                 {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
 
-                        <a class="invoice-link" href="{{ bill_file }}">Счет ссылка</a>        
+                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{bill_name}}</a>        
                 {% elif status == "CANCELED" and bill_file  %}
                         <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выставить новый счет </span>
                 {% elif status == "CANCELED" %}
                         <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
-                {% elif bill_sum_paid and bill_sum_paid > 0 or status == "COMPLETED" %}
+                {% elif status == "COMPLETED" %}
+                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{bill_name}}</a>
+                
+                        {% elif bill_sum_paid and bill_sum_paid > 0   %}
+
+               
                 {% endif %}
                 
         </div>
@@ -130,7 +136,7 @@
                 <button class="change-specification-button">Редактировать</button>
                 <br>
                 {% if bill_sum %}
-                        <span class="table_item_value_span description">при редактировании будет необходимо создать счет заново</span>
+                        <span class="table_item_value_span description">при редактировании заказа текущие документы становяться не действительны</span>
                 {% endif %}
         {% endif %}
 </div>

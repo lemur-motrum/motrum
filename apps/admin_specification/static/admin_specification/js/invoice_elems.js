@@ -133,6 +133,7 @@ export function invoiceItem(container) {
                             }
                           })
                           .then((response) => {
+                            console.log(response)
                             invoiceBtn.disabled = false;
                             invoiceBtn.innerHTML = "";
                             invoiceBtn.textContent = "Обновите счет";
@@ -158,7 +159,7 @@ export function invoiceItem(container) {
                               if (link) {
                                 link.remove();
                               }
-                              createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                              createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Скачать счет №${response.name_bill}</a>`;
 
                               const btn =
                                 specificationItem.querySelector(".changed");
@@ -171,7 +172,7 @@ export function invoiceItem(container) {
                                   ".invoice-link"
                                 );
                               link.remove();
-                              createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Счет ссылка</a>`;
+                              createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Скачать счет №${response.name_bill}</a>`;
                               const btn =
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();

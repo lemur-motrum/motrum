@@ -1,6 +1,5 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-    11111
     <div class="logout_btn">
         {% if request.user.is_superuser == True %}
             <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>

@@ -1,6 +1,7 @@
 import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
 import { invoiceItem } from "../js/invoice_elems.js";
 import { changePayment } from "../js/change_payment.js";
+import { completeOrder } from "../js/complete_order.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const specificationWrapper = document.querySelector(
@@ -179,6 +180,7 @@ window.addEventListener("DOMContentLoaded", () => {
           getActivePaginationElem();
           invoiceItem(specificationContainer);
           changePayment(specificationContainer, showErrorValidation);
+          completeOrder(specificationContainer);
         });
     }
 

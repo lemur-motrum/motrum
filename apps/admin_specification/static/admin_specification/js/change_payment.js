@@ -170,7 +170,6 @@ export function changePayment(container, errorFn) {
           if (paymentBtn) {
             paymentBtn.onclick = () => changePayment();
           }
-
           overlay.onclick = () => {
             document.querySelectorAll(".add_payment_button").forEach((el) => {
               el.disabled = false;

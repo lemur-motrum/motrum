@@ -501,6 +501,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const clientRequsits = document
           .querySelector("[name='client-requisit']")
           .getAttribute("value");
+        const deliveryRequsits = document
+          .querySelector("[name='delevery-requisit']")
+          .getAttribute("value");
         const bitrixInput = document.querySelector(".bitrix-input");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -582,6 +585,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
+            type_deivery: deliveryRequsits,
           };
 
           const data = JSON.stringify(dataObj);
@@ -1318,33 +1322,18 @@ window.addEventListener("DOMContentLoaded", () => {
                         });
 
                         if (clientRequsitsSelect) {
-                          const clientOptions =
-                            clientRequsitsSelect.querySelectorAll("option");
-                          clientRequsitsSelect.setAttribute(
-                            "value",
-                            clientOptions[0].getAttribute("value")
-                          );
-                          clientOptions.forEach((el) => {
-                            clientRequsitsSelect.addEventListener(
-                              "change",
-                              function () {
-                                if (el.selected) {
-                                  clientRequsitsSelect.setAttribute(
-                                    "value",
-                                    el.getAttribute("value")
-                                  );
-                                }
-                              }
-                            );
-                          });
+                          changeSelect(clientRequsitsSelect);
                         }
                       } else {
                         clientRequsitsSelect.innerHTML = "";
                       }
                       clientInfo.innerHTML = `
                              <div>Предоплата: ${el.prepay_persent}%</div>
-                             <div>Доставка: ${el.type_delivery}</div>
+                             <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="type_delivery">Доставка до терминала за счет покупателя</option></select></div>
                              `;
+                      const selectDelevery =
+                        searhClientForm.querySelector(".select_delevery");
+                      changeSelect(selectDelevery);
                       clientsContainer.classList.remove("show");
                       saveButtonContainer.classList.add("show");
                     };
@@ -1365,3 +1354,15 @@ window.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+
+function changeSelect(select) {
+  const clientOptions = select.querySelectorAll("option");
+  select.setAttribute("value", clientOptions[0].getAttribute("value"));
+  clientOptions.forEach((el) => {
+    select.addEventListener("change", function () {
+      if (el.selected) {
+        select.setAttribute("value", el.getAttribute("value"));
+      }
+    });
+  });
+}

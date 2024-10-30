@@ -28,7 +28,7 @@ export function changePayment(container, errorFn) {
             );
           }
           const paymentBtn = specification.querySelector(".add_payment_button");
-          
+
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {
@@ -97,8 +97,15 @@ export function changePayment(container, errorFn) {
                         "X-CSRFToken": csrfToken,
                       },
                       body: data,
-                    }).then((response) => {
-                      if (response.status == 200) {
+                    })
+                      .then((response) => {
+                        if (response.status == 200) {
+                          return response.json();
+                        } else {
+                          throw new Error("Ошибка");
+                        }
+                      })
+                      .then((response) => {
                         paymentBtn.classList.add("changed");
                         if (paymentLink.textContent === "0") {
                           paymentLink.setAttribute(
@@ -122,10 +129,10 @@ export function changePayment(container, errorFn) {
                         const addBillBtn = specification.querySelector(
                           ".create-bill-button"
                         );
-                        if(addBillBtn){
-                          addBillBtn.style.display = "none"
+                        if (addBillBtn) {
+                          addBillBtn.style.display = "none";
                         }
-                        
+
                         overlay.classList.remove("visible");
                         if (overlay.classList.contains("show")) {
                           document.body.style.overflowY = "scroll";
@@ -150,12 +157,11 @@ export function changePayment(container, errorFn) {
                         paymentBtn.disabled = false;
                         paymentBtn.innerHTML = "";
                         paymentBtn.textContent = "Внести cумму оплаты";
-                        console.log(response.is_all_sum)
-                        
-                      } else {
-                        throw new Error("Ошибка");
-                      }
-                    });
+                        console.log(response.is_all_sum);
+                        if (response.is_all_sum == true) {
+                          paymentBtn.style.display = "none";
+                        }
+                      });
                   }
                 };
               }

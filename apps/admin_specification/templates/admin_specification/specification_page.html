@@ -8,10 +8,7 @@
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
     <div class="specification-content">
-        <div class="bread-crumbs">
-            <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            <a href="{% url "admin_specification:all_specifications" %}">Cпецификации</a>
-        </div>
+        {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
             {% comment %} <a href="#">Главная</a>
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
@@ -23,7 +20,7 @@
             {% else %}
                 <a href={% url "admin_specification:categories" %}>Назад</a>
             {% endif %}
-            <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a>
+            {% comment %} <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a> {% endcomment %}
         </div>
         {% include "admin_specification/include/search_form.html" %}
         <div class="group-slider">

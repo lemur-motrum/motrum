@@ -195,6 +195,7 @@ window.addEventListener("DOMContentLoaded", () => {
       elem.onclick = () => {
         pageCount = +elem.textContent - 1;
         endContent.classList.remove("show");
+        catalogContainer.innerHTML = "";
         loader.style.display = "block";
         loadItems(
           true,

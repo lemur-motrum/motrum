@@ -1750,11 +1750,13 @@ a {
         .img-contaner {
           width: 9.375rem;
           height: 9.375rem;
+          background-color: #ff5b00;
         }
         .product_item-description {
           display: flex;
           flex-direction: column;
-
+          margin-left: 1.125rem;
+          width: 28.188rem;
           .name {
             max-width: 28.188rem;
             font-size: 1.5rem;
@@ -1790,6 +1792,13 @@ a {
           .price_once {
             font-size: 1.5rem;
             font-weight: bold;
+            .discount {
+              font-size: 1.125rem;
+              font-weight: 300;
+              width: 8.75rem;
+              display: block;
+              margin-top: 0.625rem;
+            }
           }
         }
         .item-buttons_container {
@@ -1899,7 +1908,8 @@ a {
     }
     .total_sum {
       display: flex;
-      justify-content: flex-end;
+      flex-direction: column;
+      align-items: flex-end;
       margin-top: 1.125rem;
       .total_sum_item {
         display: flex;

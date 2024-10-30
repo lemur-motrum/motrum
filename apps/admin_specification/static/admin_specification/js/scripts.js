@@ -1233,8 +1233,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelectLabel = searhClientForm.querySelector(
       ".select-client-requsits_label"
     );
-    if (orderStatus !== "None") {
-      clientRequsitsSelectLabel.classList.add("show");
+    if (orderStatus) {
+      if (orderStatus !== "None") {
+        clientRequsitsSelectLabel.classList.add("show");
+      }
     }
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"

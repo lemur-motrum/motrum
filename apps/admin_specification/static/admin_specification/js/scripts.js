@@ -585,7 +585,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
-            type_deivery: deliveryRequsits,
+            type_delivery: deliveryRequsits,
           };
 
           const data = JSON.stringify(dataObj);

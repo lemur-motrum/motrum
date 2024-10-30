@@ -719,7 +719,7 @@ def one_specifications(request, pk):
     )
     order = Order.objects.get(specification=specification)
 
-    title = "Просмотр спецификации"
+    title = "Просмотр заказа"
     context = {
         "title": title,
         "specification": specification,

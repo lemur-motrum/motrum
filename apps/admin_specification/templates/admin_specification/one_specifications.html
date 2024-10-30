@@ -56,10 +56,13 @@
             </div>
             {% if order.bill_sum_paid > 0 %}<div class="">Оплачено: {{ order.bill_sum_paid|number_into_digits }}</div>{% endif %}
             <br>
-            <div class="">
+            {% if specification.file %}
+             <div class="">
                 Документ спецификации:
                 <a target="_blank" href="{{ specification.file.url }}">скачать</a>
             </div>
+            {% endif %}
+           
             {% if admin_king %}
                 <span class="table_item_value_span">
                     <a  href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>

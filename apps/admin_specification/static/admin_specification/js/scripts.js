@@ -459,6 +459,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const specificationContainer = document.querySelector(
     ".specification-container"
   );
+  const orderStatus = specificationContainer.getAttribute("order");
 
   if (specificationContainer) {
     const spetificationTable = specificationContainer.querySelector(
@@ -585,7 +586,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
-            type_delivery: deliveryRequsits,
+            type_deivery: deliveryRequsits,
           };
 
           const data = JSON.stringify(dataObj);
@@ -1232,6 +1233,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelectLabel = searhClientForm.querySelector(
       ".select-client-requsits_label"
     );
+    if (orderStatus !== "None") {
+      clientRequsitsSelectLabel.classList.add("show");
+    }
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );

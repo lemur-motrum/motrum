@@ -460,8 +460,6 @@ window.addEventListener("DOMContentLoaded", () => {
     ".specification-container"
   );
 
-  const orderStatus = specificationContainer.getAttribute("order");
-
   if (specificationContainer) {
     const spetificationTable = specificationContainer.querySelector(
       ".spetification_table"

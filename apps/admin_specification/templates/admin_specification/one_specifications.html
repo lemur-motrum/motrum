@@ -24,11 +24,7 @@
             <div class="">Дата создания:{{ order.date_order }}</div>
             {% if order.date_update %}<div class="">Последнее обновление:{{ order.date_update }}</div>{% endif %}
             {% if order.date_completed %}<div class="">Дата завершения:{{ order.date_completed }}</div>{% endif %}
-            
-            
-            
             <div class="">
-                
                 {% if order.status  == "PROCESSING" %}
                     Спецификация действительна:
                     {% if specification.tag_stop %}
@@ -36,15 +32,12 @@
                     {% else %}
                         Недействительно
                     {% endif %}
-
                 {% elif order.status  == "PAYMENT" %}
                     {% if order.bill_sum_paid == 0 %}
                         Счет действителен до {{ order.bill_date_stop }}
                     {% else %}
                     {% endif %}
                 {% endif %}
-
-
             </div>
             <br>
             <div class="">Клиент: {{ order.requisites.legal_entity }} счет: {{ order.account_requisites }}</div>
@@ -65,7 +58,7 @@
            
             {% if admin_king %}
                 <span class="table_item_value_span">
-                    <a  href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
+                    <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
                 </span>
             {% endif %}
             {% if order.bill_file %}

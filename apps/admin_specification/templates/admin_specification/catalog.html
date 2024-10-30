@@ -404,8 +404,12 @@
                                     <div>
                                         Доставка:
                                         <select class="select_delevery" name='delevery-requisit'>
-                                            <option value="pickup">Самовывоз</option>
-                                            <option value="paid_delivery">Доставка до терминала за счет покупателя</option>
+                                            <option {% if order.type_delivery == "pickup" %}selected{% endif %}
+                                                    value="pickup">Самовывоз</option>
+                                            <option {% if order.type_delivery == "paid_delivery" %}selected{% endif %}
+                                                    value="paid_delivery">
+                                                Доставка до терминала за счет покупателя
+                                            </option>
                                         </select>
                                     </div>
                                 {% endif %}

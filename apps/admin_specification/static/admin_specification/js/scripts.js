@@ -1373,13 +1373,15 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function changeSelect(select) {
-  const clientOptions = select.querySelectorAll("option");
-  select.setAttribute("value", clientOptions[0].getAttribute("value"));
-  clientOptions.forEach((el) => {
-    select.addEventListener("change", function () {
-      if (el.selected) {
-        select.setAttribute("value", el.getAttribute("value"));
-      }
+  if (select) {
+    const clientOptions = select.querySelectorAll("option");
+    select.setAttribute("value", clientOptions[0].getAttribute("value"));
+    clientOptions.forEach((el) => {
+      select.addEventListener("change", function () {
+        if (el.selected) {
+          select.setAttribute("value", el.getAttribute("value"));
+        }
+      });
     });
-  });
+  }
 }

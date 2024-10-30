@@ -3,6 +3,9 @@ import {
   getCookie,
   getDigitsNumber,
 } from "/static/core/js/functions.js";
+
+import { completeOrder } from "../js/complete_order.js";
+
 export function changePayment(container, errorFn) {
   if (container) {
     const overlay = document.querySelector(".change_of_payment_overlay");
@@ -160,7 +163,12 @@ export function changePayment(container, errorFn) {
                         console.log(response.is_all_sum);
                         if (response.is_all_sum == true) {
                           paymentBtn.style.display = "none";
+                          const completeBtnContainer =
+                            specification.querySelector(".first_table_value");
+                          completeBtnContainer.innerHTML +=
+                            '<button class="complete_order_button">Завершить заказ</button>';
                         }
+                        completeOrder(container);
                       });
                   }
                 };

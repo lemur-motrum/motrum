@@ -7,8 +7,8 @@
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
-    <div class="specification-container">
-       {% include "admin_specification/include/bread_crumbs.html" %}
+    <div order={{ order }} class="specification-container">
+        {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum %}
             <div class="">
@@ -382,24 +382,32 @@
                                        value="{% if client_req %}{{ client_req.requisites.legal_entity }}{% endif %}">
                             </div>
                             <div class="clients"></div>
-                         <label class="select-client-requsits_label">
-                            <span>Расчетный счет</span>
-                             <select class="select-client-requsits"
-                                     {% if client_req %}value="{{ client_req.id }}"{% endif %}
-                                     name="client-requisit">
-                                 {% if client_req %}
-                                     {% for recusits in client_req_all %}
-                                         <option class="client-option"
-                                                 {% if client_req.id == recusits.id %}selected{% endif %}
-                                                 value="{{ recusits.id }}">{{ recusits.account_requisites }}</option>
-                                     {% endfor %}
-                                 {% endif %}
-                             </select>
-                         </label>
+                            <label class="select-client-requsits_label">
+                                <span>Расчетный счет</span>
+                                <select class="select-client-requsits"
+                                        {% if client_req %}value="{{ client_req.id }}"{% endif %}
+                                        name="client-requisit">
+                                    {% if client_req %}
+                                        {% for recusits in client_req_all %}
+                                            <option class="client-option"
+                                                    {% if client_req.id == recusits.id %}selected{% endif %}
+                                                    value="{{ recusits.id }}">
+                                                {{ recusits.account_requisites }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </label>
                             <div class="client-info">
                                 {% if client_req %}
                                     <div>Предоплата: {{ client_req.requisites.prepay_persent }}%</div>
-                                    {% comment %} <div>Доставка: {{ client_req.requisites.type_delivery }}</div> {% endcomment %}
+                                    <div>
+                                        Доставка:
+                                        <select class="select_delevery" name='delevery-requisit'>
+                                            <option value="pickup">Самовывоз</option>
+                                            <option value="paid_delivery">Доставка до терминала за счет покупателя</option>
+                                        </select>
+                                    </div>
                                 {% endif %}
                             </div>
                         </label>
@@ -408,7 +416,7 @@
                             <input class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
-                                   value="{% if order and order.id_bitrix  %}{{ order.id_bitrix }}{% endif %}" />
+                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}" />
                         </label>
                     </div>
                     <div class="motrum-info">
@@ -432,17 +440,14 @@
                             <button class="save_button">Сохранить спецификацию</button>
                             <div class="error"></div>
                         </div>
-                     
                         <button class="exit_button">Выйти без изменений</button>
                         {% if specification %}
-                        
                         {% else %}
-                        <div class="save_order_button-wrapper">
-                            <button class="save_order_button" >Сохранить корзину без заказа</button>
-                            <div class="save_order_button-error"></div>
-                        </div>
+                            <div class="save_order_button-wrapper">
+                                <button class="save_order_button">Сохранить корзину без заказа</button>
+                                <div class="save_order_button-error"></div>
+                            </div>
                         {% endif %}
-                        
                     </div>
                 </div>
             </div>

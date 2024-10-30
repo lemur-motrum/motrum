@@ -585,7 +585,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
-            type_deivery: deliveryRequsits,
+            type_delivery: deliveryRequsits,
           };
 
           const data = JSON.stringify(dataObj);
@@ -1246,6 +1246,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
+    const selectDelevery = searhClientForm.querySelector(".select_delevery");
+    changeSelect(selectDelevery);
 
     const motrumRequsits = document.querySelector(".select_motrum_requisites");
     const clientOptions = motrumRequsits.querySelectorAll("option");

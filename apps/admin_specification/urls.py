@@ -30,14 +30,14 @@ urlpatterns = [
     #     "update_specification/", views.update_specification, name="update_specification"
     # ),
     path(
-        "one_specifications/<int:pk>", views.one_specifications, name="one_specifications"
+        "one_specifications/<int:pk>",
+        views.one_specifications,
+        name="one_specifications",
     ),
+    path("history_admin/<int:pk>", views.history_admin, name="history_admin"),
     path(
-        "history_admin/<int:pk>", views.history_admin, name="history_admin"
+        "history_admin_bill/<int:pk>",
+        views.history_admin_bill,
+        name="history_admin_bill",
     ),
-    path(
-        "history_admin_bill/<int:pk>", views.history_admin_bill, name="history_admin_bill"
-    ),
-   
 ]
-

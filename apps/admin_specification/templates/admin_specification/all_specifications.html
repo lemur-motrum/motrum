@@ -10,15 +10,12 @@
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
     <div class="all_specifications_container">
-        <div class="bread-crumbs">
-            <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            <div class="specification-link-container">{% cart %}</div>
-        </div>
+        {% include "admin_specification/include/bread_crumbs.html" %}
+        <div class="specification-link-container">{% cart %}</div>
         <h1 class="title">
             <span class="all_orders active">{{ title }}</span> / <span class="orders_without_specifications">Корзины без заказа</span>
         </h1>
         <div class="specification_container all_specifications_content">
-            
             <div class="table-titles all_specifications_titles show">
                 <div class="table-title">Заказ</div>
                 <div class="table-title">Клиент</div>
@@ -31,7 +28,6 @@
                 <div class="table-title">Клиент</div>
                 <div class="table-title">Статус</div>
             </div>
-            
             <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">
                 <div class="specification_container all_specifications_table"
@@ -66,4 +62,4 @@
                 до {{ specification_list.date_stop }}
                 {% else %}
                         
-                {% endif %} {% endcomment %}
+{% endif %} {% endcomment %}

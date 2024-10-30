@@ -54,9 +54,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
         function getAllProductSummNoSale() {
           if (priceOnce) {
-            priceAllNoSale.textContent = (
-              +priceOnceNoSale.replace(",", ".") * +inputCount.value
-            ).toFixed(2);
+            priceAllNoSale.textContent = (+priceOnceNoSale.replace(
+              ",",
+              "."
+            )).toFixed(2);
           } else {
             return;
           }

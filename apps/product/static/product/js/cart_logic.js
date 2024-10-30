@@ -30,9 +30,13 @@ window.addEventListener("DOMContentLoaded", () => {
           const productMultiplicity =
             +procductItem.getAttribute("order-multiplicity");
           if (buttonContainer) {
-            const minusButton = buttonContainer.querySelector(".minus-button");
-            const plusButton = buttonContainer.querySelector(".plus-button");
-            const countInput = buttonContainer.querySelector("input");
+            const inputButtonsContainer =
+              buttonContainer.querySelector(".quantity-buttons");
+            const minusButton =
+              inputButtonsContainer.querySelector(".minus-button");
+            const plusButton =
+              inputButtonsContainer.querySelector(".plus-button");
+            const countInput = inputButtonsContainer.querySelector("input");
             const cartButton = buttonContainer.querySelector(
               ".add-specification-button"
             );
@@ -71,6 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 plusButton.disabled = false;
                 cartButton.disabled = false;
               }
+              saveProductInCart();
             });
 
             plusButton.onclick = () => {
@@ -92,6 +97,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 plusButton.disabled = false;
                 minusButton.disabled = false;
               }
+              saveProductInCart();
             };
             minusButton.onclick = () => {
               if (productMultiplicity) {
@@ -110,8 +116,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 minusButton.disabled = false;
                 plusButton.disabled = false;
               }
+              saveProductInCart();
             };
-            cartButton.onclick = () => {
+            function saveProductInCart() {
               console.log(getCookie("cart"));
               if (!getCookie("cart")) {
                 console.log(111);
@@ -190,6 +197,12 @@ window.addEventListener("DOMContentLoaded", () => {
                   )
                   .catch((error) => console.error(error));
               }
+            }
+
+            cartButton.onclick = () => {
+              saveProductInCart();
+              cartButton.style.display = "none";
+              inputButtonsContainer.style.zIndex = 1;
             };
           }
         });
@@ -206,12 +219,15 @@ window.addEventListener("DOMContentLoaded", () => {
     const productMultiplicity =
       +productOneContainer.getAttribute("order-multiplicity");
     if (buttonContainer) {
-      const minusButton = buttonContainer.querySelector(".minus-button");
-      const plusButton = buttonContainer.querySelector(".plus-button");
-      const countInput = buttonContainer.querySelector("input");
+      const inputButtonsContainer =
+        buttonContainer.querySelector(".quantity-buttons");
+      const minusButton = inputButtonsContainer.querySelector(".minus-button");
+      const plusButton = inputButtonsContainer.querySelector(".plus-button");
+      const countInput = inputButtonsContainer.querySelector("input");
       const cartButton = buttonContainer.querySelector(
         ".add-specification-button"
       );
+
       let countQuantity = +countInput.value;
       const price = productOneContainer.querySelector(".price");
       getDigitsNumber(price, getCurrentPrice(price.textContent));
@@ -371,7 +387,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
       cartButton.onclick = () => {
         saveProductInCart();
-        cartButton.style.zIndex = "-2";
+        cartButton.style.display = "none";
+        inputButtonsContainer.style.zIndex = 1;
       };
     }
   }
@@ -419,10 +436,9 @@ window.addEventListener("DOMContentLoaded", () => {
           if (priceWithoutDiscontContainer) {
             getDigitsNumber(
               priceWithoutDiscontContainer,
-              ((new NumberParser("ru").parse(priceOne.textContent) *
+              (new NumberParser("ru").parse(priceOne.textContent) *
                 (100 + personalDiscount)) /
-                100) *
-                +cartCountInput.value
+                100
             );
           }
           for (

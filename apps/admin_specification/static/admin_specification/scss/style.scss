@@ -27,7 +27,7 @@ input[type="number"] {
 }
 .bread-crumbs {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
   margin-bottom: 0.5rem;
 
   a {
@@ -714,8 +714,11 @@ h1 {
     }
   }
   .title {
+    display: flex;
+    gap: 2.5rem;
     span {
       cursor: pointer;
+      font-weight: 300;
       &.active {
         font-weight: bold;
         cursor: auto;

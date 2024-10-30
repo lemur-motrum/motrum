@@ -410,6 +410,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const personalDiscount = +getCurrentPrice(
       personalDiscountInput.getAttribute("data-personal-discount")
     );
+    let withoutDiscountPriceArray = [];
+
     products.forEach((product) => {
       const priceOne = product.querySelector(".cart_price");
       const productMultiplicity = +product.getAttribute("order-multiplicity");
@@ -420,6 +422,11 @@ window.addEventListener("DOMContentLoaded", () => {
       const priceQuantity = product.querySelector(".all_cart_price");
       const priceWithoutDiscontContainer = product.querySelector(
         ".all_cart_no_sale_price"
+      );
+      let withoutDiscountPrice = 0;
+
+      withoutDiscountPrice = new NumberParser("ru").parse(
+        priceWithoutDiscontContainer.textContent
       );
 
       getDigitsNumber(priceOne, getCurrentPrice(priceOne.textContent));

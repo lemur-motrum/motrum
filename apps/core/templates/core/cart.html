@@ -18,7 +18,9 @@
                         <div class="product_item"
                              product-id="{{ product_item.id_product_cart }}"
                              order-multiplicity="{{ product_item.stock.order_multiplicity }}">
-                            <div class="img-contaner"></div>
+                            <div class="img-contaner">
+                                <img src={% static "core/images/nophoto.png" %} alt="">
+                            </div>
                             <div class="product_item-description">
                                 <div class="name">{{ product_item.name }}</div>
                                 <div class="article">Артикул: {{ product_item.article }}</div>

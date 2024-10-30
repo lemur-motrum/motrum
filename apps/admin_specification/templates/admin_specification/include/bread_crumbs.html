@@ -2,11 +2,9 @@
     <div class="bread-crumbs">
         {% if url_name == "categories" or url_name == "groups" or url_name == "instruments" or url_name == "specifications" %}
             <a class="active" href="">Каталог</a>
-            <span>/</span>
             <a href="{% url "admin_specification:all_specifications" %}">заказы</a>
         {% else %}
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            <span>/</span>
             <a class="active" href="">заказы</a>
         {% endif %}
     </div>

@@ -2,44 +2,47 @@
      product-id="{{ id }}"
      order-multiplicity="{{ stock.order_multiplicity }}"
      catalog-elem="product-item">
-    <div class="img-container"></div>
-    <div class="product-item_description">
-        <a class="name" href="{{ url }}">{{ name }}</a>
-        <div class="article">Артикул: {{ article }}</div>
-        <div class="charactiristics">
-            {% if productproperty_set|length != 0 %}
-                {% for productproperty in productproperty_set %}
-                    <div class="char">
-                        <span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>
-                    </div>
-                {% endfor %}
-            {% else %}
-                -
-            {% endif %}
-        </div>
+    <div class="img-container">
+        <img src="/static/core/images/nophoto.png">
+    </img>
+</div>
+<div class="product-item_description">
+    <a class="name" href="{{ url }}">{{ name }}</a>
+    <div class="article">Артикул: {{ article }}</div>
+    <div class="charactiristics">
+        {% if productproperty_set|length != 0 %}
+            {% for productproperty in productproperty_set %}
+                <div class="char">
+                    <span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            -
+        {% endif %}
     </div>
-    <div class="price_conainer">
-        <div class="lot">{{ stock.lot_complect }} {{ stock.lot }}</div>
-        <div class="price">
-            {% if price.rub_price_supplier and price.rub_price_supplier != 0 %}
-                <span class="price_item">{{ price.rub_price_supplier }}</span> ₽
-            {% else %}
-                по запросу
-            {% endif %}
-        </div>
-        <div class="item-buttons_container">
-            <div class="quantity-buttons">
-                <button disabled class="minus-button"></button>
-                <input type="number"
-                       value="1"
-                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                       maxlength="3"
-                       onkeypress='validate(event)'>
-                <button class="plus-button"></button>
-            </div>
-            <button class="add-specification-button">
-                В корзину <span></span>
-            </button>
-        </div>
+</div>
+<div class="price_conainer">
+    <div class="lot">{{ stock.lot_complect }} {{ stock.lot }}</div>
+    <div class="price">
+        {% if price.rub_price_supplier and price.rub_price_supplier != 0 %}
+            <span class="price_item">{{ price.rub_price_supplier }}</span> ₽
+        {% else %}
+            по запросу
+        {% endif %}
     </div>
+    <div class="item-buttons_container">
+        <div class="quantity-buttons">
+            <button disabled class="minus-button"></button>
+            <input type="number"
+                   value="1"
+                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                   maxlength="3"
+                   onkeypress='validate(event)'>
+            <button class="plus-button"></button>
+        </div>
+        <button class="add-specification-button">
+            В корзину <span></span>
+        </button>
+    </div>
+</div>
 </div>

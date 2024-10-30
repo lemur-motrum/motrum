@@ -403,12 +403,18 @@ class Order(models.Model):
         data_stop = create_time_stop_specification()
         print(data_stop)
         self.bill_date_stop = data_stop
-
+        bill_last = Order.objects.filter(bill_name__isnull = False).exclude(bill_name="").last()
+        
+        if bill_last:
+            bill_name = int(bill_last.bill_name)+1
+        else:
+            bill_name = 1  
         pdf = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
             order,
+            bill_name
         )
         if pdf[0]:
             self.bill_file = pdf[0]

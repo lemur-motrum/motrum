@@ -35,7 +35,7 @@ from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 from django.db.models import Prefetch, OuterRef
 
 
-def crete_pdf_bill(specification,request,is_contract,order):
+def crete_pdf_bill(specification,request,is_contract,order,bill_name):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -70,15 +70,15 @@ def crete_pdf_bill(specification,request,is_contract,order):
         # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
 
         date_now = transform_date(datetime.date.today().isoformat())
-        bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
+        # bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
         
-        if bill_last:
-            bill_last_name = bill_last.bill_file.name.split('_')
-            bill_last_name = bill_last_name[1].split('.')
+        # if bill_last:
+        #     bill_last_name = bill_last.bill_file.name.split('_')
+        #     bill_last_name = bill_last_name[1].split('.')
 
-            bill_name = int(bill_last_name[0] )+1
-        else:
-            bill_name = 1   
+        #     bill_name = int(bill_last_name[0] )+1
+        # else:
+        #     bill_name = 1   
         name_bill = f"bill_{bill_name}.pdf"
         
         document_info = BaseImage.objects.filter().first()

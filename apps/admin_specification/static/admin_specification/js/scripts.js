@@ -459,6 +459,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const specificationContainer = document.querySelector(
     ".specification-container"
   );
+
   const orderStatus = specificationContainer.getAttribute("order");
 
   if (specificationContainer) {
@@ -1233,9 +1234,15 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelectLabel = searhClientForm.querySelector(
       ".select-client-requsits_label"
     );
-    if (orderStatus) {
-      if (orderStatus !== "None") {
-        clientRequsitsSelectLabel.classList.add("show");
+    const specificationContainer = document.querySelector(
+      ".specification-container"
+    );
+    if (specificationContainer) {
+      const orderStatus = specificationContainer.getAttribute("order");
+      if (orderStatus) {
+        if (orderStatus !== "None") {
+          clientRequsitsSelectLabel.classList.add("show");
+        }
       }
     }
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(

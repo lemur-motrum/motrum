@@ -1229,7 +1229,10 @@ window.addEventListener("DOMContentLoaded", () => {
       '[name="serch-client_input"]',
     ]);
     const clientsContainer = searhClientForm.querySelector(".clients");
-    const clientRequsitsSelect = searhClientForm.querySelector(
+    const clientRequsitsSelectLabel = searhClientForm.querySelector(
+      ".select-client-requsits_label"
+    );
+    const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
 
@@ -1317,6 +1320,7 @@ window.addEventListener("DOMContentLoaded", () => {
                             +searchClientInput.getAttribute("client-id") ===
                             +elem.requisites
                           ) {
+                            clientRequsitsSelectLabel.classList.add("show");
                             clientRequsitsSelect.innerHTML += `<option class="client-option" value="${elem.id}">${elem.account_requisites}</option>`;
                           }
                         });
@@ -1329,7 +1333,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       }
                       clientInfo.innerHTML = `
                              <div>Предоплата: ${el.prepay_persent}%</div>
-                             <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="type_delivery">Доставка до терминала за счет покупателя</option></select></div>
+                             <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
                              `;
                       const selectDelevery =
                         searhClientForm.querySelector(".select_delevery");

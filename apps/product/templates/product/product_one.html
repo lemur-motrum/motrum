@@ -29,54 +29,63 @@
                         {% endif %}  {% endcomment %}
                         <div class="small_img"></div>
                         <div class="small_img"></div>
-                        <div class="small_img"></div>
-                        <div class="small_img"></div>
-                        <div class="small_img"></div>
                     </div>
                 </div>
                 <div class="documentation_container">
-                    <a href="#" class="documentation_elem">
-                        <div class="img_container">
-                            <img src={% static "product/img/documentation_img.png" %} alt="img">
+                    <div class="documentation_title">Документация</div>
+                    <div class="documentation_items">
+                        <div class="documentation_item">
+                            <a class="documentation_link" href="#">Сертификат</a>
+                            <span class="documentation_link_exe">(PDF, 690 Kb)</span>
                         </div>
-                        <div class="description">Скачать техническую документацию</div>
-                    </a> <a href="#" class="documentation_elem">
-                    <div class="img_container">
-                        <img src={% static "product/img/documentation_img.png" %} alt="img">
-                    </div>
-                    <div class="description">Скачать техническую документацию</div>
-                </a>
-            </div>
-        </div>
-        <div class="centered_container">
-            <div class="product_article">Арткул {{ product.article }}</div>
-            <div class="product_description">
-                {% if product.description %}
-                    {{ product.description }}
-                {% else %}
-                    Описания пока нет
-                {% endif %}
-            </div>
-            <div class="technical_specifications">
-                <div class="title">Технические характеристики</div>
-                <div class="properties">
-                    {% if product.productproperty_set.all %}
-                        {% for product_property in product.productproperty_set.all %}
-                            <div class="property">
-                                <div class="property_name">{{ product_property.name }}</div>
-                                <div class="property_description">
-                                    {% if product_property.value %}
-                                        {{ product_property.value }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </div>
+                        <div class="documentation_item">
+                            <a class="documentation_link" href="#">Системное руководство</a>
+                            <span class="documentation_link_exe">(PDF, 690 Kb)</span>
+                        </div>
+                        {% comment %} <a href="#" class="documentation_elem">
+                            <div class="img_container">
+                                <img src={% static "product/img/documentation_img.png" %} alt="img">
                             </div>
-                        {% endfor %}
+                            <div class="description">Скачать техническую документацию</div>
+                        </a>
+                        <a href="#" class="documentation_elem">
+                            <div class="img_container">
+                                <img src={% static "product/img/documentation_img.png" %} alt="img">
+                            </div>
+                            <div class="description">Скачать техническую документацию</div>
+                        </a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+            <div class="centered_container">
+                <div class="product_article">Арткул: {{ product.article }}</div>
+                <div class="product_description">
+                    {% if product.description %}
+                        {{ product.description }}
                     {% else %}
-                        -
+                        Описания пока нет
                     {% endif %}
-                    {% comment %} {% for product_property in product.productproperty_set %}
+                </div>
+                <div class="technical_specifications">
+                    <div class="title">Технические характеристики</div>
+                    <div class="properties">
+                        {% if product.productproperty_set.all %}
+                            {% for product_property in product.productproperty_set.all %}
+                                <div class="property">
+                                    <div class="property_name">{{ product_property.name }}</div>
+                                    <div class="property_description">
+                                        {% if product_property.value %}
+                                            {{ product_property.value }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            -
+                        {% endif %}
+                        {% comment %} {% for product_property in product.productproperty_set %}
                         <div class="property">
                             <div class="property_name">{{ product_property.name }}</div>
                             <div class="property_description">
@@ -87,33 +96,33 @@
                                 {% endif %}
                             </div>
                         </div>
-                    {% endfor %} {% endcomment %}
-                </div>
-            </div>
-        </div>
-        <div class="rigth_container">
-            <div class="price_container">
-                <span class="price_item">
-                    {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
-                        <span class="price">{{ product.price.rub_price_supplier }}</span> ₽</span>
-                        / <span class="lot">1 {{ product.stock.lot.name_shorts }}</span>
-                    {% else %}
-                        <span>По запросу</span>
-                    {% endif %}
-                </div>
-                <div class="item-buttons_container">
-                    <div class="quantity-buttons">
-                        <button disabled class="minus-button">-</button>
-                        <input type="number"
-                               value="0"
-                               oninput="javascript: if (this.value.length> this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                               maxlength="3"
-                               onkeypress='validate(event)'>
-                        <button class="plus-button">+</button>
+                        {% endfor %} {% endcomment %}
                     </div>
-                    <button disabled class="add-specification-button">В корзину</button>
+                </div>
+            </div>
+            <div class="rigth_container">
+                <div class="price_container">
+                    <span class="price_item">
+                        {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
+                            <span class="price">{{ product.price.rub_price_supplier }}</span> ₽</span>
+                            / <span class="lot">1 {{ product.stock.lot.name_shorts }}</span>
+                        {% else %}
+                            <span>По запросу</span>
+                        {% endif %}
+                    </div>
+                    <div class="item-buttons_container">
+                        <div class="quantity-buttons">
+                            <button disabled class="minus-button">-</button>
+                            <input type="number"
+                                   value="0"
+                                   oninput="javascript: if (this.value.length> this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                   maxlength="3"
+                                   onkeypress='validate(event)'>
+                            <button class="plus-button">+</button>
+                        </div>
+                        <button disabled class="add-specification-button">В корзину</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-{% endblock content %}
+    {% endblock content %}

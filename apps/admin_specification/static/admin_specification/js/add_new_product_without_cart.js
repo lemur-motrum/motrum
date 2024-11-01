@@ -19,7 +19,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const quantityInput = form.querySelector(".quantity");
     const quantityError = form.querySelector(".quantity-error");
     const closeBtn = modalWindow.querySelector(".close-btn");
-
     const openPopupButton =
       noContentContainer.querySelector(".add_new_product");
 

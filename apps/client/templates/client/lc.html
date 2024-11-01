@@ -34,9 +34,9 @@
                 {% endif %}
                 {% url 'client:my_contacts' as my_contacts_url %}
                 {% if request.get_full_path == my_contacts_url or type_url == "/my_contacts" %}
-                    <span class="nav-elem active">мои контакты</span>
+                    <span class="nav-elem active">Персональные данные</span>
                 {% else %}
-                    <a href={% url "client:my_contacts" %} class="nav-elem">мои контакты</a>
+                    <a href={% url "client:my_contacts" %} class="nav-elem">Персональные данные</a>
                 {% endif %}
             </div>
             <div class="sort-container">

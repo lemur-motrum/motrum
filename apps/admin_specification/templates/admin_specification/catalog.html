@@ -1,4 +1,5 @@
 {% extends "core/base_okt.html" %}
+{% load static %}
 {% block content %}
     <div class="logout_btn">
         {% if request.user.is_superuser == True %}
@@ -130,6 +131,9 @@
                              data-price-exclusive="1"
                              data-product-specification-id="{{ item.id }}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+                            <div class="change_icon_container">
+                                <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+                            </div>
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
@@ -206,6 +210,9 @@
                              data-price-exclusive="1"
                              data-product-specification-id="">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+                            <div class="change_icon_container">
+                                <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+                            </div>
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
@@ -287,6 +294,9 @@
                              data-price-exclusive="1"
                              data-product-specification-id="">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+                            <div class="change_icon_container">
+                                <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+                            </div>
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
@@ -457,8 +467,11 @@
             </div>
         {% else %}
             <div class="no_content-container">
-                <div>Товаров пока нет</div>
-                <a href="{% url 'admin_specification:categories' %}">Вернуться</a>
+                <div class="small_title">Товаров пока нет</div>
+                <div class="button_container">
+                    <a href="{% url 'admin_specification:categories' %}">Вернуться</a>
+                    <div class="add_new_product">Добавить новый товар</div>
+                </div>
             </div>
         {% endif %}
     </div>

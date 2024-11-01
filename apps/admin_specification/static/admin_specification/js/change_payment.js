@@ -15,6 +15,7 @@ export function changePayment(container, errorFn) {
     const paymentChangeButton = modalWindow.querySelector(
       ".change-payment-btn"
     );
+    const closeBtn = modalWindow.querySelector(".close-btn");
 
     const interval = setInterval(() => {
       const specifications = container.querySelectorAll(".table_item");
@@ -178,7 +179,7 @@ export function changePayment(container, errorFn) {
           if (paymentBtn) {
             paymentBtn.onclick = () => changePayment();
           }
-          overlay.onclick = () => {
+          closeBtn.onclick = () => {
             document.querySelectorAll(".add_payment_button").forEach((el) => {
               el.disabled = false;
               el.innerHTML = "";
@@ -192,9 +193,6 @@ export function changePayment(container, errorFn) {
               overlay.classList.remove("show");
               paymentInput.value = "";
             }, 600);
-          };
-          modalWindow.onclick = (e) => {
-            e.stopPropagation();
           };
         });
       }

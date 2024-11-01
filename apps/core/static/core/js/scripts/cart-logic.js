@@ -58,6 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ",",
               "."
             )).toFixed(2);
+            getDigitsNumber(priceAllNoSale, priceAllNoSale.textContent);
           } else {
             return;
           }
@@ -114,7 +115,9 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = false;
             plusButton.disabled = true;
           } else if (countQuantity <= 1) {
+            countQuantity = 1;
             inputCount.value = 1;
+            minusButton.disabled = true;
             plusButton.disabled = false;
           } else {
             minusButton.disabled = false;
@@ -149,7 +152,8 @@ window.addEventListener("DOMContentLoaded", () => {
           countQuantity--;
           inputCount.value = +countQuantity;
           minusButton.disabled = false;
-          if (countQuantity == 1) {
+          if (countQuantity <= 1) {
+            countQuantity = 1;
             inputCount.value = 1;
             minusButton.disabled = true;
             plusButton.disabled = false;

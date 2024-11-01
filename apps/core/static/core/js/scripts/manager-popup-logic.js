@@ -3,12 +3,6 @@ window.addEventListener("DOMContentLoaded", () => {
   if (managerPopUp) {
     setTimeout(() => {
       managerPopUp.classList.add("visible");
-    }, 5000);
-    managerPopUp.onmouseenter = () => {
-      managerPopUp.classList.add("show");
-    };
-    managerPopUp.onmouseleave = () => {
-      managerPopUp.classList.remove("show");
-    };
+    }, 3000);
   }
 });

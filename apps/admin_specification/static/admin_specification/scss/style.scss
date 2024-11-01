@@ -264,24 +264,46 @@ h1 {
     flex-direction: column;
     align-items: center;
     gap: 0.7rem;
-    div {
+    .small_title {
       font-size: 1.7rem;
     }
-    a {
-      border: 0.063rem solid black;
-      border-radius: 5px;
-      padding: 0.7rem;
-      height: 1.2rem;
-      text-decoration: none;
+    .button_container {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: black;
-      background-color: buttonface;
-      transition: 0.6s;
-      &:hover {
-        background-color: lightgray;
-        border-color: lightgray;
+      gap: 0.5rem;
+      a {
+        border: 0.063rem solid black;
+        border-radius: 5px;
+        padding: 0.7rem;
+        height: 1.2rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        background-color: buttonface;
+        transition: 0.6s;
+        &:hover {
+          background-color: lightgray;
+          border-color: lightgray;
+        }
+      }
+      .add_new_product {
+        cursor: pointer;
+        border: 0.063rem solid black;
+        border-radius: 5px;
+        padding: 0.7rem;
+        height: 1.2rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        background-color: buttonface;
+        transition: 0.6s;
+        &:hover {
+          background-color: lightgray;
+          border-color: lightgray;
+        }
       }
     }
   }
@@ -310,6 +332,9 @@ h1 {
         .item_conainer-delete_btn {
           opacity: 1;
         }
+        .change_icon_container {
+          opacity: 1;
+        }
       }
       .item_conainer-delete_btn {
         position: absolute;
@@ -322,6 +347,23 @@ h1 {
         transition: 0.3s;
         opacity: 0;
         z-index: 3;
+      }
+      .change_icon_container {
+        width: 0.6rem;
+        height: 0.6rem;
+        position: absolute;
+        right: 1.1rem;
+        top: 2.5rem;
+        opacity: 0;
+        z-index: 3;
+        transition: 0.3s;
+        cursor: pointer;
+        img {
+          width: 100%;
+          height: 100%;
+          -o-object-fit: contain;
+          object-fit: contain;
+        }
       }
       .item_value {
         font-size: 0.813rem;

@@ -54,7 +54,7 @@ def index(request):
 def cart(request):
 
     cart = request.COOKIES.get("cart")
-    
+
     if cart:
         cart_qs = Cart.objects.get(id=cart)
         discount_client = 0
@@ -142,17 +142,16 @@ def cart(request):
 
     return render(request, "core/cart.html", context)
 
+
 def company(request):
-    context = {
-        
-    }
+    context = {}
     return render(request, "core/company.html", context)
 
+
 def company_about(request):
-    context = {
-        
-    }
+    context = {}
     return render(request, "core/about.html", context)
+
 
 # политика конфиденциальности
 def privacy_policy(request):
@@ -185,7 +184,7 @@ def server_error(request):
 # def email_callback(request):
 #     if request.method == "POST":
 #         body = json.loads(request.body)
-       
+
 #         user_name = body["name"]
 #         user_phone = body["phone"]
 #         to_manager = os.environ.get("EMAIL_MANAGER_CALLBACK")
@@ -207,7 +206,7 @@ def server_error(request):
 # def email_manager(request):
 #     if request.method == "POST":
 #         body = json.loads(request.body)
-      
+
 #         client_id = body["client_id"]
 #         text_message = body["text_message"]
 #         client = Client.objects.get(id=int(client_id))

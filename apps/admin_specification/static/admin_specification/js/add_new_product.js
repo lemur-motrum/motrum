@@ -1,4 +1,8 @@
 import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  inputValidation,
+  inputValidationQuantity,
+} from "../js/add_new_product_without_cart.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const specificationTable = document.querySelector(".spetification_table");
@@ -19,9 +23,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const priceInputError = modalWindow.querySelector(".price-error");
     const quantityInput = modalWindow.querySelector(".quantity");
     const quantityInputError = modalWindow.querySelector(".quantity-error");
+    const closeBtn = modalWindow.querySelector(".close-btn");
 
     addNewProductBtn.onclick = () => {
       overlay.classList.add("show");
+      inputValidation(priceInput);
+      inputValidationQuantity(quantityInput);
       if (overlay.classList.contains("show")) {
         document.body.style.overflow = "hidden";
       }
@@ -29,7 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
         overlay.classList.add("visible");
       });
 
-      overlay.onclick = () => {
+      closeBtn.onclick = () => {
         overlay.classList.remove("visible");
         if (overlay.classList.contains("show")) {
           document.body.style.overflowY = "scroll";

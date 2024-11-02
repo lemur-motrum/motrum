@@ -161,7 +161,6 @@ export function invoiceItem(container) {
                                 link.remove();
                               }
                               createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Скачать счет №${response.name_bill}</a>`;
-
                               const btn =
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();

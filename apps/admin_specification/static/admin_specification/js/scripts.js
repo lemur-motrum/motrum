@@ -2,7 +2,6 @@ import "/static/core/js/slider.js";
 import {
   NumberParser,
   getCookie,
-  setCookie,
   deleteCookie,
   getClosestInteger,
   getDigitsNumber,
@@ -10,24 +9,7 @@ import {
   getCurrentPrice,
 } from "/static/core/js/functions.js";
 
-// const setURLParams = (url, updates, defaults) => {
-//   let searchParams = new URL(url).searchParams;
-
-//   // Устанавливаем значения по умолчанию
-//   for (let [key, value] of Object.entries(defaults || {})) {
-//     if (!searchParams.has(key)) {
-//       searchParams.set(key, value);
-//     }
-//   }
-
-//   // Обновляем остальные параметры
-//   for (let [key, value] of Object.entries(updates)) {
-//     searchParams.set(key, value);
-//   }
-
-//   // Обновляем URL в адресной строке без перезагрузки страницы
-//   window.history.replaceState(null, "", "?" + searchParams);
-// };
+import { changeDateInOrder } from "../js/change_date_in_order.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -69,9 +51,7 @@ function catalogLogic(elems) {
 
     const productId = catalogItem.getAttribute("data-id");
     const buttonContainer = catalogItem.querySelector(".quantity-buttons");
-    const productDiscount = getCurrentPrice(
-      catalogItem.getAttribute("data-discoutnt")
-    );
+
     const plusButton = buttonContainer.querySelector(".plus-button");
     const minusButton = buttonContainer.querySelector(".minus-button");
     const addSpecificationButton = catalogItem.querySelector(
@@ -118,12 +98,13 @@ function catalogLogic(elems) {
     });
 
     plusButton.onclick = () => {
+      console.log("123");
       if (productMultiplicityQuantity) {
         countQuantity += +productMultiplicityQuantity;
       } else {
         countQuantity++;
       }
-      countQuantityZone.value = countQuantity;
+      countQuantityZone.value = +countQuantity;
       minusButton.disabled = false;
       addSpecificationButton.disabled = false;
       if (countQuantity >= 99999) {
@@ -483,7 +464,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       function saveSpecification(elems) {
-        const checkbox = document.querySelector("#prepayment-checkbox");
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
@@ -508,11 +488,7 @@ window.addEventListener("DOMContentLoaded", () => {
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
-          // const itemCartID = item.getAttribute("data-product-id-cart");
           const nameProductNew = item.getAttribute("data-product-name-new");
-          const articleProductNew = item.getAttribute(
-            "data-product-article-new"
-          );
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
           const extraDiscount = item.querySelector(".discount-input");
@@ -578,7 +554,6 @@ window.addEventListener("DOMContentLoaded", () => {
             id_bitrix: +bitrixInput.value,
             admin_creator_id: adminCreatorId,
             products: products,
-            // is_pre_sale: checkbox.checked ? true : false,
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll ? commentAll : null,
@@ -629,7 +604,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
-        const itemPrices = item.querySelectorAll(".price");
         const inputPrice = item.querySelector(".price-input");
         const discountInput = item.querySelector(".discount-input");
         const productPrice = item.getAttribute("data-price");
@@ -688,7 +662,7 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             }
             this.value = val;
-            countQuantity = val;
+            countQuantity = +val;
           } else {
             countQuantity = +quantity.value;
           }
@@ -714,6 +688,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
             getDigitsNumber(productTotalPrice, currentPrice);
             getResult();
+            updateProduct();
+            changeDateInOrder(spetificationTable);
           }
         });
 
@@ -723,7 +699,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity++;
           }
-          quantity.value = countQuantity;
+          quantity.value = +countQuantity;
           const currentPrice = !discountInput.value
             ? +getCurrentPrice(item.getAttribute("data-price")) *
               +quantity.value
@@ -743,6 +719,7 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = true;
           }
           updateProduct();
+          changeDateInOrder(spetificationTable);
         };
 
         minusButton.onclick = () => {
@@ -751,7 +728,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity--;
           }
-          quantity.value = countQuantity;
+          quantity.value = +countQuantity;
           if (quantity.value <= 1) {
             quantity.value = 1;
           }
@@ -776,6 +753,7 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = false;
           }
           updateProduct();
+          changeDateInOrder(spetificationTable);
         };
 
         if (inputPrice) {
@@ -784,7 +762,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
           quantity.onkeyup = () => {
             console.log("da");
-            countQuantity = quantity.value;
+            countQuantity = +quantity.value;
             const currentPrice = !discountInput.value
               ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
               : (new NumberParser("ru").parse(inputPrice.value) *
@@ -798,6 +776,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           plusButton.onclick = () => {
+            console.log("1234");
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
               : (+item.getAttribute("data-price") *
@@ -810,7 +789,7 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
               countQuantity++;
             }
-            quantity.value = countQuantity;
+            quantity.value = +countQuantity;
             minusButton.disabled = false;
             if (countQuantity >= 99999) {
               quantity.value = multiplicity
@@ -912,7 +891,6 @@ window.addEventListener("DOMContentLoaded", () => {
               (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
               100;
             getDigitsNumber(productPriceContainer, curentPrice);
-
             const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
             getResult();

@@ -22,12 +22,9 @@
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
-                    <div class="title_item">
-                        Ар.
-                        Поставщика:
-                    </div>
-                    <div class="title_item">Количество:</div>
+                    <div class="title_item">Остатки</div>
                     <div class="title_item">Цена за шт. в ₽:</div>
+                    <div class="title_item">Количество:</div>
                     <div class="title_item">Стоимость:</div>
                     <div class="title_item">Скидка Motrum:</div>
                     <div class="title_item">Доп.Скидка %:</div>
@@ -47,6 +44,8 @@
                         <div class="item_value">
                             {{ item.name }}
                             <br>
+                            <div class="article">Арт. {{ item.article_supplier }}</div>
+                            <br>
                             <textarea style="width: 200px;
                                              height: 15px;
                                              border-radius: 5px"
@@ -54,15 +53,37 @@
                                       name="comment-input-name"
                                       placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                         </div>
-                        <div class="item_value">{{ item.article_supplier }}</div>
-                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None %}
-                            <div class="item_value input_quantity quantity">
-                                <div class="input-container">
-                                    <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                        <div class="item_value">
+                            {% if item.stock %}
+                                <div class="stock_item">
+                                    {% if item.stock.to_order %}
+                                        Поставщик:
+                                        <br>
+                                        Под заказ
+                                    {% else %}
+                                        {% if item.stock.stock_supplier != None %}
+                                            Поставщик: <span class="supplier_unit">{{ item.stock.stock_supplier_unit }}</span> шт
+                                        {% else %}
+                                            Поставщик: -
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
-                            </div>
+                                <div class="stock_item">
+                                    Motrum: <span class="motrum_unit">{{ item.stock.stock_motrum }}</span>
+                                </div>
+                                <span class="span-transit">{{ item.stock.data_update|date:"d.m.Y" }}</span>
+                                <br>
+                                <span class="span-transit">
+                                    {% if item.stock.transit_count %}
+                                        Ближайшая поставка: {{ item.stock.data_transit|date:"d.m.Y" }} - {{ item.stock.transit_count }} шт.
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                {% if item.stock.to_order %}Под заказ{% endif %}
+                                Неизвестно
+                            {% endif %}
+                        </div>
+                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None %}
                             <div class="item_value">
                                 <input class="price-input"
                                        name="price-input-extra"
@@ -74,16 +95,23 @@
                                     {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
                                 </label>
                             </div>
-                            <div class="item_value input_totla-cost total_cost price">0</div>
-                        {% else %}
-                            <div class="item_value quantity">
+                            <div class="item_value input_quantity quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                    <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                     <button class="plus-button">+</button>
                                 </div>
                             </div>
+                            <div class="item_value input_totla-cost total_cost price">0</div>
+                        {% else %}
                             <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                            <div class="item_value quantity">
+                                <div class="input-container">
+                                    <button class="minus-button">-</button>
+                                    <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                    <button class="plus-button">+</button>
+                                </div>
+                            </div>
                             <div class="item_value total_cost price"></div>
                         {% endif %}
                         <div class="item_value">
@@ -137,6 +165,8 @@
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
+                                <div class="article">Арт. {{ item.product_new_article }}</div>
+                                <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
                                                  border-radius: 5px"
@@ -144,12 +174,11 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -168,7 +197,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -216,6 +245,8 @@
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
+                                <div class="article">Арт. {{ item.product_new_article }}</div>
+                                <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
                                                  border-radius: 5px"
@@ -223,12 +254,11 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -239,9 +269,7 @@
                                            placeholder="Введите цену по запросу"
                                            maxlength="10" />
                                     <label for="price-input-extra">
-                                        {% if item.product_price_extra_old %}
-                                            {{ item.data_old }} - {{ item.product_price_extra_old }}
-                                        {% endif %}
+                                        {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
                                     </label>
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
@@ -249,7 +277,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -300,6 +328,8 @@
                             <div class="item_value">
                                 {{ item.product_new }}
                                 <br>
+                                <div class="article">Арт. {{ item.product_new_article }}</div>
+                                <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
                                                  border-radius: 5px"
@@ -307,12 +337,11 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">{{ item.product_new_article }}</div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
@@ -331,7 +360,7 @@
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="number" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>

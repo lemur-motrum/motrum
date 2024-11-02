@@ -97,7 +97,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Товар с таким артикулом в корзине уже есть ",
                 articleInputError
               );
-              // articleInputError.style.border = "1px solid red";
             } else {
               throw new Error("Ошибка");
             }

@@ -644,7 +644,9 @@ def create_specification(request):
     print(context)
     return render(request, "admin_specification/catalog.html", context)
 
-
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def update_order(request):
+    pass 
 # Вьюха для сохранения спецификации
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def save_specification_view_admin(request):

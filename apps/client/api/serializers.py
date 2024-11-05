@@ -176,7 +176,7 @@ class OrderOktSerializer(serializers.ModelSerializer):
     status_full = serializers.CharField(source="get_status_display")
     requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
     cart_list = CartOktAllSerializer(source="cart", read_only=False)
-    # bill_status = serializers.SerializerMethodField()
+    is_superuser = serializers.SerializerMethodField()
     class Meta:
         model = Order
         fields = "__all__"
@@ -190,7 +190,15 @@ class OrderOktSerializer(serializers.ModelSerializer):
                 return True
         else:
             return None  
-        
+    def get_is_superuser(self, obj): 
+        print(self.context)   
+        user = self.context.get("request").user
+        if user.is_superuser:
+            return True
+        else:
+            return False
+ 
+    
     def to_representation(self, instance):
         representation = super(
             OrderOktSerializer, self

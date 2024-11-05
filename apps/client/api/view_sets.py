@@ -1133,7 +1133,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             small = False
 
-        serializer = OrderOktSerializer(queryset, many=True)
+        serializer = OrderOktSerializer(queryset, many=True,context={'request': request})
         data_response = {
             "data": serializer.data,
             "superadmin": superadmin,

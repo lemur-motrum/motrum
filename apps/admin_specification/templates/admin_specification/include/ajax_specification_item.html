@@ -25,7 +25,7 @@
                                 <span class="table_item_value_span">Дата завершения: {{ date_completed }}</span>
                         {% endif %}
                         
-                        {% if superadmin != false %}
+                        {% if is_superuser == true %}
                                 <br>
                                 <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
                                 <br>
@@ -99,9 +99,15 @@
                         {% elif status == "PAYMENT" and bill_sum_paid == 0 %}
                                 <button data-specication-id-to-bill="{{ specification }}"
                                         class="create-bill-button">Обновить счет</button>
+
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
                         {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
+                                {% if is_superuser == true %}
+                                <br>
+                                <a href=""><span class="table_item_value_span">Изменить счет</span></a>
+                                <br>
+                        {% endif %}
                         {% elif status == "CANCELED" and bill_file %}
                                 <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выставить новый счет </span>
                         {% elif status == "CANCELED" %}

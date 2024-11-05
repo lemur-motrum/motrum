@@ -44,7 +44,7 @@ class Vendor(models.Model):
     slug = models.SlugField(null=True, max_length=40)
     supplier = models.ForeignKey(
         Supplier,
-        verbose_name="Поставщик",
+        verbose_name="Поставщик`",
         on_delete=models.PROTECT,
     )
     currency_catalog = models.ForeignKey(
@@ -316,7 +316,11 @@ class SupplierCategoryProductAll(models.Model):
         verbose_name_plural = "Подгруппы поставщиков"
 
     def __str__(self):
-        return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+        return f"{self.name}"
+        # return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+        
+        
+        
         # request = RequestMiddleware(get_response=None)
         # request = request.thread_local.current_request
     

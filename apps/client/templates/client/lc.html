@@ -12,6 +12,7 @@
         </div>
         <div class="navigation-and-sorting">
             <div class="navigation">
+            
                 {% my_order_link %}
                 {% comment %} {% url 'client:my_orders' as my_orders_url %}
                 {% if request.get_full_path == my_orders_url or type_url == "/my_orders" %}

@@ -20,6 +20,7 @@ def index(request):
 
 
 def my_orders(request):
+    print(request)
     # current_user = request.user.id
 
     # cookie = request.COOKIES.get("client_id")

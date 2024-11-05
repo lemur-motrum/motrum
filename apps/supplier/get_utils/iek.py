@@ -626,7 +626,7 @@ def iek_api():
                             # lot = lots[0]
                             # stock_supplier_unit = lots[1]
 
-                        stock_motrum = 0
+                        
 
                         if "order_multiplicity" in data_item:
                             if data_item["order_multiplicity"] > 1:
@@ -757,40 +757,54 @@ def iek_api():
                                 stock_supplier = 0
 
 
-                        stock_supplier = get_iek_stock_one(article)
-                        if stock_supplier is not False:
-                            stock_prod_stock_supplier = stock_supplier[0] / int(
-                                order_multiplicity
-                            )
-                        else:
-                            stock_prod_stock_supplier = False    
-                        if stock_prod_stock_supplier:
+                        # stock_supplier = get_iek_stock_one(article) #(stock,to_order,is_none_error)
+                        stock,to_order,is_none_error = get_iek_stock_one(article) #(stock,to_order,is_none_error)
+                        print("stock_supplier",stock,to_order,is_none_error)
+                  
+                        # if is_none_error:
+                        #     if stock != 0:
+                        #         stock_prod_stock_supplier = stock / int(
+                        #             order_multiplicity
+                        #         )
+                        #     else:
+                        #         stock_prod_stock_supplier = 0
+                        # else:
+                        #     stock_prod_stock_supplier = False    
+                        # print(stock_prod_stock_supplier)
+                        
+                        if is_none_error:
                             if lot:
+                                if stock != 0:
+                                    stock_prod_stock_supplier = stock / int(
+                                        order_multiplicity
+                                    )
+                                else:
+                                    stock_prod_stock_supplier = 0
+                                    
+                                    
                                 try:
                                     stock_prod = Stock.objects.get(prod=article)
 
                                 except Stock.DoesNotExist:
                                     stock_prod = Stock(
                                         prod=article,
-                                        # lot=lot,
-
                                     )
 
                                 finally:
                                     stock_prod.lot = lot
                                     stock_prod.stock_supplier = stock_prod_stock_supplier
-                                    stock_prod.stock_supplier_unit = stock_supplier[0]
-                                    stock_prod.to_order = stock_supplier[1]
+                                    stock_prod.stock_supplier_unit = stock
+                                    stock_prod.to_order = to_order
                                     stock_prod.lot_complect = lot_complect
                                     stock_prod.order_multiplicity = order_multiplicity
                                     stock_prod.is_one_sale = is_one_sale
-                                    # stock_prod.data_update = datetime.datetime.now()
                                     stock_prod._change_reason = "Автоматическое"
                                     stock_prod.save()
 
                                     # update_change_reason(stock_prod, "Автоматическое")
                         else:
                             pass
+                    
                     except Exception as e:
                         print(e)
                         error = "file_api_error"
@@ -1056,7 +1070,7 @@ def iek_api():
                 #             # lot = lots[0]
                 #             # stock_supplier_unit = lots[1]
 
-                #             stock_motrum = 0
+                #            
 
                 #             if "order_multiplicity" in data_item:
                 #                 if data_item["order_multiplicity"] > 1:
@@ -1170,7 +1184,7 @@ def iek_api():
                 #                     stock_prod = Stock(
                 #                         prod=article,
                 #                         # lot=lot,
-                #                         # stock_motrum = stock_motrum
+                #                       
                 #                     )
 
                 #                 finally:
@@ -1229,7 +1243,6 @@ def iek_api():
                     data = response.json()
 
                     if data:
-                        print(data)
                         if len(data["shopItems"]) > 0:
                             for data_item in data["shopItems"]:
                                 if data_item["zakaz"] == 1:
@@ -1243,24 +1256,20 @@ def iek_api():
                                     to_order = False
 
                                 stock = 0
-
-                                # product = data_item["sku"]
-
                                 for a in data_item["residues"].values():
                                     stock += a
-
-                            return (stock, to_order)
+                            is_none_error = True
+                            return (stock,to_order,is_none_error)
                         else:
-                            stock = 0
+                            stock = None
                             to_order = False
-
-                            return (stock, to_order)
+                            is_none_error = False
+                            return (stock,to_order,is_none_error)
                     else:
-
-                        stock = 0
-                        to_order = True
-
-                        return False
+                        stock = None
+                        to_order = False
+                        is_none_error = False
+                        return (stock,to_order,is_none_error)
                 except Exception as e:
 
                     error = "file_api_error"
@@ -1268,24 +1277,25 @@ def iek_api():
 
                     info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}"
                     e = error_alert(error, location, info)
+                    stock = None
+                    to_order = False
+                    is_none_error = False
+                    return (stock,to_order,is_none_error)
             else:
                 stock = None
-                to_order = True
-
-                # return (stock, to_order)
-                return False
-                # error = "file_api_error"
-                # location = "Загрузка фаилов IEK"
-
-                # info = f"ошибка при чтении остатков - ответ апи неверный Тип ошибки: Артикул{prod.article_supplier}"
-                # e = error_alert(error, location, info)
+                to_order = False
+                is_none_error = False
+                return (stock,to_order,is_none_error)
+               
         except Exception as e:
-
             error = "file_api_error"
             location = "Загрузка фаилов IEK"
-
             info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}"
             e = error_alert(error, location, info)
+            stock = None
+            to_order = False
+            is_none_error = False
+            return (stock,to_order,is_none_error)
 
     def get_iek_property(url_service, url_params):
         url = "{0}{1}?{2}".format(base_url, url_service, url_params)
@@ -1358,19 +1368,19 @@ def iek_api():
             pass
 
     # get_iek_product("products", f"groupId=01.01.01")
-    # get_iek_product("products", f"art=AR-M06N-1-D002")
-    # get_iek_property("etim",  f"art=MKP12-V-04-40-20-U")
-
-    # категории
-    get_iek_category("ddp", None)
-    # запись продуктов и пропсовдля каждого по категориям
-    for item_iek_save_categ in iek_save_categ:
-        get_iek_product("products", f"groupId={item_iek_save_categ}")
-        get_iek_property("etim", f"groupId={item_iek_save_categ}")
-
-    # остатки на складах отдельная функция
+    get_iek_product("products", f"art=MPOB-030-2-00-S")
+    # get_iek_property("etim",  f"art=MPOB-030-2-00-S")
 
 
+    # # категории
+    # get_iek_category("ddp", None)
+    # # запись продуктов и пропсовдля каждого по категориям
+    # for item_iek_save_categ in iek_save_categ:
+    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
+    #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
+
+
+# остатки на складах отдельная функция
 def get_iek_stock():
     encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
     decoded = encoded.decode()

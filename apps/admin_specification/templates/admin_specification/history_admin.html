@@ -1,5 +1,7 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
+  {% load number_into_digits %}
+  
   <div class="logout_btn">
     <p>Пользователь: {{ request.user.username }}</p>
     <a href="{% url "user:logout_admin" %}">Выход</a>
@@ -73,19 +75,19 @@
                           <strong>{{ change.field }}:</strong>
                           {% if change.field == "Удалить" %}
                             {% get_verbose_field_name object "name" record.history_object %}
-                            {{ record.history_object }}
+                            1111{{ record.history_object }}
                           {% endif %}
                           {% if change.old == "None" %}
                             нет
                           {% else %}
-                            {{ change.old }}
+                            {{ change.old|number_into_digits }}
                           {% endif %}
                           {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
                           &nbsp;&rarr;&nbsp;&nbsp;
                           {% if change.new == "None" %}
                             нет
                           {% else %}
-                            {{ change.new }}
+                            {{ change.new|number_into_digits }}
                           {% endif %}
                         </li>
                       {% endfor %}
@@ -149,14 +151,14 @@
                             {% if change.old == "None" %}
                               нет
                             {% else %}
-                              {{ change.old }}
+                              {{ change.old|number_into_digits }}
                             {% endif %}
                             {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
                             &nbsp;&rarr;&nbsp;&nbsp;
                             {% if change.new == "None" %}
                               нет
                             {% else %}
-                              {{ change.new }}
+                              {{ change.new|number_into_digits}}
                             {% endif %}
                           </li>
                         {% endfor %}

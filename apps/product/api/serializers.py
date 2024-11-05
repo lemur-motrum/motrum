@@ -72,6 +72,15 @@ class ProductSpesifSerializer(serializers.ModelSerializer):
             "name",
         )
 
+class ProductSearchSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "article_supplier",
+            "name",
+        )
 
 class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
@@ -98,8 +107,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if data["price"]["rub_price_supplier"]:
-            if self.context["request"].user:
+        if data["price"] and data["price"]["rub_price_supplier"]:
+            if self.context and self.context["request"] and self.context["request"].user:
                 if self.context["request"].user.is_staff == False:
                     try:
                         client = Client.objects.get(id=self.context["request"].user.id)

@@ -600,6 +600,7 @@ window.addEventListener("DOMContentLoaded", () => {
           })
             .then((response) => response.json())
             .then((response) => {
+              console.log(response.data)
               localStorage.removeItem("specificationValues");
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);

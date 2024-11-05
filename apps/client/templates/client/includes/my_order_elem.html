@@ -1,4 +1,5 @@
 {% url 'client:my_orders' as my_orders_url %}
+{{request}}
 {% if request.get_full_path == my_orders_url or type_url == "/my_orders" %}
     <span class="nav-elem active">мои заказы</span>
     <span class="global_cart_count">

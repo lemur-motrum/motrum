@@ -12,10 +12,12 @@ from apps.core.tasks import currency_chek, del_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
+from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
+from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
-from apps.supplier.get_utils.one_c import one_c_price
+
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
@@ -34,8 +36,9 @@ from simple_history.utils import update_change_reason
 def add_iek(request):
 
     title = "Услуги"
-    get_motrum_storage()
-    
+ 
+    specification_date_stop()
+    bill_date_stop()
     responsets = ["233", "2131"]
     # responsets = 0
     context = {
@@ -67,7 +70,6 @@ def test(request):
 
 
 def add_one_c(request):
-    one_c_price()
     title = "Услуги"
    
 

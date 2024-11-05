@@ -10,7 +10,7 @@ from django.shortcuts import render
 from apps import specification
 from apps.client.models import AccountRequisites, Client, Order
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites
-from apps.core.utils import  get_price_motrum, save_specification
+from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
     CategoryProduct,
@@ -35,7 +35,7 @@ from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
 from django.db.models import Q, F, OrderBy
-
+from django.db.models.functions import Coalesce
 
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -57,9 +57,15 @@ def all_categories(request):
             "group",
         )
         .filter(q_object)
-        .distinct("vendor")
+        
+        .distinct("vendor__name")
+        .order_by('vendor__name')
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    for vendor in product_vendor:
+        if vendor['vendor__name'] == None:
+            vendor['vendor__name'] = "Не установлен"
+    
 
     product_list = (
         Product.objects.select_related(
@@ -127,6 +133,7 @@ def all_categories(request):
     else:
         price_url = False
 
+    
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -175,9 +182,13 @@ def group_product(request, cat):
             "group",
         )
         .filter(q_object)
-        .distinct("vendor")
+        .order_by('vendor__name')
+        .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    for vendor in product_vendor:
+        if vendor['vendor__name'] == None:
+            vendor['vendor__name'] = "Не установлен"
 
     product_list = (
         Product.objects.select_related(
@@ -324,9 +335,13 @@ def specifications(request, cat, gr):
             "group",
         )
         .filter(q_object)
-        .distinct("vendor")
+        .order_by("vendor__name")
+        .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    for vendor in product_vendor:
+        if vendor['vendor__name'] == None:
+            vendor['vendor__name'] = "Не установлен"
 
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
@@ -434,8 +449,7 @@ def specifications(request, cat, gr):
 # рендер страницы корзины
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-    
- 
+
     cart = request.COOKIES.get("cart")
     # если есть корзина
     if cart != None:
@@ -448,14 +462,12 @@ def create_specification(request):
         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
             "product__id"
         )
-        
-        
 
         product_cart = ProductCart.objects.filter(cart=cart)
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-     
+
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
@@ -465,7 +477,7 @@ def create_specification(request):
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-  
+
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
@@ -494,8 +506,7 @@ def create_specification(request):
 
         # новая спецификация
         except Specification.DoesNotExist:
-            
-            
+
             try:
                 order = Order.objects.get(cart=cart)
                 specification = None
@@ -503,36 +514,34 @@ def create_specification(request):
                 product_specification = ProductSpecification.objects.filter(
                     specification=0
                 )
-              
+
                 mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
-                "requisites"
-            )
-      
-                
-                if  order.account_requisites:
+                    "requisites"
+                )
+
+                if order.account_requisites:
                     requisites = order.requisites
-                    client_req_all = AccountRequisites.objects.filter(requisites=requisites)  
-                else:     
+                    client_req_all = AccountRequisites.objects.filter(
+                        requisites=requisites
+                    )
+                else:
                     client_req_all = None
-                
-                if  order.requisites:  
+
+                if order.requisites:
                     client_req = order.account_requisites
-                else:    
-                    client_req = None    
-                    
-                
+                else:
+                    client_req = None
+
                 title = "Новый заказ"
-                
-                
+
                 update_spesif = False
                 product_new_more = None
-                
-                
+
             except Order.DoesNotExist:
                 specification = None
-                product_spes_list = ProductSpecification.objects.filter(specification=specification).values_list(
-                "product__id"
-            )
+                product_spes_list = ProductSpecification.objects.filter(
+                    specification=specification
+                ).values_list("product__id")
                 product_specification = ProductSpecification.objects.filter(
                     specification=specification
                 )
@@ -548,7 +557,6 @@ def create_specification(request):
                 update_spesif = False
                 client_req = None
                 client_req_all = None
-
 
         # продукты которые есть в окт в корзине
         product = (
@@ -600,8 +608,6 @@ def create_specification(request):
                 ),
             )
         )
-
-    
 
     # корзины нет
     else:
@@ -676,7 +682,7 @@ def get_all_specifications(request):
     user_admin_type = user_admin.admin_type
     if user_admin_type == "ALL":
         superuser = True
-      
+
     elif user_admin_type == "BASE":
         all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
         superuser = False
@@ -684,18 +690,18 @@ def get_all_specifications(request):
     media_root = os.path.join(MEDIA_ROOT, "")
 
     title = "Все заказы"
-    
+
     sort_specif = request.GET.get("specification")
     if sort_specif:
         sort_specif = True
     else:
-        sort_specif = False    
+        sort_specif = False
     context = {
         "title": title,
         "specifications": all_specifications,
         "media_root": media_root,
-        "sort_specif":sort_specif,
-        "superuser":superuser,
+        "sort_specif": sort_specif,
+        "superuser": superuser,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
@@ -753,9 +759,13 @@ def instruments(request, cat):
             "group",
         )
         .filter(q_object)
-        .distinct("vendor")
+        .order_by("vendor__name")
+        .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug")
     )
+    for vendor in product_vendor:
+        if vendor['vendor__name'] == None:
+            vendor['vendor__name'] = "Не установлен"
 
     product_list = (
         Product.objects.select_related(
@@ -912,13 +922,24 @@ def search_product(request):
             .filter(check_to_order=True)
             .order_by("pk")
         )
-
-    product_list = product_list.filter(
-        Q(name__icontains=value)
-        | Q(article__icontains=value)
-        | Q(article_supplier__icontains=value)
-        | Q(additional_article_supplier__icontains=value)
-    )
+    search_input = value.split(" ")
+    # product_list = product_list.filter(
+    #     Q(name__icontains=value)
+    #     | Q(article__icontains=value)
+    #     | Q(article_supplier__icontains=value)
+    #     | Q(additional_article_supplier__icontains=value)
+    # )
+    product_list = Product.objects.filter(
+            Q(name__icontains=search_input[0])
+            | Q(article__icontains=search_input[0])
+            | Q(article_supplier__icontains=search_input[0])
+            | Q(additional_article_supplier__icontains=search_input[0])
+        )
+    for search_item in search_input[1:]:
+            product_list = product_list.filter(Q(name__icontains=search_item)
+            | Q(article__icontains=search_item)
+            | Q(article_supplier__icontains=search_item)
+            | Q(additional_article_supplier__icontains=search_item))
 
     items = product_list[start:counter]
 

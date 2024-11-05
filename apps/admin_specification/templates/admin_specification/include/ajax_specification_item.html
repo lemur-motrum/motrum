@@ -24,7 +24,8 @@
                                 <br>
                                 <span class="table_item_value_span">Дата завершения: {{ date_completed }}</span>
                         {% endif %}
-                        {% if superuser != false %}
+                        
+                        {% if superadmin != false %}
                                 <br>
                                 <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
                                 <br>

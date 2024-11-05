@@ -34,6 +34,7 @@ from apps.client.api.serializers import (
     LkOrderDocumentSerializer,
     LkOrderSerializer,
     OrderOktSerializer,
+    OrderSaveCartSerializer,
     OrderSerializer,
     RequisitesSerializer,
 )
@@ -530,10 +531,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             try:
                 order = Order.objects.get(cart_id=cart)
-                serializer = self.serializer_class(order, data=data_order, many=False)
+                serializer = OrderSaveCartSerializer(order, data=data_order, many=False)
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
-                    order = serializer.save()
+                    serializer.save()
                     cart.is_active = True
                     cart.save()
                     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -545,11 +546,11 @@ class OrderViewSet(viewsets.ModelViewSet):
             except Order.DoesNotExist:
 
                 print(98989898)
-                serializer = self.serializer_class(data=data_order, many=False)
+                serializer = OrderSaveCartSerializer(data=data_order, many=False)
                 if serializer.is_valid():
                     cart.is_active = True
                     cart.save()
-                    order = serializer.save()
+                    serializer.save()
 
                     print(serializer.data)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -1091,7 +1092,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(cart__cart_admin_id__isnull=False)
         elif user_admin_type == "BASE":
             q_object &= Q(cart__cart_admin_id=request.user.id)
-
+        
         sort_specif = request.query_params.get("specification")
 
         if sort_specif == "+":
@@ -1114,8 +1115,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
+        print(q_object)
 
         page_count = Order.objects.filter(q_object).count()
+        print(page_count)
         queryset_next = Order.objects.filter(q_object)[
             count + count_last : count + count_last + 1
         ].exists()

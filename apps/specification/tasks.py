@@ -41,9 +41,10 @@ def specification_date_stop(self):
 )
 def bill_date_stop(self):
     try:
-        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0).exclude(status="CANCELED").exclude(status="COMPLETED")
+        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0,date_completed__isnull=True).exclude(status="CANCELED")
 
         for bill_item in bill:
+            print(bill)
             now = datetime.date.today()
             date = bill_item.bill_date_stop
 
@@ -51,7 +52,6 @@ def bill_date_stop(self):
                 bill_item.tag_stop = False
                 bill_item._change_reason = "Автоматическое"
                 bill_item.status = "CANCELED"
-                bill_item._change_reason = "Автоматическое"
                 bill_item.save()
 
                 

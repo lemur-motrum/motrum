@@ -557,20 +557,21 @@ class ProductPropertyInline(admin.TabularInline):
 
         return qs.filter(hide=False)
 
+
 @admin.action(description="Добавить документы для выбранных товаров")
 def add_documents(ProductAdmin, request, queryset):
     from django.http import HttpResponseRedirect
-    from django.urls import reverse 
+    from django.urls import reverse
+
     selected = queryset.values("pk")
 
     id_selected = [(object.id) for object in queryset]
     id_selected = str(id_selected)
-    
-    url = reverse('product:add_document_admin') + f'?context={id_selected}'
+
+    url = reverse("product:add_document_admin") + f"?context={id_selected}"
     return HttpResponseRedirect(url)
 
 
-    
 class ProductAdmin(SimpleHistoryAdmin):
     show_facets = admin.ShowFacets.ALWAYS
     # form = ProductChangeForm
@@ -583,7 +584,15 @@ class ProductAdmin(SimpleHistoryAdmin):
         "name",
     ]
     search_help_text = "Поиск может осуществляться по: Артикулу Motrum, Артикулу поставщика,Дополнительному артикулу, Названию товара"
-    list_filter = ["supplier", "vendor", "category", "group","category_supplier","group_supplier","category_supplier_all"]
+    list_filter = [
+        "supplier",
+        "vendor",
+        "category",
+        "group",
+        # "category_supplier",
+        # "group_supplier",
+        # "category_supplier_all",
+    ]
     list_display = [
         "article",
         "article_supplier",
@@ -621,6 +630,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         ),
     ]
     actions = [add_documents]
+
     # def get_actions(self, request):
     #     actions = super().get_actions(request)
     #     if request.user.username[0].upper() != "J":
@@ -657,8 +667,10 @@ class ProductAdmin(SimpleHistoryAdmin):
 
             product_blank = f"{product_blank}{product_blank_local}"
             return product_blank
+
         # print(obj.productdocument_set.all())
         product = Product.objects.filter(id=obj.id).values()
+        
         product_blank_new = get_blank(product, Product, product_blank)
 
         try:
@@ -697,25 +709,32 @@ class ProductAdmin(SimpleHistoryAdmin):
         return mark_safe("<ul    >{}</ul>".format(product_blank_new))
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request).select_related(
+        qs = (
+            super()
+            .get_queryset(request)
+            .select_related(
                 "supplier",
-              
                 "vendor",
                 "category",
                 "group",
                 "category_supplier_all",
                 "group_supplier",
                 "category_supplier",
-            ).prefetch_related(Prefetch("stock"),Prefetch("price"),
-                            Prefetch("productproperty_set"),
-                            Prefetch("productimage_set"),
-                            Prefetch("productdocument_set"),
-                     
-                            # Prefetch("supplier__suppliergroupproduct"),
-                            # Prefetch("supplier__vendor"),
-                            # Prefetch("supplier__supplier"),
-                            # Prefetch("supplier__suppliercategoryproductall"),
-                            )
+                
+            )
+            .prefetch_related(
+                Prefetch("stock"),
+                Prefetch("price"),
+                Prefetch("productproperty_set"),
+                Prefetch("productimage_set"),
+                Prefetch("productdocument_set"),
+                
+                # Prefetch("supplier__suppliergroupproduct"),
+                # Prefetch("supplier__vendor"),
+                # Prefetch("supplier__supplier"),
+                # Prefetch("supplier__suppliercategoryproductall"),
+            )
+        )
         # qs = qs.select_related(
         #         "supplier",
         #         "vendor",
@@ -726,8 +745,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         #         "category_supplier",
         #     )
         return qs
-  
-    
+
     def delete_queryset(self, request, queryset):
         for obj in queryset.all():
             obj.delete()
@@ -865,7 +883,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             promote_product_slider(obj)
         else:
             obj.autosave_tag = False
-        
+
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
@@ -1065,8 +1083,6 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
-
-
 
 
 class LotAdmin(admin.ModelAdmin):

@@ -211,7 +211,7 @@ def prompower_api():
                     lot = Lot.objects.get(name="штука")
                     stock_supplier = data_item["instock"]
                     lot_complect = 1
-                    stock_motrum = 0
+                    
                     
                     img_list = data_item["img"]
                     
@@ -418,8 +418,7 @@ def prompower_api():
                         except Stock.DoesNotExist:
                             stock_prod = Stock(
                                 prod=article, 
-                                lot=lot, 
-                                stock_motrum=stock_motrum
+                                lot=lot,
                             )
                         finally:
                             stock_prod.stock_supplier = stock_supplier

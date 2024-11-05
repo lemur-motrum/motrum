@@ -4,5 +4,13 @@ register = template.Library()
 
 @register.filter
 def  number_into_digits(value):
-    num = "{0:,.2f}".format(value).replace(",", " ")
-    return num
+
+    try:
+        value = float(value)
+
+        num = "{0:,.2f}".format(value).replace(",", " ").replace('.', ',')
+        return num
+    
+    except ValueError:
+        return value
+       

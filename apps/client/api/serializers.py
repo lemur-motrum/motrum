@@ -71,9 +71,17 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = "__all__"
 
+class OrderSaveCartSerializer(serializers.ModelSerializer):
+    specification_list = ListsProductSpecificationSerializer(
+        source="specification", read_only=True
+    )
+    class Meta:
+        model = Order
+        fields = "__all__"        
+
 
 class LkOrderSerializer(serializers.ModelSerializer):
-    status_full = serializers.CharField(source="get_status_display")
+    status_full = serializers.CharField(source="get_status_display",read_only=True)
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
@@ -168,7 +176,7 @@ class OrderOktSerializer(serializers.ModelSerializer):
     status_full = serializers.CharField(source="get_status_display")
     requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
     cart_list = CartOktAllSerializer(source="cart", read_only=False)
-    
+    # bill_status = serializers.SerializerMethodField()
     class Meta:
         model = Order
         fields = "__all__"

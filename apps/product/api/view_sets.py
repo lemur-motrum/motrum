@@ -1,6 +1,7 @@
 import math
 from django.db.models import Prefetch
 from unicodedata import category
+from django.forms import CharField
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -8,6 +9,7 @@ from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
+    ProductSearchSerializer,
     ProductSerializer,
 )
 from apps.product.models import (
@@ -18,7 +20,7 @@ from apps.product.models import (
     ProductCart,
     ProductProperty,
 )
-from django.db.models import Q, F, OrderBy
+from django.db.models import Q, F, OrderBy,Value
 
 from apps.specification.models import ProductSpecification
 
@@ -156,6 +158,44 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         return Response(data=data_response, status=status.HTTP_200_OK)
 
+    # поиск товар в окт
+    @action(detail=False, methods=["post","get"], url_path=r"search-product")
+    def search_product(self, request, *args, **kwargs):
+        data = request.data
+        # search_input = data["product"]
+        search_input = "кнопка грибок"
+        search_input = search_input.split(" ")
+     
+     
+        
+        # # вариант ищет каждое слово все рабоатет 
+        queryset = Product.objects.filter(
+            Q(name__icontains=search_input[0])
+            | Q(article__icontains=search_input[0])
+            | Q(article_supplier__icontains=search_input[0])
+            | Q(additional_article_supplier__icontains=search_input[0])
+        ) 
+        # del search_input[0]
+
+
+        for search_item in search_input[1:]:
+            queryset = queryset.filter(Q(name__icontains=search_item)
+            | Q(article__icontains=search_item)
+            | Q(article_supplier__icontains=search_item)
+            | Q(additional_article_supplier__icontains=search_item))
+        
+        # стандатный варинт ищет целиокм  
+        # queryset = Product.objects.filter(
+        #     Q(name__icontains=search_input)
+        #     | Q(article__icontains=search_input)
+        #     | Q(article_supplier__icontains=search_input)
+        #     | Q(additional_article_supplier__icontains=search_input)
+        # ) 
+        
+        print(queryset)
+        serializer = ProductSearchSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.filter()
@@ -228,7 +268,12 @@ class CartViewSet(viewsets.ModelViewSet):
                     return response
 
                 except Cart.DoesNotExist:
-                    data = {"session_key": session, "save_cart": False, "client": None, "cart_admin":request.user}
+                    data = {
+                        "session_key": session,
+                        "save_cart": False,
+                        "client": None,
+                        "cart_admin": request.user,
+                    }
                     serializer = self.serializer_class(data=data, many=False)
                     if serializer.is_valid():
                         serializer.save()

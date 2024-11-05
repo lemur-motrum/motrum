@@ -93,7 +93,6 @@ def add_file_emas(new_file, obj):
                             stock_prod = Stock(
                                 prod=article,
                                 lot=lot,
-                                stock_motrum=0,
                                 lot_complect=1,
                             )
 

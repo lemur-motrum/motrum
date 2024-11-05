@@ -168,14 +168,12 @@ def get_avangard_file(new_file, obj):
                     try:
                         stock_prod = Stock.objects.get(prod=article)
                     except Stock.DoesNotExist:
-                        stock_motrum = 0
                         stock_supplier = None
                         lot = Lot.objects.get(name="штука")
 
                         stock_prod = Stock(
                             prod=article,
                             lot=lot,
-                            stock_motrum=stock_motrum,
                             stock_supplier=stock_supplier,
                             data_update=datetime.datetime.now(),
                         )

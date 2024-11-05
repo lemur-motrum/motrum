@@ -49,7 +49,7 @@ def veda_api():
             if stock_supplier == "":
                 stock_supplier = 0
             lot_complect = 1
-            stock_motrum = 0
+        
             
             
             # транзитная инфа
@@ -125,7 +125,6 @@ def veda_api():
                 stock_prod = Stock(
                     prod=article, 
                     lot=lot, 
-                    stock_motrum=stock_motrum
                 )
             finally:
                 print(9999999999999999999)

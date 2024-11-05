@@ -1,5 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
+  {% load number_into_digits %}
   {% load i18n %}
   {% load url from simple_history_compat %}
   {% load admin_urls %}
@@ -80,14 +81,14 @@
                           {% if change.old == "None" %}
                             нет
                           {% else %}
-                            {{ change.old }}
+                            {{ change.old|number_into_digits }}
                           {% endif %}
                           {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
                           &nbsp;&rarr;&nbsp;&nbsp;
                           {% if change.new == "None" %}
                             нет
                           {% else %}
-                            {{ change.new }}
+                            {{ change.new|number_into_digits }}
                           {% endif %}
                         </li>
                       {% endfor %}

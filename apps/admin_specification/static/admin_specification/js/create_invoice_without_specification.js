@@ -2,6 +2,7 @@ import {
   getCookie,
   showErrorValidation,
   getCurrentPrice,
+  deleteCookie,
 } from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
@@ -131,13 +132,56 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => {
             if (response.status == 200 || response.status == 201) {
+              localStorage.removeItem("specificationValues");
+              deleteCookie("key", "/", window.location.hostname);
+              deleteCookie("specificationId", "/", window.location.hostname);
+              deleteCookie("cart", "/", window.location.hostname);
               return response.json();
             } else {
               throw new Error("Ошибка");
             }
           })
-          .then((response) => {
-            fetch("/api/v1/order/432/create-bill-admin/");
+          .then((response1) => {
+            console.log("response1", response1);
+            fetch(
+              `/api/v1/order/${response1.specification}/get-specification-product/`,
+              {
+                method: "GET",
+                headers: {
+                  "X-CSRFToken": csrfToken,
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+              .then((response) => {
+                if (response.status == 200 || response.status == 201) {
+                  return response.json();
+                } else {
+                  throw new Error("Ошибка");
+                }
+              })
+              .then((response2) => {
+                const dataObj = response2.map((elem) => {
+                  return {
+                    id: elem["id"],
+                    text_delivery: elem["date_delivery"],
+                  };
+                });
+                const data = JSON.stringify(dataObj);
+                fetch(`/api/v1/order/${response1.id}/create-bill-admin/`, {
+                  method: "UPDATE",
+                  body: data,
+                  headers: {
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json",
+                  },
+                }).then((response3) => {
+                  if (response3.status == 200 || response2.status == 201) {
+                    window.location.href =
+                      "/admin_specification/all_specifications/";
+                  }
+                });
+              });
           });
       }
     };

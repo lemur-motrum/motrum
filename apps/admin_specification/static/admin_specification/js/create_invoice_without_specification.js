@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const dateDeliveryAll = document.querySelector(
       'textarea[name="delivery-date-all-input-name-all"]'
     ).value;
-    let validate = true;
+
     const products = [];
     const motrumRequsits = document
       .querySelector("[name='mortum_req']")
@@ -35,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationWrapepr.querySelectorAll(".item_container");
 
     button.onclick = () => {
+      let validate = true;
       const clientRequsits = document
         .querySelector("[name='client-requisit']")
         .getAttribute("value");
@@ -57,8 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const productSpecificationId = specificationItem.getAttribute(
           "data-product-specification-id"
         );
-        const deliveryDate =
-          specificationItem.querySelector(".delivery_date").value;
+        const deliveryDate = specificationItem.querySelector(".delivery_date");
         const commentItem = specificationItem.querySelector(
           'textarea[name="comment-input-name"]'
         ).value;
@@ -66,7 +66,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const product = {
           product_id: +itemID,
-          // product_cart_id: +itemCartID,
           quantity: +itemQuantity,
           price_exclusive: +itemPriceStatus,
           price_one: +getCurrentPrice(itemPrice),
@@ -74,21 +73,27 @@ window.addEventListener("DOMContentLoaded", () => {
             ? productSpecificationId
             : null,
           extra_discount: extraDiscount.value,
-          date_delivery: deliveryDate,
+          date_delivery: deliveryDate.value,
           product_name_new: nameProductNew,
           product_new_article: nameProductNew,
           comment: commentItem ? commentItem : null,
         };
+        if (deliveryDate) {
+          if (!deliveryDate.value) {
+            validate = false;
+            deliveryDate.style.border = "1px solid red";
+            deliveryDate.style.borderRadius = "10px";
+          }
+        }
 
         if (inputPrice) {
           if (!inputPrice.value) {
             validate = false;
             inputPrice.style.border = "1px solid red";
             inputPrice.style.borderRadius = "10px";
-          } else {
-            products.push(product);
           }
-        } else {
+        }
+        if (validate === true) {
           products.push(product);
         }
       });
@@ -162,9 +167,32 @@ window.addEventListener("DOMContentLoaded", () => {
               })
               .then((response2) => {
                 const dataObj = response2.map((elem) => {
+                  const createTextDateDelivery = () => {
+                    const orderData = new Date(elem["date_delivery"]);
+                    const today = new Date();
+                    const delta = orderData.getTime() - today.getTime();
+                    const dayDifference = +Math.floor(
+                      delta / 1000 / 60 / 60 / 24
+                    );
+                    const resultDays = +Math.ceil(dayDifference / 7);
+
+                    function num_word(value, words) {
+                      value = Math.abs(value) % 100;
+                      var num = value % 10;
+                      if (value > 10 && value < 20) return words[2];
+                      if (num > 1 && num < 5) return words[1];
+                      if (num == 1) return words[0];
+                      return words[2];
+                    }
+                    return `${resultDays} ${num_word(resultDays, [
+                      "неделя",
+                      "недели",
+                      "недель",
+                    ])}`;
+                  };
                   return {
                     id: elem["id"],
-                    text_delivery: elem["date_delivery"],
+                    text_delivery: createTextDateDelivery(),
                   };
                 });
                 const data = JSON.stringify(dataObj);

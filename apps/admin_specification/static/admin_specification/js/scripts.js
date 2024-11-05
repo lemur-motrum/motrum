@@ -10,6 +10,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { changeDateInOrder } from "../js/change_date_in_order.js";
+import { editMotrumPrice } from "../js/edit_motrum_price.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -689,6 +690,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
             getDigitsNumber(productTotalPrice, currentPrice);
             changeDateInOrder(spetificationTable);
+            editMotrumPrice(spetificationTable);
             getResult();
             updateProduct();
           }
@@ -720,6 +722,7 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = true;
           }
           changeDateInOrder(spetificationTable);
+          editMotrumPrice(spetificationTable);
           updateProduct();
         };
 
@@ -754,6 +757,7 @@ window.addEventListener("DOMContentLoaded", () => {
             minusButton.disabled = false;
           }
           changeDateInOrder(spetificationTable);
+          editMotrumPrice(spetificationTable);
 
           updateProduct();
         };
@@ -776,6 +780,7 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(totalPrice, price);
             getResult();
             changeDateInOrder(spetificationTable);
+            editMotrumPrice(spetificationTable);
           };
 
           plusButton.onclick = () => {
@@ -805,6 +810,7 @@ window.addEventListener("DOMContentLoaded", () => {
               minusButton.disabled = false;
             }
             changeDateInOrder(spetificationTable);
+            editMotrumPrice(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -836,6 +842,7 @@ window.addEventListener("DOMContentLoaded", () => {
               plusButton.disabled = false;
             }
             changeDateInOrder(spetificationTable);
+            editMotrumPrice(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -869,6 +876,7 @@ window.addEventListener("DOMContentLoaded", () => {
               totalPrice.textContent = 0;
             }
             changeDateInOrder(spetificationTable);
+            editMotrumPrice(spetificationTable);
             updateProduct();
             getResult();
           });

@@ -30,7 +30,6 @@
                     <div class="title_item">Доп.Скидка %:</div>
                     <div class="title_item">Срок поставки:</div>
                 </div>
-                
                 {% for item in product %}
                     <div class="item_container"
                          data-product-name-new=""
@@ -84,14 +83,10 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% if bill_upd %}<!--если изменение счета главным админом-->
+                        {% if bill_upd %}
+                            <!--если изменение счета главным админом-->
                             <div class="item_value">
-                                <input class="price-input"
-                                    name="price-input-extra"
-                                    type="text"
-                                    placeholder="Введите цену по запросу"
-                                    maxlength="10"
-                                    value = {{ item.old_price_one }} />
+                                <input class="price-input" name="price-input-extra" type="text" placeholder="Введите цену по запросу" maxlength="10" value = {{ item.old_price_one }} />
                                 <label for="price-input-extra">
                                     <br>
                                     {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
@@ -105,14 +100,15 @@
                                 </div>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
-                        {% else %}<!--обычное сохранение-->
+                        {% else %}
+                            <!--обычное сохранение-->
                             {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
                                 <div class="item_value">
                                     <input class="price-input"
-                                        name="price-input-extra"
-                                        type="text"
-                                        placeholder="Введите цену по запросу"
-                                        maxlength="10" />
+                                           name="price-input-extra"
+                                           type="text"
+                                           placeholder="Введите цену по запросу"
+                                           maxlength="10" />
                                     <label for="price-input-extra">
                                         <br>
                                         {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
@@ -137,23 +133,22 @@
                                 </div>
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
-                        {% endif %} 
+                        {% endif %}
                         <div class="item_value">
-
-                            <div class="">
+                            <div price-motrum="{% if item.price.price_motrum == 0 %}0{% else %}{{ item.price.price_motrum }}{% endif %}"
+                                 class="price_motrum">
                                 {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
                                     0
                                 {% else %}
-                                    {{item.price.price_motrum}}
+                                    {{ item.price.price_motrum }}
                                 {% endif %}
-
-                                </div>
+                            </div>
                             <div class="">
-                            {% if item.price.sale %}
-                                скидка {{ item.price.sale.percent }}%
-                            {% else %}
-                            {% endif %}
-                        </div>
+                                {% if item.price.sale %}
+                                    скидка {{ item.price.sale.percent }}%
+                                {% else %}
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="item_value">
                             <input class="discount-input"
@@ -177,7 +172,6 @@
                             </label>
                         </div>
                     </div>
-
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
@@ -371,7 +365,6 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -402,7 +395,6 @@
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
-
                             <div class="item_value">
                                 {% if item.discount == "" or item.discount == None %}
                                     Нет
@@ -452,14 +444,16 @@
                         <label class="serch-client">
                             <div class="client-prev">
                                 <span>Клиент</span>
-                                <input {% if bill_upd %}disabled{% endif %} type="text"
+                                <input {% if bill_upd %}disabled{% endif %}
+                                       type="text"
                                        name="serch-client_input"
                                        value="{% if client_req %}{{ client_req.requisites.legal_entity }}{% endif %}">
                             </div>
                             <div class="clients"></div>
                             <label class="select-client-requsits_label">
                                 <span>Расчетный счет</span>
-                                <select {% if bill_upd %}disabled{% endif %} class="select-client-requsits"
+                                <select {% if bill_upd %}disabled{% endif %}
+                                        class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
                                         name="client-requisit">
                                     {% if client_req %}
@@ -478,7 +472,9 @@
                                     <div>Предоплата: {{ client_req.requisites.prepay_persent }}%</div>
                                     <div>
                                         Доставка:
-                                        <select {% if bill_upd %}disabled{% endif %} class="select_delevery" name='delevery-requisit'>
+                                        <select {% if bill_upd %}disabled{% endif %}
+                                                class="select_delevery"
+                                                name='delevery-requisit'>
                                             <option {% if order.type_delivery == "pickup" %}selected{% endif %}
                                                     value="pickup">Самовывоз</option>
                                             <option {% if order.type_delivery == "paid_delivery" %}selected{% endif %}
@@ -492,7 +488,8 @@
                         </label>
                         <label class="bitrix-id-label">
                             <span>Номер сделки Bitrix</span>
-                            <input {% if bill_upd %}disabled{% endif %} class="bitrix-input"
+                            <input {% if bill_upd %}disabled{% endif %}
+                                   class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
                                    value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}" />
@@ -500,7 +497,8 @@
                     </div>
                     <div class="motrum-info">
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-                        <select {% if bill_upd %}disabled{% endif %} class="select_motrum_requisites"
+                        <select {% if bill_upd %}disabled{% endif %}
+                                class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;
                                        border-radius: 10px"
@@ -514,7 +512,6 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
                     <div class="button_specification-wrapper">
                         <div class="save_button-wrapper">
                             <button class="save_button">Сохранить спецификацию</button>
@@ -532,7 +529,7 @@
                                 <div class="save_order_button-error"></div>
                             </div>
                         {% endif %}
-                        {% if bill_upd %}<button class="save_upd_bill">Сохранить изменения в счете </button>{% endif %}
+                        {% if bill_upd %}<button class="save_upd_bill">Сохранить изменения в счете</button>{% endif %}
                     </div>
                 </div>
             </div>

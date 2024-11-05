@@ -163,10 +163,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     def search_product(self, request, *args, **kwargs):
         data = request.data
         # count = int(request.query_params.get("count"))
-        count = 10
+        count = data["count"]
+        count = 0
         count_last = 10
-        # search_input = data["product"]
-        search_input = "кнопка грибок"
+        search_input = data["search_text"]
+        # search_input = "кнопка грибок"
         search_input = search_input.split(" ")
      
         
@@ -195,12 +196,13 @@ class ProductViewSet(viewsets.ModelViewSet):
         #     | Q(additional_article_supplier__icontains=search_input)
         # ) 
         page_count = queryset.count()
+        count_all = count + page_count
         print(page_count)
         serializer = ProductSearchSerializer(queryset, many=True)
         data_response = {
             "data": serializer.data,
             "count": count,
-            "count_all": count + count_last,
+            "count_all": count_all,
             
         }
         return Response(data_response, status=status.HTTP_200_OK)

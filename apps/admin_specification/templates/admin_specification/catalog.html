@@ -181,8 +181,8 @@
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
-                    <!--когда аптейдейт-->
-                    {% if update_spesif %}
+                    
+                    {% if update_spesif %}<!--когда аптейдейт-->
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -208,6 +208,8 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
+                            <div class="item_value">
+                            </div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -228,6 +230,7 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
+                                <div class="item_value price price_once">{{ item.price_one }}</div>
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -235,7 +238,7 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                <div class="item_value price price_once">{{ item.price_one }}</div>
+                                
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
@@ -247,12 +250,18 @@
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
-                                       type="hidden"
+                                       type="text"
                                        name="price-input-discount"
-                                       onkeypress='validate(event)'
                                        placeholder="% скидки"
-                                       maxlength="2"
+                                       maxlength="6"
                                        value="" />
+                                <label for="price-input-discount">
+                                    %
+                                    <br>
+                                    {% if item.old_extra_discount %}
+                                        {{ item.old_extra_discount }}%
+                                    {% endif %}
+                                </label>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -261,8 +270,8 @@
                                 </label>
                             </div>
                         </div>
-                        <!--когда новая спецификация-->
-                    {% else %}
+                   
+                    {% else %} <!--когда новая спецификация-->
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -288,6 +297,8 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
+                            <div class="item_value">
+                            </div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -308,6 +319,7 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
+                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -315,7 +327,7 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
+                                
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
@@ -327,12 +339,18 @@
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
-                                       type="hidden"
+                                       type="text"
                                        name="price-input-discount"
-                                       onkeypress='validate(event)'
                                        placeholder="% скидки"
-                                       maxlength="2"
+                                       maxlength="6"
                                        value="" />
+                                <label for="price-input-discount">
+                                    %
+                                    <br>
+                                    {% if item.old_extra_discount %}
+                                        {{ item.old_extra_discount }}%
+                                    {% endif %}
+                                </label>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -371,7 +389,8 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            
+                            <div class="item_value">
+                            </div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -392,6 +411,7 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
+                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -399,7 +419,7 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
+                               
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
 
@@ -412,12 +432,18 @@
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
-                                       type="hidden"
+                                       type="text"
                                        name="price-input-discount"
-                                       onkeypress='validate(event)'
                                        placeholder="% скидки"
-                                       maxlength="2"
+                                       maxlength="6"
                                        value="" />
+                                <label for="price-input-discount">
+                                    %
+                                    <br>
+                                    {% if item.old_extra_discount %}
+                                        {{ item.old_extra_discount }}%
+                                    {% endif %}
+                                </label>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -428,6 +454,7 @@
                         </div>
                     {% endif %}
                 {% endfor %}
+                
                 <div class="add_new_product">Добавить новый товар</div>
                 <div class="coment_all_spesif">
                     <br>

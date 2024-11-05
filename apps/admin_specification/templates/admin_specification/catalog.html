@@ -145,7 +145,7 @@
                             </div>
                             <div class="">
                                 {% if item.price.sale %}
-                                    скидка {{ item.price.sale.percent }}%
+                                    скидка <span class="motrum_sale_persent">{{ item.price.sale.percent }}</span>%
                                 {% else %}
                                 {% endif %}
                             </div>
@@ -175,8 +175,8 @@
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
-                    
-                    {% if update_spesif %}<!--когда аптейдейт-->
+                    {% if update_spesif %}
+                        <!--когда аптейдейт-->
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -202,8 +202,7 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">
-                            </div>
+                            <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -232,7 +231,6 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
@@ -264,8 +262,8 @@
                                 </label>
                             </div>
                         </div>
-                   
-                    {% else %} <!--когда новая спецификация-->
+                    {% else %}
+                        <!--когда новая спецификация-->
                         <div class="item_container"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -291,8 +289,7 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">
-                            </div>
+                            <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -321,7 +318,6 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
@@ -383,8 +379,7 @@
                                           name="comment-input-name"
                                           placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                             </div>
-                            <div class="item_value">
-                            </div>
+                            <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -413,7 +408,6 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                               
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
@@ -447,7 +441,6 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                
                 <div class="add_new_product">Добавить новый товар</div>
                 <div class="coment_all_spesif">
                     <br>

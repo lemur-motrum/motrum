@@ -8,7 +8,17 @@ export function editMotrumPrice(container) {
       const motrumPriceContainer = specification.querySelector(".price_motrum");
       if (priceInput) {
         priceInput.oninput = () => {
-          motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
+          if (specification.querySelector(".motrum_sale_persent")) {
+            const motrumSalePersent = getCurrentPrice(
+              specification.querySelector(".motrum_sale_persent").textContent
+            );
+            motrumPriceContainer.setAttribute(
+              "price-motrum",
+              (+priceInput.value / 100) * (100 - +motrumSalePersent)
+            );
+          } else {
+            motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
+          }
         };
       }
       const motrumPriceOne = getCurrentPrice(

@@ -43,6 +43,16 @@ input[type="number"] {
       margin-left: auto !important;
     }
   }
+  span {
+    text-decoration: none;
+    color: #000;
+    font-size: 0.813rem;
+    text-decoration: none;
+    text-transform: lowercase;
+    &.active {
+      font-weight: bold;
+    }
+  }
 }
 h1 {
   font-size: 1.875rem;

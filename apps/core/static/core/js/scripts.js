@@ -7,6 +7,7 @@ import "/static/admin_specification/js/filters.js";
 import "/static/admin_specification/js/add_new_product.js";
 import "/static/admin_specification/js/add_new_product_without_cart.js";
 import "/static/admin_specification/js/change_date_in_order.js";
+import "/static/admin_specification/js/create_invoice_without_specification.js";
 import "/static/admin_specification/js/edit_unique_product.js";
 import "/static/admin_specification/js/change_payment.js";
 import "/static/admin_specification/js/ajax_specification_load.js";

@@ -687,9 +687,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 100;
 
             getDigitsNumber(productTotalPrice, currentPrice);
+            changeDateInOrder(spetificationTable);
             getResult();
             updateProduct();
-            changeDateInOrder(spetificationTable);
           }
         });
 
@@ -718,8 +718,8 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = true;
           }
-          updateProduct();
           changeDateInOrder(spetificationTable);
+          updateProduct();
         };
 
         minusButton.onclick = () => {
@@ -752,8 +752,9 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = false;
           }
-          updateProduct();
           changeDateInOrder(spetificationTable);
+
+          updateProduct();
         };
 
         if (inputPrice) {
@@ -773,6 +774,7 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getResult();
+            changeDateInOrder(spetificationTable);
           };
 
           plusButton.onclick = () => {
@@ -801,6 +803,7 @@ window.addEventListener("DOMContentLoaded", () => {
               plusButton.disabled = false;
               minusButton.disabled = false;
             }
+            changeDateInOrder(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -831,6 +834,7 @@ window.addEventListener("DOMContentLoaded", () => {
               minusButton.disabled = false;
               plusButton.disabled = false;
             }
+            changeDateInOrder(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -863,6 +867,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
             }
+            changeDateInOrder(spetificationTable);
             updateProduct();
             getResult();
           });
@@ -1249,9 +1254,14 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButtonContainer = document.querySelector(".save_button-wrapper");
+    const saveInvoiceButtonContainer = document.querySelector(
+      ".save_invoice_button-wrapper"
+    );
+    console.log(saveInvoiceButtonContainer);
     window.onload = () => {
       if (searchClientInput.value) {
         saveButtonContainer.classList.add("show");
+        saveInvoiceButtonContainer.classList.add("show");
         if (clientRequsitsSelect) {
           const clientOptions = clientRequsitsSelect.querySelectorAll("option");
           clientRequsitsSelect.setAttribute(
@@ -1337,6 +1347,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       changeSelect(selectDelevery);
                       clientsContainer.classList.remove("show");
                       saveButtonContainer.classList.add("show");
+                      saveInvoiceButtonContainer.classList.add("show");
                     };
                   }
                 });
@@ -1350,6 +1361,7 @@ window.addEventListener("DOMContentLoaded", () => {
       } else {
         clientsContainer.classList.remove("show");
         saveButtonContainer.classList.remove("show");
+        saveInvoiceButtonContainer.classList.remove("show");
         searchClientInput.setAttribute("client-id", "");
       }
     };

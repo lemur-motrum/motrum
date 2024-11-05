@@ -11,7 +11,7 @@ from apps import supplier
 from apps.core.models import Currency, Vat
 from apps.logs.utils import error_alert
 
-from apps.product.models import Lot, Product, Stock
+from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import Supplier, Vendor
 from project.settings import MEDIA_ROOT
 
@@ -156,6 +156,11 @@ def add_new_product(
     )
     prod_new.save()
     update_change_reason(prod_new, "Автоматическое")
+    currency = Currency.objects.get(words_code="RUB")
+    vat = Vat.objects.get(name=20)
+    price =  Price(prod=prod_new,currency=currency,vat=vat,extra_price=True)
+    price.save()
+    update_change_reason(price, "Автоматическое")
     return prod_new
 
 

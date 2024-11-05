@@ -9,7 +9,7 @@ from simple_history.utils import update_change_reason
 
 from apps import supplier
 from apps.core.models import Currency, Vat
-from apps.product.models import Lot, Product, Stock
+from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import Supplier, Vendor
 from project.settings import MEDIA_ROOT
 
@@ -139,7 +139,13 @@ def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,in
         stock_motrum=int_stock_motrum,
     )
     product_stock.save()
+    
     update_change_reason(product_stock, "Автоматическое")
+    currency = Currency.objects.get(words_code="RUB")
+    vat = Vat.objects.get(name=20)
+    price =  Price(prod=prod_new,currency=currency,vat=vat,extra_price=True)
+    price.save()
+    update_change_reason(price, "Автоматическое")
     
 def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum):
     product_stock = Stock.objects.get_or_create(

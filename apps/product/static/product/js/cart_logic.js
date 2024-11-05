@@ -410,10 +410,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const personalDiscount = +getCurrentPrice(
       personalDiscountInput.getAttribute("data-personal-discount")
     );
-    let withoutDiscountPriceArray = [];
-    const priceWithoutDiscontContainer = document.querySelectorA(
-      ".all_cart_no_sale_price"
-    );
+    // let withoutDiscountPriceArray = [];
+    // const priceWithoutDiscontContainer = document.querySelectorA(
+    //   ".all_cart_no_sale_price"
+    // );
 
     products.forEach((product) => {
       const priceOne = product.querySelector(".cart_price");
@@ -428,89 +428,85 @@ window.addEventListener("DOMContentLoaded", () => {
       );
       let withoutDiscountPrice = 0;
 
-      getDigitsNumber(priceOne, getCurrentPrice(priceOne.textContent));
+      if (priceOne) {
+        getDigitsNumber(priceOne, getCurrentPrice(priceOne.textContent));
 
-      setInterval(() => {
-        if (!+new NumberParser("ru").parse(priceQuantity.textContent)) {
-          allPriceWithoutDiscount = 0;
-          allPrice = 0;
-          getDigitsNumber(
-            priceQuantity,
-            new NumberParser("ru").parse(priceOne.textContent) *
-              +cartCountInput.value
-          );
-          if (priceWithoutDiscontContainer) {
+        setInterval(() => {
+          if (!+new NumberParser("ru").parse(priceQuantity.textContent)) {
+            allPriceWithoutDiscount = 0;
+            allPrice = 0;
             getDigitsNumber(
-              priceWithoutDiscontContainer,
-              (new NumberParser("ru").parse(priceOne.textContent) *
-                (100 + personalDiscount)) /
-                100
+              priceQuantity,
+              new NumberParser("ru").parse(priceOne.textContent) *
+                +cartCountInput.value
             );
-            withoutDiscountPrice = (
-              new NumberParser("ru").parse(
-                priceWithoutDiscontContainer.textContent
-              ) * +cartCountInput.value
-            ).toFixed(2);
-            priceWithoutDiscontContainer.setAttribute(
-              "count-quantity-price",
-              withoutDiscountPrice
-            );
-          }
-          for (
-            let i = 0;
-            i < cartContainer.querySelectorAll(".all_cart_price").length;
-            i++
-          ) {
-            allPrice += new NumberParser("ru").parse(
-              cartContainer.querySelectorAll(".all_cart_price")[i].textContent
-            );
-          }
-          if (allPriceContainer) {
-            getDigitsNumber(allPriceContainer, allPrice);
-          }
+            if (priceWithoutDiscontContainer) {
+              withoutDiscountPrice = (
+                new NumberParser("ru").parse(
+                  priceWithoutDiscontContainer.textContent
+                ) * +cartCountInput.value
+              ).toFixed(2);
+              priceWithoutDiscontContainer.setAttribute(
+                "count-quantity-price",
+                withoutDiscountPrice
+              );
+            }
+            for (
+              let i = 0;
+              i < cartContainer.querySelectorAll(".all_cart_price").length;
+              i++
+            ) {
+              allPrice += new NumberParser("ru").parse(
+                cartContainer.querySelectorAll(".all_cart_price")[i].textContent
+              );
+            }
+            if (allPriceContainer) {
+              getDigitsNumber(allPriceContainer, allPrice);
+            }
 
-          for (
-            let i = 0;
-            i <
-            cartContainer.querySelectorAll(".all_cart_no_sale_price").length;
-            i++
-          ) {
-            allPriceWithoutDiscount += new NumberParser("ru").parse(
-              cartContainer.querySelectorAll(".all_cart_no_sale_price")[i]
-                .textContent
-            );
-          }
-          if (cartTotalPriceAll) {
-            const totalPriceArray = [];
-            document
-              .querySelectorAll(".all_cart_no_sale_price")
-              .forEach((el) => {
-                const price = el.getAttribute("count-quantity-price");
-                totalPriceArray.push(+price);
-              });
-            const getSumm = (array) => {
-              let summ = 0;
-              for (let i of array) {
-                summ += i;
-              }
-              return summ;
-            };
+            for (
+              let i = 0;
+              i <
+              cartContainer.querySelectorAll(".all_cart_no_sale_price").length;
+              i++
+            ) {
+              allPriceWithoutDiscount += new NumberParser("ru").parse(
+                cartContainer.querySelectorAll(".all_cart_no_sale_price")[i]
+                  .textContent
+              );
+            }
+            if (cartTotalPriceAll) {
+              const totalPriceArray = [];
+              document
+                .querySelectorAll(".all_cart_no_sale_price")
+                .forEach((el) => {
+                  const price = el.getAttribute("count-quantity-price");
+                  totalPriceArray.push(+price);
+                });
+              const getSumm = (array) => {
+                let summ = 0;
+                for (let i of array) {
+                  console.log(array);
+                  summ += i;
+                }
+                return summ;
+              };
 
-            getDigitsNumber(cartTotalPriceAll, getSumm(totalPriceArray));
-          }
+              getDigitsNumber(cartTotalPriceAll, getSumm(totalPriceArray));
+            }
 
-          if (cartTotalPriceSale) {
-            getDigitsNumber(
-              cartTotalPriceSale,
-              new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
-                new NumberParser("ru").parse(allPriceContainer.textContent)
-            );
+            if (cartTotalPriceSale) {
+              getDigitsNumber(
+                cartTotalPriceSale,
+                new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
+                  new NumberParser("ru").parse(allPriceContainer.textContent)
+              );
+            }
+          } else {
+            clearInterval();
           }
-        } else {
-          clearInterval();
-        }
-      });
-
+        });
+      }
       cartCountInput.addEventListener("input", function () {
         allPrice = 0;
         allPriceWithoutDiscount = 0;
@@ -567,6 +563,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       };
       cartMinusButton.onclick = () => {
+        console.log("cartCountQuantity", cartCountQuantity);
         allPrice = 0;
         allPriceWithoutDiscount = 0;
         if (productMultiplicity) {

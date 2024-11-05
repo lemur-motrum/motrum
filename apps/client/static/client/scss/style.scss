@@ -1,3 +1,99 @@
+.lc-container {
+  margin: 1.625rem 3.125rem 0 3.125rem;
+  .title-container {
+    display: flex;
+    flex-direction: column;
+    // gap: 0.5rem;
+    .bread-crumbs {
+      margin-bottom: 0;
+      .bread-crumb-elem {
+        font-size: 0.938rem;
+        text-transform: lowercase;
+        font-weight: 300;
+      }
+    }
+    .title {
+      margin: 0;
+      padding: 0;
+      font-size: 3rem;
+      font-weight: 700;
+    }
+  }
+  .navigation-and-sorting {
+    margin-top: 1.313rem;
+    display: flex;
+    justify-content: space-between;
+    .navigation {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3.375rem;
+
+      .nav-elem {
+        font-size: 1.125rem;
+        font-weight: 300;
+        color: #000;
+        text-transform: lowercase;
+        text-decoration: none;
+        border: 0.094rem solid black;
+        padding: 0.938rem 2.813rem 0.938rem 1.813rem;
+        box-sizing: border-box;
+        height: 3.563rem;
+        border-radius: 2rem;
+        position: relative;
+        &.active {
+          font-weight: bold;
+        }
+        .global_cart_count {
+          position: absolute;
+          top: 0.563rem;
+          right: 1.5rem;
+          width: 1.25rem;
+          height: 1.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #fff;
+          background-color: #95bad4;
+          border-radius: 100%;
+        }
+      }
+    }
+    .sort-container {
+      display: flex;
+      gap: 1.875rem;
+      font-size: 0.938rem;
+      .sort-elem {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        .arrow {
+          position: relative;
+          width: 0.688rem;
+          height: 0.361rem;
+          display: flex;
+          gap: 0.23rem;
+          .arrow-elem-1 {
+            width: 0.102rem;
+            height: 0.453rem;
+            border-radius: 2px;
+            transform: rotate(-45deg);
+            background-color: #000;
+          }
+          .arrow-elem-2 {
+            width: 0.102rem;
+            height: 0.453rem;
+            border-radius: 2px;
+            transform: rotate(45deg);
+            background-color: #000;
+          }
+        }
+      }
+    }
+  }
+}
+
 .personal_account_content {
   .details {
     margin-top: 2.188rem;

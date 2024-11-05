@@ -21,4 +21,5 @@ def my_document_link(context):
 
     return {
         "count": count,
+        "request": context["request"],
     }

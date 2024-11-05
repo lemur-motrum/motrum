@@ -7,6 +7,7 @@ export function completeOrder(container) {
     const calendar = modalWindow.querySelector(".calendar");
     const addOrderButton = modalWindow.querySelector(".complete_order_button");
     const error = modalWindow.querySelector(".error");
+    const closeBtn = modalWindow.querySelector(".close-btn");
 
     const csrfToken = getCookie("csrftoken");
     const interval = setInterval(() => {
@@ -64,7 +65,6 @@ export function completeOrder(container) {
                       }, 600);
                       completeBtn.style.display = "none";
                       specification.classList.add("completed_order");
-
                       console.log("ок");
                       addOrderButton.disabled = false;
                       addOrderButton.innerHTML = "";
@@ -79,7 +79,7 @@ export function completeOrder(container) {
       }
     });
 
-    overlay.onclick = () => {
+    closeBtn.onclick = () => {
       overlay.classList.remove("visible");
       if (overlay.classList.contains("show")) {
         document.body.style.overflowY = "scroll";
@@ -90,9 +90,6 @@ export function completeOrder(container) {
         const currentDate = new Date().toISOString().slice(0, 10);
         calendar.value = currentDate;
       }, 600);
-    };
-    modalWindow.onclick = (e) => {
-      e.stopPropagation();
     };
   }
 }

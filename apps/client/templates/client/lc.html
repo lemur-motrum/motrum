@@ -14,19 +14,9 @@
             <div class="navigation">
             
                 {% my_order_link %}
-                {% comment %} {% url 'client:my_orders' as my_orders_url %}
-                {% if request.get_full_path == my_orders_url or type_url == "/my_orders" %}
-                    <span class="nav-elem active">мои заказы</span>
-                {% else %}
-                    <a href={% url "client:my_orders" %} class="nav-elem">мои заказы</a>
-                {% endif %} {% endcomment %}
+
                 {% my_document_link %}
-                {% comment %} {% url 'client:my_documents' as my_documents_url %}
-                {% if request.get_full_path == my_documents_url or type_url == "/my_documents" %}
-                    <span class="nav-elem active">мои документы</span>
-                {% else %}
-                    <a href={% url "client:my_documents" %} class="nav-elem">мои документы</a>
-                {% endif %} {% endcomment %}
+    
                 {% url 'client:my_details' as my_details_url %}
                 {% if request.get_full_path == my_details_url or type_url == "/my_details" %}
                     <span class="nav-elem active">мои реквизиты</span>
@@ -35,9 +25,9 @@
                 {% endif %}
                 {% url 'client:my_contacts' as my_contacts_url %}
                 {% if request.get_full_path == my_contacts_url or type_url == "/my_contacts" %}
-                    <span class="nav-elem active">мои контакты</span>
+                    <span class="nav-elem active">Персональные данные</span>
                 {% else %}
-                    <a href={% url "client:my_contacts" %} class="nav-elem">мои контакты</a>
+                    <a href={% url "client:my_contacts" %} class="nav-elem">Персональные данные</a>
                 {% endif %}
             </div>
             <div class="sort-container">

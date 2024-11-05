@@ -83,10 +83,9 @@
                                 <div class="article-motrum">{{ product.article_supplier }}</div>
                                 <div class="charactiristics">
                                     {% for char in product.productproperty_set.all %}
-                                   
                                         {% if forloop.counter < 4 %}
-                                        {{ char.name }}   {{ char.value }}
-                                        <br>
+                                            {{ char.name }}   {{ char.value }}
+                                            <br>
                                         {% endif %}
                                         {% comment %} {{ char.value }} {% endcomment %}
                                     {% empty %}
@@ -102,13 +101,15 @@
                                                 Под заказ
                                             {% else %}
                                                 {% if product.stock.stock_supplier != None %}
-                                                    Поставщик: {{ product.stock.stock_supplier_unit }} шт
+                                                    Поставщик: <span class="supplier_unit">{{ product.stock.stock_supplier_unit }}</span> шт
                                                 {% else %}
                                                     Поставщик: -
                                                 {% endif %}
                                             {% endif %}
                                         </div>
-                                        <div class="stock_item">Motrum:{{ product.stock.stock_motrum }}</div>
+                                        <div class="stock_item">
+                                            Motrum: <span class="motrum_unit">{{ product.stock.stock_motrum }}</span>
+                                        </div>
                                         <span class="span-transit">{{ product.stock.data_update|date:"d.m.Y" }}</span>
                                         <br>
                                         <span class="span-transit">
@@ -124,7 +125,6 @@
                                 <div class="lot">
                                     {% if product.stock %}
                                         {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
-                                       
                                             <span class="span-min">Заказ по {{ product.stock.order_multiplicity }}
                                             {{ product.stock.lot.name_shorts }}</span>
                                         {% endif %}

@@ -4,6 +4,7 @@ export function invoiceItem(container) {
   if (container) {
     const invoiceOverlay = document.querySelector(".invoice-overlay");
     const modalWindow = invoiceOverlay.querySelector(".modal-window");
+    const closeBtn = modalWindow.querySelector(".close-btn");
     const invoiceContainer = modalWindow.querySelector(
       '[invoice-elem="container"]'
     );
@@ -133,7 +134,7 @@ export function invoiceItem(container) {
                             }
                           })
                           .then((response) => {
-                            console.log(response)
+                            console.log(response);
                             invoiceBtn.disabled = false;
                             invoiceBtn.innerHTML = "";
                             invoiceBtn.textContent = "Обновите счет";
@@ -160,7 +161,6 @@ export function invoiceItem(container) {
                                 link.remove();
                               }
                               createInvoiceContainer.innerHTML += `<a class="invoice-link" href='${response.pdf}'>Скачать счет №${response.name_bill}</a>`;
-
                               const btn =
                                 specificationItem.querySelector(".changed");
                               btn.onclick = () => openInvoiceModal();
@@ -183,7 +183,7 @@ export function invoiceItem(container) {
                             const addPayBtn = specificationItem.querySelector(
                               ".add_payment_button"
                             );
-                            addPayBtn.style.display ="block"
+                            addPayBtn.style.display = "block";
                           });
                       }
                     };
@@ -191,7 +191,7 @@ export function invoiceItem(container) {
                 });
               }
               invoiceBtn.onclick = () => openInvoiceModal();
-              invoiceOverlay.onclick = () => {
+              closeBtn.onclick = () => {
                 document
                   .querySelectorAll(".create-bill-button")
                   .forEach((el) => {
@@ -209,9 +209,6 @@ export function invoiceItem(container) {
                   invoiceOverlay.classList.remove("show");
                   invoiceContainer.innerHTML = "";
                 }, 600);
-              };
-              modalWindow.onclick = (e) => {
-                e.stopPropagation();
               };
             }
           });

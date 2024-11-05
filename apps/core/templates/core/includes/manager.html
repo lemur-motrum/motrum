@@ -1,21 +1,15 @@
+{% load static %}
 {% if is_need == True %}
   <div class="personal-manager-container">
-    <div class="img-container"></div>
+    <div class="img-container">
+      <img src={% static "core/images/no_manager_photo.jpg" %} alt="">
+    </div>
     <div class="description-container">
       <div class="name-description">
         <div class="title-name">{{ manager.first_name }}</div>
         <div class="title-name">{{ manager.last_name }}</div>
-        <div class="description">Ваш персональный менеджер</div>
       </div>
-      <div class="contacts-description">
-        <div class="description">
-          тел: <span>{{ manager.phone }}</span>
-        </div>
-        <div class="description">
-          email: <span>{{ manager.email }}</span>
-        </div>
-        <button class="send-manager" type="button">сообщение менеджеру</button>
-      </div>
+      <div class="description">Ваш персональный менеджер</div>
     </div>
   </div>
 {% endif %}

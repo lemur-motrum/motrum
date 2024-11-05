@@ -28,10 +28,12 @@
                                     {{ products.productproperty_set }}
                                     {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
                                         {% for productproperty in product_item.productproperty_set.all %}
-                                            <div class="char">
-                                                <span>{{ productproperty.name }}:</span>
-                                                <span>{{ productproperty.value }}</span>
-                                            </div>
+                                            {% if forloop.counter < 4 %}
+                                                <div class="char">
+                                                    <span>{{ productproperty.name }}:</span>
+                                                    <span>{{ productproperty.value }}</span>
+                                                </div>
+                                            {% endif %}
                                         {% endfor %}
                                     {% else %}
                                         -
@@ -103,7 +105,7 @@
                         </div>
                     {% endif %}
                     {% if client %}
-                        <div>
+                        <div class="client-order-details">
                             {% if requisites %}
                                 <select class="select_account_requisites">
                                     {% for requisit in requisites %}

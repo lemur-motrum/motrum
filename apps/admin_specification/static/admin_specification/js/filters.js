@@ -1,10 +1,7 @@
 import { getCookie } from "/static/core/js/functions.js";
 let currentUrl = new URL(window.location.href);
-const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
-  const searhForm = document.querySelector(".search-form-container");
-
   const adminSpecificationsFilters = document.querySelector(
     ".admin_specification_filters"
   );
@@ -67,7 +64,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     if (productCatalogArticles) {
       const arrowPrice = productCatalogArticles.querySelector(".price_arrow");
-      const arrowPriceParam = arrowPrice.getAttribute("param");
       let urlsParam;
       const urlParams = new URL(document.location).searchParams;
       if (urlParams.get("price")) {

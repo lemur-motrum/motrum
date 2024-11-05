@@ -162,11 +162,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post","get"], url_path=r"search-product")
     def search_product(self, request, *args, **kwargs):
         data = request.data
+        # count = int(request.query_params.get("count"))
+        count = 10
+        count_last = 10
         # search_input = data["product"]
         search_input = "кнопка грибок"
         search_input = search_input.split(" ")
      
-     
+        
         
         # # вариант ищет каждое слово все рабоатет 
         queryset = Product.objects.filter(
@@ -182,7 +185,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(name__icontains=search_item)
             | Q(article__icontains=search_item)
             | Q(article_supplier__icontains=search_item)
-            | Q(additional_article_supplier__icontains=search_item))
+            | Q(additional_article_supplier__icontains=search_item))[count : count + count_last]
         
         # стандатный варинт ищет целиокм  
         # queryset = Product.objects.filter(
@@ -191,10 +194,16 @@ class ProductViewSet(viewsets.ModelViewSet):
         #     | Q(article_supplier__icontains=search_input)
         #     | Q(additional_article_supplier__icontains=search_input)
         # ) 
-        
-        print(queryset)
+        page_count = queryset.count()
+        print(page_count)
         serializer = ProductSearchSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data_response = {
+            "data": serializer.data,
+            "count": count,
+            "count_all": count + count_last,
+            
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
 
 
 class CartViewSet(viewsets.ModelViewSet):

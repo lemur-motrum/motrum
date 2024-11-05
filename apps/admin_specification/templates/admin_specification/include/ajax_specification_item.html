@@ -105,7 +105,7 @@
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
                                 {% if is_superuser == true %}
                                 <br>
-                                <a href=""><span class="table_item_value_span">Изменить счет</span></a>
+                                <button class="change-bill-button">Изменить счет</button>
                                 <br>
                         {% endif %}
                         {% elif status == "CANCELED" and bill_file %}

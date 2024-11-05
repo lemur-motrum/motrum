@@ -99,6 +99,9 @@ window.addEventListener("DOMContentLoaded", () => {
               const changeButton = item.querySelector(
                 ".change-specification-button"
               );
+              const changeBillButton = item.querySelector(
+                ".change-bill-button"
+              );
               const updateButton = item.querySelector(
                 ".uptate-specification-button"
               );
@@ -106,7 +109,7 @@ window.addEventListener("DOMContentLoaded", () => {
               const specificationId = item.getAttribute("specification-id");
               const cartId = +link.dataset.cartId;
 
-              function uptadeOrChanegeSpecification(button) {
+              function uptadeOrChanegeSpecification(button, getParams) {
                 button.onclick = () => {
                   button.setAttribute("text-content", button.textContent);
                   button.disabled = true;
@@ -114,7 +117,10 @@ window.addEventListener("DOMContentLoaded", () => {
                   button.innerHTML = "<div class='small_loader'></div>";
                   document.cookie = `cart=${cartId};path=/`;
                   document.cookie = `specificationId=${specificationId};path=/`;
-                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
+                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`
+                 
+
+
                   fetch(endpoint, {
                     method: "UPDATE",
                     headers: {
@@ -125,7 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     .then((response) => response.json())
                     .then((response) => {
                       window.location.href =
-                        "/admin_specification/current_specification/";
+                        `/admin_specification/current_specification/?${getParams}`;
                       setTimeout(() => {
                         button.disabled = false;
                         button.innerHTML = "";
@@ -136,10 +142,13 @@ window.addEventListener("DOMContentLoaded", () => {
                 };
               }
               if (changeButton) {
-                uptadeOrChanegeSpecification(changeButton);
+                uptadeOrChanegeSpecification(changeButton, null);
               }
               if (updateButton) {
-                uptadeOrChanegeSpecification(updateButton);
+                uptadeOrChanegeSpecification(updateButton, null);
+              }
+              if (changeBillButton) {
+                uptadeOrChanegeSpecification(changeBillButton, "bill-upd=True");
               }
             });
           }
@@ -160,8 +169,8 @@ window.addEventListener("DOMContentLoaded", () => {
             !data.small
               ? i < pageCount + 2
               : +data.count > 1
-              ? i <= pageCount + 1
-              : i <= pageCount;
+                ? i <= pageCount + 1
+                : i <= pageCount;
             i++
           ) {
             pagintationArray.push(i);

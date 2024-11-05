@@ -449,7 +449,8 @@ def specifications(request, cat, gr):
 # рендер страницы корзины
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-
+    bill_upd = request.GET.get('bill-upd', None)
+    
     cart = request.COOKIES.get("cart")
     # если есть корзина
     if cart != None:
@@ -606,8 +607,13 @@ def create_specification(request):
                 comment=product_specification.filter(product=OuterRef("pk")).values(
                     "comment",
                 ),
+                is_prise=product_cart.filter(product=OuterRef("pk")).values(
+                    "product__price",
+                ),
             )
         )
+        # for p in product:
+        #     print(p.price)
 
     # корзины нет
     else:
@@ -626,6 +632,7 @@ def create_specification(request):
 
     current_date = datetime.date.today().isoformat()
 
+        
     context = {
         "title": title,
         "product": product,
@@ -640,6 +647,7 @@ def create_specification(request):
         "order": order,
         "client_req": client_req,
         "client_req_all": client_req_all,
+        "bill_upd":bill_upd,
     }
     print(context)
     return render(request, "admin_specification/catalog.html", context)

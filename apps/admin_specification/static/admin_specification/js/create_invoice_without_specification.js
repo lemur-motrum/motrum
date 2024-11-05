@@ -168,14 +168,17 @@ window.addEventListener("DOMContentLoaded", () => {
                   };
                 });
                 const data = JSON.stringify(dataObj);
-                fetch(`/api/v1/order/${response1.id}/create-bill-admin/`, {
-                  method: "UPDATE",
-                  body: data,
-                  headers: {
-                    "X-CSRFToken": csrfToken,
-                    "Content-Type": "application/json",
-                  },
-                }).then((response3) => {
+                fetch(
+                  `/api/v1/order/${response1.specification}/create-bill-admin/`,
+                  {
+                    method: "UPDATE",
+                    body: data,
+                    headers: {
+                      "X-CSRFToken": csrfToken,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                ).then((response3) => {
                   if (response3.status == 200 || response2.status == 201) {
                     window.location.href =
                       "/admin_specification/all_specifications/";

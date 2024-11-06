@@ -441,7 +441,15 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                <div class="add_new_product">Добавить новый товар</div>
+                {% comment %} <div class="add_new_product">Добавить новый товар</div> {% endcomment %}
+                <div class="add_new_product_container">
+                    <label class="search_label">
+                        <input class="search_input" placeholder="Введите имя или артикул товара" type="text"/>
+                        <div class="search_container"></div>
+                    </label>
+                    <button class="add_product">Добавить товар</button>
+                    <button class="add_new_product">Добавить новый товар</button>
+                </div>
                 <div class="coment_all_spesif">
                     <br>
                     <textarea style="width: 400px;

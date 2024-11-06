@@ -81,8 +81,10 @@ def get_motrum_storage():
             # работа с товарами поставщиков
             else:
 
-                all_fredom_remaining = data_sheet.cell(row=index, column=14).value
+                all_fredom_remaining = data_sheet.cell(row=index, column=16).value
+                all_reserve_remaining = data_sheet.cell(row=index, column=15).value
                 int_stock_motrum = int(all_fredom_remaining)
+                int_stock_reserve_motrum = int(all_reserve_remaining)
                 article_supplier = data_sheet.cell(row=index, column=1).value
 
 
@@ -108,20 +110,20 @@ def get_motrum_storage():
                                 
                                 product.save()
                                 update_change_reason(product, "Автоматическое")
-                                add_stok_motrum_old_article(product,lot_auto,int_stock_motrum)
+                                add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
                             except Product.DoesNotExist:   
-                                add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum)
+                                add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
                             
                                 
                         # порлностью новый товар
                         else:
-                            add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum)
+                            add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
 
     reed_workbook(path_storage_pnm)
     # reed_workbook(path_storage_motrum)
 
 # вспомогательные функции
-def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum):
+def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum,int_stock_reserve_motrum):
     prod_new = Product(
         supplier=supplier_qs,
         name=article_supplier,
@@ -137,6 +139,7 @@ def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,in
         prod=prod_new,
         lot=lot_auto,
         stock_motrum=int_stock_motrum,
+        stock_motrum_reserve = int_stock_reserve_motrum,
     )
     product_stock.save()
     
@@ -147,7 +150,7 @@ def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,in
     price.save()
     update_change_reason(price, "Автоматическое")
     
-def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum):
+def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum):
     product_stock = Stock.objects.get_or_create(
         prod=product,
         defaults={
@@ -158,6 +161,7 @@ def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum):
     stock = product_stock[0]
 
     stock.stock_motrum = int_stock_motrum
+    stock.stock_motrum_reserve = int_stock_reserve_motrum
     stock._change_reason = "Автоматическое"
     stock.save()
     # update_change_reason(stock, "Автоматическое")

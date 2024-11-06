@@ -637,6 +637,7 @@ class Stock(models.Model):
         null=True,
     )
     stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
+    stock_motrum_reserve = models.PositiveIntegerField("Резерв на складе Motrum в штуках", default=0)
     to_order = models.BooleanField("Товар под заказ", default=False)
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления поставщика")
     transit_count = models.PositiveIntegerField(

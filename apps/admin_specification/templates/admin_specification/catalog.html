@@ -71,6 +71,8 @@
                                 </div>
                                 <div class="stock_item">
                                     Motrum: <span class="motrum_unit">{{ item.stock.stock_motrum }}</span>
+                                    {% if item.stock.stock_motrum_reserve  %} Motrum резерв: <span class="motrum_unit_reserve">{{ item.stock.stock_motrum_reserve }}</span>{% endif %}
+                                   
                                 </div>
                                 <span class="span-transit">{{ item.stock.data_update|date:"d.m.Y" }}</span>
                                 <br>

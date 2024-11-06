@@ -168,8 +168,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         count_last = data["count_last"]
         search_input = data["search_text"]
         # search_input = "кнопка грибок"
-        search_input = search_input.split(" ")
-        
+        search_input = search_input.replace(".","").replace(',', '')
+        search_input = search_input.split()
+     
+        print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
             Q(name__icontains=search_input[0])
@@ -186,10 +188,10 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(article__icontains=search_item)
                     | Q(article_supplier__icontains=search_item)
                     | Q(additional_article_supplier__icontains=search_item)
-                )[count : count + count_last]
+                )
         else:
             queryset = queryset[count : count + count_last]
-            
+        queryset = queryset[count : count + count_last]
         print(queryset)
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(

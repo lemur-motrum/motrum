@@ -449,7 +449,7 @@ def specifications(request, cat, gr):
 # рендер страницы корзины
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-    bill_upd = request.GET.get('bill-upd', None)
+    # bill_upd = request.GET.get('bill-upd', None)
     
     cart = request.COOKIES.get("cart")
     # если есть корзина
@@ -631,7 +631,12 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-
+    bill_upd = False
+    if order:
+        if order.bill_sum_paid != 0:
+            bill_upd = True
+            title = f"Заказ № {order.id} - изменение счета "
+    
         
     context = {
         "title": title,

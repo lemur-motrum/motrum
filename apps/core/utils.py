@@ -877,7 +877,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix,type_delivery):
+def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix,type_delivery,post_update):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -897,14 +897,18 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     
     # первичное создание/взятие спецификации
     try:
-        specification = Specification.objects.get(id=id_specification)
-        data_stop = create_time_stop_specification()
-        specification.date_stop = data_stop
-        specification.tag_stop = True
+        if post_update:
+            specification = Specification.objects.get(id=id_specification)
+        else:
+            specification = Specification.objects.get(id=id_specification)
+            data_stop = create_time_stop_specification()
+            specification.date_stop = data_stop
+            specification.tag_stop = True
         
-        product_old = ProductSpecification.objects.filter(specification=specification)
+      
 
         # удалить продукты если удалили из спецификации
+        product_old = ProductSpecification.objects.filter(specification=specification)
         for product_item_for_old in product_old:
             item_id = product_item_for_old.id
             having_items = False
@@ -1087,6 +1091,17 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         else:
             print(33333333333333)
             price_one = product_item["price_one"]
+            
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+                                             
+                persent_sale = float(product_item["extra_discount"])
+                
+                price_one_sale = price_one - (price_one / 100 * persent_sale)
+                price_one = round(price_one_sale, 2)
 
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
@@ -1136,9 +1151,10 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     specification.date_delivery = date_delivery_all
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
+    
     specification.save()
     pdf = crete_pdf_specification(
-        specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery
+        specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update
     )
     if pdf:
         specification.file = pdf

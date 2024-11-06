@@ -451,6 +451,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
         type_delivery = data["type_delivery"]
+        
+        if "post_update" in data:
+            post_update = True
+        else:
+            post_update = True    
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -480,26 +485,28 @@ class OrderViewSet(viewsets.ModelViewSet):
                     requisites,
                     id_bitrix,
                     type_delivery,
+                    post_update,
                 )
                 
         except Exception as e:
             #   добавление в козину удаленного товара при сохранении спецификации из апдейта
-            product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
-                "product__id"
-            )
+            if data["id_specification"] != None:
+                product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+                    "product__id"
+                )
 
-            product_spes_list = ProductSpecification.objects.filter(
-                specification_id=cart.specification.id
-            ).exclude(product_id__in=product_cart_list)
+                product_spes_list = ProductSpecification.objects.filter(
+                    specification_id=data["id_specification"]
+                ).exclude(product_id__in=product_cart_list)
 
-            if product_spes_list:
-                for product_spes_l in product_spes_list:
-                    new = ProductCart(
-                        cart=cart,
-                        product=product_spes_l.product,
-                        quantity=product_spes_l.quantity,
-                    )
-                    new.save()
+                if product_spes_list:
+                    for product_spes_l in product_spes_list:
+                        new = ProductCart(
+                            cart=cart,
+                            product=product_spes_l.product,
+                            quantity=product_spes_l.quantity,
+                        )
+                        new.save()
 
             error = "error"
             location = "Сохранение спецификации админам окт"

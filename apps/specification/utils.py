@@ -59,7 +59,7 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery):
+def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -76,7 +76,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             specification=specification
         )
         
-        motrum_requisites
+        
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
         date_data = datetime.date.today().isoformat()

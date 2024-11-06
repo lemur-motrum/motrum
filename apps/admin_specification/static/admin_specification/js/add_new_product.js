@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", () => {
               response.data.forEach((el) => {
                 searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
               });
-              searchElemsContainer.innerHTML += `<div class="small_loader"></div>`;
+              searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
             } else if (response.data.length > 0 && response.data.length < 9) {
               response.data.forEach((el) => {
                 searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
@@ -92,7 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       response.data.forEach((el) => {
                         searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
                       });
-                      searchElemsContainer.innerHTML += `<div class="small_loader"></div>`;
+                      searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
                     } else {
                       response.data.forEach((el) => {
                         searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
@@ -117,6 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
         searchProductItem.onclick = () => {
           searchInput.value = searchProductItem.textContent;
           container.classList.remove("show");
+          addProductButton.classList.add("show");
         };
       });
     }

@@ -169,7 +169,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = data["search_text"]
         # search_input = "кнопка грибок"
         search_input = search_input.split(" ")
-
+        
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
             Q(name__icontains=search_input[0])
@@ -177,15 +177,19 @@ class ProductViewSet(viewsets.ModelViewSet):
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
         )
+        print(len(search_input) )
         # del search_input[0]
-
-        for search_item in search_input[1:]:
-            queryset = queryset.filter(
-                Q(name__icontains=search_item)
-                | Q(article__icontains=search_item)
-                | Q(article_supplier__icontains=search_item)
-                | Q(additional_article_supplier__icontains=search_item)
-            )[count : count + count_last]
+        if len(search_input) > 1:
+            for search_item in search_input[1:]:
+                queryset = queryset.filter(
+                    Q(name__icontains=search_item)
+                    | Q(article__icontains=search_item)
+                    | Q(article_supplier__icontains=search_item)
+                    | Q(additional_article_supplier__icontains=search_item)
+                )[count : count + count_last]
+        else:
+            queryset = queryset[count : count + count_last]
+            
         print(queryset)
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
@@ -195,6 +199,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         #     | Q(additional_article_supplier__icontains=search_input)
         # )
         page_count = queryset.count()
+        print(1111)
+        print(page_count)
         count_all = count + page_count
         print(page_count)
         serializer = ProductSearchSerializer(queryset, many=True)

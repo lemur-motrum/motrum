@@ -555,6 +555,9 @@ h1 {
               bottom: 0;
               right: 0;
             }
+            &.search {
+              margin: 0 auto;
+            }
           }
           .product_search_item {
             padding: 0.5rem 0.6rem;

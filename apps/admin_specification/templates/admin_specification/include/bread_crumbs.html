@@ -1,11 +1,11 @@
 {% with request.resolver_match.url_name as url_name %}
     <div class="bread-crumbs">
         {% if url_name == "categories" or url_name == "groups" or url_name == "instruments" or url_name == "specifications" %}
-            <a class="active" href="">Каталог</a>
+            <span class="active" href="">Каталог</span>
             <a href="{% url "admin_specification:all_specifications" %}">заказы</a>
         {% else %}
             <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            <a class="active" href="">заказы</a>
+            <span class="active" href="">заказы</span>
         {% endif %}
     </div>
 {% endwith %}

@@ -20,7 +20,7 @@ from apps.product.models import (
     ProductCart,
     ProductProperty,
 )
-from django.db.models import Q, F, OrderBy,Value
+from django.db.models import Q, F, OrderBy, Value
 
 from apps.specification.models import ProductSpecification
 
@@ -31,6 +31,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     http_method_names = [
         "get",
+        "post",
     ]
 
     # аякс загрузка товаров в каталоге
@@ -159,42 +160,40 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(data=data_response, status=status.HTTP_200_OK)
 
     # поиск товар в окт
-    @action(detail=False, methods=["post","get"], url_path=r"search-product")
+    @action(detail=False, methods=["post", "get"], url_path=r"search-product")
     def search_product(self, request, *args, **kwargs):
         data = request.data
         # count = int(request.query_params.get("count"))
         count = data["count"]
-        count = 0
-        count_last = 10
+        count_last = data["count_last"]
         search_input = data["search_text"]
         # search_input = "кнопка грибок"
         search_input = search_input.split(" ")
-     
-        
-        
-        # # вариант ищет каждое слово все рабоатет 
+
+        # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
             Q(name__icontains=search_input[0])
             | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
-        ) 
+        )
         # del search_input[0]
 
-
         for search_item in search_input[1:]:
-            queryset = queryset.filter(Q(name__icontains=search_item)
-            | Q(article__icontains=search_item)
-            | Q(article_supplier__icontains=search_item)
-            | Q(additional_article_supplier__icontains=search_item))[count : count + count_last]
-        
-        # стандатный варинт ищет целиокм  
+            queryset = queryset.filter(
+                Q(name__icontains=search_item)
+                | Q(article__icontains=search_item)
+                | Q(article_supplier__icontains=search_item)
+                | Q(additional_article_supplier__icontains=search_item)
+            )[count : count + count_last]
+        print(queryset)
+        # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
         #     | Q(article__icontains=search_input)
         #     | Q(article_supplier__icontains=search_input)
         #     | Q(additional_article_supplier__icontains=search_input)
-        # ) 
+        # )
         page_count = queryset.count()
         count_all = count + page_count
         print(page_count)
@@ -203,7 +202,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             "data": serializer.data,
             "count": count,
             "count_all": count_all,
-            
         }
         return Response(data_response, status=status.HTTP_200_OK)
 

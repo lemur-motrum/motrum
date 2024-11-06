@@ -47,14 +47,78 @@ window.addEventListener("DOMContentLoaded", () => {
           })
           .then((response) => {
             searchElemsContainer.innerHTML = "";
-            response.data.forEach((el) => {
-              searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
-            });
+            if (response.data.length >= 9) {
+              response.data.forEach((el) => {
+                searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
+              });
+              searchElemsContainer.innerHTML += `<div class="small_loader"></div>`;
+            } else if (response.data.length > 0 && response.data.length < 9) {
+              response.data.forEach((el) => {
+                searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
+              });
+            } else {
+              searchElemsContainer.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
+            }
+            searchElemsContainer.onscroll = () => {
+              if (
+                searchElemsContainer.scrollHeight -
+                  searchElemsContainer.scrollTop <=
+                searchElemsContainer.offsetHeight
+              ) {
+                objData["count"] += 10;
+                const data = JSON.stringify(objData);
+                fetch("/api/v1/product/search-product/", {
+                  method: "POST",
+                  body: data,
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                  },
+                })
+                  .then((response) => {
+                    if (response.status === 200) {
+                      return response.json();
+                    } else {
+                      throw new Error("Ошибка");
+                    }
+                  })
+                  .then((response) => {
+                    if (searchElemsContainer.querySelector(".small_loader")) {
+                      searchElemsContainer
+                        .querySelector(".small_loader")
+                        .remove();
+                    }
+                    if (response.data.length >= 9) {
+                      response.data.forEach((el) => {
+                        searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
+                      });
+                      searchElemsContainer.innerHTML += `<div class="small_loader"></div>`;
+                    } else {
+                      response.data.forEach((el) => {
+                        searchElemsContainer.innerHTML += `<div class="product_search_item">${el.name}</div>`;
+                      });
+                    }
+                    searchProductLogic(searchElemsContainer);
+                  });
+              }
+            };
+            searchProductLogic(searchElemsContainer);
           });
       } else {
         searchElemsContainer.innerHTML = "";
         searchElemsContainer.classList.remove("show");
       }
     };
+    function searchProductLogic(container) {
+      const searchProductItems = container.querySelectorAll(
+        ".product_search_item"
+      );
+      searchProductItems.forEach((searchProductItem) => {
+        searchProductItem.onclick = () => {
+          searchInput.value = searchProductItem.textContent;
+          container.classList.remove("show");
+        };
+      });
+    }
   }
 });

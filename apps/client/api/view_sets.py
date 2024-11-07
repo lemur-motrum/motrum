@@ -488,13 +488,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = None
 
         if post_update:
-            post_update = True
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
-        else:
-            post_update = True    
-        
-        
+
         try:
             with transaction.atomic():
                 
@@ -567,7 +563,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             try:
                 order = Order.objects.get(cart_id=cart)
-                serializer = OrderSaveCartSerializer(order, data=data_order, many=False)
+                serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
                     serializer.save()
@@ -584,13 +580,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             except Order.DoesNotExist:
 
                 print(98989898)
-                serializer = OrderSaveCartSerializer(data=data_order, many=False)
+                serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
                     cart.is_active = True
                     cart.save()
                     serializer.save()
 
-                    print(serializer.data)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
                     print(serializer.errors)
@@ -732,6 +727,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             
             
             order_pdf = order.create_bill(request, is_req, order,bill_name,post_update)
+            
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}

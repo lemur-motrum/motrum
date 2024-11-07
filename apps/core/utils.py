@@ -1157,9 +1157,10 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 )
                 product_spes.date_delivery = date_delivery
             product_spes.save()
+            print(product_spes)
 
             total_amount = total_amount + price_all
-
+        
     # обновить спецификацию пдф
     total_amount = round(total_amount, 2)
     specification.total_amount = total_amount
@@ -1182,7 +1183,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
             specification._change_reason = "Ручное"
 
             specification.save()
-
+    
     return specification
 
     # except Exception as e:

@@ -1261,7 +1261,8 @@ def loc_mem_cache(key, function, timeout=300):
         cache.set(key, cache_data, timeout)
     return cache_data
 
-def save_new_product_okt
+def save_new_product_okt():
+    pass
 
 
 # from django.utils.http import url_has_allowed_host_and_scheme

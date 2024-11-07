@@ -34,11 +34,19 @@ export function invoiceItem(container) {
               if (num == 1) return words[0];
               return words[2];
             }
-            return `${resultDays} ${num_word(resultDays, [
-              "неделя",
-              "недели",
-              "недель",
-            ])}`;
+            if (resultDays >= 7) {
+              return `${resultDays} ${num_word(resultDays, [
+                "неделя",
+                "недели",
+                "недель",
+              ])}`;
+            } else {
+              return `${resultDays} ${num_word(resultDays, [
+                "день",
+                "дня",
+                "дней",
+              ])}`;
+            }
           };
 
           for (let i in data) {

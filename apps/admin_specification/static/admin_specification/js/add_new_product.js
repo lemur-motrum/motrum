@@ -298,9 +298,16 @@ window.addEventListener("DOMContentLoaded", () => {
         inputValidate(articleInput);
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
-        // inputValidate(persentSaleInput);
-        // inputValidate(addPersentSaleInput);
-        inputValidate(calendarInput);
+
+        if (
+          nameInput.value &&
+          articleInput.value &&
+          priceOnceInput.value &&
+          quantityInput.value
+        ) {
+          validate = true;
+        }
+
         if (validate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {

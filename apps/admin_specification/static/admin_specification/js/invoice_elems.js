@@ -19,7 +19,32 @@ export function invoiceItem(container) {
       })
         .then((response) => response.json())
         .then(function (data) {
+          const createTextDateDelivery = (elem) => {
+            const orderData = new Date(elem["date_delivery"]);
+            const today = new Date();
+            const delta = orderData.getTime() - today.getTime();
+            const dayDifference = +Math.floor(delta / 1000 / 60 / 60 / 24);
+            const resultDays = +Math.ceil(dayDifference / 7);
+
+            function num_word(value, words) {
+              value = Math.abs(value) % 100;
+              var num = value % 10;
+              if (value > 10 && value < 20) return words[2];
+              if (num > 1 && num < 5) return words[1];
+              if (num == 1) return words[0];
+              return words[2];
+            }
+            return `${resultDays} ${num_word(resultDays, [
+              "неделя",
+              "недели",
+              "недель",
+            ])}`;
+          };
+
           for (let i in data) {
+            console.log(i["date_delivery"]);
+            // i["text_delivery"] = createTextDateDelivery(i);
+
             addAjaxCatalogItem(data[i]);
           }
         });

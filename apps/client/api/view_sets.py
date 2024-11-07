@@ -454,7 +454,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         id_specification = data["id_specification"]
         # type_save = data["type_save"]
         type_save = "bill"
-        data.update({'post_update': True}) 
+         # post_update = data["post_update"]
+        post_update = False
         
         
 
@@ -486,7 +487,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         elif type_save == "bill":
             specification_name = None
 
-        if "post_update" in data:
+        if post_update:
             post_update = True
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
@@ -703,7 +704,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             data = request.data
             # post_update = data["post_update"]
-            post_update = True
+            post_update = False
             
             for obj in data:
 

@@ -70,6 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 searchElemsContainer.offsetHeight
               ) {
                 objData["count"] += 10;
+                objData["count_last"] += 10;
                 const data = JSON.stringify(objData);
                 fetch("/api/v1/product/search-product/", {
                   method: "POST",

@@ -21,15 +21,17 @@ export function editMotrumPrice(container) {
           }
         };
       }
-      const motrumPriceOne = getCurrentPrice(
-        motrumPriceContainer.getAttribute("price-motrum")
-      );
+      const motrumPriceOne = motrumPriceContainer
+        ? getCurrentPrice(motrumPriceContainer.getAttribute("price-motrum"))
+        : 0;
 
       const quantityItem = specification.querySelector(".input-quantity").value;
       const currentMotrumPrice = +motrumPriceOne * +quantityItem;
       console.log("currentMotrumPrice", currentMotrumPrice);
 
-      getDigitsNumber(motrumPriceContainer, currentMotrumPrice);
+      motrumPriceContainer
+        ? getDigitsNumber(motrumPriceContainer, currentMotrumPrice)
+        : "";
     });
   }
 }

@@ -501,6 +501,7 @@ window.addEventListener("DOMContentLoaded", () => {
             'textarea[name="comment-input-name"]'
           ).value;
           const inputPrice = item.querySelector(".price-input");
+          const saleMotrum = item.querySelector(".motrum_sale_persent");
 
           const product = {
             product_id: +itemID,
@@ -516,6 +517,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
+            sale_motrum: saleMotrum ? saleMotrum.textContent : null,
           };
           console.log(product);
           if (inputPrice) {

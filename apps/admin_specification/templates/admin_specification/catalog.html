@@ -447,48 +447,52 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                <div class="new_item_container">
-                  <div class="new_item_container_value">
-                    <label class="name_label" >  
-                        <input placeholder="Имя товара" class="new_item_container_name_input" type="text" />
-                        <div class="error"></div>
-                    </label>
-                    <label class="article_label" >
-                        <input placeholder="Артикул товара" class="new_item_container_article_input" type="text" />
-                        <div class="error"></div>
-                    </label>
-                  </div>
-                  <div class="new_item_container_value">
-                    <label class="price_once_label">
-                        <input placeholder="цена за 1шт" type="text" class="price_input" />
-                        <div class="error"></div>
-                    </label>
-                  </div>
-                  <div class="new_item_container_value">
-                    <label class="quantity_label">
-                        <input placeholder="Количество" type="text" class="quantity_input" />
-                        <div class="error"></div>
-                    </label>
-                  </div>
-                  <div class="new_item_container_value">
-                    <div class="new_item_container_value_total_cost">0</div>
-                  </div>
-                  <div class="new_item_container_value">
-                    <div class="new_item_container_value_motrum_price">0</div>
-                    <div> Cкидка <input class="persent_sale" type="text" placeholder="%" /> %</div>
-                  </div>
-                  <div class="new_item_container_value">
-                    <input class="add_sale" type="text" placeholder="%" /><span>%</span>
-                  </div>
-                  <div class="new_item_container_value">
-                    <label class="new_item_container_value_calendar_label">
-                        <span>Срок поставки</span>
-                        <input class="new_item_container_calendar" type="date" />
-                        <div class="error"></div>
-                    </label>
-                  </div>
-                  <button class="add_new_item_in_cart">+</button>
-                </div>
+                    <div class="new_item_container_wrapper">
+                        <div>
+                            <div class="new_item_container">
+                              <div class="new_item_container_value">
+                                <label class="name_label" >  
+                                    <input placeholder="Имя товара" class="new_item_container_name_input" type="text" />
+                                    <div class="error"></div>
+                                </label>
+                                <label class="article_label" >
+                                    <input placeholder="Артикул товара" class="new_item_container_article_input" type="text" />
+                                    <div class="error"></div>
+                                </label>
+                              </div>
+                              <div class="new_item_container_value">
+                                <label class="price_once_label">
+                                    <input placeholder="цена за 1шт" type="text" class="price_input" />
+                                    <div class="error"></div>
+                                </label>
+                              </div>
+                              <div class="new_item_container_value">
+                                <label class="quantity_label">
+                                    <input placeholder="Количество" type="text" class="quantity_input" />
+                                    <div class="error"></div>
+                                </label>
+                              </div>
+                              <div class="new_item_container_value">
+                                <div class="new_item_container_value_total_cost">0</div>
+                              </div>
+                              <div class="new_item_container_value">
+                                <div class="new_item_container_value_motrum_price">0</div>
+                                <div> Cкидка <input class="persent_sale" type="text" placeholder="%" /> %</div>
+                              </div>
+                              <div class="new_item_container_value">
+                                <input class="add_sale" type="text" placeholder="%" /><span>%</span>
+                              </div>
+                              <div class="new_item_container_value">
+                                <label class="new_item_container_value_calendar_label">
+                                    <span>Срок поставки</span>
+                                    <input class="new_item_container_calendar" type="date" min={{ current_date }} />
+                                    <div class="error"></div>
+                                </label>
+                              </div>
+                              <button class="add_new_item_in_cart">+</button>
+                            </div>
+                        </div>
+                    </div>
                 <div class="add_new_product_container">
                     <label class="search_label">
                         <div class="delete_search_details_btn">+</div>

@@ -1,4 +1,8 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  getDigitsNumber,
+} from "/static/core/js/functions.js";
 import {
   inputValidation,
   inputValidationQuantity,
@@ -125,6 +129,11 @@ window.addEventListener("DOMContentLoaded", () => {
       addProductButton.classList.remove("show");
       deleteSearchButton.classList.remove("show");
     };
+    addNewProductButton.onclick = () => {
+      document
+        .querySelector(".new_item_container_wrapper")
+        .classList.add("is_open");
+    };
 
     addProductButton.onclick = () => {
       const cartId = getCookie("cart");
@@ -173,6 +182,110 @@ window.addEventListener("DOMContentLoaded", () => {
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
       );
+      const newItemContainerTotalCost = newItemContainer.querySelector(
+        ".new_item_container_value_total_cost"
+      );
+      const motrumPrice = newItemContainer.querySelector(
+        ".new_item_container_value_motrum_price"
+      );
+      function changePercent() {
+        if (priceOnceInput.value && quantityInput.value) {
+          getDigitsNumber(
+            motrumPrice,
+            (priceOnceInput.value / 100) *
+              (100 - persentSaleInput.value) *
+              quantityInput.value
+          );
+        }
+      }
+      persentSaleInput.addEventListener("input", function () {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d.-]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+        persentSaleInput.value = currentValue;
+        if (+persentSaleInput.value > 99.99) {
+          persentSaleInput.value = 99.99;
+        }
+        if (+persentSaleInput.value < -99.99) {
+          persentSaleInput.value = -99.99;
+        }
+        if (
+          persentSaleInput.value.length > 1 &&
+          persentSaleInput.value.at(-1) === "-"
+        ) {
+          persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
+        }
+        if (persentSaleInput.value == ".") {
+          persentSaleInput.target.value = "";
+        }
+        if (persentSaleInput.value == "0") {
+          persentSaleInput.target.value = "";
+        }
+        changePercent();
+      });
+
+      // addPersentSaleInput.addEventListener("input", function (e) {
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d.-]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //   addPersentSaleInput.value = currentValue;
+      //   if (+addPersentSaleInput.value > 99.99) {
+      //     addPersentSaleInput.value = 99.99;
+      //   }
+      //   if (+addPersentSaleInput.value < -99.99) {
+      //     addPersentSaleInput.value = -99.99;
+      //   }
+      //   if (
+      //     addPersentSaleInput.value.length > 1 &&
+      //     addPersentSaleInput.value.at(-1) === "-"
+      //   ) {
+      //     addPersentSaleInput.target.value = addPersentSaleInput.value.slice(
+      //       0,
+      //       -1
+      //     );
+      //   }
+      //   if (addPersentSaleInput.value == ".") {
+      //     addPersentSaleInput.target.value = "";
+      //   }
+      //   if (addPersentSaleInput.value == "0") {
+      //     addPersentSaleInput.target.value = "";
+      //   }
+
+      //   if (priceOnceInput.value) {
+      //     priceOnceInput.value =
+      //       (priceOnceInput.value / 100) * (100 - addPersentSaleInput.value);
+      //   }
+      // });
+
+      function changeTotalCost(input1, input2) {
+        input1.addEventListener("input", function (e) {
+          const currentValue = this.value
+            .replace(",", ".")
+            .replace(/[^.\d.-]+/g, "")
+            .replace(/^([^\.]*\.)|\./g, "$1")
+            .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+              return a + b + c.slice(0, 2);
+            });
+          input1.value = currentValue;
+          if (input2.value) {
+            getDigitsNumber(
+              newItemContainerTotalCost,
+              +input1.value * +input2.value
+            );
+          }
+          changePercent();
+        });
+      }
+      changeTotalCost(priceOnceInput, quantityInput);
+      changeTotalCost(quantityInput, priceOnceInput);
       let validate = true;
       addNewItemInCartButton.onclick = () => {
         function inputValidate(input) {
@@ -185,13 +298,43 @@ window.addEventListener("DOMContentLoaded", () => {
         inputValidate(articleInput);
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
-        inputValidate(persentSaleInput);
-        inputValidate(addPersentSaleInput);
+        // inputValidate(persentSaleInput);
+        // inputValidate(addPersentSaleInput);
         inputValidate(calendarInput);
+        if (validate === true) {
+          const cartId = getCookie("cart");
+          const dataObjNewProduct = {
+            product: null,
+            product_new: nameInput.value,
+            product_new_article: articleInput.value,
+            product_new_price: +priceOnceInput.value,
+            cart: +cartId,
+            quantity: +quantityInput.value,
+            product_new_sale: persentSaleInput.value
+              ? persentSaleInput.value
+              : null,
+            product_new_sale_motrum: addPersentSaleInput.value
+              ? addPersentSaleInput.value
+              : null,
+          };
+          const data = JSON.stringify(dataObjNewProduct);
+
+          fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          }).then((response) => {
+            if (response.status === 200 || response.status === 201) {
+              window.location.reload();
+            } else {
+              throw new Error("Ошибка");
+            }
+          });
+        }
       };
-      // if (validate === ) {
-      //   fetch("");
-      // }
     }
 
     function searchProductLogic(container) {

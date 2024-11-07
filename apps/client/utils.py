@@ -43,7 +43,7 @@ from reportlab.platypus import ListFlowable, ListItem
 
 
 def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delivery,post_update):
-    
+    print(post_update)
     try:
         directory = check_spesc_directory_exist(
             "bill",
@@ -71,9 +71,11 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
         if post_update:
             date_now = order.bill_date_start
-            date_now = transform_date(date_now.isoformat())
+            date_now = transform_date(date_now)
+            print("''''''''''''''''")
         else:
             date_now = transform_date(datetime.date.today().isoformat())
+            print(date_now)
         # bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
         
         # if bill_last:

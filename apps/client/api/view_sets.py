@@ -708,11 +708,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 
             order = Order.objects.get(specification_id=pk)
+            print(2222222222222222222222222222222)
+            print(order)
             if post_update:
-                post_update = True
                 bill_name = order.bill_name
             else:
-                post_update = True 
                 bill_name = Order.objects.filter(bill_name__isnull = False).last()
                 if bill_name:
                     bill_name = int(bill_name.bill_name)+1

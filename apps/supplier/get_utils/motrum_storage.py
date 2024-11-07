@@ -67,7 +67,7 @@ def get_motrum_storage():
                     supplier_qs = vendor_qs.supplier
 
                 except Vendor.DoesNotExist:
-                    supplier_qs = Supplier.objects.get(slug="neizvestnyij")
+                    supplier_qs = Supplier.objects.get(slug="drugoe")
                     vat_catalog = Vat.objects.get(name=20)
                     currency_catalog = Currency.objects.get(words_code="RUB")
 
@@ -80,12 +80,21 @@ def get_motrum_storage():
 
             # работа с товарами поставщиков
             else:
-
-                all_fredom_remaining = data_sheet.cell(row=index, column=16).value
-                all_reserve_remaining = data_sheet.cell(row=index, column=15).value
-                int_stock_motrum = int(all_fredom_remaining)
-                int_stock_reserve_motrum = int(all_reserve_remaining)
+         
                 article_supplier = data_sheet.cell(row=index, column=1).value
+                all_fredom_remaining = data_sheet.cell(row=index, column=16).value
+             
+                all_reserve_remaining = data_sheet.cell(row=index, column=15).value
+                if all_fredom_remaining:
+                    int_stock_motrum = int(all_fredom_remaining)
+                else:
+                    int_stock_motrum = 0  
+                    
+                if all_reserve_remaining :    
+                    int_stock_reserve_motrum = int(all_reserve_remaining)
+                else:
+                    int_stock_reserve_motrum = 0
+                
 
 
                 if article_supplier != "" and article_supplier != None:
@@ -96,7 +105,7 @@ def get_motrum_storage():
                         product = Product.objects.get(
                             vendor=vendor_qs, article_supplier=article_supplier
                         )
-                        add_stok_motrum_old_article(product,lot_auto,int_stock_motrum)
+                        add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
                     
                     # товары НЕ находяться в окт с артикулом и производителем
                     except Product.DoesNotExist:
@@ -155,14 +164,21 @@ def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_rese
         prod=product,
         defaults={
             "lot": lot_auto,
+            
         },
     )
+    
 
     stock = product_stock[0]
-
+    old_stock_data =  stock.data_update
     stock.stock_motrum = int_stock_motrum
     stock.stock_motrum_reserve = int_stock_reserve_motrum
+    
     stock._change_reason = "Автоматическое"
     stock.save()
+    stock = Stock.objects.filter(prod=product).update(data_update=old_stock_data)
+
+    # if old_stock_data:
+    #     stock.data_update = old_stock_data
     # update_change_reason(stock, "Автоматическое")
     

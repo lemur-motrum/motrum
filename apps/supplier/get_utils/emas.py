@@ -69,13 +69,14 @@ def add_file_emas(new_file, obj):
                             article = Product.objects.get(
                                 supplier=supplier, article_supplier=article_suppliers
                             )
-
+                        
                         except Product.DoesNotExist:
+                            vendor_qs = Vendor.objects.get(slug="drugoe")
                             new_article = create_article_motrum(supplier.id)
                             article = Product(
                                 article=new_article,
                                 supplier=supplier,
-                                vendor=None,
+                                vendor=vendor_qs,
                                 article_supplier=article_suppliers,
                                 name=name,
                                 description=None,

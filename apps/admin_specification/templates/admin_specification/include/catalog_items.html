@@ -110,12 +110,14 @@
                                         <div class="stock_item">
                                             Motrum: <span class="motrum_unit">{{ product.stock.stock_motrum }}</span>
                                         </div>
-                                        <span class="span-transit">{{ product.stock.data_update|date:"d.m.Y" }}</span>
-                                        <br>
-                                        <span class="span-transit">
-                                            {% if product.stock.transit_count %}
-                                                Ближайшая поставка: {{ product.stock.data_transit|date:"d.m.Y" }} - {{ product.stock.transit_count }} шт.
-                                            {% endif %}
+                                        {% if item.stock.stock_supplier != None %}
+                                            <span class="span-transit">{{ product.stock.data_update|date:"d.m.Y" }}</span>
+                                            <br>
+                                            <span class="span-transit">
+                                                {% if product.stock.transit_count %}
+                                                    Ближайшая поставка: {{ product.stock.data_transit|date:"d.m.Y" }} - {{ product.stock.transit_count }} шт.
+                                                {% endif %}
+                                        {% endif %}
                                         </span>
                                     {% else %}
                                         {% if product.stock.to_order %}Под заказ{% endif %}
@@ -136,7 +138,7 @@
                                         {% endif %}
                                     {% else %}
                                         -
-                                    {% endif %}
+                                    {% endif %}                                    
                                 </div>
                                 <div class="suppler-price">
                                     {% if product.price.price_motrum and product.price.price_motrum != 0 %}

@@ -37,8 +37,7 @@ def add_iek(request):
 
     title = "Услуги"
  
-    specification_date_stop()
-    bill_date_stop()
+    get_motrum_nomenclature()
     responsets = ["233", "2131"]
     # responsets = 0
     context = {

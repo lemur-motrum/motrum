@@ -47,14 +47,14 @@ def get_motrum_nomenclature():
             i += 1
             try:
                 
-                if ( i > 22630
+                if ( i > 5000
                     and row_nomenk["Артикул"] != ""
-                    and row_nomenk["Артикул"] != None
+                    and row_nomenk["Артикул"] != None and row_nomenk["В группе"] == "Emas"
                 ):
                     vendor_row = str(row_nomenk["В группе"]).strip()
 
                     supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
-
+                    
                     article_supplier = str(row_nomenk["Артикул"]).strip()
                     article_supplier = " ".join(article_supplier.split())
                     print(article_supplier)
@@ -80,9 +80,6 @@ def get_motrum_nomenclature():
                         if product:
                             print(9999)
                             product = product[0]
-                            if article_supplier == "CP0B0XB":
-                                print(product.vendor)
-                                print(vendor_qs)
                             product.vendor = vendor_qs
                             if (
                                 product.name == article_supplier
@@ -100,7 +97,6 @@ def get_motrum_nomenclature():
                             )
                             product.name = name
                             product.description = description
-
                     else:
                         product = Product.objects.filter(
                             vendor=vendor_qs, article_supplier=article_supplier
@@ -153,12 +149,13 @@ def add_new_product(
         category_supplier_all=None,
         group_supplier=None,
         category_supplier=None,
+        add_in_nomenclature=True,
     )
     prod_new.save()
     update_change_reason(prod_new, "Автоматическое")
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name=20)
-    price =  Price(prod=prod_new,currency=currency,vat=vat,extra_price=True)
+    price =  Price(prod=prod_new,currency=currency,vat=vat,extra_price=True,in_auto_sale=False)
     price.save()
     update_change_reason(price, "Автоматическое")
     return prod_new
@@ -182,7 +179,7 @@ def get_or_add_vendor(vendor):
 
     except Vendor.DoesNotExist:
 
-        supplier_qs = Supplier.objects.get(slug="neizvestnyij")
+        supplier_qs = Supplier.objects.get(slug="drugoe")
         vat_catalog = Vat.objects.get(name=20)
         currency_catalog = Currency.objects.get(words_code="RUB")
 

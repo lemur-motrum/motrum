@@ -127,7 +127,9 @@ class Product(models.Model):
     promote = models.BooleanField("Продвижение на главной в слайдере", default=False)
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
-
+    add_in_nomenclature = models.BooleanField("Загрузка из номенклатуры", default=False)
+    # in_auto_sale = models.BooleanField("Разрешить применять скидки автоматичсеки", default=False)
+    in_view_website =  models.BooleanField("Видимость на сайте", default=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -416,6 +418,7 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
+    in_auto_sale = models.BooleanField("Разрешить применять скидки автоматически", default=True)
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
 
@@ -458,20 +461,22 @@ class Price(models.Model):
             self.rub_price_supplier = rub_price_supplier
 
         # получить скидки
-        price_motrum_all = get_price_motrum(
-            self.prod.category_supplier,
-            self.prod.group_supplier,
-            self.prod.vendor,
-            self.rub_price_supplier,
-            self.prod.category_supplier_all,
-            self.prod.supplier,
-        )
+        if self.in_auto_sale:
+            price_motrum_all = get_price_motrum(
+                self.prod.category_supplier,
+                self.prod.group_supplier,
+                self.prod.vendor,
+                self.rub_price_supplier,
+                self.prod.category_supplier_all,
+                self.prod.supplier,
+            )
 
-        price_motrum = price_motrum_all[0]
-        sale = price_motrum_all[1]
-        self.price_motrum = price_motrum
-        self.sale = sale
-
+            price_motrum = price_motrum_all[0]
+            sale = price_motrum_all[1]
+            self.price_motrum = price_motrum
+            self.sale = sale
+        else:
+            self.price_motrum = self.rub_price_supplier
         super().save(*args, **kwargs)
 
     # def price_sale_personal(self):
@@ -838,6 +843,26 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    product_new_sale = models.FloatField(
+        "Доп.скидка товара нового без добавления в бд",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    product_new_vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    product_new_sale_motrum = models.FloatField(
+        "Скидка мотрум товара нового без добавления в бд",
+        blank=True,
+        null=True,
+        default=None,
+    )
 
     quantity = models.IntegerField(
         "количество товара",
@@ -860,6 +885,7 @@ class ProductCart(models.Model):
         return str(self.id)
     
     def save(self, *args, **kwargs):
-       
-       
         super().save(*args, **kwargs)
+        
+    def save_product_to_okt(self):
+        

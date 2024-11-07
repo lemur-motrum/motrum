@@ -390,7 +390,7 @@ class CartViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")
     def add_product_cart_new(self, request, *args, **kwargs):
 
-        queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
+     
         serializer_class = ProductCartSerializer
         data = request.data
         cart_id = data["cart"]
@@ -413,7 +413,24 @@ class CartViewSet(viewsets.ModelViewSet):
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=["post"], url_path=r"/upd-product-new")
+    def upd_product_cart_new(self, request,pk=None, *args, **kwargs):
+        queryset = ProductCart.objects.get(pk=pk)
+        serializer_class = ProductCartSerializer
 
+        data = request.data
+        serializer = serializer_class(queryset, data=data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        
     # изменить колличство товаров в корзине
     @action(detail=True, methods=["update"], url_path=r"update-product")
     def update_product_cart(self, request, pk=None, *args, **kwargs):

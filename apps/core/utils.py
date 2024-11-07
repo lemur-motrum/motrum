@@ -984,18 +984,22 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 #     price_one = round(price_one, 2)
                 #     print(price_one)
                 print(4444444)
-                price_motrum_all = get_price_motrum(
-                    price.prod.category_supplier,
-                    price.prod.group_supplier,
-                    price.prod.vendor,
-                    # price.rub_price_supplier,
-                    price_one,
-                    price.prod.category_supplier_all,
-                    price.prod.supplier,
-                )
-                print(123123123)
-                price_one_motrum = price_motrum_all[0]
-                sale = price_motrum_all[1]
+                if price.in_auto_sale:
+                    price_motrum_all = get_price_motrum(
+                        price.prod.category_supplier,
+                        price.prod.group_supplier,
+                        price.prod.vendor,
+                        # price.rub_price_supplier,
+                        price_one,
+                        price.prod.category_supplier_all,
+                        price.prod.supplier,
+                    )
+                    print(123123123)
+                    price_one_motrum = price_motrum_all[0]
+                    sale = price_motrum_all[1]
+                else: 
+                    price_one = price.rub_price_supplier
+                    price_one_motrum = price.price_motrum 
 
             else:
                 print(77777777)
@@ -1257,8 +1261,11 @@ def loc_mem_cache(key, function, timeout=300):
         cache.set(key, cache_data, timeout)
     return cache_data
 
-from django.utils.http import url_has_allowed_host_and_scheme
-import urllib
+def save_new_product_okt
+
+
+# from django.utils.http import url_has_allowed_host_and_scheme
+# import urllib
 
 
 

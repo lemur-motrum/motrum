@@ -201,6 +201,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:

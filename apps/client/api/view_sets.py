@@ -677,7 +677,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
-
+                
             order = Order.objects.get(specification_id=pk)
 
             if order.requisites.contract:

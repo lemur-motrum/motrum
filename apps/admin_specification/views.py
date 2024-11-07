@@ -507,7 +507,7 @@ def create_specification(request):
 
         # новая спецификация
         except Specification.DoesNotExist:
-
+            
             try:
                 order = Order.objects.get(cart=cart)
                 specification = None
@@ -612,8 +612,7 @@ def create_specification(request):
                 ),
             )
         )
-        # for p in product:
-        #     print(p.price)
+
 
     # корзины нет
     else:
@@ -629,6 +628,7 @@ def create_specification(request):
         product_new_more = None
         specification = None
         order = None
+        
 
     current_date = datetime.date.today().isoformat()
     bill_upd = False
@@ -637,7 +637,7 @@ def create_specification(request):
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
     
-        
+    vendor = Vendor.objects.all()    
     context = {
         "title": title,
         "product": product,
@@ -653,6 +653,7 @@ def create_specification(request):
         "client_req": client_req,
         "client_req_all": client_req_all,
         "bill_upd":bill_upd,
+        "vendor":vendor,
     }
     print(context)
     return render(request, "admin_specification/catalog.html", context)

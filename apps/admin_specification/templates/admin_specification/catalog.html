@@ -71,16 +71,19 @@
                                 </div>
                                 <div class="stock_item">
                                     Motrum: <span class="motrum_unit">{{ item.stock.stock_motrum }}</span>
+
                                     {% if item.stock.stock_motrum_reserve  %} Motrum резерв: <span class="motrum_unit_reserve">{{ item.stock.stock_motrum_reserve }}</span>{% endif %}
                                    
                                 </div>
-                                <span class="span-transit">{{ item.stock.data_update|date:"d.m.Y" }}</span>
-                                <br>
-                                <span class="span-transit">
-                                    {% if item.stock.transit_count %}
-                                        Ближайшая поставка: {{ item.stock.data_transit|date:"d.m.Y" }} - {{ item.stock.transit_count }} шт.
-                                    {% endif %}
-                                </span>
+                                {% if item.stock.stock_supplier != None %}
+                                    <span class="span-transit">{{ item.stock.data_update|date:"d.m.Y" }}</span>
+                                    <br>
+                                    <span class="span-transit">
+                                        {% if item.stock.transit_count %}
+                                            Ближайшая поставка: {{ item.stock.data_transit|date:"d.m.Y" }} - {{ item.stock.transit_count }} шт.
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
                             {% else %}
                                 {% if item.stock.to_order %}Под заказ{% endif %}
                                 Неизвестно
@@ -354,7 +357,7 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                <!--товары без записи в бд при аплдете добавленные новые которых езе нет в спецификации-->
+                <!--товары без записи в бд при аплдете добавленные новые которых еще нет в спецификации-->
                 {% for item in product_new_more %}
                     {% if update_spesif %}
                         <div class="item_container"

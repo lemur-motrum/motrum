@@ -21,9 +21,8 @@ class Specification(models.Model):
     )
     number = models.CharField(
         "Номер спецификации",
-        default=uuid.uuid4,
         max_length=1000,
-        null=True,
+        null=True, default=None
 
     )
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
@@ -192,6 +191,12 @@ class ProductSpecification(models.Model):
         "Процент дополнительной скидки",
         blank=True,
         null=True,
+    )
+    sale_motrum = models.FloatField(
+        "Скидка мотрум",
+        blank=True,
+        null=True,
+        default=None,
     )
     date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     text_delivery = models.CharField(

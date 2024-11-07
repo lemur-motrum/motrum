@@ -68,7 +68,7 @@ from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
     SpecificationSerializer,
 )
-from apps.specification.models import ProductSpecification
+from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification
 from apps.user.models import AdminUser
 
@@ -451,11 +451,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
         type_delivery = data["type_delivery"]
+        id_specification = data["id_specification"]
+        # type_save = data["type_save"]
+        type_save = "bill"
+        data.update({'post_update': True}) 
         
-        if "post_update" in data:
-            post_update = True
-        else:
-            post_update = True    
+        
+
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -474,8 +476,27 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             client = None
         
+        if type_save == "specification":
+            last_spec_name = Specification.objects.filter(number__isnull=False).last()
+            if last_spec_name:
+                last_spec_name = last_spec_name.number
+                specification_name = int(last_spec_name) + 1
+            else: 
+                last_spec_name = 1   
+        elif type_save == "bill":
+            specification_name = None
+
+        if "post_update" in data:
+            post_update = True
+            specification_name = Specification.objects.get(id=id_specification)
+            specification_name = specification_name.number
+        else:
+            post_update = True    
+        
+        
         try:
             with transaction.atomic():
+                
                 specification = save_specification(
                     data,
                     pre_sale,
@@ -486,6 +507,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     id_bitrix,
                     type_delivery,
                     post_update,
+                    specification_name,
                 )
                 
         except Exception as e:
@@ -514,26 +536,32 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
 
         if specification:
-            data_order = {
-                "client": client,
-                "name": 123131,
-                "specification": specification.id,
-                "requisites": requisites.id,
-                "account_requisites": account_requisites.id,
-                "status": "PROCESSING",
-                "cart": cart.id,
-                "bill_name": None,
-                "bill_file": None,
-                "bill_date_start": None,
-                "bill_date_stop": None,
-                "bill_sum": None,
-                "comment": data["comment"],
-                "prepay_persent": requisites.prepay_persent,
-                "postpay_persent": requisites.postpay_persent,
-                "motrum_requisites": motrum_requisites.id,
-                "id_bitrix": id_bitrix,
-                "type_delivery": type_delivery,
-            }
+            if post_update:
+                 data_order = {
+                    "comment": data["comment"],
+                    "name": 123131,
+                }
+            else:
+                data_order = {
+                    "client": client,
+                    "name": 123131,
+                    "specification": specification.id,
+                    "requisites": requisites.id,
+                    "account_requisites": account_requisites.id,
+                    "status": "PROCESSING",
+                    "cart": cart.id,
+                    "bill_name": None,
+                    "bill_file": None,
+                    "bill_date_start": None,
+                    "bill_date_stop": None,
+                    "bill_sum": None,
+                    "comment": data["comment"],
+                    "prepay_persent": requisites.prepay_persent,
+                    "postpay_persent": requisites.postpay_persent,
+                    "motrum_requisites": motrum_requisites.id,
+                    "id_bitrix": id_bitrix,
+                    "type_delivery": type_delivery,
+                }
             print(data_order)
 
             try:
@@ -544,8 +572,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     cart.is_active = True
                     cart.save()
+                    print("ok",serializer.data)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
+                    print("error",serializer.errors)
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
@@ -672,6 +702,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
 
             data = request.data
+            # post_update = data["post_update"]
+            post_update = True
+            
             for obj in data:
 
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
@@ -679,13 +712,25 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 
             order = Order.objects.get(specification_id=pk)
-
+            if post_update:
+                post_update = True
+                bill_name = order.bill_name
+            else:
+                post_update = True 
+                bill_name = Order.objects.filter(bill_name__isnull = False).last()
+                if bill_name:
+                    bill_name = int(bill_name.bill_name)+1
+                else:
+                    bill_name = 1    
             if order.requisites.contract:
-                order_pdf = order.create_bill(request, True, order)
+                is_req = True
+                
 
             else:
-                order_pdf = order.create_bill(request, False, order)
-
+                is_req = False
+            
+            
+            order_pdf = order.create_bill(request, is_req, order,bill_name,post_update)
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
@@ -695,8 +740,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             error = "error"
-            location = "Сохранение спецификации админам окт"
-            info = f"Сохранение спецификации админам окт ошибка {e}"
+            location = "Сохранение счета админам окт"
+            info = f"Сохранение счета админам окт ошибка {e}"
             e = error_alert(error, location, info)
 
         return Response(data, status=status.HTTP_400_BAD_REQUEST)

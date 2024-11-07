@@ -877,7 +877,7 @@ def save_update_product_attr(
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix,type_delivery,post_update):
+def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix,type_delivery,post_update,specification_name):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -897,13 +897,15 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     
     # первичное создание/взятие спецификации
     try:
+        specification = Specification.objects.get(id=id_specification)
         if post_update:
-            specification = Specification.objects.get(id=id_specification)
+            pass
         else:
-            specification = Specification.objects.get(id=id_specification)
+            
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True
+            
         
       
 
@@ -944,6 +946,8 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
         specification = Specification(
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
         )
+        if specification_name:
+            specification.number = specification_name
         specification.skip_history_when_saving = True
         data_stop = create_time_stop_specification()
         specification.date_stop = data_stop
@@ -1106,9 +1110,17 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-
+            if product_item["extra_discount"]:    
+                motrum_sale = float(product_item["extra_discount"])
+            else:
+                motrum_sale = 0
+            price_one_motrum = price_one - (price_one / 100 * motrum_sale)
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
+            price_all_motrum = float(price_one_motrum) * int(
+                product_item["quantity"]
+            )
+            price_all_motrum = round(price_all_motrum, 2)
             currency = Currency.objects.get(words_code="RUB")
 
             if (
@@ -1131,8 +1143,8 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
             product_spes.price_all = price_all
             product_spes.price_one = price_one
             product_spes.extra_discount = None
-            product_spes.price_one_motrum = price_one
-            product_spes.price_all_motrum = price_all
+            product_spes.price_one_motrum = price_one_motrum
+            product_spes.price_all_motrum = price_all_motrum
             product_spes.product_new = product_item["product_name_new"]
             product_spes.product_new_article = product_item["product_new_article"]
             product_spes._change_reason = "Ручное"
@@ -1156,15 +1168,20 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
     
+    
+    
+    
     specification.save()
-    pdf = crete_pdf_specification(
-        specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update
-    )
-    if pdf:
-        specification.file = pdf
-        specification._change_reason = "Ручное"
+    if specification_name:
+        pdf = crete_pdf_specification(
+            specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update,specification_name
+        )
+        
+        if pdf:
+            specification.file = pdf
+            specification._change_reason = "Ручное"
 
-        specification.save()
+            specification.save()
 
     return specification
 

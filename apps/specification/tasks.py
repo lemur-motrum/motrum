@@ -12,7 +12,7 @@ from django.db.models import Prefetch, OuterRef
 )
 def specification_date_stop(self):
     try:
-        specification = Specification.objects.filter(tag_stop=True)
+        specification = Specification.objects.filter(tag_stop=True,number__isnull=False)
 
         for specification_item in specification:
             now = datetime.date.today()

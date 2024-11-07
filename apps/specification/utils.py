@@ -59,7 +59,7 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update):
+def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update,specification_name):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -86,7 +86,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
         
 
-        name_specification = f"specification_{specification}.pdf"
+        name_specification = f"specification_{specification_name}.pdf"
         fileName = os.path.join(directory, name_specification)
         story = []
 
@@ -141,7 +141,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         if requisites.contract:
             to_contract = requisites.contract
         else:
-            to_contract = 88775545   
+            to_contract = None   
         if requisites:
             to_address = requisites.legal_entity
         else:
@@ -149,10 +149,12 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
         story.append(
             Paragraph(
-                f"<b>Спецификация №{specification} от {date_title}г.</b><br></br><br></br>", bold_left_style
+                f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>", bold_left_style
             )
         )
-        story.append(Paragraph(f"К договору № {to_contract}", normal_style))
+        if to_contract:
+            story.append(Paragraph(f"К договору № {to_contract}", normal_style))
+            
         story.append(Paragraph(f"На поставку продукции в адрес {to_address}", normal_style))
         story.append(Paragraph(f'от {motrum_info.short_name_legal_entity} <br></br><br></br>', normal_style))
 

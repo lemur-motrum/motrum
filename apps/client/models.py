@@ -357,7 +357,7 @@ class Order(models.Model):
 
     bill_name = models.CharField(
         max_length=1000,
-        default=random.randint(0, 9999),
+        default=None,
         blank=True,
         null=True,
     )
@@ -398,23 +398,18 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self, request, is_contract, order):
+    def create_bill(self, request, is_contract, order,bill_name,post_update):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
 
-        print(is_contract, order)
-        self.bill_date_start = datetime.date.today()
-        print(is_contract, order)
-        data_stop = create_time_stop_specification()
-        print(data_stop)
-        self.bill_date_stop = data_stop
-        bill_last = Order.objects.filter(bill_name__isnull = False).exclude(bill_name="").last()
-        
-        if bill_last:
-            bill_name = int(bill_last.bill_name)+1
+        if post_update:
+            pass
         else:
-            bill_name = 1  
+            self.bill_date_start = datetime.date.today()
+            data_stop = create_time_stop_specification()
+            self.bill_date_stop = data_stop
+
         pdf = crete_pdf_bill(
             self.specification.id,
             request,
@@ -422,6 +417,7 @@ class Order(models.Model):
             order,
             bill_name,
             self.type_delivery,
+            post_update
         )
         if pdf[0]:
             self.bill_file = pdf[0]

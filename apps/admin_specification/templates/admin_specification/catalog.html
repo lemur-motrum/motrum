@@ -189,7 +189,7 @@
                              data-product-article-new="{{ item.product_new_article }}"
                              data-product-id-cart="{{ item.id_product_cart }}"
                              data-id="{{ item.id_product_cart }}"
-                             data-price="{{ item.price_one }}"
+                             data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
                              data-product-specification-id="{{ item.id }}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
@@ -229,7 +229,7 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
-                                <div class="item_value price price_once">{{ item.price_one }}</div>
+                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -240,11 +240,22 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                                {% if item.discount == "" or item.discount == None %}
-                                    Нет
-                                {% else %}
-                                    {{ item.discount }} %
-                                {% endif %}
+                                <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
+                                     class="price_motrum">
+                                    {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                        0
+                                    {% else %}
+                                   
+                                        {{ item.price_motrum }}
+                                    {% endif %}
+                                </div>
+                                <div class="">
+                                    
+                                    {% if item.sale_motrum %}
+                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
+                                    {% else %}
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
@@ -256,8 +267,8 @@
                                 <label for="price-input-discount">
                                     %
                                     <br>
-                                    {% if item.old_extra_discount %}
-                                        {{ item.old_extra_discount }}%
+                                    {% if item.extra_discount %}
+                                        {{ item.extra_discount }}%
                                     {% endif %}
                                 </label>
                             </div>
@@ -327,12 +338,23 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                                {% if item.discount == "" or item.discount == None %}
-                                    Нет
+                            <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
+                                 class="price_motrum">
+                                {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                    0
                                 {% else %}
-                                    {{ item.discount }} %
+                               
+                                    {{ item.price_motrum }}
                                 {% endif %}
                             </div>
+                            <div class="">
+                                
+                                {% if item.product_new_sale_motrum %}
+                                    скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
+                                {% else %}
+                                {% endif %}
+                            </div>
+                        </div>
                             <div class="item_value">
                                 <input class="discount-input"
                                        type="text"
@@ -417,11 +439,22 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                                {% if item.discount == "" or item.discount == None %}
-                                    Нет
-                                {% else %}
-                                    {{ item.discount }} %
-                                {% endif %}
+                                <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
+                                     class="price_motrum">
+                                    {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                        0
+                                    {% else %}
+                                   
+                                        {{ item.price_motrum }}
+                                    {% endif %}
+                                </div>
+                                <div class="">
+                                    
+                                    {% if item.product_new_sale_motrum %}
+                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
+                                    {% else %}
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"

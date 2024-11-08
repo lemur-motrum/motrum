@@ -36,6 +36,8 @@ from project.settings import MEDIA_ROOT
 from .forms import SearchForm
 from django.db.models import Q, F, OrderBy
 from django.db.models.functions import Coalesce
+from django.db.models.functions import Round
+
 
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -57,15 +59,13 @@ def all_categories(request):
             "group",
         )
         .filter(q_object)
-        
         .distinct("vendor__name")
-        .order_by('vendor__name')
+        .order_by("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug")
     )
     for vendor in product_vendor:
-        if vendor['vendor__name'] == None:
-            vendor['vendor__name'] = "Не установлен"
-    
+        if vendor["vendor__name"] == None:
+            vendor["vendor__name"] = "Не установлен"
 
     product_list = (
         Product.objects.select_related(
@@ -133,7 +133,6 @@ def all_categories(request):
     else:
         price_url = False
 
-    
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -182,13 +181,13 @@ def group_product(request, cat):
             "group",
         )
         .filter(q_object)
-        .order_by('vendor__name')
+        .order_by("vendor__name")
         .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug")
     )
     for vendor in product_vendor:
-        if vendor['vendor__name'] == None:
-            vendor['vendor__name'] = "Не установлен"
+        if vendor["vendor__name"] == None:
+            vendor["vendor__name"] = "Не установлен"
 
     product_list = (
         Product.objects.select_related(
@@ -340,8 +339,8 @@ def specifications(request, cat, gr):
         .values("vendor", "vendor__name", "vendor__slug")
     )
     for vendor in product_vendor:
-        if vendor['vendor__name'] == None:
-            vendor['vendor__name'] = "Не установлен"
+        if vendor["vendor__name"] == None:
+            vendor["vendor__name"] = "Не установлен"
 
     if request.GET.get("vendor") != None:
         vendor_urls = request.GET.get("vendor")
@@ -450,7 +449,7 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     # bill_upd = request.GET.get('bill-upd', None)
-    
+
     cart = request.COOKIES.get("cart")
     # если есть корзина
     if cart != None:
@@ -487,27 +486,63 @@ def create_specification(request):
             order = Order.objects.get(specification=specification)
 
             # список товаров без щаписи в окт которые были в спецификации
-            product_new = ProductSpecification.objects.filter(
-                specification=specification,
-                product=None,
-            ).annotate(
-                id_product_cart=product_cart.filter(
-                    product_new=OuterRef("product_new")
-                ).values(
-                    "id",
-                ),
+            product_new = (
+                ProductSpecification.objects.filter(
+                    specification=specification,
+                    product=None,
+                )
+                .annotate(
+                    id_product_cart=product_cart.filter(
+                        product_new=OuterRef("product_new")
+                    ).values(
+                        "id",
+                    ),
+                    product_new_price=product_cart.filter(
+                        product_new=OuterRef("product_new")
+                    ).values(
+                        "product_new_price",
+                    ),
+                    product_new_sale_motrum=product_cart.filter(
+                        product_new=OuterRef("product_new")
+                    ).values(
+                        "product_new_sale_motrum",
+                    ),
+                )
+                .annotate(
+                    price_motrum=Round(
+                        F("product_new_price")
+                        - (
+                            F("product_new_price")
+                            / 100
+                            * (F("product_new_sale_motrum"))
+                        ),
+                        2,
+                    ),
+                )
             )
             product_new_value_id = product_new.values_list("id_product_cart")
 
             # список товаров без щаписи в окт которые новые еще на записанны
-            product_new_more = ProductCart.objects.filter(
-                cart=cart, product=None
-            ).exclude(id__in=product_new_value_id)
+            product_new_more = (
+                ProductCart.objects.filter(cart=cart, product=None)
+                .exclude(id__in=product_new_value_id)
+                .annotate(
+                    price_motrum=Round(
+                        F("product_new_price")
+                        - (
+                            F("product_new_price")
+                            / 100
+                            * (F("product_new_sale_motrum"))
+                        ),
+                        2,
+                    ),
+                )
+            )
             update_spesif = True
 
         # новая спецификация
         except Specification.DoesNotExist:
-            
+
             try:
                 order = Order.objects.get(cart=cart)
                 specification = None
@@ -553,7 +588,19 @@ def create_specification(request):
                 order = None
 
                 # товары без записи в окт
-                product_new = ProductCart.objects.filter(cart=cart, product=None)
+                product_new = ProductCart.objects.filter(
+                    cart=cart, product=None
+                ).annotate(
+                    price_motrum=Round(
+                        F("product_new_price")
+                        - (
+                            F("product_new_price")
+                            / 100
+                            * (F("product_new_sale_motrum"))
+                        ),
+                        2,
+                    ),
+                )
                 product_new_more = None
                 update_spesif = False
                 client_req = None
@@ -613,7 +660,6 @@ def create_specification(request):
             )
         )
 
-
     # корзины нет
     else:
 
@@ -628,7 +674,6 @@ def create_specification(request):
         product_new_more = None
         specification = None
         order = None
-        
 
     current_date = datetime.date.today().isoformat()
     bill_upd = False
@@ -636,8 +681,8 @@ def create_specification(request):
         if order.bill_sum_paid != 0:
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
-    
-    vendor = Vendor.objects.all()    
+
+    vendor = Vendor.objects.all()
     context = {
         "title": title,
         "product": product,
@@ -652,15 +697,18 @@ def create_specification(request):
         "order": order,
         "client_req": client_req,
         "client_req_all": client_req_all,
-        "bill_upd":bill_upd,
-        "vendor":vendor,
+        "bill_upd": bill_upd,
+        "vendor": vendor,
     }
-    
+
     return render(request, "admin_specification/catalog.html", context)
+
 
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def update_order(request):
-    pass 
+    pass
+
+
 # Вьюха для сохранения спецификации
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def save_specification_view_admin(request):
@@ -780,8 +828,8 @@ def instruments(request, cat):
         .values("vendor", "vendor__name", "vendor__slug")
     )
     for vendor in product_vendor:
-        if vendor['vendor__name'] == None:
-            vendor['vendor__name'] = "Не установлен"
+        if vendor["vendor__name"] == None:
+            vendor["vendor__name"] = "Не установлен"
 
     product_list = (
         Product.objects.select_related(
@@ -946,16 +994,18 @@ def search_product(request):
     #     | Q(additional_article_supplier__icontains=value)
     # )
     product_list = Product.objects.filter(
-            Q(name__icontains=search_input[0])
-            | Q(article__icontains=search_input[0])
-            | Q(article_supplier__icontains=search_input[0])
-            | Q(additional_article_supplier__icontains=search_input[0])
-        )
+        Q(name__icontains=search_input[0])
+        | Q(article__icontains=search_input[0])
+        | Q(article_supplier__icontains=search_input[0])
+        | Q(additional_article_supplier__icontains=search_input[0])
+    )
     for search_item in search_input[1:]:
-            product_list = product_list.filter(Q(name__icontains=search_item)
+        product_list = product_list.filter(
+            Q(name__icontains=search_item)
             | Q(article__icontains=search_item)
             | Q(article_supplier__icontains=search_item)
-            | Q(additional_article_supplier__icontains=search_item))
+            | Q(additional_article_supplier__icontains=search_item)
+        )
 
     items = product_list[start:counter]
 

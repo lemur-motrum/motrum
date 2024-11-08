@@ -163,6 +163,8 @@ class ProductSpecification(models.Model):
     )
 
     price_one = models.FloatField("Цена одного на момент формирования")
+    price_one_original_new = models.FloatField("Цена одного для нового товара без скидки",blank=True,
+        null=True,)
     price_all = models.FloatField(
         "Цена всего товара на момент формирования",
         blank=True,

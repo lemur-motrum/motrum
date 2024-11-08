@@ -1092,6 +1092,17 @@ def save_specification(
         else:
             print(33333333333333)
             price_one = product_item["price_one"]
+            price_one_original_new = price_one
+            if product_item["sale_motrum"]:
+                motrum_sale = product_item["sale_motrum"]
+                motrum_sale = motrum_sale.replace('.', '')
+                motrum_sale = motrum_sale.replace(',', '.')
+                motrum_sale = float(motrum_sale)
+            else:
+                motrum_sale = 0.00
+            price_one_motrum = price_one - (price_one / 100 * motrum_sale) 
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            price_all_motrum = round(price_all_motrum, 2) 
 
             if (
                 product_item["extra_discount"] != "0"
@@ -1103,15 +1114,12 @@ def save_specification(
 
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-            if product_item["extra_discount"]:
-                motrum_sale = float(product_item["extra_discount"])
-            else:
-                motrum_sale = 0
-            price_one_motrum = price_one - (price_one / 100 * motrum_sale)
+            
+                
+           
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
-            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-            price_all_motrum = round(price_all_motrum, 2)
+
             currency = Currency.objects.get(words_code="RUB")
 
             if (
@@ -1127,13 +1135,24 @@ def save_specification(
                     specification=specification,
                     product=None,
                 )
-
+            
+            
+            
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+                product_spes.extra_discount = product_item["extra_discount"]
+            else:
+                product_spes.extra_discount = None
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = currency
             product_spes.quantity = product_item["quantity"]
             product_spes.price_all = price_all
             product_spes.price_one = price_one
-            product_spes.extra_discount = None
+            product_spes.price_one_original_new = price_one_original_new
+            product_spes.sale_motrum = motrum_sale
             product_spes.price_one_motrum = price_one_motrum
             product_spes.price_all_motrum = price_all_motrum
             product_spes.product_new = product_item["product_name_new"]

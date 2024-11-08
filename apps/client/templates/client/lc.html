@@ -16,7 +16,7 @@
                 {% my_order_link %}
 
                 {% my_document_link %}
-    
+
                 {% url 'client:my_details' as my_details_url %}
                 {% if request.get_full_path == my_details_url or type_url == "/my_details" %}
                     <span class="nav-elem active">мои реквизиты</span>

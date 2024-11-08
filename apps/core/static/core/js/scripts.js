@@ -10,6 +10,7 @@ import "/static/admin_specification/js/change_date_in_order.js";
 import "/static/admin_specification/js/create_invoice_without_specification.js";
 import "/static/admin_specification/js/edit_unique_product.js";
 import "/static/admin_specification/js/edit_motrum_price.js";
+import "/static/admin_specification/js/set_cart_id.js";
 import "/static/admin_specification/js/change_payment.js";
 import "/static/admin_specification/js/ajax_specification_load.js";
 import "/static/admin_specification/js/sorting_by_status_order.js";

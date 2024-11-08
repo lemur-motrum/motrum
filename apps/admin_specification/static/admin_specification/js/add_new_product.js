@@ -3,17 +3,12 @@ import {
   getCookie,
   getDigitsNumber,
 } from "/static/core/js/functions.js";
-import {
-  inputValidation,
-  inputValidationQuantity,
-} from "../js/add_new_product_without_cart.js";
 
 const csrfToken = getCookie("csrftoken");
 
-window.addEventListener("DOMContentLoaded", () => {
-  const globalCartWrapper = document.querySelector(".spetification_table");
-  if (globalCartWrapper) {
-    const addNewProductContainer = globalCartWrapper.querySelector(
+function addNewProductLogic(container) {
+  if (container) {
+    const addNewProductContainer = container.querySelector(
       ".add_new_product_container"
     );
     const searchInput = addNewProductContainer.querySelector(".search_input");
@@ -171,9 +166,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     };
 
-    const newItemContainer = globalCartWrapper.querySelector(
-      ".new_item_container"
-    );
+    const newItemContainer = container.querySelector(".new_item_container");
     if (newItemContainer) {
       const nameInput = newItemContainer.querySelector(
         ".new_item_container_name_input"
@@ -188,6 +181,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const newProductError = newItemContainer.querySelector(
         ".add_new_item_in_cart_container_error"
       );
+      const vendorSelect = newItemContainer.querySelector(".vendor_select");
 
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
@@ -198,6 +192,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const motrumPrice = newItemContainer.querySelector(
         ".new_item_container_value_motrum_price"
       );
+
+      const options = vendorSelect.querySelectorAll("option");
+      options.forEach((el) => {
+        vendorSelect.addEventListener("change", function () {
+          if (el.selected) {
+            vendorSelect.setAttribute("value", el.getAttribute("value"));
+          }
+        });
+      });
+
       function changePercent() {
         if (priceOnceInput.value && quantityInput.value) {
           getDigitsNumber(
@@ -272,11 +276,17 @@ window.addEventListener("DOMContentLoaded", () => {
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
 
+        if (!vendorSelect.getAttribute("value")) {
+          validate = false;
+          vendorSelect.style.border = "1px solid red";
+        }
+
         if (
           nameInput.value &&
           articleInput.value &&
           priceOnceInput.value &&
-          quantityInput.value
+          quantityInput.value &&
+          vendorSelect.getAttribute("value")
         ) {
           validate = true;
         }
@@ -296,6 +306,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_sale: addPersentSaleInput.value
               ? addPersentSaleInput.value
               : null,
+            vendor: vendorSelect.getAttribute("value"),
           };
           const data = JSON.stringify(dataObjNewProduct);
 
@@ -322,14 +333,12 @@ window.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    function searchProductLogic(container) {
-      const searchProductItems = container.querySelectorAll(
-        ".product_search_item"
-      );
+    function searchProductLogic(cont) {
+      const searchProductItems = cont.querySelectorAll(".product_search_item");
       searchProductItems.forEach((searchProductItem) => {
         searchProductItem.onclick = () => {
           searchInput.value = searchProductItem.textContent;
-          container.classList.remove("show");
+          cont.classList.remove("show");
           addProductButton.setAttribute(
             "product-id",
             searchProductItem.getAttribute("product-id")
@@ -338,5 +347,15 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       });
     }
+  }
+}
+window.addEventListener("DOMContentLoaded", () => {
+  const globalCartWrapper = document.querySelector(".spetification_table");
+  if (globalCartWrapper) {
+    addNewProductLogic(globalCartWrapper);
+  }
+  const noContentContainer = document.querySelector(".no_content_container");
+  if (noContentContainer) {
+    addNewProductLogic(noContentContainer);
   }
 });

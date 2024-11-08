@@ -453,8 +453,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         id_bitrix = int(data["id_bitrix"])
         type_delivery = data["type_delivery"]
         id_specification = data["id_specification"]
-        # type_save = data["type_save"]
-        type_save = "bill"
+        type_save = data["type_save"]
+      
          # post_update = data["post_update"]
         post_update = False
         
@@ -479,20 +479,27 @@ class OrderViewSet(viewsets.ModelViewSet):
             client = None
         
         if type_save == "specification":
+            print(9999999999999)
             last_spec_name = Specification.objects.filter(number__isnull=False).last()
+            print(type(last_spec_name))
             if last_spec_name:
                 last_spec_name = last_spec_name.number
                 specification_name = int(last_spec_name) + 1
+                print(last_spec_name)
             else: 
-                last_spec_name = 1   
+                specification_name = 1   
+                print(last_spec_name)
         elif type_save == "bill":
             specification_name = None
 
         if post_update:
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
-
+        print(3333333333333)
+        
+        print("specification_name",specification_name)
         try:
+            print("specification_name",specification_name)
             with transaction.atomic():
                 
                 specification = save_specification(

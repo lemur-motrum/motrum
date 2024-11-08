@@ -23,9 +23,13 @@ export function invoiceItem(container) {
             const orderData = new Date(elem["date_delivery"]);
             const today = new Date();
             const delta = orderData.getTime() - today.getTime();
-            const dayDifference = +Math.floor(delta / 1000 / 60 / 60 / 24);
-            const resultDays = +Math.ceil(dayDifference / 7);
-
+            let dayDifference = +Math.ceil(delta / 1000 / 60 / 60 / 24);
+            let result;
+            if (dayDifference >= 7) {
+              result = +Math.ceil(dayDifference / 7);
+            } else {
+              dayDifference = dayDifference += 1;
+            }
             function num_word(value, words) {
               value = Math.abs(value) % 100;
               var num = value % 10;
@@ -34,11 +38,19 @@ export function invoiceItem(container) {
               if (num == 1) return words[0];
               return words[2];
             }
-            return `${resultDays} ${num_word(resultDays, [
-              "неделя",
-              "недели",
-              "недель",
-            ])}`;
+            if (dayDifference >= 6) {
+              return `${result} ${num_word(result, [
+                "неделя",
+                "недели",
+                "недель",
+              ])}`;
+            } else {
+              return `${dayDifference} ${num_word(dayDifference, [
+                "день",
+                "дня",
+                "дней",
+              ])}`;
+            }
           };
 
           for (let i in data) {

@@ -486,10 +486,13 @@
                                 <label class="new_item_container_value_calendar_label">
                                     <span>Срок поставки</span>
                                     <input class="new_item_container_calendar" type="date" min={{ current_date }} />
-                                    <div class="error"></div>
+                                    <div class="error"></div> 
                                 </label>
                               </div>
-                              <button class="add_new_item_in_cart">+</button>
+                              <div class="add_new_item_in_cart_container">
+                                  <button class="add_new_item_in_cart">Добавить товар</button>
+                                  <div class="add_new_item_in_cart_container_error"></div>
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -499,7 +502,10 @@
                         <input class="search_input" placeholder="Введите имя или артикул товара" type="text"/>
                         <div class="search_container"></div>
                     </label>
-                    <button class="add_product">Добавить этот товар</button>
+                    <div class="add_product_container">
+                        <button class="add_product">Добавить этот товар</button>
+                        <div class="add_product_error"></div>
+                    </div>
                     <button class="add_new_product">Добавить новый товар</button>
                 </div>
                 <div class="coment_all_spesif">

@@ -19,6 +19,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const searchInput = addNewProductContainer.querySelector(".search_input");
     const searchElemsContainer =
       addNewProductContainer.querySelector(".search_container");
+    const addProductContainer = addNewProductContainer.querySelector(
+      ".add_product_container"
+    );
+    const error = addNewProductContainer.querySelector(".add_product_error");
+
     const addProductButton =
       addNewProductContainer.querySelector(".add_product");
     const addNewProductButton =
@@ -117,7 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
         searchElemsContainer.innerHTML = "";
         searchElemsContainer.classList.remove("show");
         deleteSearchButton.classList.remove("show");
-        addProductButton.classList.remove("show");
+        addProductContainer.classList.remove("show");
       }
     };
     deleteSearchButton.onclick = () => {
@@ -126,7 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (addProductButton.getAttribute("product-id")) {
         addProductButton.setAttribute("product-id", "");
       }
-      addProductButton.classList.remove("show");
+      addProductContainer.classList.remove("show");
       deleteSearchButton.classList.remove("show");
     };
     addNewProductButton.onclick = () => {
@@ -156,6 +161,10 @@ window.addEventListener("DOMContentLoaded", () => {
       }).then((response) => {
         if (response.status == 200) {
           window.location.reload();
+        } else if (response.status == 409) {
+          addProductButton.innerHTML = "";
+          addProductButton.textContent = "Добавить этот товар";
+          showErrorValidation("Этот товар уже в корзине", error);
         } else {
           throw new Error("Ошибка");
         }
@@ -176,9 +185,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const quantityInput = newItemContainer.querySelector(".quantity_input");
       const persentSaleInput = newItemContainer.querySelector(".persent_sale");
       const addPersentSaleInput = newItemContainer.querySelector(".add_sale");
-      const calendarInput = newItemContainer.querySelector(
-        ".new_item_container_calendar"
+      const newProductError = newItemContainer.querySelector(
+        ".add_new_item_in_cart_container_error"
       );
+
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
       );
@@ -298,9 +308,16 @@ window.addEventListener("DOMContentLoaded", () => {
         inputValidate(articleInput);
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
-        // inputValidate(persentSaleInput);
-        // inputValidate(addPersentSaleInput);
-        inputValidate(calendarInput);
+
+        if (
+          nameInput.value &&
+          articleInput.value &&
+          priceOnceInput.value &&
+          quantityInput.value
+        ) {
+          validate = true;
+        }
+
         if (validate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {
@@ -329,6 +346,11 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             if (response.status === 200 || response.status === 201) {
               window.location.reload();
+            } else if (response.status === 409) {
+              showErrorValidation(
+                "Товар с таким артикулом уже есть в корзине",
+                newProductError
+              );
             } else {
               throw new Error("Ошибка");
             }
@@ -349,7 +371,7 @@ window.addEventListener("DOMContentLoaded", () => {
             "product-id",
             searchProductItem.getAttribute("product-id")
           );
-          addProductButton.classList.add("show");
+          addProductContainer.classList.add("show");
         };
       });
     }

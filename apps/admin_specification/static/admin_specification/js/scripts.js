@@ -564,6 +564,7 @@ window.addEventListener("DOMContentLoaded", () => {
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
+            type_save: "specification",
           };
 
           const data = JSON.stringify(dataObj);

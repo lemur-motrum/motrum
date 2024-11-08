@@ -37,6 +37,7 @@ class SpecificationSerializer(serializers.ModelSerializer):
 class ProductSpecificationSerializer(serializers.ModelSerializer):
     product_okt_name = serializers.SerializerMethodField()
     product_okt_article = serializers.SerializerMethodField()
+    stock = serializers.SerializerMethodField()
     class Meta:
         model = ProductSpecification
         fields = (
@@ -47,7 +48,8 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
             "product_new_article",
             "quantity",
             "date_delivery",
-            "text_delivery"
+            "text_delivery",
+            "stock"
         )
     
     def get_product_okt_name(self, obj):
@@ -68,6 +70,13 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
         else:
             return None      
 
+    def get_stock(self, obj):
+        if obj.product:
+            stock_item = Stock.objects.get(prod_id=obj.product_id)
+            serializer = StockSerializer(stock_item, many=False)
+            return serializer.data
+        else:
+            return None 
 
 class ListProductSpecificationSerializer(serializers.ModelSerializer):
 

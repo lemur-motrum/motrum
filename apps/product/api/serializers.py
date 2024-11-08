@@ -48,6 +48,7 @@ class StockSerializer(serializers.ModelSerializer):
             "stock_supplier",
             "stock_supplier_unit",
             "stock_motrum",
+            "stock_motrum_reserve",
             "to_order",
         )
 

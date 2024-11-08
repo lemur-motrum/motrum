@@ -38,18 +38,14 @@ export function invoiceItem(container) {
               if (num == 1) return words[0];
               return words[2];
             }
-            if (dayDifference >= 6) {
+            if (dayDifference > 7) {
               return `${result} ${num_word(result, [
                 "неделя",
                 "недели",
                 "недель",
               ])}`;
             } else {
-              return `${dayDifference} ${num_word(dayDifference, [
-                "день",
-                "дня",
-                "дней",
-              ])}`;
+              return "1 неделя";
             }
           };
 

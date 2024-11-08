@@ -8,6 +8,7 @@ from apps.core.models import Currency
 from apps.product.models import Price, Product
 from apps.specification.utils import get_document_path
 from simple_history.models import HistoricalRecords
+from apps.supplier.models import Vendor
 from apps.user.models import AdminUser
 import uuid
 # Create your models here.
@@ -119,6 +120,13 @@ class ProductSpecification(models.Model):
     product = models.ForeignKey(
         Product,
         verbose_name="Продукты",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
         on_delete=models.PROTECT,
         blank=True,
         null=True,

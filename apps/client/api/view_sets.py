@@ -67,6 +67,7 @@ from apps.product.api.serializers import ProductCartSerializer
 from apps.product.models import Cart, Lot, Price, Product, ProductCart
 from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
+    ProductSpecificationToAddBillSerializer,
     SpecificationSerializer,
 )
 from apps.specification.models import ProductSpecification, Specification
@@ -454,12 +455,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         type_delivery = data["type_delivery"]
         id_specification = data["id_specification"]
         type_save = data["type_save"]
-      
-         # post_update = data["post_update"]
-        post_update = False
-        
-        
 
+        # post_update = data["post_update"]
+        post_update = False
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -472,23 +470,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             pre_sale = False
 
-        
         if requisites.client:
             client = requisites.client
         else:
             client = None
-        
+
         if type_save == "specification":
-            print(9999999999999)
             last_spec_name = Specification.objects.filter(number__isnull=False).last()
-            print(type(last_spec_name))
             if last_spec_name:
                 last_spec_name = last_spec_name.number
                 specification_name = int(last_spec_name) + 1
-                print(last_spec_name)
-            else: 
-                specification_name = 1   
-                print(last_spec_name)
+            else:
+                specification_name = 1
+
         elif type_save == "bill":
             specification_name = None
 
@@ -496,12 +490,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
         print(3333333333333)
-        
-        print("specification_name",specification_name)
+
+        print("specification_name", specification_name)
         try:
-            print("specification_name",specification_name)
+            print("specification_name", specification_name)
             with transaction.atomic():
-                
+
                 specification = save_specification(
                     data,
                     pre_sale,
@@ -514,7 +508,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     post_update,
                     specification_name,
                 )
-                
+
         except Exception as e:
             #   добавление в козину удаленного товара при сохранении спецификации из апдейта
             if data["id_specification"] != None:
@@ -542,7 +536,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             if post_update:
-                 data_order = {
+                data_order = {
                     "comment": data["comment"],
                     "name": 123131,
                 }
@@ -567,8 +561,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": id_bitrix,
                     "type_delivery": type_delivery,
                 }
-            print(data_order)
-
             try:
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)
@@ -577,10 +569,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     cart.is_active = True
                     cart.save()
-                    print("ok",serializer.data)
+                    print("ok", serializer.data)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
-                    print("error",serializer.errors)
+                    print("error", serializer.errors)
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
@@ -624,10 +616,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             account_requisites_id = account_requisites.id
             prepay_persent = requisites.prepay_persent
             postpay_persent = requisites.postpay_persent
-
-            print(prepay_persent)
-            print(postpay_persent)
-
             if requisites.client:
                 client = requisites.client
             else:
@@ -643,12 +631,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             motrum_requisites_id = int(data["motrum_requisites"])
         else:
             motrum_requisites_id = None
-        
+
         if data["type_delivery"] != None:
             type_delivery = data["type_delivery"]
         else:
             type_delivery = None
-            
+
         data_order = {
             "client": client,
             "name": 123131,
@@ -667,15 +655,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             "postpay_persent": postpay_persent,
             "motrum_requisites": motrum_requisites_id,
             "id_bitrix": id_bitrix,
-            "type_delivery":type_delivery,
+            "type_delivery": type_delivery,
         }
         print(data_order)
         try:
-            print(0000000)
             order = Order.objects.get(cart=cart)
-            print(order)
             serializer = self.serializer_class(order, data=data_order, many=False)
-            print("]]]]]]]")
             if serializer.is_valid():
                 serializer._change_reason = "Ручное"
                 order = serializer.save()
@@ -683,21 +668,17 @@ class OrderViewSet(viewsets.ModelViewSet):
                 cart.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Order.DoesNotExist:
-            print("hsdhfsjdfjh")
             serializer = self.serializer_class(data=data_order, many=False)
             if serializer.is_valid():
                 cart.is_active = True
                 cart.save()
                 order = serializer.save()
-
-                print(serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                print(serializer.errors)
+
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # создание счета к заказу
@@ -708,47 +689,51 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             # post_update = data["post_update"]
             post_update = False
-            print("post_update",post_update)
+            print("post_update", post_update)
             for obj in data:
 
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
-                
+
             order = Order.objects.get(specification_id=pk)
 
             if post_update:
                 bill_name = order.bill_name
             else:
-                bill_name = Order.objects.filter(bill_name__isnull = False).order_by("-bill_name").last()
-                print("bill_name1",bill_name)
+                bill_name = (
+                    Order.objects.filter(bill_name__isnull=False)
+                    .order_by("-bill_name")
+                    .last()
+                )
+                print("bill_name1", bill_name)
                 if bill_name:
-                    bill_name = int(bill_name.bill_name)+1
-                    
+                    bill_name = int(bill_name.bill_name) + 1
+
                 else:
-                    bill_name = 1 
-            print("bill_name2",bill_name)
+                    bill_name = 1
+            print("bill_name2", bill_name)
             if order.requisites.contract:
                 is_req = True
-                
 
             else:
                 is_req = False
-            
-            
-            order_pdf = order.create_bill(request, is_req, order,bill_name,post_update)
-            
+
+            order_pdf = order.create_bill(
+                request, is_req, order, bill_name, post_update
+            )
+
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
-                
+
                 # # сохранение товара в окт нового
                 # for obj in data:
                 #     prod = ProductSpecification.objects.filter(id=obj["id"])
                 #     if prod.product_new_article:
                 #         pass
                 #         # save_new_product_okt(prod)
-                        
+
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
@@ -783,7 +768,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         product_specification = ProductSpecification.objects.filter(specification=pk)
         if product_specification.exists():
-            serializer = ProductSpecificationSerializer(
+            serializer = ProductSpecificationToAddBillSerializer(
                 product_specification, many=True
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -1160,7 +1145,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(cart__cart_admin_id__isnull=False)
         elif user_admin_type == "BASE":
             q_object &= Q(cart__cart_admin_id=request.user.id)
-        
+
         sort_specif = request.query_params.get("specification")
 
         if sort_specif == "+":
@@ -1201,7 +1186,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             small = False
 
-        serializer = OrderOktSerializer(queryset, many=True,context={'request': request})
+        serializer = OrderOktSerializer(
+            queryset, many=True, context={"request": request}
+        )
         data_response = {
             "data": serializer.data,
             "superadmin": superadmin,

@@ -1,11 +1,12 @@
 from rest_framework import serializers
 
+from apps.client.models import Order
 from apps.product.api.serializers import (
     ProductSerializer,
     ProductSpesifSerializer,
     StockSerializer,
 )
-from apps.product.models import Product, Stock
+from apps.product.models import CategoryProduct, Product, ProductCart, Stock
 from apps.specification.models import ProductSpecification, Specification
 
 
@@ -16,59 +17,63 @@ class SpecificationSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source="get_absolute_url", read_only=True)
     url_history = serializers.CharField(source="get_history_url", read_only=True)
     admin_creator_name = serializers.CharField(source="admin_creator")
+
     class Meta:
         model = Specification
         fields = "__all__"
-        
+
     def to_representation(self, instance):
-        representation = super(
-            SpecificationSerializer, self
-        ).to_representation(instance)
-        
+        representation = super(SpecificationSerializer, self).to_representation(
+            instance
+        )
+
         representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
-        representation["total_amount"] = '{0:,}'.format(instance.total_amount).replace(',', ' ').replace('.', ',')
+        representation["total_amount"] = (
+            "{0:,}".format(instance.total_amount).replace(",", " ").replace(".", ",")
+        )
         if instance.date:
-            representation["date"] = instance.date.strftime("%d.%m.%Y")  
+            representation["date"] = instance.date.strftime("%d.%m.%Y")
         if instance.date_update:
-            representation["date_update"] = instance.date_update.strftime("%d.%m.%Y")        
-        return representation      
+            representation["date_update"] = instance.date_update.strftime("%d.%m.%Y")
+        return representation
 
 
 class ProductSpecificationSerializer(serializers.ModelSerializer):
     product_okt_name = serializers.SerializerMethodField()
     product_okt_article = serializers.SerializerMethodField()
     stock = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductSpecification
         fields = (
             "id",
             "product_okt_name",
-            'product_okt_article',
+            "product_okt_article",
             "product_new",
             "product_new_article",
             "quantity",
             "date_delivery",
             "text_delivery",
-            "stock"
+            "stock",
         )
-    
+
     def get_product_okt_name(self, obj):
         if obj.product:
             product_okt_name = Product.objects.get(id=obj.product_id).name
-            # product_okt_name 
+            # product_okt_name
 
             return product_okt_name
         else:
-            return None  
-         
+            return None
+
     def get_product_okt_article(self, obj):
         if obj.product:
             article_supplier = Product.objects.get(id=obj.product_id).article_supplier
-            # product_okt_name 
+            # product_okt_name
 
             return article_supplier
         else:
-            return None      
+            return None
 
     def get_stock(self, obj):
         if obj.product:
@@ -76,7 +81,62 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
             serializer = StockSerializer(stock_item, many=False)
             return serializer.data
         else:
-            return None 
+            return None
+
+class ProductSpecificationToAddBillSerializer(serializers.ModelSerializer):
+    product_okt_name = serializers.SerializerMethodField()
+    product_okt_article = serializers.SerializerMethodField()
+    stock = serializers.SerializerMethodField()
+    text_delivery_bill = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductSpecification
+        fields = (
+            "id",
+            "product_okt_name",
+            "product_okt_article",
+            "product_new",
+            "product_new_article",
+            "quantity",
+            "date_delivery",
+            "text_delivery",
+            "stock",
+            "text_delivery_bill"
+        )
+
+    def get_product_okt_name(self, obj):
+        if obj.product:
+            product_okt_name = Product.objects.get(id=obj.product_id).name
+            # product_okt_name
+
+            return product_okt_name
+        else:
+            return None
+
+    def get_product_okt_article(self, obj):
+        if obj.product:
+            article_supplier = Product.objects.get(id=obj.product_id).article_supplier
+            # product_okt_name
+
+            return article_supplier
+        else:
+            return None
+
+    def get_stock(self, obj):
+        if obj.product:
+            stock_item = Stock.objects.get(prod_id=obj.product_id)
+            serializer = StockSerializer(stock_item, many=False)
+            return serializer.data
+        else:
+            return None
+
+    def get_text_delivery_bill(self, obj):
+        order = Order.objects.get(specification_id=obj.specification.id)
+        product_cart = ProductCart.objects.filter(cart=order.cart)
+        if obj.product:
+            product_cart.filter(product=obj.product)
+        else:
+            product_cart.filter(product_new=obj.product_new)
 
 class ListProductSpecificationSerializer(serializers.ModelSerializer):
 
@@ -139,9 +199,9 @@ class ListsSpecificationSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
-        representation = super(
-            ListsSpecificationSerializer, self
-        ).to_representation(instance)
+        representation = super(ListsSpecificationSerializer, self).to_representation(
+            instance
+        )
         representation["date"] = instance.date.strftime("%d.%m.%Y")
         representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
         return representation

@@ -16,39 +16,49 @@
         {% endif %}
     </div>
     <div class="stock">
-        <div class="stock_item">
-            {% if stock.to_order %}
-                Поставщик:
-                <br>
-                Под заказ
-            {% else %}
-                {% if stock.stock_supplier != None %}
-                    Поставщик: <span class="supplier_unit">{{ stock.stock_supplier_unit }}</span> шт
+        {% if stock %}
+            <div class="stock_item">
+                {% if stock.to_order %}
+                    Поставщик:
+                    <br>
+                    Под заказ
                 {% else %}
-                    Поставщик: -
+                    {% if stock.stock_supplier != None %}
+                        Поставщик: <span class="supplier_unit">{{ stock.stock_supplier_unit }}</span> шт
+                    {% else %}
+                        Поставщик: -
+                    {% endif %}
                 {% endif %}
+            </div>
+            <div class="stock_item">
+                Motrum: <span class="motrum_unit">{{ stock.stock_motrum }}</span>
+                {% if stock.stock_motrum_reserve %}
+                    Motrum резерв: <span class="motrum_unit_reserve">{{ stock.stock_motrum_reserve }}</span>
+                {% endif %}
+            </div>
+            {% if stock.stock_supplier != None %}
+                <span class="span-transit"style="
+                font-size: 10px;
+                line-height: 5px;
+            ">{{ stock.data_update }}</span>
+                <br>
+                <span class="span-transit"style="
+                font-size: 10px;
+                line-height: 5px;
+            ">
+                    {% if stock.transit_count %}
+                        Ближайшая поставка: {{ stock.data_transit }} - {{ stock.transit_count }} шт.
+                    {% endif %}
+                </span>
             {% endif %}
-        </div>
-        <div class="stock_item">
-            Motrum: <span class="motrum_unit">{{ stock.stock_motrum }}</span>
-            {% if stock.stock_motrum_reserve %}
-                Motrum резерв: <span class="motrum_unit_reserve">{{ stock.stock_motrum_reserve }}</span>
-            {% endif %}
-        </div>
-        {% if stock.stock_supplier != None %}
-            <span class="span-transit">{{ stock.data_update }}</span>
-            <br>
-            <span class="span-transit">
-                {% if stock.transit_count %}Ближайшая поставка: {{ stock.data_transit }} - {{ stock.transit_count }} шт.{% endif %}
-            </span>
-        {% endif %}
-        {% if stock.to_order %}
-            Под заказ
         {% else %}
+            {% if stock.to_order %}Под заказ{% endif %}
             Неизвестно
         {% endif %}
     </div>
+    
     <label>
+        
         <input placeholder="Укажите срок поставки"
                class="invoice-data-input"
                type="text"

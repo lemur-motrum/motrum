@@ -727,7 +727,7 @@ def get_file_price_path_add(instance, filename):
             random_number,
             instance.file,
         )
-        # print(filename + filetype)
+
 
         return file
 
@@ -749,7 +749,7 @@ def get_file_price_path_add(instance, filename):
             random_number,
             instance.file,
         )
-        # print(filename + filetype)
+
 
         return file
 
@@ -771,7 +771,7 @@ def get_file_price_path_add(instance, filename):
             random_number,
             instance.file,
         )
-        # print(filename + filetype)
+   
 
         return file
 
@@ -885,7 +885,7 @@ def save_specification(
     from apps.core.utils import create_time_stop_specification
 
     # try:
-    print("save_specification",specification_name)
+
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
     admin_creator_id = received_data["admin_creator_id"]
@@ -928,15 +928,11 @@ def save_specification(
             having_items = False
 
             # for i, dic in enumerate(products):
-            #     print(99999)
-            #     print(dic["product_specif_id"] )
-            #     print(item_id)
             #     if dic["product_specif_id"] == item_id:
             #         having_items = True
-            #         print(having_items)
 
             # if having_items == False:
-            #     print(product_item_for_old.id)
+    
             #     product_item_for_old.delete()
 
     except Specification.DoesNotExist:
@@ -959,9 +955,9 @@ def save_specification(
     currency_product = False
 
     for product_item in products:
-        print(products)
+   
         # продукты которые есть в окт
-        if product_item["product_id"] != 0:
+        if product_item["product_new_article"] == "":
             product = Product.objects.get(id=product_item["product_id"])
             price = Price.objects.get(prod=product)
             # если цена по запросу взять ее если нет взять цену из бд
@@ -983,8 +979,7 @@ def save_specification(
                 #         1 - float(product_item["extra_discount"]) / 100
                 #     )
                 #     price_one = round(price_one, 2)
-                #     print(price_one)
-                print(4444444)
+              
                 if price.in_auto_sale:
                     price_motrum_all = get_price_motrum(
                         price.prod.category_supplier,
@@ -995,7 +990,7 @@ def save_specification(
                         price.prod.category_supplier_all,
                         price.prod.supplier,
                     )
-                    print(123123123)
+
                     price_one_motrum = price_motrum_all[0]
                     sale = price_motrum_all[1]
                 else:
@@ -1003,7 +998,7 @@ def save_specification(
                     price_one_motrum = price.price_motrum
 
             else:
-                print(77777777)
+       
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
 
@@ -1090,7 +1085,8 @@ def save_specification(
 
         # продукты без записи в окт
         else:
-            print(33333333333333)
+            
+            print("продукты без записи в окт")
             price_one = product_item["price_one"]
             price_one_original_new = price_one
             if product_item["sale_motrum"]:
@@ -1159,7 +1155,10 @@ def save_specification(
             product_spes.product_new_article = product_item["product_new_article"]
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
-            # product_spes.product_in_cart =
+      
+            print(int(product_item["vendor"]))
+            product_spes.vendor_id = int(product_item["vendor"])
+            print(product_spes.vendor_id)
             date_delivery = product_item["date_delivery"]
             if date_delivery != "":
                 product_spes.date_delivery = datetime.datetime.strptime(
@@ -1260,15 +1259,15 @@ def rub_words(n):
 
     if n[-2:] in ("11", "12", "13", "14"):
         return f"рублей"
-        # print(n, 'копеек')
+    
     elif n[-1] == "1":
         return f"рубль"
     elif n[-1] in ("2", "3", "4"):
         return f"рубля"
-        # print(n, 'копейки')
+    
     else:
         return f"рублей"
-        # print(n, 'копеек')
+   
 
 
 def pens_words(n):

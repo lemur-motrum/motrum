@@ -823,6 +823,13 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
     product_new = models.CharField(
         "Название товара нового без добавления в бд",
         default=None,
@@ -830,6 +837,7 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    
     product_new_article = models.CharField(
         "Артикул товара нового без добавления в бд",
         default=None,
@@ -849,14 +857,6 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
-    product_new_vendor = models.ForeignKey(
-        Vendor,
-        verbose_name="Производитель",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-    )
-
     product_new_sale_motrum = models.FloatField(
         "Скидка мотрум товара нового без добавления в бд",
         blank=True,

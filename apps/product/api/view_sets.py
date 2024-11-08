@@ -395,8 +395,7 @@ class CartViewSet(viewsets.ModelViewSet):
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
-        print(product_new_article)
-        print(cart_id)
+        
         try:
             product_new_article = ProductCart.objects.get(
                 cart_id=cart_id, product_new_article=product_new_article

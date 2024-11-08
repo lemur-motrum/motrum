@@ -885,7 +885,7 @@ def save_specification(
     from apps.core.utils import create_time_stop_specification
 
     # try:
-
+    print("save_specification",specification_name)
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
     admin_creator_id = received_data["admin_creator_id"]

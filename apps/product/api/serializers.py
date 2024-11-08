@@ -50,6 +50,8 @@ class StockSerializer(serializers.ModelSerializer):
             "stock_motrum",
             "stock_motrum_reserve",
             "to_order",
+            "data_update",
+            "transit_count"
         )
 
 

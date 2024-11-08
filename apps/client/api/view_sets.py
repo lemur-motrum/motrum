@@ -701,7 +701,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             # post_update = data["post_update"]
             post_update = False
-            
+            print("post_update",post_update)
             for obj in data:
 
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
@@ -714,12 +714,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 bill_name = order.bill_name
             else:
                 bill_name = Order.objects.filter(bill_name__isnull = False).order_by("-bill_name").last()
-
+                print("bill_name1",bill_name)
                 if bill_name:
                     bill_name = int(bill_name.bill_name)+1
+                    
                 else:
                     bill_name = 1 
- 
+            print("bill_name2",bill_name)
             if order.requisites.contract:
                 is_req = True
                 

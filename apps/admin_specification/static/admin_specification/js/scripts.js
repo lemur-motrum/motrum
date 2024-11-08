@@ -496,7 +496,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
           );
-          const deliveryDate = item.querySelector(".delivery_date").value;
+          const deliveryDate = item.querySelector(".delivery_date");
           const commentItem = item.querySelector(
             'textarea[name="comment-input-name"]'
           ).value;
@@ -505,7 +505,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
           const product = {
             product_id: +itemID,
-            // product_cart_id: +itemCartID,
             quantity: +itemQuantity,
             price_exclusive: +itemPriceStatus,
             price_one: +getCurrentPrice(itemPrice),
@@ -513,22 +512,34 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery: deliveryDate,
+            date_delivery: deliveryDate.value,
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
           };
-          console.log(product);
-          if (inputPrice) {
-            if (!inputPrice.value) {
-              validate = false;
+
+          if (
+            inputPrice
+              ? !inputPrice.value || !deliveryDate.value
+              : !deliveryDate.value
+          ) {
+            validate = false;
+            if (!deliveryDate.value) {
+              deliveryDate.style.border = "1px solid red";
+              deliveryDate.style.borderRadius = "10px";
+            }
+            if (inputPrice && !inputPrice.value) {
               inputPrice.style.border = "1px solid red";
               inputPrice.style.borderRadius = "10px";
-            } else {
-              products.push(product);
             }
           } else {
+            if (deliveryDate) {
+              deliveryDate.style.border = "1px solid red";
+            }
+            if (inputPrice) {
+              inputPrice.style.border = "1px solid red";
+            }
             products.push(product);
           }
         });

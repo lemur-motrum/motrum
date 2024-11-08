@@ -238,43 +238,6 @@ window.addEventListener("DOMContentLoaded", () => {
         changePercent();
       });
 
-      // addPersentSaleInput.addEventListener("input", function (e) {
-      //   const currentValue = this.value
-      //     .replace(",", ".")
-      //     .replace(/[^.\d.-]+/g, "")
-      //     .replace(/^([^\.]*\.)|\./g, "$1")
-      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-      //       return a + b + c.slice(0, 2);
-      //     });
-      //   addPersentSaleInput.value = currentValue;
-      //   if (+addPersentSaleInput.value > 99.99) {
-      //     addPersentSaleInput.value = 99.99;
-      //   }
-      //   if (+addPersentSaleInput.value < -99.99) {
-      //     addPersentSaleInput.value = -99.99;
-      //   }
-      //   if (
-      //     addPersentSaleInput.value.length > 1 &&
-      //     addPersentSaleInput.value.at(-1) === "-"
-      //   ) {
-      //     addPersentSaleInput.target.value = addPersentSaleInput.value.slice(
-      //       0,
-      //       -1
-      //     );
-      //   }
-      //   if (addPersentSaleInput.value == ".") {
-      //     addPersentSaleInput.target.value = "";
-      //   }
-      //   if (addPersentSaleInput.value == "0") {
-      //     addPersentSaleInput.target.value = "";
-      //   }
-
-      //   if (priceOnceInput.value) {
-      //     priceOnceInput.value =
-      //       (priceOnceInput.value / 100) * (100 - addPersentSaleInput.value);
-      //   }
-      // });
-
       function changeTotalCost(input1, input2) {
         input1.addEventListener("input", function (e) {
           const currentValue = this.value
@@ -327,10 +290,10 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_price: +priceOnceInput.value,
             cart: +cartId,
             quantity: +quantityInput.value,
-            product_new_sale: persentSaleInput.value
+            product_new_sale_motrum: persentSaleInput.value
               ? persentSaleInput.value
               : null,
-            product_new_sale_motrum: addPersentSaleInput.value
+            product_new_sale: addPersentSaleInput.value
               ? addPersentSaleInput.value
               : null,
           };

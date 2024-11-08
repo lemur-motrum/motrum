@@ -508,7 +508,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
           const product = {
             product_id: +itemID,
-            // product_cart_id: +itemCartID,
             quantity: +itemQuantity,
             price_exclusive: +itemPriceStatus,
             price_one: +getCurrentPrice(itemPrice),
@@ -516,7 +515,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery: deliveryDate,
+            date_delivery: deliveryDate.value,
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
@@ -529,10 +528,14 @@ window.addEventListener("DOMContentLoaded", () => {
               validate = false;
               inputPrice.style.border = "1px solid red";
               inputPrice.style.borderRadius = "10px";
-            } else {
-              products.push(product);
             }
           } else {
+            if (deliveryDate) {
+              deliveryDate.style.border = "1px solid red";
+            }
+            if (inputPrice) {
+              inputPrice.style.border = "1px solid red";
+            }
             products.push(product);
           }
         });

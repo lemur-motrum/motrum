@@ -1293,7 +1293,7 @@ def loc_mem_cache(key, function, timeout=300):
         cache.set(key, cache_data, timeout)
     return cache_data
 
-
+# сохранение товара без записи в бд в бд 
 def save_new_product_okt(product_new):
     from apps.product.models import Product,Price,Lot,Stock
     from apps.supplier.models import Supplier, Vendor
@@ -1305,26 +1305,50 @@ def save_new_product_okt(product_new):
         vendor = Vendor.objects.get("drugoe")
         supplier = Supplier.objects.get("drugoe")
 
-    product = Product(
-        supplier=supplier, vendor=vendor, article_supplier=product_new.article_supplier,name=product_new.name,in_view_website=False
-    )
-    product.save()
-    update_change_reason(product, "Автоматическое")
+    try:
+        product = Product.objects.get(vendor=vendor, article_supplier=product_new.article_supplier)
+        
+    except Product.DoesNotExist:
+        product = Product(
+            supplier=supplier, vendor=vendor, article_supplier=product_new.article_supplier,name=product_new.name,in_view_website=False
+        )
+        product.save()
+        update_change_reason(product, "Автоматическое")
     
-    currency = Currency.objects.get(words_code="RUB")
-    vat = Vat.objects.get(name=20)
-    
-    price = Price(prod=product,currency=currency,vat=vat,extra_price=True,in_auto_sale=False)
-    price.save()
-    update_change_reason(price, "Автоматическое")
-    
-    lot_auto = Lot.objects.get(name_shorts="шт")
-    product_stock = Stock(
-        prod=product,
-        lot=lot_auto,
-    )
-    product_stock.save()
-
+        currency = Currency.objects.get(words_code="RUB")
+        vat = Vat.objects.get(name=20)
+        
+        price = Price(prod=product,currency=currency,vat=vat,extra_price=True,in_auto_sale=False)
+        price.save()
+        update_change_reason(price, "Автоматическое")
+        
+        lot_auto = Lot.objects.get(name_shorts="шт")
+        product_stock = Stock(
+            prod=product,
+            lot=lot_auto,
+        )
+        product_stock.save()
+        print(product)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 # from django.utils.http import url_has_allowed_host_and_scheme
 # import urllib
 

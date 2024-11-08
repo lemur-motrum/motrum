@@ -703,7 +703,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             else:
                 bill_name = (
                     Order.objects.filter(bill_name__isnull=False)
-                    .order_by("-bill_name")
+                    .order_by("bill_name")
                     .last()
                 )
                 print("bill_name1", bill_name)
@@ -722,17 +722,19 @@ class OrderViewSet(viewsets.ModelViewSet):
             order_pdf = order.create_bill(
                 request, is_req, order, bill_name, post_update
             )
-
+            print(order_pdf)
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
-
-                # # сохранение товара в окт нового
+                print(data)
+                # сохранение товара в окт нового
                 # for obj in data:
+                #     print(obj["id"])
                 #     prod = ProductSpecification.objects.filter(id=obj["id"])
+                    
                 #     if prod.product_new_article:
-                #         pass
-                #         # save_new_product_okt(prod)
+                #         print(prod)
+                #         save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
             else:

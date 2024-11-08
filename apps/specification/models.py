@@ -19,12 +19,11 @@ class Specification(models.Model):
         "Номер сделки битрикс",
         null=True,
     )
-    number = models.CharField(
-        "Номер спецификации",
-        max_length=1000,
-        null=True, default=None
-
+    number = models.PositiveIntegerField(
+        "Номер спецификации",default=None,
+        null=True,
     )
+    
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     date_stop = models.DateField(verbose_name="Дата окончания")
@@ -124,13 +123,6 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
-    # product_in_cart = models.ForeignKey(
-    #     "product.ProductCart",
-    #     verbose_name="Продукт в корзине",
-    #     on_delete=models.PROTECT,
-    #     blank=True,
-    #     null=True,
-    # )
 
     product_new = models.CharField(
         "Название товара нового без добавления в бд",

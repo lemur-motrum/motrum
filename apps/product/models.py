@@ -887,5 +887,4 @@ class ProductCart(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         
-    def save_product_to_okt(self):
-       pass 
+    

@@ -11,10 +11,9 @@ from django.core.cache import cache
 import traceback
 
 
-# from apps import supplier
-from apps import supplier
-from apps.core.models import Currency, CurrencyPercent
+from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.logs.utils import error_alert
+
 
 
 from project.settings import MEDIA_ROOT
@@ -421,12 +420,10 @@ def get_file_path_add(instance, filename):
     elif isinstance(instance, ProductImage):
         path_name = "img"
         try:
-            images_last = ProductImage.objects.filter(
-                product=instance.product
-            ).latest("id")
-            item_count = ProductImage.objects.filter(
-                product=instance.product
-            ).count()
+            images_last = ProductImage.objects.filter(product=instance.product).latest(
+                "id"
+            )
+            item_count = ProductImage.objects.filter(product=instance.product).count()
         except ProductImage.DoesNotExist:
             item_count = 1
 
@@ -455,7 +452,7 @@ def get_file_path_add_more_doc(product, type_doc, filename):
 
     from apps.product.models import ProductDocument
     from apps.product.models import ProductImage
- 
+
     from pytils import translit
 
     base_dir = "products"
@@ -473,8 +470,6 @@ def get_file_path_add_more_doc(product, type_doc, filename):
 
     type_doc = type_doc
 
-    
-
     slug_text = str(filename)
     regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
     slugish = re.sub(regex, "", slug_text)
@@ -488,22 +483,20 @@ def get_file_path_add_more_doc(product, type_doc, filename):
         base_dir_vendor,
         path_name,
         type_doc,
-        
-        
     )
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
-        
+
     link = "{0}/{1}/{2}/{3}/{4}".format(
         base_dir,
         base_dir_supplier,
         base_dir_vendor,
         path_name,
         type_doc,
-        
     )
 
-    return (link,slugish)
+    return (link, slugish)
+
 
 # сохранение изображений и докуметов из админки и общее
 def doc_file_mass_upload(instance, filename):
@@ -576,13 +569,11 @@ def doc_file_mass_upload(instance, filename):
         filename,
     )
 
+
 def get_file_path_add_motrum_base(instance, filename):
     from pytils import translit
-    
-    new_dir = "{0}/{1}".format(
-        MEDIA_ROOT,
-        "documents"
-    )
+
+    new_dir = "{0}/{1}".format(MEDIA_ROOT, "documents")
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
@@ -592,8 +583,6 @@ def get_file_path_add_motrum_base(instance, filename):
     slugish = translit.translify(slugish)
 
     link_file = f"{new_dir}/{slugish}"
-
-    
 
     return "{0}/{1}".format(
         "documents",
@@ -868,24 +857,35 @@ def save_update_product_attr(
 
         product._change_reason = "Автоматическое"
         product.save()
-    except Exception as e: 
+    except Exception as e:
         print(e)
         error = "file_api_error"
         location = "Загрузка фаилов IEK"
         info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}"
-        e = error_alert(error, location, info)    
+        e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")
 
 
-def save_specification(received_data,pre_sale, request,motrum_requisites,account_requisites,requisites,id_bitrix,type_delivery,post_update,specification_name):
+def save_specification(
+    received_data,
+    pre_sale,
+    request,
+    motrum_requisites,
+    account_requisites,
+    requisites,
+    id_bitrix,
+    type_delivery,
+    post_update,
+    specification_name,
+):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
     from apps.core.utils import create_time_stop_specification
-    
+
     # try:
-        
+
     # сохранение спецификации
     id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
     admin_creator_id = received_data["admin_creator_id"]
@@ -894,20 +894,17 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     date_delivery_all = received_data["date_delivery"]
     products = received_data["products"]
     id_cart = received_data["id_cart"]
-    
+
     # первичное создание/взятие спецификации
     try:
         specification = Specification.objects.get(id=id_specification)
         if post_update:
             pass
         else:
-            
+
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True
-            
-        
-      
 
         # удалить продукты если удалили из спецификации
         product_old = ProductSpecification.objects.filter(specification=specification)
@@ -924,7 +921,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                         having_items = True
 
             if having_items == False:
-                
+
                 specification._change_reason = "Ручное"
                 product_item_for_old.delete()
 
@@ -960,9 +957,9 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     total_amount = 0.00
     date_ship = datetime.date.today().isoformat()
     currency_product = False
-    
-    for product_item in products:
 
+    for product_item in products:
+        print(products)
         # продукты которые есть в окт
         if product_item["product_id"] != 0:
             product = Product.objects.get(id=product_item["product_id"])
@@ -1001,9 +998,9 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                     print(123123123)
                     price_one_motrum = price_motrum_all[0]
                     sale = price_motrum_all[1]
-                else: 
+                else:
                     price_one = price.rub_price_supplier
-                    price_one_motrum = price.price_motrum 
+                    price_one_motrum = price.price_motrum
 
             else:
                 print(77777777)
@@ -1018,16 +1015,15 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 and product_item["extra_discount"] != 0
             ):
                 # если есть предоплата найти скидку по предоплате мотрум
-                persent_pre_sale = 0 
+                persent_pre_sale = 0
                 if pre_sale:
                     price_pre_sale = get_presale_discount(product)
                     if price_pre_sale:
                         persent_pre_sale = price_pre_sale.percent
-                         
-                        
+
                 persent_sale = float(product_item["extra_discount"])
                 persent_sale = float(persent_sale) + float(persent_pre_sale)
-                
+
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
 
@@ -1043,9 +1039,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
 
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
-            price_all_motrum = float(price_one_motrum) * int(
-                product_item["quantity"]
-            )
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
 
             # выбор продукт из спецификации или заспись нового
@@ -1076,13 +1070,13 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 product_spes.extra_discount = product_item["extra_discount"]
             else:
                 product_spes.extra_discount = None
-                
+
             product_spes.price_one_motrum = price_one_motrum
             product_spes.price_all_motrum = price_all_motrum
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
 
-            # запись дат 
+            # запись дат
             date_delivery = product_item["date_delivery"]
             if date_delivery != "":
                 product_spes.date_delivery = datetime.datetime.strptime(
@@ -1091,35 +1085,32 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
                 product_spes.date_delivery = date_delivery
 
             product_spes.save()
-            
+
             total_amount = total_amount + price_all
-        
 
         # продукты без записи в окт
         else:
             print(33333333333333)
             price_one = product_item["price_one"]
-            
+
             if (
                 product_item["extra_discount"] != "0"
                 and product_item["extra_discount"] != ""
                 and product_item["extra_discount"] != 0
             ):
-                                             
+
                 persent_sale = float(product_item["extra_discount"])
-                
+
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-            if product_item["extra_discount"]:    
+            if product_item["extra_discount"]:
                 motrum_sale = float(product_item["extra_discount"])
             else:
                 motrum_sale = 0
             price_one_motrum = price_one - (price_one / 100 * motrum_sale)
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
-            price_all_motrum = float(price_one_motrum) * int(
-                product_item["quantity"]
-            )
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
             currency = Currency.objects.get(words_code="RUB")
 
@@ -1160,7 +1151,7 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
             print(product_spes)
 
             total_amount = total_amount + price_all
-        
+
     # обновить спецификацию пдф
     total_amount = round(total_amount, 2)
     specification.total_amount = total_amount
@@ -1168,22 +1159,27 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     specification.date_delivery = date_delivery_all
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
-    
-    
-    
-    
+
     specification.save()
     if specification_name:
         pdf = crete_pdf_specification(
-            specification.id, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update,specification_name
+            specification.id,
+            requisites,
+            account_requisites,
+            request,
+            motrum_requisites,
+            date_delivery_all,
+            type_delivery,
+            post_update,
+            specification_name,
         )
-        
+
         if pdf:
             specification.file = pdf
             specification._change_reason = "Ручное"
 
             specification.save()
-    
+
     return specification
 
     # except Exception as e:
@@ -1195,12 +1191,12 @@ def save_specification(received_data,pre_sale, request,motrum_requisites,account
     #     #         prod.delete()
     #     # else:
     #     #     specification.delete()
-            
+
     #     error = "error"
     #     location = "Сохранение спецификации админам окт"
     #     info = f"Сохранение спецификации админам окт ошибка {e}"
     #     e = error_alert(error, location, info)
-        
+
     #     return None
 
 
@@ -1279,13 +1275,40 @@ def loc_mem_cache(key, function, timeout=300):
         cache.set(key, cache_data, timeout)
     return cache_data
 
-def save_new_product_okt():
-    pass
 
+def save_new_product_okt(product_new):
+    from apps.product.models import Product,Price,Lot,Stock
+    from apps.supplier.models import Supplier, Vendor
+
+    if product_new.vendor:
+        vendor = product_new.vendor
+        supplier = vendor.supplier
+    else:
+        vendor = Vendor.objects.get("drugoe")
+        supplier = Supplier.objects.get("drugoe")
+
+    product = Product(
+        supplier=supplier, vendor=vendor, article_supplier=product_new.article_supplier,name=product_new.name,in_view_website=False
+    )
+    product.save()
+    update_change_reason(product, "Автоматическое")
+    
+    currency = Currency.objects.get(words_code="RUB")
+    vat = Vat.objects.get(name=20)
+    
+    price = Price(prod=product,currency=currency,vat=vat,extra_price=True,in_auto_sale=False)
+    price.save()
+    update_change_reason(price, "Автоматическое")
+    
+    lot_auto = Lot.objects.get(name_shorts="шт")
+    product_stock = Stock(
+        prod=product,
+        lot=lot_auto,
+    )
+    product_stock.save()
 
 # from django.utils.http import url_has_allowed_host_and_scheme
 # import urllib
-
 
 
 #  def orders_cache():

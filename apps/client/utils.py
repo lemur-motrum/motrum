@@ -42,7 +42,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.platypus import ListFlowable, ListItem
 
 
-def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delivery,post_update):
+def crete_pdf_bill(
+    specification, request, is_contract, order, bill_name, type_delivery, post_update
+):
     print(post_update)
     try:
         directory = check_spesc_directory_exist(
@@ -52,44 +54,35 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
         if specifications.admin_creator.middle_name:
             name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
-            
+
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         )
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
         motrum_info_req = order.motrum_requisites
-        
+
         client_info = order.requisites
         client_info_req = order.account_requisites
-        # motrum_info = (
-        #     BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set"))
-        #     .all()
-        #     .first()
-        # )
-    
-        # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
         if post_update:
             date_now = order.bill_date_start
             date_now = transform_date(date_now)
-            print("''''''''''''''''")
         else:
             date_now = transform_date(datetime.date.today().isoformat())
-            print(date_now)
-        # bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
+
         
+        # bill_last = Order.objects.filter(bill_file__isnull = False).exclude(bill_file="").last()
+
         # if bill_last:
         #     bill_last_name = bill_last.bill_file.name.split('_')
         #     bill_last_name = bill_last_name[1].split('.')
 
         #     bill_name = int(bill_last_name[0] )+1
         # else:
-        #     bill_name = 1   
+        #     bill_name = 1
         name_bill = f"bill_{bill_name}.pdf"
-        
         document_info = BaseImage.objects.filter().first()
-        
-        # number_bill =
+
         fileName = os.path.join(directory, name_bill)
         story = []
 
@@ -113,8 +106,12 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
 
         styles.add(ParagraphStyle(name="Roboto", fontName="Roboto", fontSize=7))
         styles.add(ParagraphStyle(name="Roboto-8", fontName="Roboto", fontSize=6))
-        styles.add(ParagraphStyle(name="Roboto-Bold", fontName="Roboto-Bold", fontSize=7))
-        styles.add(ParagraphStyle(name="Roboto-Title", fontName="Roboto-Bold", fontSize=12))
+        styles.add(
+            ParagraphStyle(name="Roboto-Bold", fontName="Roboto-Bold", fontSize=7)
+        )
+        styles.add(
+            ParagraphStyle(name="Roboto-Title", fontName="Roboto-Bold", fontSize=12)
+        )
         styles.add(
             ParagraphStyle(
                 name="Roboto-Bold-Center",
@@ -182,15 +179,14 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         # name_image_logo = f"{MEDIA_ROOT}/documents/logo.png"
         name_image_logo = request.build_absolute_uri(document_info.logo.url)
         print(name_image_logo)
-        
+
         logo_motrum = Paragraph(
             f'<img width="155" height="35"  src="{name_image_logo}" />',
             normal_style,
         )
-        
-        
+
         story.append(logo_motrum)
-       
+
         # тут вставки бик корпоратив
         data_bank = [
             (
@@ -267,7 +263,7 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
 
         # name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
-        
+
         logo_supplier = Paragraph(
             f'<br></br><br></br><br></br><br></br><br></br><br></br><img width="555" height="55"  src="{name_image_logo_supplier}" /><br></br>',
             normal_style,
@@ -275,12 +271,18 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         story.append(logo_supplier)
         if is_contract:
             story.append(
-                Paragraph(f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>", title_style_14)
+                Paragraph(
+                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
             )
         else:
-                    story.append(
-                Paragraph(f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>", title_style_14)
-            )    
+            story.append(
+                Paragraph(
+                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
+            )
 
         data_info = []
         data_info.append(
@@ -296,14 +298,15 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
             )
         )
         if client_info.tel:
-            info_client = f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}'
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}"
         else:
-            info_client = f'{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}'
-        
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}"
+
         data_info.append(
             (
                 Paragraph(
-                    f'Покупатель<br></br><font  size="6">(заказчик):</font>', normal_style
+                    f'Покупатель<br></br><font  size="6">(заказчик):</font>',
+                    normal_style,
                 ),
                 Paragraph(
                     info_client,
@@ -373,26 +376,26 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
             # else:
             #     is_none_date_delivery = True
 
-            
-            
             if product.product:
                 if IS_TESTING:
                     link = product.product.get_url_document_test()
                 else:
                     link = product.product.get_url_document()
-                    
+
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
-                product_name = f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
-                product_name = Paragraph(product_name, normal_style),
+                product_name = (
+                    f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
+                )
+                product_name = (Paragraph(product_name, normal_style),)
                 product_code = product.product.article_supplier
-                product_code = Paragraph(product_code, normal_style),
+                product_code = (Paragraph(product_code, normal_style),)
 
             else:
                 product_name = product.product_new
-                product_name = Paragraph(product_name, normal_style),
+                product_name = (Paragraph(product_name, normal_style),)
                 product_code = product.product_new_article
-                product_code = Paragraph(product_code, normal_style),
+                product_code = (Paragraph(product_code, normal_style),)
 
             product_price = product.price_one
             product_price = "{0:,.2f}".format(product_price).replace(",", " ")
@@ -418,16 +421,16 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                     product_data,
                 )
             )
-        total_amount_str = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
+        total_amount_str = "{0:,.2f}".format(specifications.total_amount).replace(
+            ",", " "
+        )
         # if is_none_date_delivery:
         #     final_date_ship = "-"
         # else:
         #     final_date_ship = str(date_ship.strftime("%d.%m.%Y"))
-        
+
         # client_info =""
-            
-        
-        
+
         data.append(
             (
                 None,
@@ -473,28 +476,24 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
             )
         )
         story.append(table_product)
-        
-        
-        
-        
+
         if order.prepay_persent:
             if order.prepay_persent == 100:
                 info_payment = f" Способ оплаты: 100% предоплата."
-                    
-                
+
             else:
                 info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
-                    
-        else: 
-            info_payment =''    
-            
-        print(info_payment)   
+
+        else:
+            info_payment = ""
+
+        print(info_payment)
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
         total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
         total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
-        final_table_all =[]
+        final_table_all = []
         final_table_all.append(
             (
                 None,
@@ -503,13 +502,13 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                 None,
                 None,
                 None,
-               None,
+                None,
                 None,
             )
         )
         final_table_all.append(
             (
-                Paragraph(info_payment,normal_style),
+                Paragraph(info_payment, normal_style),
                 None,
                 None,
                 None,
@@ -521,7 +520,6 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         )
 
         final_table_all.append(
-        
             (
                 None,
                 None,
@@ -532,12 +530,9 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                 Paragraph(f"{total_amount_nds} ", bold_left_style),
                 None,
             )
-        
         )
 
-          
         final_table_all.append(
-            
             (
                 None,
                 None,
@@ -548,8 +543,7 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                 Paragraph(f"{total_amount}<br></br>", bold_left_style),
                 None,
             )
-        
-        )            
+        )
 
         final_table_all_prod = Table(
             final_table_all,
@@ -563,32 +557,24 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                 2.5 * cm,
                 2 * cm,
             ],
-            rowHeights=13
+            rowHeights=13,
         )
         story.append(final_table_all_prod)
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
         ).capitalize()
         total_amount_pens = str(specifications.total_amount).split(".")
         total_amount_pens = total_amount_pens[1]
-       
+
         if len(total_amount_pens) < 2:
             total_amount_pens = f"{total_amount_pens}0"
         rub_word = rub_words(int(specifications.total_amount))
 
-  
         story.append(
             Paragraph(
-                f"Всего наименований {i}, на сумму {total_amount_str} руб.", normal_style
+                f"Всего наименований {i}, на сумму {total_amount_str} руб.",
+                normal_style,
             )
         )
         story.append(
@@ -633,77 +619,74 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
                     f"3. Товар отгружается после полной оплаты счета-оферты Покупателем.",
                     normal_style,
                 )
-            ) 
+            )
             story.append(
                 Paragraph(
                     f"5. Обязательства Поставщика по поставке Товара считаются выполненными с момента подписания УПД или товарной накладной представителями Поставщика и Покупателя или организации перевозчика.",
                     normal_style,
                 )
-            )  
+            )
             story.append(
                 Paragraph(
                     f"6. Каждая партия поставляемой продукции сопровождается Универсальным передаточным документом (УПД): на бумажном носителе в двух экземплярах (1 экз. Покупателя, 1 экз. Поставщика). После каждой поставки продукции с документами, Покупатель обязан вернуть Поставщику один экземпляр, верно оформленного УПД, не позднее 1 месяца с даты подтверждения получения товара. В случае задержки Покупателем возврата, верно оформленного со стороны Покупателя, оригинала УПД на бумажном носителе на срок более 1 (одного) календарного месяца, Поставщик вправе предъявить Покупателю штрафные санкции в размере 5 000 (Пять тысяч) рублей (НДС не облагается) за каждый факт не предоставления подписанного оригинала УПД.",
                     normal_style,
                 )
-            )  
+            )
             # type_delivery_client = str(client_info.type_delivery).lower()
-           
+
             # type_delivery_client_index = type_delivery_client.find("самовывоз")
-            
+
             # 6
-           
+
             # if type_delivery_client_index >= 0:
             if type_delivery == "pickup":
                 story.append(
-                Paragraph(
-                    f"7. Доставка товара осуществляется самовывозом со склада Поставщика",
-                    normal_style,
+                    Paragraph(
+                        f"7. Доставка товара осуществляется самовывозом со склада Поставщика",
+                        normal_style,
+                    )
                 )
-            )
-            elif  type_delivery == "paid_delivery": 
+            elif type_delivery == "paid_delivery":
                 story.append(
                     Paragraph(
                         f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
                         normal_style,
                     )
-                )  
+                )
             else:
                 pass
-                
-                
+
             story.append(
                 Paragraph(
                     f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",
                     normal_style,
                 )
-            )  
+            )
             story.append(
                 Paragraph(
                     f"9. Претензии по п. 8 должны быть заявлены Сторонами в письменной форме в течение 5 дней с момента наступления, указанных в них событий. В случае не выставления претензии в указанный срок, это трактуется как освобождение Сторон от уплаты неустойки.",
                     normal_style,
                 )
-            )  
+            )
             story.append(
                 Paragraph(
                     f"10. Срок гарантии на поставляемую продукцию составляет не менее одного года с момента отгрузки.",
                     normal_style,
                 )
-            )  
+            )
             story.append(
                 Paragraph(
                     f"11. Правила гарантийного обслуживания оговариваются в гарантийных талонах на поставляемую продукцию.",
                     normal_style,
                 )
-            )  
+            )
             story.append(
                 Paragraph(
                     f"12.  Стороны принимают необходимые меры к тому, чтобы спорные вопросы и разногласия, возникающие при исполнении и расторжении настоящего договора, были урегулированы путем переговоров. В случае если стороны не достигнут соглашения по спорным вопросам путем переговоров, то спор передается заинтересованной стороной в арбитражный суд.",
                     normal_style,
                 )
-            )  
-                                                    
+            )
 
-       
         name_image = request.build_absolute_uri(motrum_info.signature.url)
         signature_motrum = Paragraph(
             f'<br /><img width="100" height="30" src="{name_image}" valign="middle"/>',
@@ -712,7 +695,7 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
         signature_motrum_name = Paragraph(f"Старостина В. П.", normal_style)
         # name_image_press = f"{MEDIA_ROOT}/documents/press.png"
         name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
-        print(9999999999999999999)
+
         press_motrum = Paragraph(
             f'<br /><br /><br /><br /><br />М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
             normal_style,
@@ -737,12 +720,14 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
             (
                 None,
                 None,
-                Paragraph(f"<br></br><br></br><br></br>{name_admin}", normal_style_right),
+                Paragraph(
+                    f"<br></br><br></br><br></br>{name_admin}", normal_style_right
+                ),
             ),
         ]
 
         table_signature = Table(
-            data_signature, colWidths=[3 * cm, 5 * cm, 7 * cm,7 * cm], hAlign="LEFT"
+            data_signature, colWidths=[3 * cm, 5 * cm, 7 * cm, 7 * cm], hAlign="LEFT"
         )
         table_signature.setStyle(
             TableStyle(
@@ -755,35 +740,29 @@ def crete_pdf_bill(specification,request,is_contract,order,bill_name,type_delive
             )
         )
         story.append(table_signature)
-        
+
         # story.append(
         #         Paragraph(
         #             f"{name_admin}",
         #             normal_style_right,
         #         )
         #     )
-        
-        
 
-        
         pdf = doc
-        
-        print(pdf)
-        print(name_bill)
         pdf = pdf.build(story, canvasmaker=MyCanvas)
-        print(1231231231231)
-        print(pdf)
+
         file_path = "{0}/{1}/{2}".format(
             "documents",
             "bill",
             name_bill,
         )
-        print(file_path)
 
-        return (file_path,bill_name)
+        print(file_path)
+        return (file_path, bill_name)
+
     except Exception as e:
-          
-            error = "error"
-            location = "Сохранение спецификации админам окт"
-            info = f"Сохранение спецификации админам окт ошибка {e}"
-            e = error_alert(error, location, info)
+
+        error = "error"
+        location = "Сохранение пдф счета "
+        info = f"Сохранение пдф счета  ошибка {e}"
+        e = error_alert(error, location, info)

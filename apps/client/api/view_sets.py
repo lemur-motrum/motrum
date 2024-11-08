@@ -52,6 +52,7 @@ from apps.core.utils import (
     create_time_stop_specification,
     get_presale_discount,
     loc_mem_cache,
+    save_new_product_okt,
     save_specification,
 )
 from apps.core.utils_web import (
@@ -708,16 +709,17 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 
             order = Order.objects.get(specification_id=pk)
-            print(2222222222222222222222222222222)
-            print(order)
+
             if post_update:
                 bill_name = order.bill_name
             else:
-                bill_name = Order.objects.filter(bill_name__isnull = False).last()
+                bill_name = Order.objects.filter(bill_name__isnull = False).order_by("-bill_name").last()
+
                 if bill_name:
                     bill_name = int(bill_name.bill_name)+1
                 else:
-                    bill_name = 1    
+                    bill_name = 1 
+ 
             if order.requisites.contract:
                 is_req = True
                 
@@ -731,11 +733,20 @@ class OrderViewSet(viewsets.ModelViewSet):
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
+                
+                # # сохранение товара в окт нового
+                # for obj in data:
+                #     prod = ProductSpecification.objects.filter(id=obj["id"])
+                #     if prod.product_new_article:
+                #         pass
+                #         # save_new_product_okt(prod)
+                        
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
+            print(e)
             error = "error"
             location = "Сохранение счета админам окт"
             info = f"Сохранение счета админам окт ошибка {e}"

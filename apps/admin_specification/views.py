@@ -655,7 +655,7 @@ def create_specification(request):
         "bill_upd":bill_upd,
         "vendor":vendor,
     }
-    print(context)
+    
     return render(request, "admin_specification/catalog.html", context)
 
 @permission_required("specification.add_specification", login_url="/user/login_admin/")

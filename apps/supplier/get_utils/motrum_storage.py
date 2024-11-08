@@ -151,8 +151,8 @@ def add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,in
         stock_motrum_reserve = int_stock_reserve_motrum,
     )
     product_stock.save()
-    
     update_change_reason(product_stock, "Автоматическое")
+    
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name=20)
     price =  Price(prod=prod_new,currency=currency,vat=vat,extra_price=True)

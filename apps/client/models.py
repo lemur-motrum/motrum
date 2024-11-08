@@ -354,13 +354,16 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-
-    bill_name = models.CharField(
-        max_length=1000,
-        default=None,
-        blank=True,
+    bill_name = models.PositiveIntegerField(
+        "Номер сделки битрикс",default=None,
         null=True,
     )
+    # bill_name = models.PositiveIntegerField(
+    #     max_length=1000,
+    #     default=None,
+    #     blank=True,
+    #     null=True,
+    # )
     bill_file = models.FileField(
         "Фаил счета",
         upload_to=get_document_bill_path,

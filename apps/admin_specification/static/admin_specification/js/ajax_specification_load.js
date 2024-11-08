@@ -117,9 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   button.innerHTML = "<div class='small_loader'></div>";
                   document.cookie = `cart=${cartId};path=/`;
                   document.cookie = `specificationId=${specificationId};path=/`;
-                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`
-                 
-
+                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
 
                   fetch(endpoint, {
                     method: "UPDATE",
@@ -130,8 +128,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   })
                     .then((response) => response.json())
                     .then((response) => {
-                      window.location.href =
-                        `/admin_specification/current_specification/?${getParams}`;
+                      window.location.href = `/admin_specification/current_specification/?${getParams}`;
                       setTimeout(() => {
                         button.disabled = false;
                         button.innerHTML = "";
@@ -169,8 +166,8 @@ window.addEventListener("DOMContentLoaded", () => {
             !data.small
               ? i < pageCount + 2
               : +data.count > 1
-                ? i <= pageCount + 1
-                : i <= pageCount;
+              ? i <= pageCount + 1
+              : i <= pageCount;
             i++
           ) {
             pagintationArray.push(i);

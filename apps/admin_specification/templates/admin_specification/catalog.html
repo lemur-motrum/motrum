@@ -270,12 +270,12 @@
                         </div>
                     {% else %}
                         <!--когда новая спецификация-->
-                        <div class="item_container"
-                             data-product-pk=""
+                        <div class="item_container added_item_container"
+                             data-product-pk="{{ item.id }}"
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id }}"
                              data-product-article-new="{{ item.product_new_article }}"
-                             data-id="{{ item.id_product_cart }}"
+                             data-id="{{ item.id }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
                              data-product-specification-id="">
@@ -284,9 +284,9 @@
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
                             </div>
                             <div class="item_value">
-                                {{ item.product_new }}
+                                <span class="item_added_product_name">{{ item.product_new }}<span>
                                 <br>
-                                <div class="article">Арт. {{ item.product_new_article }}</div>
+                                <div class="article">Арт. <span class="item_added_product_article">{{ item.product_new_article }}</span></div>
                                 <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
@@ -316,7 +316,7 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
-                                <div class="item_value price price_once">{{ item.product_new_price }}</div>
+                                <div class="item_value"><span class="price price_once">{{ item.product_new_price }}</span></div>
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -324,7 +324,7 @@
                                         <button class="plus-button">+</button>
                                     </div>
                                 </div>
-                                <div class="item_value total_cost price"></div>
+                                <div class="item_value"><span class="total_cost price"></span></div>
                             {% endif %}
                             <div class="item_value">
                                 {% if item.discount == "" or item.discount == None %}

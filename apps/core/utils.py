@@ -994,8 +994,20 @@ def save_specification(
                     price_one_motrum = price_motrum_all[0]
                     sale = price_motrum_all[1]
                 else:
-                    price_one = price.rub_price_supplier
-                    price_one_motrum = price.price_motrum
+                    if post_update:
+                        product_spesification = ProductSpecification.objects.get(
+                    id=product_item["product_specif_id"],
+                )
+                        price_one_before = product_spesification.price_one
+                        price_one = price_one_before / (
+                            1 - float(product_spesification.extra_discount) / 100
+                        )
+                        price_one = round(price_one, 2)
+                        price_one_motrum = product_spesification.price_one_motrum
+                        
+                    else:
+                        price_one = price.rub_price_supplier
+                        price_one_motrum = price.price_motrum
 
             else:
                
@@ -1012,7 +1024,8 @@ def save_specification(
             ):
                 # если есть предоплата найти скидку по предоплате мотрум
                 persent_pre_sale = 0
-                if pre_sale:
+                
+                if pre_sale and price.in_auto_sale:
                     price_pre_sale = get_presale_discount(product)
                     if price_pre_sale:
                         persent_pre_sale = price_pre_sale.percent

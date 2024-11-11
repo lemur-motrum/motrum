@@ -89,6 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
           client_requisites: clientRequsits ? +clientRequsits : null,
           type_delivery: deliveryRequsits ? deliveryRequsits : null,
           type_save: "bill",
+          post_update: false,
         };
         const data = JSON.stringify(dataObj);
 

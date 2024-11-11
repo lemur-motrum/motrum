@@ -99,7 +99,6 @@ function catalogLogic(elems) {
     });
 
     plusButton.onclick = () => {
-      console.log("123");
       if (productMultiplicityQuantity) {
         countQuantity += +productMultiplicityQuantity;
       } else {
@@ -520,7 +519,7 @@ window.addEventListener("DOMContentLoaded", () => {
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
           };
-          console.log(product);
+
           if (
             inputPrice
               ? !inputPrice.value || !deliveryDate.value
@@ -578,6 +577,7 @@ window.addEventListener("DOMContentLoaded", () => {
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
             type_save: "specification",
+            post_update: false,
           };
 
           const data = JSON.stringify(dataObj);
@@ -592,7 +592,6 @@ window.addEventListener("DOMContentLoaded", () => {
           })
             .then((response) => response.json())
             .then((response) => {
-              console.log(response.data);
               localStorage.removeItem("specificationValues");
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
@@ -647,7 +646,6 @@ window.addEventListener("DOMContentLoaded", () => {
           const currnetPriceOne = +itemPriceOnce.textContent.replace(",", ".");
           getDigitsNumber(itemPriceOnce, currnetPriceOne);
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
-          console.log("dasdsa", currentPrice);
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
         }
@@ -792,7 +790,6 @@ window.addEventListener("DOMContentLoaded", () => {
           const quantity = item.querySelector(".input-quantity");
 
           quantity.onkeyup = () => {
-            console.log("da");
             countQuantity = +quantity.value;
             const currentPrice = !discountInput.value
               ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
@@ -809,7 +806,6 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           plusButton.onclick = () => {
-            console.log("1234");
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
               : (+item.getAttribute("data-price") *
@@ -1163,16 +1159,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".create-bill-button");
-      console.log(changeButton);
+
       const link = item.querySelector("a");
 
       const specificationId = +link.textContent;
       const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
-        console.log(specificationId);
-        console.log(cartId);
-
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
           method: "UPDATE",
@@ -1194,11 +1187,9 @@ window.addEventListener("DOMContentLoaded", () => {
         +item.querySelectorAll(".table_item_value")[0].textContent;
       let cartId = item.querySelectorAll(".table_item_value")[0];
 
-      console.log(cartId);
       updatingBtn.onclick = () => {
-        console.log(specificationId);
         cartId = cartId.getAttribute("data-cart-id");
-        console.log(cartId);
+
         document.cookie = `cart=${cartId};path=/`;
         document.cookie = `specificationId=${specificationId};path=/`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
@@ -1297,7 +1288,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const saveInvoiceButtonContainer = document.querySelector(
       ".save_invoice_button-wrapper"
     );
-    console.log(saveInvoiceButtonContainer);
+
     window.onload = () => {
       if (searchClientInput.value) {
         if (saveButtonContainer) {
@@ -1326,7 +1317,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
     searchClientInput.onkeyup = () => {
-      console.log(searchClientInput.value);
       const objData = {
         client: searchClientInput.value,
       };

@@ -634,6 +634,12 @@ window.addEventListener("DOMContentLoaded", () => {
         let countQuantity = +quantity.value;
         const productID = item.getAttribute("data-id");
         const productCartID = item.getAttribute("data-product-id-cart");
+        if (inputPrice) {
+          getDigitsNumber(
+            productTotalPrice,
+            +inputPrice.value * +quantity.value
+          );
+        }
         if (itemPriceOnce) {
           const currnetPriceOne = +itemPriceOnce.textContent.replace(",", ".");
           getDigitsNumber(itemPriceOnce, currnetPriceOne);
@@ -901,6 +907,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (discountInput.value >= 100) {
               discountInput.value == 100;
             }
+
             const curentPrice =
               (+item.getAttribute("data-price") *
                 (100 - +discountInput.value)) /
@@ -910,7 +917,9 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
             getResult();
           };
-          saveButton.onclick = () => saveSpecification();
+          if (saveButton) {
+            saveButton.onclick = () => saveSpecification();
+          }
         } else {
           getResult();
           discountInput.onkeyup = () => {
@@ -925,7 +934,9 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(productTotalPrice, allPrice);
             getResult();
           };
-          saveButton.onclick = () => saveSpecification(productItems);
+          if (saveButton) {
+            saveButton.onclick = () => saveSpecification(productItems);
+          }
         }
 
         deleteItemBtn.onclick = () => {
@@ -943,8 +954,9 @@ window.addEventListener("DOMContentLoaded", () => {
             .catch((error) => console.error(error));
         };
       });
-
-      saveButton.onclick = () => saveSpecification(productItems);
+      if (saveButton) {
+        saveButton.onclick = () => saveSpecification(productItems);
+      }
       exitButton.onclick = () => exitSpecification(productItems);
     }
   }
@@ -1285,8 +1297,12 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log(saveInvoiceButtonContainer);
     window.onload = () => {
       if (searchClientInput.value) {
-        saveButtonContainer.classList.add("show");
-        saveInvoiceButtonContainer.classList.add("show");
+        if (saveButtonContainer) {
+          saveButtonContainer.classList.add("show");
+        }
+        if (saveInvoiceButtonContainer) {
+          saveInvoiceButtonContainer.classList.add("show");
+        }
         if (clientRequsitsSelect) {
           const clientOptions = clientRequsitsSelect.querySelectorAll("option");
           clientRequsitsSelect.setAttribute(

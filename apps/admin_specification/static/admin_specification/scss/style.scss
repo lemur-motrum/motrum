@@ -1446,7 +1446,8 @@ h1 {
         gap: 20px;
       }
       .save_button,
-      .exit_button {
+      .exit_button,
+      .save_upd_bill {
         font-size: 0.938rem;
         text-transform: uppercase;
         display: flex;
@@ -1459,6 +1460,19 @@ h1 {
         cursor: pointer;
         padding: 0.5rem 0.875rem;
         width: 20%;
+      }
+      .save_upd_bill-wrapper {
+        position: relative;
+        width: 20%;
+        .save_upd_bill {
+          width: 100%;
+          height: 100%;
+          &:disabled,
+          &[disabled] {
+            cursor: auto;
+            background-color: #bdbdbd;
+          }
+        }
       }
       .save_button-wrapper {
         position: relative;

@@ -317,18 +317,33 @@ function addNewProductLogic(container) {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status === 200 || response.status === 201) {
-              window.location.reload();
-            } else if (response.status === 409) {
-              showErrorValidation(
-                "Товар с таким артикулом уже есть в корзине",
-                newProductError
-              );
-            } else {
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status === 200 || response.status === 201) {
+                window.location.reload();
+              } else if (response.status === 403) {
+                // showErrorValidation(
+                //   "Товар с таким артикулом уже есть в корзине",
+                //   newProductError
+                // );
+                return response.json();
+              } else {
+                throw new Error("Ошибка");
+              }
+            })
+            .then((response) => {
+              if (response.status == "product_in_okt") {
+                showErrorValidation(
+                  "Данный товар уже есть в ОКТ",
+                  newProductError
+                );
+              } else if (response.status == "product_in_cart") {
+                showErrorValidation(
+                  "Товар с таким артикулом уже есть в корзине",
+                  newProductError
+                );
+              }
+            });
         }
       };
     }

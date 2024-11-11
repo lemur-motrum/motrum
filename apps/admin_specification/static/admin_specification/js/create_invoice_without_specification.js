@@ -66,7 +66,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const saleMotrum = specificationItem.querySelector(
           ".motrum_sale_persent"
         );
-        const vendor = item.getAttribute("data-vendor");
+        const vendor = specificationItem.getAttribute("data-vendor");
 
         const product = {
           product_id: +itemID,

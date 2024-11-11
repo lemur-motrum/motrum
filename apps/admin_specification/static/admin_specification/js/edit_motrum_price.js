@@ -6,32 +6,34 @@ export function editMotrumPrice(container) {
     specificationItems.forEach((specification) => {
       const priceInput = specification.querySelector(".price-input");
       const motrumPriceContainer = specification.querySelector(".price_motrum");
-      const motrumSalePersent = getCurrentPrice(
-        specification.querySelector(".motrum_sale_persent").textContent
-      );
 
       if (priceInput) {
         priceInput.value = getCurrentPrice(priceInput.value);
 
         if (specification.querySelector(".motrum_sale_persent")) {
-          getDigitsNumber(motrumPriceContainer);
+          const motrumSalePersent = getCurrentPrice(
+            specification.querySelector(".motrum_sale_persent").textContent
+          );
           motrumPriceContainer.setAttribute(
             "price-motrum",
             (+priceInput.value / 100) * (100 - +motrumSalePersent)
           );
+          priceInput.addEventListener("input", function () {
+            if (specification.querySelector(".motrum_sale_persent")) {
+              motrumPriceContainer.setAttribute(
+                "price-motrum",
+                (+priceInput.value / 100) * (100 - +motrumSalePersent)
+              );
+            } else {
+              motrumPriceContainer.setAttribute(
+                "price-motrum",
+                priceInput.value
+              );
+            }
+          });
         } else {
           motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
         }
-        priceInput.addEventListener("input", function () {
-          if (specification.querySelector(".motrum_sale_persent")) {
-            motrumPriceContainer.setAttribute(
-              "price-motrum",
-              (+priceInput.value / 100) * (100 - +motrumSalePersent)
-            );
-          } else {
-            motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
-          }
-        });
       }
       const motrumPriceOne = motrumPriceContainer
         ? getCurrentPrice(motrumPriceContainer.getAttribute("price-motrum"))

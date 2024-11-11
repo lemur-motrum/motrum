@@ -6,12 +6,28 @@ export function editMotrumPrice(container) {
     specificationItems.forEach((specification) => {
       const priceInput = specification.querySelector(".price-input");
       const motrumPriceContainer = specification.querySelector(".price_motrum");
+      const motrumSalePersent = getCurrentPrice(
+        specification.querySelector(".motrum_sale_persent").textContent
+      );
+
       if (priceInput) {
-        priceInput.oninput = () => {
+        priceInput.value = getCurrentPrice(priceInput.value);
+        // getDigitsNumber(
+        //   productTotalPrice,
+        //   +inputPrice.value * +quantity.value
+        // );
+        if (specification.querySelector(".motrum_sale_persent")) {
+          getDigitsNumber(motrumPriceContainer);
+          motrumPriceContainer.setAttribute(
+            "price-motrum",
+            (+priceInput.value / 100) * (100 - +motrumSalePersent)
+          );
+        } else {
+          motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
+        }
+        priceInput.addEventListener("input", function () {
           if (specification.querySelector(".motrum_sale_persent")) {
-            const motrumSalePersent = getCurrentPrice(
-              specification.querySelector(".motrum_sale_persent").textContent
-            );
+            getDigitsNumber(motrumPriceContainer);
             motrumPriceContainer.setAttribute(
               "price-motrum",
               (+priceInput.value / 100) * (100 - +motrumSalePersent)
@@ -19,7 +35,7 @@ export function editMotrumPrice(container) {
           } else {
             motrumPriceContainer.setAttribute("price-motrum", priceInput.value);
           }
-        };
+        });
       }
       const motrumPriceOne = motrumPriceContainer
         ? getCurrentPrice(motrumPriceContainer.getAttribute("price-motrum"))
@@ -27,10 +43,9 @@ export function editMotrumPrice(container) {
 
       const quantityItem = specification.querySelector(".input-quantity").value;
       const currentMotrumPrice = +motrumPriceOne * +quantityItem;
-      console.log("currentMotrumPrice", currentMotrumPrice);
 
       motrumPriceContainer
-        ? getDigitsNumber(motrumPriceContainer, currentMotrumPrice)
+        ? getDigitsNumber(motrumPriceContainer, +currentMotrumPrice)
         : "";
     });
   }

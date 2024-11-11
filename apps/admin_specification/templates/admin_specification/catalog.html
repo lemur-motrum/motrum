@@ -816,23 +816,37 @@
                         </select>
                     </div>
                     <div class="button_specification-wrapper">
-                        <div class="save_button-wrapper">
-                            <button class="save_button">Сохранить спецификацию</button>
-                            <div class="error"></div>
-                        </div>
-                        <div class="save_invoice_button-wrapper">
-                            <button class="save_button">Сохранить только счет</button>
-                            <div class="error"></div>
-                        </div>
-                        <button class="exit_button">Выйти без изменений</button>
-                        {% if specification %}
-                        {% else %}
-                            <div class="save_order_button-wrapper">
-                                <button class="save_order_button">Сохранить корзину без заказа</button>
-                                <div class="save_order_button-error"></div>
+                        {% if bill_upd %}
+                            <div class="save_upd_bill-wrapper">
+                                <button class="save_upd_bill">Сохранить изменения в счете</button>
+                                <div class="save_upd_bill-error"></div>
                             </div>
+                            <button class="exit_button">Выйти без изменений</button>
+                            {% comment %} {% if specification %}
+                            {% else %}
+                                <div class="save_order_button-wrapper">
+                                    <button class="save_order_button">Сохранить корзину без заказа</button>
+                                    <div class="save_order_button-error"></div>
+                                </div>
+                            {% endif %} {% endcomment %}
+                        {% else %}
+                            <div class="save_button-wrapper">
+                                <button class="save_button">Сохранить спецификацию</button>
+                                <div class="error"></div>
+                            </div>
+                            <div class="save_invoice_button-wrapper">
+                                <button class="save_button">Сохранить только счет</button>
+                                <div class="error"></div>
+                            </div>
+                            <button class="exit_button">Выйти без изменений</button>
+                            {% if specification %}
+                            {% else %}
+                                <div class="save_order_button-wrapper">
+                                    <button class="save_order_button">Сохранить корзину без заказа</button>
+                                    <div class="save_order_button-error"></div>
+                                </div>
+                            {% endif %}
                         {% endif %}
-                        {% if bill_upd %}<button class="save_upd_bill">Сохранить изменения в счете</button>{% endif %}
                     </div>
                 </div>
             </div>

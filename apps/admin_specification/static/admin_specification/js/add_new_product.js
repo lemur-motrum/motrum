@@ -322,10 +322,6 @@ function addNewProductLogic(container) {
               if (response.status === 200 || response.status === 201) {
                 window.location.reload();
               } else if (response.status === 409) {
-                // showErrorValidation(
-                //   "Товар с таким артикулом уже есть в корзине",
-                //   newProductError
-                // );
                 return response.json();
               } else {
                 throw new Error("Ошибка");

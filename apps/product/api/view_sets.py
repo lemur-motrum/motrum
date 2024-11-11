@@ -413,7 +413,7 @@ class CartViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(detail=True, methods=["post"], url_path=r"/upd-product-new")
+    @action(detail=True, methods=["post"], url_path=r"upd-product-new")
     def upd_product_cart_new(self, request,pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
         serializer_class = ProductCartSerializer

@@ -506,15 +506,16 @@ def create_specification(request):
                         product_new=OuterRef("product_new")
                     ).values(
                         "product_new_sale_motrum",
-                    ),
+                    )
                 )
                 .annotate(
+                    
                     price_motrum=Round(
                         F("product_new_price")
                         - (
                             F("product_new_price")
-                            / 100
-                            * (F("product_new_sale_motrum"))
+                            / 100 * 0
+                            # * (F("product_new_sale_motrum"))
                         ),
                         2,
                     ),

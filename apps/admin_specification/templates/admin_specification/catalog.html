@@ -242,6 +242,7 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
+
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
                                      class="price_motrum">
                                     {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
@@ -251,7 +252,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="">
-                                    {% if item.sale_motrum %}
+                                    {% if item.product_new_sale_motrum %}
                                         скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
                                     {% else %}
                                     {% endif %}
@@ -395,6 +396,7 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
+                                
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
                                      class="price_motrum">
                                     {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}

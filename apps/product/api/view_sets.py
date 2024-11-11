@@ -390,28 +390,36 @@ class CartViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")
     def add_product_cart_new(self, request, *args, **kwargs):
 
-     
+        
         serializer_class = ProductCartSerializer
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
-        
         try:
-            product_new_article = ProductCart.objects.get(
-                cart_id=cart_id, product_new_article=product_new_article
-            )
-            print(product_new_article)
-            return Response(None, status=status.HTTP_409_CONFLICT)
+            product_okt = Product.objects.get(vendor_id=data['vendor'],article_supplier=product_new_article)
+            data={
+                "status": "product_in_okt"
+            }
+            return Response(data, status=status.HTTP_409_CONFLICT)
+        except Product.DoesNotExist:
+            try:
+                product_new_article = ProductCart.objects.get(
+                    cart_id=cart_id, product_new_article=product_new_article
+                )
+                data={
+                "status": "product_in_cart"
+            }
+                return Response(data, status=status.HTTP_409_CONFLICT)
 
-        except ProductCart.DoesNotExist:
-            serializer = serializer_class(data=data, many=False)
-            if serializer.is_valid():
-                cart_product = serializer.save()
-                cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
-                data["cart_len"] = cart_len
-                return Response(data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except ProductCart.DoesNotExist:
+                serializer = serializer_class(data=data, many=False)
+                if serializer.is_valid():
+                    cart_product = serializer.save()
+                    cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
+                    data["cart_len"] = cart_len
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=["post"], url_path=r"upd-product-new")
     def upd_product_cart_new(self, request,pk=None, *args, **kwargs):

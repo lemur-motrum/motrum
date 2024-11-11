@@ -186,7 +186,7 @@
                     
                         <!--когда аптейдейт-->
                         <div class="item_container"
-                            data-vendor="{{item.vendor.id}}"
+                             data-vendor="{{ item.vendor.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"
@@ -286,7 +286,7 @@
                     {% else %}
                         <!--когда новая спецификация-->
                         <div class="item_container added_item_container"
-                            data-vendor="{{item.vendor.id}}"
+                             data-vendor="{{ item.vendor.id }}"
                              data-product-pk="{{ item.id }}"
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id }}"
@@ -426,6 +426,7 @@
                                         <button class="add_new_item_in_cart">Изменить</button>
                                         <div class="add_new_item_in_cart_container_error"></div>
                                     </div>
+                                    <div class="close-btn">+</div>
                                 </div>
                             </div>
                         </div>
@@ -435,7 +436,7 @@
                 {% for item in product_new_more %}
                     {% if update_spesif %}
                         <div class="item_container"
-                             data-vendor="{{item.vendor.id}}"
+                             data-vendor="{{ item.vendor.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"

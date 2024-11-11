@@ -485,7 +485,7 @@ def create_specification(request):
             title = f"Cпецификация № {specification.id}"
             order = Order.objects.get(specification=specification)
 
-            # список товаров без щаписи в окт которые были в спецификации
+            # список товаров без записи в окт которые были в спецификации
             product_new = (
                 ProductSpecification.objects.filter(
                     specification=specification,

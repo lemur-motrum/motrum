@@ -496,10 +496,8 @@ window.addEventListener("DOMContentLoaded", () => {
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
           );
-          const vendor = item.getAttribute(
-            "data-vendor"
-          );
-          const deliveryDate = item.querySelector(".delivery_date").value;
+          const vendor = item.getAttribute("data-vendor");
+          const deliveryDate = item.querySelector(".delivery_date");
           const commentItem = item.querySelector(
             'textarea[name="comment-input-name"]'
           ).value;
@@ -520,7 +518,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
-            vendor:vendor ? vendor : null,
+            vendor: vendor ? vendor : null,
           };
           console.log(product);
           if (inputPrice) {
@@ -530,10 +528,11 @@ window.addEventListener("DOMContentLoaded", () => {
               inputPrice.style.borderRadius = "10px";
             }
           } else {
-            if (deliveryDate) {
+            if (!deliveryDate.value) {
               deliveryDate.style.border = "1px solid red";
             }
-            if (inputPrice) {
+
+            if (inputPrice && !inputPrice.value) {
               inputPrice.style.border = "1px solid red";
             }
             products.push(product);

@@ -38,7 +38,11 @@
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
                          data-id="{{ item.id_product_cart }}"
-                         data-price="{{ item.price.rub_price_supplier }}"
+                         data-price="{% if bill_upd %}
+                         {{ item.old_price_one }}
+                         {% else %}
+                          {{ item.price.rub_price_supplier }}
+                         {% endif %}"
                          data-price-exclusive=" {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %} 1 {% else %} 0 {% endif %} "
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
@@ -90,7 +94,7 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% if bill_upd %}
+                        {% comment %} {% if bill_upd %}
                             <!--если изменение счета главным админом-->
                             <div class="item_value">
                                 <input class="price-input" name="price-input-extra" type="text" placeholder="Введите цену по запросу" maxlength="10" value = {{ item.old_price_one }} />
@@ -107,7 +111,7 @@
                                 </div>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
-                        {% else %}
+                        {% else %} {% endcomment %}
                             <!--обычное сохранение-->
                             {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
                                 <div class="item_value">
@@ -130,7 +134,14 @@
                                 </div>
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
-                                <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                                
+                                    {% if bill_upd %}
+                                    <div class="item_value price price_once">{{ item.old_price_one }}</div>
+                                    {% else %}
+                                    <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                                    {% endif %}
+                                    
+                                    
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -140,14 +151,32 @@
                                 </div>
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
-                        {% endif %}
+                        {% comment %} {% endif %} {% endcomment %}
                         <div class="item_value">
-                            <div price-motrum="{% if item.price.price_motrum == 0 or item.price.price_motrum == None %}0{% else %}{{ item.price.price_motrum }}{% endif %}"
+
+                            <div price-motrum="
+                            {% if item.price.price_motrum == 0 or item.price.price_motrum == None %}
+                             0
+                             {% else %}
+                             {% if bill_upd %}
+                                    {{item.old_price_one_motrum}}
+                                    
+                                    {% else %}
+                                    {{ item.price.price_motrum }}
+                                    {% endif %}
+                               {% endif %}"
                                  class="price_motrum">
                                 {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
                                     0
                                 {% else %}
+                               
+                                    {% if bill_upd %}
+                                    {{item.old_price_one_motrum}}
+                                    
+                                    {% else %}
                                     {{ item.price.price_motrum }}
+                                    {% endif %}
+                                    
                                 {% endif %}
                             </div>
                             <div class="">
@@ -175,7 +204,13 @@
                         <div class="item_value">
                             <label>
                                 <span>Срок поставки</span>
+                                {% comment %} {% if bill_upd %}
+                                <input placeholder="Укажите срок поставки" class="invoice-data-input" type="text" value="{{item.text_delivery}}">
+                                {% else %}
                                 <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                {% endif %} {% endcomment %}
+                                <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                               
                             </label>
                         </div>
                     </div>

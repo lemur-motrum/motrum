@@ -489,7 +489,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         if post_update:
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
-        print(3333333333333)
 
         print("specification_name", specification_name)
         try:

@@ -29,7 +29,9 @@ window.addEventListener("DOMContentLoaded", () => {
         "data-product-specification-id"
       );
       const vendor = item.getAttribute("data-vendor");
-      const deliveryDate = item.querySelector(".delivery_date").value;
+      const deliveryDate = item.querySelector(".delivery_date")
+        ? item.querySelector(".delivery_date").value
+        : item.querySelector(".invoice-data-input").value;
       const commentItem = item.querySelector(
         'textarea[name="comment-input-name"]'
       ).value;

@@ -640,6 +640,9 @@ window.addEventListener("DOMContentLoaded", () => {
             +inputPrice.value * +quantity.value
           );
         }
+        if (discountInput) {
+          discountInput.value = getCurrentPrice(discountInput.value);
+        }
         if (itemPriceOnce) {
           const currnetPriceOne = +itemPriceOnce.textContent.replace(",", ".");
           getDigitsNumber(itemPriceOnce, currnetPriceOne);

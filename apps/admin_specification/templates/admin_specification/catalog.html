@@ -183,7 +183,6 @@
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                    
                         <!--когда аптейдейт-->
                         <div class="item_container"
                              data-vendor="{{ item.vendor.id }}"
@@ -243,23 +242,20 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                                
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
-                                class="price_motrum">
-                               {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
-                                   0
-                               {% else %}
-                              
-                                   {{ item.price_motrum }}
-                               {% endif %}
-                           </div>
-                           <div class="">
-                               
-                               {% if item.sale_motrum %}
-                                   скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
-                               {% else %}
-                               {% endif %}
-                           </div>
+                                     class="price_motrum">
+                                    {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                        0
+                                    {% else %}
+                                        {{ item.price_motrum }}
+                                    {% endif %}
+                                </div>
+                                <div class="">
+                                    {% if item.sale_motrum %}
+                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+                                    {% else %}
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
@@ -344,18 +340,16 @@
                             {% endif %}
                             <div class="item_value">
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
-                                class="price_motrum">
+                                     class="price_motrum">
                                     {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
                                         0
                                     {% else %}
-                                    
                                         {{ item.price_motrum }}
                                     {% endif %}
                                 </div>
                                 <div class="">
-                                    
                                     {% if item.product_new_sale_motrum %}
-                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
+                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
                                     {% else %}
                                     {% endif %}
                                 </div>
@@ -395,7 +389,12 @@
                                         <label class="vedor_label">
                                             <select class="vendor_select" value="">
                                                 <option value="" disabled selected>Выберете производителя</option>
-                                                {% for vendor_item in vendor %}<option value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}>{{ vendor_item.name }}</option>{% endfor %}
+                                                {% for vendor_item in vendor %}
+                                                    <option value="{{ vendor_item.id }}"
+                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}>
+                                                        {{ vendor_item.name }}
+                                                    </option>
+                                                {% endfor %}
                                             </select>
                                         </label>
                                     </div>
@@ -418,7 +417,10 @@
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
                                             Cкидка
-                                            <input class="persent_sale" type="text" placeholder="%" value={% if  item.product_new_sale_motrum %}{{ item.product_new_sale_motrum}}{% endif %} />
+                                            <input class="persent_sale"
+                                                   type="text"
+                                                   placeholder="%"
+                                                   value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
                                             %
                                         </div>
                                     </div>
@@ -493,23 +495,21 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                            <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
-                                            class="price_motrum">
-                                        {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
-                                            0
-                                        {% else %}
-                                        
-                                            {{ item.price_motrum }}
-                                        {% endif %}
-                                    </div>
-                                    <div class="">
-                                        
-                                        {% if item.product_new_sale_motrum %}
-                                            скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum}}</span>%
-                                        {% else %}
-                                        {% endif %}
-                                    </div>
-                            </div>        
+                                <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
+                                     class="price_motrum">
+                                    {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                        0
+                                    {% else %}
+                                        {{ item.price_motrum }}
+                                    {% endif %}
+                                </div>
+                                <div class="">
+                                    {% if item.product_new_sale_motrum %}
+                                        скидка <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                            </div>
                             <div class="item_value">
                                 <input class="discount-input"
                                        type="text"

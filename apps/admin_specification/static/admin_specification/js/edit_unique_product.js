@@ -34,6 +34,9 @@ window.addEventListener("DOMContentLoaded", () => {
       const supplierSelect = changeFormWrapper.querySelector(".vendor_select");
       const options = supplierSelect.querySelectorAll("option");
       options.forEach((el) => {
+        if (el.selected && el.getAttribute("value")) {
+          supplierSelect.setAttribute("value", el.getAttribute("value"));
+        }
         supplierSelect.addEventListener("change", function () {
           if (el.selected) {
             supplierSelect.setAttribute("value", el.getAttribute("value"));
@@ -54,7 +57,9 @@ window.addEventListener("DOMContentLoaded", () => {
         ".change_item_container_value_motrum_price"
       );
       const salePersentInput = changeFormWrapper.querySelector(".persent_sale");
-      salePersentInput.value = getCurrentPrice(salePersentInput.value);
+      salePersentInput.value = salePersentInput.value
+        ? getCurrentPrice(salePersentInput.value)
+        : "";
       const changeButton = changeFormWrapper.querySelector(
         ".add_new_item_in_cart"
       );

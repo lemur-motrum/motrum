@@ -28,6 +28,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const productSpecificationId = item.getAttribute(
         "data-product-specification-id"
       );
+      const vendor = item.getAttribute("data-vendor");
       const deliveryDate = item.querySelector(".delivery_date").value;
       const commentItem = item.querySelector(
         'textarea[name="comment-input-name"]'
@@ -46,6 +47,7 @@ window.addEventListener("DOMContentLoaded", () => {
         product_name_new: nameProductNew,
         product_new_article: nameProductNew,
         comment: commentItem ? commentItem : null,
+        vendor: vendor ? vendor : null,
       };
 
       products.push(product);

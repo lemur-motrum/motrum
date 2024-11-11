@@ -395,7 +395,7 @@
                                         <label class="vedor_label">
                                             <select class="vendor_select" value="">
                                                 <option value="" disabled selected>Выберете производителя</option>
-                                                {% for vendor_item in vendor %}<option value="{{ vendor_item.id }}">{{ vendor_item.name }}</option>{% endfor %}
+                                                {% for vendor_item in vendor %}<option value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}>{{ vendor_item.name }}</option>{% endfor %}
                                             </select>
                                         </label>
                                     </div>
@@ -418,7 +418,7 @@
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
                                             Cкидка
-                                            <input class="persent_sale" type="text" placeholder="%" />
+                                            <input class="persent_sale" type="text" placeholder="%" value={% if  item.product_new_sale_motrum %}{{ item.product_new_sale_motrum}}{% endif %} />
                                             %
                                         </div>
                                     </div>

@@ -54,6 +54,7 @@ window.addEventListener("DOMContentLoaded", () => {
         ".change_item_container_value_motrum_price"
       );
       const salePersentInput = changeFormWrapper.querySelector(".persent_sale");
+      salePersentInput.value = getCurrentPrice(salePersentInput.value);
       const changeButton = changeFormWrapper.querySelector(
         ".add_new_item_in_cart"
       );
@@ -155,7 +156,9 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_price: +priceOneInput.value,
             cart: +cartId,
             quantity: +quantityInput.value,
-            product_new_sale_motrum: saleValue.value ? saleValue.value : null,
+            product_new_sale_motrum: salePersentInput.value
+              ? salePersentInput.value
+              : null,
             vendor: supplierSelect.getAttribute("value"),
           };
           const data = JSON.stringify(objData);

@@ -480,7 +480,6 @@ def create_specification(request):
                 specification=specification
             )
 
-
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
@@ -565,7 +564,7 @@ def create_specification(request):
                                 2,
                             ),
                         ),
-                    ),                    
+                    ),
                     # price_motrum=Round(
                     #     F("product_new_price")
                     #     - (
@@ -700,24 +699,35 @@ def create_specification(request):
                 ).values(
                     "price_one",
                 ),
-                old_price_one_motrum=product_specification.filter(
-                    product=OuterRef("pk")
-                ).values(
-                    "price_one_motrum",
-                ),
                 old_extra_discount=product_specification.filter(
                     product=OuterRef("pk")
                 ).values(
                     "extra_discount",
                 ),
-                
+                old_price_one_full=Case(
+                    When(old_extra_discount=None, then="old_price_one"),
+                    When(
+                        old_extra_discount__isnull=False,
+                        then=Round(
+                            F("old_price_one") / (1 - F("old_extra_discount") / 100),
+                            2,
+                        ),
+                    ),
+                ),
+                old_price_one_motrum=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "price_one_motrum",
+                ),
                 old_date=product_specification.filter(product=OuterRef("pk")).values(
                     "specification__date_update",
                 ),
                 comment=product_specification.filter(product=OuterRef("pk")).values(
                     "comment",
                 ),
-                text_delivery=product_specification.filter(product=OuterRef("pk")).values(
+                text_delivery=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
                     "text_delivery",
                 ),
                 is_prise=product_cart.filter(product=OuterRef("pk")).values(

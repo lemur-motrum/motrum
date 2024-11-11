@@ -34,7 +34,8 @@ from apps.specification.models import ProductSpecification, Specification
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
-from django.db.models import Q, F, OrderBy
+from django.db.models import Q, F, OrderBy, Case, When, Value
+
 from django.db.models.functions import Coalesce
 from django.db.models.functions import Round
 
@@ -506,19 +507,36 @@ def create_specification(request):
                         product_new=OuterRef("product_new")
                     ).values(
                         "product_new_sale_motrum",
-                    )
+                    ),
                 )
                 .annotate(
-                    
-                    price_motrum=Round(
-                        F("product_new_price")
-                        - (
-                            F("product_new_price")
-                            / 100 * 0
-                            # * (F("product_new_sale_motrum"))
+                    price_motrum=Case(
+                        When(
+                            product_new_sale_motrum=None,
+                            then=("product_new_price"),
                         ),
-                        2,
+                        When(
+                            product_new_sale_motrum__isnull=False,
+                            then=Round(
+                                F("product_new_price")
+                                - (
+                                    F("product_new_price")
+                                    / 100
+                                    * (F("product_new_sale_motrum"))
+                                ),
+                                2,
+                            ),
+                        ),
                     ),
+                    # price_motrum=Round(
+                    #     F("product_new_price")
+                    #     - (
+                    #         F("product_new_price")
+                    #         / 100
+                    #         * (F("product_new_sale_motrum"))
+                    #     ),
+                    #     2,
+                    # ),
                 )
             )
             product_new_value_id = product_new.values_list("id_product_cart")
@@ -528,15 +546,33 @@ def create_specification(request):
                 ProductCart.objects.filter(cart=cart, product=None)
                 .exclude(id__in=product_new_value_id)
                 .annotate(
-                    price_motrum=Round(
-                        F("product_new_price")
-                        - (
-                            F("product_new_price")
-                            / 100
-                            * (F("product_new_sale_motrum"))
+                    price_motrum=Case(
+                        When(
+                            product_new_sale_motrum=None,
+                            then=("product_new_price"),
                         ),
-                        2,
-                    ),
+                        When(
+                            product_new_sale_motrum__isnull=False,
+                            then=Round(
+                                F("product_new_price")
+                                - (
+                                    F("product_new_price")
+                                    / 100
+                                    * (F("product_new_sale_motrum"))
+                                ),
+                                2,
+                            ),
+                        ),
+                    ),                    
+                    # price_motrum=Round(
+                    #     F("product_new_price")
+                    #     - (
+                    #         F("product_new_price")
+                    #         / 100
+                    #         * (F("product_new_sale_motrum"))
+                    #     ),
+                    #     2,
+                    # ),
                 )
             )
             update_spesif = True
@@ -592,15 +628,33 @@ def create_specification(request):
                 product_new = ProductCart.objects.filter(
                     cart=cart, product=None
                 ).annotate(
-                    price_motrum=Round(
-                        F("product_new_price")
-                        - (
-                            F("product_new_price")
-                            / 100
-                            * (F("product_new_sale_motrum"))
+                    price_motrum=Case(
+                        When(
+                            product_new_sale_motrum=None,
+                            then=("product_new_price"),
                         ),
-                        2,
+                        When(
+                            product_new_sale_motrum__isnull=False,
+                            then=Round(
+                                F("product_new_price")
+                                - (
+                                    F("product_new_price")
+                                    / 100
+                                    * (F("product_new_sale_motrum"))
+                                ),
+                                2,
+                            ),
+                        ),
                     ),
+                    # price_motrum=Round(
+                    #     F("product_new_price")
+                    #     - (
+                    #         F("product_new_price")
+                    #         / 100
+                    #         * (F("product_new_sale_motrum"))
+                    #     ),
+                    #     2,
+                    # ),
                 )
                 product_new_more = None
                 update_spesif = False

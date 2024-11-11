@@ -242,7 +242,7 @@
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-
+                                
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
                                      class="price_motrum">
                                     {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
@@ -399,7 +399,7 @@
                                 
                                 <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
                                      class="price_motrum">
-                                    {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
+                                    {% if item.price_motrum == 0 or item.price_motrum == None  %}
                                         0
                                     {% else %}
                                         {{ item.price_motrum }}

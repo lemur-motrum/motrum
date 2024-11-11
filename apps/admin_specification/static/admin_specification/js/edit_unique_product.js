@@ -159,7 +159,7 @@ window.addEventListener("DOMContentLoaded", () => {
             vendor: supplierSelect.getAttribute("value"),
           };
           const data = JSON.stringify(objData);
-          fetch(`/api/v1/cart/${productId}/upd-product-new`, {
+          fetch(`/api/v1/cart/${productId}/upd-product-new/`, {
             method: "POST",
             body: data,
             headers: {

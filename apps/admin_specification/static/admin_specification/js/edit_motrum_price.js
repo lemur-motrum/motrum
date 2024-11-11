@@ -12,10 +12,7 @@ export function editMotrumPrice(container) {
 
       if (priceInput) {
         priceInput.value = getCurrentPrice(priceInput.value);
-        // getDigitsNumber(
-        //   productTotalPrice,
-        //   +inputPrice.value * +quantity.value
-        // );
+
         if (specification.querySelector(".motrum_sale_persent")) {
           getDigitsNumber(motrumPriceContainer);
           motrumPriceContainer.setAttribute(
@@ -27,7 +24,6 @@ export function editMotrumPrice(container) {
         }
         priceInput.addEventListener("input", function () {
           if (specification.querySelector(".motrum_sale_persent")) {
-            getDigitsNumber(motrumPriceContainer);
             motrumPriceContainer.setAttribute(
               "price-motrum",
               (+priceInput.value / 100) * (100 - +motrumSalePersent)

@@ -686,11 +686,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
 
-            data = request.data
+            data_get = request.data
             # post_update = data["post_update"]
             post_update = False
             print("post_update", post_update)
-            for obj in data:
+            for obj in data_get:
 
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
@@ -715,26 +715,26 @@ class OrderViewSet(viewsets.ModelViewSet):
             print("bill_name2", bill_name)
             if order.requisites.contract:
                 is_req = True
-
             else:
                 is_req = False
 
             order_pdf = order.create_bill(
                 request, is_req, order, bill_name, post_update
             )
+            
             print(order_pdf)
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
                 print(data)
                 # сохранение товара в окт нового
-                # for obj in data:
-                #     print(obj["id"])
-                #     prod = ProductSpecification.objects.filter(id=obj["id"])
-                    
-                #     if prod.product_new_article:
-                #         print(prod)
-                #         save_new_product_okt(prod)
+                for obj in data_get:
+                    print(obj)
+                    prod = ProductSpecification.objects.get(id=obj["id"])
+                    print(prod.product_new_article)
+                    if prod.product_new_article != None:
+                        print(prod)
+                        save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
             else:

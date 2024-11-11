@@ -1297,7 +1297,7 @@ def loc_mem_cache(key, function, timeout=300):
 def save_new_product_okt(product_new):
     from apps.product.models import Product,Price,Lot,Stock
     from apps.supplier.models import Supplier, Vendor
-
+    print(product_new)
     if product_new.vendor:
         vendor = product_new.vendor
         supplier = vendor.supplier
@@ -1306,11 +1306,11 @@ def save_new_product_okt(product_new):
         supplier = Supplier.objects.get("drugoe")
 
     try:
-        product = Product.objects.get(vendor=vendor, article_supplier=product_new.article_supplier)
+        product = Product.objects.get(vendor=vendor, article_supplier=product_new.product_new_article)
         
     except Product.DoesNotExist:
         product = Product(
-            supplier=supplier, vendor=vendor, article_supplier=product_new.article_supplier,name=product_new.name,in_view_website=False
+            supplier=supplier, vendor=vendor, article_supplier=product_new.product_new_article,name=product_new.product_new,in_view_website=False,autosave_tag = False
         )
         product.save()
         update_change_reason(product, "Автоматическое")

@@ -204,12 +204,12 @@
                         <div class="item_value">
                             <label>
                                 <span>Срок поставки</span>
-                                {% comment %} {% if bill_upd %}
+                             {% if bill_upd %}
                                 <input placeholder="Укажите срок поставки" class="invoice-data-input" type="text" value="{{item.text_delivery}}">
                                 {% else %}
                                 <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
-                                {% endif %} {% endcomment %}
-                                <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                {% endif %} 
+                                {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
                                
                             </label>
                         </div>

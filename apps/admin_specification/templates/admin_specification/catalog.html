@@ -184,7 +184,7 @@
                 {% for item in product_new %}
                     {% if update_spesif %}
                         <!--когда аптейдейт-->
-                        <div class="item_container"
+                        <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -277,6 +277,62 @@
                                     <span>Срок поставки</span>
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
+                            </div>
+                            <div class="change_item_container_wrapper">
+                                <div class="change_item_container">
+                                    <div class="change_item_container_value">
+                                        <label class="name_label">
+                                            <input placeholder="Имя товара" class="new_item_container_name_input" type="text" value={{ item.product_new }} />
+                                            <div class="error"></div>
+                                        </label>
+                                        <label class="article_label">
+                                            <input placeholder="Артикул товара" class="new_item_container_article_input" type="text" value={{ item.product_new_article }} />
+                                            <div class="error"></div>
+                                        </label>
+                                        <label class="vedor_label">
+                                            <select class="vendor_select" value="">
+                                                <option value="" disabled selected>Выберете производителя</option>
+                                                {% for vendor_item in vendor %}
+                                                    <option value="{{ vendor_item.id }}"
+                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}>
+                                                        {{ vendor_item.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <label class="price_once_label">
+                                            <input placeholder="цена за 1шт" type="text" class="price_input" value={{ item.product_new_price }} />
+                                            <div class="error"></div>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <label class="quantity_label">
+                                            <input placeholder="Количество" type="text" class="quantity_input" value={{ item.quantity }} />
+                                            <div class="error"></div>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <div class="change_item_container_value_total_cost">0</div>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <div class="change_item_container_value_motrum_price">0</div>
+                                        <div>
+                                            Cкидка
+                                            <input class="persent_sale"
+                                                   type="text"
+                                                   placeholder="%"
+                                                   value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
+                                            %
+                                        </div>
+                                    </div>
+                                    <div class="add_change_item_in_cart_container">
+                                        <button class="add_new_item_in_cart">Изменить</button>
+                                        <div class="add_new_item_in_cart_container_error"></div>
+                                    </div>
+                                    <div class="close-btn">+</div>
+                                </div>
                             </div>
                         </div>
                     {% else %}
@@ -437,7 +493,7 @@
                 <!--товары без записи в бд при аплдете добавленные новые которых еще нет в спецификации-->
                 {% for item in product_new_more %}
                     {% if update_spesif %}
-                        <div class="item_container"
+                        <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
@@ -530,6 +586,62 @@
                                     <span>Срок поставки</span>
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                 </label>
+                            </div>
+                            <div class="change_item_container_wrapper">
+                                <div class="change_item_container">
+                                    <div class="change_item_container_value">
+                                        <label class="name_label">
+                                            <input placeholder="Имя товара" class="new_item_container_name_input" type="text" value={{ item.product_new }} />
+                                            <div class="error"></div>
+                                        </label>
+                                        <label class="article_label">
+                                            <input placeholder="Артикул товара" class="new_item_container_article_input" type="text" value={{ item.product_new_article }} />
+                                            <div class="error"></div>
+                                        </label>
+                                        <label class="vedor_label">
+                                            <select class="vendor_select" value="">
+                                                <option value="" disabled selected>Выберете производителя</option>
+                                                {% for vendor_item in vendor %}
+                                                    <option value="{{ vendor_item.id }}"
+                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}>
+                                                        {{ vendor_item.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <label class="price_once_label">
+                                            <input placeholder="цена за 1шт" type="text" class="price_input" value={{ item.product_new_price }} />
+                                            <div class="error"></div>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <label class="quantity_label">
+                                            <input placeholder="Количество" type="text" class="quantity_input" value={{ item.quantity }} />
+                                            <div class="error"></div>
+                                        </label>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <div class="change_item_container_value_total_cost">0</div>
+                                    </div>
+                                    <div class="change_item_container_value">
+                                        <div class="change_item_container_value_motrum_price">0</div>
+                                        <div>
+                                            Cкидка
+                                            <input class="persent_sale"
+                                                   type="text"
+                                                   placeholder="%"
+                                                   value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
+                                            %
+                                        </div>
+                                    </div>
+                                    <div class="add_change_item_in_cart_container">
+                                        <button class="add_new_item_in_cart">Изменить</button>
+                                        <div class="add_new_item_in_cart_container_error"></div>
+                                    </div>
+                                    <div class="close-btn">+</div>
+                                </div>
                             </div>
                         </div>
                     {% endif %}

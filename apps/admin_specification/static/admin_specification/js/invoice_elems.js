@@ -50,11 +50,10 @@ export function invoiceItem(container) {
           };
 
           for (let i in data) {
-            if (data[i]["text_delivery"]) {
-              if (data[i]["date_delivery"]) {
-                data[i]["text_delivery"] = createTextDateDelivery(data[i]);
-              }
+            if (data[i]["date_delivery"]) {
+              data[i]["text_delivery"] = createTextDateDelivery(data[i]);
             }
+
             addAjaxCatalogItem(data[i]);
           }
         });

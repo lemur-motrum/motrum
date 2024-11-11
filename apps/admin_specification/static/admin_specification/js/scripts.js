@@ -521,19 +521,26 @@ window.addEventListener("DOMContentLoaded", () => {
             vendor: vendor ? vendor : null,
           };
           console.log(product);
-          if (inputPrice) {
-            if (!inputPrice.value) {
-              validate = false;
+          if (
+            inputPrice
+              ? !inputPrice.value || !deliveryDate.value
+              : !deliveryDate.value
+          ) {
+            validate = false;
+            if (!deliveryDate.value) {
+              deliveryDate.style.border = "1px solid red";
+              deliveryDate.style.borderRadius = "10px";
+            }
+            if (inputPrice && !inputPrice.value) {
               inputPrice.style.border = "1px solid red";
               inputPrice.style.borderRadius = "10px";
             }
           } else {
-            if (!deliveryDate.value) {
-              deliveryDate.style.border = "1px solid red";
+            if (deliveryDate) {
+              deliveryDate.style.border = "1px solid black";
             }
-
-            if (inputPrice && !inputPrice.value) {
-              inputPrice.style.border = "1px solid red";
+            if (inputPrice) {
+              inputPrice.style.border = "1px solid black";
             }
             products.push(product);
           }

@@ -23,10 +23,9 @@ export function changePayment(container, errorFn) {
       if (specifications.length > 0) {
         clearInterval(interval);
         specifications.forEach((specification) => {
-          const link = specification.querySelector("a");
-          const specificationId =
-            specification.getAttribute("specification-id");
-          const cartId = link.getAttribute("cartId");
+          const link = item.querySelector("a");
+          const specificationId = link.getAttribute("data-cart-id");
+          const cartId = item.getAttribute("order-id");
 
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"

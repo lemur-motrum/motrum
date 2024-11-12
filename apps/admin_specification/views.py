@@ -451,7 +451,7 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
-   
+
     # если есть корзина
     if cart != None:
 
@@ -468,13 +468,11 @@ def create_specification(request):
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
-
             client_req_all = AccountRequisites.objects.filter(requisites=requisites)
-
+            
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -493,7 +491,7 @@ def create_specification(request):
                     product=None,
                 )
                 .annotate(
-                    id_product_spesif = F("id"),
+                    id_product_spesif=F("id"),
                     id_product_cart=product_cart.filter(
                         product_new=OuterRef("product_new")
                     ).values(
@@ -739,7 +737,7 @@ def create_specification(request):
         if order.bill_sum_paid != 0:
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
-    
+
     vendor = Vendor.objects.all()
     context = {
         "title": title,

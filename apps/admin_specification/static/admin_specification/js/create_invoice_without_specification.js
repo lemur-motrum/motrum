@@ -68,6 +68,28 @@ window.addEventListener("DOMContentLoaded", () => {
         );
         const vendor = specificationItem.getAttribute("data-vendor");
 
+        const createTextDateDelivery = () => {
+          const orderData = new Date(deliveryDate.value);
+          const today = new Date();
+          const delta = orderData.getTime() - today.getTime();
+          const dayDifference = +Math.floor(delta / 1000 / 60 / 60 / 24);
+          const resultDays = +Math.ceil(dayDifference / 7);
+
+          function num_word(value, words) {
+            value = Math.abs(value) % 100;
+            var num = value % 10;
+            if (value > 10 && value < 20) return words[2];
+            if (num > 1 && num < 5) return words[1];
+            if (num == 1) return words[0];
+            return words[2];
+          }
+          return `${resultDays} ${num_word(resultDays, [
+            "неделя",
+            "недели",
+            "недель",
+          ])}`;
+        };
+
         const product = {
           product_id: +itemID,
           quantity: +itemQuantity,
@@ -78,7 +100,7 @@ window.addEventListener("DOMContentLoaded", () => {
             : null,
           extra_discount: extraDiscount.value,
           date_delivery: deliveryDate.value,
-          text_delivery: null,
+          text_delivery: createTextDateDelivery(),
           product_name_new: nameProductNew,
           product_new_article: nameProductNew,
           comment: commentItem ? commentItem : null,

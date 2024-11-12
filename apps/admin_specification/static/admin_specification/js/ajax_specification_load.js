@@ -106,8 +106,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 ".uptate-specification-button"
               );
 
-              const cartId = item.getAttribute("specification-id");
-              const specificationId = item.getAttribute("data-cart-id");
+              const specificationId = item.getAttribute("specification-id");
+              const cartId = item.getAttribute("data-cart-id");
 
               if (changeButton) {
                 uptadeOrChanegeSpecification(
@@ -312,9 +312,9 @@ export function uptadeOrChanegeSpecification(
     button.disabled = true;
     button.textContent = "";
     button.innerHTML = "<div class='small_loader'></div>";
-    document.cookie = `cart=${idCart};path=/`;
-    document.cookie = `specificationId=${idSpecification};path=/`;
-    const endpoint = `/api/v1/order/${idCart}/update-order-admin/`;
+    document.cookie = `cart=${idSpecification};path=/`;
+    document.cookie = `specificationId=${idCart};path=/`;
+    const endpoint = `/api/v1/order/${idSpecification}/update-order-admin/`;
 
     fetch(endpoint, {
       method: "UPDATE",

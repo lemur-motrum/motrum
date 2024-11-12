@@ -457,6 +457,7 @@ window.addEventListener("DOMContentLoaded", () => {
       function getResult() {
         let sum = 0;
         const allElems = spetificationTable.querySelectorAll(".total_cost");
+
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }

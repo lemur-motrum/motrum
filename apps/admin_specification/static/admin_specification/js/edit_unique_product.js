@@ -108,9 +108,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (salePersentInput.value == ".") {
           salePersentInput.target.value = "";
         }
-        // if (salePersentInput.value == "0") {
-        //   salePersentInput.target.value = "";
-        // }
         changePercent();
       });
 

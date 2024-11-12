@@ -633,18 +633,30 @@ window.addEventListener("DOMContentLoaded", () => {
         let countQuantity = +quantity.value;
         const productID = item.getAttribute("data-id");
         const productCartID = item.getAttribute("data-product-id-cart");
+
+        if (discountInput) {
+          discountInput.value = getCurrentPrice(discountInput.value);
+        }
         if (inputPrice) {
           getDigitsNumber(
             productTotalPrice,
             +inputPrice.value * +quantity.value
           );
         }
-        if (discountInput) {
-          discountInput.value = getCurrentPrice(discountInput.value);
-        }
         if (itemPriceOnce) {
-          const currnetPriceOne = +itemPriceOnce.textContent.replace(",", ".");
-          getDigitsNumber(itemPriceOnce, currnetPriceOne);
+          if (discountInput) {
+            getDigitsNumber(
+              itemPriceOnce,
+              (+getCurrentPrice(productPrice) * (100 - discountInput.value)) /
+                100
+            );
+          } else {
+            const currnetPriceOne = +itemPriceOnce.textContent.replace(
+              ",",
+              "."
+            );
+            getDigitsNumber(itemPriceOnce, currnetPriceOne);
+          }
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
           getResult();
@@ -892,7 +904,14 @@ window.addEventListener("DOMContentLoaded", () => {
                   (100 - +discountInput.value)) /
                 100;
             getDigitsNumber(totalPrice, price);
-            item.setAttribute("data-price", inputPrice.value);
+            if (!discountInput.value) {
+              item.setAttribute("data-price", inputPrice.value);
+            } else {
+              item.setAttribute(
+                "data-price",
+                (+inputPrice.value * 100) / (100 - +discountInput.value)
+              );
+            }
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
             }

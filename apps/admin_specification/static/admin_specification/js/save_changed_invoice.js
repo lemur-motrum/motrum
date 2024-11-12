@@ -143,6 +143,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           const data = JSON.stringify(dataObj);
+
           fetch("/api/v1/order/add-order-admin/", {
             method: "POST",
             body: data,
@@ -150,17 +151,85 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
               "Content-Type": "application/json",
             },
-          }).then((response) => {
-            if (response.status == 200 || response.status == 201) {
-              localStorage.removeItem("specificationValues");
-              deleteCookie("key", "/", window.location.hostname);
-              deleteCookie("specificationId", "/", window.location.hostname);
-              deleteCookie("cart", "/", window.location.hostname);
-              window.location.href = "/admin_specification/all_specifications/";
-            } else {
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status == 200 || response.status == 201) {
+                localStorage.removeItem("specificationValues");
+                deleteCookie("key", "/", window.location.hostname);
+                deleteCookie("specificationId", "/", window.location.hostname);
+                deleteCookie("cart", "/", window.location.hostname);
+                return response.json();
+              } else {
+                throw new Error("Ошибка");
+              }
+            })
+            .then((response1) => {
+              fetch(
+                `/api/v1/order/${response1.specification}/get-specification-product/`,
+                {
+                  method: "GET",
+                  headers: {
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json",
+                  },
+                }
+              )
+                .then((response) => {
+                  if (response.status == 200 || response.status == 201) {
+                    return response.json();
+                  } else {
+                    throw new Error("Ошибка");
+                  }
+                })
+                .then((response2) => {
+                  const dataObj = response2.map((elem) => {
+                    const createTextDateDelivery = () => {
+                      const orderData = new Date(elem["date_delivery"]);
+                      const today = new Date();
+                      const delta = orderData.getTime() - today.getTime();
+                      const dayDifference = +Math.floor(
+                        delta / 1000 / 60 / 60 / 24
+                      );
+                      const resultDays = +Math.ceil(dayDifference / 7);
+
+                      function num_word(value, words) {
+                        value = Math.abs(value) % 100;
+                        var num = value % 10;
+                        if (value > 10 && value < 20) return words[2];
+                        if (num > 1 && num < 5) return words[1];
+                        if (num == 1) return words[0];
+                        return words[2];
+                      }
+                      return `${resultDays} ${num_word(resultDays, [
+                        "неделя",
+                        "недели",
+                        "недель",
+                      ])}`;
+                    };
+                    return {
+                      id: elem["id"],
+                      text_delivery: createTextDateDelivery(),
+                    };
+                  });
+                  const data = JSON.stringify(dataObj);
+                  fetch(
+                    `/api/v1/order/${response1.specification}/create-bill-admin/`,
+                    {
+                      method: "UPDATE",
+                      body: data,
+                      headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  ).then((response3) => {
+                    if (response3.status == 200 || response2.status == 201) {
+                      window.location.href =
+                        "/admin_specification/all_specifications/";
+                    }
+                  });
+                });
+            });
         }
       };
     }

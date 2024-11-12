@@ -68,7 +68,6 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     from reportlab.platypus import SimpleDocTemplate, Paragraph
     from reportlab.platypus import ListFlowable, ListItem
     try:
-        print("crete_pdf_specification")
         directory = check_spesc_directory_exist(
             "specification",
         )
@@ -90,7 +89,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             date_title = datetime.datetime.today().strftime("%d/%m/%Y")
             date_data = datetime.date.today().isoformat()
             date = transform_date(date_data)
-        print(date_title)
+
         name_specification = f"specification_{specification_name}.pdf"
         fileName = os.path.join(directory, name_specification)
         story = []
@@ -290,8 +289,6 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             final_final_price_total,
         )
         story.append(table)
-        print(date_ship)
-
         date_ship = transform_date(str(date_ship))
         
         i_dop_info = 1

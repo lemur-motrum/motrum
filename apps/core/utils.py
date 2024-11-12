@@ -967,7 +967,6 @@ def save_specification(
                 and product_item["price_exclusive"] != ""
                 and product_item["price_exclusive"] != 0
             ):
-                print("price_exclusive",product_item["product_new_article"])
                 price_one_before = product_item["price_one"]
                 price_one = product_item["price_one"]
 
@@ -1011,8 +1010,7 @@ def save_specification(
                         price_one_motrum = price.price_motrum
 
             else:
-               
-                print("price_exclusive2",product_item["product_new_article"])
+
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
 
@@ -1093,6 +1091,10 @@ def save_specification(
                     date_delivery, "%Y-%m-%d"
                 )
                 product_spes.date_delivery = date_delivery
+                
+            text_delivery = product_item["text_delivery"]
+            if text_delivery != "" and text_delivery != None:
+                product_spes.text_delivery = text_delivery   
 
             product_spes.save()
 
@@ -1100,8 +1102,6 @@ def save_specification(
 
         # продукты без записи в окт
         else:
-            
-            print("продукты без записи в окт")
             price_one = product_item["price_one"]
             price_one_original_new = price_one
             if product_item["sale_motrum"]:
@@ -1177,8 +1177,11 @@ def save_specification(
                     date_delivery, "%Y-%m-%d"
                 )
                 product_spes.date_delivery = date_delivery
-            product_spes.save()
-            print(product_spes)
+            text_delivery = product_item["text_delivery"]
+            if text_delivery != "" and text_delivery != None:
+                product_spes.text_delivery = text_delivery   
+
+            product_spes.save()    
 
             total_amount = total_amount + price_all
 
@@ -1311,7 +1314,7 @@ def loc_mem_cache(key, function, timeout=300):
 def save_new_product_okt(product_new):
     from apps.product.models import Product,Price,Lot,Stock
     from apps.supplier.models import Supplier, Vendor
-    print(product_new)
+   
     if product_new.vendor:
         vendor = product_new.vendor
         supplier = vendor.supplier
@@ -1342,7 +1345,7 @@ def save_new_product_okt(product_new):
             lot=lot_auto,
         )
         product_stock.save()
-        print(product)
+       
         
         
         

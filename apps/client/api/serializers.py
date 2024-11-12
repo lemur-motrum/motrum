@@ -191,7 +191,7 @@ class OrderOktSerializer(serializers.ModelSerializer):
         else:
             return None  
     def get_is_superuser(self, obj): 
-        print(self.context)   
+   
         user = self.context.get("request").user
         if user.is_superuser:
             return True

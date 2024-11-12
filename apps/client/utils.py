@@ -45,7 +45,7 @@ from reportlab.platypus import ListFlowable, ListItem
 def crete_pdf_bill(
     specification, request, is_contract, order, bill_name, type_delivery, post_update
 ):
-    print(post_update)
+    
     try:
         directory = check_spesc_directory_exist(
             "bill",
@@ -178,8 +178,6 @@ def crete_pdf_bill(
 
         # name_image_logo = f"{MEDIA_ROOT}/documents/logo.png"
         name_image_logo = request.build_absolute_uri(document_info.logo.url)
-        print(name_image_logo)
-
         logo_motrum = Paragraph(
             f'<img width="155" height="35"  src="{name_image_logo}" />',
             normal_style,
@@ -487,7 +485,6 @@ def crete_pdf_bill(
         else:
             info_payment = ""
 
-        print(info_payment)
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
@@ -757,7 +754,6 @@ def crete_pdf_bill(
             name_bill,
         )
 
-        print(file_path)
         return (file_path, bill_name)
 
     except Exception as e:

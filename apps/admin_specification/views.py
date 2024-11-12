@@ -450,9 +450,8 @@ def specifications(request, cat, gr):
 # рендер страницы корзины
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-    # bill_upd = request.GET.get('bill-upd', None)
-
     cart = request.COOKIES.get("cart")
+
     # если есть корзина
     if cart != None:
 
@@ -469,13 +468,11 @@ def create_specification(request):
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
-
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites = order.requisites
-
             client_req_all = AccountRequisites.objects.filter(requisites=requisites)
-
+            
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -494,6 +491,7 @@ def create_specification(request):
                     product=None,
                 )
                 .annotate(
+                    id_product_spesif=F("id"),
                     id_product_cart=product_cart.filter(
                         product_new=OuterRef("product_new")
                     ).values(
@@ -529,15 +527,6 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                    # price_motrum=Round(
-                    #     F("product_new_price")
-                    #     - (
-                    #         F("product_new_price")
-                    #         / 100
-                    #         * (F("product_new_sale_motrum"))
-                    #     ),
-                    #     2,
-                    # ),
                 )
             )
             product_new_value_id = product_new.values_list("id_product_cart")
@@ -565,15 +554,6 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                    # price_motrum=Round(
-                    #     F("product_new_price")
-                    #     - (
-                    #         F("product_new_price")
-                    #         / 100
-                    #         * (F("product_new_sale_motrum"))
-                    #     ),
-                    #     2,
-                    # ),
                 )
             )
             update_spesif = True
@@ -757,8 +737,8 @@ def create_specification(request):
         if order.bill_sum_paid != 0:
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
-    
-    vendor = Vendor.objects.all()
+
+    vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
         "product": product,

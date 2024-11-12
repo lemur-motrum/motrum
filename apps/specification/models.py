@@ -27,6 +27,7 @@ class Specification(models.Model):
     
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
+    date_create_pdf = models.DateField(verbose_name="Дата создания пдф", null=True, default=None)
     date_stop = models.DateField(verbose_name="Дата окончания")
     tag_stop = models.BooleanField("Действительно", default=True)
     total_amount = models.FloatField("Сумма спецификации", null=True, default=None)

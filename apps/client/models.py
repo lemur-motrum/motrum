@@ -261,8 +261,6 @@ STATUS_ORDER_INT = (
     (7, "COMPLETED"),
 )
 
-import random
-
 
 class Order(models.Model):
     client = models.ForeignKey(
@@ -355,7 +353,8 @@ class Order(models.Model):
         null=True,
     )
     bill_name = models.PositiveIntegerField(
-        "Номер сделки битрикс",default=None,
+        "Номер сделки битрикс",
+        default=None,
         null=True,
     )
     # bill_name = models.PositiveIntegerField(
@@ -401,7 +400,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self, request, is_contract, order,bill_name,post_update):
+    def create_bill(self, request, is_contract, order, bill_name, post_update):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
@@ -420,7 +419,7 @@ class Order(models.Model):
             order,
             bill_name,
             self.type_delivery,
-            post_update
+            post_update,
         )
         if pdf[0]:
             self.bill_file = pdf[0]

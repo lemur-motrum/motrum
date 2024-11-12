@@ -45,8 +45,9 @@ from reportlab.platypus import ListFlowable, ListItem
 def crete_pdf_bill(
     specification, request, is_contract, order, bill_name, type_delivery, post_update
 ):
-    print(post_update)
+    
     try:
+        print("crete_pdf_bill")
         directory = check_spesc_directory_exist(
             "bill",
         )
@@ -54,7 +55,7 @@ def crete_pdf_bill(
         name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
         if specifications.admin_creator.middle_name:
             name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
-
+        
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         )
@@ -65,7 +66,7 @@ def crete_pdf_bill(
         client_info = order.requisites
         client_info_req = order.account_requisites
         if post_update:
-            date_now = order.bill_date_start
+            date_now = order.bill_date_start.isoformat()
             date_now = transform_date(date_now)
         else:
             date_now = transform_date(datetime.date.today().isoformat())
@@ -178,8 +179,6 @@ def crete_pdf_bill(
 
         # name_image_logo = f"{MEDIA_ROOT}/documents/logo.png"
         name_image_logo = request.build_absolute_uri(document_info.logo.url)
-        print(name_image_logo)
-
         logo_motrum = Paragraph(
             f'<img width="155" height="35"  src="{name_image_logo}" />',
             normal_style,
@@ -363,6 +362,7 @@ def crete_pdf_bill(
         total_product_quantity = 0
         for product in product_specification:
             i += 1
+            print(i,product)
             try:
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
@@ -487,7 +487,6 @@ def crete_pdf_bill(
         else:
             info_payment = ""
 
-        print(info_payment)
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
@@ -757,7 +756,6 @@ def crete_pdf_bill(
             name_bill,
         )
 
-        print(file_path)
         return (file_path, bill_name)
 
     except Exception as e:

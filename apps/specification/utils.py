@@ -79,12 +79,16 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
-        date_data = datetime.date.today().isoformat()
-        date = transform_date(date_data)
-        date_title = datetime.datetime.today().strftime("%d/%m/%Y")
-        #  motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
-        # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
         
+
+        if post_update:
+            date_title = specifications.date_create_pdf.strftime("%d/%m/%Y")
+            date_data = specifications.date_create_pdf.isoformat()
+            date = transform_date(date_data)
+        else:
+            date_title = datetime.datetime.today().strftime("%d/%m/%Y")
+            date_data = datetime.date.today().isoformat()
+            date = transform_date(date_data)
 
         name_specification = f"specification_{specification_name}.pdf"
         fileName = os.path.join(directory, name_specification)
@@ -285,8 +289,6 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             final_final_price_total,
         )
         story.append(table)
-        print(date_ship)
-
         date_ship = transform_date(str(date_ship))
         
         i_dop_info = 1

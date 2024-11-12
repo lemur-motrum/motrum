@@ -456,8 +456,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         id_specification = data["id_specification"]
         type_save = data["type_save"]
 
-        # post_update = data["post_update"]
-        post_update = False
+        post_update = data["post_update"]
+
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -477,6 +477,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if type_save == "specification":
             last_spec_name = Specification.objects.filter(number__isnull=False).last()
+ 
             if last_spec_name:
                 last_spec_name = last_spec_name.number
                 specification_name = int(last_spec_name) + 1
@@ -490,9 +491,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
 
-        print("specification_name", specification_name)
+
         try:
-            print("specification_name", specification_name)
+         
             with transaction.atomic():
 
                 specification = save_specification(
@@ -509,6 +510,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
 
         except Exception as e:
+            print(e)
             #   добавление в козину удаленного товара при сохранении спецификации из апдейта
             if data["id_specification"] != None:
                 product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
@@ -568,17 +570,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     cart.is_active = True
                     cart.save()
-                    print("ok", serializer.data)
+            
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
-                    print("error", serializer.errors)
+
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
 
             except Order.DoesNotExist:
 
-                print(98989898)
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
                     cart.is_active = True
@@ -587,7 +588,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
-                    print(serializer.errors)
+
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
@@ -656,7 +657,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             "id_bitrix": id_bitrix,
             "type_delivery": type_delivery,
         }
-        print(data_order)
+
         try:
             order = Order.objects.get(cart=cart)
             serializer = self.serializer_class(order, data=data_order, many=False)
@@ -684,18 +685,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
-
             data_get = request.data
-            # post_update = data["post_update"]
-            post_update = False
-            print("post_update", post_update)
-            for obj in data_get:
-
+            post_update = data_get["post_update"]
+            products = data_get["products"]
+            order = Order.objects.get(specification_id=pk)
+            
+            for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
-
-            order = Order.objects.get(specification_id=pk)
 
             if post_update:
                 bill_name = order.bill_name
@@ -705,13 +703,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                     .order_by("bill_name")
                     .last()
                 )
-                print("bill_name1", bill_name)
                 if bill_name:
                     bill_name = int(bill_name.bill_name) + 1
-
                 else:
                     bill_name = 1
-            print("bill_name2", bill_name)
+
             if order.requisites.contract:
                 is_req = True
             else:
@@ -720,19 +716,19 @@ class OrderViewSet(viewsets.ModelViewSet):
             order_pdf = order.create_bill(
                 request, is_req, order, bill_name, post_update
             )
-            
-            print(order_pdf)
+
             if order_pdf:
+                print(444)
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
                 print(data)
                 # сохранение товара в окт нового
-                for obj in data_get:
-                    print(obj)
+                for obj in products:
+
                     prod = ProductSpecification.objects.get(id=obj["id"])
-                    print(prod.product_new_article)
+
                     if prod.product_new_article != None:
-                        print(prod)
+     
                         save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
@@ -746,7 +742,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Сохранение счета админам окт ошибка {e}"
             e = error_alert(error, location, info)
 
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)
 
     # изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")
@@ -1169,10 +1165,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
-        print(q_object)
+
 
         page_count = Order.objects.filter(q_object).count()
-        print(page_count)
+
         queryset_next = Order.objects.filter(q_object)[
             count + count_last : count + count_last + 1
         ].exists()
@@ -1242,7 +1238,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         # data = request.data
         # bill_sum_paid = data["bill_sum_paid"]
         # order.bill_sum_paid = float(bill_sum_paid)
-        print(order)
+
         sum_prepay = order.bill_sum - (
             order.bill_sum / 100 * order.requisites.postpay_persent
         )
@@ -1269,7 +1265,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def date_completed(self, request, pk=None, *args, **kwargs):
         data = request.data
         date_completed_data = data["date_completed"]
-        print(date_completed_data)
+
         date_completed = datetime.datetime.strptime(
             date_completed_data, "%Y-%m-%d"
         ).date()
@@ -1313,11 +1309,11 @@ class EmailsViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"manager-email")
     def send_manager_email(self, request, *args, **kwargs):
         data = request.data
-        print(data)
+
         client_id = data["client_id"]
         text_message = data["text_message"]
         client = Client.objects.get(id=int(client_id))
-        print(client_id)
+
         title_email = "Сообщение с сайта от клиента"
         text_email = f"Клиент: {client.contact_name}Телефон: {client.phone}Сообщение{text_message}"
         to_manager = client.manager.email

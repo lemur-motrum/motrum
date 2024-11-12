@@ -3,6 +3,7 @@
              specification-id="{{ specification_list.id }}"
              order-id="{{ id }}"
              status="{{ status }}"
+             superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
                 <div class="table_item_value first_table_value">
                         <a data-cart-id="{{ specification_list.cart }}"

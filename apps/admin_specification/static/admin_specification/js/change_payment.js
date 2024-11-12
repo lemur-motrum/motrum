@@ -5,6 +5,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { completeOrder } from "../js/complete_order.js";
+import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 
 export function changePayment(container, errorFn) {
   if (container) {
@@ -22,8 +23,16 @@ export function changePayment(container, errorFn) {
       if (specifications.length > 0) {
         clearInterval(interval);
         specifications.forEach((specification) => {
+          const link = specification.querySelector("a");
+          const specificationId =
+            specification.getAttribute("specification-id");
+          const cartId = link.getAttribute("cartId");
+
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
+          );
+          const invoiceSpecificationContainer = specification.querySelector(
+            ".invoice-table_item_value"
           );
           if (paymentLink) {
             getDigitsNumber(
@@ -168,6 +177,18 @@ export function changePayment(container, errorFn) {
                             specification.querySelector(".first_table_value");
                           completeBtnContainer.innerHTML +=
                             '<button class="complete_order_button">Завершить заказ</button>';
+                        }
+                        invoiceSpecificationContainer.innerHTML +=
+                          "<br><button class='change-bill-button'>Изменить счет</button><br>";
+                        if (
+                          specification.querySelector(".change-bill-button")
+                        ) {
+                          uptadeOrChanegeSpecification(
+                            specification.querySelector(".change-bill-button"),
+                            "bill-upd=True",
+                            specificationId,
+                            cartId
+                          );
                         }
                         completeOrder(container);
                       });

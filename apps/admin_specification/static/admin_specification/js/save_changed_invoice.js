@@ -78,6 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
             ? productSpecificationId
             : null,
           extra_discount: extraDiscount.value,
+          date_delivery: null,
           text_delivery: deliveryDate.value,
           product_name_new: nameProductNew,
           product_new_article: nameProductNew,

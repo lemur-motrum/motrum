@@ -118,7 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         }
         if (validate == false) {
-          const error = buttonContainer.querySelector(".error");
+          const error = buttonContainer.querySelector(".save_upd_bill-error");
           showErrorValidation("Заполните все поля", error);
         }
 

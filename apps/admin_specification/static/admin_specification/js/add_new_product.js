@@ -265,6 +265,9 @@ function addNewProductLogic(container) {
       changeTotalCost(quantityInput, priceOnceInput);
       let validate = true;
       addNewItemInCartButton.onclick = () => {
+        addNewItemInCartButton.textContent = "";
+        addNewItemInCartButton.innerHTML = "<div class='small_loader'></div>";
+        addNewItemInCartButton.disabled = true;
         function inputValidate(input) {
           if (!input.value) {
             validate = false;
@@ -289,6 +292,11 @@ function addNewProductLogic(container) {
           vendorSelect.getAttribute("value")
         ) {
           validate = true;
+        }
+        if (validate == false) {
+          addNewItemInCartButton.disabled = false;
+          addNewItemInCartButton.innerHTML = "";
+          addNewItemInCartButton.textContent = "Добавить товар";
         }
 
         if (validate === true) {
@@ -329,11 +337,17 @@ function addNewProductLogic(container) {
             })
             .then((response) => {
               if (response.status == "product_in_okt") {
+                addNewItemInCartButton.disabled = false;
+                addNewItemInCartButton.innerHTML = "";
+                addNewItemInCartButton.textContent = "Добавить товар";
                 showErrorValidation(
                   "Данный товар уже есть в ОКТ",
                   newProductError
                 );
               } else if (response.status == "product_in_cart") {
+                addNewItemInCartButton.disabled = false;
+                addNewItemInCartButton.innerHTML = "";
+                addNewItemInCartButton.textContent = "Добавить товар";
                 showErrorValidation(
                   "Товар с таким артикулом уже есть в корзине",
                   newProductError

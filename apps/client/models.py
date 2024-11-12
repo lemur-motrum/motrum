@@ -353,7 +353,7 @@ class Order(models.Model):
         null=True,
     )
     bill_name = models.PositiveIntegerField(
-        "Номер сделки битрикс",
+        "Номер счета",
         default=None,
         null=True,
     )

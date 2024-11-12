@@ -107,10 +107,10 @@
                         {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
                                 {% if is_superuser == true %}
-                                <br>
-                                <button class="change-bill-button">Изменить счет</button>
-                                <br>
-                        {% endif %}
+                                        <br>
+                                        <button class="change-bill-button">Изменить счет</button>
+                                        <br>
+                                {% endif %}
                         {% elif status == "CANCELED" and bill_file %}
                                 <span class="table_item_value_span">Не оплачено в срок. Для выставления счета необходимо актуализировать спецификацию и выставить новый счет </span>
                         {% elif status == "CANCELED" %}

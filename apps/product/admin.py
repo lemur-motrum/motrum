@@ -342,6 +342,7 @@ class PriceInline(admin.TabularInline):
                     "rub_price_supplier",
                     "price_motrum",
                     "sale",
+                    "in_auto_sale",
                 ]
             },
         )
@@ -622,7 +623,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "article_supplier",
                         "additional_article_supplier",
                     ),
-                    ("check_to_order", "promote"),
+                    ("check_to_order", "promote","add_in_nomenclature","in_view_website"),
                     "name",
                     "description",
                     ("supplier", "vendor"),

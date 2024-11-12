@@ -25,6 +25,9 @@ export function changePayment(container, errorFn) {
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
+          const invoiceSpecificationContainer = specification.querySelector(
+            ".invoice-table_item_value"
+          );
           if (paymentLink) {
             getDigitsNumber(
               paymentLink,
@@ -170,6 +173,8 @@ export function changePayment(container, errorFn) {
                             '<button class="complete_order_button">Завершить заказ</button>';
                         }
                         completeOrder(container);
+                        invoiceSpecificationContainer.innerHTML +=
+                          "<button>уой</button>";
                       });
                   }
                 };

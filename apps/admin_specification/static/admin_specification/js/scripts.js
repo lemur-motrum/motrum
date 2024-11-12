@@ -491,6 +491,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const nameProductNew = item.getAttribute("data-product-name-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
+
           const extraDiscount = item.querySelector(".discount-input");
           const productSpecificationId = item.getAttribute(
             "data-product-specification-id"
@@ -647,14 +648,11 @@ window.addEventListener("DOMContentLoaded", () => {
           if (discountInput) {
             getDigitsNumber(
               itemPriceOnce,
-              (+getCurrentPrice(productPrice) * (100 - discountInput.value)) /
+              (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
                 100
             );
           } else {
-            const currnetPriceOne = +itemPriceOnce.textContent.replace(
-              ",",
-              "."
-            );
+            const currnetPriceOne = +getCurrentPrice(itemPriceOnce.textContent);
             getDigitsNumber(itemPriceOnce, currnetPriceOne);
           }
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
@@ -905,7 +903,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 100;
             getDigitsNumber(totalPrice, price);
             if (!discountInput.value) {
-              item.setAttribute("data-price", inputPrice.value);
+              item.setAttribute("data-price", +inputPrice.value);
             } else {
               item.setAttribute(
                 "data-price",
@@ -920,16 +918,23 @@ window.addEventListener("DOMContentLoaded", () => {
             updateProduct();
             getResult();
           });
+          const curentPrice =
+            (+getCurrentPrice(item.getAttribute("data-price")) *
+              (100 - +discountInput.value)) /
+            100;
 
+          inputPrice.value = curentPrice.toFixed(2);
+          const allPrice = curentPrice * countQuantity;
+          getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
               discountInput.value == 100;
             }
-
             const curentPrice =
-              (+item.getAttribute("data-price") *
+              (+getCurrentPrice(item.getAttribute("data-price")) *
                 (100 - +discountInput.value)) /
               100;
+
             inputPrice.value = curentPrice.toFixed(2);
             const allPrice = curentPrice * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice.toFixed(2));

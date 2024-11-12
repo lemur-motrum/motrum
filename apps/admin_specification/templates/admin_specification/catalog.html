@@ -38,8 +38,8 @@
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
                          data-id="{{ item.id_product_cart }}"
-                         data-price="{% if bill_upd %} {{ item.old_price_one_full }} {% else %} {{ item.price.rub_price_supplier }} {% endif %}"
-                         data-price-exclusive=" {% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %} 1 {% else %} 0 {% endif %} "
+                         data-price="{% if bill_upd %}{{ item.old_price_one_full }}{% else %}{{ item.price.rub_price_supplier }}{% endif %}"
+                         data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
@@ -98,7 +98,7 @@
                                        type="text"
                                        placeholder="Введите цену по запросу"
                                        maxlength="10" 
-                                       value="{% if bill_upd %}{{ item.old_price_one_full }}{% else %}{% endif %}"/>
+                                       value="{% if bill_upd %}{{ item.old_price_one }}{% else %}{% endif %}"/>
                                 <label for="price-input-extra">
                                     <br>
                                     {% if item.old_price_one_full %}{{ item.old_date }} - {{ item.old_price_one_full }}{% endif %}

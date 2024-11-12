@@ -16,7 +16,8 @@ export function editMotrumPrice(container) {
           );
           motrumPriceContainer.setAttribute(
             "price-motrum",
-            (+priceInput.value / 100) * (100 - +motrumSalePersent)
+            (+getCurrentPrice(specification.getAttribute("data-price")) / 100) *
+              (100 - +motrumSalePersent)
           );
           priceInput.addEventListener("input", function () {
             if (specification.querySelector(".motrum_sale_persent")) {

@@ -11,10 +11,10 @@
     <div order={{ order }} class="specification-container">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
-        {% if order.bill_sum and bill_upd == None %}
+        {% if order.bill_sum and bill_upd == False %}
             <div class="">
                 <h4 style=" color: red; ">
-                    ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! ПРИ СОХРАНЕНИИ ИЗМЕНЕНИЙ В ЗАКАЗЕ БУДЕТ НЕОБХОДИМО СОЗДАТЬ СЧЕТ ЗАНОВО
+                    ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! При редактировании заказа текущие документы становятся не действительны
                 </h4>
             </div>
         {% endif %}

@@ -901,7 +901,8 @@ def save_specification(
         if post_update:
             pass
         else:
-
+            if specification_name:
+                specification.number = specification_name
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True

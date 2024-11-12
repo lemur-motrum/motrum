@@ -142,8 +142,11 @@ export function invoiceItem(container) {
                           };
                           dataArray.push(dataObject);
                         });
-
-                        const data = JSON.stringify(dataArray);
+                        const dataObj = {
+                          products: dataArray,
+                          post_update: false,
+                        };
+                        const data = JSON.stringify(dataObj);
 
                         fetch(
                           `/api/v1/order/${specificationId}/create-bill-admin/`,

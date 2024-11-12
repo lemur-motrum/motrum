@@ -70,9 +70,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const dateDeliveryAll = cartWrapper.querySelector(
           'textarea[name="delivery-date-all-input-name-all"]'
         ).value;
-        const deliveryRequsits = document
-          .querySelector("[name='delevery-requisit']")
-          .getAttribute("value");
+        const deliveryRequsits = document.querySelector(
+          "[name='delevery-requisit']"
+        );
 
         saveWithoutSpecificationButton.disabled = true;
         saveWithoutSpecificationButton.textContent = "";
@@ -87,7 +87,9 @@ window.addEventListener("DOMContentLoaded", () => {
           date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
           motrum_requisites: motrumRequsits ? +motrumRequsits : null,
           client_requisites: clientRequsits ? +clientRequsits : null,
-          type_delivery: deliveryRequsits ? deliveryRequsits : null,
+          type_delivery: deliveryRequsits
+            ? deliveryRequsits.getAttribute("value")
+            : null,
           type_save: "bill",
           post_update: false,
         };

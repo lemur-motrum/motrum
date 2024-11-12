@@ -131,9 +131,15 @@ window.addEventListener("DOMContentLoaded", () => {
       changeTotalCost(quantityInput, priceOneInput);
 
       changeButton.onclick = () => {
+        changeButton.textContent = "";
+        changeButton.innerHTML = "<div class='small_loader'></div>";
+        changeButton.disabled = true;
         function validate(input) {
           if (!input.value) {
             input.style.border = "1px solid red";
+            changeButton.disabled = false;
+            changeButton.innerHTML = "";
+            changeButton.textContent = "Изменить";
           }
         }
         validate(nameInput);

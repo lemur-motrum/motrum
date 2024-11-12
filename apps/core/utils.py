@@ -1192,7 +1192,7 @@ def save_specification(
 
     specification.save()
     # specification.file != None
-    if specification_name and post_update == False:
+    if specification_name:
         pdf = crete_pdf_specification(
             specification.id,
             requisites,
@@ -1208,8 +1208,8 @@ def save_specification(
         if pdf:
             specification.file = pdf
             specification._change_reason = "Ручное"
-            if specification.date_create_pdf == None:
-                specification.date_create_pdf = datetime.datetime.today()
+            if post_update == False:
+                    specification.date_create_pdf = datetime.datetime.today()
             specification.save()
 
     return specification

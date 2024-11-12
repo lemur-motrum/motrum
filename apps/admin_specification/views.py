@@ -732,11 +732,12 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
+    
     bill_upd = False
     if order:
         if order.bill_sum_paid != 0:
             bill_upd = True
-            title = f"Заказ № {order.id} - изменение счета "
+            title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
 
     vendor = Vendor.objects.all().order_by("name")
     context = {

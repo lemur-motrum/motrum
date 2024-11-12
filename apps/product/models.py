@@ -127,7 +127,7 @@ class Product(models.Model):
     promote = models.BooleanField("Продвижение на главной в слайдере", default=False)
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
-    add_in_nomenclature = models.BooleanField("Загрузка из номенклатуры", default=False)
+    add_in_nomenclature = models.BooleanField("Загружен из номенклатуры", default=False)
     # in_auto_sale = models.BooleanField("Разрешить применять скидки автоматичсеки", default=False)
     in_view_website =  models.BooleanField("Видимость на сайте", default=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
@@ -396,7 +396,7 @@ class Price(models.Model):
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
     price_supplier = models.FloatField(
         "Цена в каталоге поставщика в валюте каталога",
-        # blank=True,
+        blank=True,
         null=True,
         default=0,
     )

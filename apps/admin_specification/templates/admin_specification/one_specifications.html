@@ -17,13 +17,13 @@
             {% if specification.id_bitrix %}<div class="">Номер сделки битрикс: {{ specification.id_bitrix }}</div>{% endif %}
             {% if admin_king %}
                 <div class="">
-                    Менеджер:{{ specification.admin_creator.last_name }} {{ specification.admin_creator.first_name }} {{ specification.admin_creator.middle_name }}
+                    Менеджер: {{ specification.admin_creator.last_name }} {{ specification.admin_creator.first_name }} {{ specification.admin_creator.middle_name }}
                 </div>
             {% endif %}
             <br>
             <div class="">Дата создания:{{ order.date_order }}</div>
-            {% if order.date_update %}<div class="">Последнее обновление:{{ order.date_update }}</div>{% endif %}
-            {% if order.date_completed %}<div class="">Дата завершения:{{ order.date_completed }}</div>{% endif %}
+            {% if order.date_update %}<div class="">Последнее обновление: {{ order.date_update }}</div>{% endif %}
+            {% if order.date_completed %}<div class="">Дата завершения: {{ order.date_completed }}</div>{% endif %}
             <div class="">
                 {% if order.status  == "PROCESSING" %}
                     Спецификация действительна:

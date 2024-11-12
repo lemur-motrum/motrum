@@ -172,7 +172,7 @@
                                    name="price-input-discount"
                                    placeholder="% скидки"
                                    maxlength="6"
-                                   value="{% if item.old_extra_discount %} {{ item.old_extra_discount }} {% endif %}" />
+                                   value="{% if bill_upd %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% endif %}"/>
                             <label for="price-input-discount">
                                 %
                                 <br>

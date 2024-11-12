@@ -6,10 +6,10 @@
              specification-elem="specification-item">
                 <div class="table_item_value first_table_value">
                         <a data-cart-id="{{ specification_list.cart }}"
-                           href="{{ specification_list.url }}">№ {{ specification_list.id }} просмотр</a>
+                           href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
                         <br>
-                        {% if specification_list.file %} <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию  {{ specification_list.pdf.url }}</a>{% endif %}
+                        {% if specification_list.file %} <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию №{{ specification_list.id }}  {{ specification_list.pdf.url }} </a>{% endif %}
                        
                         {% if id_bitrix %}
                                 <br>

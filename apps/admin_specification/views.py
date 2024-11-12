@@ -757,7 +757,7 @@ def create_specification(request):
         if order.bill_sum_paid != 0:
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
-
+    
     vendor = Vendor.objects.all()
     context = {
         "title": title,

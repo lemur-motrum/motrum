@@ -130,7 +130,6 @@
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
-                        
                             {% if bill_upd %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
                             {% else %}
@@ -280,7 +279,7 @@
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value=" {% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>
@@ -441,7 +440,7 @@
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value=" {% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>
@@ -605,7 +604,7 @@
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value=" {% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>

@@ -53,7 +53,6 @@ export function invoiceItem(container) {
             if (data[i]["date_delivery"]) {
               data[i]["text_delivery"] = createTextDateDelivery(data[i]);
             }
-
             addAjaxCatalogItem(data[i]);
           }
         });

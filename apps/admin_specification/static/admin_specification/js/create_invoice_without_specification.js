@@ -131,6 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
           client_requisites: +clientRequsits,
           type_delivery: deliveryRequsits,
           type_save: "bill",
+          post_update: false,
         };
 
         const data = JSON.stringify(dataObj);
@@ -154,7 +155,6 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           })
           .then((response1) => {
-            console.log("response1", response1);
             fetch(
               `/api/v1/order/${response1.specification}/get-specification-product/`,
               {

@@ -47,6 +47,7 @@ def crete_pdf_bill(
 ):
     
     try:
+        print("crete_pdf_bill")
         directory = check_spesc_directory_exist(
             "bill",
         )
@@ -54,7 +55,7 @@ def crete_pdf_bill(
         name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
         if specifications.admin_creator.middle_name:
             name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
-
+        
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         )
@@ -361,6 +362,7 @@ def crete_pdf_bill(
         total_product_quantity = 0
         for product in product_specification:
             i += 1
+            print(i,product)
             try:
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts

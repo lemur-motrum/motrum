@@ -917,6 +917,8 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             updateProduct();
             getResult();
+            const allPrice = inputPrice.value * countQuantity;
+            getDigitsNumber(productTotalPrice, allPrice);
           });
           const curentPrice =
             (+getCurrentPrice(item.getAttribute("data-price")) *
@@ -924,7 +926,7 @@ window.addEventListener("DOMContentLoaded", () => {
             100;
 
           inputPrice.value = curentPrice.toFixed(2);
-          const allPrice = curentPrice * countQuantity;
+          const allPrice = inputPrice.value * countQuantity;
           getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
@@ -936,8 +938,8 @@ window.addEventListener("DOMContentLoaded", () => {
               100;
 
             inputPrice.value = curentPrice.toFixed(2);
-            const allPrice = curentPrice * countQuantity;
-            getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
+            const allPrice = inputPrice.value * countQuantity;
+            getDigitsNumber(productTotalPrice, allPrice);
             getResult();
           };
           if (saveButton) {

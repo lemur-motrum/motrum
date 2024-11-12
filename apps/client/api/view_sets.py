@@ -724,13 +724,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 data = {"pdf": pdf, "name_bill": order.bill_name}
                 print(data)
                 # сохранение товара в окт нового
-                for obj in data_get:
+                # for obj in data_get:
 
-                    prod = ProductSpecification.objects.get(id=obj["id"])
+                #     prod = ProductSpecification.objects.get(id=obj["id"])
 
-                    if prod.product_new_article != None:
+                #     if prod.product_new_article != None:
      
-                        save_new_product_okt(prod)
+                #         save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
             else:

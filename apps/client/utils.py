@@ -65,7 +65,7 @@ def crete_pdf_bill(
         client_info = order.requisites
         client_info_req = order.account_requisites
         if post_update:
-            date_now = order.bill_date_start
+            date_now = order.bill_date_start.isoformat()
             date_now = transform_date(date_now)
         else:
             date_now = transform_date(datetime.date.today().isoformat())

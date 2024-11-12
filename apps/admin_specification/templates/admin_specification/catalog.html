@@ -11,7 +11,6 @@
     <div order={{ order }} class="specification-container">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
-        {{ bill_upd }}
         {% if order.bill_sum and bill_upd == None %}
             <div class="">
                 <h4 style=" color: red; ">
@@ -184,6 +183,7 @@
                 {% for item in product_new %}
                     {% if update_spesif %}
                         <!--когда аптейдейт-->
+                        
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
                              data-product-pk=""

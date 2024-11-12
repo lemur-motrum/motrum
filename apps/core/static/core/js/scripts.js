@@ -16,6 +16,7 @@ import "/static/admin_specification/js/ajax_specification_load.js";
 import "/static/admin_specification/js/sorting_by_status_order.js";
 import "/static/admin_specification/js/complete_order.js";
 import "/static/admin_specification/js/save_without_spec.js";
+import "/static/admin_specification/js/save_changed_invoice.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
 import "/static/core/js/scripts/motrum-in-numbers-script.js";

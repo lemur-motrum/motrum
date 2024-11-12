@@ -90,35 +90,19 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% comment %} {% if bill_upd %}
-                            <!--если изменение счета главным админом-->
-                            <div class="item_value">
-                                <input class="price-input" name="price-input-extra" type="text" placeholder="Введите цену по запросу" maxlength="10" value = {{ item.old_price_one }} />
-                                <label for="price-input-extra">
-                                    <br>
-                                    {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
-                                </label>
-                            </div>
-                            <div class="item_value input_quantity quantity">
-                                <div class="input-container">
-                                    <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
-                                </div>
-                            </div>
-                            <div class="item_value input_totla-cost total_cost price">0</div>
-                    {% else %} {% endcomment %}
-                        <!--обычное сохранение-->
-                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
+
+                        {% if   item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
                             <div class="item_value">
                                 <input class="price-input"
                                        name="price-input-extra"
                                        type="text"
                                        placeholder="Введите цену по запросу"
-                                       maxlength="10" />
+                                       maxlength="10" 
+                                       value="{% if bill_upd %}{{ item.old_price_one_full }}{% else %}{% endif %}"/>
                                 <label for="price-input-extra">
                                     <br>
-                                    {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
+                                    {% if item.old_price_one_full %}{{ item.old_date }} - {{ item.old_price_one_full }}{% endif %}
+                                    {% comment %} {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %} {% endcomment %}
                                 </label>
                             </div>
                             <div class="item_value input_quantity quantity">
@@ -279,7 +263,7 @@
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if bill_upd %}{% if item.extra_discount %}{{ item.extra_discount }}{% endif %}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>

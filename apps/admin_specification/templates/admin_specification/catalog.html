@@ -100,8 +100,7 @@
                                        value="{% if bill_upd and item.id_product_spesif  %}{{ item.old_price_one }}{% else %}{% endif %}"/>
                                 <label for="price-input-extra">
                                     <br>
-                                    {% if item.old_price_one_full %}{{ item.old_date }} - {{ item.old_price_one_full }}{% endif %}
-                                    {% comment %} {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %} {% endcomment %}
+                                    {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
                                 </label>
                             </div>
                             <div class="item_value input_quantity quantity">

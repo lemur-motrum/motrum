@@ -738,7 +738,7 @@ def create_specification(request):
             bill_upd = True
             title = f"Заказ № {order.id} - изменение счета "
 
-    vendor = Vendor.objects.all()
+    vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
         "product": product,

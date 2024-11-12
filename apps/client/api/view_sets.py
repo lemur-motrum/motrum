@@ -707,7 +707,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     bill_name = int(bill_name.bill_name) + 1
                 else:
                     bill_name = 1
-            print(2222)
+
             if order.requisites.contract:
                 is_req = True
             else:
@@ -716,21 +716,20 @@ class OrderViewSet(viewsets.ModelViewSet):
             order_pdf = order.create_bill(
                 request, is_req, order, bill_name, post_update
             )
-            print(3333)
-            print("order_pdf",order_pdf)
+
             if order_pdf:
                 print(444)
                 pdf = request.build_absolute_uri(order.bill_file.url)
                 data = {"pdf": pdf, "name_bill": order.bill_name}
                 print(data)
                 # сохранение товара в окт нового
-                # for obj in data_get:
+                for obj in products:
 
-                #     prod = ProductSpecification.objects.get(id=obj["id"])
+                    prod = ProductSpecification.objects.get(id=obj["id"])
 
-                #     if prod.product_new_article != None:
+                    if prod.product_new_article != None:
      
-                #         save_new_product_okt(prod)
+                        save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
             else:

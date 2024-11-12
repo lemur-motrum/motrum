@@ -1087,7 +1087,7 @@ def save_specification(
 
             # запись дат
             date_delivery = product_item["date_delivery"]
-            if date_delivery != "":
+            if date_delivery != "" and date_delivery != None:
                 product_spes.date_delivery = datetime.datetime.strptime(
                     date_delivery, "%Y-%m-%d"
                 )
@@ -1174,7 +1174,7 @@ def save_specification(
             product_spes.vendor_id = int(product_item["vendor"])
             print(product_spes.vendor_id)
             date_delivery = product_item["date_delivery"]
-            if date_delivery != "":
+            if date_delivery != "" and date_delivery != None:
                 product_spes.date_delivery = datetime.datetime.strptime(
                     date_delivery, "%Y-%m-%d"
                 )
@@ -1193,7 +1193,7 @@ def save_specification(
     specification._change_reason = "Ручное"
 
     specification.save()
-    if specification_name:
+    if specification_name and post_update == False:
         pdf = crete_pdf_specification(
             specification.id,
             requisites,

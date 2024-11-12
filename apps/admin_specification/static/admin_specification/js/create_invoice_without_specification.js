@@ -196,7 +196,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 }
               })
               .then((response2) => {
-                const dataObj = response2.map((elem) => {
+                const dataArr = response2.map((elem) => {
                   const createTextDateDelivery = () => {
                     const orderData = new Date(elem["date_delivery"]);
                     const today = new Date();
@@ -225,6 +225,10 @@ window.addEventListener("DOMContentLoaded", () => {
                     text_delivery: createTextDateDelivery(),
                   };
                 });
+                const dataObj = {
+                  products: dataArr,
+                  post_update: false,
+                };
                 const data = JSON.stringify(dataObj);
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,

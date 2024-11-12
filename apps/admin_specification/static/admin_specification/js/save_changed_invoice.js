@@ -182,12 +182,13 @@ window.addEventListener("DOMContentLoaded", () => {
                   }
                 })
                 .then((response2) => {
-                  const dataObj = response2.map((elem) => {
+                  const dataArr = response2.map((elem) => {
                     return {
                       id: elem["id"],
                       text_delivery: elem["text_delivery"],
                     };
                   });
+                  const dataObj = { products: dataArr, post_update: true };
                   const data = JSON.stringify(dataObj);
                   fetch(
                     `/api/v1/order/${response1.specification}/create-bill-admin/`,

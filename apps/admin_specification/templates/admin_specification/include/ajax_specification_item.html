@@ -9,7 +9,7 @@
                            href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
                         <br>
-                        {% if specification_list.file %} <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию №{{ specification_list.id }}  {{ specification_list.pdf.url }} </a>{% endif %}
+                        {% if specification_list.file %} <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию №{{ specification_list.number }}  {{ specification_list.pdf.url }} </a>{% endif %}
                        
                         {% if id_bitrix %}
                                 <br>

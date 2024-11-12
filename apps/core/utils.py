@@ -1169,10 +1169,7 @@ def save_specification(
             product_spes.product_new_article = product_item["product_new_article"]
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
-      
-            print(int(product_item["vendor"]))
             product_spes.vendor_id = int(product_item["vendor"])
-            print(product_spes.vendor_id)
             date_delivery = product_item["date_delivery"]
             if date_delivery != "" and date_delivery != None:
                 product_spes.date_delivery = datetime.datetime.strptime(
@@ -1193,6 +1190,7 @@ def save_specification(
     specification._change_reason = "Ручное"
 
     specification.save()
+    # specification.file != None
     if specification_name and post_update == False:
         pdf = crete_pdf_specification(
             specification.id,
@@ -1209,7 +1207,8 @@ def save_specification(
         if pdf:
             specification.file = pdf
             specification._change_reason = "Ручное"
-
+            if specification.date_create_pdf == None:
+                specification.date_create_pdf = datetime.datetime.today()
             specification.save()
 
     return specification

@@ -81,10 +81,10 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         motrum_info_req = motrum_requisites
         date_data = datetime.date.today().isoformat()
         date = transform_date(date_data)
-        date_title = datetime.datetime.today().strftime("%d/%m/%Y")
-        #  motrum_info = BaseInfo.objects.prefetch_related(Prefetch("baseinfoaccountrequisites_set")).all().first()
-        # motrum_info_req = motrum_info.baseinfoaccountrequisites_set.first()
-        
+        if post_update:
+            date_title = specifications.date_create_pdf 
+        else:
+            date_title = datetime.datetime.today().strftime("%d/%m/%Y")
 
         name_specification = f"specification_{specification_name}.pdf"
         fileName = os.path.join(directory, name_specification)

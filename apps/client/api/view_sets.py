@@ -456,8 +456,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         id_specification = data["id_specification"]
         type_save = data["type_save"]
 
-        # post_update = data["post_update"]
-        post_update = False
+        post_update = data["post_update"]
+        print(post_update)
+        print(type(post_update))
 
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
@@ -477,6 +478,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if type_save == "specification":
             last_spec_name = Specification.objects.filter(number__isnull=False).last()
+            print(last_spec_name)
             if last_spec_name:
                 last_spec_name = last_spec_name.number
                 specification_name = int(last_spec_name) + 1

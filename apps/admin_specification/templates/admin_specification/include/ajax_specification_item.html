@@ -1,12 +1,13 @@
 {% if specification_list.id %}
         <div class="specification_item table_item {% if status == "CANCELED" and bill_file %}bill_notpayment {% elif status == "COMPLETED" %} completed_order {% endif %} {% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
              specification-id="{{ specification_list.id }}"
+             data-cart-id="{{ specification_list.cart }}" 
              order-id="{{ id }}"
              status="{{ status }}"
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
                 <div class="table_item_value first_table_value">
-                        <a data-cart-id="{{ specification_list.cart }}"
+                        <a 
                            href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
                         <br>

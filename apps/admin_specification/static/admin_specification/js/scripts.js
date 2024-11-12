@@ -1002,6 +1002,7 @@ window.addEventListener("DOMContentLoaded", () => {
             .catch((error) => console.error(error));
         };
       });
+      getResult();
       if (saveButton) {
         saveButton.onclick = () => saveSpecification(productItems);
       }

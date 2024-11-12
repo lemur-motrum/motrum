@@ -1,18 +1,18 @@
 {% if specification_list.id %}
         <div class="specification_item table_item {% if status == "CANCELED" and bill_file %}bill_notpayment {% elif status == "COMPLETED" %} completed_order {% endif %} {% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
              specification-id="{{ specification_list.id }}"
-             data-cart-id="{{ specification_list.cart }}" 
+             data-cart-id="{{ specification_list.cart }}"
              order-id="{{ id }}"
              status="{{ status }}"
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
                 <div class="table_item_value first_table_value">
-                        <a 
-                           href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
+                        <a href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
                         <br>
-                        {% if specification_list.file %} <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию №{{ specification_list.number }}  {{ specification_list.pdf.url }} </a>{% endif %}
-                       
+                        {% if specification_list.file %}
+                                <a target="_blank"  href="{{ specification_list.file }}">Скачать спецификацию №{{ specification_list.number }}  {{ specification_list.pdf.url }} </a>
+                        {% endif %}
                         {% if id_bitrix %}
                                 <br>
                                 <span class="table_item_value_span">Номер bitrix: {{ id_bitrix }}</span>
@@ -27,7 +27,6 @@
                                 <br>
                                 <span class="table_item_value_span">Дата завершения: {{ date_completed }}</span>
                         {% endif %}
-                        
                         {% if is_superuser == true %}
                                 <br>
                                 <span class="table_item_value_span">Создал: {{ specification_list.admin_creator_name }}</span>
@@ -102,7 +101,6 @@
                         {% elif status == "PAYMENT" and bill_sum_paid == 0 %}
                                 <button data-specication-id-to-bill="{{ specification }}"
                                         class="create-bill-button">Обновить счет</button>
-
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
                         {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>

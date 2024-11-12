@@ -105,9 +105,9 @@ window.addEventListener("DOMContentLoaded", () => {
               const updateButton = item.querySelector(
                 ".uptate-specification-button"
               );
-              const link = item.querySelector("a");
-              const specificationId = link.getAttribute("data-cart-id");
-              const cartId = item.getAttribute("order-id");
+
+              const cartId = item.getAttribute("specification-id");
+              const specificationId = item.getAttribute("data-cart-id");
 
               if (changeButton) {
                 uptadeOrChanegeSpecification(

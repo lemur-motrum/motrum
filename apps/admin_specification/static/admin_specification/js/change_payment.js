@@ -5,6 +5,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { completeOrder } from "../js/complete_order.js";
+import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 
 export function changePayment(container, errorFn) {
   if (container) {
@@ -22,6 +23,11 @@ export function changePayment(container, errorFn) {
       if (specifications.length > 0) {
         clearInterval(interval);
         specifications.forEach((specification) => {
+          const link = specification.querySelector("a");
+          const specificationId =
+            specification.getAttribute("specification-id");
+          const cartId = link.getAttribute("cartId");
+
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
@@ -172,9 +178,19 @@ export function changePayment(container, errorFn) {
                           completeBtnContainer.innerHTML +=
                             '<button class="complete_order_button">Завершить заказ</button>';
                         }
-                        completeOrder(container);
                         invoiceSpecificationContainer.innerHTML +=
-                          "<button>уой</button>";
+                          "<br><button class='change-bill-button'>Изменить счет</button><br>";
+                        if (
+                          specification.querySelector(".change-bill-button")
+                        ) {
+                          uptadeOrChanegeSpecification(
+                            specification.querySelector(".change-bill-button"),
+                            "bill-upd=True",
+                            specificationId,
+                            cartId
+                          );
+                        }
+                        completeOrder(container);
                       });
                   }
                 };

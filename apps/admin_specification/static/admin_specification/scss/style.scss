@@ -672,7 +672,7 @@ h1 {
             // top: 50%;
             // right: 1rem;
             // transform: translateY(-50%);
-            margin-top:1rem;
+            margin-top: 1rem;
             .add_new_item_in_cart {
               cursor: pointer;
               width: 9rem;
@@ -2235,6 +2235,64 @@ h1 {
             flex-direction: column;
             gap: 0.5rem;
             .create-bill-button {
+              width: 100%;
+              font-size: 0.75rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              &:disabled,
+              &[disabled] {
+                cursor: auto;
+                background-color: lightgray;
+                border-color: lightgray;
+                border: 1px solid gray;
+              }
+              .small_loader {
+                display: block;
+                overflow: hidden;
+                font-size: 10px;
+                text-indent: -9999em;
+                width: 1rem;
+                height: 1rem;
+                border-radius: 50%;
+                background: #65abf8;
+                margin: 0 auto;
+                background: linear-gradient(
+                  to right,
+                  #bdbdbd 10%,
+                  rgba(101, 171, 248, 0) 42%
+                );
+                position: relative;
+                -webkit-animation: load3 1.4s infinite linear;
+                animation: load3 1.4s infinite linear;
+                transform: translateZ(0);
+                &:before {
+                  width: 50%;
+                  height: 50%;
+                  background: #bdbdbd;
+                  border-radius: 100% 0 0 0;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  content: "";
+                }
+                &:after {
+                  background-color: lightgray;
+                  width: 75%;
+                  height: 75%;
+                  border-radius: 50%;
+                  content: "";
+                  margin: auto;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  bottom: 0;
+                  right: 0;
+                }
+              }
+            }
+            .change-bill-button {
               width: 100%;
               font-size: 0.75rem;
               display: flex;

@@ -3,6 +3,8 @@ import { invoiceItem } from "../js/invoice_elems.js";
 import { changePayment } from "../js/change_payment.js";
 import { completeOrder } from "../js/complete_order.js";
 
+let csrfToken = getCookie("csrftoken");
+
 window.addEventListener("DOMContentLoaded", () => {
   const specificationWrapper = document.querySelector(
     '[specification-elem="wrapper"]'
@@ -56,8 +58,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    let csrfToken = getCookie("csrftoken");
-
     function loadItems(
       pagintaionFn = false,
       cleanArray = false,
@@ -109,43 +109,29 @@ window.addEventListener("DOMContentLoaded", () => {
               const specificationId = item.getAttribute("specification-id");
               const cartId = +link.dataset.cartId;
 
-              function uptadeOrChanegeSpecification(button, getParams) {
-                button.onclick = () => {
-                  button.setAttribute("text-content", button.textContent);
-                  button.disabled = true;
-                  button.textContent = "";
-                  button.innerHTML = "<div class='small_loader'></div>";
-                  document.cookie = `cart=${cartId};path=/`;
-                  document.cookie = `specificationId=${specificationId};path=/`;
-                  const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
-
-                  fetch(endpoint, {
-                    method: "UPDATE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "X-CSRFToken": csrfToken,
-                    },
-                  })
-                    .then((response) => response.json())
-                    .then((response) => {
-                      window.location.href = `/admin_specification/current_specification/?${getParams}`;
-                      setTimeout(() => {
-                        button.disabled = false;
-                        button.innerHTML = "";
-                        button.textContent =
-                          button.getAttribute("text-content");
-                      }, 3000);
-                    });
-                };
-              }
               if (changeButton) {
-                uptadeOrChanegeSpecification(changeButton, null);
+                uptadeOrChanegeSpecification(
+                  changeButton,
+                  null,
+                  specificationId,
+                  cartId
+                );
               }
               if (updateButton) {
-                uptadeOrChanegeSpecification(updateButton, null);
+                uptadeOrChanegeSpecification(
+                  updateButton,
+                  null,
+                  specificationId,
+                  cartId
+                );
               }
               if (changeBillButton) {
-                uptadeOrChanegeSpecification(changeBillButton, "bill-upd=True");
+                uptadeOrChanegeSpecification(
+                  changeBillButton,
+                  "bill-upd=True",
+                  specificationId,
+                  cartId
+                );
               }
             });
           }
@@ -314,3 +300,37 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+export function uptadeOrChanegeSpecification(
+  button,
+  getParams,
+  idCart,
+  idSpecification
+) {
+  button.onclick = () => {
+    button.setAttribute("text-content", button.textContent);
+    button.disabled = true;
+    button.textContent = "";
+    button.innerHTML = "<div class='small_loader'></div>";
+    document.cookie = `cart=${idCart};path=/`;
+    document.cookie = `specificationId=${idSpecification};path=/`;
+    const endpoint = `/api/v1/order/${idCart}/update-order-admin/`;
+
+    fetch(endpoint, {
+      method: "UPDATE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        window.location.href = `/admin_specification/current_specification/?${getParams}`;
+        setTimeout(() => {
+          button.disabled = false;
+          button.innerHTML = "";
+          button.textContent = button.getAttribute("text-content");
+        }, 3000);
+      });
+  };
+}

@@ -947,7 +947,7 @@ window.addEventListener("DOMContentLoaded", () => {
               (100 - +discountInput.value)) /
             100;
 
-          inputPrice.value = curentPrice.toFixed(2);
+          // inputPrice.value = curentPrice.toFixed(2);
           const allPrice = inputPrice.value * countQuantity;
           getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {

@@ -514,6 +514,7 @@ window.addEventListener("DOMContentLoaded", () => {
               : null,
             extra_discount: extraDiscount.value,
             date_delivery: deliveryDate.value,
+            text_delivery: null,
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,

@@ -509,7 +509,7 @@ def create_specification(request):
                     ),
                 )
                 .annotate(
-                    price_motrum=Case(
+                price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
                             then=("product_new_price"),
@@ -709,6 +709,11 @@ def create_specification(request):
                     product=OuterRef("pk")
                 ).values(
                     "text_delivery",
+                ),
+                date_delivery=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery",
                 ),
                 is_prise=product_cart.filter(product=OuterRef("pk")).values(
                     "product__price",

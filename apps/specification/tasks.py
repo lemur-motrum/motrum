@@ -12,13 +12,19 @@ from django.db.models import Prefetch, OuterRef
 )
 def specification_date_stop(self):
     try:
-        specification = Specification.objects.filter(tag_stop=True,number__isnull=False)
-
+        now = datetime.date.today()
+        orders = Order.objects.filter(status="PROCESSING").values_list("specification")
+        print()
+        print(orders)
+        specification = Specification.objects.filter(id__in=orders, tag_stop=True,number__isnull=False)
+        print(specification)
         for specification_item in specification:
-            now = datetime.date.today()
+            print(specification_item)
             date = specification_item.date_stop
+            print(date)
 
             if now >= date:
+                print("date stopping")
                 specification_item.tag_stop = False
                 specification_item._change_reason = "Автоматическое"
                 specification_item.save()
@@ -41,7 +47,7 @@ def specification_date_stop(self):
 )
 def bill_date_stop(self):
     try:
-        bill = Order.objects.filter(bill_sum__isnull=False, bill_sum_paid=0,date_completed__isnull=True).exclude(status="CANCELED")
+        bill = Order.objects.filter(status="PAYMENT",bill_sum__isnull=False, bill_sum_paid=0,date_completed__isnull=True)
 
         for bill_item in bill:
             print(bill)

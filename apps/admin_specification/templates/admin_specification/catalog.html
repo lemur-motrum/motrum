@@ -11,7 +11,7 @@
     <div order={{ order }} class="specification-container">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
-        {% if order.bill_sum and bill_upd == False %}
+        {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}
             <div class="">
                 <h4 style=" color: red; ">
                     ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! При редактировании заказа текущие документы становятся не действительны
@@ -171,7 +171,12 @@
                                            value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
-                                {% endif %}
+                                    {% if item.date_delivery %}
+                                    <br>
+                                    <span class="">{{ item.date_delivery }}</span>
+                                    {% endif %}
+                                    
+                                    {% endif %}
                                 {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
                             </label>
                         </div>
@@ -279,7 +284,11 @@
                                                value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
-                                    {% endif %}
+                                        {% if item.date_delivery %}
+                                        <br>
+                                        <span class="">{{ item.date_delivery }}</span>
+                                        {% endif %}
+                                        {% endif %}
                                     {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
                                 </label>
                             </div>

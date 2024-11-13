@@ -295,16 +295,81 @@ h1 {
             transform: translateY(-50%);
             .add_new_item_in_cart {
               cursor: pointer;
+              width: 9rem;
+              height: 2rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 0.85rem;
+              border-radius: 0.625rem;
+              transition: 0.6s;
+              background-color: #bdbdbd;
+              border: none;
+              text-transform: uppercase;
+              &:hover {
+                background-color: #7a7878;
+              }
+              &:disabled,
+              &[disabled] {
+                cursor: auto;
+                background-color: lightgray;
+                color: gray;
+                &:hover {
+                  background-color: lightgray;
+                }
+              }
+              .small_loader {
+                display: block;
+                overflow: hidden;
+                font-size: 10px;
+                text-indent: -9999em;
+                width: 1rem;
+                height: 1rem;
+                border-radius: 50%;
+                background: #65abf8;
+                margin: 0 auto;
+                background: linear-gradient(
+                  to right,
+                  #bdbdbd 10%,
+                  rgba(101, 171, 248, 0) 42%
+                );
+                position: relative;
+                -webkit-animation: load3 1.4s infinite linear;
+                animation: load3 1.4s infinite linear;
+                transform: translateZ(0);
+                &:before {
+                  width: 50%;
+                  height: 50%;
+                  background: #bdbdbd;
+                  border-radius: 100% 0 0 0;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  content: "";
+                }
+                &:after {
+                  background-color: lightgray;
+                  width: 75%;
+                  height: 75%;
+                  border-radius: 50%;
+                  content: "";
+                  margin: auto;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  bottom: 0;
+                  right: 0;
+                }
+              }
             }
             .add_new_item_in_cart_container_error {
               color: red;
-              font-size: 1rem;
+              font-size: 0.7rem;
               position: absolute;
               top: 102%;
               left: 2%;
               transition: 0.6s;
               opacity: 0;
-              width: 90%;
               &.show {
                 opacity: 1;
               }
@@ -325,16 +390,22 @@ h1 {
                 height: 2rem;
                 padding: 0.4rem;
                 box-sizing: border-box;
+                border-radius: 0.625rem;
+                border: 0.063rem solid black;
+                font-size: 0.675rem;
                 &:focus {
                   outline: none;
                 }
               }
             }
-
             &:nth-of-type(1) {
               display: flex;
               flex-direction: column;
               gap: 0.5rem;
+              .vendor_select {
+                width: 101%;
+                font-size: 0.7rem;
+              }
             }
             &:nth-of-type(2) {
               margin-left: 10.5rem;
@@ -358,6 +429,9 @@ h1 {
               div {
                 input {
                   width: 2rem;
+                  border-radius: 0.313rem;
+                  border: 0.063rem solid black;
+                  font-size: 0.675rem;
                   &:focus {
                     outline: none;
                   }
@@ -881,6 +955,7 @@ h1 {
                 box-sizing: border-box;
                 border: 0.063rem solid black;
                 border-radius: 0.625rem;
+                font-size: 0.675rem;
                 &:focus {
                   outline: none;
                 }
@@ -919,6 +994,7 @@ h1 {
                   width: 2rem;
                   border-radius: 0.313rem;
                   border: 0.063rem solid black;
+                  font-size: 0.675rem;
                   &:focus {
                     outline: none;
                   }
@@ -1214,6 +1290,7 @@ h1 {
                 box-sizing: border-box;
                 border-radius: 0.625rem;
                 border: 0.063rem solid black;
+                font-size: 0.675rem;
                 &:focus {
                   outline: none;
                 }
@@ -1252,6 +1329,7 @@ h1 {
                   width: 2rem;
                   border-radius: 0.313rem;
                   border: 0.063rem solid black;
+                  font-size: 0.675rem;
                   &:focus {
                     outline: none;
                   }

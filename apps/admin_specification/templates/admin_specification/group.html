@@ -10,8 +10,6 @@
     <div class="all_groups-container">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
-            {% comment %} <a href="#">Главная</a>
-            <a href="{% url "admin_specification:categories" %}">Каталог</a> {% endcomment %}
             <a href={% url "admin_specification:categories" %}>Назад</a>
         </div>
         {% include "admin_specification/include/search_form.html" %}

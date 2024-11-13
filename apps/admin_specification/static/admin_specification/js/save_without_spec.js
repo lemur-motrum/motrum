@@ -11,12 +11,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const specificationId = getCookie("specificationId");
     const adminCreator = document.querySelector("[data-user-id]");
     const adminCreatorId = adminCreator.getAttribute("data-user-id");
-
     const products = [];
-
     const saveWithoutSpecificationButton =
       cartWrapper.querySelector(".save_order_button");
-
     const cartItems = cartWrapper.querySelectorAll(".item_container");
     cartItems.forEach((item) => {
       const itemQuantity = item.querySelector(".input-quantity").value;

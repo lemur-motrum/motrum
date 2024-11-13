@@ -429,10 +429,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 setCurrentPriceCataloItem(catalogItems);
               }
             });
-          // .catch((error) => console.error(error));
         };
       }
-      //
+
       setCurrentPriceCataloItem(catalogItems);
     }
   }
@@ -1175,7 +1174,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".change-specification-button");
-
       const link = item.querySelector("a");
       const specificationId = +link.textContent;
       const cartId = +link.dataset.cartId;

@@ -89,9 +89,9 @@ export function invoiceItem(container) {
             );
             const invoiceLink =
               createInvoiceContainer.querySelector(".invoice-link");
-
             const specificationId =
               specificationItem.getAttribute("specification-id");
+
             if (invoiceBtn) {
               function openInvoiceModal() {
                 invoiceBtn.setAttribute("text-content", invoiceBtn.textContent);

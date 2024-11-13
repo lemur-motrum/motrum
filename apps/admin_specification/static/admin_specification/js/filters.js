@@ -54,7 +54,6 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
           history.pushState({}, "", currentUrl);
-
           window.location.reload();
         };
       });

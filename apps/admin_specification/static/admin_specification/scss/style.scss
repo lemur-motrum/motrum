@@ -1132,7 +1132,8 @@ h1 {
           font-size: 0.813rem;
           width: 80%;
           box-sizing: border-box;
-
+          border: 0.063rem solid black;
+          border-radius: 0.313rem;
           &.discount-input {
             width: 40%;
           }
@@ -2631,8 +2632,8 @@ h1 {
       }
     }
   }
-  .color--red{
-    color:#dd5454
+  .color--red {
+    color: #dd5454;
   }
 }
 

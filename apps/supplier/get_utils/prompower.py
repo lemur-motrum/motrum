@@ -405,6 +405,8 @@ def prompower_api():
 
                         finally:
                             price_product.currency = currency
+                            
+                            price_product.extra_price = False
                             price_product.price_supplier = price_supplier
                             price_product.vat = vat_catalog
                             price_product.vat_include = vat_include
@@ -422,6 +424,7 @@ def prompower_api():
                             )
                         finally:
                             stock_prod.stock_supplier = stock_supplier
+                            stock_prod.stock_supplier_unit = stock_supplier
                             stock_prod.data_update = datetime.datetime.now()
                             stock_prod._change_reason = "Автоматическое"
                             stock_prod.save()

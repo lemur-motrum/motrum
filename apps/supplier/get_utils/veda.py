@@ -110,6 +110,7 @@ def veda_api():
                 price_product = Price(prod=article)
 
             finally:
+                price_product.extra_price = False
                 price_product.currency = currency
                 price_product.price_supplier = price_supplier
                 price_product.vat = vat_catalog
@@ -132,6 +133,7 @@ def veda_api():
                 stock_prod.transit_count = transit_count
                 stock_prod.data_transit = data_transit
                 stock_prod.stock_supplier = stock_supplier
+                stock_prod.stock_supplier_unit = stock_supplier
                 stock_prod.data_update = datetime.datetime.now()
                 stock_prod._change_reason = 'Автоматическое'
                 stock_prod.save()

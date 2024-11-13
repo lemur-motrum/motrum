@@ -19,6 +19,8 @@
   </thead>
   <tbody>
     {% for record in historical_records %}
+    
+           
       <tr>
         <td>{% get_verbose_field_name object "name" record.history_object %}</td>
         {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
@@ -55,12 +57,17 @@
                 {% endfor %}
               </ul>
             {% else %}
-              <ul>
+            {% if record.get_history_type_display == "Изменено"  %}
+             
+            {% else %}
+            <ul>
                 <li>
                   <strong>Созданно:</strong>
                   {% get_verbose_field_name object "name" record.history_object %}
                 </li>
               </ul>
+            {% endif %}
+             
             {% endif %}
           {% endblock %}
         </td>

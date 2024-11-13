@@ -527,7 +527,7 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                )
+                ).order_by("id_product_cart")
             )
             product_new_value_id = product_new.values_list("id_product_cart")
 
@@ -554,7 +554,7 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                )
+                ).order_by("id")
             )
             update_spesif = True
 
@@ -627,16 +627,8 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                    # price_motrum=Round(
-                    #     F("product_new_price")
-                    #     - (
-                    #         F("product_new_price")
-                    #         / 100
-                    #         * (F("product_new_sale_motrum"))
-                    #     ),
-                    #     2,
-                    # ),
-                )
+                ).order_by("id")
+                
                 product_new_more = None
                 update_spesif = False
                 client_req = None
@@ -719,6 +711,7 @@ def create_specification(request):
                     "product__price",
                 ),
             )
+            .order_by("id_product_cart")
         )
 
     # корзины нет

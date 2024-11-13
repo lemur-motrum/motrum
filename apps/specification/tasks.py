@@ -49,7 +49,7 @@ def bill_date_stop(self):
             date = bill_item.bill_date_stop
 
             if now >= date:
-                bill_item.tag_stop = False
+                bill_item.bill_tag_stop = False
                 bill_item._change_reason = "Автоматическое"
                 bill_item.status = "CANCELED"
                 bill_item.save()

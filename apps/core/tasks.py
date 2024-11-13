@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 from simple_history.utils import update_change_reason
 
+from apps.client.models import Order
 from apps.core.models import CalendarHoliday, Currency
 from apps.logs.utils import error_alert
 from apps.product.models import CurrencyRate, Price
@@ -61,7 +62,7 @@ def del_currency():
     three_days = datetime.timedelta(3)
     in_three_days = now - three_days
     data = in_three_days.strftime("%Y-%m-%d")
-    CurrencyRate.objects.filter(date__lt=data).delete()
+    CurrencyRate.objects.filter(date__lte=data).delete()
 
 
 # обновление валютных цен у всех продуктов
@@ -82,7 +83,8 @@ def currency_chek(current, now_rate):
     ).earliest("date")
     old_rate_count = old_rate.vunit_rate
     new_rate_count = now_rate.vunit_rate
-    difference_count = old_rate_count - new_rate_count
+    # difference_count = old_rate_count - new_rate_count
+    difference_count = new_rate_count - old_rate_count
 
     count_percent = old_rate_count / 100 * 3
     
@@ -98,8 +100,13 @@ def currency_chek(current, now_rate):
                 specification._change_reason = "Автоматическое"
                
                 specification.save()
-              
-                  
+                try:
+                    order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
+                    order.tag_stop = False
+                    order.status = "CANCELED"
+                    order._change_reason = "Автоматическое"
+                except Order.DoesNotExist:
+                     pass
         except  ProductSpecification.DoesNotExist:
             pass
 

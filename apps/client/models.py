@@ -221,26 +221,6 @@ class EmailsCallBack(models.Model):
     )
 
 
-# class ClientDiscount(models.Model):
-#     requisites = models.OneToOneField(Requisites,verbose_name="Юр.лицо", on_delete=models.CASCADE)
-#     percent = models.FloatField(
-#             "Процент скидки",
-#         )
-
-#     class Meta:
-#         verbose_name = "Скидка юрлица"
-#         verbose_name_plural = "Скидки юрлиц"
-
-#     def __str__(self):
-#         return self.name
-# PROCESSING = 1
-# PAYMENT = 2
-# IN_MOTRUM = 3
-# SHIPMENT_AUTO = 4
-# SHIPMENT_PICKUP = 5
-# CANCELED = 6
-# COMPLETED = 7
-
 STATUS_ORDER = (
     ("", "----"),
     ("PROCESSING", "В обработке"),
@@ -289,7 +269,6 @@ class Order(models.Model):
         null=True,
     )
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
-
     status = models.CharField(
         max_length=100, choices=STATUS_ORDER, default="PROCESSING"
     )
@@ -326,7 +305,6 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-
     postpay_persent = models.FloatField(
         "Процент постоплаты",
         blank=True,
@@ -357,12 +335,6 @@ class Order(models.Model):
         default=None,
         null=True,
     )
-    # bill_name = models.PositiveIntegerField(
-    #     max_length=1000,
-    #     default=None,
-    #     blank=True,
-    #     null=True,
-    # )
     bill_file = models.FileField(
         "Фаил счета",
         upload_to=get_document_bill_path,
@@ -387,7 +359,7 @@ class Order(models.Model):
     bill_sum_paid = models.FloatField(
         "Оплаченная сумма", blank=True, null=True, default=0
     )
-
+    bill_tag_stop = models.BooleanField("Действительно", default=True)
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
@@ -405,12 +377,7 @@ class Order(models.Model):
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
 
-        if post_update:
-            pass
-        else:
-            self.bill_date_start = datetime.date.today()
-            data_stop = create_time_stop_specification()
-            self.bill_date_stop = data_stop
+
 
         pdf = crete_pdf_bill(
             self.specification.id,
@@ -422,10 +389,18 @@ class Order(models.Model):
             post_update,
         )
         if pdf[0]:
+            if post_update:
+                pass
+            else:
+                self.bill_date_start = datetime.date.today()
+                data_stop = create_time_stop_specification()
+                self.bill_date_stop = data_stop          
+                self.status = "PAYMENT"
+            
             self.bill_file = pdf[0]
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf[1]
-            self.status = "PAYMENT"
+
             if self.client:
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
             self._change_reason = "Ручное"
@@ -441,20 +416,3 @@ class Order(models.Model):
                 return choice[1]
         return ""
 
-
-# class Document(models.Model):
-#     client = models.ForeignKey(
-#         Client,
-#         verbose_name="Клиент",
-#         on_delete=models.PROTECT,
-#         blank=True,
-#         null=True,
-#     )
-#     order = models.ForeignKey(
-#         Order,
-#         verbose_name="Заказ",
-#         on_delete=models.PROTECT,
-#         blank=True,
-#         null=True,
-#     )
-#     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")

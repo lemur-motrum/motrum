@@ -133,8 +133,12 @@
                             <div class="item_value">{{ specif_prod.price_all|number_into_digits }}</div>
                             <div class="item_value">{{ specif_prod.price_all_motrum|number_into_digits }}</div>
                             <div class="item_value">
-                                {% if specif_prod.product and specif_prod.product.price.sale %}
-                                    {{ specif_prod.product.price.sale.percent }}%
+                                {% if specif_prod.product  %}
+                                {% if specif_prod.product.price.sale %}{{ specif_prod.product.price.sale.percent }}%{% endif %}
+                                    
+                                {% else %}
+                                {% if specif_prod.sale_motrum %}{{specif_prod.sale_motrum}}%{% endif %}
+                                    
                                 {% endif %}
                             </div>
                             <div class="item_value">

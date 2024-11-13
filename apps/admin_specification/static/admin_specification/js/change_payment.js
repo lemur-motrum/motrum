@@ -177,17 +177,41 @@ export function changePayment(container, errorFn) {
                           completeBtnContainer.innerHTML +=
                             '<button class="complete_order_button">Завершить заказ</button>';
                         }
-                        invoiceSpecificationContainer.innerHTML +=
-                          "<br><button class='change-bill-button'>Изменить счет</button><br>";
-                        if (
-                          specification.querySelector(".change-bill-button")
-                        ) {
-                          uptadeOrChanegeSpecification(
-                            specification.querySelector(".change-bill-button"),
-                            "bill-upd=True",
-                            specificationId,
-                            cartId
-                          );
+                        const superUserSatus = document
+                          .querySelector(".all_specifications_table")
+                          .getAttribute("superuser");
+                        if (superUserSatus == "true") {
+                          if (
+                            specification.querySelector(".change-bill-button")
+                          ) {
+                            specification
+                              .querySelector(".change-bill-button")
+                              .remove();
+                          }
+                          invoiceSpecificationContainer.innerHTML +=
+                            "<button class='change-bill-button'>Изменить счет</button>";
+                          if (
+                            specification.querySelector(".change-bill-button")
+                          ) {
+                            uptadeOrChanegeSpecification(
+                              specification.querySelector(
+                                ".change-bill-button"
+                              ),
+                              "bill-upd=True",
+                              specificationId,
+                              cartId
+                            );
+                          }
+                        }
+                        const changePaymentButton = specification.querySelector(
+                          ".change-specification-button"
+                        );
+                        const description =
+                          specification.querySelector(".description");
+
+                        if (changePaymentButton && description) {
+                          changePaymentButton.style.display = "none";
+                          description.style.display = "none";
                         }
                         completeOrder(container);
                       });

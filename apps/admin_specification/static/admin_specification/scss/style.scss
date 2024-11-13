@@ -628,6 +628,14 @@ h1 {
       gap: 0.7rem;
       margin-bottom: 1.25rem;
       padding: 0.5rem;
+      &.fixed {
+        position: -webkit-sticky;
+        position: sticky;
+        padding: 0.5rem;
+        background-color: #fff;
+        top: 0;
+        z-index: 900;
+      }
       .title_item {
         font-size: 0.938rem;
         width: 16.6666%;

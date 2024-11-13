@@ -51,6 +51,8 @@ class DatabaseAdminSite(admin.AdminSite):
             app["models"].sort(key=lambda x: ordering[x["name"]])
 
         return app_list
+    
+    
     def index(self, request, extra_context=None):
         """
         Display the main admin index page, which lists all of the installed
@@ -75,6 +77,8 @@ class DatabaseAdminSite(admin.AdminSite):
             cookie = request.COOKIES.get("client_id")
             if cookie:
                 response = TemplateResponse(request, self.index_template or "admin/index.html", context)
+                # НЕ РАБОТАЕТ работает тут def login_clear
+               
                 response.set_cookie('client_id', max_age=-1)
                 response.set_cookie('cart', max_age=-1)
                 response.set_cookie('specificationId', max_age=-1)          

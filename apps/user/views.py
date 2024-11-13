@@ -68,6 +68,7 @@ def login_clear(request, next_url, form):
                     response = redirect(next_url)
                     response.set_cookie('client_id', max_age=-1)
                     response.set_cookie('cart', max_age=-1)
+                    response.set_cookie('specificationId', max_age=-1)  
                    
                     return response
                     # if cookie:

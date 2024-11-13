@@ -562,6 +562,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": id_bitrix,
                     "type_delivery": type_delivery,
                 }
+            
             try:
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)

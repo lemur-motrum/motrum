@@ -974,16 +974,8 @@ def save_specification(
             ):
                 price_one_before = product_item["price_one"]
                 price_one = product_item["price_one"]
-
-                # оригинальная цена без примененой скидки
-                # if (
-                #     product_item["extra_discount"] != "0"
-                #     and product_item["extra_discount"] != ""
-                # ):
-                #     price_one = price_one_before / (
-                #         1 - float(product_item["extra_discount"]) / 100
-                #     )
-                #     price_one = round(price_one, 2)
+                print("price_one = product_ite",product_item["price_one"])
+                print("price_one = product_ite",price_one)
               
                 if price.in_auto_sale:
                     price_motrum_all = get_price_motrum(
@@ -1003,16 +995,18 @@ def save_specification(
                         product_spesification = ProductSpecification.objects.get(
                     id=product_item["product_specif_id"],
                 )
+                        
                         price_one_before = product_spesification.price_one
                         price_one = price_one_before / (
                             1 - float(product_spesification.extra_discount) / 100
                         )
+                        
                         price_one = round(price_one, 2)
                         price_one_motrum = product_spesification.price_one_motrum
                         
                     else:
-                        price_one = price.rub_price_supplier
-                        price_one_motrum = price.price_motrum
+                        # price_one = price.rub_price_supplier
+                        price_one_motrum = price_one
 
             else:
 
@@ -1049,9 +1043,11 @@ def save_specification(
             #             price_one_motrum / 100 * float(persent_pre_sale)
             #         )
             #         price_one_motrum = round(price_one_motrum, 2)
-
+            print("Float2")
+            print(price_one)
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
+            print("Float3")
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
 
@@ -1754,3 +1750,15 @@ def save_new_product_okt(product_new):
 
 #         orders = orders_cache()
 #         orders = orders.order_by(sorting, "-id")[count : count + count_last]
+
+
+
+             # оригинальная цена без примененой скидки
+                # if (
+                #     product_item["extra_discount"] != "0"
+                #     and product_item["extra_discount"] != ""
+                # ):
+                #     price_one = price_one_before / (
+                #         1 - float(product_item["extra_discount"]) / 100
+                #     )
+                #     price_one = round(price_one, 2)

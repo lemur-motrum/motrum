@@ -67,7 +67,7 @@
                 <div class="table_item_value ">
                         <span class="price">
                                 Сумма:
-                                <span {% if bill_file and bill_sum_paid < bill_sum %}style="color: red;"{% endif %} bill-sum-paid="{% if bill_sum_paid %}{{ bill_sum_paid }}{% else %}0{% endif %}"
+                                <span {% if bill_file and bill_sum_paid < bill_sum %}class = "color--red"{% endif %} bill-sum-paid="{% if bill_sum_paid %}{{ bill_sum_paid }}{% else %}0{% endif %}"
                                       class="price_bill_sum_paid">
                                         {% if bill_sum_paid %}
                                                 {{ bill_sum_paid }}

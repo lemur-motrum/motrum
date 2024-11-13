@@ -1388,7 +1388,6 @@ window.addEventListener("DOMContentLoaded", () => {
               data.forEach((el) => {
                 clientsContainer.innerHTML += `<div data-client-id="${el.id}" class="client">${el.legal_entity}</div>`;
                 const clients = clientsContainer.querySelectorAll(".client");
-
                 clients.forEach((client) => {
                   if (client) {
                     client.onmouseover = () => {

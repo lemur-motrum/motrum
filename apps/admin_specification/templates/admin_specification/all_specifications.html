@@ -30,8 +30,9 @@
             </div>
             <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">
-                <div class="specification_container all_specifications_table" 
-                     specification-elem="container">
+                <div class="specification_container all_specifications_table"
+                     specification-elem="container"
+                     superuser="{% if is_superuser == true %}true{% endif %}">
                     {% for specification in specification_list %}
                         {% include "admin_specification/include/specification_item.html" with specification=specification %}
                     {% endfor %}

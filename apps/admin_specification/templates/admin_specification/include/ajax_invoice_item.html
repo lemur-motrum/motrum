@@ -37,18 +37,10 @@
                 {% endif %}
             </div>
             {% if stock.stock_supplier != None %}
-                <span class="span-transit"style="
-                font-size: 10px;
-                line-height: 5px;
-            ">{{ stock.data_update }}</span>
+                <span class="span-transit"style=" font-size: 10px; line-height: 5px; ">{{ stock.data_update }}</span>
                 <br>
-                <span class="span-transit"style="
-                font-size: 10px;
-                line-height: 5px;
-            ">
-                    {% if stock.transit_count %}
-                        Ближайшая поставка: {{ stock.data_transit }} - {{ stock.transit_count }} шт.
-                    {% endif %}
+                <span class="span-transit"style=" font-size: 10px; line-height: 5px; ">
+                    {% if stock.transit_count %}Ближайшая поставка: {{ stock.data_transit }} - {{ stock.transit_count }} шт.{% endif %}
                 </span>
             {% endif %}
         {% else %}
@@ -56,9 +48,7 @@
             Неизвестно
         {% endif %}
     </div>
-    
     <label>
-        
         <input placeholder="Укажите срок поставки"
                class="invoice-data-input"
                type="text"

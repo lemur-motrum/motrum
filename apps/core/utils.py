@@ -625,13 +625,14 @@ def create_time_stop_specification():
     data_bd = CalendarHoliday.objects.get(year=year)
     data_bd_holidays = data_bd.json_date
     now = datetime.datetime.now()
-
+    print(now)
     day_need = 1
     i = 0
-    while day_need <= 3:
+    while day_need < 3:
+        print("start")
         i += 1
         date = now + datetime.timedelta(days=i)
-
+        # расчет на стыке годов 
         if date.year > year_date:
             data_bd = CalendarHoliday.objects.get(year=date.year)
             data_bd_holidays = data_bd.json_date
@@ -642,7 +643,10 @@ def create_time_stop_specification():
                     str(date.date())
                 )
                 holidays_day_need += holidays_day_need_nowork
+        # расчет внутри текущего года
         else:
+            print("day_need",day_need)
+            print("i",i)
             holidays_day_need = data_bd_holidays["holidays"].count(str(date.date()))
 
             if "nowork" in data_bd_holidays and holidays_day_need == 0:
@@ -650,12 +654,13 @@ def create_time_stop_specification():
                     str(date.date())
                 )
                 holidays_day_need += holidays_day_need_nowork
-
+        print("holidays_day_need",holidays_day_need)
         if holidays_day_need == 0:
-
+            
             day_need += 1
-
-    three_days = datetime.timedelta(i)
+            print("day_need",day_need)
+    print("pass",i)
+    three_days = datetime.timedelta(i+1)
     in_three_days = now + three_days
     data_stop = in_three_days.strftime("%Y-%m-%d")
 

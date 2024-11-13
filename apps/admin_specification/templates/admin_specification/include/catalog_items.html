@@ -15,24 +15,9 @@
             </div>
         {% endfor %}
     </div>
-    {% comment %} <div class="filter_content price_filters">
-        <div param="up" class="filter_elem_content">
-            <div class="checkbox">
-                <div class="checked"></div>
-            </div>
-            <div class="filter_name">По возврастанию</div>
-        </div>
-        <div param="down" class="filter_elem_content">
-            <div class="checkbox">
-                <div class="checked"></div>
-            </div>
-            <div class="filter_name">По убыванию</div>
-        </div>
-    </div> {% endcomment %}
 </div>
 <div class="catalog_container">
     <div class="product-catalog-articles">
-        {% comment %} <div class="article">Фильтр</div> {% endcomment %}
         <div class="article">Товар</div>
         <div class="article">Артикул</div>
         <div class="article">Характеристики</div>
@@ -44,22 +29,6 @@
         <div class="article">Цена</div>
     </div>
     <div class="content-container">
-        {% comment %} <div class="filters">
-            <div class="filter-elem">
-                <div class="title-container">
-                    <span>^</span>
-                    <div class="title">Производитель</div>
-                </div>
-                <div class="filter-content">
-                    {% for suppler in supplers %}
-                        <div class="suppler-chekbox">
-                            <div class="chekbox"></div>
-                            <span>{{ suppler }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div> {% endcomment %}
         <div class="spetification-product-catalog">
             <div class="all-products">
                 {% for product in products %}
@@ -87,7 +56,6 @@
                                             {{ char.name }}   {{ char.value }}
                                             <br>
                                         {% endif %}
-                                        {% comment %} {{ char.value }} {% endcomment %}
                                     {% empty %}
                                         -
                                     {% endfor %}
@@ -117,7 +85,7 @@
                                                 {% if product.stock.transit_count %}
                                                     Ближайшая поставка: {{ product.stock.data_transit|date:"d.m.Y" }} - {{ product.stock.transit_count }} шт.
                                                 {% endif %}
-                                        {% endif %}
+                                            {% endif %}
                                         </span>
                                     {% else %}
                                         {% if product.stock.to_order %}Под заказ{% endif %}
@@ -138,7 +106,7 @@
                                         {% endif %}
                                     {% else %}
                                         -
-                                    {% endif %}                                    
+                                    {% endif %}
                                 </div>
                                 <div class="suppler-price">
                                     {% if product.price.price_motrum and product.price.price_motrum != 0 %}

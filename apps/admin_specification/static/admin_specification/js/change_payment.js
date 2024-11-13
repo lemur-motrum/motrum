@@ -17,7 +17,6 @@ export function changePayment(container, errorFn) {
       ".change-payment-btn"
     );
     const closeBtn = modalWindow.querySelector(".close-btn");
-
     const interval = setInterval(() => {
       const specifications = container.querySelectorAll(".table_item");
       if (specifications.length > 0) {
@@ -40,7 +39,6 @@ export function changePayment(container, errorFn) {
             );
           }
           const paymentBtn = specification.querySelector(".add_payment_button");
-
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {

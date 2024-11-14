@@ -155,7 +155,6 @@ function catalogLogic(elems) {
               };
 
               const data = JSON.stringify(dataObj);
-
               fetch(`/api/v1/cart/${cart_id}/save-product/`, {
                 method: "POST",
                 body: data,
@@ -942,12 +941,7 @@ window.addEventListener("DOMContentLoaded", () => {
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
           });
-          const curentPrice =
-            (+getCurrentPrice(item.getAttribute("data-price")) *
-              (100 - +discountInput.value)) /
-            100;
 
-          // inputPrice.value = curentPrice.toFixed(2);
           const allPrice = inputPrice.value * countQuantity;
           getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {
@@ -1207,11 +1201,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".create-bill-button");
-
       const link = item.querySelector("a");
-
       const specificationId = +link.textContent;
-      const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;

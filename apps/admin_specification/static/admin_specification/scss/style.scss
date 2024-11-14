@@ -278,6 +278,7 @@ h1 {
         }
       }
       div {
+        width: 100%;
         .new_item_container {
           max-height: 0;
           overflow: hidden;
@@ -293,6 +294,11 @@ h1 {
             top: 50%;
             right: 1rem;
             transform: translateY(-50%);
+            display: flex;
+            justify-content: flex-end;
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
             .add_new_item_in_cart {
               cursor: pointer;
               width: 9rem;
@@ -731,6 +737,7 @@ h1 {
       }
       &.added_item_container {
         overflow: hidden;
+        width: 100%;
         .change_item_container {
           top: 102%;
           left: 0;
@@ -1177,6 +1184,7 @@ h1 {
         }
       }
       div {
+        width: 100%;
         .new_item_container {
           max-height: 0;
           overflow: hidden;
@@ -1192,6 +1200,11 @@ h1 {
             top: 50%;
             right: 1rem;
             transform: translateY(-50%);
+            display: flex;
+            justify-content: flex-end;
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
             .add_new_item_in_cart {
               cursor: pointer;
               width: 9rem;

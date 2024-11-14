@@ -3,7 +3,7 @@ import {
   getCookie,
   getDigitsNumber,
 } from "/static/core/js/functions.js";
-
+import { setErrorModal } from "../js/error_modal.js";
 import { completeOrder } from "../js/complete_order.js";
 import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 
@@ -57,6 +57,7 @@ export function changePayment(container, errorFn) {
                 if (response.status == 200) {
                   return response.json();
                 } else {
+                  setErrorModal();
                   throw new Error("Ошибка");
                 }
               })
@@ -120,6 +121,7 @@ export function changePayment(container, errorFn) {
                           if (response.status == 200) {
                             return response.json();
                           } else {
+                            setErrorModal();
                             throw new Error("Ошибка");
                           }
                         })

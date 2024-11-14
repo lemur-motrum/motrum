@@ -4,6 +4,8 @@ import {
   getCurrentPrice,
 } from "/static/core/js/functions.js";
 
+import { setErrorModal } from "../js/error_modal.js";
+
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");
   if (cartWrapper) {
@@ -106,6 +108,7 @@ window.addEventListener("DOMContentLoaded", () => {
             deleteCookie("cart", "/", window.location.hostname);
             window.location.href = "/admin_specification/all_specifications/";
           } else {
+            setErrorModal();
             throw new Error("Ошибка");
           }
         });

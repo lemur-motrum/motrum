@@ -1,4 +1,5 @@
 import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
+import { setErrorModal } from "../js/error_modal.js";
 
 export function completeOrder(container) {
   if (container) {
@@ -69,6 +70,8 @@ export function completeOrder(container) {
                       addOrderButton.disabled = false;
                       addOrderButton.innerHTML = "";
                       addOrderButton.textContent = "Завершить заказ";
+                    } else {
+                      setErrorModal();
                     }
                   });
                 }

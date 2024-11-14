@@ -3,6 +3,7 @@ import {
   getCookie,
   getDigitsNumber,
 } from "/static/core/js/functions.js";
+import { setErrorModal } from "../js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -50,6 +51,7 @@ function addNewProductLogic(container) {
             if (response.status === 200) {
               return response.json();
             } else {
+              setErrorModal();
               throw new Error("Ошибка");
             }
           })
@@ -88,6 +90,7 @@ function addNewProductLogic(container) {
                     if (response.status === 200) {
                       return response.json();
                     } else {
+                      setErrorModal();
                       throw new Error("Ошибка");
                     }
                   })
@@ -161,6 +164,7 @@ function addNewProductLogic(container) {
           addProductButton.textContent = "Добавить этот товар";
           showErrorValidation("Этот товар уже в корзине", error);
         } else {
+          setErrorModal();
           throw new Error("Ошибка");
         }
       });
@@ -332,6 +336,7 @@ function addNewProductLogic(container) {
               } else if (response.status === 409) {
                 return response.json();
               } else {
+                setErrorModal();
                 throw new Error("Ошибка");
               }
             })

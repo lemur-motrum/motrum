@@ -8,6 +8,7 @@ import {
   inputValidation,
   inputValidationQuantity,
 } from "../js/add_new_product_without_cart.js";
+import { setErrorModal } from "../js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -181,6 +182,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (response.status == 200) {
               window.location.reload();
             } else {
+              setErrorModal();
               throw new Error("Ошибка");
             }
           });

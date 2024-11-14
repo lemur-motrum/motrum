@@ -9,6 +9,7 @@ import {
   getCurrentPrice,
 } from "/static/core/js/functions.js";
 
+import { setErrorModal } from "../js/error_modal.js";
 import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 
@@ -167,6 +168,7 @@ function catalogLogic(elems) {
                   if (response.status == 200) {
                     return response.json();
                   } else {
+                    setErrorModal();
                     throw new Error("Ошибка");
                   }
                 })
@@ -176,10 +178,16 @@ function catalogLogic(elems) {
                       ".admin_specification_cart_length"
                     ).textContent = response.cart_len)
                 )
-                .catch((error) => console.error(error));
+                .catch((error) => {
+                  setErrorModal();
+                  console.error(error);
+                });
             }
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            setErrorModal();
+            console.error(error);
+          });
       } else {
         const cart_id = getCookie("cart");
         const dataObj = {
@@ -201,6 +209,7 @@ function catalogLogic(elems) {
             if (response.status == 200) {
               return response.json();
             } else {
+              setErrorModal();
               throw new Error("Ошибка");
             }
           })
@@ -210,7 +219,10 @@ function catalogLogic(elems) {
                 ".admin_specification_cart_length"
               ).textContent = response.cart_len)
           )
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            setErrorModal();
+            console.error(error);
+          });
       }
     };
   });
@@ -625,7 +637,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
               window.location.href = "/admin_specification/all_specifications/";
             })
-            .catch((error) => console.error(error));
+            .catch((error) => {
+              setErrorModal();
+              console.error(error);
+            });
         }
       }
       function exitSpecification(elems) {
@@ -706,7 +721,10 @@ window.addEventListener("DOMContentLoaded", () => {
                   );
                 }
               })
-              .catch((error) => console.error(error));
+              .catch((error) => {
+                setErrorModal();
+                console.error(error);
+              });
           }, 1500);
         }
 
@@ -995,7 +1013,10 @@ window.addEventListener("DOMContentLoaded", () => {
                 window.location.reload();
               }
             })
-            .catch((error) => console.error(error));
+            .catch((error) => {
+              setErrorModal();
+              console.error(error);
+            });
         };
       });
       getResult();
@@ -1218,6 +1239,8 @@ window.addEventListener("DOMContentLoaded", () => {
         }).then((response) => {
           if (response.status == 200) {
             window.location.reload();
+          } else {
+            setErrorModal();
           }
         });
       };

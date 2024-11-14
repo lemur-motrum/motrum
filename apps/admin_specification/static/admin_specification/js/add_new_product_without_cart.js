@@ -1,5 +1,5 @@
 import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
-
+import { setErrorModal } from "../js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -112,6 +112,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   articleError
                 );
               } else {
+                setErrorModal();
                 throw new Error("Ошибка");
               }
             })
@@ -121,7 +122,10 @@ window.addEventListener("DOMContentLoaded", () => {
                   ".admin_specification_cart_length"
                 ).textContent = response.cart_len)
             )
-            .catch((error) => console.error(error));
+            .catch((error) => {
+              setErrorModal();
+              console.error(error);
+            });
         }
       }
     };

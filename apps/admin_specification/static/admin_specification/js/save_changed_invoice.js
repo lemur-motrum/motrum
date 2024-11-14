@@ -4,6 +4,7 @@ import {
   getCurrentPrice,
   deleteCookie,
 } from "/static/core/js/functions.js";
+import { setErrorModal } from "../js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -178,6 +179,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   if (response.status == 200 || response.status == 201) {
                     return response.json();
                   } else {
+                    setErrorModal();
                     throw new Error("Ошибка");
                   }
                 })
@@ -204,6 +206,8 @@ window.addEventListener("DOMContentLoaded", () => {
                     if (response3.status == 200 || response2.status == 201) {
                       window.location.href =
                         "/admin_specification/all_specifications/";
+                    } else {
+                      setErrorModal();
                     }
                   });
                 });

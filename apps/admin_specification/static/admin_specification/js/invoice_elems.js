@@ -1,4 +1,5 @@
 import { getCookie } from "/static/core/js/functions.js";
+import { setErrorModal } from "../js/error_modal.js";
 
 export function invoiceItem(container) {
   if (container) {
@@ -162,6 +163,7 @@ export function invoiceItem(container) {
                             ) {
                               return response.json();
                             } else {
+                              setErrorModal();
                               throw new Error("Ошибка");
                             }
                           })

@@ -384,9 +384,15 @@ def crete_pdf_bill(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
-                product_name = (
+                if product.product.in_view_website:
+                    product_name = (
                     f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
                 )
+                else:
+                    product_name = (
+                    f'{str(product.product.name)}'
+                ) 
+                
                 product_name = (Paragraph(product_name, normal_style),)
                 product_code = product.product.article_supplier
                 product_code = (Paragraph(product_code, normal_style),)

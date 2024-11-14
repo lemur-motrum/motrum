@@ -198,14 +198,22 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                     url_absolute = request.build_absolute_uri("/").strip("/")
                     link = f"{url_absolute}/{link}"
                     product_name_str = str(product.product.name)
-                    product_name = (
-                        Paragraph(
-                            f'<a href="{link}" color="blue">{product_name_str}</a>',
-                            bold_style_center,
-                        ),
-                    )
+                    if product.product.in_view_website:
+                        product_name = (
+                            Paragraph(
+                                f'<a href="{link}" color="blue">{product_name_str}</a>',
+                                bold_style_center,
+                            ),
+                        )
+                    else:
+                         product_name = (
+                            Paragraph(
+                                f'{product_name_str}',
+                                bold_style_center,
+                            ))    
                 # else:    
                 #     product_name_str = str(product.product.name)
+                    
                 #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
             else:
                 product_name = product.product_new
@@ -433,7 +441,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             name_specification,
         )
         
-
+        print("file_path",file_path)
         return file_path
     except Exception as e:
 

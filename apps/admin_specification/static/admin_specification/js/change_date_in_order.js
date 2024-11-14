@@ -29,6 +29,9 @@ export function changeDateInOrder(container) {
           }
         };
         getDateInCalendar();
+        quantityInput.onchange = () => {
+          quantityInput.value = quantityInput.value;
+        };
       }
     });
   }

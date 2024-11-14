@@ -83,11 +83,15 @@ window.addEventListener("DOMContentLoaded", () => {
             if (num == 1) return words[0];
             return words[2];
           }
-          return `${resultDays} ${num_word(resultDays, [
-            "неделя",
-            "недели",
-            "недель",
-          ])}`;
+          if (dayDifference > 7) {
+            return `${resultDays} ${num_word(resultDays, [
+              "неделя",
+              "недели",
+              "недель",
+            ])}`;
+          } else {
+            return "1 неделя";
+          }
         };
 
         const product = {
@@ -214,11 +218,15 @@ window.addEventListener("DOMContentLoaded", () => {
                       if (num == 1) return words[0];
                       return words[2];
                     }
-                    return `${resultDays} ${num_word(resultDays, [
-                      "неделя",
-                      "недели",
-                      "недель",
-                    ])}`;
+                    if (dayDifference > 7) {
+                      return `${resultDays} ${num_word(resultDays, [
+                        "неделя",
+                        "недели",
+                        "недель",
+                      ])}`;
+                    } else {
+                      return "1 неделя";
+                    }
                   };
                   return {
                     id: elem["id"],

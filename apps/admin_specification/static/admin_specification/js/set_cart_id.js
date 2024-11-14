@@ -4,7 +4,7 @@ import { setErrorModal } from "../js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
-  const wrapper = document.querySelector(".otk_description_content");
+  const wrapper = document.querySelector(".okt_cart_container");
   if (wrapper) {
     if (!getCookie("cart")) {
       fetch("/api/v1/cart/add-cart/", {

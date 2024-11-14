@@ -8,7 +8,7 @@
         <p>Пользователь: {{ request.user.username }}</p>
         <a href="{% url "user:logout_admin" %}">Выход</a>
     </div>
-    <div order={{ order }} class="specification-container">
+    <div order={{ order }} class="specification-container okt_cart_container">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}
@@ -19,7 +19,6 @@
             </div>
         {% endif %}
         {% if product or product_new %}
-       
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
@@ -128,21 +127,11 @@
                         {% endif %}
                         {% comment %} {% endif %} {% endcomment %}
                         <div class="item_value">
-                           
-                            <div price-motrum=" 
-                            {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 
-                             0 {% else %} 
-                             {% if bill_upd and item.id_product_spesif %} 
-                              {{ item.old_price_one_motrum }}  
-                            {% else %} 
-                             {{ item.price.price_motrum }} 
-                            {% endif %} 
-                            {% endif %}"
+                            <div price-motrum=" {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }} {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %}"
                                  class="price_motrum">
                                 {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
                                     0
                                 {% else %}
-                                
                                     {% if bill_upd and item.id_product_spesif %}
                                         {{ item.old_price_one_motrum }}
                                     {% else %}
@@ -371,7 +360,6 @@
                         </div>
                     {% else %}
                         <!--когда новая спецификация-->
-                        
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
                              data-product-pk="{{ item.id }}"

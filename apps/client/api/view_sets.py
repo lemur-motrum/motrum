@@ -491,6 +491,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = specification_name.number
 
         try:
+            print(dddd)
             with transaction.atomic():
                 specification = save_specification(
                     data,
@@ -519,12 +520,31 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 if product_spes_list:
                     for product_spes_l in product_spes_list:
-                        new = ProductCart(
-                            cart=cart,
-                            product=product_spes_l.product,
-                            quantity=product_spes_l.quantity,
-                        )
-                        new.save()
+                        if product_spes_l.product :
+                            new = ProductCart(
+                                cart=cart,
+                                product=product_spes_l.product,
+                                quantity=product_spes_l.quantity,
+                            )
+                            new.save()
+                            
+                        elif product_spes_l.product_new_article:
+                            new = ProductCart(
+                                cart=cart,
+                                product_new=product_spes_l.product_new,
+                                product_new_article=product_spes_l.product_new_article,
+                                product_new_price=product_spes_l.product_new_price,
+                                vendor=product_spes_l.vendor,
+                                product_new_sale=product_spes_l.product_new_sale,
+                                product_new_sale_motrum=product_spes_l.product_new_sale_motrum,
+                                comment=product_spes_l.comment,
+                                quantity=product_spes_l.quantity,
+                                
+                            )
+                            new.save()
+                        else:
+                            pass    
+                        
 
             error = "error"
             location = "Сохранение спецификации админам окт"

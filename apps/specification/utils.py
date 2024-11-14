@@ -189,22 +189,24 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             if date_delivery and date_delivery > date_ship:
                 date_ship = date_delivery
             if product.product:
+                # if product.product.in_view_website:
+                    if IS_TESTING:
+                        link = product.product.get_url_document_test()
+                    else:
+                        link = product.product.get_url_document()
 
-                if IS_TESTING:
-                    link = product.product.get_url_document_test()
-                else:
-                    link = product.product.get_url_document()
-
-                url_absolute = request.build_absolute_uri("/").strip("/")
-                link = f"{url_absolute}/{link}"
-                product_name_str = str(product.product.name)
-                product_name = (
-                    Paragraph(
-                        f'<a href="{link}" color="blue">{product_name_str}</a>',
-                        bold_style_center,
-                    ),
-                )
-
+                    url_absolute = request.build_absolute_uri("/").strip("/")
+                    link = f"{url_absolute}/{link}"
+                    product_name_str = str(product.product.name)
+                    product_name = (
+                        Paragraph(
+                            f'<a href="{link}" color="blue">{product_name_str}</a>',
+                            bold_style_center,
+                        ),
+                    )
+                # else:    
+                #     product_name_str = str(product.product.name)
+                #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
             else:
                 product_name = product.product_new
                 product_name = (Paragraph(f"{product_name}", bold_style_center),)

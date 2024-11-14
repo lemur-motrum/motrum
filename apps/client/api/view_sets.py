@@ -532,7 +532,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             error = "error"
             location = "Сохранение спецификации админам окт"
-            info = f"Сохранение спецификации админам окт ошибка {e}"
+            info = f" ошибка {e}"
             e = error_alert(error, location, info)
 
         if specification:

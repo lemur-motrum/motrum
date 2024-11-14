@@ -19,6 +19,7 @@
             </div>
         {% endif %}
         {% if product or product_new %}
+       
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">Название:</div>
@@ -31,6 +32,7 @@
                     <div class="title_item">Срок поставки:</div>
                 </div>
                 {% for item in product %}
+                
                     <div class="item_container"
                          data-vendor=""
                          data-product-name-new=""
@@ -127,11 +129,21 @@
                         {% endif %}
                         {% comment %} {% endif %} {% endcomment %}
                         <div class="item_value">
-                            <div price-motrum=" {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }}  {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %}"
+                           
+                            <div price-motrum=" 
+                            {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 
+                             0 {% else %} 
+                             {% if bill_upd and item.id_product_spesif %} 
+                              {{ item.old_price_one_motrum }}  
+                            {% else %} 
+                             {{ item.price.price_motrum }} 
+                            {% endif %} 
+                            {% endif %}"
                                  class="price_motrum">
                                 {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
                                     0
                                 {% else %}
+                                
                                     {% if bill_upd and item.id_product_spesif %}
                                         {{ item.old_price_one_motrum }}
                                     {% else %}

@@ -23,13 +23,9 @@ export function invoiceItem(container) {
             const orderData = new Date(elem["date_delivery"]);
             const today = new Date();
             const delta = orderData.getTime() - today.getTime();
-            let dayDifference = +Math.ceil(delta / 1000 / 60 / 60 / 24);
-            let result;
-            if (dayDifference >= 7) {
-              result = +Math.ceil(dayDifference / 7);
-            } else {
-              dayDifference = dayDifference += 1;
-            }
+            const dayDifference = +Math.ceil(delta / 1000 / 60 / 60 / 24);
+            const resultDays = +Math.ceil(dayDifference / 7);
+
             function num_word(value, words) {
               value = Math.abs(value) % 100;
               var num = value % 10;
@@ -39,7 +35,7 @@ export function invoiceItem(container) {
               return words[2];
             }
             if (dayDifference > 7) {
-              return `${result} ${num_word(result, [
+              return `${resultDays} ${num_word(resultDays, [
                 "неделя",
                 "недели",
                 "недель",

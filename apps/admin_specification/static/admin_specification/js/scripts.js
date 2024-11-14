@@ -518,11 +518,15 @@ window.addEventListener("DOMContentLoaded", () => {
               if (num == 1) return words[0];
               return words[2];
             }
-            return `${resultDays} ${num_word(resultDays, [
-              "неделя",
-              "недели",
-              "недель",
-            ])}`;
+            if (dayDifference > 7) {
+              return `${resultDays} ${num_word(resultDays, [
+                "неделя",
+                "недели",
+                "недель",
+              ])}`;
+            } else {
+              return "1 неделя";
+            }
           };
           const product = {
             product_id: +itemID,
@@ -743,8 +747,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 100;
 
             getDigitsNumber(productTotalPrice, currentPrice);
-            changeDateInOrder(spetificationTable);
             editMotrumPrice(spetificationTable);
+            changeDateInOrder(spetificationTable);
             getResult();
             updateProduct();
           }
@@ -775,8 +779,8 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = true;
           }
-          changeDateInOrder(spetificationTable);
           editMotrumPrice(spetificationTable);
+          changeDateInOrder(spetificationTable);
           updateProduct();
         };
 
@@ -810,9 +814,8 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             minusButton.disabled = false;
           }
-          changeDateInOrder(spetificationTable);
           editMotrumPrice(spetificationTable);
-
+          changeDateInOrder(spetificationTable);
           updateProduct();
         };
 
@@ -832,8 +835,8 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getResult();
-            changeDateInOrder(spetificationTable);
             editMotrumPrice(spetificationTable);
+            changeDateInOrder(spetificationTable);
           };
 
           plusButton.onclick = () => {
@@ -861,8 +864,8 @@ window.addEventListener("DOMContentLoaded", () => {
               plusButton.disabled = false;
               minusButton.disabled = false;
             }
-            changeDateInOrder(spetificationTable);
             editMotrumPrice(spetificationTable);
+            changeDateInOrder(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -893,9 +896,9 @@ window.addEventListener("DOMContentLoaded", () => {
               minusButton.disabled = false;
               plusButton.disabled = false;
             }
-            changeDateInOrder(spetificationTable);
             editMotrumPrice(spetificationTable);
             updateProduct();
+            changeDateInOrder(spetificationTable);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getResult();
@@ -934,9 +937,9 @@ window.addEventListener("DOMContentLoaded", () => {
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
             }
-            changeDateInOrder(spetificationTable);
             editMotrumPrice(spetificationTable);
             updateProduct();
+            // changeDateInOrder(spetificationTable);
             getResult();
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);

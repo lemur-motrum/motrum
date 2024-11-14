@@ -887,7 +887,7 @@ def save_specification(
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
     from apps.core.utils import create_time_stop_specification
-
+    print("pre_sale func",pre_sale)
     # try:
 
     # сохранение спецификации
@@ -1024,20 +1024,26 @@ def save_specification(
                 and product_item["extra_discount"] != ""
                 and product_item["extra_discount"] != 0
             ):
-                # если есть предоплата найти скидку по предоплате мотрум
-                persent_pre_sale = 0
-                print("продукт из окт 4",product)
-                if pre_sale and price.in_auto_sale:
-                    price_pre_sale = get_presale_discount(product)
-                    if price_pre_sale:
-                        persent_pre_sale = price_pre_sale.percent
 
                 persent_sale = float(product_item["extra_discount"])
-                persent_sale = float(persent_sale) + float(persent_pre_sale)
 
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-                print("продукт из окт 5",product)
+
+                
+            # если есть предоплата найти скидку по предоплате мотрум
+            persent_pre_sale = 0
+            print("продукт из окт 4",product)
+            if pre_sale and price.in_auto_sale:
+                
+                price_pre_sale = get_presale_discount(product)
+                print("get_presale_discount",price_pre_sale)
+                if price_pre_sale:
+                    persent_pre_sale = price_pre_sale.percent  
+                    price_one_motrum = price_one_motrum - (
+                        price_one_motrum / 100 * float(persent_pre_sale)
+                    )
+                    price_one_motrum = round(price_one_motrum, 2) 
             # # если есть предоплата найти скидку по предоплате мотрум
             # if pre_sale:
             #     price_pre_sale = get_presale_discount(product)

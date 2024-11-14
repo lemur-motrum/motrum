@@ -472,7 +472,7 @@ def create_specification(request):
             client_req = order.account_requisites
             requisites = order.requisites
             client_req_all = AccountRequisites.objects.filter(requisites=requisites)
-            
+
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -509,7 +509,7 @@ def create_specification(request):
                     ),
                 )
                 .annotate(
-                price_motrum=Case(
+                    price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
                             then=("product_new_price"),
@@ -527,7 +527,8 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                ).order_by("id_product_cart")
+                )
+                .order_by("id_product_cart")
             )
             product_new_value_id = product_new.values_list("id_product_cart")
 
@@ -554,7 +555,8 @@ def create_specification(request):
                             ),
                         ),
                     ),
-                ).order_by("id")
+                )
+                .order_by("id")
             )
             update_spesif = True
 
@@ -565,26 +567,30 @@ def create_specification(request):
                 # если корзина без заказа
                 order = Order.objects.get(cart=cart)
                 specification = None
-                product_new = ProductCart.objects.filter(cart=cart, product=None).annotate(
-                    price_motrum=Case(
-                        When(
-                            product_new_sale_motrum=None,
-                            then=("product_new_price"),
-                        ),
-                        When(
-                            product_new_sale_motrum__isnull=False,
-                            then=Round(
-                                F("product_new_price")
-                                - (
+                product_new = (
+                    ProductCart.objects.filter(cart=cart, product=None)
+                    .annotate(
+                        price_motrum=Case(
+                            When(
+                                product_new_sale_motrum=None,
+                                then=("product_new_price"),
+                            ),
+                            When(
+                                product_new_sale_motrum__isnull=False,
+                                then=Round(
                                     F("product_new_price")
-                                    / 100
-                                    * (F("product_new_sale_motrum"))
+                                    - (
+                                        F("product_new_price")
+                                        / 100
+                                        * (F("product_new_sale_motrum"))
+                                    ),
+                                    2,
                                 ),
-                                2,
                             ),
                         ),
-                    ),
-                ).order_by("id")
+                    )
+                    .order_by("id")
+                )
                 product_specification = ProductSpecification.objects.filter(
                     specification=0
                 )
@@ -626,29 +632,31 @@ def create_specification(request):
                 order = None
 
                 # товары без записи в окт
-                product_new = ProductCart.objects.filter(
-                    cart=cart, product=None
-                ).annotate(
-                    price_motrum=Case(
-                        When(
-                            product_new_sale_motrum=None,
-                            then=("product_new_price"),
-                        ),
-                        When(
-                            product_new_sale_motrum__isnull=False,
-                            then=Round(
-                                F("product_new_price")
-                                - (
+                product_new = (
+                    ProductCart.objects.filter(cart=cart, product=None)
+                    .annotate(
+                        price_motrum=Case(
+                            When(
+                                product_new_sale_motrum=None,
+                                then=("product_new_price"),
+                            ),
+                            When(
+                                product_new_sale_motrum__isnull=False,
+                                then=Round(
                                     F("product_new_price")
-                                    / 100
-                                    * (F("product_new_sale_motrum"))
+                                    - (
+                                        F("product_new_price")
+                                        / 100
+                                        * (F("product_new_sale_motrum"))
+                                    ),
+                                    2,
                                 ),
-                                2,
                             ),
                         ),
-                    ),
-                ).order_by("id")
-                
+                    )
+                    .order_by("id")
+                )
+
                 product_new_more = None
                 update_spesif = False
                 client_req = None
@@ -750,7 +758,7 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-    
+
     bill_upd = False
     if order:
         if order.bill_sum_paid != 0:
@@ -859,8 +867,17 @@ def one_specifications(request, pk):
         admin_king = False
 
     specification = Specification.objects.get(pk=pk)
-    product_specification = ProductSpecification.objects.filter(
+    product_specification_list = ProductSpecification.objects.filter(
         specification=specification
+    ).values_list("product__id")
+
+    product_specification = (
+        ProductSpecification.objects.filter(specification=specification)
+        .select_related(
+            "product",
+        )
+        .order_by("id")
+        .prefetch_related(Prefetch("product__price"))
     )
     order = Order.objects.get(specification=specification)
 

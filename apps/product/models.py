@@ -255,7 +255,16 @@ class Product(models.Model):
         product,
     )
         return url   
+    
+    def get_presale_discount(self):
+        from apps.supplier.models import Discount
 
+        supplier = self.supplier
+        try:
+            discount = Discount.objects.get(supplier=supplier, is_tag_pre_sale=True)
+            return discount.percent
+        except Discount.DoesNotExist:
+            return False
     # def get_blank(self, Model, product_blank):
     #         # item = Product.objects.filter(id=self.id).values()
     #         item = list(self)

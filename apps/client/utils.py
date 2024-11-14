@@ -58,7 +58,7 @@ def crete_pdf_bill(
         
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        )
+        ).order_by("id")
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
         motrum_info_req = order.motrum_requisites

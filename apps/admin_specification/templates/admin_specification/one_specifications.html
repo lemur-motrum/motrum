@@ -10,7 +10,9 @@
     </div>
     <div class="specification-container">
         {% include "admin_specification/include/bread_crumbs.html" %}
-        <h1 class="title">{{ title }} {{ specification.id }}</h1>
+        <h1 class="title">{{ title }} №{{ order.id }} </h1>
+       <h2>{% if order.bill_name %}Счет №{{ order.bill_name }}{% endif %} {% if specification.number %}Спецификация №{{ specification.number }}{% endif %}</h2>
+        
         <div class="">
             <h2 class="title">Информация</h2>
             <div class="">Статус:{{ order.get_status_name }}</div>
@@ -135,7 +137,12 @@
                                 {% if specif_prod.product %}
                                     {% if specif_prod.product.price.sale %}
                                         {{ specif_prod.product.price.sale.percent }}%
+
+                                           
                                     {% endif %}
+                                    {% if specif_prod.product.get_presale_discount  %} 
+                                    +{{ specif_prod.product.get_presale_discount }}% по предоплате
+                                        {% endif %}
                                 {% else %}
                                     {% if specif_prod.sale_motrum %}
                                         {{ specif_prod.sale_motrum }}%
@@ -146,6 +153,7 @@
                                 {% if specif_prod.extra_discount %}
                                     {{ specif_prod.extra_discount }}%
                                 {% endif %}
+
                             </div>
                             <div class="item_value">
                                 {% if specif_prod.date_delivery %}{{ specif_prod.date_delivery }}{% endif %}

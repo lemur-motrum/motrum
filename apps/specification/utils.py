@@ -74,7 +74,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         specifications = Specification.objects.get(id=specification)
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        )
+        ).order_by("id")
         
         
         motrum_info = motrum_requisites.requisites

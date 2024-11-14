@@ -469,7 +469,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             pre_sale = True
         else:
             pre_sale = False
-
+        print("pre_sale",pre_sale)
         if requisites.client:
             client = requisites.client
         else:
@@ -493,9 +493,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
         try:
-         
             with transaction.atomic():
-
                 specification = save_specification(
                     data,
                     pre_sale,

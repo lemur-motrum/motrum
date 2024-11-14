@@ -25,7 +25,6 @@ export function changePayment(container, errorFn) {
           const specificationId =
             specification.getAttribute("specification-id");
           const cartId = specification.getAttribute("data-cart-id");
-
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
@@ -98,128 +97,129 @@ export function changePayment(container, errorFn) {
                   if (!paymentInput.value) {
                     errorFn("Поле не заполнено", paymentError);
                   } else {
-                    paymentChangeButton.disabled = true;
-                    paymentChangeButton.textContent = "";
-                    paymentChangeButton.innerHTML =
-                      "<div class='small_loader'></div>";
-                    const objData = {
-                      bill_sum_paid: paymentInput.value,
-                    };
-                    const data = JSON.stringify(objData);
-
-                    fetch(`/api/v1/order/${orderId}/save-payment/`, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
-                      },
-                      body: data,
-                    })
-                      .then((response) => {
-                        if (response.status == 200) {
-                          return response.json();
-                        } else {
-                          throw new Error("Ошибка");
-                        }
+                    if (paymentInput.value == "0") {
+                      errorFn("Значение не изменит сумму", paymentError);
+                    } else {
+                      paymentChangeButton.disabled = true;
+                      paymentChangeButton.textContent = "";
+                      paymentChangeButton.innerHTML =
+                        "<div class='small_loader'></div>";
+                      const objData = {
+                        bill_sum_paid: paymentInput.value,
+                      };
+                      const data = JSON.stringify(objData);
+                      fetch(`/api/v1/order/${orderId}/save-payment/`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          "X-CSRFToken": csrfToken,
+                        },
+                        body: data,
                       })
-                      .then((response) => {
-                        paymentBtn.classList.add("changed");
-                        if (paymentLink.textContent === "0") {
-                          paymentLink.setAttribute(
-                            "bill-sum-paid",
-                            paymentInput.value
-                          );
-                          getDigitsNumber(
-                            paymentLink,
-                            +paymentLink.getAttribute("bill-sum-paid")
-                          );
-                        } else {
-                          const count =
-                            +paymentLink.getAttribute("bill-sum-paid") +
-                            +paymentInput.value;
-                          paymentLink.setAttribute("bill-sum-paid", count);
-                          getDigitsNumber(
-                            paymentLink,
-                            +paymentLink.getAttribute("bill-sum-paid")
-                          );
-                        }
-                        const addBillBtn = specification.querySelector(
-                          ".create-bill-button"
-                        );
-                        if (addBillBtn) {
-                          addBillBtn.style.display = "none";
-                        }
-
-                        overlay.classList.remove("visible");
-                        if (overlay.classList.contains("show")) {
-                          document.body.style.overflowY = "scroll";
-                        }
-
-                        setTimeout(() => {
-                          overlay.classList.remove("show");
-                          paymentInput.value = "";
-                        }, 600);
-                        paymentChangeButton.disabled = false;
-                        paymentChangeButton.innerHTML = "";
-                        paymentChangeButton.textContent = "Внести";
-
-                        const intevalChangeBtn = setInterval(() => {
-                          const changedBtn =
-                            specification.querySelector("changed");
-                          if (changedBtn) {
-                            clearInterval(intevalChangeBtn);
-                            changedBtn.onclick = () => changePayment();
+                        .then((response) => {
+                          if (response.status == 200) {
+                            return response.json();
+                          } else {
+                            throw new Error("Ошибка");
                           }
-                        });
-                        paymentBtn.disabled = false;
-                        paymentBtn.innerHTML = "";
-                        paymentBtn.textContent = "Внести cумму оплаты";
-                        console.log(response.is_all_sum);
-                        if (response.is_all_sum == true) {
-                          paymentBtn.style.display = "none";
-                          const completeBtnContainer =
-                            specification.querySelector(".first_table_value");
-                          completeBtnContainer.innerHTML +=
-                            '<button class="complete_order_button">Завершить заказ</button>';
-                        }
-                        const superUserSatus = document
-                          .querySelector(".all_specifications_table")
-                          .getAttribute("superuser");
-                        if (superUserSatus == "true") {
-                          if (
-                            specification.querySelector(".change-bill-button")
-                          ) {
-                            specification
-                              .querySelector(".change-bill-button")
-                              .remove();
-                          }
-                          invoiceSpecificationContainer.innerHTML +=
-                            "<button class='change-bill-button'>Изменить счет</button>";
-                          if (
-                            specification.querySelector(".change-bill-button")
-                          ) {
-                            uptadeOrChanegeSpecification(
-                              specification.querySelector(
-                                ".change-bill-button"
-                              ),
-                              "bill-upd=True",
-                              specificationId,
-                              cartId
+                        })
+                        .then((response) => {
+                          paymentBtn.classList.add("changed");
+                          if (paymentLink.textContent === "0") {
+                            paymentLink.setAttribute(
+                              "bill-sum-paid",
+                              paymentInput.value
+                            );
+                            getDigitsNumber(
+                              paymentLink,
+                              +paymentLink.getAttribute("bill-sum-paid")
+                            );
+                          } else {
+                            const count =
+                              +paymentLink.getAttribute("bill-sum-paid") +
+                              +paymentInput.value;
+                            paymentLink.setAttribute("bill-sum-paid", count);
+                            getDigitsNumber(
+                              paymentLink,
+                              +paymentLink.getAttribute("bill-sum-paid")
                             );
                           }
-                        }
-                        const changePaymentButton = specification.querySelector(
-                          ".change-specification-button"
-                        );
-                        const description =
-                          specification.querySelector(".description");
+                          const addBillBtn = specification.querySelector(
+                            ".create-bill-button"
+                          );
+                          if (addBillBtn) {
+                            addBillBtn.style.display = "none";
+                          }
+                          overlay.classList.remove("visible");
+                          if (overlay.classList.contains("show")) {
+                            document.body.style.overflowY = "scroll";
+                          }
+                          setTimeout(() => {
+                            overlay.classList.remove("show");
+                            paymentInput.value = "";
+                          }, 600);
+                          paymentChangeButton.disabled = false;
+                          paymentChangeButton.innerHTML = "";
+                          paymentChangeButton.textContent = "Внести";
+                          const intevalChangeBtn = setInterval(() => {
+                            const changedBtn =
+                              specification.querySelector("changed");
+                            if (changedBtn) {
+                              clearInterval(intevalChangeBtn);
+                              changedBtn.onclick = () => changePayment();
+                            }
+                          });
+                          paymentBtn.disabled = false;
+                          paymentBtn.innerHTML = "";
+                          paymentBtn.textContent = "Внести cумму оплаты";
+                          console.log(response.is_all_sum);
+                          if (response.is_all_sum == true) {
+                            paymentBtn.style.display = "none";
+                            const completeBtnContainer =
+                              specification.querySelector(".first_table_value");
+                            completeBtnContainer.innerHTML +=
+                              '<button class="complete_order_button">Завершить заказ</button>';
+                          }
+                          const superUserSatus = document
+                            .querySelector(".all_specifications_table")
+                            .getAttribute("superuser");
+                          if (superUserSatus == "true") {
+                            if (
+                              specification.querySelector(".change-bill-button")
+                            ) {
+                              specification
+                                .querySelector(".change-bill-button")
+                                .remove();
+                            }
+                            invoiceSpecificationContainer.innerHTML +=
+                              "<button class='change-bill-button'>Изменить счет</button>";
+                            if (
+                              specification.querySelector(".change-bill-button")
+                            ) {
+                              uptadeOrChanegeSpecification(
+                                specification.querySelector(
+                                  ".change-bill-button"
+                                ),
+                                "bill-upd=True",
+                                specificationId,
+                                cartId
+                              );
+                            }
+                          }
+                          const changePaymentButton =
+                            specification.querySelector(
+                              ".change-specification-button"
+                            );
+                          const description =
+                            specification.querySelector(".description");
 
-                        if (changePaymentButton && description) {
-                          changePaymentButton.style.display = "none";
-                          description.style.display = "none";
-                        }
-                        completeOrder(container);
-                      });
+                          if (changePaymentButton && description) {
+                            changePaymentButton.style.display = "none";
+                            description.style.display = "none";
+                          }
+                          completeOrder(container);
+                        });
+                    }
                   }
                 };
               }

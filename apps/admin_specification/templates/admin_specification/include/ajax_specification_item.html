@@ -143,6 +143,8 @@
              specification-id="{{ specification_list.id }}"
              order-id="{{ id }}"
              status="{{ status }}"
+             data-cart-id="{{ cart_list.id }}"
+             superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
                 <div class="table_item_value" style="width: 30.875rem";>
                         <a data-cart-id="{{ cart }}" href=""></a>

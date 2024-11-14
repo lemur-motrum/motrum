@@ -562,9 +562,29 @@ def create_specification(request):
         except Specification.DoesNotExist:
 
             try:
+                # если корзина без заказа
                 order = Order.objects.get(cart=cart)
                 specification = None
-                product_new = ProductCart.objects.filter(cart=cart, product=None)
+                product_new = ProductCart.objects.filter(cart=cart, product=None).annotate(
+                    price_motrum=Case(
+                        When(
+                            product_new_sale_motrum=None,
+                            then=("product_new_price"),
+                        ),
+                        When(
+                            product_new_sale_motrum__isnull=False,
+                            then=Round(
+                                F("product_new_price")
+                                - (
+                                    F("product_new_price")
+                                    / 100
+                                    * (F("product_new_sale_motrum"))
+                                ),
+                                2,
+                            ),
+                        ),
+                    ),
+                ).order_by("id")
                 product_specification = ProductSpecification.objects.filter(
                     specification=0
                 )

@@ -50,12 +50,11 @@
             {% if order.bill_sum_paid > 0 %}<div class="">Оплачено: {{ order.bill_sum_paid|number_into_digits }}</div>{% endif %}
             <br>
             {% if specification.file %}
-             <div class="">
-                Документ спецификации:
-                <a target="_blank" href="{{ specification.file.url }}">скачать</a>
-            </div>
+                <div class="">
+                    Документ спецификации:
+                    <a target="_blank" href="{{ specification.file.url }}">скачать</a>
+                </div>
             {% endif %}
-           
             {% if admin_king %}
                 <span class="table_item_value_span">
                     <a href="{% url "admin_specification:history_admin" specification.pk %}">История изменений спецификации</a>
@@ -133,12 +132,14 @@
                             <div class="item_value">{{ specif_prod.price_all|number_into_digits }}</div>
                             <div class="item_value">{{ specif_prod.price_all_motrum|number_into_digits }}</div>
                             <div class="item_value">
-                                {% if specif_prod.product  %}
-                                {% if specif_prod.product.price.sale %}{{ specif_prod.product.price.sale.percent }}%{% endif %}
-                                    
+                                {% if specif_prod.product %}
+                                    {% if specif_prod.product.price.sale %}
+                                        {{ specif_prod.product.price.sale.percent }}%
+                                    {% endif %}
                                 {% else %}
-                                {% if specif_prod.sale_motrum %}{{specif_prod.sale_motrum}}%{% endif %}
-                                    
+                                    {% if specif_prod.sale_motrum %}
+                                        {{ specif_prod.sale_motrum }}%
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             <div class="item_value">

@@ -10,17 +10,11 @@
     <div class="specification-content">
         {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
-            {% comment %} <a href="#">Главная</a>
-            <a href="{% url "admin_specification:categories" %}">Каталог</a>
-            {% if group %}
-                <a href="{% url "admin_specification:groups" group.category.pk %}">{{ group.category.name }}</a>
-            {% endif %} {% endcomment %}
             {% if group %}
                 <a href="{% url "admin_specification:groups" group.category.pk %}">Назад</a>
             {% else %}
                 <a href={% url "admin_specification:categories" %}>Назад</a>
             {% endif %}
-            {% comment %} <a href="{% url "admin_specification:all_specifications" %}">Все спецификации</a> {% endcomment %}
         </div>
         {% include "admin_specification/include/search_form.html" %}
         <div class="group-slider">

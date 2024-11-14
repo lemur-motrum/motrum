@@ -54,13 +54,12 @@
     </div>
 {% endblock content %}
 {% comment %} {% if date_completed %}
-                        {{date_completed}}
-                {% elif bill_date_stop and  %}
-                счет был до {{ bill_date_stop }}
-                {% elif bill_date_stop %}
-                до {{ bill_date_stop }}
-                {% elif specification_list.date_stop %}
-                до {{ specification_list.date_stop }}
-                {% else %}
-                        
+    {{ date_completed }}
+{% elif bill_date_stop and %}
+    счет был до {{ bill_date_stop }}
+{% elif bill_date_stop %}
+    до {{ bill_date_stop }}
+{% elif specification_list.date_stop %}
+    до {{ specification_list.date_stop }}
+{% else %}
 {% endif %} {% endcomment %}

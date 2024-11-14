@@ -1,38 +1,35 @@
-<div class="order_item"
-     order-id="{{ id }}"
-     order-elem="order-item"
-     style="border-style: solid;
-            {% if notification_count > 0 %}border-color: red{% endif %}">
-    <div class="">дата -{{ date_order }}</div>
-    <div class="">номер -{{ name }}</div>
-    <div class="">
-        состав заказа -
-        {% for specification_list_item in specification_list.productspecification_set %}
-            {{ specification_list_item.product_name }} - {{ specification_list_item.quantity }}
-            {{ specification_list_item.lot.lot }}
-        {% endfor %}
+<div class="order_item" order-id="{{ id }}" order-elem="order-item">
+    <div class="description_order">
+        <div class="order_number">Заказ №{{ name }}</div>
+        <div class="order_date">от <span class="order_date_value">{{ date_order }}</span></div>
+        <div class="order_status">{{ status_full }}</div>
     </div>
-    <div class="">
-        сумма  -
+    <div class="order_composition">
+        <div class="order_composition_container">
+            {% for specification_list_item in specification_list.productspecification_set %}
+                <div class="order_composition_item">
+                    {{ specification_list_item.product_name }} - {{ specification_list_item.quantity }}
+                    {{ specification_list_item.lot.lot }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="add_more_btn">подробнее</div>
+    </div>
+    <div class="order_invoice_details_container">
         {% if bill_sum %}
-            {{ bill_sum }}
+            <div class="bill_sum_details">
+                {{ bill_sum_paid }} ₽/
+                {{ bill_sum }} ₽
+            </div>
         {% else %}
-            счет не сформирован
+            <div class="bill_sum_details none-invoice">счет не сформирован</div>
         {% endif %}
     </div>
-    <div class="">
-        оплата -{{ bill_sum_paid }}
-        {% if bill_sum_paid %}
-            {{ bill_sum_paid }}
-        {% else %}
-            счет не сформирован
+    <div class="order_documents">
+        {% if specification_list.file %}
+            <a class="order_documents_item">спецификация {{ specification_list.file }}</a>
         {% endif %}
-    </div>
-    <div class="">статус -{{ status_full }}</div>
-    <div class="">
-        документы
-        {% if specification_list.file %}спецификация {{ specification_list.file }}{% endif %}
-        {% if bill_file %}счёт {{ bill_file }}{% endif %}
-        {% if act_file %}акт {{ act_file }}{% endif %}
+        {% if bill_file %}<a class="order_documents_item">счёт {{ bill_file }}</a>{% endif %}
+        {% if act_file %}<a class="order_documents_item">акт {{ act_file }}</a>{% endif %}
     </div>
 </div>

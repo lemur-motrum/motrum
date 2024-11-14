@@ -458,7 +458,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         post_update = data["post_update"]
 
-
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
             id=motrum_requisites_data
@@ -477,7 +476,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if type_save == "specification":
             last_spec_name = Specification.objects.filter(number__isnull=False).last()
- 
+
             if last_spec_name:
                 last_spec_name = last_spec_name.number
                 specification_name = int(last_spec_name) + 1
@@ -490,7 +489,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         if post_update:
             specification_name = Specification.objects.get(id=id_specification)
             specification_name = specification_name.number
-
 
         try:
             with transaction.atomic():
@@ -569,7 +567,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     cart.is_active = True
                     cart.save()
-            
+
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     return Response(
@@ -686,7 +684,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-            
+
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
@@ -725,7 +723,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     prod = ProductSpecification.objects.get(id=obj["id"])
 
                     if prod.product_new_article != None:
-     
+
                         save_new_product_okt(prod)
 
                 return Response(data, status=status.HTTP_200_OK)
@@ -1162,7 +1160,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
-
 
         page_count = Order.objects.filter(q_object).count()
 

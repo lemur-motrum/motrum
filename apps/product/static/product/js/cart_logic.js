@@ -230,7 +230,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
       let countQuantity = +countInput.value;
       const price = productOneContainer.querySelector(".price");
-      getDigitsNumber(price, getCurrentPrice(price.textContent));
+      if (price) {
+        getDigitsNumber(price, getCurrentPrice(price.textContent));
+      }
 
       countInput.addEventListener("keyup", function () {
         if (productMultiplicity) {
@@ -355,7 +357,7 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
           const cart_id = setCookie("cart");
           const dataObj = {
-            product: product_id,
+            product: productId,
             cart: cart_id,
             quantity: countInput.value,
           };

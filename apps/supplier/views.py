@@ -32,6 +32,7 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 
+
 # тестовая страница скриптов
 def add_iek(request):
 

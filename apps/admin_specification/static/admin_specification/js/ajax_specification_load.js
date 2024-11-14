@@ -83,7 +83,6 @@ window.addEventListener("DOMContentLoaded", () => {
       )
         .then((response) => response.json())
         .then(function (data) {
-          console.log(data);
           loader.classList.add("hide");
           smallLoader.classList.remove("show");
           lastPage = +data.count;

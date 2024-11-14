@@ -9,6 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const catalogContainer = catalogWrapper.querySelector(
       '[order-elem="container"]'
     );
+    const loader = catalogWrapper.querySelector(".loader");
     let productCount = 0;
 
     function loadItems(pagintaionFn = false) {
@@ -27,9 +28,11 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then(function (data) {
           console.log(data);
+
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
           }
+          loader.classList.add("hide");
         });
     }
 
@@ -54,46 +57,3 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
-
-// import {getCookie} from "/static/core/js/functions.js";
-
-// let catalogWrapper = document.querySelector('[order-elem="wrapper"]')
-// let catalogContainer = catalogWrapper.querySelector('[order-elem="container"]')
-// let catalogButton = catalogWrapper.querySelector('[order-elem="button"]')
-
-// catalogButton.addEventListener('click', function(event) {
-//   let productsCount = catalogContainer.querySelectorAll('[order-elem="order-item"]').length
-
-//   let data = {
-//     'count': productsCount
-//   }
-
-//   let params = new URLSearchParams(data)
-
-//   let csrfToken = getCookie('csrftoken')
-
-//   fetch(`/api/v1/product/load-ajax-product-list/?${params.toString()}`,{
-//     method: "GET",
-//     headers: {
-//       'X-CSRFToken': csrfToken
-//     }
-//   }).then((response) => response.json())
-//     .then(function (data) {
-//       for (let i in data) {
-//         addAjaxCatalogItem(data[i])
-//       }
-//     })
-// })
-
-// function renderCatalogItem(productData) {
-//   let ajaxTemplateWrapper = document.querySelector('[template-elem="wrapper"]')
-//   let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector('[catalog-elem="product-item"]').innerText
-
-//   return nunjucks.renderString(ajaxCatalogElementTemplate, productData)
-// }
-
-// function addAjaxCatalogItem(ajaxElemData) {
-//   let renderCatalogItemHtml = renderCatalogItem(ajaxElemData)
-
-//   catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml)
-// }

@@ -73,7 +73,7 @@ export function changePayment(container, errorFn) {
                 setTimeout(() => {
                   overlay.classList.add("visible");
                 }, 600);
-                paymentInput.addEventListener("input", function () {
+                paymentInput.addEventListener("input", function (e) {
                   let currentValue = this.value
                     .replace(",", ".")
                     .replace(/[^.\d]+/g, "")
@@ -81,10 +81,17 @@ export function changePayment(container, errorFn) {
                     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
                       return a + b + c.slice(0, 2);
                     });
+
                   if (currentValue > +paymentInput.getAttribute("summ-pay")) {
                     currentValue = +paymentInput.getAttribute("summ-pay");
                   }
                   paymentInput.value = currentValue;
+                  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                  numbers.forEach((num) => {
+                    if (paymentInput.value == `0${num}`) {
+                      e.target.value = "0";
+                    }
+                  });
                 });
 
                 paymentChangeButton.onclick = () => {

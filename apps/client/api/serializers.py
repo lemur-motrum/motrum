@@ -3,7 +3,10 @@ from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
 from datetime import date
-from apps.notifications.api.serializers import NotificationOrderSerializer, NotificationSerializer
+from apps.notifications.api.serializers import (
+    NotificationOrderSerializer,
+    NotificationSerializer,
+)
 from apps.product.api.serializers import CartOktAllSerializer, ProductCartSerializer
 from apps.specification.api.serializers import (
     ListProductSpecificationSerializer,
@@ -22,6 +25,7 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class RequisitesSerializer(serializers.ModelSerializer):
     type_payment_full = serializers.CharField(source="get_type_payment")
+
     class Meta:
         model = Requisites
         fields = "__all__"
@@ -71,25 +75,27 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = "__all__"
 
+
 class OrderSaveCartSerializer(serializers.ModelSerializer):
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
     )
+
     class Meta:
         model = Order
-        fields = "__all__"        
+        fields = "__all__"
 
 
 class LkOrderSerializer(serializers.ModelSerializer):
-    status_full = serializers.CharField(source="get_status_display",read_only=True)
+    status_full = serializers.CharField(source="get_status_display", read_only=True)
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
     )
-    
+
     # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
-    notification_count =  serializers.CharField()
-    
+    notification_count = serializers.CharField()
+
     class Meta:
         model = Order
         fields = (
@@ -113,27 +119,31 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "act_file",
             # "notification_set",
             "notification_count",
-            
         )
         read_only_fields = ("status_full",)
-        
+
     def to_representation(self, instance):
         representation = super(LkOrderSerializer, self).to_representation(instance)
-        if representation['bill_date_start']:
-            representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
-            representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')
-        return representation    
-    
-    
+        if representation["bill_date_start"]:
+            representation["bill_date_start"] = instance.bill_date_start.strftime(
+                "%d.%m.%Y"
+            )
+            representation["bill_date_stop"] = instance.bill_date_stop.strftime(
+                "%d.%m.%Y"
+            )
+        return representation
+
+
 class LkOrderDocumentSerializer(serializers.ModelSerializer):
     status_full = serializers.CharField(source="get_status_display")
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
     specification_list = ListsSpecificationSerializer(
         source="specification", read_only=True
     )
-    notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
-    
-    
+    notification_set = NotificationSerializer(
+        source="filtered_notification_items", read_only=False, many=True
+    )
+
     class Meta:
         model = Order
         fields = (
@@ -156,17 +166,21 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
             "bill_date_stop",
             "bill_date_start",
             "notification_set",
-            
         )
         read_only_fields = ("status_full",)
-        
+
     def to_representation(self, instance):
-        representation = super(LkOrderDocumentSerializer, self).to_representation(instance)
-        if representation['bill_date_start']:
-            representation['bill_date_start'] = instance.bill_date_start.strftime('%d.%m.%Y')
-            representation['bill_date_stop'] = instance.bill_date_stop.strftime('%d.%m.%Y')
-        return representation    
-    
+        representation = super(LkOrderDocumentSerializer, self).to_representation(
+            instance
+        )
+        if representation["bill_date_start"]:
+            representation["bill_date_start"] = instance.bill_date_start.strftime(
+                "%d.%m.%Y"
+            )
+            representation["bill_date_stop"] = instance.bill_date_stop.strftime(
+                "%d.%m.%Y"
+            )
+        return representation
 
 
 class OrderOktSerializer(serializers.ModelSerializer):
@@ -174,48 +188,58 @@ class OrderOktSerializer(serializers.ModelSerializer):
     bill_status = serializers.SerializerMethodField()
     name_req_full = serializers.CharField(source="requisites")
     status_full = serializers.CharField(source="get_status_display")
-    requisites_set = AllAccountRequisitesSerializer(source="requisites",read_only=False,)
+    requisites_set = AllAccountRequisitesSerializer(
+        source="requisites",
+        read_only=False,
+    )
     cart_list = CartOktAllSerializer(source="cart", read_only=False)
     is_superuser = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
         fields = "__all__"
-    
+
     def get_bill_status(self, obj):
-        
+
         if obj.bill_date_stop:
             if date.today() > obj.bill_date_stop:
                 return False
             else:
                 return True
         else:
-            return None  
-    def get_is_superuser(self, obj): 
-   
+            return None
+
+    def get_is_superuser(self, obj):
+
         user = self.context.get("request").user
         if user.is_superuser:
             return True
         else:
             return False
- 
-    
+
     def to_representation(self, instance):
-        representation = super(
-            OrderOktSerializer, self
-        ).to_representation(instance)
+        representation = super(OrderOktSerializer, self).to_representation(instance)
         if instance.bill_date_stop:
-            representation["bill_date_stop"] = instance.bill_date_stop.strftime("%d.%m.%Y")
+            representation["bill_date_stop"] = instance.bill_date_stop.strftime(
+                "%d.%m.%Y"
+            )
         if instance.bill_date_start:
-            representation["bill_date_start"] = instance.bill_date_start.strftime("%d.%m.%Y")
+            representation["bill_date_start"] = instance.bill_date_start.strftime(
+                "%d.%m.%Y"
+            )
         if instance.date_completed:
-            representation["date_completed"] = instance.date_completed.strftime("%d.%m.%Y")
+            representation["date_completed"] = instance.date_completed.strftime(
+                "%d.%m.%Y"
+            )
         if instance.requisites:
             representation["name_req_full"] = instance.requisites.legal_entity
-        
-        return representation      
+
+        return representation
+
 
 class DocumentSerializer(serializers.Serializer):
     """Your data serializer, define your fields here."""
+
     name = serializers.CharField()
     cart = serializers.CharField()
     status = serializers.CharField()
@@ -226,9 +250,9 @@ class DocumentSerializer(serializers.Serializer):
     date_created = serializers.DateField()
     data_stop = serializers.DateField()
     amount = serializers.FloatField()
-    
-    
+
+
 class EmailsCallBackSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailsCallBack
-        fields = "__all__" 
+        fields = "__all__"

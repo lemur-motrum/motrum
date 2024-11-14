@@ -998,13 +998,14 @@ def save_specification(
                     id=product_item["product_specif_id"],
                 )
                         
-                        price_one_before = product_spesification.price_one
-                        price_one = price_one_before / (
-                            1 - float(product_spesification.extra_discount) / 100
-                        )
-                        print(44444)
-                        price_one = round(price_one, 2)
-                        price_one_motrum = product_spesification.price_one_motrum
+                        # price_one_before = product_spesification.price_one
+                        # price_one = price_one_before / (
+                        #     1 - float(product_spesification.extra_discount) / 100
+                        # )
+                        # print(44444)
+                        # price_one = round(price_one, 2)
+                        # price_one_motrum = product_spesification.price_one_motrum
+                        price_one_motrum = price_one
                         
                     else:
                         print(5555555)

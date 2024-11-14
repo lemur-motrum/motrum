@@ -28,7 +28,7 @@ export function editMotrumPrice(container) {
             } else {
               motrumPriceContainer.setAttribute(
                 "price-motrum",
-                priceInput.value
+                +getCurrentPrice(specification.getAttribute("data-price"))
               );
             }
           });

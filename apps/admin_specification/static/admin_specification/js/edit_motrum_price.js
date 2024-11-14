@@ -9,7 +9,6 @@ export function editMotrumPrice(container) {
 
       if (priceInput) {
         priceInput.value = getCurrentPrice(priceInput.value);
-
         if (specification.querySelector(".motrum_sale_persent")) {
           const motrumSalePersent = getCurrentPrice(
             specification.querySelector(".motrum_sale_persent").textContent

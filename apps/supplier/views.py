@@ -37,7 +37,7 @@ def add_iek(request):
 
     title = "Услуги"
  
-    bill_date_stop()
+    iek_api()
     responsets = ["233", "2131"]
     # responsets = 0
     context = {

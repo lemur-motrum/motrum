@@ -1002,12 +1002,14 @@ window.addEventListener("DOMContentLoaded", () => {
             inputPrice.value = curentPrice.toFixed(2);
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
+            getMarginality(spetificationTable);
             getResult();
           };
           if (saveButton) {
             saveButton.onclick = () => saveSpecification();
           }
         } else {
+          getMarginality(spetificationTable);
           getResult();
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
@@ -1019,6 +1021,7 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(productPriceContainer, curentPrice);
             const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
+            getMarginality(spetificationTable);
             getResult();
           };
           if (saveButton) {

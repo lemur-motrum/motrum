@@ -1365,8 +1365,8 @@ def save_new_product_okt(product_new):
         )
         product_stock.save()
        
-        
-        
+def save_spesif_web():
+    pass      
         
         
         

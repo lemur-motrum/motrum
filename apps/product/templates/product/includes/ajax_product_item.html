@@ -3,7 +3,18 @@
      order-multiplicity="{{ stock.order_multiplicity }}"
      catalog-elem="product-item">
     <div class="img-container">
-        <img src="/static/core/images/nophoto.png">
+        {% if productimage_set|length > 0 %}
+            {% for productimage in productimage_set %}
+                <div class="char">
+                    {% if loop.first %}
+                        <img src="{{productimage.photo}}">
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <img src="/static/core/images/nophoto.png">
+        {% endif %}
+        
     </img>
 </div>
 <div class="product-item_description">
@@ -13,7 +24,9 @@
         {% if productproperty_set|length != 0 %}
             {% for productproperty in productproperty_set %}
                 <div class="char">
-                    <span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>
+                    {% if loop.index < 4 %}
+                        <span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

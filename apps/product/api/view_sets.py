@@ -43,7 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
 
-        page_get = request.query_params.get("page") 
+        page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
         if request.query_params.get("vendor"):
@@ -122,7 +122,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "price",
                 "stock",
             )
-            .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"))
+            .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"),)
             .filter(q_object)
             .order_by(sorting)[count : count + count_last]
         )
@@ -273,42 +273,42 @@ class CartViewSet(viewsets.ModelViewSet):
             # корзина админов
             if request.user.is_staff:
                 # try:
-                    cart = Cart.objects.filter(session_key=session, is_active=False).last()
-                    if cart:
+                cart = Cart.objects.filter(session_key=session, is_active=False).last()
+                if cart:
+                    response = Response()
+                    response.data = cart.id
+                    response.status = status.HTTP_200_OK
+                    response.set_cookie("cart", cart.id, max_age=2629800)
+                    return response
+                else:
+
+                    # except Cart.DoesNotExist:
+                    data = {
+                        "session_key": session,
+                        "save_cart": False,
+                        "client": None,
+                        "cart_admin": request.user,
+                    }
+                    serializer = self.serializer_class(data=data, many=False)
+                    if serializer.is_valid():
+                        serializer.save()
                         response = Response()
-                        response.data = cart.id
-                        response.status = status.HTTP_200_OK
-                        response.set_cookie("cart", cart.id, max_age=2629800)
+                        response.data = serializer.data["id"]
+                        response.status = status.HTTP_201_CREATED
+                        # response.set_cookie(
+                        #     "sessionid", serializer.data["session_key"], max_age=2629800
+                        # )
+                        response.set_cookie(
+                            "cart", serializer.data["id"], max_age=2629800
+                        )
                         return response
                     else:
+                        return Response(
+                            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                        )
 
-                # except Cart.DoesNotExist:
-                        data = {
-                            "session_key": session,
-                            "save_cart": False,
-                            "client": None,
-                            "cart_admin": request.user,
-                        }
-                        serializer = self.serializer_class(data=data, many=False)
-                        if serializer.is_valid():
-                            serializer.save()
-                            response = Response()
-                            response.data = serializer.data["id"]
-                            response.status = status.HTTP_201_CREATED
-                            # response.set_cookie(
-                            #     "sessionid", serializer.data["session_key"], max_age=2629800
-                            # )
-                            response.set_cookie(
-                                "cart", serializer.data["id"], max_age=2629800
-                            )
-                            return response
-                        else:
-                            return Response(
-                                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                            )
-
-                # cart = Cart.objects.get_or_create(session_key=session, save_cart=False)
-                # response.set_cookie("cart", cart[0].id, max_age=2629800)
+            # cart = Cart.objects.get_or_create(session_key=session, save_cart=False)
+            # response.set_cookie("cart", cart[0].id, max_age=2629800)
             # корзина юзера логиненого
             else:
                 try:

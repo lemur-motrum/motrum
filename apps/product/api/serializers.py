@@ -6,6 +6,7 @@ from apps.product.models import (
     Lot,
     Price,
     Product,
+    ProductImage,
     ProductProperty,
     Stock,
     ProductCart,
@@ -60,9 +61,20 @@ class ProductPropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductProperty
         fields = (
+            "id",
             "hide",
             "name",
             "value",
+        )
+
+class ProductImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductImage
+        fields = (
+            "id",
+            "hide",
+            "photo",
         )
 
 
@@ -89,6 +101,7 @@ class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
     stock = StockSerializer(read_only=False, many=False)
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
+    productimage_set = ProductImageSerializer(read_only=False, many=True)
     url = serializers.CharField(source="get_absolute_url", read_only=True)
 
     class Meta:
@@ -105,6 +118,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "stock",
             "productproperty_set",
+            "productimage_set",
             "url",
         )
 

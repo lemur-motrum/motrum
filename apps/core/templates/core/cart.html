@@ -19,7 +19,14 @@
                              product-id="{{ product_item.id_product_cart }}"
                              order-multiplicity="{{ product_item.stock.order_multiplicity }}">
                             <div class="img-contaner">
-                                <img src={% static "core/images/nophoto.png" %} alt="">
+                                {% for productimage in product_item.productimage_set.all %}
+                                    {% if forloop.counter == 1 %}
+                                   
+                                        <img src="{{productimage.photo.url}}" alt="">
+                                    {% endif %}
+                                {% empty %}
+                                    <img src={% static "core/images/nophoto.png" %} alt="">
+                                {% endfor %}
                             </div>
                             <div class="product_item-description">
                                 <div class="name">{{ product_item.name }}</div>

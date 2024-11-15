@@ -83,9 +83,9 @@ def cart(request):
         )
         product_cart = ProductCart.objects.filter(cart=cart)
 
-        prefetch_queryset_property = ProductProperty.objects.filter(
-            product__in=product_cart_list
-        )
+        # prefetch_queryset_property = ProductProperty.objects.filter(
+        #     product__in=product_cart_list
+        # )
 
         product = (
             Product.objects.filter(id__in=product_cart_list)
@@ -101,7 +101,9 @@ def cart(request):
             .prefetch_related(
                 Prefetch(
                     "productproperty_set",
-                    queryset=prefetch_queryset_property,
+                    # queryset=prefetch_queryset_property,
+                ),Prefetch(
+                    "productimage_set",
                 )
             )
             .annotate(

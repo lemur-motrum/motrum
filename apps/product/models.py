@@ -719,6 +719,7 @@ class ProductImage(models.Model):
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
+        ordering = ['pk']
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
 

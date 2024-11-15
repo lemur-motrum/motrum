@@ -363,6 +363,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 for product_item in products_cart:
                     quantity = product_item.quantity
                     product = Product.objects.get(id=product_item.product.id)
+                    print()
                     item_data = get_product_item_data(
                         specification, product, extra_discount, quantity
                     )

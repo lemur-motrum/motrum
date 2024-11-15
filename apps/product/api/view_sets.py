@@ -43,7 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
 
-        page_get = request.query_params.get("page")
+        page_get = request.query_params.get("page") 
         sort_price = request.query_params.get("sort")
         # sort_price = "-"
         if request.query_params.get("vendor"):

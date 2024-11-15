@@ -111,6 +111,13 @@ class Specification(models.Model):
 
 
 class ProductSpecification(models.Model):
+    id_cart = models.ForeignKey(
+        "product.ProductCart",
+        on_delete=models.CASCADE,
+        verbose_name="Товар корзины",
+        blank=True,
+        null=True,
+    )
     specification = models.ForeignKey(
         Specification,
         on_delete=models.CASCADE,

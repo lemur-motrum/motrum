@@ -9,8 +9,17 @@ export function getMarginality(wrapper) {
     const spetificationItems = wrapper.querySelectorAll(".item_container");
     spetificationItems.forEach((item) => {
       const quantityInput = item.querySelector(".input-quantity");
+      const discountInput = item.querySelector(".discount-input");
+
       const priceOne = +getCurrentPrice(item.getAttribute("data-price"));
-      const totalCost = +quantityInput.value * priceOne;
+      let totalCost;
+      if (!discountInput) {
+        totalCost = +quantityInput.value * priceOne;
+      } else {
+        totalCost =
+          ((+quantityInput.value * priceOne) / 100) *
+          (100 - discountInput.value);
+      }
       const marginalityContainer = item.querySelector(".marginality");
       const motrumSalePersent = item.querySelector(".motrum_sale_persent");
       if (motrumSalePersent) {

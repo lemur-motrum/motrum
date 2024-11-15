@@ -514,6 +514,7 @@ window.addEventListener("DOMContentLoaded", () => {
           ).value;
           const inputPrice = item.querySelector(".price-input");
           const saleMotrum = item.querySelector(".motrum_sale_persent");
+          const productCartId = item.getAttribute("data-product-id-cart");
 
           const createTextDateDelivery = () => {
             const orderData = new Date(deliveryDate.value);
@@ -556,6 +557,7 @@ window.addEventListener("DOMContentLoaded", () => {
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
+            id_cart: productCartId,
           };
 
           if (

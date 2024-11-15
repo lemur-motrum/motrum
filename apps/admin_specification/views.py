@@ -2,9 +2,10 @@ import datetime
 import json
 from multiprocessing import context
 import os
+from django.views.decorators.cache import cache_control
 from django.core import serializers
 from django.db.models import Prefetch, OuterRef
-
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
@@ -448,6 +449,7 @@ def specifications(request, cat, gr):
 
 
 # рендер страницы корзины
+# @cache_control(max_age=3600)
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
@@ -497,9 +499,7 @@ def create_specification(request):
                     ).values(
                         "vendor",
                     ),
-                    product_new_cart=product_cart.filter(
-                        id=OuterRef("id_cart")
-                    ).values(
+                    product_new_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "product_new",
                     ),
                     product_new_article_cart=product_cart.filter(
@@ -507,9 +507,7 @@ def create_specification(request):
                     ).values(
                         "product_new_article",
                     ),
-                    id_product_cart=product_cart.filter(
-                        id=OuterRef("id_cart")
-                    ).values(
+                    id_product_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "id",
                     ),
                     product_new_price=product_cart.filter(
@@ -891,8 +889,20 @@ def one_specifications(request, pk):
         .select_related(
             "product",
         )
+        .annotate(
+            marja=Round(
+                F("price_all") - F("price_all_motrum"),
+                2,
+            ),
+        )
         .order_by("id")
         .prefetch_related(Prefetch("product__price"))
+    )
+    totals = product_specification.aggregate(
+        all_sum=Sum("price_all"),
+        all_sum_motrum=Sum("price_all_motrum"),
+        all_sum_marja=Sum("marja"),
+        all_sum_quantity=Sum("quantity"),
     )
     order = Order.objects.get(specification=specification)
 
@@ -903,6 +913,7 @@ def one_specifications(request, pk):
         "product_specification": product_specification,
         "order": order,
         "admin_king": admin_king,
+        "totals": totals,
     }
 
     return render(request, "admin_specification/one_specifications.html", context)

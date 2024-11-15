@@ -15,7 +15,6 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.logs.utils import error_alert
 
 
-
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
 
@@ -625,14 +624,14 @@ def create_time_stop_specification():
     data_bd = CalendarHoliday.objects.get(year=year)
     data_bd_holidays = data_bd.json_date
     now = datetime.datetime.now()
-  
+
     day_need = 1
     i = 0
     while day_need < 3:
-   
+
         i += 1
         date = now + datetime.timedelta(days=i)
-        # расчет на стыке годов 
+        # расчет на стыке годов
         if date.year > year_date:
             data_bd = CalendarHoliday.objects.get(year=date.year)
             data_bd_holidays = data_bd.json_date
@@ -655,11 +654,10 @@ def create_time_stop_specification():
                 holidays_day_need += holidays_day_need_nowork
 
         if holidays_day_need == 0:
-            
+
             day_need += 1
-         
- 
-    three_days = datetime.timedelta(i+1)
+
+    three_days = datetime.timedelta(i + 1)
     in_three_days = now + three_days
     data_stop = in_three_days.strftime("%Y-%m-%d")
 
@@ -732,7 +730,6 @@ def get_file_price_path_add(instance, filename):
             instance.file,
         )
 
-
         return file
 
     elif instance.slug == "optimus-drive":
@@ -754,7 +751,6 @@ def get_file_price_path_add(instance, filename):
             instance.file,
         )
 
-
         return file
 
     elif instance.slug == "emas":
@@ -775,7 +771,6 @@ def get_file_price_path_add(instance, filename):
             random_number,
             instance.file,
         )
-   
 
         return file
 
@@ -887,7 +882,8 @@ def save_specification(
     from apps.specification.utils import crete_pdf_specification
     from apps.product.models import ProductCart
     from apps.core.utils import create_time_stop_specification
-    print("pre_sale func",pre_sale)
+
+    print("pre_sale func", pre_sale)
     # try:
 
     # сохранение спецификации
@@ -937,7 +933,7 @@ def save_specification(
             #         having_items = True
 
             # if having_items == False:
-    
+
             #     product_item_for_old.delete()
 
     except Specification.DoesNotExist:
@@ -960,13 +956,13 @@ def save_specification(
     currency_product = False
 
     for product_item in products:
-   
+
         # продукты которые есть в окт
         if product_item["product_new_article"] == "":
-            
+
             product = Product.objects.get(id=product_item["product_id"])
             price = Price.objects.get(prod=product)
-            print("продукт из окт",product)
+            print("продукт из окт", product)
             # если цена по запросу взять ее если нет взять цену из бд
             if (
                 product_item["price_exclusive"] != "0"
@@ -976,7 +972,7 @@ def save_specification(
                 price_one_before = product_item["price_one"]
                 price_one = product_item["price_one"]
                 print(111111)
-              
+
                 if price.in_auto_sale:
                     price_motrum_all = get_price_motrum(
                         price.prod.category_supplier,
@@ -992,12 +988,16 @@ def save_specification(
                     sale = price_motrum_all[1]
                 else:
                     print(99999)
-                    if post_update and product_item["product_specif_id"] !="None" and product_item["product_specif_id"] != None:
+                    if (
+                        post_update
+                        and product_item["product_specif_id"] != "None"
+                        and product_item["product_specif_id"] != None
+                    ):
                         print(333)
                         product_spesification = ProductSpecification.objects.get(
-                    id=product_item["product_specif_id"],
-                )
-                        
+                            id=product_item["product_specif_id"],
+                        )
+
                         # price_one_before = product_spesification.price_one
                         # price_one = price_one_before / (
                         #     1 - float(product_spesification.extra_discount) / 100
@@ -1006,17 +1006,17 @@ def save_specification(
                         # price_one = round(price_one, 2)
                         # price_one_motrum = product_spesification.price_one_motrum
                         price_one_motrum = price_one
-                        
+
                     else:
                         print(5555555)
                         # price_one = price.rub_price_supplier
                         price_one_motrum = price_one
-                print("продукт из окт 2",product)
+                print("продукт из окт 2", product)
             else:
 
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
-                print("продукт из окт 3",product)
+                print("продукт из окт 3", product)
 
             # если есть доп скидка отнять от цены поставщика
 
@@ -1031,20 +1031,19 @@ def save_specification(
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
 
-                
             # если есть предоплата найти скидку по предоплате мотрум
             persent_pre_sale = 0
-            print("продукт из окт 4",product)
+            print("продукт из окт 4", product)
             if pre_sale and price.in_auto_sale:
-                
+
                 price_pre_sale = get_presale_discount(product)
-                print("get_presale_discount",price_pre_sale)
+                print("get_presale_discount", price_pre_sale)
                 if price_pre_sale:
-                    persent_pre_sale = price_pre_sale.percent  
+                    persent_pre_sale = price_pre_sale.percent
                     price_one_motrum = price_one_motrum - (
                         price_one_motrum / 100 * float(persent_pre_sale)
                     )
-                    price_one_motrum = round(price_one_motrum, 2) 
+                    price_one_motrum = round(price_one_motrum, 2)
             # # если есть предоплата найти скидку по предоплате мотрум
             # if pre_sale:
             #     price_pre_sale = get_presale_discount(product)
@@ -1054,11 +1053,10 @@ def save_specification(
             #             price_one_motrum / 100 * float(persent_pre_sale)
             #         )
             #         price_one_motrum = round(price_one_motrum, 2)
-         
-    
+
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
-            print("продукт из окт 6",product)
+            print("продукт из окт 6", product)
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
 
@@ -1067,19 +1065,19 @@ def save_specification(
                 product_item["product_specif_id"] != "None"
                 and product_item["product_specif_id"] != None
             ):
-                
+
                 product_spes = ProductSpecification.objects.get(
                     id=product_item["product_specif_id"],
                 )
-                print("продукт из окт 7",product)
+                print("продукт из окт 7", product)
             else:
-          
+
                 product_spes = ProductSpecification(
                     specification=specification,
                     product=product,
                 )
-                print("продукт из окт 8",product)
-         
+                print("продукт из окт 8", product)
+
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = price.currency
             product_spes.quantity = product_item["quantity"]
@@ -1100,7 +1098,7 @@ def save_specification(
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
             product_spes.id_cart_id = int(product_item["id_cart"])
-    
+
             # запись дат
             date_delivery = product_item["date_delivery"]
             if date_delivery != "" and date_delivery != None:
@@ -1108,10 +1106,10 @@ def save_specification(
                     date_delivery, "%Y-%m-%d"
                 )
                 product_spes.date_delivery = date_delivery
-                
+
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
-                product_spes.text_delivery = text_delivery   
+                product_spes.text_delivery = text_delivery
 
             product_spes.save()
 
@@ -1119,19 +1117,19 @@ def save_specification(
             print("продукт  из каталога стоп")
         # продукты без записи в окт
         else:
-            print( "продукты без записи в окт")
+            print("продукты без записи в окт")
             price_one = product_item["price_one"]
             price_one_original_new = price_one
             if product_item["sale_motrum"]:
                 motrum_sale = product_item["sale_motrum"]
-                motrum_sale = motrum_sale.replace('.', '')
-                motrum_sale = motrum_sale.replace(',', '.')
+                motrum_sale = motrum_sale.replace(".", "")
+                motrum_sale = motrum_sale.replace(",", ".")
                 motrum_sale = float(motrum_sale)
             else:
                 motrum_sale = 0.00
-            price_one_motrum = price_one - (price_one / 100 * motrum_sale) 
+            price_one_motrum = price_one - (price_one / 100 * motrum_sale)
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-            price_all_motrum = round(price_all_motrum, 2) 
+            price_all_motrum = round(price_all_motrum, 2)
 
             if (
                 product_item["extra_discount"] != "0"
@@ -1143,9 +1141,7 @@ def save_specification(
 
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-            
-                
-           
+
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
 
@@ -1164,9 +1160,7 @@ def save_specification(
                     specification=specification,
                     product=None,
                 )
-            
-            
-            
+
             if (
                 product_item["extra_discount"] != "0"
                 and product_item["extra_discount"] != ""
@@ -1198,9 +1192,9 @@ def save_specification(
                 product_spes.date_delivery = date_delivery
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
-                product_spes.text_delivery = text_delivery   
+                product_spes.text_delivery = text_delivery
 
-            product_spes.save()    
+            product_spes.save()
 
             total_amount = total_amount + price_all
 
@@ -1231,7 +1225,7 @@ def save_specification(
             specification.file = pdf
             specification._change_reason = "Ручное"
             if post_update == False:
-                    specification.date_create_pdf = datetime.datetime.today()
+                specification.date_create_pdf = datetime.datetime.today()
             specification.save()
 
     return specification
@@ -1295,15 +1289,14 @@ def rub_words(n):
 
     if n[-2:] in ("11", "12", "13", "14"):
         return f"рублей"
-    
+
     elif n[-1] == "1":
         return f"рубль"
     elif n[-1] in ("2", "3", "4"):
         return f"рубля"
-    
+
     else:
         return f"рублей"
-   
 
 
 def pens_words(n):
@@ -1329,11 +1322,12 @@ def loc_mem_cache(key, function, timeout=300):
         cache.set(key, cache_data, timeout)
     return cache_data
 
-# сохранение товара без записи в бд в бд 
+
+# сохранение товара без записи в бд в бд
 def save_new_product_okt(product_new):
-    from apps.product.models import Product,Price,Lot,Stock
+    from apps.product.models import Product, Price, Lot, Stock
     from apps.supplier.models import Supplier, Vendor
-   
+
     if product_new.vendor:
         vendor = product_new.vendor
         supplier = vendor.supplier
@@ -1342,35 +1336,49 @@ def save_new_product_okt(product_new):
         supplier = Supplier.objects.get("drugoe")
 
     try:
-        product = Product.objects.get(vendor=vendor, article_supplier=product_new.product_new_article)
-        
+        product = Product.objects.get(
+            vendor=vendor, article_supplier=product_new.product_new_article
+        )
+
     except Product.DoesNotExist:
         product = Product(
-            supplier=supplier, vendor=vendor, article_supplier=product_new.product_new_article,name=product_new.product_new,in_view_website=False,autosave_tag = False
+            supplier=supplier,
+            vendor=vendor,
+            article_supplier=product_new.product_new_article,
+            name=product_new.product_new,
+            in_view_website=False,
+            autosave_tag=False,
         )
         product.save()
         update_change_reason(product, "Автоматическое")
-    
+
         currency = Currency.objects.get(words_code="RUB")
         vat = Vat.objects.get(name=20)
-        
-        price = Price(prod=product,currency=currency,vat=vat,extra_price=True,in_auto_sale=False)
+
+        price = Price(
+            prod=product,
+            currency=currency,
+            vat=vat,
+            extra_price=True,
+            in_auto_sale=False,
+        )
         price.save()
         update_change_reason(price, "Автоматическое")
-        
+
         lot_auto = Lot.objects.get(name_shorts="шт")
         product_stock = Stock(
             prod=product,
             lot=lot_auto,
         )
         product_stock.save()
-       
+
+        return Product
+
+
 def save_spesif_web():
-    pass      
-        
-        
-        
-        
+    pass
+
+
 #      def save_specification(
 #     received_data,
 #     pre_sale,
@@ -1437,7 +1445,7 @@ def save_spesif_web():
 #             #         having_items = True
 
 #             # if having_items == False:
-    
+
 #             #     product_item_for_old.delete()
 
 #     except Specification.DoesNotExist:
@@ -1460,7 +1468,7 @@ def save_spesif_web():
 #     currency_product = False
 
 #     for product_item in products:
-   
+
 #         # продукты которые есть в окт
 #         if product_item["product_new_article"] == "":
 #             product = Product.objects.get(id=product_item["product_id"])
@@ -1484,7 +1492,7 @@ def save_spesif_web():
 #                 #         1 - float(product_item["extra_discount"]) / 100
 #                 #     )
 #                 #     price_one = round(price_one, 2)
-              
+
 #                 if price.in_auto_sale:
 #                     price_motrum_all = get_price_motrum(
 #                         price.prod.category_supplier,
@@ -1503,7 +1511,7 @@ def save_spesif_web():
 #                     price_one_motrum = price.price_motrum
 
 #             else:
-       
+
 #                 price_one = price.rub_price_supplier
 #                 price_one_motrum = price.price_motrum
 
@@ -1590,7 +1598,7 @@ def save_spesif_web():
 
 #         # продукты без записи в окт
 #         else:
-            
+
 #             print("продукты без записи в окт")
 #             price_one = product_item["price_one"]
 #             price_one_original_new = price_one
@@ -1601,9 +1609,9 @@ def save_spesif_web():
 #                 motrum_sale = float(motrum_sale)
 #             else:
 #                 motrum_sale = 0.00
-#             price_one_motrum = price_one - (price_one / 100 * motrum_sale) 
+#             price_one_motrum = price_one - (price_one / 100 * motrum_sale)
 #             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-#             price_all_motrum = round(price_all_motrum, 2) 
+#             price_all_motrum = round(price_all_motrum, 2)
 
 #             if (
 #                 product_item["extra_discount"] != "0"
@@ -1615,9 +1623,8 @@ def save_spesif_web():
 
 #                 price_one_sale = price_one - (price_one / 100 * persent_sale)
 #                 price_one = round(price_one_sale, 2)
-            
-                
-           
+
+
 #             price_all = float(price_one) * int(product_item["quantity"])
 #             price_all = round(price_all, 2)
 
@@ -1636,9 +1643,8 @@ def save_spesif_web():
 #                     specification=specification,
 #                     product=None,
 #                 )
-            
-            
-            
+
+
 #             if (
 #                 product_item["extra_discount"] != "0"
 #                 and product_item["extra_discount"] != ""
@@ -1660,7 +1666,7 @@ def save_spesif_web():
 #             product_spes.product_new_article = product_item["product_new_article"]
 #             product_spes._change_reason = "Ручное"
 #             product_spes.comment = product_item["comment"]
-      
+
 #             print(int(product_item["vendor"]))
 #             product_spes.vendor_id = int(product_item["vendor"])
 #             print(product_spes.vendor_id)
@@ -1703,20 +1709,9 @@ def save_spesif_web():
 
 #             specification.save()
 
-#     return specification   
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+#     return specification
+
+
 # from django.utils.http import url_has_allowed_host_and_scheme
 # import urllib
 
@@ -1770,13 +1765,12 @@ def save_spesif_web():
 #         orders = orders.order_by(sorting, "-id")[count : count + count_last]
 
 
-
-             # оригинальная цена без примененой скидки
-                # if (
-                #     product_item["extra_discount"] != "0"
-                #     and product_item["extra_discount"] != ""
-                # ):
-                #     price_one = price_one_before / (
-                #         1 - float(product_item["extra_discount"]) / 100
-                #     )
-                #     price_one = round(price_one, 2)
+# оригинальная цена без примененой скидки
+# if (
+#     product_item["extra_discount"] != "0"
+#     and product_item["extra_discount"] != ""
+# ):
+#     price_one = price_one_before / (
+#         1 - float(product_item["extra_discount"]) / 100
+#     )
+#     price_one = round(price_one, 2)

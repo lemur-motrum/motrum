@@ -100,9 +100,11 @@
                         <div class="title_item">Цена за шт. в ₽:</div>
                         <div class="title_item">Стоимость:</div>
                         <div class="title_item">Стоимость Motrum:</div>
+                        <div class="title_item">Маржа</div>
                         <div class="title_item">Скидка Motrum %:</div>
                         <div class="title_item">Доп.Скидка %:</div>
-                        <div class="title_item">Срок поставки спецификация:</div>
+                        
+                        {% comment %} <div class="title_item">Срок поставки спецификация:</div> {% endcomment %}
                         <div class="title_item">Срок поставки счет:</div>
                     </div>
                     {% for specif_prod in product_specification %}
@@ -134,6 +136,10 @@
                             <div class="item_value">{{ specif_prod.price_all|number_into_digits }}</div>
                             <div class="item_value">{{ specif_prod.price_all_motrum|number_into_digits }}</div>
                             <div class="item_value">
+                                {{specif_prod.marja|number_into_digits }}
+                                {% comment %} {% if specif_prod.date_delivery %}{{ specif_prod.date_delivery }}{% endif %} {% endcomment %}
+                            </div>
+                            <div class="item_value">
                                 {% if specif_prod.product %}
                                     {% if specif_prod.product.price.sale %}
                                         {{ specif_prod.product.price.sale.percent }}%
@@ -155,13 +161,28 @@
                                 {% endif %}
 
                             </div>
-                            <div class="item_value">
-                                {% if specif_prod.date_delivery %}{{ specif_prod.date_delivery }}{% endif %}
-                            </div>
+
                             <div class="item_value">
                                 {% if specif_prod.text_delivery %}{{ specif_prod.text_delivery }}{% endif %}
                             </div>
                         </div>
+                        {% if forloop.last %}
+                        <div class="item_container"style="
+                        border-top: 1px solid black;
+                        font-weight: 800;
+                    ">
+                            <div class="item_value">Итого:</div>
+                            <div class="item_value"></div>
+                            <div class="item_value"></div>
+                            <div class="item_value"style=" width: 100px;">{{totals.all_sum_quantity }}</div>
+                            <div class="item_value"></div>
+                            <div class="item_value">{{totals.all_sum|number_into_digits }} </div>
+                            <div class="item_value">{{totals.all_sum_motrum|number_into_digits }}</div>
+                            <div class="item_value">{{totals.all_sum_marja|number_into_digits }}</div>
+                            <div class="item_value"> </div>
+                            <div class="item_value"></div>
+                            <div class="item_value"></div>
+                        </div>{% endif %}
                     {% endfor %}
                 </div>
             </div>

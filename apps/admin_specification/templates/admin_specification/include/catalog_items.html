@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="suppler-price">
                                     {% if product.price.price_motrum and product.price.price_motrum != 0 %}
-                                        <span class="price-suppler-count">{{ product.price.price_motrum }}</span> ₽
+                                        <span class="price-suppler-count">{{ product.price.price_motrum }}</span> 
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}
@@ -118,7 +118,7 @@
                                 <div class="price">
                                     {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
                                         <span class="span-update">{{ product.price.data_update|date:"d.m.Y" }}</span>
-                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> ₽
+                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> 
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}

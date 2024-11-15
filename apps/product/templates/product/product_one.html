@@ -20,15 +20,12 @@
                         <span>изображение товара 1</span>
                     </div>
                     <div class="small_img_container">
-               
-                        {% comment %} {% if product.productimage_set.all  %}
+                         {% if product.productimage_set.all  %}
                         {% for image in product.productimage_set.all %}
                             <div class="small_img"><img src="{{image.photo.url}}" alt=""></div>
                             {% endfor %}
                         {% else %}
-                        {% endif %}  {% endcomment %}
-                        <div class="small_img"></div>
-                        <div class="small_img"></div>
+                        {% endif %} 
                     </div>
                 </div>
                 <div class="documentation_container">
@@ -36,8 +33,8 @@
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
                             <div class="documentation_item">
-                                <a class="documentation_link" href="{{productdocument.document.url}}">{{productdocument.name}}</a>
-                                <span class="documentation_link_exe">({{productdocument.extension|upper }}, {{productdocument.document.size|filesizeformat }}) </span>
+                                <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
+                                {% comment %} <span class="documentation_link_exe">({{productdocument.extension|upper }}, {{productdocument.document.size|filesizeformat }}) </span> {% endcomment %}
                             </div>
                         {% empty %}
                         {% endfor %}
@@ -72,7 +69,6 @@
                         {% else %}
                             -
                         {% endif %}
-
                     </div>
                 </div>
             </div>

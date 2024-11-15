@@ -10,8 +10,10 @@ import {
 let csrfToken = getCookie("csrftoken");
 
 const globalCountCart = document.querySelector(".global_cart_count");
-if (globalCountCart.textContent) {
-  globalCountCart.classList.add("orange");
+if (globalCountCart) {
+  if (globalCountCart.textContent) {
+    globalCountCart.classList.add("orange");
+  }
 }
 
 window.addEventListener("DOMContentLoaded", () => {

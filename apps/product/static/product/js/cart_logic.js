@@ -13,6 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const filtersAndProductContainer = document.querySelector(
     ".filters_and_products_container"
   );
+  const globalCountCart = document.querySelector(".global_cart_count");
 
   if (filtersAndProductContainer) {
     const productContainer = filtersAndProductContainer.querySelector(
@@ -154,12 +155,12 @@ window.addEventListener("DOMContentLoaded", () => {
                             throw new Error("Ошибка");
                           }
                         })
-                        .then(
-                          (response) =>
-                            (document.querySelector(
-                              ".global_cart_count"
-                            ).textContent = response.cart_len)
-                        )
+                        .then((response) => {
+                          globalCountCart.textContent = response.cart_len;
+                          if (!globalCountCart.classList.contains("orange")) {
+                            globalCountCart.classList.add("orange");
+                          }
+                        })
                         .catch((error) => console.error(error));
                     }
                   })
@@ -189,12 +190,12 @@ window.addEventListener("DOMContentLoaded", () => {
                       throw new Error("Ошибка");
                     }
                   })
-                  .then(
-                    (response) =>
-                      (document.querySelector(
-                        ".global_cart_count"
-                      ).textContent = response.cart_len)
-                  )
+                  .then((response) => {
+                    globalCountCart.textContent = response.cart_len;
+                    if (!globalCountCart.classList.contains("orange")) {
+                      globalCountCart.classList.add("orange");
+                    }
+                  })
                   .catch((error) => console.error(error));
               }
             }
@@ -344,12 +345,12 @@ window.addEventListener("DOMContentLoaded", () => {
                       throw new Error("Ошибка");
                     }
                   })
-                  .then(
-                    (response) =>
-                      (document.querySelector(
-                        ".global_cart_count"
-                      ).textContent = response.cart_len)
-                  )
+                  .then((response) => {
+                    globalCountCart.textContent = response.cart_len;
+                    if (!globalCountCart.classList.contains("orange")) {
+                      globalCountCart.classList.add("orange");
+                    }
+                  })
                   .catch((error) => console.error(error));
               }
             })
@@ -378,11 +379,12 @@ window.addEventListener("DOMContentLoaded", () => {
                 throw new Error("Ошибка");
               }
             })
-            .then(
-              (response) =>
-                (document.querySelector(".global_cart_count").textContent =
-                  response.cart_len)
-            )
+            .then((response) => {
+              globalCountCart.textContent = response.cart_len;
+              if (!globalCountCart.classList.contains("orange")) {
+                globalCountCart.classList.add("orange");
+              }
+            })
             .catch((error) => console.error(error));
         }
       }

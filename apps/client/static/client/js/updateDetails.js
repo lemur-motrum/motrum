@@ -106,55 +106,56 @@ window.addEventListener("DOMContentLoaded", () => {
         const updateBtn = legalAdressForm.querySelector(
           ".change-post-adress-button"
         );
-
-        updateBtn.onclick = (e) => {
-          e.preventDefault();
-          if (!indexInput.value) {
-            showErrorValidation("Обязательное поле", indexInputError);
-          }
-          if (indexInput.value.length !== 6) {
-            showErrorValidation("индекс состоит из 6 цифр", indexInputError);
-          }
-          if (!cityInput.value) {
-            showErrorValidation("Обязательное поле", cityInputError);
-          }
-          if (!addressInput.value) {
-            showErrorValidation("Обязательное поле", addressError);
-          }
-          if (
-            indexInput.value.length == 6 &&
-            cityInput.value &&
-            addressInput.value
-          ) {
-            const dataObj = [
-              {
-                requisites: {
-                  postal_post_code: indexInput.value,
-                  postal_city: cityInput.value,
-                  postal_address: addressInput.value,
+        if (updateBtn) {
+          updateBtn.onclick = (e) => {
+            e.preventDefault();
+            if (!indexInput.value) {
+              showErrorValidation("Обязательное поле", indexInputError);
+            }
+            if (indexInput.value.length !== 6) {
+              showErrorValidation("индекс состоит из 6 цифр", indexInputError);
+            }
+            if (!cityInput.value) {
+              showErrorValidation("Обязательное поле", cityInputError);
+            }
+            if (!addressInput.value) {
+              showErrorValidation("Обязательное поле", addressError);
+            }
+            if (
+              indexInput.value.length == 6 &&
+              cityInput.value &&
+              addressInput.value
+            ) {
+              const dataObj = [
+                {
+                  requisites: {
+                    postal_post_code: indexInput.value,
+                    postal_city: cityInput.value,
+                    postal_address: addressInput.value,
+                  },
                 },
-              },
-            ];
-            const data = JSON.stringify(dataObj);
+              ];
+              const data = JSON.stringify(dataObj);
 
-            fetch(`/api/v1/requisites/${detailsId}/update/`, {
-              method: "UPDATE",
-              body: data,
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken,
-              },
-            }).then((response) => {
-              response.json();
-              if (response.status == 200) {
-                window.location.reload();
-              }
-              if (response.status == 400) {
-                console.log("Ошибка");
-              }
-            });
-          }
-        };
+              fetch(`/api/v1/requisites/${detailsId}/update/`, {
+                method: "UPDATE",
+                body: data,
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": csrfToken,
+                },
+              }).then((response) => {
+                response.json();
+                if (response.status == 200) {
+                  window.location.reload();
+                }
+                if (response.status == 400) {
+                  console.log("Ошибка");
+                }
+              });
+            }
+          };
+        }
 
         bankDetails.forEach((bankDetail) => {
           if (bankDetail) {

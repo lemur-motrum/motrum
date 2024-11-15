@@ -12,9 +12,7 @@
         <div class="img-container">
             <img src={% static "core/images/header_bascet.png" %} />
         </div>
-        <span class="global_cart_count cart-count">
-            {% if count_cart %}{{ count_cart }}{% endif %}
-        </span>
+        <span class="global_cart_count cart-count">{% if count_cart %}{{ count_cart }}{% endif %}</span>
     </a>
     <a href={% url 'client:my_orders' %} class="cart-elem">
         <div class="img-container">

@@ -272,38 +272,40 @@ class CartViewSet(viewsets.ModelViewSet):
         else:
             # корзина админов
             if request.user.is_staff:
-                try:
-                    cart = Cart.objects.get(session_key=session, is_active=False)
-                    response = Response()
-                    response.data = cart.id
-                    response.status = status.HTTP_200_OK
-                    response.set_cookie("cart", cart.id, max_age=2629800)
-                    return response
-
-                except Cart.DoesNotExist:
-                    data = {
-                        "session_key": session,
-                        "save_cart": False,
-                        "client": None,
-                        "cart_admin": request.user,
-                    }
-                    serializer = self.serializer_class(data=data, many=False)
-                    if serializer.is_valid():
-                        serializer.save()
+                # try:
+                    cart = Cart.objects.filter(session_key=session, is_active=False).last()
+                    if cart:
                         response = Response()
-                        response.data = serializer.data["id"]
-                        response.status = status.HTTP_201_CREATED
-                        # response.set_cookie(
-                        #     "sessionid", serializer.data["session_key"], max_age=2629800
-                        # )
-                        response.set_cookie(
-                            "cart", serializer.data["id"], max_age=2629800
-                        )
+                        response.data = cart.id
+                        response.status = status.HTTP_200_OK
+                        response.set_cookie("cart", cart.id, max_age=2629800)
                         return response
                     else:
-                        return Response(
-                            serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                        )
+
+                # except Cart.DoesNotExist:
+                        data = {
+                            "session_key": session,
+                            "save_cart": False,
+                            "client": None,
+                            "cart_admin": request.user,
+                        }
+                        serializer = self.serializer_class(data=data, many=False)
+                        if serializer.is_valid():
+                            serializer.save()
+                            response = Response()
+                            response.data = serializer.data["id"]
+                            response.status = status.HTTP_201_CREATED
+                            # response.set_cookie(
+                            #     "sessionid", serializer.data["session_key"], max_age=2629800
+                            # )
+                            response.set_cookie(
+                                "cart", serializer.data["id"], max_age=2629800
+                            )
+                            return response
+                        else:
+                            return Response(
+                                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                            )
 
                 # cart = Cart.objects.get_or_create(session_key=session, save_cart=False)
                 # response.set_cookie("cart", cart[0].id, max_age=2629800)

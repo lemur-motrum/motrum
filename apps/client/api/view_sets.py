@@ -491,7 +491,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = specification_name.number
 
         try:
-            print(dddd)
+            
             with transaction.atomic():
                 specification = save_specification(
                     data,
@@ -528,20 +528,20 @@ class OrderViewSet(viewsets.ModelViewSet):
                             )
                             new.save()
                             
-                        elif product_spes_l.product_new_article:
-                            new = ProductCart(
-                                cart=cart,
-                                product_new=product_spes_l.product_new,
-                                product_new_article=product_spes_l.product_new_article,
-                                product_new_price=product_spes_l.product_new_price,
-                                vendor=product_spes_l.vendor,
-                                product_new_sale=product_spes_l.product_new_sale,
-                                product_new_sale_motrum=product_spes_l.product_new_sale_motrum,
-                                comment=product_spes_l.comment,
-                                quantity=product_spes_l.quantity,
+                        # elif product_spes_l.product_new_article:
+                        #     new = ProductCart(
+                        #         cart=cart,
+                        #         product_new=product_spes_l.product_new,
+                        #         product_new_article=product_spes_l.product_new_article,
+                        #         product_new_price=product_spes_l.product_new_price,
+                        #         vendor=product_spes_l.vendor,
+                        #         product_new_sale=product_spes_l.product_new_sale,
+                        #         product_new_sale_motrum=product_spes_l.product_new_sale_motrum,
+                        #         comment=product_spes_l.comment,
+                        #         quantity=product_spes_l.quantity,
                                 
-                            )
-                            new.save()
+                        #     )
+                        #     new.save()
                         else:
                             pass    
                         

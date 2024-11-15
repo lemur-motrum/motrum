@@ -8,7 +8,7 @@ from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
-from apps.core.tasks import currency_chek, del_currency, update_currency_price
+from apps.core.tasks import currency_chek, del_currency, del_void_cart, update_currency_price
 from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
@@ -38,7 +38,7 @@ def add_iek(request):
 
     title = "Услуги"
  
-    iek_api()
+
     responsets = ["233", "2131"]
     # responsets = 0
     context = {

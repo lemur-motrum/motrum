@@ -7,10 +7,10 @@ from simple_history.utils import update_change_reason
 from apps.client.models import Order
 from apps.core.models import CalendarHoliday, Currency
 from apps.logs.utils import error_alert
-from apps.product.models import CurrencyRate, Price
+from apps.product.models import Cart, CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
-
+from django.db.models import Prefetch, OuterRef
 
 @app.task(
     bind=True,
@@ -195,6 +195,28 @@ def get_next_year_holiday(self):
             location = "Получение производственного календаря"
 
             info = f"Получение производственного календаря не удалось"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=160)    
+    
+
+
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def del_void_cart(self):
+    try:
+        carts = Cart.objects.prefetch_related(Prefetch("productcart_set")).filter().order_by("id")
+        print(carts)
+        for cart in carts:
+            print(cart)
+            print(cart.productcart_set)
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Удаление пустых корзин"
+
+            info = f"Удаление пустых корзин"
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)    
     

@@ -34,6 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const commentItem = item.querySelector(
         'textarea[name="comment-input-name"]'
       ).value;
+      const productCartId = item.getAttribute("data-product-id-cart");
 
       const product = {
         product_id: +itemID,
@@ -49,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
         product_new_article: nameProductNew,
         comment: commentItem ? commentItem : null,
         vendor: vendor ? vendor : null,
+        id_cart: productCartId,
       };
 
       products.push(product);

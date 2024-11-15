@@ -174,7 +174,7 @@ export function changePayment(container, errorFn) {
                           paymentBtn.disabled = false;
                           paymentBtn.innerHTML = "";
                           paymentBtn.textContent = "Внести cумму оплаты";
-                          console.log(response.is_all_sum);
+
                           if (response.is_all_sum == true) {
                             paymentBtn.style.display = "none";
                             const completeBtnContainer =

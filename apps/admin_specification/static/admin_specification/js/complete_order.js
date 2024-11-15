@@ -66,7 +66,6 @@ export function completeOrder(container) {
                       }, 600);
                       completeBtn.style.display = "none";
                       specification.classList.add("completed_order");
-                      console.log("ок");
                       addOrderButton.disabled = false;
                       addOrderButton.innerHTML = "";
                       addOrderButton.textContent = "Завершить заказ";

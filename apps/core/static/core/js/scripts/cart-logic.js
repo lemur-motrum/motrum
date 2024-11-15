@@ -9,6 +9,11 @@ import {
 
 let csrfToken = getCookie("csrftoken");
 
+const globalCountCart = document.querySelector(".global_cart_count");
+if (globalCountCart.textContent) {
+  globalCountCart.classList.add("orange");
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   const cartContainer = document.querySelector(".cart_container");
   if (cartContainer) {
@@ -23,6 +28,12 @@ window.addEventListener("DOMContentLoaded", () => {
       let itemNotPrice = 0;
 
       const productItems = productContainer.querySelectorAll(".product_item");
+
+      if (productItems.length == 0) {
+        if (globalCountCart.classList.contains("orange")) {
+          globalCountCart.classList.add("orange");
+        }
+      }
       productItems.forEach((productItem) => {
         const productId = productItem.getAttribute("product-id");
         const inputCount = productItem.querySelector(".quantity");

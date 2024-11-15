@@ -67,6 +67,9 @@ window.addEventListener("DOMContentLoaded", () => {
           ".motrum_sale_persent"
         );
         const vendor = specificationItem.getAttribute("data-vendor");
+        const productCartId = specificationItem.getAttribute(
+          "data-product-id-cart"
+        );
 
         const createTextDateDelivery = () => {
           const orderData = new Date(deliveryDate.value);
@@ -110,6 +113,7 @@ window.addEventListener("DOMContentLoaded", () => {
           comment: commentItem ? commentItem : null,
           sale_motrum: saleMotrum ? saleMotrum.textContent : null,
           vendor: vendor ? vendor : null,
+          id_cart: productCartId,
         };
         if (deliveryDate) {
           if (!deliveryDate.value) {

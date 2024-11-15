@@ -179,22 +179,20 @@ def product_one(request, category, group, article):
             Prefetch("stock__lot"),
             Prefetch("productproperty_set"),
             Prefetch("productimage_set"),
+            Prefetch("productdocument_set"),
         )
         .get(article=article)
     )
-    # product_properties = ProductProperty.objects.filter(product=product.pk)
-    # product_lot = Stock.objects.get(prod=product.pk)
+    product_document = ProductDocument.objects.filter(product=product)
 
-    # current_category = CategoryProduct.objects.get(slug=category)
-    # current_group = GroupProduct.objects.get(slug=group)
 
     context = {
         "product": product,
         "current_category": product.category,
         "current_group": product.group,
         "title": product.name,
-        # "product_properties": product_properties,
-        # "product_lot": product_lot,
+        "product_document":product_document
+
     }
     return render(request, "product/product_one.html", context)
 

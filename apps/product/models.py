@@ -1,3 +1,4 @@
+import os
 import re
 import unicodedata
 from django.urls import reverse
@@ -753,6 +754,10 @@ class ProductDocument(models.Model):
     def __str__(self):
         return f"{self.document}"
     
+    def extension(self):
+        name, extension = os.path.splitext(self.document.name)
+        extension = extension.replace('.', '')
+        return extension
     # def pre_save(self, model_instance, add):
     #     file = super().pre_save(model_instance, add)
     #     if file and not file._committed:

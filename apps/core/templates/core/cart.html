@@ -32,7 +32,6 @@
                                 <div class="name">{{ product_item.name }}</div>
                                 <div class="article">Артикул: {{ product_item.article }}</div>
                                 <div class="chars">
-                                    {{ products.productproperty_set }}
                                     {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
                                         {% for productproperty in product_item.productproperty_set.all %}
                                             {% if forloop.counter < 4 %}

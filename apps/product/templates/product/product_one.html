@@ -34,26 +34,13 @@
                 <div class="documentation_container">
                     <div class="documentation_title">Документация</div>
                     <div class="documentation_items">
-                        <div class="documentation_item">
-                            <a class="documentation_link" href="#">Сертификат</a>
-                            <span class="documentation_link_exe">(PDF, 690 Kb)</span>
-                        </div>
-                        <div class="documentation_item">
-                            <a class="documentation_link" href="#">Системное руководство</a>
-                            <span class="documentation_link_exe">(PDF, 690 Kb)</span>
-                        </div>
-                        {% comment %} <a href="#" class="documentation_elem">
-                            <div class="img_container">
-                                <img src={% static "product/img/documentation_img.png" %} alt="img">
+                        {% for productdocument in product_document %}
+                            <div class="documentation_item">
+                                <a class="documentation_link" href="{{productdocument.document.url}}">{{productdocument.name}}</a>
+                                <span class="documentation_link_exe">({{productdocument.extension|upper }}, {{productdocument.document.size|filesizeformat }}) </span>
                             </div>
-                            <div class="description">Скачать техническую документацию</div>
-                        </a>
-                        <a href="#" class="documentation_elem">
-                            <div class="img_container">
-                                <img src={% static "product/img/documentation_img.png" %} alt="img">
-                            </div>
-                            <div class="description">Скачать техническую документацию</div>
-                        </a> {% endcomment %}
+                        {% empty %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -85,18 +72,7 @@
                         {% else %}
                             -
                         {% endif %}
-                        {% comment %} {% for product_property in product.productproperty_set %}
-                        <div class="property">
-                            <div class="property_name">{{ product_property.name }}</div>
-                            <div class="property_description">
-                                {% if product_property.value %}
-                                    {{ product_property.value }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %} {% endcomment %}
+
                     </div>
                 </div>
             </div>

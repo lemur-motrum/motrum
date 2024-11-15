@@ -26,6 +26,15 @@ export function getMarginality(wrapper) {
         const marginality =
           (totalCost / 100) * +getCurrentPrice(motrumSalePersent.textContent);
         getDigitsNumber(marginalityContainer, marginality);
+      } else {
+        if (discountInput) {
+          getDigitsNumber(
+            marginalityContainer,
+            ((+quantityInput.value * priceOne) / 100) *
+              (100 - +discountInput.value) -
+              quantityInput.value * priceOne
+          );
+        }
       }
     });
   }

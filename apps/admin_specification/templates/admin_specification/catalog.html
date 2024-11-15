@@ -28,6 +28,7 @@
                     <div class="title_item">Стоимость:</div>
                     <div class="title_item">Стоимость Motrum:</div>
                     <div class="title_item">Доп.Скидка %:</div>
+                    <div class="title_item">Маржа</div>
                     <div class="title_item">Срок поставки:</div>
                 </div>
                 {% for item in product %}
@@ -161,6 +162,7 @@
                                 {% endif %}
                             </label>
                         </div>
+                        <div class="item_value"><span class="marginality">0</span> ₽</div>
                         <div class="item_value">
                             <label>
                                 {% if bill_upd %}
@@ -274,6 +276,7 @@
                                     {% endif %}
                                 </label>
                             </div>
+                            <div class="item_value"><span class="marginality">0</span> ₽</div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -459,6 +462,7 @@
                                     {% endif %}
                                 </label>
                             </div>
+                            <div class="item_value"><span class="marginality">0</span> ₽</div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -634,6 +638,7 @@
                                     {% endif %}
                                 </label>
                             </div>
+                            <div class="item_value"><span class="marginality">0</span> ₽</div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -781,6 +786,10 @@
                         </div>
                     </div>
                 </div>
+                <div class="price_description">
+                    <div>Итого: <span class="price">0</span> <span class="total-price-description">₽</span></div>
+                    <div>Маржа: <span class="marginality_value">0</span> <span class="total-price-description">₽</span></div>
+                </div>
                 <div class="add_new_product_container">
                     <label class="search_label">
                         <div class="delete_search_details_btn">+</div>
@@ -810,10 +819,9 @@
                               name="delivery-date-all-input-name-all"
                               placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
                 </div>
+              
                 <div class="submit-container">
-                    <div class="price_description">
-                        Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
-                    </div>
+                 
                     <div class="client">
                         <label class="serch-client">
                             <div class="client-prev">

@@ -12,6 +12,7 @@ import {
 import { setErrorModal } from "../js/error_modal.js";
 import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
+import { getMarginality } from "../js/marginality.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -461,17 +462,30 @@ window.addEventListener("DOMContentLoaded", () => {
       const totalPriceValueContainer =
         spetificationTable.querySelector(".price_description");
       const valueContainer = totalPriceValueContainer.querySelector(".price");
+      const marginality =
+        totalPriceValueContainer.querySelector(".marginality_value");
+      const revenue = totalPriceValueContainer.querySelector(".revenue");
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
 
       function getResult() {
+        let margSum = 0;
         let sum = 0;
         const allElems = spetificationTable.querySelectorAll(".total_cost");
+        const allElemsMarginaliry =
+          spetificationTable.querySelectorAll(".marginality");
+
+        for (let i = 0; i < allElems.length; i++) {
+          margSum += new NumberParser("ru").parse(
+            allElemsMarginaliry[i].textContent
+          );
+        }
 
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
         getDigitsNumber(valueContainer, +sum);
+        getDigitsNumber(marginality, +margSum);
       }
 
       function saveSpecification(elems) {
@@ -769,6 +783,7 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(productTotalPrice, currentPrice);
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
+            getMarginality(spetificationTable);
             getResult();
             updateProduct();
           }
@@ -789,7 +804,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 (100 - +discountInput.value)) /
               100;
           getDigitsNumber(productTotalPrice, currentPrice);
-          getResult();
+
           if (countQuantity >= 99999) {
             minusButton.disabled = false;
             plusButton.disabled = true;
@@ -801,7 +816,9 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           editMotrumPrice(spetificationTable);
           changeDateInOrder(spetificationTable);
+          getMarginality(spetificationTable);
           updateProduct();
+          getResult();
         };
 
         minusButton.onclick = () => {
@@ -822,7 +839,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 (100 - +discountInput.value)) /
               100;
           getDigitsNumber(productTotalPrice, currentPrice);
-          getResult();
+
           if (countQuantity >= 99999) {
             minusButton.disabled = false;
             plusButton.disabled = true;
@@ -836,7 +853,9 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           editMotrumPrice(spetificationTable);
           changeDateInOrder(spetificationTable);
+          getMarginality(spetificationTable);
           updateProduct();
+          getResult();
         };
 
         if (inputPrice) {
@@ -854,9 +873,10 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(productTotalPrice, currentPrice);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
-            getResult();
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
+            getMarginality(spetificationTable);
+            getResult();
           };
 
           plusButton.onclick = () => {
@@ -886,6 +906,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
+            getMarginality(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -919,6 +940,7 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             updateProduct();
             changeDateInOrder(spetificationTable);
+            getMarginality(spetificationTable);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getResult();
@@ -958,6 +980,7 @@ window.addEventListener("DOMContentLoaded", () => {
               totalPrice.textContent = 0;
             }
             editMotrumPrice(spetificationTable);
+            getMarginality(spetificationTable);
             updateProduct();
             // changeDateInOrder(spetificationTable);
             getResult();

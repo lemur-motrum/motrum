@@ -84,7 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         }
       }
-
+      changePercent();
       salePersentInput.addEventListener("input", function () {
         const currentValue = this.value
           .replace(",", ".")

@@ -492,18 +492,33 @@ def create_specification(request):
                 )
                 .annotate(
                     id_product_spesif=F("id"),
+                    product_new_cart_vendor=product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "vendor",
+                    ),
+                    product_new_cart=product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "product_new",
+                    ),
+                    product_new_article_cart=product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "product_new_article",
+                    ),
                     id_product_cart=product_cart.filter(
-                        product_new=OuterRef("product_new")
+                        id=OuterRef("id_cart")
                     ).values(
                         "id",
                     ),
                     product_new_price=product_cart.filter(
-                        product_new=OuterRef("product_new")
+                        id=OuterRef("id_cart")
                     ).values(
                         "product_new_price",
                     ),
                     product_new_sale_motrum=product_cart.filter(
-                        product_new=OuterRef("product_new")
+                        id=OuterRef("id_cart")
                     ).values(
                         "product_new_sale_motrum",
                     ),

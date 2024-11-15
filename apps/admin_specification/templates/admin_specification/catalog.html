@@ -183,13 +183,14 @@
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                    1111
+                    
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
-                             data-vendor="{{ item.vendor.id }}"
+                             data-vendor="{% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}{% else %}
+                             {{ item.vendor.id }}{% endif %}"
                              data-product-pk=""
-                             data-product-name-new="{{ item.product_new }}"
-                             data-product-article-new="{{ item.product_new_article }}"
+                             data-product-name-new="{% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}"
+                             data-product-article-new="{% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}"
                              data-product-id-cart="{{ item.id_product_cart }}"
                              data-id="{{ item.id_product_cart }}"
                              data-price="{{ item.product_new_price }}"
@@ -200,9 +201,9 @@
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
                             </div>
                             <div class="item_value">
-                                {{ item.product_new }}
+                                {% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}
                                 <br>
-                                <div class="article">Арт. {{ item.product_new_article }}</div>
+                                <div class="article">Арт. {% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}</div>
                                 <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
@@ -296,7 +297,7 @@
                                         <label class="name_label">
                                             <input placeholder="Имя товара"
                                                    class="new_item_container_name_input"
-                                                   value="{{ item.product_new }}"
+                                                   value="{% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}"
                                                    type="text" />
                                             <div class="error"></div>
                                         </label>
@@ -304,15 +305,24 @@
                                             <input placeholder="Артикул товара"
                                                    class="new_item_container_article_input"
                                                    type="text"
-                                                   value="{{ item.product_new_article }}" />
+                                                   value="{% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}" />
                                             <div class="error"></div>
                                         </label>
                                         <label class="vedor_label">
                                             <select class="vendor_select" value="">
                                                 <option value="" disabled selected>Выберете производителя</option>
                                                 {% for vendor_item in vendor %}
-                                                    <option value="{{ vendor_item.id }}"
-                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}>
+                                                {% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}{% else %}
+                             {{ item.vendor.id }}{% endif %}
+                                                    <option
+                                                    {% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}
+                                                    value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor%}selected{% endif %}
+                                                    {% else %}
+                                                        value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}{% endif %}
+                                                    
+                                                    {% comment %} value="{{ vendor_item.id }}" {% endcomment %}
+                                                            {% comment %} {% if vendor_item.id == item.vendor.id %}selected{% endif %} {% endcomment %}
+                                                            >
                                                         {{ vendor_item.name }}
                                                     </option>
                                                 {% endfor %}

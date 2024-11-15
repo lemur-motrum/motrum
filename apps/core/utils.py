@@ -1099,7 +1099,7 @@ def save_specification(
             product_spes.price_all_motrum = price_all_motrum
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
-            product_spes.id_cart = int(product_item["id_cart"])
+            product_spes.id_cart_id = int(product_item["id_cart"])
     
             # запись дат
             date_delivery = product_item["date_delivery"]
@@ -1189,7 +1189,7 @@ def save_specification(
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
             product_spes.vendor_id = int(product_item["vendor"])
-            product_spes.id_cart = int(product_item["id_cart"])
+            product_spes.id_cart_id = int(product_item["id_cart"])
             date_delivery = product_item["date_delivery"]
             if date_delivery != "" and date_delivery != None:
                 product_spes.date_delivery = datetime.datetime.strptime(

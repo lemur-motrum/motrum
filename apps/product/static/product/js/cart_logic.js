@@ -355,7 +355,7 @@ window.addEventListener("DOMContentLoaded", () => {
             })
             .catch((error) => console.error(error));
         } else {
-          const cart_id = setCookie("cart");
+          const cart_id = getCookie("cart");
           const dataObj = {
             product: productId,
             cart: cart_id,

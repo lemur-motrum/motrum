@@ -111,15 +111,17 @@
                     </div>
                     <div class="item-buttons_container">
                         <div class="quantity-buttons">
-                            <button disabled class="minus-button">-</button>
+                            <button disabled class="minus-button"></button>
                             <input type="number"
                                    value="1"
-                                   oninput="javascript: if (this.value.length> this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                    maxlength="3"
                                    onkeypress='validate(event)'>
-                            <button class="plus-button">+</button>
+                            <button class="plus-button"></button>
                         </div>
-                        <button disabled class="add-specification-button">В корзину</button>
+                        <button class="add-specification-button">
+                            В корзину <span></span>
+                        </button>
                     </div>
                 </div>
             </div>

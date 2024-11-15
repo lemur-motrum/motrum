@@ -1273,9 +1273,10 @@ a {
   .projects {
     display: grid;
     grid-template-columns: 40.351rem 40.351rem;
-    -moz-column-gap: 3.082rem;
-    column-gap: 3.082rem;
+    // -moz-column-gap: 3.082rem;
+    // column-gap: 3.082rem;
     row-gap: 2.928rem;
+    justify-content: space-between;
     margin-top: 5.511rem;
     .title-container {
       display: flex;
@@ -1284,6 +1285,7 @@ a {
         text-transform: uppercase;
         font-size: 3rem;
         font-weight: bold;
+        line-height: 0.9em;
       }
       .description {
         font-size: 1.5rem;

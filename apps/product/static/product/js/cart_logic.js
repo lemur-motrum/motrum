@@ -411,13 +411,6 @@ window.addEventListener("DOMContentLoaded", () => {
     let allPrice = 0;
     const personalDiscountInput =
       cartContainer.querySelector(".personal_discount");
-    const personalDiscount = +getCurrentPrice(
-      personalDiscountInput.getAttribute("data-personal-discount")
-    );
-    // let withoutDiscountPriceArray = [];
-    // const priceWithoutDiscontContainer = document.querySelectorA(
-    //   ".all_cart_no_sale_price"
-    // );
 
     products.forEach((product) => {
       const priceOne = product.querySelector(".cart_price");

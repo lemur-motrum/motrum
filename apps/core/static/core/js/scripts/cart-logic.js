@@ -1,10 +1,7 @@
 import {
-  setCookie,
   getCookie,
   deleteCookie,
-  NumberParser,
   getDigitsNumber,
-  getCurrentPrice,
 } from "/static/core/js/functions.js";
 
 let csrfToken = getCookie("csrftoken");

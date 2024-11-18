@@ -16,13 +16,16 @@ export function editMotrumPrice(container) {
           motrumPriceContainer.setAttribute(
             "price-motrum",
             (+getCurrentPrice(specification.getAttribute("data-price")) / 100) *
-              (100 - +motrumSalePersent)
+              (100 - +motrumSalePersent).toFixed(2)
           );
           priceInput.addEventListener("input", function () {
             if (specification.querySelector(".motrum_sale_persent")) {
               motrumPriceContainer.setAttribute(
                 "price-motrum",
-                (+priceInput.value / 100) * (100 - +motrumSalePersent)
+                (
+                  (+priceInput.value / 100) *
+                  (100 - +motrumSalePersent)
+                ).toFixed(2)
               );
             } else {
               motrumPriceContainer.setAttribute(
@@ -46,7 +49,7 @@ export function editMotrumPrice(container) {
       const currentMotrumPrice = +motrumPriceOne * +quantityItem;
 
       motrumPriceContainer
-        ? getDigitsNumber(motrumPriceContainer, +currentMotrumPrice)
+        ? getDigitsNumber(motrumPriceContainer, +currentMotrumPrice.toFixed(2))
         : "";
     });
   }

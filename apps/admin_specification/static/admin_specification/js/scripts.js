@@ -1032,15 +1032,16 @@ window.addEventListener("DOMContentLoaded", () => {
             if (discountInput.value == "-") {
               curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
             } else {
-              curentPrice =
+              curentPrice = (
                 (+getCurrentPrice(item.getAttribute("data-price")) *
                   (100 - +discountInput.value)) /
-                100;
+                100
+              ).toFixed(2);
             }
 
             inputPrice.value = curentPrice.toFixed(2);
             const allPrice = inputPrice.value * countQuantity;
-            getDigitsNumber(productTotalPrice, allPrice);
+            getDigitsNumber(productTotalPrice, allPrice.toFixed());
             getMarginality(spetificationTable);
             getResult();
           };
@@ -1063,10 +1064,12 @@ window.addEventListener("DOMContentLoaded", () => {
                   (100 - +discountInput.value)) /
                 100;
             }
-            (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
-              100;
-            getDigitsNumber(productPriceContainer, curentPrice);
-            const allPrice = (curentPrice * countQuantity).toFixed(2);
+            (
+              (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
+              100
+            ).toFixed(2);
+            getDigitsNumber(productPriceContainer, curentPrice.toFixed(2));
+            const allPrice = (curentPrice * countQuantity).toFixed();
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
             getResult();

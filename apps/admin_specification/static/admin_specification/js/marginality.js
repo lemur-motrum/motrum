@@ -27,7 +27,12 @@ export function getMarginality(wrapper) {
         }
       }
       const marginalityContainer = item.querySelector(".marginality");
-      getDigitsNumber(marginalityContainer, totalCost - priceMotrum);
+      const marginality = totalCost - priceMotrum;
+
+      getDigitsNumber(marginalityContainer, marginality);
+      // if ((marginalityContainer.textContent = "-0,00")) {
+      //   marginalityContainer.textContent = "0,00";
+      // }
     });
   }
 }

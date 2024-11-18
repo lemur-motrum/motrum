@@ -23,7 +23,7 @@ export function getMarginality(wrapper) {
         } else {
           totalCost =
             +quantityInput.value *
-            ((priceOne / 100) * (100 - discountInput.value));
+            ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
         }
       }
       const marginalityContainer = item.querySelector(".marginality");

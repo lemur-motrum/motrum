@@ -1,4 +1,8 @@
-import { getCurrentPrice, getDigitsNumber } from "/static/core/js/functions.js";
+import {
+  getCurrentPrice,
+  getDigitsNumber,
+  NumberParser,
+} from "/static/core/js/functions.js";
 
 export function editMotrumPrice(container) {
   if (container) {
@@ -6,7 +10,6 @@ export function editMotrumPrice(container) {
     specificationItems.forEach((specification) => {
       const priceInput = specification.querySelector(".price-input");
       const motrumPriceContainer = specification.querySelector(".price_motrum");
-
       if (priceInput) {
         priceInput.value = getCurrentPrice(priceInput.value);
         if (specification.querySelector(".motrum_sale_persent")) {
@@ -16,16 +19,13 @@ export function editMotrumPrice(container) {
           motrumPriceContainer.setAttribute(
             "price-motrum",
             (+getCurrentPrice(specification.getAttribute("data-price")) / 100) *
-              (100 - +motrumSalePersent).toFixed(2)
+              (100 - +motrumSalePersent)
           );
           priceInput.addEventListener("input", function () {
             if (specification.querySelector(".motrum_sale_persent")) {
               motrumPriceContainer.setAttribute(
                 "price-motrum",
-                (
-                  (+priceInput.value / 100) *
-                  (100 - +motrumSalePersent)
-                ).toFixed(2)
+                (+priceInput.value / 100) * (100 - +motrumSalePersent)
               );
             } else {
               motrumPriceContainer.setAttribute(
@@ -49,7 +49,7 @@ export function editMotrumPrice(container) {
       const currentMotrumPrice = +motrumPriceOne * +quantityItem;
 
       motrumPriceContainer
-        ? getDigitsNumber(motrumPriceContainer, +currentMotrumPrice.toFixed(2))
+        ? getDigitsNumber(motrumPriceContainer, +currentMotrumPrice)
         : "";
     });
   }

@@ -116,7 +116,7 @@
                                 <select class="select_account_requisites">
                                     {% for requisit in requisites %}
                                         <option data-requisites-id="{{ requisit.id }}"
-                                                data-account-requisites-id="{{ requisit.accountrequisit }}">
+                                                data-account-requisites-id="{{ requisit.accountrequisit_id }}">
                                             Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
                                         </option>
                                     {% endfor %}

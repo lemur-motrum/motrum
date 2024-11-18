@@ -259,7 +259,7 @@ function saveCart() {
     const dataObj = {
       cart: +cart_id,
       requisites: +requisites,
-      account_requisites: account_requisites_name,
+      account_requisites: +account_requisites_name,
     };
 
     const data = JSON.stringify(dataObj);
@@ -276,8 +276,8 @@ function saveCart() {
       .then((response) => {
         deleteCookie("cart", "/", window.location.hostname);
 
-        // window.location.href =
-        //   "/lk/my_orders";
+        window.location.href =
+          "/lk/my_orders";
       })
       .catch((error) => console.error(error));
   }

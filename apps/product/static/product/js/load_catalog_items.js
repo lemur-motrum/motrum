@@ -195,40 +195,40 @@ function DelProductCart() {
 }
 DelProductCart();
 
-// ФУНКЦИЯ ДОБАВИТЬ ЗАКАЗ пользователем ТЕСТ
-function addOrder() {
-  const clientAdd = document.querySelectorAll(".button-cart-save-user");
+// // ФУНКЦИЯ ДОБАВИТЬ ЗАКАЗ пользователем ТЕСТ
+// function addOrder() {
+//   const clientAdd = document.querySelectorAll(".button-cart-save-user");
 
-  if (clientAdd) {
-    clientAdd.forEach((element) => {
-      element.addEventListener("click", () => {
-        let el = element.getAttribute("data-id-cart-product");
-        console.log(el);
-        let cart = getCookie("cart");
-        console.log(cart);
-        let csrfToken = getCookie("csrftoken");
-        let dataArr = {
-          cart: cart,
-          requisites: 32,
-          account_requisites: 1,
-        };
+//   if (clientAdd) {
+//     clientAdd.forEach((element) => {
+//       element.addEventListener("click", () => {
+//         let el = element.getAttribute("data-id-cart-product");
+//         console.log(el);
+//         let cart = getCookie("cart");
+//         console.log(cart);
+//         let csrfToken = getCookie("csrftoken");
+//         let dataArr = {
+//           cart: cart,
+//           requisites: 32,
+//           account_requisites: 1,
+//         };
 
-        let data = JSON.stringify(dataArr);
-        let endpoint = `/api/v1/order/add_order/`;
-        fetch(endpoint, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-          });
-      });
-    });
-  }
-}
-addOrder();
+//         let data = JSON.stringify(dataArr);
+//         let endpoint = `/api/v1/order/add_order/`;
+//         fetch(endpoint, {
+//           method: "POST",
+//           body: data,
+//           headers: {
+//             "Content-Type": "application/json",
+//             "X-CSRFToken": csrfToken,
+//           },
+//         })
+//           .then((response) => response.json())
+//           .then((data) => {
+//             console.log(data);
+//           });
+//       });
+//     });
+//   }
+// }
+// addOrder();

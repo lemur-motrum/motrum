@@ -12,9 +12,13 @@ from django.core.cache import cache
 import traceback
 from django.db import IntegrityError, transaction
 
+
+
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
+
+
 
 
 from apps.specification.utils import crete_pdf_specification
@@ -1403,6 +1407,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
         SpecificationSerializer,
         ProductSpecificationSaveSerializer,
     )
+    from apps.specification.models import Specification
     from apps.product.models import Product
     from apps.core.utils_web import get_product_item_data
 
@@ -1411,6 +1416,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
             specification_name = number_specification("specification")
+            print(specification_name)
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1418,7 +1424,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 "date_stop": data_stop,
                 "number": specification_name,
             }
-
+            print(data_specification)
             serializer = serializer_class_specification(
                 data=data_specification, partial=True
             )
@@ -1426,59 +1432,99 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
-                total_amount = 0.00
-                for product_item in products_cart:
-                    quantity = product_item.quantity
-                    product = Product.objects.get(id=product_item.product.id)
-                    item_data = get_product_item_data(
-                        specification, product, extra_discount, quantity
-                    )
-                    print(item_data)
-                    serializer_class_specification_product = (
-                        ProductSpecificationSaveSerializer
-                    )
-                    print(serializer_class_specification_product)
-                    serializer_prod = serializer_class_specification_product(
-                        data=item_data
-                    )
-                    if serializer_prod.is_valid():
-                        serializer_prod._change_reason = "Клиент с сайта"
-                        # serializer_prod.skip_history_when_saving = True
-                        specification_product = serializer_prod.save()
+                print(specification)
+                if specification:
+                    print("sdfsdfs",specification)
+                    total_amount = 0.00
+                    for product_item in products_cart:
+                        quantity = product_item.quantity
+                        product = Product.objects.get(id=product_item.product.id)
+                        item_data = get_product_item_data(
+                            specification, product, extra_discount, quantity
+                        )
+                        print(item_data)
+                        serializer_class_specification_product = (
+                            ProductSpecificationSaveSerializer
+                        )
+                        serializer_prod = serializer_class_specification_product(
+                            data=item_data
+                        )
+                        if serializer_prod.is_valid():
+                            serializer_prod._change_reason = "Клиент с сайта"
+                            # serializer_prod.skip_history_when_saving = True
+                            specification_product = serializer_prod.save()
+                            print(specification_product)
+                            
 
-                    else:
-                        return ("error", serializer_prod.errors)
+                        else:
+                            print ("2222222222222error", serializer_prod.errors,specification_name)
+                            return ("error", serializer_prod.errors,specification_name)
+                        total_amount += float(item_data["price_all"])
+                            
+                    # обновить спецификацию пдф
+            
+                    specification.total_amount = total_amount
+                    specification._change_reason = "Клиент с сайта"
+                    # specification.skip_history_when_saving = True
+                    specification.save()
+                    # specification_obj = Specification.objects.get(specification.id)
+                    print(specification.total_amount)
+                    print("111111111111111111ok", specification, specification_name)
+                    return ("ok", specification ,specification_name)
+                else:
+                    return ("error", None ,None)
 
-                    total_amount += float(item_data["price_all"])
-                # обновить спецификацию пдф
-
-                specification.total_amount = total_amount
-                specification._change_reason = "Клиент с сайта"
-                # specification.skip_history_when_saving = True
-                specification.save()
-
-                return ("ok", specification)
-
-            if specification_name:
-                crete_pdf_specification(
-                    specification,
-                    requisites,
-                    account_requisites,
-                    request,
-                    motrum_requisites,
-                    date_delivery_all,
-                    type_delivery,
-                    post_update,
-                    specification_name,
-                )
 
     except Exception as e:
         print(e)
         error = "error"
         location = "Сохранение спецификации в корзине сайта"
         info = f" ошибка {e}"
-        # e = error_alert(error, location, info)
+        
+        e = error_alert(error, location, info)
+        return ("error", None ,None)
 
+def save_order_web(request,data_order,all_info_requisites,all_info_product):
+    from apps.client.api.serializers import OrderSerializer
+    from apps.notifications.models import Notification
+    from apps.client.models import Order
+    
+    serializer_class = OrderSerializer
+    serializer = serializer_class(data=data_order, many=False)
+    
+    if serializer.is_valid():
+        order = serializer.save()
+        if all_info_requisites and all_info_product:
+            Notification.add_notification(order.id, "STATUS_ORDERING")
+            Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
+            
+            bill_name = (
+                Order.objects.filter(bill_name__isnull=False)
+                .order_by("bill_name")
+                .last()
+            )
+            if bill_name:
+                bill_name = int(bill_name.bill_name) + 1
+            else:
+                bill_name = 1
+                
+            if order.requisites.contract:
+                is_req = True
+            else:
+                is_req = False
+
+            order_pdf = order.create_bill(
+                request, is_req, order, bill_name, False
+            )
+        else:
+            pass
+
+        return ("ok", serializer.data)
+
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return ("error", serializer.errors)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #      def save_specification(
 #     received_data,

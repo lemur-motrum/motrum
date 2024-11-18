@@ -259,8 +259,7 @@ def get_product_item_data(specification, product, extra_discount, quantity):
         
     price_one = price.rub_price_supplier
     price_one_motrum = price.price_motrum
-    print(price_one)
-    print(price_one_motrum)
+
     if extra_discount:
         price_one = price_one - (price_one / 100 * float(extra_discount))
         price_one = round(price_one, 2)
@@ -281,5 +280,4 @@ def get_product_item_data(specification, product, extra_discount, quantity):
         "extra_discount": extra_discount,
 
     }
-    print(product_item_data)
     return product_item_data

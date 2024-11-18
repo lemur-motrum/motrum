@@ -53,6 +53,7 @@ from apps.core.utils import (
     get_presale_discount,
     loc_mem_cache,
     save_new_product_okt,
+    save_order_web,
     save_specification,
     save_spesif_web,
 )
@@ -319,19 +320,22 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["cart"])
         client = cart.client
         extra_discount = client.percent
-        extra_discount = 0
+       
         products_cart = ProductCart.objects.filter(cart_id=cart)
         all_info_requisites = False
         all_info_product = True
         requisites_id = None
         account_requisites_id = None
-        # print(stop)
+        motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
+        
+        
+        
         if "requisites" in data:
             all_info_requisites = True
             requisites = Requisites.objects.get(id=data["requisites"])
             requisites_id = requisites.id
             account_requisites = AccountRequisites.objects.get(
-                requisites=requisites, account_requisites=data["account_requisites"]
+                requisites=requisites, id=data["account_requisites"]
             )
             account_requisites_id = account_requisites.id
 
@@ -340,8 +344,67 @@ class OrderViewSet(viewsets.ModelViewSet):
                 all_info_product = False
 
         # сохранение спецификации для заказа с реквизитами
-        if all_info_requisites and all_info_product:
-            save_spesif_web(cart,products_cart,extra_discount)
+        if all_info_requisites and all_info_product: 
+            status_save_spes,specification,specification_name = save_spesif_web(cart,products_cart,extra_discount)
+            if status_save_spes == "ok" and specification_name:
+                pdf = crete_pdf_specification(
+                    specification.id,
+                    requisites,
+                    account_requisites,
+                    request,
+                    motrum_requisites,
+                    None,
+                    "paid_delivery",
+                    False,
+                    specification_name,
+                )
+
+                if pdf:
+                    specification.file = pdf
+                    specification._change_reason = "Ручное"
+                    specification.save()
+                
+                status_order = "PROCESSING" 
+                    # # сохранение ордера
+                print("11111111111",specification.id)
+                serializer_class = OrderSerializer
+                data_order = {
+                    "client": client,
+                    "name": 123131,
+                    "specification": specification.id,
+                    "cart": cart.id,
+                    "status": status_order,
+                    "requisites": requisites_id,
+                    "account_requisites": account_requisites_id,
+                    "bill_name": None,
+                    "bill_file": None,
+                    "bill_date_start": None,
+                    "bill_date_stop": None,
+                    "bill_sum": None,
+                    "prepay_persent": 100,
+                    "postpay_persent": 0,
+                    "motrum_requisites": motrum_requisites.id,
+                    "id_bitrix": None,
+                    "type_delivery": "paid_delivery",
+                }
+                print("222222222",data_order)
+
+                status_save_order,data = save_order_web(request,data_order,all_info_requisites,all_info_product)
+
+                if status_save_order == "ok":
+                
+                    cart.is_active = True
+                    cart.save()
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    return Response(data, status=status.HTTP_400_BAD_REQUEST)      
+
+        else:
+            return Response("товары без цены или заказ без реквизитов", status=status.HTTP_400_BAD_REQUEST)    
+                
+        # else:
+        #     return Response("товары без цены", status=status.HTTP_400_BAD_REQUEST)  
+            
         #     # сохранение спецификации
         #     serializer_class_specification = SpecificationSerializer
         #     data_stop = create_time_stop_specification()

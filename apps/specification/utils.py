@@ -59,7 +59,17 @@ class MyCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
 
-def crete_pdf_specification(specification, requisites, account_requisites, request,motrum_requisites,date_delivery_all,type_delivery,post_update,specification_name):
+def crete_pdf_specification(
+    specification,
+    requisites,
+    account_requisites,
+    request,
+    motrum_requisites,
+    date_delivery_all,
+    type_delivery,
+    post_update,
+    specification_name,
+):
     from apps.product.models import Product, ProductCart, Stock
     from apps.specification.models import ProductSpecification, Specification
     from reportlab.lib.fonts import addMapping
@@ -69,6 +79,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     from reportlab.platypus import ListFlowable, ListItem
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
+
     try:
         directory = check_spesc_directory_exist(
             "specification",
@@ -77,11 +88,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         ).order_by("id")
-        
-        
+
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
-        
 
         if post_update:
             date_title = specifications.date_create_pdf.strftime("%d/%m/%Y")
@@ -116,7 +125,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
         styles.add(ParagraphStyle(name="Roboto", fontName="Roboto", fontSize=10))
         styles.add(ParagraphStyle(name="Roboto-8", fontName="Roboto", fontSize=8))
-        styles.add(ParagraphStyle(name="Roboto-Bold", fontName="Roboto-Bold", fontSize=10))
+        styles.add(
+            ParagraphStyle(name="Roboto-Bold", fontName="Roboto-Bold", fontSize=10)
+        )
         styles.add(
             ParagraphStyle(
                 name="Roboto-Bold-left",
@@ -143,11 +154,11 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         doc_title = copy.copy(styles["Heading1"])
         doc_title.fontName = "Roboto-Bold"
         doc_title.fontSize = 10
-        
+
         if requisites.contract:
             to_contract = requisites.contract
         else:
-            to_contract = None   
+            to_contract = None
         if requisites:
             to_address = requisites.legal_entity
         else:
@@ -155,14 +166,22 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
         story.append(
             Paragraph(
-                f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>", bold_left_style
+                f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>",
+                bold_left_style,
             )
         )
         if to_contract:
             story.append(Paragraph(f"К договору № {to_contract}", normal_style))
-            
-        story.append(Paragraph(f"На поставку продукции в адрес {to_address}", normal_style))
-        story.append(Paragraph(f'от {motrum_info.short_name_legal_entity} <br></br><br></br>', normal_style))
+
+        story.append(
+            Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
+        )
+        story.append(
+            Paragraph(
+                f"от {motrum_info.short_name_legal_entity} <br></br><br></br>",
+                normal_style,
+            )
+        )
 
         data = [
             (
@@ -178,7 +197,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         i = 0
         date_ship = datetime.date.today()
 
-        product_cart = ProductCart.objects.filter(cart=specifications.cart, product=None)
+        product_cart = ProductCart.objects.filter(
+            cart=specifications.cart, product=None
+        )
         product_ = ProductCart.objects.filter(cart=specifications.cart, product=None)
         for product in product_specification:
             i += 1
@@ -192,31 +213,30 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 date_ship = date_delivery
             if product.product:
                 # if product.product.in_view_website:
-                    if IS_TESTING:
-                        link = product.product.get_url_document_test()
-                    else:
-                        link = product.product.get_url_document()
+                if IS_TESTING:
+                    link = product.product.get_url_document_test()
+                else:
+                    link = product.product.get_url_document()
 
-                    url_absolute = request.build_absolute_uri("/").strip("/")
-                    link = f"{url_absolute}/{link}"
-                    product_name_str = str(product.product.name)
-                    if product.product.in_view_website:
-                        product_name = (
-                            Paragraph(
-                                f'<a href="{link}" color="blue">{product_name_str}</a>',
-                                bold_style_center,
-                            ),
-                        )
-                    else:
-                         product_name = (
-                            Paragraph(
-                                f'{product_name_str}',
-                                bold_style_center,
-                            ))    
-                # else:    
-                #     product_name_str = str(product.product.name)
-                    
-                #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
+                url_absolute = request.build_absolute_uri("/").strip("/")
+                link = f"{url_absolute}/{link}"
+                product_name_str = str(product.product.name)
+                if product.product.in_view_website:
+                    product_name = (
+                        Paragraph(
+                            f'<a href="{link}" color="blue">{product_name_str}</a>',
+                            bold_style_center,
+                        ),
+                    )
+                else:
+                    product_name = Paragraph(
+                        f"{product_name_str}",
+                        bold_style_center,
+                    )
+            # else:
+            #     product_name_str = str(product.product.name)
+
+            #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
             else:
                 product_name = product.product_new
                 product_name = (Paragraph(f"{product_name}", bold_style_center),)
@@ -242,7 +262,11 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 )
             )
 
-        table = Table(data, colWidths=[2 * cm, 7 * cm, 2 * cm, 2 * cm, 3 * cm, 3 * cm],repeatRows=1,)
+        table = Table(
+            data,
+            colWidths=[2 * cm, 7 * cm, 2 * cm, 2 * cm, 3 * cm, 3 * cm],
+            repeatRows=1,
+        )
         table.setStyle(
             TableStyle(
                 [
@@ -302,45 +326,50 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
         )
         story.append(table)
         date_ship = transform_date(str(date_ship))
-        
+
         i_dop_info = 1
         if date_delivery_all:
-        
-            story.append(Paragraph(f"{i_dop_info}. Срок поставки: {date_delivery_all}", normal_style))
+
+            story.append(
+                Paragraph(
+                    f"{i_dop_info}. Срок поставки: {date_delivery_all}", normal_style
+                )
+            )
             i_dop_info += 1
-            
+
         if requisites.prepay_persent:
             if requisites.prepay_persent == 100:
                 story.append(
                     Paragraph(
-                        f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.", normal_style
+                        f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
+                        normal_style,
                     )
                 )
             else:
                 story.append(
                     Paragraph(
-                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.", normal_style
+                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
+                        normal_style,
                     )
-                ) 
-            i_dop_info += 1  
-        
+                )
+            i_dop_info += 1
+
         if type_delivery:
             if type_delivery == "pickup":
                 story.append(
-                        Paragraph(
-                            f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
-                        )
+                    Paragraph(
+                        f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
                     )
-            elif  type_delivery == "paid_delivery":
+                )
+            elif type_delivery == "paid_delivery":
                 story.append(
-                        Paragraph(
-                            f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.", normal_style
-                        )
+                    Paragraph(
+                        f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+                        normal_style,
                     )
+                )
             else:
                 pass
-                    
-                
 
         data_address = [
             (
@@ -348,9 +377,9 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 Paragraph("Покупатель:", bold_style),
             )
         ]
-        text_motrum_ur = f'{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>'
+        text_motrum_ur = f"{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>"
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
-        text_motrum_inn = f'ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>'
+        text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
         if requisites:
             text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {requisites.legal_post_code}, г. {requisites.legal_city}, {requisites.legal_address}<br></br><br></br>"
             text_buyer_post = f"Почтовый адрес: {requisites.postal_post_code}, г. {requisites.postal_city}, {requisites.postal_address}<br></br><br></br>"
@@ -411,7 +440,6 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
                 Paragraph(text_signature, normal_style_8),
             )
         )
-        
 
         data_signature.append(
             (
@@ -442,23 +470,23 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
             "specification",
             name_specification,
         )
-        
-        print("file_path",file_path)
+
+        print("file_path", file_path)
         return file_path
     except Exception as e:
 
-            
         error = "error"
         location = "Сохранение документа спецификации админам окт"
         info = f"Сохранение документа спецификации админам окт ошибка {e}"
         e = error_alert(error, location, info)
-        
+
         return None
 
 
 # путь до спецификаций пдф
 def get_document_path(instance, filename):
     from apps.core.utils import check_spesc_directory_exist, transform_date
+
     directory = check_spesc_directory_exist(
         "specification",
     )
@@ -470,6 +498,7 @@ def get_document_path(instance, filename):
 # путь до счета пдф
 def get_document_bill_path(instance, filename):
     from apps.core.utils import check_spesc_directory_exist, transform_date
+
     directory = check_spesc_directory_exist(
         "bill",
     )

@@ -67,13 +67,11 @@ def cart(request):
             requisites = (
                 Requisites.objects.filter(client=client)
                 .prefetch_related("accountrequisites_set")
-                .annotate(accountrequisit=F("accountrequisites__account_requisites"))
+                .annotate(accountrequisit=F("accountrequisites__account_requisites"),accountrequisit_id=F("accountrequisites__id"))
+                
             )
 
-            # .prefetch_related("accountrequisites_set")
-            # for requisit in requisites:
-            #      print(requisit.accountrequisit)
-            #    print(requisit.accountrequisites_set.all())
+
         else:
             requisites = None
             client = None

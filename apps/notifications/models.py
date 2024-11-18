@@ -72,8 +72,8 @@ class Notification(models.Model):
             },
         )
         
-        result = send_email_message_html(
-            title_email, text_email, to_client, html_message=html_message
-        )
+        # result = send_email_message_html(
+        #     title_email, text_email, to_client, html_message=html_message
+        # )
         
         

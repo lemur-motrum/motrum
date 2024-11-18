@@ -18,19 +18,16 @@ export function getMarginality(wrapper) {
       if (!discountInput) {
         totalCost = +quantityInput.value * priceOne;
       } else {
-        totalCost =
-          +quantityInput.value *
-          ((priceOne / 100) * (100 - discountInput.value));
-      }
-      const marginalityContainer = item.querySelector(".marginality");
-      const motrumSalePersent = item.querySelector(".motrum_sale_persent");
-      if (motrumSalePersent) {
-        getDigitsNumber(marginalityContainer, totalCost - priceMotrum);
-      } else {
-        if (discountInput.value) {
-          getDigitsNumber(marginalityContainer, totalCost - priceMotrum);
+        if (discountInput.value == "-") {
+          totalCost = +quantityInput.value * priceOne;
+        } else {
+          totalCost =
+            +quantityInput.value *
+            ((priceOne / 100) * (100 - discountInput.value));
         }
       }
+      const marginalityContainer = item.querySelector(".marginality");
+      getDigitsNumber(marginalityContainer, totalCost - priceMotrum);
     });
   }
 }

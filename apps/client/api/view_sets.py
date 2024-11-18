@@ -54,6 +54,7 @@ from apps.core.utils import (
     loc_mem_cache,
     save_new_product_okt,
     save_specification,
+    save_spesif_web,
 )
 from apps.core.utils_web import (
     _get_pin,
@@ -318,12 +319,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["cart"])
         client = cart.client
         extra_discount = client.percent
+        extra_discount = 0
         products_cart = ProductCart.objects.filter(cart_id=cart)
         all_info_requisites = False
         all_info_product = True
         requisites_id = None
         account_requisites_id = None
-
+        # print(stop)
         if "requisites" in data:
             all_info_requisites = True
             requisites = Requisites.objects.get(id=data["requisites"])
@@ -339,111 +341,112 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # сохранение спецификации для заказа с реквизитами
         if all_info_requisites and all_info_product:
-            # сохранение спецификации
-            serializer_class_specification = SpecificationSerializer
-            data_stop = create_time_stop_specification()
-            data_specification = {
-                "cart": cart.id,
-                "admin_creator": None,
-                "id_bitrix": None,
-                "date_stop": data_stop,
-            }
+            save_spesif_web(cart,products_cart,extra_discount)
+        #     # сохранение спецификации
+        #     serializer_class_specification = SpecificationSerializer
+        #     data_stop = create_time_stop_specification()
+        #     data_specification = {
+        #         "cart": cart.id,
+        #         "admin_creator": None,
+        #         "id_bitrix": None,
+        #         "date_stop": data_stop,
+        #     }
 
-            serializer = serializer_class_specification(
-                data=data_specification, partial=True
-            )
-            if serializer.is_valid():
-                # serializer._change_reason = "Клиент с сайта"
-                serializer.skip_history_when_saving = True
-                specification = serializer.save()
+        #     serializer = serializer_class_specification(
+        #         data=data_specification, partial=True
+        #     )
+        #     if serializer.is_valid():
+        #         # serializer._change_reason = "Клиент с сайта"
+        #         serializer.skip_history_when_saving = True
+        #         specification = serializer.save()
 
-                # сохранение продуктов для спецификации
-                total_amount = 0.00
-                currency_product = False
-                for product_item in products_cart:
-                    quantity = product_item.quantity
-                    product = Product.objects.get(id=product_item.product.id)
-                    print()
-                    item_data = get_product_item_data(
-                        specification, product, extra_discount, quantity
-                    )
+        #         # сохранение продуктов для спецификации
+        #         total_amount = 0.00
+        #         currency_product = False
+        #         for product_item in products_cart:
+        #             quantity = product_item.quantity
+        #             product = Product.objects.get(id=product_item.product.id)
+        #             print()
+        #             item_data = get_product_item_data(
+        #                 specification, product, extra_discount, quantity
+        #             )
 
-                    serializer_class_specification_product = (
-                        ProductSpecificationSerializer
-                    )
-                    serializer_prod = serializer_class_specification_product(
-                        data=item_data, partial=True
-                    )
-                    if serializer_prod.is_valid():
-                        serializer_prod._change_reason = "Клиент с сайта"
-                        # serializer_prod.skip_history_when_saving = True
-                        specification_product = serializer_prod.save()
+        #             serializer_class_specification_product = (
+        #                 ProductSpecificationSerializer
+        #             )
+        #             serializer_prod = serializer_class_specification_product(
+        #                 data=item_data, partial=True
+        #             )
+        #             if serializer_prod.is_valid():
+        #                 serializer_prod._change_reason = "Клиент с сайта"
+        #                 # serializer_prod.skip_history_when_saving = True
+        #                 specification_product = serializer_prod.save()
 
-                    else:
-                        return Response(
-                            serializer_prod.errors,
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
+        #             else:
+        #                 return Response(
+        #                     serializer_prod.errors,
+        #                     status=status.HTTP_400_BAD_REQUEST,
+        #                 )
 
-                    total_amount += float(item_data["price_all"])
-                # # обновить спецификацию пдф
+        #             total_amount += float(item_data["price_all"])
+        #         # # обновить спецификацию пдф
 
-                specification.total_amount = total_amount
-                specification._change_reason = "Клиент с сайта"
-                # specification.skip_history_when_saving = True
-                specification.save()
+        #         specification.total_amount = total_amount
+        #         specification._change_reason = "Клиент с сайта"
+        #         # specification.skip_history_when_saving = True
+        #         specification.save()
 
-                pdf = crete_pdf_specification(
-                    specification.id, requisites, account_requisites, request
-                )
-                specification.file = pdf
-                specification._change_reason = "Клиент с сайта"
-                data_stop = create_time_stop_specification()
-                specification.date_stop = data_stop
-                specification.tag_stop = True
-                # specification.skip_history_when_saving = True
-                specification.save()
-                specification = specification.id
-                requisites = data["requisites"]
-                account_requisites = data["account_requisites"]
-                status_order = "PAYMENT"
+        #         pdf = crete_pdf_specification(
+        #             specification.id, requisites, account_requisites, request
+        #         )
+        #         specification.file = pdf
+        #         specification._change_reason = "Клиент с сайта"
+        #         data_stop = create_time_stop_specification()
+        #         specification.date_stop = data_stop
+        #         specification.tag_stop = True
+        #         # specification.skip_history_when_saving = True
+        #         specification.save()
+        #         specification = specification.id
+        #         requisites = data["requisites"]
+        #         account_requisites = data["account_requisites"]
+        #         status_order = "PAYMENT"
 
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #     else:
+        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # сохранение данные заказа БЕЗ реквизит и продукты под вопросом
-        else:
-            specification = None
-            status_order = "PROCESSING"
+        # # сохранение данные заказа БЕЗ реквизит и продукты под вопросом
+        # else:
+        #     specification = None
+        #     status_order = "PROCESSING"
 
-        # сохранение ордера
-        serializer_class = OrderSerializer
-        data_order = {
-            "client": client,
-            "name": 123131,
-            "specification": specification,
-            "cart": cart.id,
-            "status": status_order,
-            "requisites": requisites_id,
-            "account_requisites": account_requisites_id,
-        }
-        serializer = self.serializer_class(data=data_order, many=False)
-        if serializer.is_valid():
-            order = serializer.save()
-            if all_info_requisites and all_info_product:
-                Notification.add_notification(order.id, "STATUS_ORDERING")
+        # # сохранение ордера
+        # serializer_class = OrderSerializer
+        # data_order = {
+        #     "client": client,
+        #     "name": 123131,
+        #     "specification": specification,
+        #     "cart": cart.id,
+        #     "status": status_order,
+        #     "requisites": requisites_id,
+        #     "account_requisites": account_requisites_id,
+        # }
+        # serializer = self.serializer_class(data=data_order, many=False)
+        # if serializer.is_valid():
+        #     order = serializer.save()
+        #     if all_info_requisites and all_info_product:
+        #         Notification.add_notification(order.id, "STATUS_ORDERING")
 
-                Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
-                order.create_bill()
-            else:
-                pass
+        #         Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
+        #         order.create_bill()
+        #     else:
+        #         pass
 
-            cart.is_active = True
-            cart.save()
+        #     cart.is_active = True
+        #     cart.save()
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #     return Response(serializer.data, status=status.HTTP_200_OK)
+        # else:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")

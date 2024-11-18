@@ -1,4 +1,5 @@
 # расчет цены
+from csv import Error
 import datetime
 import random
 import re
@@ -9,12 +10,17 @@ import os
 import traceback
 from django.core.cache import cache
 import traceback
-
+from django.db import IntegrityError, transaction
 
 from apps.core.models import Currency, CurrencyPercent, Vat
+
 from apps.logs.utils import error_alert
 
 
+
+
+
+from apps.specification.utils import crete_pdf_specification
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
 
@@ -1374,17 +1380,95 @@ def save_new_product_okt(product_new):
 
         return Product
 
+def number_specification(type_save):
+    from apps.specification.models import Specification
+    
+    if type_save == "specification":
+        last_spec_name = Specification.objects.filter(number__isnull=False).last()
 
-def save_spesif_web():
-    pass
+        if last_spec_name:
+            last_spec_name = last_spec_name.number
+            specification_name = int(last_spec_name) + 1
+        else:
+            specification_name = 1
+
+    elif type_save == "bill":
+        specification_name = None
+        
+    return  specification_name
+
+
+def save_spesif_web(cart,products_cart,extra_discount):
+    from apps.specification.api.serializers import SpecificationSerializer,ProductSpecificationSaveSerializer
+    from apps.product.models import Product
+    from apps.core.utils_web import get_product_item_data
+    
+    try:    
+        with transaction.atomic():
+            serializer_class_specification = SpecificationSerializer
+            data_stop = create_time_stop_specification()
+            specification_name = number_specification("specification")
+            data_specification = {
+                "cart": cart.id,
+                "admin_creator": None,
+                "id_bitrix": None,
+                "date_stop": data_stop,
+                "number":specification_name
+            }
+
+            serializer = serializer_class_specification(
+                data=data_specification, partial=True
+            )
+            if serializer.is_valid():
+                # serializer._change_reason = "Клиент с сайта"
+                serializer.skip_history_when_saving = True
+                specification = serializer.save()
+                total_amount = 0.00
+                for product_item in products_cart:
+                    quantity = product_item.quantity
+                    product = Product.objects.get(id=product_item.product.id)
+                    item_data = get_product_item_data(
+                        specification, product, extra_discount, quantity
+                    )
+                    print(item_data)
+                    serializer_class_specification_product = ProductSpecificationSaveSerializer
+                    print(serializer_class_specification_product)
+                    serializer_prod = serializer_class_specification_product(
+                        data=item_data
+                    )
+                    if serializer_prod.is_valid():
+                        serializer_prod._change_reason = "Клиент с сайта"
+                        # serializer_prod.skip_history_when_saving = True
+                        specification_product = serializer_prod.save()
+
+                    else:
+                        return ('error',serializer_prod.errors)
+
+                    total_amount += float(item_data["price_all"])
+                # обновить спецификацию пдф
+
+                specification.total_amount = total_amount
+                specification._change_reason = "Клиент с сайта"
+                # specification.skip_history_when_saving = True
+                specification.save()
+
+
+                
+                
+                return ("ok",specification)
+    except Exception as e:
+        print(e)
+        error = "error"
+        location = "Сохранение спецификации в корзине сайта"
+        info = f" ошибка {e}"
+        # e = error_alert(error, location, info)
+
 
 
 #      def save_specification(
 #     received_data,
 #     pre_sale,
 #     request,
-#     motrum_requisites,
-#     account_requisites,
 #     requisites,
 #     id_bitrix,
 #     type_delivery,

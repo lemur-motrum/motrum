@@ -252,9 +252,11 @@ def get_product_item_data(specification, product, extra_discount, quantity):
 
     from apps.core.utils import get_presale_discount
 
-    # product = product_item
     price = Price.objects.get(prod=product)
-    price_pre_sale = get_presale_discount(product)
+    
+    if price.in_auto_sale:
+        price_pre_sale = get_presale_discount(product)
+        
     price_one = price.rub_price_supplier
     price_one_motrum = price.price_motrum
     print(price_one)
@@ -277,5 +279,7 @@ def get_product_item_data(specification, product, extra_discount, quantity):
         "price_all_motrum": price_all_motrum,
         "price_exclusive": price.extra_price,
         "extra_discount": extra_discount,
+
     }
+    print(product_item_data)
     return product_item_data

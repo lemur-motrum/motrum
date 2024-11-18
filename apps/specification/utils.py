@@ -4,8 +4,8 @@ from enum import auto
 import itertools
 import os
 from re import T
-from apps.core.models import BaseInfo
-from apps.core.utils import check_spesc_directory_exist, transform_date
+
+
 from PIL import Image
 import io
 import pathlib
@@ -67,6 +67,8 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
     from reportlab.lib.styles import ParagraphStyle, ListStyle
     from reportlab.platypus import SimpleDocTemplate, Paragraph
     from reportlab.platypus import ListFlowable, ListItem
+    from apps.core.models import BaseInfo
+    from apps.core.utils import check_spesc_directory_exist, transform_date
     try:
         directory = check_spesc_directory_exist(
             "specification",
@@ -456,6 +458,7 @@ def crete_pdf_specification(specification, requisites, account_requisites, reque
 
 # путь до спецификаций пдф
 def get_document_path(instance, filename):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
     directory = check_spesc_directory_exist(
         "specification",
     )
@@ -466,6 +469,7 @@ def get_document_path(instance, filename):
 
 # путь до счета пдф
 def get_document_bill_path(instance, filename):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
     directory = check_spesc_directory_exist(
         "bill",
     )

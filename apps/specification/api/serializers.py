@@ -82,7 +82,21 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+        
+        
+class ProductSpecificationSaveSerializer(serializers.ModelSerializer):
+    product_okt_name = serializers.SerializerMethodField()
+    product_okt_article = serializers.SerializerMethodField()
+    stock = serializers.SerializerMethodField()
 
+    class Meta:
+        model = ProductSpecification
+        fields = "__all__"
+        
+        
+        
+        
+        
 class ProductSpecificationToAddBillSerializer(serializers.ModelSerializer):
     product_okt_name = serializers.SerializerMethodField()
     product_okt_article = serializers.SerializerMethodField()

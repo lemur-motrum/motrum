@@ -1130,7 +1130,9 @@ def save_specification(
                 motrum_sale = float(motrum_sale)
             else:
                 motrum_sale = 0.00
+                
             price_one_motrum = price_one - (price_one / 100 * motrum_sale)
+            price_one_motrum = round(price_one_motrum, 2)
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
 

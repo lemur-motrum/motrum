@@ -37,7 +37,11 @@ from simple_history.utils import update_change_reason
 def add_iek(request):
 
     title = "Услуги"
-    prompower_api()
+    motrum_price = 20.12 - (20.12 / 100 * float(51))
+        # обрезать цены
+    print(motrum_price)
+    motrum_price = round(motrum_price, 2)
+    print(motrum_price)
 
     responsets = ["233", "2131"]
     # responsets = 0

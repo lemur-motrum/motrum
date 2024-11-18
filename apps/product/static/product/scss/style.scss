@@ -514,12 +514,12 @@
             .img-container {
               width: 9.375rem;
               height: 9.375rem;
-              background-color: #ff5b00;
+              overflow: hidden;
               img {
                 width: 100%;
                 height: 100%;
-                -o-object-fit: cover;
-                object-fit: cover;
+                -o-object-fit: contain;
+                object-fit: contain;
               }
             }
             .product-item_description {
@@ -915,7 +915,7 @@
           width: 22.5rem;
           height: 25rem;
           border-radius: 2.5rem;
-          background-color: #f5f5f5;
+          background-color: #fff;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -928,8 +928,8 @@
             img {
               width: 100%;
               height: 100%;
-              -o-object-fit: cover;
-              object-fit: cover;
+              -o-object-fit: contain;
+              object-fit: contain;
             }
           }
         }
@@ -937,7 +937,7 @@
           width: 100%;
           .small_img {
             border-radius: 1.25rem;
-            background-color: #f5f5f5;
+            background-color: #fff;
             width: 6.909rem;
             height: 7.5rem;
             border: 0.094rem solid black;
@@ -950,8 +950,8 @@
             img {
               width: 100%;
               height: 100%;
-              -o-object-fit: cover;
-              object-fit: cover;
+              -o-object-fit: contain;
+              object-fit: contain;
             }
             &.active {
               border: 0.094rem solid gold;

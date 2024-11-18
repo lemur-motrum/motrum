@@ -17,9 +17,6 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.logs.utils import error_alert
 
 
-
-
-
 from apps.specification.utils import crete_pdf_specification
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
@@ -1380,9 +1377,10 @@ def save_new_product_okt(product_new):
 
         return Product
 
+
 def number_specification(type_save):
     from apps.specification.models import Specification
-    
+
     if type_save == "specification":
         last_spec_name = Specification.objects.filter(number__isnull=False).last()
 
@@ -1394,16 +1392,19 @@ def number_specification(type_save):
 
     elif type_save == "bill":
         specification_name = None
-        
-    return  specification_name
+
+    return specification_name
 
 
-def save_spesif_web(cart,products_cart,extra_discount):
-    from apps.specification.api.serializers import SpecificationSerializer,ProductSpecificationSaveSerializer
+def save_spesif_web(cart, products_cart, extra_discount):
+    from apps.specification.api.serializers import (
+        SpecificationSerializer,
+        ProductSpecificationSaveSerializer,
+    )
     from apps.product.models import Product
     from apps.core.utils_web import get_product_item_data
-    
-    try:    
+
+    try:
         with transaction.atomic():
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
@@ -1413,7 +1414,7 @@ def save_spesif_web(cart,products_cart,extra_discount):
                 "admin_creator": None,
                 "id_bitrix": None,
                 "date_stop": data_stop,
-                "number":specification_name
+                "number": specification_name,
             }
 
             serializer = serializer_class_specification(
@@ -1431,7 +1432,9 @@ def save_spesif_web(cart,products_cart,extra_discount):
                         specification, product, extra_discount, quantity
                     )
                     print(item_data)
-                    serializer_class_specification_product = ProductSpecificationSaveSerializer
+                    serializer_class_specification_product = (
+                        ProductSpecificationSaveSerializer
+                    )
                     print(serializer_class_specification_product)
                     serializer_prod = serializer_class_specification_product(
                         data=item_data
@@ -1442,7 +1445,7 @@ def save_spesif_web(cart,products_cart,extra_discount):
                         specification_product = serializer_prod.save()
 
                     else:
-                        return ('error',serializer_prod.errors)
+                        return ("error", serializer_prod.errors)
 
                     total_amount += float(item_data["price_all"])
                 # обновить спецификацию пдф
@@ -1452,17 +1455,27 @@ def save_spesif_web(cart,products_cart,extra_discount):
                 # specification.skip_history_when_saving = True
                 specification.save()
 
+                return ("ok", specification)
 
-                
-                
-                return ("ok",specification)
+            if specification_name:
+                crete_pdf_specification(
+                    specification,
+                    requisites,
+                    account_requisites,
+                    request,
+                    motrum_requisites,
+                    date_delivery_all,
+                    type_delivery,
+                    post_update,
+                    specification_name,
+                )
+
     except Exception as e:
         print(e)
         error = "error"
         location = "Сохранение спецификации в корзине сайта"
         info = f" ошибка {e}"
         # e = error_alert(error, location, info)
-
 
 
 #      def save_specification(

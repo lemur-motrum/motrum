@@ -1,8 +1,4 @@
-import {
-  getCurrentPrice,
-  getDigitsNumber,
-  NumberParser,
-} from "/static/core/js/functions.js";
+import { getCurrentPrice, getDigitsNumber } from "/static/core/js/functions.js";
 
 export function editMotrumPrice(container) {
   if (container) {
@@ -10,6 +6,7 @@ export function editMotrumPrice(container) {
     specificationItems.forEach((specification) => {
       const priceInput = specification.querySelector(".price-input");
       const motrumPriceContainer = specification.querySelector(".price_motrum");
+
       if (priceInput) {
         priceInput.value = getCurrentPrice(priceInput.value);
         if (specification.querySelector(".motrum_sale_persent")) {

@@ -1071,7 +1071,8 @@ a {
   .products {
     display: grid;
     grid-template-columns: 20.188rem 20.188rem 20.188rem 20.188rem;
-    gap: 1rem;
+    justify-content: space-between;
+    row-gap: 0.8rem;
     margin-top: 3.75rem;
     .title-container {
       display: flex;

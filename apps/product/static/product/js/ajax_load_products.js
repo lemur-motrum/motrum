@@ -1,6 +1,5 @@
 import {
   getCookie,
-  NumberParser,
   getDigitsNumber,
   getCurrentPrice,
 } from "/static/core/js/functions.js";

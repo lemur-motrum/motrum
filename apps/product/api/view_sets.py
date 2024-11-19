@@ -122,14 +122,17 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "price",
                 "stock",
             )
-            .prefetch_related(Prefetch("stock__lot"), Prefetch("productproperty_set"),)
+            .prefetch_related(
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+            )
             .filter(q_object)
             .order_by(sorting)[count : count + count_last]
         )
         # .order_by(ordering_filter)
         # проверка есть ли еще данные для след запроса
         queryset_next = Product.objects.filter(q_object)[
-            count + count_last + 1 : count + count_last + 2
+            count + count_last : count + count_last + 1
         ].exists()
 
         serializer = ProductSerializer(

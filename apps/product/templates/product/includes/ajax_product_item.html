@@ -5,16 +5,11 @@
     <div class="img-container">
         {% if productimage_set|length > 0 %}
             {% for productimage in productimage_set %}
-              
-                    {% if loop.first %}
-                        <img src="{{productimage.photo}}">
-                    {% endif %}
-             
+                {% if loop.first %}<img src="{{ productimage.photo }}">{% endif %}
             {% endfor %}
         {% else %}
             <img src="/static/core/images/nophoto.png">
         {% endif %}
-        
     </img>
 </div>
 <div class="product-item_description">
@@ -24,9 +19,7 @@
         {% if productproperty_set|length != 0 %}
             {% for productproperty in productproperty_set %}
                 <div class="char">
-                    {% if loop.index < 4 %}
-                        <span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>
-                    {% endif %}
+                    {% if loop.index < 4 %}<span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>{% endif %}
                 </div>
             {% endfor %}
         {% else %}

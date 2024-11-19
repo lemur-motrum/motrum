@@ -1011,7 +1011,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ).toFixed(2);
             }
 
-            inputPrice.value = curentPrice.toFixed(2);
+            inputPrice.value = curentPrice;
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);

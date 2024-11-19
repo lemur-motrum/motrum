@@ -6,7 +6,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     let deltaY;
     window.addEventListener("scroll", function () {
-      console.log(deltaY);
       deltaY = specificationTitlesWrapper.getBoundingClientRect().top;
       if (deltaY <= 0) {
         specificationTitlesWrapper.classList.add("fixed");

@@ -20,45 +20,7 @@
   <tbody>
     {% for record in historical_records %}
       {% if record.get_history_type_display == "Создано" %}
-
-      <tr>
-
-        <td>{% get_verbose_field_name object "name" record.history_object %}</td>
-        {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
-        <td>{{ record.history_date }}</td>
-        <td>{{ record.get_history_type_display }}</td>
-        <td>
-          {% if record.history_user %}
-            {% url admin_user_view record.history_user_id as admin_user_url %}
-            {% if admin_user_url %}
-              <a href="{{ admin_user_url }}">{{ record.history_user }}</a>
-            {% else %}
-              {{ record.history_user }}
-            {% endif %}
-          {% else %}
-            {% trans "Auto" %}
-          {% endif %}
-        </td>
-        <td>{{ record.history_change_reason }}</td>
-        <td>
-       
-
-            <ul>
-                <li>
-                  <strong>Созданно:</strong>
-                  {% get_verbose_field_name object "name" record.history_object %}
-                </li>
-              </ul>
-
-           
-          
-        </td>
-
-      </tr>
-      {% elif record.get_history_type_display == "Изменено" %}
-        {% if record.history_delta_changes %}
         <tr>
-
           <td>{% get_verbose_field_name object "name" record.history_object %}</td>
           {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
           <td>{{ record.history_date }}</td>
@@ -77,73 +39,89 @@
           </td>
           <td>{{ record.history_change_reason }}</td>
           <td>
-            {% block history_delta_changes %}
-              {% if record.history_delta_changes %}
-                <ul>
-                  {% for change in record.history_delta_changes %}
-                    <li>
-                      <strong>{{ change.field }}:</strong>
-                      {% if change.field == "Удалить" %}
-                        {% get_verbose_field_name object "name" record.history_object %}
-                        {{ record.history_object }}
-                      {% endif %}
-                      {{ change.old }}
-                      {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
-                      &nbsp;&rarr;&nbsp;&nbsp;{{ change.new }}
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-              <ul>
-                  <li>
-                    <strong>Созданно:</strong>
-                    {% get_verbose_field_name object "name" record.history_object %}
-                  </li>
-                </ul>
-  
-              {% endif %}
-            {% endblock %}
+            <ul>
+              <li>
+                <strong>Созданно:</strong>
+                {% get_verbose_field_name object "name" record.history_object %}
+              </li>
+            </ul>
           </td>
-  
         </tr>
+      {% elif record.get_history_type_display == "Изменено" %}
+        {% if record.history_delta_changes %}
+          <tr>
+            <td>{% get_verbose_field_name object "name" record.history_object %}</td>
+            {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
+            <td>{{ record.history_date }}</td>
+            <td>{{ record.get_history_type_display }}</td>
+            <td>
+              {% if record.history_user %}
+                {% url admin_user_view record.history_user_id as admin_user_url %}
+                {% if admin_user_url %}
+                  <a href="{{ admin_user_url }}">{{ record.history_user }}</a>
+                {% else %}
+                  {{ record.history_user }}
+                {% endif %}
+              {% else %}
+                {% trans "Auto" %}
+              {% endif %}
+            </td>
+            <td>{{ record.history_change_reason }}</td>
+            <td>
+              {% block history_delta_changes %}
+                {% if record.history_delta_changes %}
+                  <ul>
+                    {% for change in record.history_delta_changes %}
+                      <li>
+                        <strong>{{ change.field }}:</strong>
+                        {% if change.field == "Удалить" %}
+                          {% get_verbose_field_name object "name" record.history_object %}
+                          {{ record.history_object }}
+                        {% endif %}
+                        {{ change.old }}
+                        {# Add some spacing, and prevent having the arrow point to the edge of the page if `new` is wrapped #}
+                        &nbsp;&rarr;&nbsp;&nbsp;{{ change.new }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <ul>
+                    <li>
+                      <strong>Созданно:</strong>
+                      {% get_verbose_field_name object "name" record.history_object %}
+                    </li>
+                  </ul>
+                {% endif %}
+              {% endblock %}
+            </td>
+          </tr>
         {% endif %}
       {% else %}
-      <tr>
-
-        <td>{% get_verbose_field_name object "name" record.history_object %}</td>
-        {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
-        <td>{{ record.history_date }}</td>
-        <td>{{ record.get_history_type_display }}</td>
-        <td>
-          {% if record.history_user %}
-            {% url admin_user_view record.history_user_id as admin_user_url %}
-            {% if admin_user_url %}
-              <a href="{{ admin_user_url }}">{{ record.history_user }}</a>
+        <tr>
+          <td>{% get_verbose_field_name object "name" record.history_object %}</td>
+          {% for column in history_list_display %}<td>{{ record|getattribute:column }}</td>{% endfor %}
+          <td>{{ record.history_date }}</td>
+          <td>{{ record.get_history_type_display }}</td>
+          <td>
+            {% if record.history_user %}
+              {% url admin_user_view record.history_user_id as admin_user_url %}
+              {% if admin_user_url %}
+                <a href="{{ admin_user_url }}">{{ record.history_user }}</a>
+              {% else %}
+                {{ record.history_user }}
+              {% endif %}
             {% else %}
-              {{ record.history_user }}
+              {% trans "Auto" %}
             {% endif %}
-          {% else %}
-            {% trans "Auto" %}
-          {% endif %}
-        </td>
-        <td>{{ record.history_change_reason }}</td>
-        <td>
-       
-
+          </td>
+          <td>{{ record.history_change_reason }}</td>
+          <td>
             <ul>
-                <li>
-                  
-                  {% get_verbose_field_name object "name" record.history_object %}
-                </li>
-              </ul>
-
-           
-          
-        </td>
-
-      </tr>
+              <li>{% get_verbose_field_name object "name" record.history_object %}</li>
+            </ul>
+          </td>
+        </tr>
       {% endif %}
-
     {% endfor %}
   </tbody>
 </table>

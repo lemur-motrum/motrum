@@ -17,24 +17,28 @@
             <div class="left_container">
                 <div class="img_container">
                     <div class="big_img">
-                        {% if product.productimage_set.all  %}
-                        <div class="swiper-wrapper">
-                            {% for image in product.productimage_set.all %}
-                                <div class="big_img_item swiper-slide"><img src="{{image.photo.url}}" alt=""></div>
+                        {% if product.productimage_set.all %}
+                            <div class="swiper-wrapper">
+                                {% for image in product.productimage_set.all %}
+                                    <div class="big_img_item swiper-slide">
+                                        <img src="{{ image.photo.url }}" alt="">
+                                    </div>
                                 {% endfor %}
-                        </div>
-                       {% else %}
-                       {% endif %} 
+                            </div>
+                        {% else %}
+                        {% endif %}
                     </div>
                     <div class="small_img_container">
-                         {% if product.productimage_set.all  %}
-                         <div class="swiper-wrapper">
-                             {% for image in product.productimage_set.all %}
-                                 <div class="small_img swiper-slide"><img src="{{image.photo.url}}" alt=""></div>
-                                 {% endfor %}
-                         </div>
+                        {% if product.productimage_set.all %}
+                            <div class="swiper-wrapper">
+                                {% for image in product.productimage_set.all %}
+                                    <div class="small_img swiper-slide">
+                                        <img src="{{ image.photo.url }}" alt="">
+                                    </div>
+                                {% endfor %}
+                            </div>
                         {% else %}
-                        {% endif %} 
+                        {% endif %}
                     </div>
                 </div>
                 <div class="documentation_container">

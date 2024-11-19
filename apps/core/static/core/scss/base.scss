@@ -1812,7 +1812,8 @@ a {
         .img-contaner {
           width: 9.375rem;
           height: 9.375rem;
-          background-color: #fff img {
+          background-color: #fff;
+          img {
             width: 100%;
             height: 100%;
             -o-object-fit: contain;

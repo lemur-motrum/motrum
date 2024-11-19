@@ -9,6 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const catalogContainer = catalogWrapper.querySelector(
       '[document-elem="container"]'
     );
+    const loader = catalogWrapper.querySelector(".loader");
     let productCount = 0;
 
     function loadItems(pagintaionFn = false) {
@@ -30,6 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
           }
+          loader.classList.add("hide");
         });
     }
 

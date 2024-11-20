@@ -82,8 +82,8 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
-        
-        
+
+
 class ProductSpecificationSaveSerializer(serializers.ModelSerializer):
     product_okt_name = serializers.SerializerMethodField()
     product_okt_article = serializers.SerializerMethodField()
@@ -92,11 +92,8 @@ class ProductSpecificationSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSpecification
         fields = "__all__"
-        
-        
-        
-        
-        
+
+
 class ProductSpecificationToAddBillSerializer(serializers.ModelSerializer):
     product_okt_name = serializers.SerializerMethodField()
     product_okt_article = serializers.SerializerMethodField()
@@ -115,7 +112,7 @@ class ProductSpecificationToAddBillSerializer(serializers.ModelSerializer):
             "date_delivery",
             "text_delivery",
             "stock",
-            "text_delivery_bill"
+            "text_delivery_bill",
         )
 
     def get_product_okt_name(self, obj):
@@ -151,6 +148,7 @@ class ProductSpecificationToAddBillSerializer(serializers.ModelSerializer):
             product_cart.filter(product=obj.product)
         else:
             product_cart.filter(product_new=obj.product_new)
+
 
 class ListProductSpecificationSerializer(serializers.ModelSerializer):
 
@@ -189,6 +187,7 @@ class ListsProductSpecificationSerializer(serializers.ModelSerializer):
             "date_stop",
             "total_amount",
             "productspecification_set",
+            "number",
         )
 
     def to_representation(self, instance):

@@ -363,90 +363,47 @@
             align-items: center;
             gap: 0.75rem;
             cursor: pointer;
-            .arrow {
-              position: relative;
-              width: 1.125rem;
-              height: 0.59rem;
-              transition: 0.6s;
-              &.rotate {
-                transform: rotate(180deg);
-              }
-              &::before {
-                content: "";
-                display: inline-block;
-                width: 0.168rem;
-                height: 0.74rem;
-                border-radius: 2px;
-                background-color: black;
-                transform: rotate(130deg);
-                position: relative;
-                top: -30%;
-                left: 30%;
-              }
-              &::after {
-                content: "";
-                display: inline-block;
-                width: 0.168rem;
-                height: 0.74rem;
-                border-radius: 2px;
-                background-color: black;
-                transform: rotate(230deg);
-                position: relative;
-                top: -30%;
-                left: 60%;
-              }
-            }
           }
           .filter-wrapper-content {
             display: flex;
-            &.is_open {
-              div {
-                .filter_content {
-                  max-height: 100%;
-                }
-              }
-            }
-            div {
-              .filter_content {
+            .filter_content {
+              display: flex;
+              flex-direction: column;
+              gap: 0.875rem;
+              margin-left: 2rem;
+              overflow: hidden;
+              transition: max-height 0.6s ease-out;
+              .filter_elem_content {
+                cursor: pointer;
                 display: flex;
-                flex-direction: column;
-                gap: 0.875rem;
-                margin-left: 2rem;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.6s ease-out;
-                .filter_elem_content {
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  gap: 0.75rem;
-                  color: #000;
-                  text-decoration: none;
-                  .checkbox {
-                    width: 1.125rem;
-                    height: 1.125rem;
+                align-items: center;
+                gap: 0.75rem;
+                color: #000;
+                text-decoration: none;
+                .checkbox {
+                  width: 1.125rem;
+                  height: 1.125rem;
+                  border-radius: 2px;
+                  border: 0.063rem solid black;
+                  position: relative;
+                  .checked {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 0.875rem;
+                    height: 0.875rem;
+                    background-color: #000;
                     border-radius: 2px;
-                    border: 0.063rem solid black;
-                    position: relative;
-                    .checked {
-                      position: absolute;
-                      top: 50%;
-                      left: 50%;
-                      transform: translate(-50%, -50%);
-                      width: 0.875rem;
-                      height: 0.875rem;
-                      background-color: #000;
-                      border-radius: 2px;
-                      opacity: 0;
-                      transition: 0.6s;
-                      &.show {
-                        opacity: 1;
-                      }
+                    opacity: 0;
+                    transition: 0.6s;
+                    &.show {
+                      opacity: 1;
                     }
                   }
-                  .filter_name {
-                    font-size: 0.813rem;
-                  }
+                }
+                .filter_name {
+                  font-size: 0.813rem;
                 }
               }
             }

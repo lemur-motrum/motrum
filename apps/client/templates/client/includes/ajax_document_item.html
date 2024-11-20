@@ -1,15 +1,15 @@
-<div style="border-style: solid;
-            {% if notification_set|length %}border-color: red{% endif %}"
-     class="document_item"
+<div class="document_item"
      document-id="{{ id }}"
      document-elem="document-item">
-    <div class="">№ документа - {{ order }}</div>
-    <div class="">дата создания -{{ date_created }}</div>
-    <div class="">сумма -{{ amount }}</div>
-    <div class="">статус -{{ name }}</div>
-    <div class="">договор -{{ requisites_legal_entity }}{{ requisites_contract }}</div>
-    <div class="">
-        <a href="{{ pdf }}">ссылка документ</a>
-        -
+    <div class="name">{{ name }} № {{ order }} от {{ date_created }}</div>
+    <div class="contract">договор -{{ requisites_legal_entity }}{{ requisites_contract }}</div>
+    <div class="summ_and_status">
+        <div class="summ_container">
+            <span class="summ">{{ amount }}</span> ₽
+        </div>
+        <div class="status">Подтверждена</div>
+    </div>
+    <div class="download">
+        <a href="{{ pdf }}" target="_blank">скачать</a>
     </div>
 </div>

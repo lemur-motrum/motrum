@@ -3,7 +3,6 @@ window.addEventListener("DOMContentLoaded", () => {
   if (cookiePopupContainer) {
     const cookiePopupBtn = cookiePopupContainer.querySelector(".cookie_button");
     if (!sessionStorage.getItem("cookieModalVisible")) {
-      cookiePopupContainer.style.display = "flex";
       setTimeout(() => {
         cookiePopupContainer.classList.add("visible");
       });

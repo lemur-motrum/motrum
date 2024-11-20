@@ -1,5 +1,4 @@
 import {
-  setCookie,
   getCookie,
   getClosestInteger,
   NumberParser,
@@ -409,8 +408,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const products = cartContainer.querySelectorAll(".product_item");
     let allPriceWithoutDiscount = 0;
     let allPrice = 0;
-    const personalDiscountInput =
-      cartContainer.querySelector(".personal_discount");
 
     products.forEach((product) => {
       const priceOne = product.querySelector(".cart_price");

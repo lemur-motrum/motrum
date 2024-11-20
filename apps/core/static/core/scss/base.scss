@@ -1071,7 +1071,8 @@ a {
   .products {
     display: grid;
     grid-template-columns: 20.188rem 20.188rem 20.188rem 20.188rem;
-    gap: 1rem;
+    justify-content: space-between;
+    row-gap: 0.8rem;
     margin-top: 3.75rem;
     .title-container {
       display: flex;
@@ -1812,7 +1813,8 @@ a {
         .img-contaner {
           width: 9.375rem;
           height: 9.375rem;
-          background-color: #fff img {
+          background-color: #fff;
+          img {
             width: 100%;
             height: 100%;
             -o-object-fit: contain;

@@ -5,6 +5,8 @@ import { completeOrder } from "../js/complete_order.js";
 
 let csrfToken = getCookie("csrftoken");
 
+const currentUrl = new URL(window.location.href);
+
 window.addEventListener("DOMContentLoaded", () => {
   const specificationWrapper = document.querySelector(
     '[specification-elem="wrapper"]'
@@ -168,15 +170,25 @@ window.addEventListener("DOMContentLoaded", () => {
               paginationElems[i].textContent = +el + 1;
             }
           });
+
           getActivePaginationElem();
           invoiceItem(specificationContainer);
           changePayment(specificationContainer, showErrorValidation);
           completeOrder(specificationContainer);
+          currentUrl.searchParams.set("page", pageCount + 1);
+          history.pushState({}, "", currentUrl);
         });
     }
 
     window.onload = () => {
-      loadItems(false, false, false, false);
+      const pageNumGetParam = currentUrl.searchParams.get("page");
+      if (pageNumGetParam) {
+        pageCount = +pageNumGetParam - 1;
+        specificationCount = pageCount * 10;
+        loadItems(false, false, false, false);
+      } else {
+        loadItems(false, false, false, false);
+      }
     };
 
     paginationFirstElem.onclick = () => {

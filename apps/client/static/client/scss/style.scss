@@ -92,6 +92,233 @@
       }
     }
   }
+  .document_container {
+    .document_wrapper {
+      .site_document_container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        .loader {
+          overflow: hidden;
+          font-size: 0.625rem;
+          margin: 0.0125rem auto;
+          text-indent: -9999em;
+          width: 13rem;
+          height: 13rem;
+          border-radius: 50%;
+          background: #65abf8;
+          background: linear-gradient(
+            to right,
+            #bdbdbd 10%,
+            rgba(101, 171, 248, 0) 42%
+          );
+          position: relative;
+          -webkit-animation: load3 1.4s infinite linear;
+          animation: load3 1.4s infinite linear;
+          transform: translateZ(0);
+          &.remove {
+            display: none;
+          }
+          &:before {
+            width: 50%;
+            height: 50%;
+            background: #bdbdbd;
+            border-radius: 100% 0 0 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: "";
+          }
+          &:after {
+            background: white;
+            width: 75%;
+            height: 75%;
+            border-radius: 50%;
+            content: "";
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+          }
+          &.hide {
+            display: none;
+          }
+        }
+        .document_item {
+          height: 6.813rem;
+          width: 100%;
+          border: 0.094rem solid #000;
+          border-radius: 2.5rem;
+          padding: 2rem 1.875rem;
+          box-sizing: border-box;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 1.125rem;
+          font-weight: 300;
+          .name {
+            width: 12.188rem;
+          }
+          .contract {
+            width: 22.313rem;
+          }
+          .summ_and_status {
+            display: flex;
+            flex-direction: column;
+            width: 9.063rem;
+            font-size: 1.125rem;
+            font-weight: bold;
+            .summ_container {
+            }
+            .status {
+              text-transform: lowercase;
+            }
+          }
+          .download {
+            margin-right: 5.375rem;
+            a {
+              font-size: 1.125rem;
+              font-weight: bold;
+              color: #95bad4;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+    .end_content {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.688rem;
+      &.show {
+        display: flex;
+      }
+      .add_more {
+        font-size: 1.313rem;
+        background-color: inherit;
+        border: 0.094rem solid black;
+        text-transform: lowercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1.875rem;
+        width: 12.563rem;
+        height: 3.563rem;
+        transition: 0.6s;
+        &:disabled,
+        &[disabled] {
+          border: 0.094rem solid rgba(16, 16, 16, 0.3);
+          cursor: auto;
+          &:hover {
+            background-color: inherit;
+            color: rgba(16, 16, 16, 0.3);
+            border: 0.094rem solid rgba(16, 16, 16, 0.3);
+          }
+        }
+        &:hover {
+          background-color: #95bad4;
+          color: #fff;
+          border: 0.094rem solid #95bad4;
+        }
+      }
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 0.438rem;
+        text-transform: uppercase;
+        .first {
+          display: none;
+          cursor: pointer;
+          transition: 0.6s;
+          &.show {
+            width: 3.563rem;
+            height: 3.563rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 100%;
+            border: 0.094rem solid black;
+            background-color: inherit;
+          }
+          &:hover {
+            background-color: #95bad4;
+            color: #fff;
+            border: 0.094rem solid #95bad4;
+          }
+        }
+        .dots {
+          display: none;
+          font-size: 1.313rem;
+          &.first_dots {
+            &.show {
+              display: block;
+            }
+          }
+          &.last_dots {
+            &.show {
+              display: block;
+            }
+          }
+        }
+        .elem {
+          width: 3.563rem;
+          height: 3.563rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border-radius: 100%;
+          border: 0.094rem solid black;
+          background-color: inherit;
+          transition: 0.6s;
+          &.active {
+            background-color: #95bad4;
+            color: #fff;
+            border: 0.094rem solid #95bad4;
+            cursor: auto;
+          }
+          &:hover {
+            background-color: #95bad4;
+            color: #fff;
+            border: 0.094rem solid #95bad4;
+          }
+        }
+        .last {
+          cursor: pointer;
+          display: none;
+          transition: 0.6s;
+          &.show {
+            width: 3.563rem;
+            height: 3.563rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 100%;
+            border: 0.094rem solid black;
+            background-color: inherit;
+          }
+          &:hover {
+            background-color: #95bad4;
+            color: #fff;
+            border: 0.094rem solid #95bad4;
+          }
+        }
+        .next {
+          cursor: pointer;
+          display: none;
+          &.show {
+            display: block;
+          }
+        }
+      }
+    }
+  }
   .order_container {
     .order_wrapper {
       .site_order_container {
@@ -198,8 +425,11 @@
               color: #95bad4;
               text-decoration: underline;
               text-transform: lowercase;
-              font-weight: bold;
-              font-size: 1.125rem;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
             }
           }
         }

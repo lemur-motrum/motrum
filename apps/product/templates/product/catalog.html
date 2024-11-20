@@ -37,28 +37,23 @@
             <div class="filters_and_products_container">
                 <div class="filter_container">
                     <div class="filter_elem">
-                        <div class="filter_title">
-                            <span class="arrow"></span>
-                            <span class="filter_title_name">Производитель</span>
-                        </div>
+                        <div class="filter_title">Производитель</div>
                         <div class="filter-wrapper-content">
-                            <div>
-                                <div class="filter_content">
-                                    {% for vendor in product_vendor %}
-                                        <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
-                                            <div class="checkbox">
-                                                <div class="checked"></div>
-                                            </div>
-                                            <div class="filter_name">
-                                                {% if vendor.vendor__name %}
-                                                    {{ vendor.vendor__name }}
-                                                {% else %}
-                                                    Неизвестный производитель
-                                                {% endif %}
-                                            </div>
+                            <div class="filter_content">
+                                {% for vendor in product_vendor %}
+                                    <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
+                                        <div class="checkbox">
+                                            <div class="checked"></div>
                                         </div>
-                                    {% endfor %}
-                                </div>
+                                        <div class="filter_name">
+                                            {% if vendor.vendor__name %}
+                                                {{ vendor.vendor__name }}
+                                            {% else %}
+                                                Неизвестный производитель
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>

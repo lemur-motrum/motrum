@@ -44,10 +44,10 @@ window.addEventListener("DOMContentLoaded", () => {
           paginationElems[i].classList.remove("active");
         }
       }
-      showFirstPagintationElem();
+      showFirstPaginationElem();
     }
 
-    function showFirstPagintationElem() {
+    function showFirstPaginationElem() {
       if (pageCount >= 2) {
         paginationFirstElem.classList.add("show");
         firstDots.classList.add("show");
@@ -56,17 +56,15 @@ window.addEventListener("DOMContentLoaded", () => {
         firstDots.classList.remove("show");
       }
       if (pageCount >= 0 && pageCount < 4) {
-        if (pageCount >= lastPage - 4) {
+        if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           if (pageCount >= lastPage - 1) {
-            console.log("Один");
             paginationElems[2].style.display = "none";
             if (paginationElems[1].textContent == "") {
               paginationElems[1].style.display = "none";
             }
           } else {
-            console.log("Два");
             paginationElems[2].style.display = "flex";
           }
         } else {
@@ -79,10 +77,8 @@ window.addEventListener("DOMContentLoaded", () => {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           if (pageCount >= lastPage - 1) {
-            console.log("Три");
             paginationElems[2].style.display = "none";
           } else {
-            console.log("Четыре");
             paginationElems[2].style.display = "flex";
           }
         } else {
@@ -93,13 +89,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadItems(
-      pagintaionFn = false,
+      paginationFn = false,
       cleanArray = false,
       vendor = false,
       addMoreBtn = false
     ) {
       let data = {
-        count: !pagintaionFn ? productCount : 10,
+        count: !paginationFn ? productCount : 10,
         sort: "?",
         page: pageCount,
         category: category,
@@ -120,7 +116,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then(function (data) {
           lastPage = +data.count;
-          const pagintationArray = [];
+          const paginationArray = [];
           paginationLastElem.textContent = `${lastPage}`;
           loader.style.display = "none";
           endContent.classList.add("show");
@@ -145,7 +141,7 @@ window.addEventListener("DOMContentLoaded", () => {
               : i <= pageCount;
             i++
           ) {
-            pagintationArray.push(i);
+            paginationArray.push(i);
           }
           if (cleanArray) {
             paginationElems.forEach((elem) => {
@@ -153,15 +149,15 @@ window.addEventListener("DOMContentLoaded", () => {
             });
           }
           paginationElems.forEach((el) => (el.textContent = ""));
-          pagintationArray.forEach((el, i) => {
+          paginationArray.forEach((el, i) => {
             if (paginationElems[i]) {
               paginationElems[i].textContent = +el + 1;
             }
           });
 
           const products = document.querySelectorAll(".product_item");
-          products.forEach((procductItem) => {
-            const priceItem = procductItem.querySelector(".price_item");
+          products.forEach((productItem) => {
+            const priceItem = productItem.querySelector(".price_item");
             if (priceItem) {
               const currentPrice = +getCurrentPrice(priceItem.textContent);
               if (!isNaN(currentPrice)) {
@@ -340,10 +336,10 @@ window.addEventListener("DOMContentLoaded", () => {
           history.pushState({}, "", currentUrl);
         };
       });
-      title.onclick = () => {
-        filterContent.classList.toggle("is_open");
-        arrow.classList.toggle("rotate");
-      };
+      // title.onclick = () => {
+      //   filterContent.classList.toggle("is_open");
+      //   arrow.classList.toggle("rotate");
+      // };
     });
   }
 });

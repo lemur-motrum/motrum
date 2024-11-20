@@ -28,6 +28,7 @@ class CurrencyAdmin(admin.ModelAdmin):
 class VatAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request,obj=None):
+        print()
         return False  
     
 

@@ -193,6 +193,24 @@ class ClientViewSet(viewsets.ModelViewSet):
         serializer = AllAccountRequisitesSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # # добавление клиента через б24
+    @action(detail=False, methods=["post"], url_path=r"add-client-bitrix")
+    def add_client_bitrix(self, request, *args, **kwargs):
+        data = request.data
+        data_login = data["login"]
+
+        data = {
+            "login": {
+                "bitrix_id_manager": 22,
+                "token": 22,
+            },
+            "company": {
+                "bitrix_id_manager": 22,
+                "token": 22,
+            },
+        }
+        # "data = [{
+
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -320,16 +338,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.get(id=data["cart"])
         client = cart.client
         extra_discount = client.percent
-       
+
         products_cart = ProductCart.objects.filter(cart_id=cart)
         all_info_requisites = False
         all_info_product = True
         requisites_id = None
         account_requisites_id = None
         motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
-        
-        
-        
+
         if "requisites" in data:
             all_info_requisites = True
             requisites = Requisites.objects.get(id=data["requisites"])
@@ -344,8 +360,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 all_info_product = False
 
         # сохранение спецификации для заказа с реквизитами
-        if all_info_requisites and all_info_product: 
-            status_save_spes,specification,specification_name = save_spesif_web(cart,products_cart,extra_discount)
+        if all_info_requisites and all_info_product:
+            status_save_spes, specification, specification_name = save_spesif_web(
+                cart, products_cart, extra_discount
+            )
             if status_save_spes == "ok" and specification_name:
                 pdf = crete_pdf_specification(
                     specification.id,
@@ -363,10 +381,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                     specification.file = pdf
                     specification._change_reason = "Ручное"
                     specification.save()
-                
-                status_order = "PROCESSING" 
-                    # # сохранение ордера
-                print("11111111111",specification.id)
+
+                status_order = "PROCESSING"
+                # # сохранение ордера
+                print("11111111111", specification.id)
                 serializer_class = OrderSerializer
                 data_order = {
                     "client": client,
@@ -387,24 +405,29 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": None,
                     "type_delivery": "paid_delivery",
                 }
-                print("222222222",data_order)
+                print("222222222", data_order)
 
-                status_save_order,data = save_order_web(request,data_order,all_info_requisites,all_info_product)
+                status_save_order, data = save_order_web(
+                    request, data_order, all_info_requisites, all_info_product
+                )
 
                 if status_save_order == "ok":
-                
+
                     cart.is_active = True
                     cart.save()
                     return Response(data, status=status.HTTP_200_OK)
                 else:
-                    return Response(data, status=status.HTTP_400_BAD_REQUEST)      
+                    return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response("товары без цены или заказ без реквизитов", status=status.HTTP_400_BAD_REQUEST)    
-                
+            return Response(
+                "товары без цены или заказ без реквизитов",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # else:
-        #     return Response("товары без цены", status=status.HTTP_400_BAD_REQUEST)  
-            
+        #     return Response("товары без цены", status=status.HTTP_400_BAD_REQUEST)
+
         #     # сохранение спецификации
         #     serializer_class_specification = SpecificationSerializer
         #     data_stop = create_time_stop_specification()
@@ -535,7 +558,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             pre_sale = True
         else:
             pre_sale = False
-        print("pre_sale",pre_sale)
+        print("pre_sale", pre_sale)
         if requisites.client:
             client = requisites.client
         else:
@@ -558,7 +581,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             specification_name = specification_name.number
 
         try:
-            
+
             with transaction.atomic():
                 specification = save_specification(
                     data,
@@ -587,14 +610,14 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 if product_spes_list:
                     for product_spes_l in product_spes_list:
-                        if product_spes_l.product :
+                        if product_spes_l.product:
                             new = ProductCart(
                                 cart=cart,
                                 product=product_spes_l.product,
                                 quantity=product_spes_l.quantity,
                             )
                             new.save()
-                            
+
                         # elif product_spes_l.product_new_article:
                         #     new = ProductCart(
                         #         cart=cart,
@@ -606,12 +629,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                         #         product_new_sale_motrum=product_spes_l.product_new_sale_motrum,
                         #         comment=product_spes_l.comment,
                         #         quantity=product_spes_l.quantity,
-                                
+
                         #     )
                         #     new.save()
                         else:
-                            pass    
-                        
+                            pass
 
             error = "error"
             location = "Сохранение спецификации админам окт"
@@ -645,7 +667,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": id_bitrix,
                     "type_delivery": type_delivery,
                 }
-            
+
             try:
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)

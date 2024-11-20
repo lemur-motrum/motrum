@@ -7,8 +7,8 @@ from django.dispatch import receiver
 from django.db.models import signals, Sum, Q
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
-
-
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect, render
 from apps.user.signals import update_group, user_admin_logged_in
 from apps.user.utils import perform_some_action_on_login
 
@@ -30,6 +30,10 @@ class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     middle_name = models.CharField("Отчество", max_length=20,  null=True, blank=True)
     admin_type = models.CharField(max_length=100, choices=ADMIN_TYPE, default="ALL")
+    bitrix_id = models.PositiveIntegerField(
+        "Номер менеджера битрикс",
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Администратор"
@@ -55,6 +59,46 @@ class AdminUser(CustomUser):
 
         super().save(*args, **kwargs)
 
+    # def login_bitrix(self,data):
+    #     pass
+    
+    @classmethod
+    def login_bitrix(cls,data,next_url,request ):
+        print(data)
+        try:
+            admin = cls.objects.get(
+                bitrix_id=data["bitrix_id"], password=data["token"]
+            )
+            is_groups_user = admin.groups.filter(
+                    name__in=["Полный доступ", "Базовый доступ"]
+                ).exists()
+            
+            if admin.is_active and is_groups_user:
+                login(request, admin)
+                if next_url:
+                    pass
+                    # response = redirect(next_url)
+                    # response.set_cookie('client_id', max_age=-1)
+                    # response.set_cookie('cart', max_age=-1)
+                    # response.set_cookie('specificationId', max_age=-1)
+                    # return redirects
+                else:
+                    data = {
+                    "status": 200 
+                    }
+                    return (data)
+
+            else:
+                data = {
+               "status": 403 
+            }
+            return (data)
+        except cls.DoesNotExist:
+            data = {
+               "status": 401
+            }
+            return (data)
+        
 
 signals.post_save.connect(update_group, sender=AdminUser)
 user_logged_in.connect(perform_some_action_on_login,)

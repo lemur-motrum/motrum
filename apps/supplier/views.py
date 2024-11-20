@@ -23,6 +23,7 @@ from apps.supplier.models import SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
+from apps.user.models import AdminUser
 from apps.user.utils import upgrade_permission
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
@@ -31,23 +32,29 @@ from pytils import translit
 from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
+from apps.user.views import login_bitrix
+
 
 
 # тестовая страница скриптов
 def add_iek(request):
+    title = "TEST"
+    data = {
+        "login":{
+            "bitrix_id": "13",
+            "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
+        },
+        "company":{
+            "bitrix_id_manager": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
+            "token": 22,
+        }
+        
+    }
 
-    title = "Услуги"
-    motrum_price = 20.12 - (20.12 / 100 * float(51))
-        # обрезать цены
-    print(motrum_price)
-    motrum_price = round(motrum_price, 2)
-    print(motrum_price)
-
-    responsets = ["233", "2131"]
-    # responsets = 0
+    data_admin = AdminUser.login_bitrix(data["login"], None,request)
+    print(data_admin)
     context = {
         "title": title,
-        "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
 

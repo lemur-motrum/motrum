@@ -1474,7 +1474,8 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 else:
                     return ("error", None ,None)
 
-
+            else:
+                return ("error", None ,None)
     except Exception as e:
         print(e)
         error = "error"

@@ -85,6 +85,11 @@ class Requisites(models.Model):
         null=True,
         blank=True,
     )
+    id_bitrix = models.PositiveIntegerField(
+        "Номер клиента битрикс",
+        null=True,
+        blank=True,
+    )
 
     contract = models.CharField(
         "Договор",

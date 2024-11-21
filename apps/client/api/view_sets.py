@@ -2,6 +2,7 @@ import datetime
 import math
 from operator import itemgetter
 import os
+import random
 import re
 from itertools import chain
 from xmlrpc.client import boolean
@@ -10,6 +11,8 @@ from django.db.models import Prefetch
 from django.db import IntegrityError, transaction
 
 # from regex import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.template import loader
 from django.template.loader import render_to_string
 from rest_framework import routers, serializers, viewsets, mixins, status
@@ -196,20 +199,32 @@ class ClientViewSet(viewsets.ModelViewSet):
     # # добавление клиента через б24
     @action(detail=False, methods=["post"], url_path=r"add-client-bitrix")
     def add_client_bitrix(self, request, *args, **kwargs):
-        data = request.data
-        data_login = data["login"]
+        # data = request.data
 
         data = {
             "login": {
-                "bitrix_id_manager": 22,
-                "token": 22,
+                "bitrix_id": 13,
+                "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
             },
             "company": {
-                "bitrix_id_manager": 22,
-                "token": 22,
+                "ИНФА": 22,
             },
         }
-        # "data = [{
+        result = "ok"
+        
+        data_admin = AdminUser.login_bitrix(data["login"], None, request)
+        print(data_admin)
+        if data_admin["status_admin"] == 200:
+        
+            if result == "ok":
+                return Response(result, status=201)
+            elif result == "upd":
+                return Response(result, status=status.HTTP_200_OK)
+            else:
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(data_admin, status=data_admin["status_admin"])    
+        
 
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
@@ -533,7 +548,68 @@ class OrderViewSet(viewsets.ModelViewSet):
         #     return Response(serializer.data, status=status.HTTP_200_OK)
         # else:
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # сохранение Заказа БИТРИКС специф
+    @action(detail=False, methods=["post"], url_path=r"order-bitrix")
+    def order_bitrix(self, request, *args, **kwargs):
+        random_int = random.randint(1,9999)
+        next_url = "/admin_specification/current_specification/"
+        data = {
+            "login": {
+                "bitrix_id": 13,
+                "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
+            },
+            "order": {
+                "id_bitrix": random_int,
+                "id_client_bitrix": 69,
+                "account_requisites": 40702810762030005446,
+            },
+        }
+        result = "ok"
+        order_info = data["order"]
+        
 
+        
+        data_admin = AdminUser.login_bitrix(data["login"], None, request)
+        if data_admin["status_admin"] == 200:
+            client_req = Requisites.objects.get(id_bitrix=order_info["id_client_bitrix"])
+            acc_req = AccountRequisites.objects.get(requisites=client_req , account_requisites=order_info["account_requisites"])
+            session = request.session.session_key
+            
+            try:
+                order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
+                
+            except Order.DoesNotExist:
+                cart = Cart.create_cart_admin(session, data_admin["admin"])
+                print(cart)
+                data_order = {
+                    "id_bitrix":order_info["id_bitrix"],
+                    "name": 123131,
+                    "requisites": client_req.id,
+                    "account_requisites": acc_req.id,
+                    "status": "",
+                    "cart": cart.id,
+                    "prepay_persent": client_req.prepay_persent,
+                    "postpay_persent": client_req.postpay_persent,
+                    "type_delivery": client_req.type_delivery,
+                }
+                serializer = self.serializer_class(data=data_order, many=False)
+                if serializer.is_valid():
+                    serializer._change_reason = "Ручное"
+                    order = serializer.save()
+                    response = HttpResponseRedirect(next_url)
+             
+                    response.set_cookie('client_id', max_age=-1)
+                    response.set_cookie('cart',cart.id, max_age=1000)
+                    response.set_cookie('specificationId', max_age=-1)
+                    return response
+                else:
+                    pass
+
+        else:
+            pass
+        
+    
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
@@ -882,7 +958,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         from django.db.models.functions import Length
 
         count = int(request.query_params.get("count"))
-        count_last = 5
+        count_last = 10
 
         serializer_class = LkOrderSerializer
         current_user = request.user.id
@@ -1046,7 +1122,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             )
             .order_by(sorting, "-id")[count : count + count_last]
         )
-
+        print(orders)
         # [count : count + count_last]
         serializer = serializer_class(orders, many=True)
         data = serializer.data

@@ -20,8 +20,8 @@
     <div class="order_invoice_details_container">
         {% if bill_sum %}
             <div class="bill_sum_details">
-                {{ bill_sum_paid }} ₽/
-                {{ bill_sum }} ₽
+                <span class="price">{{ bill_sum_paid }}</span> ₽ <br>/
+                <span class="price">{{ bill_sum }}</span> ₽
             </div>
         {% else %}
             <div class="bill_sum_details none-invoice">счет не сформирован</div>
@@ -33,7 +33,9 @@
                target="_blank"
                class="order_documents_item">спецификация #{{ specification_list.number }} от {{ specification_list.date }}</a>
         {% endif %}
-        {% if bill_file %}<a class="order_documents_item">счёт {{ bill_file }}</a>{% endif %}
+        {% if bill_file %}
+            <a class="order_documents_item" href="{{ bill_file }}" target="_blank">счёт # {{ bill_name }} от {{ bill_date_start }}</a>
+        {% endif %}
         {% if act_file %}<a class="order_documents_item">акт {{ act_file }}</a>{% endif %}
     </div>
 </div>

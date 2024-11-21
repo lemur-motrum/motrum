@@ -111,6 +111,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "status",
             "status_full",
             "specification_list",
+            "bill_name",
             "bill_sum",
             "bill_sum_paid",
             "bill_file",

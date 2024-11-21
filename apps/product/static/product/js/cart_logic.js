@@ -79,6 +79,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
 
             plusButton.onclick = () => {
+              console.log("да да да");
               if (productMultiplicity) {
                 countQuantity += +productMultiplicity;
               } else {
@@ -107,8 +108,8 @@ window.addEventListener("DOMContentLoaded", () => {
               }
               countInput.value = +countQuantity;
               minusButton.disabled = false;
-              if (countQuantity <= 0) {
-                countInput.value = 0;
+              if (countQuantity <= 1) {
+                countInput.value = 1;
                 minusButton.disabled = true;
                 plusButton.disabled = false;
                 cartButton.disabled = true;

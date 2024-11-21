@@ -881,7 +881,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     def load_ajax_order_list(self, request):
         from django.db.models.functions import Length
 
-        count = int(request.query_params.get("count"))
+        current_count = int(request.query_params.get("count"))
+        page_get = request.query_params.get("page")
         count_last = 5
 
         serializer_class = LkOrderSerializer
@@ -1044,11 +1045,29 @@ class OrderViewSet(viewsets.ModelViewSet):
                     ),
                 )
             )
-            .order_by(sorting, "-id")[count : count + count_last]
         )
+        page_count = orders.count()
+
+        if page_count % count_last == 0:
+            count = page_count / count_last
+        else:
+            count = math.trunc(page_count / count_last) + 1
+
+        if page_count <= count_last * 2:
+            small = True
+        else:
+            small = False
+
+        orders_sorting = orders.order_by(sorting, "-id")[
+            current_count : current_count + count_last
+        ]
+
+        queryset_next = orders[
+            current_count + count_last : current_count + count_last + 1
+        ].exists()
 
         # [count : count + count_last]
-        serializer = serializer_class(orders, many=True)
+        serializer = serializer_class(orders_sorting, many=True)
         data = serializer.data
         # прочитать уведомления только выведенные ордеры
         for data_order in data:
@@ -1070,13 +1089,18 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         data_response = {
             "data": data,
+            "page": page_get,
+            "count": count,
+            "small": small,
+            "next": queryset_next,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
     # страница мои документы аякс загрузка
     @action(detail=False, url_path="load-ajax-document-list")
     def load_ajax_document_list(self, request):
-        count = int(request.query_params.get("count"))
+        current_count = int(request.query_params.get("count"))
+        page_get = request.query_params.get("page")
         count_last = 10
         serializer_class = LkOrderDocumentSerializer
         current_user = request.user.id
@@ -1220,10 +1244,34 @@ class OrderViewSet(viewsets.ModelViewSet):
             .exclude(type_notification="STATUS_ORDERING")
             .update(is_viewed=True)
         )
+        page_count = len(documents)
+
+        if page_count % count_last == 0:
+            count = page_count / count_last
+        else:
+            count = math.trunc(page_count / count_last) + 1
+
+        if page_count <= count_last * 2:
+            small = True
+        else:
+            small = False
+
+        queryset_next = len(
+            documents[current_count + count_last : current_count + count_last + 1]
+        )
+
+        if queryset_next == 1:
+            next_elem = True
+        else:
+            next_elem = False
 
         data_response = {
-            "data": documents[count : count + count_last],
-            # [count : count + 10]
+            "data": documents[current_count : current_count + count_last],
+            "page": page_get,
+            "count": count,
+            "small": small,
+            "next": next_elem,
+            "len": page_count,
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)
@@ -1412,11 +1460,9 @@ class EmailsViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"manager-email")
     def send_manager_email(self, request, *args, **kwargs):
         data = request.data
-
         client_id = data["client_id"]
         text_message = data["text_message"]
         client = Client.objects.get(id=int(client_id))
-
         title_email = "Сообщение с сайта от клиента"
         text_email = f"Клиент: {client.contact_name}Телефон: {client.phone}Сообщение{text_message}"
         to_manager = client.manager.email

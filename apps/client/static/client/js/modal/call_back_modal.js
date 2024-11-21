@@ -1,15 +1,15 @@
 import { getCookie } from "/static/core/js/functions.js";
 const btn = document.querySelector(".call-back-link");
 if (btn) {
-  btn.addEventListener("click", (event) => {
-    let dataArr = {
+  btn.addEventListener("click", () => {
+    const dataArr = {
       name: "NaME Mane",
       phone: "89276892240",
     };
 
-    let data = JSON.stringify(dataArr);
-    let csrfToken = getCookie("csrftoken");
-    let endpoint = "/api/v1/emails/call-back-email/";
+    const data = JSON.stringify(dataArr);
+    const csrfToken = getCookie("csrftoken");
+    const endpoint = "/api/v1/emails/call-back-email/";
     fetch(endpoint, {
       method: "POST",
       body: data,

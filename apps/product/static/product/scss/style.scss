@@ -321,97 +321,170 @@
   }
   .product_container {
     margin-top: 2.813rem;
-    .titles {
-      display: flex;
-      .small_title {
-        font-size: 0.938rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        &:nth-of-type(2) {
-          margin-left: 10.188rem;
-        }
-        &:nth-of-type(3) {
-          margin-left: 11.938rem;
-        }
-        &:nth-of-type(4) {
-          margin-left: 5.563rem;
-        }
-        &:nth-of-type(5) {
-          margin-left: 5.375rem;
-        }
-        &:nth-of-type(6) {
-          margin-left: 2.25rem;
-        }
-      }
-    }
     .filters_and_products_container {
       margin-top: 1.25rem;
       display: flex;
-      gap: 2.9rem;
+      justify-content: space-between;
       .filter_container {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 2.688rem;
         .filter_elem {
           display: flex;
           flex-direction: column;
-          gap: 0.875rem;
           .filter_title {
-            font-size: 0.938rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
           }
-          .filter-wrapper-content {
+          .supplier_content {
+            margin-top: 1.5rem;
             display: flex;
-            .filter_content {
+            flex-direction: column;
+            gap: 1rem;
+            .suplier_elem_content {
+              width: 18.313rem;
+              height: 3.563rem;
               display: flex;
-              flex-direction: column;
-              gap: 0.875rem;
-              margin-left: 2rem;
-              overflow: hidden;
-              transition: max-height 0.6s ease-out;
-              .filter_elem_content {
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                color: #000;
-                text-decoration: none;
-                .checkbox {
-                  width: 1.125rem;
-                  height: 1.125rem;
-                  border-radius: 2px;
-                  border: 0.063rem solid black;
-                  position: relative;
-                  .checked {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 0.875rem;
-                    height: 0.875rem;
-                    background-color: #000;
-                    border-radius: 2px;
-                    opacity: 0;
-                    transition: 0.6s;
-                    &.show {
-                      opacity: 1;
-                    }
-                  }
-                }
-                .filter_name {
-                  font-size: 0.813rem;
+              align-items: center;
+              cursor: pointer;
+              .suplier_elem_content_img_container {
+                width: 3.563rem;
+                height: 100%;
+                border-radius: 100%;
+                border: 0.094rem solid #000;
+              }
+              .suplier_elem_content_name {
+                width: 14.75rem;
+                height: 100%;
+                background-color: #fff;
+                border: 0.094rem solid #000;
+                box-sizing: border-box;
+                padding: 0.875rem 1.875rem;
+                border-radius: 2rem;
+                font-size: 1.313rem;
+                transition: 0.6s;
+                &.show {
+                  background-color: #95bad4;
+                  color: #fff;
+                  border: 0.094rem solid #95bad4;
                 }
               }
+            }
+          }
+          .price_content {
+            margin-top: 1.125rem;
+            .price_content_wrapper {
+              width: 18.313rem;
+              height: 3.563rem;
+              border: 0.094rem solid #000;
+              border-radius: 2rem;
+              display: flex;
+              justify-content: space-between;
+              padding: 0.938rem 1.094rem;
+              box-sizing: border-box;
+              .price_content_wrapper_elem {
+                width: 7rem;
+                display: flex;
+                gap: 0.5rem;
+                font-size: 1.125rem;
+                font-weight: 300;
+                input {
+                  width: 75%;
+                  border: none;
+                  font-size: 1.125rem;
+                  font-weight: 300;
+                  font-family: "Nunito", sans-serif;
+                  &:focus {
+                    outline: none;
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                  &::-webkit-input-placeholder {
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                  &::-moz-placeholder {
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                  &:-ms-input-placeholder {
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                  &::-ms-input-placeholder {
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                  &::placeholder {
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                  }
+                }
+              }
+            }
+            .price_checkbox_content {
+              margin-top: 1rem;
+              margin-left: 1.063rem;
+              display: flex;
+              align-items: flex-start;
+              gap: 0.75rem;
+              cursor: pointer;
+              .checkbox {
+                width: 1rem;
+                height: 1rem;
+                border-radius: 0.313rem;
+                border: 0.094rem solid #000;
+                background-color: #fff;
+                transition: 1s;
+                &.checked {
+                  border: 0.094rem solid #95bad4;
+                  background-color: #95bad4;
+                }
+              }
+              .price_checkbox_content_description {
+                width: 10.563rem;
+                font-size: 1.125rem;
+                font-weight: 300;
+                margin-top: -0.3rem;
+              }
+            }
+          }
+        }
+        .submit_filter_container {
+          margin-top: 2.688rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          width: 18.313rem;
+          .submit {
+            height: 3.563rem;
+            background-color: #95bad4;
+            border: none;
+            border-radius: 1.875rem;
+            font-size: 1.313rem;
+            color: #fff;
+            text-transform: lowercase;
+            cursor: pointer;
+            transition: 0.6s;
+            &:hover {
+              background-color: #ff5b00;
+            }
+          }
+          .canceled {
+            background-color: #fff;
+            border: none;
+            font-size: 1.313rem;
+            text-transform: lowercase;
+            cursor: pointer;
+            transition: 0.6s;
+            &:hover {
+              color: gray;
             }
           }
         }
       }
       .catalog_wrapper {
-        width: 100%;
+        // width: 100%;
         min-height: 15.125rem;
         .loader {
           overflow: hidden;
@@ -459,6 +532,7 @@
           display: flex;
           flex-direction: column;
           gap: 1rem;
+          width: 62.563rem;
           .product_item {
             width: 100%;
             min-height: 13.063rem;
@@ -481,7 +555,7 @@
             }
             .product-item_description {
               margin-left: 2.822rem;
-              width: 41.438rem;
+              width: 33.438rem;
               .name {
                 font-size: 1.5rem;
                 color: #000;
@@ -503,6 +577,7 @@
               }
             }
             .price_conainer {
+              margin-left: 1rem;
               .lot {
                 font-size: 1.125rem;
                 font-weight: 300;

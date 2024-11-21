@@ -2,14 +2,14 @@ import { getCookie } from "/static/core/js/functions.js";
 const btn = document.querySelector(".send-manager");
 if (btn) {
   btn.addEventListener("click", (event) => {
-    let dataArr = {
+    const dataArr = {
       client_id: 24,
       text_message: "jsfkjsdfkj sjdfnksjndf sjdfnskjdnfk",
     };
 
-    let data = JSON.stringify(dataArr);
-    let csrfToken = getCookie("csrftoken");
-    let endpoint = "/api/v1/emails/manager-email/";
+    const data = JSON.stringify(dataArr);
+    const csrfToken = getCookie("csrftoken");
+    const endpoint = "/api/v1/emails/manager-email/";
     fetch(endpoint, {
       method: "POST",
       body: data,

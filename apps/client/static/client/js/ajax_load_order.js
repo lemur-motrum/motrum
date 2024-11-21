@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const catalogWrapper = document.querySelector('[order-elem="wrapper"]');
   if (catalogWrapper) {
     let paramsArray = [];
-    const btn = catalogWrapper.querySelector(".add_more");
+
     const catalogContainer = catalogWrapper.querySelector(
       '[order-elem="container"]'
     );
@@ -46,7 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
         firstDots.classList.remove("show");
       }
       if (pageCount >= 0 && pageCount < 4) {
-        if (pageCount >= lastPage - 2) {
+        if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);

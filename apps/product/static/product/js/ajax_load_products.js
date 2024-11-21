@@ -56,7 +56,7 @@ window.addEventListener("DOMContentLoaded", () => {
         firstDots.classList.remove("show");
       }
       if (pageCount >= 0 && pageCount < 4) {
-        if (pageCount >= lastPage - 2) {
+        if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           if (pageCount >= lastPage - 1) {
@@ -290,7 +290,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
-              checkbox.classList.add("show");
+              nameContainer.classList.add("show");
             }
           });
         }

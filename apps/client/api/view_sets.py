@@ -921,7 +921,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                 pdf_signed = request.build_absolute_uri(order.bill_file.url)
-                document_specification  = request.build_absolute_uri(order.specification.file.url)
+                document_specification = request.build_absolute_uri(
+                    order.specification.file.url
+                )
                 data = {"pdf": pdf, "name_bill": order.bill_name}
 
                 # сохранение товара в окт нового
@@ -953,23 +955,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "pdf": pdf,
                     "pdf_signed": pdf_signed,
                     "bill_date_create": order.bill_date_start,
-                    "document_specification":document_specification, 
+                    "document_specification": document_specification,
                     "order_products": order_products,
-                    "currency":{
-                        
-                    } 
+                    "currency": {},
                 }
-                
+
                 print(999)
-                
-                
-                
-                
-                
-                
-                
-                
-                
+
                 print(data_for_bitrix)
                 return Response(data, status=status.HTTP_200_OK)
             else:
@@ -1572,15 +1564,16 @@ class OrderViewSet(viewsets.ModelViewSet):
             {"id_bitrix": "232", "status": "Отгрузка оборудования заказчику"},
             {"id_bitrix": "5924", "status": "Отгрузка оборудования заказчику"},
         ]
+
         def get_status_bx(status):
             for choice in STATUS_ORDER_BITRIX:
                 if choice[1] == status:
                     return choice[0]
-    
+
         for data_order in data:
             print(data_order["id_bitrix"])
             order = Order.objects.filter(id_bitrix=data_order["id_bitrix"]).last()
-            
+
             if order:
                 status_bx = get_status_bx(data_order["status"])
                 if status == "SHIPMENT_":
@@ -1588,17 +1581,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                         status = "SHIPMENT_PICKUP"
                     else:
                         status = "SHIPMENT_AUTO"
-                    
+
                     order.status = status
                     order.save()
-                        
-        
-       
-        
-        
+
         return Response(data, status=status.HTTP_200_OK)
-        
-            
+
 
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()

@@ -216,6 +216,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    date_delivery_bill = models.DateField(verbose_name="Дата поставки товара в счете", null=True)
     
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 

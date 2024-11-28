@@ -77,25 +77,26 @@ class AdminUser(CustomUser):
                 login(request, admin)
                 if next_url:
                     pass
-                    # response = redirect(next_url)
-                    # response.set_cookie('client_id', max_age=-1)
-                    # response.set_cookie('cart', max_age=-1)
-                    # response.set_cookie('specificationId', max_age=-1)
-                    # return redirects
+                    response = redirect(next_url)
+                    response.set_cookie('client_id', max_age=-1)
+                    response.set_cookie('cart', max_age=-1)
+                    response.set_cookie('specificationId', max_age=-1)
+                    return redirects
                 else:
                     data = {
-                    "status": 200 
+                    "status_admin": 200 ,
+                    "admin":admin,
                     }
                     return (data)
 
             else:
                 data = {
-               "status": 403 
+               "status_admin": 403 
             }
             return (data)
         except cls.DoesNotExist:
             data = {
-               "status": 401
+               "status_admin": 401
             }
             return (data)
         

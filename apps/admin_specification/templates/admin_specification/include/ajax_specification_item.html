@@ -7,6 +7,7 @@
              status="{{ status }}"
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
+             
                 <div class="table_item_value first_table_value">
                         <a href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
@@ -94,7 +95,14 @@
                         {% endif %}
                 </div>
                 <div class="table_item_value invoice-table_item_value">
-                        {% if status == "PROCESSING" and specification_list.tag_stop == true %}
+                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
+                   
+                        <!--<button data-specication-id-to-bill="{{ specification }}"
+                                        class="create-bill-button">Создать счет</button>    -->
+                        <br>
+                        <button data-type-save="update" class="change-bill-button">Изменить счет</button>
+                        <br>                    
+                        <!--{% if status == "PROCESSING" and specification_list.tag_stop == true %}
                                 <button data-specication-id-to-bill="{{ specification }}"
                                         class="create-bill-button">Создать счет</button>
                         {% elif status == "PROCESSING" and specification_list.tag_stop == false %}
@@ -122,9 +130,10 @@
                                         <br>
                                 {% endif %}
                         {% elif bill_sum_paid and bill_sum_paid > 0 %}
-                        {% endif %}
+                        {% endif %}-->
                 </div>
-                {% if bill_sum_paid > 0 %}
+                <button data-type-save="hard_update" class="change-specification-button">Выставить новый счет</button>
+                <!--{% if bill_sum_paid > 0 %}
                 {% elif status == "PROCESSING" and specification_list.tag_stop == false %}
                         <button class="uptate-specification-button">Актуализировать</button>
                 {% elif status == "CANCELED" %}
@@ -134,7 +143,7 @@
                         <br>
                         {% if bill_sum %}
                                 <span class="table_item_value_span description">при редактировании заказа текущие документы становятся не действительны</span>
-                        {% endif %}
+                        {% endif %}-->
                 {% endif %}
         </div>
         <!-- корзины без заказа-->

@@ -40,7 +40,6 @@ from django.dispatch import receiver
 from apps.user.models import AdminUser
 
 
-
 TYPE_DOCUMENT = (
     ("InstallationProduct", "Руководство по монтажу и эксплуатации"),
     ("DimensionDrawing", "Габаритные чертежи"),
@@ -120,7 +119,7 @@ class Product(models.Model):
 
     name = models.CharField("Название товара", max_length=600)
     slug = models.SlugField(null=True, max_length=600)
-    
+
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -130,7 +129,7 @@ class Product(models.Model):
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
     add_in_nomenclature = models.BooleanField("Загружен из номенклатуры", default=False)
     # in_auto_sale = models.BooleanField("Разрешить применять скидки автоматичсеки", default=False)
-    in_view_website =  models.BooleanField("Видимость на сайте", default=True)
+    in_view_website = models.BooleanField("Видимость на сайте", default=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -170,22 +169,22 @@ class Product(models.Model):
         if self.description != None:
             self.description = self.description.strip()
             self.description = " ".join(self.description.split())
-        try:    
+        try:
             if self.slug == None:
                 slug_text = f"{self.name}-{self.article}"
                 regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
                 slugish = re.sub(regex, "", slug_text)
                 slugish = translit.translify(slugish)
                 self.slug = slugify(slugish)
-                
+
         except Exception as e:
             print(e)
             error = "file_error"
             location = "Обновление слагов"
 
             info = f"Обновление слагов"
-            e = error_alert(error, location, info)   
-                 
+            e = error_alert(error, location, info)
+
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
@@ -223,40 +222,39 @@ class Product(models.Model):
                     "article": self.article,
                 },
             )
-            
+
     def get_url_document(self):
         if self.category is not None:
             category = self.category.slug
         else:
             category = "other"
-            
+
         if self.group is not None:
-            
-            groupe =  self.group.slug
+
+            groupe = self.group.slug
         else:
-            groupe = "none_group"       
-            
+            groupe = "none_group"
+
         product = str(self.article)
-        
-            
+
         url = "{0}/{1}/{2}/{3}".format(
-        "product",
-        category,
-        groupe,
-        product,
-    )
-        return url    
-    
+            "product",
+            category,
+            groupe,
+            product,
+        )
+        return url
+
     def get_url_document_test(self):
-        
+
         product = int(self.article)
-        
+
         url = "{0}/{1}".format(
-        "product",
-        product,
-    )
-        return url   
-    
+            "product",
+            product,
+        )
+        return url
+
     def get_presale_discount(self):
         from apps.supplier.models import Discount
 
@@ -266,6 +264,7 @@ class Product(models.Model):
             return discount.percent
         except Discount.DoesNotExist:
             return False
+
     # def get_blank(self, Model, product_blank):
     #         # item = Product.objects.filter(id=self.id).values()
     #         item = list(self)
@@ -295,7 +294,7 @@ class Product(models.Model):
 
     #         product_blank = f"{product_blank}{product_blank_local}"
     #         return product_blank
-    
+
     # удаление пустых исторических записей
     @receiver(post_create_historical_record)
     def post_create_historical_record_callback(
@@ -306,14 +305,16 @@ class Product(models.Model):
             if delta.changed_fields == []:
                 history_instance.delete()
 
+
 @receiver(post_save, sender=Product)
 def add_logs_created(sender, instance, created, **kwargs):
     from apps.logs.models import LogsAddProduct
+
     if created:
         log = LogsAddProduct.objects.create(product=instance)
-        print(f'New deal with pk: {instance.pk} was created.')
-        
-        
+        print(f"New deal with pk: {instance.pk} was created.")
+
+
 class CategoryProduct(models.Model):
     name = models.CharField("Название категории", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
@@ -344,7 +345,7 @@ class CategoryProduct(models.Model):
 
     def save(self, *args, **kwargs):
         slug_text = self.name
-        
+
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)
@@ -428,7 +429,9 @@ class Price(models.Model):
         blank=True,
         null=True,
     )
-    in_auto_sale = models.BooleanField("Разрешить применять скидки автоматически", default=True)
+    in_auto_sale = models.BooleanField(
+        "Разрешить применять скидки автоматически", default=True
+    )
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
 
@@ -461,7 +464,7 @@ class Price(models.Model):
         elif self.price_supplier != 0:
             self.extra_price == False
             # получить рублевую цену
-  
+
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -495,37 +498,36 @@ class Price(models.Model):
     #     request = RequestMiddleware(get_response=None)
     #     request = request.thread_local.current_request
     #     print(request.user)
-        
+
     #     if request.user.is_authenticated :
     #         print(33333)
     #         if request.user.is_staff == False:
     #             client = Client.objects.get(id=request.user.id)
     #             discount = client.percent
-                
+
     #             price = self.rub_price_supplier
-                
+
     #             price_discount = price - (price / 100 * float(discount))
-                
+
     #             return round(price_discount, 2)
     #         else:
     #             return self.rub_price_supplier
     #     else:
     #         print(22222)
     #         return self.rub_price_supplier
-   
-    def get_sale_price_motrum(
-        self
-    ):
+
+    def get_sale_price_motrum(self):
         from apps.supplier.models import (
             Discount,
         )
+
         item_category = self.prod.category_supplier
         item_group = self.prod.group_supplier
         vendors = self.prod.vendor
         rub_price_supplier = self.rub_price_supplier
         all_item_group = self.prod.category_supplier_all
         supplier = self.prod.supplier
-        
+
         motrum_price = rub_price_supplier
         percent = 0
         sale = [None]
@@ -540,7 +542,6 @@ class Price(models.Model):
                 category_supplier_all=all_item_group.id,
                 is_tag_pre_sale=False,
             )
-        
 
             if discount_all_group:
                 percent = get_percent(discount_all_group)
@@ -552,26 +553,26 @@ class Price(models.Model):
 
             discount_group = Discount.objects.filter(
                 category_supplier_all__isnull=True,
-                group_supplier=item_group.id, is_tag_pre_sale=False
+                group_supplier=item_group.id,
+                is_tag_pre_sale=False,
             )
-            
-        
+
             if discount_group:
                 percent = get_percent(discount_group)
                 sale = discount_group
-            
+
                 # if percent != 0
 
         # скидка по категории
         if item_category and percent == 0:
-        
+
             discount_categ = Discount.objects.filter(
                 category_supplier_all__isnull=True,
                 group_supplier__isnull=True,
                 category_supplier=item_category.id,
-                is_tag_pre_sale = False
+                is_tag_pre_sale=False,
             )
-            
+
             if discount_categ:
                 percent = get_percent(discount_categ)
                 sale = discount_categ
@@ -583,13 +584,13 @@ class Price(models.Model):
                 group_supplier__isnull=True,
                 category_supplier__isnull=True,
                 category_supplier_all__isnull=True,
-                is_tag_pre_sale = False
+                is_tag_pre_sale=False,
             )
             # скидка по всем вендору
             if discount_all:
                 percent = get_percent(discount_all)
                 sale = discount_all
-                
+
         if percent == 0:
 
             discount_all = Discount.objects.filter(
@@ -598,21 +599,22 @@ class Price(models.Model):
                 group_supplier__isnull=True,
                 category_supplier__isnull=True,
                 category_supplier_all__isnull=True,
-                is_tag_pre_sale = False
+                is_tag_pre_sale=False,
             )
             # скидка по всем вендору
             if discount_all:
                 percent = get_percent(discount_all)
                 sale = discount_all
             # нет скидки
-        
+
         # motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
         # # обрезать цены
         # motrum_price = round(motrum_price, 2)
         if sale[0]:
             return sale[0].percent
         else:
-            return  None
+            return None
+
 
 # курсы валют
 class CurrencyRate(models.Model):
@@ -651,10 +653,16 @@ class Stock(models.Model):
         "Остаток на складе поставщика в штуках",
         null=True,
     )
-    stock_motrum = models.PositiveIntegerField("Остаток на складе Motrum в штуках", default=0)
-    stock_motrum_reserve = models.PositiveIntegerField("Резерв на складе Motrum в штуках", default=0)
+    stock_motrum = models.PositiveIntegerField(
+        "Остаток на складе Motrum в штуках", default=0
+    )
+    stock_motrum_reserve = models.PositiveIntegerField(
+        "Резерв на складе Motrum в штуках", default=0
+    )
     to_order = models.BooleanField("Товар под заказ", default=False)
-    data_update = models.DateField(auto_now=True, verbose_name="Дата обновления поставщика")
+    data_update = models.DateField(
+        auto_now=True, verbose_name="Дата обновления поставщика"
+    )
     transit_count = models.PositiveIntegerField(
         "Ближайшая поставка количество", blank=True, null=True
     )
@@ -668,8 +676,6 @@ class Stock(models.Model):
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
-    
-    
     class Meta:
         verbose_name = "Остаток"
         verbose_name_plural = "Остатки"
@@ -720,7 +726,7 @@ class ProductImage(models.Model):
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
-        ordering = ['pk']
+        ordering = ["pk"]
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
 
@@ -753,11 +759,12 @@ class ProductDocument(models.Model):
 
     def __str__(self):
         return f"{self.document}"
-    
+
     def extension(self):
         name, extension = os.path.splitext(self.document.name)
-        extension = extension.replace('.', '')
+        extension = extension.replace(".", "")
         return extension
+
     # def pre_save(self, model_instance, add):
     #     file = super().pre_save(model_instance, add)
     #     if file and not file._committed:
@@ -769,8 +776,6 @@ class ProductDocument(models.Model):
     # def save(self, *args, **kwargs):
     #     # self.document
     #     super().save(*args, **kwargs)
-        
-
 
 
 class ProductProperty(models.Model):
@@ -810,14 +815,14 @@ class Cart(models.Model):
     )
     is_active = models.BooleanField("корзина сохранена", default=False)
     session_key = models.CharField(max_length=100, blank=True, null=True)
-    cart_admin =  models.ForeignKey(
+    cart_admin = models.ForeignKey(
         AdminUser,
         on_delete=models.PROTECT,
         verbose_name="Администратор",
-        blank=True, null=True
+        blank=True,
+        null=True,
     )
 
-    
     class Meta:
         verbose_name = "Корзина"
         verbose_name_plural = "Корзины"
@@ -825,6 +830,11 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @classmethod
+    def create_cart_admin(cls, session,admin):
+        cart = cls.objects.create(session_key=None, is_active=False,client=None,cart_admin=admin)
+        
+        return  cart
 
 class ProductCart(models.Model):
     cart = models.ForeignKey(
@@ -852,7 +862,7 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
-    
+
     product_new_article = models.CharField(
         "Артикул товара нового без добавления в бд",
         default=None,
@@ -898,8 +908,6 @@ class ProductCart(models.Model):
 
     def __str__(self):
         return str(self.id)
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        
-    

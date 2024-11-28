@@ -13,9 +13,9 @@
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}
             <div class="">
-                <h4 style=" color: red; ">
+                {% comment %} <h4 style=" color: red; ">
                     ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! При редактировании заказа текущие документы становятся не действительны
-                </h4>
+                </h4> {% endcomment %}
             </div>
         {% endif %}
         {% if product or product_new %}
@@ -25,9 +25,9 @@
                     <div class="title_item">Остатки</div>
                     <div class="title_item">Цена за шт. в ₽:</div>
                     <div class="title_item">Количество:</div>
-                    <div class="title_item">Стоимость:</div>
+                    <div class="title_item">Стоимость для клиента:</div>
                     <div class="title_item">Стоимость Motrum:</div>
-                    <div class="title_item">Доп.Скидка %:</div>
+                    <div class="title_item">Скидка клиента %:</div>
                     <div class="title_item">Маржа</div>
                     <div class="title_item">Срок поставки:</div>
                 </div>
@@ -902,12 +902,14 @@
                             </div>
                             <button class="exit_button">Выйти без изменений</button>
                         {% else %}
-                            <div class="save_button-wrapper">
+                            <div class="save_button-wrapper "style="
+                            display: none;
+                        ">
                                 <button class="save_button">Сохранить спецификацию</button>
                                 <div class="error"></div>
                             </div>
                             <div class="save_invoice_button-wrapper">
-                                <button class="save_button">Сохранить только счет</button>
+                                <button class="save_button">Сохранить</button>
                                 <div class="error"></div>
                             </div>
                             {% if specification %}

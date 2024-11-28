@@ -1,4 +1,4 @@
-import { getCookie } from "/static/core/js/functions.js";
+import { getCookie, setCookie } from "/static/core/js/functions.js";
 import { setErrorModal } from "../js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
@@ -14,6 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
         },
       }).then((response) => {
         if (response.status == 200) {
+          setCookie("type_save", "new", { path: "/" });
           console.log("ok");
         } else {
           setErrorModal();

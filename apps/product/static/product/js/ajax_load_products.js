@@ -65,7 +65,11 @@ window.addEventListener("DOMContentLoaded", () => {
               paginationElems[1].style.display = "none";
             }
           } else {
-            paginationElems[2].style.display = "flex";
+            if (paginationElems[2].textContent == "") {
+              paginationElems[2].style.display = "none";
+            } else {
+              paginationElems[2].style.display = "flex";
+            }
           }
         } else {
           paginationElems[2].style.display = "flex";
@@ -276,25 +280,24 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const filters = document.querySelectorAll(".filter_elem");
     filters.forEach((filterElem) => {
-      const title = filterElem.querySelector(".filter_title");
-      const filterContent = filterElem.querySelector(".filter-wrapper-content");
-      const arrow = filterElem.querySelector(".arrow");
-      const filterValues = filterElem.querySelectorAll(".filter_elem_content");
+      const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
 
       filterValues.forEach((filterValue) => {
-        const checkbox = filterValue.querySelector(".checked");
+        const nameContainer = filterValue.querySelector(
+          ".suplier_elem_content_name"
+        );
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
-              checkbox.classList.add("show");
+              nameContainer.classList.add("show");
             }
           });
         }
         filterValue.onclick = () => {
           paramsArray.push(vendorParam);
-          checkbox.classList.toggle("show");
-          if (checkbox.classList.contains("show")) {
+          nameContainer.classList.toggle("show");
+          if (nameContainer.classList.contains("show")) {
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
               currentUrl.searchParams.set("vendor", paramsArray.join());
@@ -336,10 +339,6 @@ window.addEventListener("DOMContentLoaded", () => {
           history.pushState({}, "", currentUrl);
         };
       });
-      // title.onclick = () => {
-      //   filterContent.classList.toggle("is_open");
-      //   arrow.classList.toggle("rotate");
-      // };
     });
   }
 });

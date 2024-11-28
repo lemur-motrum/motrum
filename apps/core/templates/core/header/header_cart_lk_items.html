@@ -4,9 +4,7 @@
         <div class="img-container">
             <img src={% static "core/images/header_orders.png" %} />
         </div>
-        <span>
-            {% if notifications_order %}{{ notifications_order }}{% endif %}
-        </span>
+        <span class="order_count">{% if notifications_order %}{{ notifications_order }}{% endif %}</span>
     </a>
     <a href={% url "core:cart" %} class="cart-elem">
         <div class="img-container">
@@ -18,9 +16,7 @@
         <div class="img-container">
             <img src={% static "core/images/header_account.png" %} />
         </div>
-        <span>
-            {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
-        </span>
+        <span class="order_count">{% if count_notifications_all %}{{ count_notifications_all }}{% endif %}</span>
     </a>
 {% elif request.user.is_staff %}
     <div class="cart-elem enter-in-site">вход</div>

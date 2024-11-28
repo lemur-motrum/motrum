@@ -26,36 +26,47 @@
             </div>
         </div>
         <div class="product_container">
-            <div class="titles">
-                <div class="small_title">Фильтр</div>
-                <div class="small_title">товар</div>
-                <div class="small_title">артикул</div>
-                <div class="small_title">характеристики</div>
-                <div class="small_title">упак</div>
-                <div class="small_title">цена</div>
-            </div>
             <div class="filters_and_products_container">
                 <div class="filter_container">
                     <div class="filter_elem">
                         <div class="filter_title">Производитель</div>
-                        <div class="filter-wrapper-content">
-                            <div class="filter_content">
-                                {% for vendor in product_vendor %}
-                                    <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
-                                        <div class="checkbox">
-                                            <div class="checked"></div>
-                                        </div>
-                                        <div class="filter_name">
-                                            {% if vendor.vendor__name %}
-                                                {{ vendor.vendor__name }}
-                                            {% else %}
-                                                Неизвестный производитель
-                                            {% endif %}
-                                        </div>
+                        <div class="supplier_content">
+                            {% for vendor in product_vendor %}
+                                <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
+                                    <div class="suplier_elem_content_img_container"></div>
+                                    <div class="suplier_elem_content_name">
+                                        {% if vendor.vendor__name %}
+                                            {{ vendor.vendor__name }}
+                                        {% else %}
+                                            Неизвестный производитель
+                                        {% endif %}
                                     </div>
-                                {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="filter_elem">
+                        <div class="filter_title">Цена</div>
+                        <div class="price_content">
+                            <div class="price_content_wrapper">
+                                <div class="price_content_wrapper_elem">
+                                    от
+                                    <input placeholder="1000" class="small_price_input" type="text" />
+                                </div>
+                                <div class="price_content_wrapper_elem">
+                                    до
+                                    <input placeholder="500000" class="big_price_input" type="text" />
+                                </div>
+                            </div>
+                            <div class="price_checkbox_content">
+                                <div class="checkbox"></div>
+                                <div class="price_checkbox_content_description">исключить товары с ценой по запросу</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="submit_filter_container">
+                        <button class="submit">Применить фильтры</button>
+                        <button class="canceled">Сбросить</button>
                     </div>
                 </div>
                 <input id="category-product"
@@ -94,7 +105,6 @@
                             <div class="elem"></div>
                             <div class="dots last_dots">...</div>
                             <div class="last">578</div>
-                            {% comment %} <div class="next">далее</div> {% endcomment %}
                         </div>
                     </div>
                 </div>

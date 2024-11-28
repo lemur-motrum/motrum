@@ -138,7 +138,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
-        # page_count = queryset.count()
 
         page_count = Product.objects.filter(q_object).count()
 

@@ -52,7 +52,7 @@ class StockSerializer(serializers.ModelSerializer):
             "stock_motrum_reserve",
             "to_order",
             "data_update",
-            "transit_count"
+            "transit_count",
         )
 
 
@@ -66,6 +66,7 @@ class ProductPropertySerializer(serializers.ModelSerializer):
             "name",
             "value",
         )
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
 
@@ -87,6 +88,7 @@ class ProductSpesifSerializer(serializers.ModelSerializer):
             "name",
         )
 
+
 class ProductSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -96,6 +98,7 @@ class ProductSearchSerializer(serializers.ModelSerializer):
             "article_supplier",
             "name",
         )
+
 
 class ProductSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True, many=False)
@@ -125,7 +128,11 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if data["price"] and data["price"]["rub_price_supplier"]:
-            if self.context and self.context["request"] and self.context["request"].user:
+            if (
+                self.context
+                and self.context["request"]
+                and self.context["request"].user
+            ):
                 if self.context["request"].user.is_staff == False:
                     try:
                         client = Client.objects.get(id=self.context["request"].user.id)
@@ -154,28 +161,28 @@ class CartSerializer(serializers.ModelSerializer):
 
 class ProductCartSerializer(serializers.ModelSerializer):
     product_id_name = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = ProductCart
         fields = "__all__"
+
     def get_product_id_name(self, obj):
-        
-        
+
         if obj.product:
             return f"{obj.product.article_supplier} {obj.product.name}"
         else:
-            return None      
+            return None
+
 
 class CartOktAllSerializer(serializers.ModelSerializer):
     productcart_set = ProductCartSerializer(read_only=True, many=True)
     admin_creator_name = serializers.CharField(source="cart_admin")
+
     class Meta:
         model = Cart
-        fields = ( 
+        fields = (
             "id",
             "cart_admin",
             "admin_creator_name",
             "productcart_set",
-            )
-        
-        
+        )

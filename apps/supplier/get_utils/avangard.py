@@ -24,7 +24,7 @@ from project.settings import BASE_DIR, MEDIA_ROOT
 
 
 def get_category_avangard(name, supplier, vendor):
-  
+
     try:
         category_item = SupplierCategoryProduct.objects.get(
             supplier=supplier, vendor=vendor, name=category

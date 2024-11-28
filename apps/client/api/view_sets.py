@@ -968,16 +968,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                         prod.product = new_prod_db
                         prod.save()
                     data_prod_to_1c = {
-                        "vendor": prod.product.vendor.name,
-                        "article": prod.product.article_supplier,
-                        "article_motrum": prod.product.article,
-                        "name": prod.product.name,
-                        "price_one": prod.price_one,
-                        "quantity": prod.quantity,
-                        "price_all": prod.price_all,
-                        "text_delivery": prod.text_delivery,
+                        # "vendor": prod.product.vendor.name,
+                        # "article": prod.product.article_supplier,
+                        # "article_motrum": prod.product.article,
+                        # # "name": prod.product.name,
+                        # "price_one": prod.price_one,
+                        # "quantity": prod.quantity,
+                        # "price_all": prod.price_all,
+                        # "text_delivery": prod.text_delivery,
                     }
-                    order_products[prod.product.article] = data_prod_to_1c
+                    # order_products[prod.product.article] = data_prod_to_1c
                 print(order_products)
                 data_for_bitrix = {
                     "name_bill": order.bill_name,

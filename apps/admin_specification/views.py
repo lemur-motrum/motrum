@@ -469,7 +469,8 @@ def create_specification(request):
         product_cart = ProductCart.objects.filter(cart=cart)
         print(product_cart)
         # изменение спецификации
-        try:
+        if type_save_cookee != "new":
+        # try:
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
@@ -580,7 +581,8 @@ def create_specification(request):
             update_spesif = True
 
         # новая спецификация
-        except Specification.DoesNotExist:
+        else:
+        # except Specification.DoesNotExist:
 
             try:
                 # если корзина без заказа
@@ -798,12 +800,16 @@ def create_specification(request):
             
     if type_save_cookee == "new":
         bill_upd = False
-        if order.requisites.contract:
-            title = f"Новый заказ: счет + спецификация"
-            type_save = "счет + спецификация"
+        if order:
+            if order.requisites.contract:
+                title = f"Новый заказ: счет + спецификация"
+                type_save = "счет + спецификация"
+            else:
+                title = f"Новый заказ: счет-оферта"
+                type_save = " счет-оферта" 
         else:
-            title = f"Новый заказ: счет-оферта"
-            type_save = " счет-оферта" 
+            title = f"Новый заказ"
+            type_save = "" 
                  
     elif type_save_cookee == "update" :
         bill_upd = True

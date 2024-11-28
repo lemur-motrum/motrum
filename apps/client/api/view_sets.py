@@ -740,36 +740,44 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             print(specification)
-            if post_update:
+            
+            
+            
+            
+            # if post_update:
+            #     data_order = {
+            #         "comment": data["comment"],
+            #         "name": 123131,
+            #     }
+            # else:
+            #     data_order = {
+            #         # "client": client,
+            #         "name": 123131,
+            #         "specification": specification.id,
+            #         # "requisites": requisites.id,
+            #         # "account_requisites": account_requisites.id,
+            #         "status": "PROCESSING",
+            #         # "cart": cart.id,
+            #         # "bill_name": None,
+            #         # "bill_file": None,
+            #         # "bill_date_start": None,
+            #         # "bill_date_stop": None,
+            #         # "bill_sum": None,
+            #         # "comment": data["comment"],
+            #         # "prepay_persent": requisites.prepay_persent,
+            #         # "postpay_persent": requisites.postpay_persent,
+            #         "motrum_requisites": motrum_requisites.id,
+            #         # "id_bitrix": id_bitrix,
+            #         # "type_delivery": type_delivery,
+            #     }
+        
+            try:
                 data_order = {
                     "comment": data["comment"],
                     "name": 123131,
-                }
-            else:
-                data_order = {
-                    # "client": client,
-                    "name": 123131,
                     "specification": specification.id,
-                    # "requisites": requisites.id,
-                    # "account_requisites": account_requisites.id,
-                    "status": "PROCESSING",
-                    # "cart": cart.id,
-                    # "bill_name": None,
-                    # "bill_file": None,
-                    # "bill_date_start": None,
-                    # "bill_date_stop": None,
-                    # "bill_sum": None,
-                    # "comment": data["comment"],
-                    # "prepay_persent": requisites.prepay_persent,
-                    # "postpay_persent": requisites.postpay_persent,
-                    "motrum_requisites": motrum_requisites.id,
-                    # "id_bitrix": id_bitrix,
-                    # "type_delivery": type_delivery,
                 }
-            print(data_order)
-            try:
                 order = Order.objects.get(cart_id=cart)
-                print(order)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
@@ -786,16 +794,37 @@ class OrderViewSet(viewsets.ModelViewSet):
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
             except Order.DoesNotExist:
-
+                data_order = {
+                    "client": client,
+                    "name": 123131,
+                    "specification": specification.id,
+                    "requisites": requisites.id,
+                    "account_requisites": account_requisites.id,
+                    "status": "PROCESSING",
+                    "cart": cart.id,
+                    "bill_name": None,
+                    "bill_file": None,
+                    "bill_date_start": None,
+                    "bill_date_stop": None,
+                    "bill_sum": None,
+                    "comment": data["comment"],
+                    "prepay_persent": requisites.prepay_persent,
+                    "postpay_persent": requisites.postpay_persent,
+                    "motrum_requisites": motrum_requisites.id,
+                    "id_bitrix": id_bitrix,
+                    "type_delivery": type_delivery,
+                }
                 serializer = self.serializer_class(data=data_order, many=False)
+                print(000000)
                 if serializer.is_valid():
+                    print("serializer.is_valid():")
                     cart.is_active = True
                     cart.save()
                     serializer.save()
 
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
-
+                    print()
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
@@ -898,12 +927,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-
+            print("orderorder")
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
-
+            print(order.requisites)
             if order.requisites.contract:
                 is_req = True
             else:

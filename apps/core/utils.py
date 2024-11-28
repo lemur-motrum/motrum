@@ -942,7 +942,7 @@ def save_specification(
             # if having_items == False:
 
             #     product_item_for_old.delete()
-
+        print(111111111)
     except Specification.DoesNotExist:
         specification = Specification(
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
@@ -955,7 +955,7 @@ def save_specification(
         specification.tag_stop = True
         # specification._change_reason = "Ручное"
         specification.save()
-
+    print(222)
     # сохранение продуктов для спецификации
     # перебор продуктов и сохранение
     total_amount = 0.00
@@ -1206,7 +1206,7 @@ def save_specification(
             product_spes.save()
 
             total_amount = total_amount + price_all
-
+    print(333)
     # обновить спецификацию пдф
     total_amount = round(total_amount, 2)
     specification.total_amount = total_amount
@@ -1214,7 +1214,7 @@ def save_specification(
     specification.date_delivery = date_delivery_all
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
-
+    print(333333)
     specification.save()
     if requisites.contract:
         if type_save == "new":

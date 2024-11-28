@@ -319,12 +319,16 @@ export function uptadeOrChanegeSpecification(
   idSpecification
 ) {
   button.onclick = () => {
+    console.log(button)
     button.setAttribute("text-content", button.textContent);
+    const typeSave = button.getAttribute('data-type-save')
     button.disabled = true;
     button.textContent = "";
     button.innerHTML = "<div class='small_loader'></div>";
     document.cookie = `cart=${idSpecification};path=/`;
     document.cookie = `specificationId=${idCart};path=/`;
+    document.cookie = `type_save=${typeSave};path=/`;
+    
     const endpoint = `/api/v1/order/${idSpecification}/update-order-admin/`;
 
     fetch(endpoint, {

@@ -5,7 +5,7 @@ from xml.etree import ElementTree, ElementInclude
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
-from apps.core.models import CalendarHoliday, Currency
+from apps.core.models import BaseInfo, CalendarHoliday, Currency
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
@@ -91,22 +91,23 @@ def currency_chek(current, now_rate):
     if difference_count > count_percent:
        
         try:
-            product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
-            for prod in product_specification:
-                specification = Specification.objects.get(
-                tag_stop=True, id=prod["specification"]
-            )
-                specification.tag_stop = False
-                specification._change_reason = "Автоматическое"
+            pass
+            # product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
+            # for prod in product_specification:
+            #     specification = Specification.objects.get(
+            #     tag_stop=True, id=prod["specification"]
+            # )
+            #     specification.tag_stop = False
+            #     specification._change_reason = "Автоматическое"
                
-                specification.save()
-                try:
-                    order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
-                    order.tag_stop = False
-                    order.status = "CANCELED"
-                    order._change_reason = "Автоматическое"
-                except Order.DoesNotExist:
-                     pass
+            #     specification.save()
+            #     try:
+            #         order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
+            #         order.tag_stop = False
+            #         order.status = "CANCELED"
+            #         order._change_reason = "Автоматическое"
+            #     except Order.DoesNotExist:
+            #          pass
         except  ProductSpecification.DoesNotExist:
             pass
 
@@ -198,6 +199,24 @@ def get_next_year_holiday(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)    
     
+
+
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def counter_bill_new_year(self):
+    try:
+       вase_info = BaseInfo.objects.filter().update(counter_bill=0,counter_bill_offer=0)
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Обнуление счетчика счетов"
+
+            info = f"Обнуление счетчика счетов"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=160)    
+
 
 
 @app.task(

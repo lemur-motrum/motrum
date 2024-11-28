@@ -239,3 +239,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 # CART_SESSION_ID = 'cart'
+
+
+

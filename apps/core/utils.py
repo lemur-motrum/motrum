@@ -19,8 +19,6 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.logs.utils import error_alert
 
 
-
-
 from apps.specification.utils import crete_pdf_specification
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
@@ -312,6 +310,7 @@ def check_spesc_directory_exist(
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
     return new_dir
+
 
 
 # проверка директории для загрузки прайса из админки
@@ -882,7 +881,8 @@ def save_specification(
     id_bitrix,
     type_delivery,
     post_update,
-    specification_name,
+    # specification_name,
+    type_save,
 ):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
@@ -890,7 +890,7 @@ def save_specification(
     from apps.product.models import ProductCart
     from apps.core.utils import create_time_stop_specification
 
-    print("pre_sale func", pre_sale)
+
     # try:
 
     # сохранение спецификации
@@ -908,8 +908,8 @@ def save_specification(
         if post_update:
             pass
         else:
-            if specification_name:
-                specification.number = specification_name
+            # if specification_name:
+            #     specification.number = specification_name
             data_stop = create_time_stop_specification()
             specification.date_stop = data_stop
             specification.tag_stop = True
@@ -947,8 +947,8 @@ def save_specification(
         specification = Specification(
             id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
         )
-        if specification_name:
-            specification.number = specification_name
+        # if specification_name:
+        #     specification.number = specification_name
         specification.skip_history_when_saving = True
         data_stop = create_time_stop_specification()
         specification.date_stop = data_stop
@@ -969,7 +969,7 @@ def save_specification(
 
             product = Product.objects.get(id=product_item["product_id"])
             price = Price.objects.get(prod=product)
-            print("продукт из окт", product)
+      
             # если цена по запросу взять ее если нет взять цену из бд
             if (
                 product_item["price_exclusive"] != "0"
@@ -978,7 +978,7 @@ def save_specification(
             ):
                 price_one_before = product_item["price_one"]
                 price_one = product_item["price_one"]
-                print(111111)
+             
 
                 if price.in_auto_sale:
                     price_motrum_all = get_price_motrum(
@@ -994,13 +994,13 @@ def save_specification(
                     price_one_motrum = price_motrum_all[0]
                     sale = price_motrum_all[1]
                 else:
-                    print(99999)
+            
                     if (
                         post_update
                         and product_item["product_specif_id"] != "None"
                         and product_item["product_specif_id"] != None
                     ):
-                        print(333)
+                    
                         product_spesification = ProductSpecification.objects.get(
                             id=product_item["product_specif_id"],
                         )
@@ -1015,15 +1015,15 @@ def save_specification(
                         price_one_motrum = price_one
 
                     else:
-                        print(5555555)
+                
                         # price_one = price.rub_price_supplier
                         price_one_motrum = price_one
-                print("продукт из окт 2", product)
+   
             else:
 
                 price_one = price.rub_price_supplier
                 price_one_motrum = price.price_motrum
-                print("продукт из окт 3", product)
+        
 
             # если есть доп скидка отнять от цены поставщика
 
@@ -1040,11 +1040,11 @@ def save_specification(
 
             # если есть предоплата найти скидку по предоплате мотрум
             persent_pre_sale = 0
-            print("продукт из окт 4", product)
+          
             if pre_sale and price.in_auto_sale:
 
                 price_pre_sale = get_presale_discount(product)
-                print("get_presale_discount", price_pre_sale)
+            
                 if price_pre_sale:
                     persent_pre_sale = price_pre_sale.percent
                     price_one_motrum = price_one_motrum - (
@@ -1063,7 +1063,7 @@ def save_specification(
 
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
-            print("продукт из окт 6", product)
+        
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
             price_all_motrum = round(price_all_motrum, 2)
 
@@ -1076,14 +1076,14 @@ def save_specification(
                 product_spes = ProductSpecification.objects.get(
                     id=product_item["product_specif_id"],
                 )
-                print("продукт из окт 7", product)
+       
             else:
 
                 product_spes = ProductSpecification(
                     specification=specification,
                     product=product,
                 )
-                print("продукт из окт 8", product)
+  
 
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = price.currency
@@ -1121,10 +1121,10 @@ def save_specification(
             product_spes.save()
 
             total_amount = total_amount + price_all
-            print("продукт  из каталога стоп")
+     
         # продукты без записи в окт
         else:
-            print("продукты без записи в окт")
+         
             price_one = product_item["price_one"]
             price_one_original_new = price_one
             if product_item["sale_motrum"]:
@@ -1134,7 +1134,7 @@ def save_specification(
                 motrum_sale = float(motrum_sale)
             else:
                 motrum_sale = 0.00
-                
+
             price_one_motrum = price_one - (price_one / 100 * motrum_sale)
             price_one_motrum = round(price_one_motrum, 2)
             price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
@@ -1216,8 +1216,18 @@ def save_specification(
     specification._change_reason = "Ручное"
 
     specification.save()
-    # specification.file != None
-    if specification_name:
+    if requisites.contract:
+        if type_save == "new":
+            specification_name = requisites.number_spec + 1
+            requisites.number_spec = specification_name
+            
+        elif type_save == "update":
+            specification_name = specification.number
+        elif type_save == "hard_update":
+            specification_name = specification.number
+        else:
+            specification_name = specification.number
+            
         pdf = crete_pdf_specification(
             specification.id,
             requisites,
@@ -1233,9 +1243,38 @@ def save_specification(
         if pdf:
             specification.file = pdf
             specification._change_reason = "Ручное"
+           
             if post_update == False:
                 specification.date_create_pdf = datetime.datetime.today()
+            specification.number = specification_name
             specification.save()
+            requisites.save()
+            
+    else:
+        specification_name = None
+        
+    # if specification_name:
+
+            
+    #     pdf = crete_pdf_specification(
+    #         specification.id,
+    #         requisites,
+    #         account_requisites,
+    #         request,
+    #         motrum_requisites,
+    #         date_delivery_all,
+    #         type_delivery,
+    #         post_update,
+    #         specification_name,
+    #     )
+
+    #     if pdf:
+    #         specification.file = pdf
+    #         specification._change_reason = "Ручное"
+           
+    #         if post_update == False:
+    #             specification.date_create_pdf = datetime.datetime.today()
+    #         specification.save()
 
     return specification
 
@@ -1348,6 +1387,8 @@ def save_new_product_okt(product_new):
         product = Product.objects.get(
             vendor=vendor, article_supplier=product_new.product_new_article
         )
+        product.name = product_new.product_new
+        product.save()
 
     except Product.DoesNotExist:
         product = Product(
@@ -1381,7 +1422,7 @@ def save_new_product_okt(product_new):
         )
         product_stock.save()
 
-        return Product
+        return product
 
 
 def number_specification(type_save):
@@ -1416,7 +1457,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
             specification_name = number_specification("specification")
-            print(specification_name)
+       
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1424,7 +1465,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 "date_stop": data_stop,
                 "number": specification_name,
             }
-            print(data_specification)
+     
             serializer = serializer_class_specification(
                 data=data_specification, partial=True
             )
@@ -1432,9 +1473,9 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
-                print(specification)
+         
                 if specification:
-                    print("sdfsdfs",specification)
+           
                     total_amount = 0.00
                     for product_item in products_cart:
                         quantity = product_item.quantity
@@ -1442,7 +1483,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                         item_data = get_product_item_data(
                             specification, product, extra_discount, quantity
                         )
-                        print(item_data)
+                       
                         serializer_class_specification_product = (
                             ProductSpecificationSaveSerializer
                         )
@@ -1453,52 +1494,52 @@ def save_spesif_web(cart, products_cart, extra_discount):
                             serializer_prod._change_reason = "Клиент с сайта"
                             # serializer_prod.skip_history_when_saving = True
                             specification_product = serializer_prod.save()
-                            print(specification_product)
-                            
+                       
 
                         else:
-                            print ("2222222222222error", serializer_prod.errors,specification_name)
-                            return ("error", serializer_prod.errors,specification_name)
+
+                            return ("error", serializer_prod.errors, specification_name)
                         total_amount += float(item_data["price_all"])
-                            
+
                     # обновить спецификацию пдф
-            
+
                     specification.total_amount = total_amount
                     specification._change_reason = "Клиент с сайта"
                     # specification.skip_history_when_saving = True
                     specification.save()
                     # specification_obj = Specification.objects.get(specification.id)
-                    print(specification.total_amount)
-                    print("111111111111111111ok", specification, specification_name)
-                    return ("ok", specification ,specification_name)
+             
+          
+                    return ("ok", specification, specification_name)
                 else:
-                    return ("error", None ,None)
+                    return ("error", None, None)
 
             else:
-                return ("error", None ,None)
+                return ("error", None, None)
     except Exception as e:
         print(e)
         error = "error"
         location = "Сохранение спецификации в корзине сайта"
         info = f" ошибка {e}"
-        
-        e = error_alert(error, location, info)
-        return ("error", None ,None)
 
-def save_order_web(request,data_order,all_info_requisites,all_info_product):
+        e = error_alert(error, location, info)
+        return ("error", None, None)
+
+
+def save_order_web(request, data_order, all_info_requisites, all_info_product):
     from apps.client.api.serializers import OrderSerializer
     from apps.notifications.models import Notification
     from apps.client.models import Order
-    
+
     serializer_class = OrderSerializer
     serializer = serializer_class(data=data_order, many=False)
-    
+
     if serializer.is_valid():
         order = serializer.save()
         if all_info_requisites and all_info_product:
             Notification.add_notification(order.id, "STATUS_ORDERING")
             Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
-            
+
             bill_name = (
                 Order.objects.filter(bill_name__isnull=False)
                 .order_by("bill_name")
@@ -1508,15 +1549,13 @@ def save_order_web(request,data_order,all_info_requisites,all_info_product):
                 bill_name = int(bill_name.bill_name) + 1
             else:
                 bill_name = 1
-                
+
             if order.requisites.contract:
                 is_req = True
             else:
                 is_req = False
 
-            order_pdf = order.create_bill(
-                request, is_req, order, bill_name, False
-            )
+            order_pdf = order.create_bill(request, is_req, order, bill_name, False)
         else:
             pass
 
@@ -1526,6 +1565,64 @@ def save_order_web(request,data_order,all_info_requisites,all_info_product):
     else:
         return ("error", serializer.errors)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def client_info_bitrix(data):
+    from apps.client.models import AccountRequisites, Requisites,RequisitesOtherKpp
+ 
+    if data["contract_date"]:
+        data_contract = datetime.datetime.strptime(data["contract_date"], '%Y-%m-%d').date()
+    else:
+        data_contract = None
+    
+    client_req, client_req_created = Requisites.objects.update_or_create(
+        id_bitrix=data["id_bitrix"],
+        defaults={
+            # "contract": data["contract"],
+            "legal_entity": data["legal_entity"],
+            "inn": data["inn"],
+            # "kpp": data["kpp"],
+            # "legal_post_code": data["legal_post_code"],
+            # "legal_city": data["legal_city"],
+            # "legal_address": data["legal_address"],
+            # "postal_post_code": data["postal_post_code"],
+            # "postal_city": data["postal_city"],
+            # "postal_address": data["postal_address"],
+            
+        },
+        create_defaults={"contract": data["contract"],"contract_date":data_contract,}
+    )
+    if data["contract"]!="" and client_req.contract != data["contract"]:
+        client_req.contract = data["contract"]
+        client_req.contract_date = data_contract
+        client_req.number_spec = 0
+        client_req.save()    
+    
+    
+    client_req_kpp, client_req_kpp_created = RequisitesOtherKpp.objects.update_or_create(
+        requisites=client_req,
+        defaults={
+            "kpp": data["kpp"],
+            "legal_post_code": data["legal_post_code"],
+            "legal_city": data["legal_city"],
+            "legal_address": data["legal_address"],
+            "postal_post_code": data["postal_post_code"],
+            "postal_city": data["postal_city"],
+            "postal_address": data["postal_address"],
+            "tel":data["tel"],
+            
+        },)
+    
+    acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
+        requisites=client_req, account_requisites=data["account_requisites"],
+         defaults={
+            "bank": data["bank"],
+            "kpp": data["ks"],
+            "bic": data["bic"],
+        },
+    )
+    return (client_req,acc_req)
+
 
 #      def save_specification(
 #     received_data,
@@ -1745,7 +1842,7 @@ def save_order_web(request,data_order,all_info_requisites,all_info_product):
 #         # продукты без записи в окт
 #         else:
 
-#             print("продукты без записи в окт")
+#          
 #             price_one = product_item["price_one"]
 #             price_one_original_new = price_one
 #             if product_item["sale_motrum"]:
@@ -1813,9 +1910,8 @@ def save_order_web(request,data_order,all_info_requisites,all_info_product):
 #             product_spes._change_reason = "Ручное"
 #             product_spes.comment = product_item["comment"]
 
-#             print(int(product_item["vendor"]))
 #             product_spes.vendor_id = int(product_item["vendor"])
-#             print(product_spes.vendor_id)
+#        
 #             date_delivery = product_item["date_delivery"]
 #             if date_delivery != "":
 #                 product_spes.date_delivery = datetime.datetime.strptime(
@@ -1823,7 +1919,7 @@ def save_order_web(request,data_order,all_info_requisites,all_info_product):
 #                 )
 #                 product_spes.date_delivery = date_delivery
 #             product_spes.save()
-#             print(product_spes)
+#        
 
 #             total_amount = total_amount + price_all
 

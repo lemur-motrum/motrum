@@ -256,6 +256,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   }
                 ).then((response3) => {
                   if (response3.status == 200 || response2.status == 201) {
+                    
                     window.location.href =
                       "/admin_specification/all_specifications/";
                   } else {

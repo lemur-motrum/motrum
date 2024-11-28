@@ -91,17 +91,24 @@ def crete_pdf_specification(
 
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
+        
+        
+        date_title = datetime.datetime.today().strftime("%d.%m.%Y")
+        date_data = datetime.date.today().isoformat()
+        date = transform_date(date_data)
+        date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
+        # if post_update:
+        #     date_title = specifications.date_create_pdf.strftime("%d.%m.%Y")
+        #     date_data = specifications.date_create_pdf.isoformat()
+        #     date = transform_date(date_data)
+        #     date_name_file = specifications.date_create_pdf.strftime("%d.%m.%Y")
+        # else:
+        #     date_title = datetime.datetime.today().strftime("%d.%m.%Y")
+        #     date_data = datetime.date.today().isoformat()
+        #     date = transform_date(date_data)
+        #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
-        if post_update:
-            date_title = specifications.date_create_pdf.strftime("%d/%m/%Y")
-            date_data = specifications.date_create_pdf.isoformat()
-            date = transform_date(date_data)
-        else:
-            date_title = datetime.datetime.today().strftime("%d/%m/%Y")
-            date_data = datetime.date.today().isoformat()
-            date = transform_date(date_data)
-
-        name_specification = f"specification_{specification_name}.pdf"
+        name_specification = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
         fileName = os.path.join(directory, name_specification)
         story = []
 
@@ -130,10 +137,18 @@ def crete_pdf_specification(
         )
         styles.add(
             ParagraphStyle(
-                name="Roboto-Bold-left",
+                name="Roboto-Bold-right",
                 fontName="Roboto-Bold",
                 fontSize=10,
                 alignment=TA_RIGHT,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-Bold-left",
+                fontName="Roboto-Bold",
+                fontSize=10,
+                alignment=TA_LEFT,
             )
         )
         styles.add(
@@ -144,12 +159,40 @@ def crete_pdf_specification(
                 alignment=TA_CENTER,
             )
         )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-Center",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_CENTER,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-right",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_RIGHT,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-left",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_LEFT,
+            )
+        )
 
         bold_style = styles["Roboto-Bold"]
         normal_style = styles["Roboto"]
         bold_left_style = styles["Roboto-Bold-left"]
+        bold_right_style = styles["Roboto-Bold-right"]
         bold_style_center = styles["Roboto-Bold-Center"]
         normal_style_8 = styles["Roboto-8"]
+        norm10_left_style = styles["Roboto-norm-left"]
+        norm10_right_style = styles["Roboto-norm-right"]
+        norm10_style_center = styles["Roboto-norm-Center"]
 
         doc_title = copy.copy(styles["Heading1"])
         doc_title.fontName = "Roboto-Bold"
@@ -157,8 +200,15 @@ def crete_pdf_specification(
 
         if requisites.contract:
             to_contract = requisites.contract
+            if requisites.contract_date:
+                date_contract = requisites.contract_date
+                date_contract = date_contract.isoformat()
+                date_contract = transform_date(date_contract)
+            else:
+                date_contract = None
         else:
             to_contract = None
+            
         if requisites:
             to_address = requisites.legal_entity
         else:
@@ -167,11 +217,11 @@ def crete_pdf_specification(
         story.append(
             Paragraph(
                 f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>",
-                bold_left_style,
+                bold_right_style,
             )
         )
         if to_contract:
-            story.append(Paragraph(f"К договору № {to_contract}", normal_style))
+            story.append(Paragraph(f"К договору № {to_contract} от {date_contract}", normal_style))
 
         story.append(
             Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
@@ -225,40 +275,40 @@ def crete_pdf_specification(
                     product_name = (
                         Paragraph(
                             f'<a href="{link}" color="blue">{product_name_str}</a>',
-                            bold_style_center,
+                            norm10_left_style,
                         ),
                     )
                 else:
                     product_name = Paragraph(
                         f"{product_name_str}",
-                        bold_style_center,
+                        norm10_left_style,
                     )
-            # else:
-            #     product_name_str = str(product.product.name)
-
-            #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
             else:
                 product_name = product.product_new
-                product_name = (Paragraph(f"{product_name}", bold_style_center),)
+                product_name = (Paragraph(f"{product_name}", norm10_left_style),)
 
             product_price = product.price_one
-            product_price = "{0:,.2f}".format(product_price).replace(",", " ")
+            product_price = "{0:,.2f}".format(product_price).replace(",", " ").replace('.', ',')
             product_price_all = product.price_all
 
             product_price_all = "{0:,.2f}".format(product_price_all, ".2f").replace(
                 ",", " "
-            )
+            ).replace('.', ',')
 
             product_quantity = product.quantity
             data.append(
                 (
-                    i,
+            
+                    Paragraph(f"{str(i)}", norm10_style_center),
                     product_name,
-                    # Paragraph(product_name, normal_style),
-                    product_stock,
-                    product_quantity,
-                    product_price,
-                    product_price_all,
+                    # product_stock,
+                    Paragraph(f"{str(product_stock)}.", norm10_left_style),
+                    Paragraph(f"{str(product_quantity)}", norm10_right_style),
+
+                    Paragraph(product_price, norm10_right_style),
+                    # product_price,
+                    Paragraph(product_price_all, norm10_right_style),
+                    # product_price_all,
                 )
             )
 
@@ -281,8 +331,8 @@ def crete_pdf_specification(
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
-        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
+        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ").replace('.', ',')
+        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace('.', ',')
 
         final_price_no_nds_table = [
             (

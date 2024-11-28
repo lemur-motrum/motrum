@@ -2,7 +2,6 @@ import threading
 from django.db import models
 
 
-
 from apps.core.utils_web import get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
@@ -61,6 +60,7 @@ class Vat(models.Model):
         return str(self.name) + "%"
 
 
+
 class CalendarHoliday(models.Model):
     year = models.CharField("Год", max_length=30)
     json_date = models.JSONField("Список выходных из консультанта")
@@ -77,7 +77,6 @@ SLIDER_TYPE = (
     ("PHOTO_2", "Фото лево"),
     ("PROMOTE", "Продвижение товара"),
 )
-
 
 class SliderMain(models.Model):
     active = models.BooleanField("Активно", default=True)
@@ -136,9 +135,13 @@ class SliderMain(models.Model):
 
 class BaseInfo(models.Model):
     from apps.core.utils import get_file_path_add_motrum_base
-    
-    stamp = models.ImageField("Печать", upload_to=get_file_path_add_motrum_base, null=True)
-    signature = models.ImageField("Подпись в документах", upload_to=get_file_path_add_motrum_base, null=True)
+
+    stamp = models.ImageField(
+        "Печать", upload_to=get_file_path_add_motrum_base, null=True
+    )
+    signature = models.ImageField(
+        "Подпись в документах", upload_to=get_file_path_add_motrum_base, null=True
+    )
     full_name_legal_entity = models.CharField(
         "Название компании полностью",
         max_length=300,
@@ -155,10 +158,7 @@ class BaseInfo(models.Model):
         "КПП",
         max_length=10,
     )
-    ogrn = models.CharField(
-        "ОГРН",
-        max_length=15, blank=True, null=True
-    )
+    ogrn = models.CharField("ОГРН", max_length=15, blank=True, null=True)
     legal_post_code = models.PositiveIntegerField(
         "Юридический адрес :индекс",
     )
@@ -186,13 +186,27 @@ class BaseInfo(models.Model):
         "Телефон",
         max_length=200,
     )
-    
+    counter_bill =  models.PositiveIntegerField(
+        "Номер счета клиента",
+        null=True,
+        blank=True,
+        default=0
+    )
+    counter_bill_offer =  models.PositiveIntegerField(
+        "Номер счета клиента",
+        null=True,
+        blank=True,
+        default=0
+    )
+
+
     class Meta:
         verbose_name = "Юридическое лицо"
         verbose_name_plural = "Юридические лица"
-        
+
     def __str__(self):
-            return self.short_name_legal_entity
+        return self.short_name_legal_entity
+
 
 class BaseInfoAccountRequisites(models.Model):
     is_active = models.BooleanField("Активно", default=True)
@@ -217,6 +231,7 @@ class BaseInfoAccountRequisites(models.Model):
         "БИК",
         max_length=10,
     )
+
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
@@ -224,9 +239,14 @@ class BaseInfoAccountRequisites(models.Model):
 
 class BaseImage(models.Model):
     from apps.core.utils import get_file_path_add_motrum_base
-    logo = models.ImageField("Логотип", upload_to=get_file_path_add_motrum_base, null=True)
-    vendors = models.ImageField("Поставщики", upload_to=get_file_path_add_motrum_base, null=True)
-    
+
+    logo = models.ImageField(
+        "Логотип", upload_to=get_file_path_add_motrum_base, null=True
+    )
+    vendors = models.ImageField(
+        "Поставщики", upload_to=get_file_path_add_motrum_base, null=True
+    )
+
     class Meta:
         verbose_name = "Базовые изображения для документов "
-        verbose_name_plural = "Базовые изображения для документов" 
+        verbose_name_plural = "Базовые изображения для документов"

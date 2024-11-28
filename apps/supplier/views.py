@@ -8,7 +8,7 @@ from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
-from apps.core.tasks import currency_chek, del_currency, del_void_cart, update_currency_price
+from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, update_currency_price
 from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
@@ -39,20 +39,8 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    data = {
-        "login":{
-            "bitrix_id": "13",
-            "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
-        },
-        "company":{
-            "bitrix_id_manager": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
-            "token": 22,
-        }
-        
-    }
-
-    data_admin = AdminUser.login_bitrix(data["login"], None,request)
-    print(data_admin)
+    counter_bill_new_year()
+ 
     context = {
         "title": title,
     }

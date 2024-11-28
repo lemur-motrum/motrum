@@ -453,20 +453,21 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
+    type_save_cookee = request.COOKIES.get("type_save")
 
     # если есть корзина
     if cart != None:
-
         cart_qs = Cart.objects.get(id=cart)
-        discount_client = 0
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
 
-        product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+        product_cart_list = ProductCart.objects.filter(cart=cart,product__isnull=False).values_list(
             "product__id"
         )
-
+        print(product_cart_list)
+        product_cart_prod = ProductCart.objects.filter(cart=cart,product__isnull=False)
         product_cart = ProductCart.objects.filter(cart=cart)
+        print(product_cart)
         # изменение спецификации
         try:
             specification = Specification.objects.get(cart=cart)
@@ -490,7 +491,8 @@ def create_specification(request):
             product_new = (
                 ProductSpecification.objects.filter(
                     specification=specification,
-                    product=None,
+                    # product=None,
+                    product_new_article__isnull=False,
                 )
                 .annotate(
                     id_product_spesif=F("id"),
@@ -547,7 +549,11 @@ def create_specification(request):
 
             # список товаров без щаписи в окт которые новые еще на записанны
             product_new_more = (
-                ProductCart.objects.filter(cart=cart, product=None)
+                ProductCart.objects.filter(
+                    cart=cart,
+                    #    product=None
+                    product_new_article__isnull=False,
+                )
                 .exclude(id__in=product_new_value_id)
                 .annotate(
                     price_motrum=Case(
@@ -676,6 +682,8 @@ def create_specification(request):
                 client_req_all = None
 
         # продукты которые есть в окт в корзине
+        print(4444)
+        print(product_cart_prod)
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -696,10 +704,10 @@ def create_specification(request):
                 Prefetch("price__sale"),
             )
             .annotate(
-                quantity=product_cart.filter(product=OuterRef("pk")).values(
+                quantity=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "quantity",
                 ),
-                id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                id_product_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "id",
                 ),
                 id_product_spesif=product_specification.filter(
@@ -748,13 +756,15 @@ def create_specification(request):
                 ).values(
                     "date_delivery",
                 ),
-                is_prise=product_cart.filter(product=OuterRef("pk")).values(
+                is_prise=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product__price",
                 ),
+            
             )
-            .order_by("id_product_cart")
+            # .order_by("id_product_cart")
         )
-
+        print(222222)
+        print(product)
     # корзины нет
     else:
 
@@ -772,12 +782,50 @@ def create_specification(request):
 
     current_date = datetime.date.today().isoformat()
 
-    bill_upd = False
-    if order:
-        if order.bill_sum_paid != 0:
-            bill_upd = True
-            title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+    # bill_upd = False
+    # if order:
+    #     if order.requisites.contract:
+    #         title = f"Новый заказ: счет + спецификация"
+    #         type_save = "счет + спецификация"
+    #     else:
+    #         title = f"Новый заказ: счет-оферта"
+    #         type_save = " счет-оферта"
 
+    #     if order.bill_sum_paid != 0:
+    #         bill_upd = True
+    #         title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+    #         type_save = "??"
+            
+    if type_save_cookee == "new":
+        bill_upd = False
+        if order.requisites.contract:
+            title = f"Новый заказ: счет + спецификация"
+            type_save = "счет + спецификация"
+        else:
+            title = f"Новый заказ: счет-оферта"
+            type_save = " счет-оферта" 
+                 
+    elif type_save_cookee == "update" :
+        bill_upd = True
+        title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+        type_save = " изменения"
+        
+    elif type_save_cookee == "update_info":
+        pass
+    elif type_save_cookee == "hard_update":
+        bill_upd = False
+        # title = f"Заказ № {order.id} - новый счет"
+        if order.requisites.contract:
+            title = f"Заказ № {order.id}: счет + спецификация"
+            type_save = "счет + спецификация"
+        else:
+            title = f"Заказ № {order.id}: счет-оферта"
+            type_save = " счет-оферта" 
+    else:
+        bill_upd = False
+        title = f"Новый заказ"
+        type_save = "счет"
+            
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -795,7 +843,9 @@ def create_specification(request):
         "client_req_all": client_req_all,
         "bill_upd": bill_upd,
         "vendor": vendor,
+        "type_save": type_save,
     }
+    print(context)
 
     return render(request, "admin_specification/catalog.html", context)
 

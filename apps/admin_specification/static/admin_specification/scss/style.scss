@@ -29,7 +29,6 @@ input[type="number"] {
   display: flex;
   gap: 1.5rem;
   margin-bottom: 0.5rem;
-
   a {
     text-decoration: none;
     color: #000;
@@ -78,7 +77,6 @@ h1 {
   .categories-container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    // grid-template-rows: 1fr 1fr;
     row-gap: 2rem;
     .category {
       width: 8rem;
@@ -162,7 +160,6 @@ h1 {
   .group-container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    // grid-template-rows: 1fr 1fr;
     row-gap: 2rem;
     .group {
       width: 8rem;

@@ -55,6 +55,40 @@ class SliderMainAdminWeb(admin.ModelAdmin):
         "type_slider",
         "active",
     ]
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                     "name",
+                    "type_slider",
+                ]
+            },
+        )
+    ]
+    def get_fieldsets(self, request, obj):
+        fields = super(SliderMainAdminWeb, self).get_fieldsets(request, obj)
+        # slider = SliderMain.objects.filter(prod=obj).exists()
+        slider_main = [
+            (
+                "Текст в слайде",
+                {
+                    "fields": [
+                        "image",
+                        ("image_right","video"),
+                        ("text1",
+                        "text2",),
+                        ("text4",
+                        "icon3",),
+                    ]
+                },
+            )
+        ]
+        if obj:
+            if obj.type_slider == "MAIN":
+                return slider_main
+        else:
+            return fields
     def get_exclude(self, request, obj=None):
  
         if obj:
@@ -64,6 +98,7 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                 return ["product_promote","slug"]
         else:
             return ["product_promote","slug"]
+        
     def has_delete_permission(self, request,obj=None):
         return False
 # Register your models here.

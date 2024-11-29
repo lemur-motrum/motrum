@@ -114,9 +114,12 @@
                         {% else %}
                             {% if bill_upd and item.id_product_spesif %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
+                                
                             {% else %}
                                 <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                                
                             {% endif %}
+                            
                             <div class="item_value quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -852,9 +855,9 @@
                             <div class="client-info">
                                 {% if client_req %}
                                     <div>Предоплата: {{ client_req.requisites.prepay_persent }}%</div>
-                                    <div>
+                                    <div>1111111111
                                         Доставка:
-                                        <select {% if bill_upd %}disabled{% endif %}
+                                        {% comment %} <select {% if bill_upd %}disabled{% endif %}
                                                 class="select_delevery"
                                                 name='delevery-requisit'>
                                             <option {% if order.type_delivery == "pickup" %}selected{% endif %}
@@ -863,7 +866,7 @@
                                                     value="paid_delivery">
                                                 Доставка до терминала за счет покупателя
                                             </option>
-                                        </select>
+                                        </select> {% endcomment %}
                                     </div>
                                 {% endif %}
                             </div>
@@ -878,6 +881,19 @@
                         </label>
                     </div>
                     <div class="motrum-info">
+                        <div>
+                            Доставка:
+                            <select
+                                    class="select_delevery"
+                                    name='delevery-requisit'
+                                    value="1">
+                                    
+                                {% for delivery in type_delivery %}
+                                <option {% if order.type_delivery.id == delivery %}selected{% endif %}
+                                        value="{{delivery.id}}">{{delivery.text}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
                         <select {% if bill_upd %}disabled{% endif %}
                                 class="select_motrum_requisites"
@@ -995,7 +1011,7 @@
                             <div class="delete_search_details_btn">+</div>
                             <input class="search_input"
                                    placeholder="Введите имя или артикул товара"
-                                   type="text" />
+                                   type="text"/>
                             <div class="search_container"></div>
                         </label>
                         <div class="add_product_container">

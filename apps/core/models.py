@@ -267,3 +267,31 @@ class BaseImage(models.Model):
     class Meta:
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
+
+class TypeDelivery(models.Model):
+    text = models.CharField(
+        "Способ доставки ",
+        max_length=250,
+    )
+    text_long = models.CharField(
+        "Способ доставки с описанием для документов",
+        max_length=1500,
+    )
+    
+    company_delivery = models.CharField(
+        "Компания осуществляющая доставку",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = "Типы доставки"
+        verbose_name_plural = "Типы доставок"
+
+
+    def __str__(self):
+        return self.text
+
+
+

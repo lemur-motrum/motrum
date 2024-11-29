@@ -509,6 +509,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const deliveryRequsits = document
           .querySelector("[name='delevery-requisit']")
           .getAttribute("value");
+          
         const bitrixInput = document.querySelector(".bitrix-input");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -1484,9 +1485,13 @@ window.addEventListener("DOMContentLoaded", () => {
                       } else {
                         clientRequsitsSelect.innerHTML = "";
                       }
+                      // clientInfo.innerHTML = `
+                      //        <div>Предоплата: ${el.prepay_persent}%</div>
+                      //        <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
+                      //        `;
                       clientInfo.innerHTML = `
                              <div>Предоплата: ${el.prepay_persent}%</div>
-                             <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
+                            
                              `;
                       const selectDelevery =
                         searhClientForm.querySelector(".select_delevery");

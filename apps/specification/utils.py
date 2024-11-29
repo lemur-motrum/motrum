@@ -24,6 +24,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from django.db.models import Prefetch, OuterRef
 
+
 from apps.logs.utils import error_alert
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL
 
@@ -79,6 +80,7 @@ def crete_pdf_specification(
     from reportlab.platypus import ListFlowable, ListItem
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
+    from apps.core.models import TypeDelivery
 
     try:
         directory = check_spesc_directory_exist(
@@ -88,6 +90,8 @@ def crete_pdf_specification(
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         ).order_by("id")
+        type_delivery = TypeDelivery.objects.get(id=type_delivery)
+        type_delivery_name = type_delivery.text
 
         motrum_info = motrum_requisites.requisites
         motrum_info_req = motrum_requisites
@@ -405,21 +409,27 @@ def crete_pdf_specification(
             i_dop_info += 1
 
         if type_delivery:
-            if type_delivery == "pickup":
-                story.append(
+            story.append(
                     Paragraph(
-                        f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
+                        f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}", normal_style
                     )
                 )
-            elif type_delivery == "paid_delivery":
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
-                        normal_style,
-                    )
-                )
-            else:
-                pass
+            
+            # if type_delivery == "pickup":
+            #     story.append(
+            #         Paragraph(
+            #             f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
+            #         )
+            #     )
+            # elif type_delivery == "paid_delivery":
+            #     story.append(
+            #         Paragraph(
+            #             f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+            #             normal_style,
+            #         )
+            #     )
+            # else:
+            #     pass
 
         data_address = [
             (

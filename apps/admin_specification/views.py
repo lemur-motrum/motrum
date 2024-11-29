@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
 from apps.client.models import AccountRequisites, Client, Order
-from apps.core.models import BaseInfo, BaseInfoAccountRequisites
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
@@ -464,10 +464,10 @@ def create_specification(request):
         product_cart_list = ProductCart.objects.filter(cart=cart,product__isnull=False).values_list(
             "product__id"
         )
-        print(product_cart_list)
+   
         product_cart_prod = ProductCart.objects.filter(cart=cart,product__isnull=False)
         product_cart = ProductCart.objects.filter(cart=cart)
-        print(product_cart)
+      
         # изменение спецификации
         if type_save_cookee != "new":
         # try:
@@ -684,8 +684,7 @@ def create_specification(request):
                 client_req_all = None
 
         # продукты которые есть в окт в корзине
-        print(4444)
-        print(product_cart_prod)
+     
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -761,12 +760,13 @@ def create_specification(request):
                 is_prise=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product__price",
                 ),
+                actual_price=F("price__rub_price_supplier"),
+                
             
             )
             # .order_by("id_product_cart")
         )
-        print(222222)
-        print(product)
+    
     # корзины нет
     else:
 
@@ -831,7 +831,7 @@ def create_specification(request):
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
-            
+    type_delivery = TypeDelivery.objects.all()          
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -850,8 +850,9 @@ def create_specification(request):
         "bill_upd": bill_upd,
         "vendor": vendor,
         "type_save": type_save,
+        "type_delivery":type_delivery
     }
-    print(context)
+   
 
     return render(request, "admin_specification/catalog.html", context)
 
@@ -1045,7 +1046,7 @@ def instruments(request, cat):
     # if request.GET.get("vendor") != None:
     #     vendor_urls = request.GET.get("vendor")
     #     vendor_get = vendor_urls.split(",")
-    #     print(vendor_urls)
+    #  
     #     product_list = product_list.filter(vendor__slug__in=vendor_get)
     #     vendor_url = vendor_urls
     # else:
@@ -1588,7 +1589,7 @@ def history_admin(request, pk):
 
     result_list_sorted = result_list.sort(key=get_date, reverse=True)
 
-    print(object_id)
+
     context = {
         "specification": specification,
         "historical_records": result_list,

@@ -1,7 +1,7 @@
 from locale import currency
 from django.contrib import admin
 
-from apps.core.models import BaseImage, BaseInfo, BaseInfoAccountRequisites, Currency, CurrencyPercent, SliderMain, Vat
+from apps.core.models import BaseImage, BaseInfo, BaseInfoAccountRequisites, Currency, CurrencyPercent, SliderMain, TypeDelivery, Vat
 from apps.product.admin import LotAdmin
 from apps.product.models import Lot
 from project.admin import website_admin
@@ -44,8 +44,8 @@ class BaseInfoAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request,obj=None):
         return False            
 
-
-
+class TypeDeliveryAdmin(admin.ModelAdmin):
+    list_display = ("text","text_long","company_delivery")
 
 
 # АДМИНКА ДЛЯ ВЕБСАЙТА            
@@ -108,6 +108,7 @@ admin.site.register(BaseInfo, BaseInfoAdmin)
 admin.site.register(Currency,CurrencyAdmin)
 admin.site.register(CurrencyPercent,CurrencyPercentAdmin)
 admin.site.register(Vat,VatAdmin)
+admin.site.register(TypeDelivery,TypeDeliveryAdmin)
 
 website_admin.register(SliderMain,SliderMainAdminWeb)
 

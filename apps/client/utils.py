@@ -9,7 +9,7 @@ from re import T
 import re
 
 from apps.client.models import Order, OrderDocumentBill
-from apps.core.models import BaseImage, BaseInfo
+from apps.core.models import BaseImage, BaseInfo, TypeDelivery
 from apps.core.utils import check_spesc_directory_exist, transform_date, rub_words
 from PIL import Image
 import io
@@ -70,7 +70,10 @@ def crete_pdf_bill(
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         ).order_by("id")
-
+        print(type_delivery)
+        type_delivery = TypeDelivery.objects.get(id=type_delivery)
+        print(11111111111)
+        
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
         motrum_info_req = order.motrum_requisites
@@ -723,29 +726,23 @@ def crete_pdf_bill(
                     normal_style,
                 )
             )
-            # type_delivery_client = str(client_info.type_delivery).lower()
 
-            # type_delivery_client_index = type_delivery_client.find("самовывоз")
-
-            # 6
-
-            # if type_delivery_client_index >= 0:
-            if type_delivery == "pickup":
-                story.append(
-                    Paragraph(
-                        f"7. Доставка товара осуществляется самовывозом со склада Поставщика",
-                        normal_style,
-                    )
-                )
-            elif type_delivery == "paid_delivery":
-                story.append(
-                    Paragraph(
-                        f"7. Доставка товара осуществляется с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
-                        normal_style,
-                    )
-                )
-            else:
-                pass
+            # if type_delivery.company_delivery is None:
+            #     story.append(
+            #         Paragraph(
+            #             f"7. Доставка товара самовывозом со склада Поставщика",
+            #             normal_style,
+            #         )
+            #     )
+            # else:
+            
+            #     story.append(
+            #         Paragraph(
+            #             f"7.{type_delivery.text_long}",
+            #             normal_style,
+            #         )
+            #     )
+           
 
             story.append(
                 Paragraph(

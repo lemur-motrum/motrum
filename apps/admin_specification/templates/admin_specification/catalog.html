@@ -38,7 +38,7 @@
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
                          data-id="{{ item.id_product_cart }}"
-                         data-price=" {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} {% if item.price.rub_price_supplier %} {{ item.price.rub_price_supplier }} {% else %} 0 {% endif %} {% endif %}"
+                         data-price="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one_full }}{% else %}{% if item.price.rub_price_supplier %}{{ item.price.rub_price_supplier }}{% else %}0{% endif %}{% endif %}"
                          data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
@@ -90,7 +90,7 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% if   item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
+                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
                             <div class="item_value">
                                 <input class="price-input"
                                        name="price-input-extra"
@@ -114,12 +114,9 @@
                         {% else %}
                             {% if bill_upd and item.id_product_spesif %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
-                                
                             {% else %}
                                 <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
-                                
                             {% endif %}
-                            
                             <div class="item_value quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -165,7 +162,11 @@
                                 {% endif %}
                             </label>
                         </div>
-                        <div class="item_value"><span class="marginality">0</span> ₽</div>
+                        <div class="item_value">
+                            <span class="marginality">0</span> ₽ /
+                            <br>
+                            <span class="marginality-persent">0</span> %
+                        </div>
                         <div class="item_value">
                             <label>
                                 {% if bill_upd %}
@@ -188,14 +189,12 @@
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                    
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
-                             data-vendor="{% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}{% else %}
-                             {{ item.vendor.id }}{% endif %}"
+                             data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
                              data-product-pk=""
-                             data-product-name-new="{% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}"
-                             data-product-article-new="{% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}"
+                             data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
+                             data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
                              data-product-id-cart="{{ item.id_product_cart }}"
                              data-id="{{ item.id_product_cart }}"
                              data-price="{{ item.product_new_price }}"
@@ -206,9 +205,20 @@
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
                             </div>
                             <div class="item_value">
-                                {% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}
+                                {% if item.product_new_cart %}
+                                    {{ item.product_new_cart }}
+                                {% else %}
+                                    {{ item.product_new }}
+                                {% endif %}
                                 <br>
-                                <div class="article">Арт. {% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}</div>
+                                <div class="article">
+                                    Арт.
+                                    {% if item.product_new_article_cart %}
+                                        {{ item.product_new_article_cart }}
+                                    {% else %}
+                                        {{ item.product_new_article_cart }}
+                                    {% endif %}
+                                </div>
                                 <br>
                                 <textarea style="width: 200px;
                                                  height: 15px;
@@ -279,7 +289,11 @@
                                     {% endif %}
                                 </label>
                             </div>
-                            <div class="item_value"><span class="marginality">0</span> ₽</div>
+                            <div class="item_value">
+                                <span class="marginality">0</span> ₽ /
+                                <br>
+                                <span class="marginality-persent">0</span> %
+                            </div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -303,7 +317,7 @@
                                         <label class="name_label">
                                             <input placeholder="Имя товара"
                                                    class="new_item_container_name_input"
-                                                   value="{% if item.product_new_cart %}{{item.product_new_cart}}{% else %}{{ item.product_new }}{% endif %}"
+                                                   value="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                                                    type="text" />
                                             <div class="error"></div>
                                         </label>
@@ -311,24 +325,19 @@
                                             <input placeholder="Артикул товара"
                                                    class="new_item_container_article_input"
                                                    type="text"
-                                                   value="{% if item.product_new_article_cart %}{{item.product_new_article_cart}}{% else %}{{ item.product_new_article_cart }}{% endif %}" />
+                                                   value="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}" />
                                             <div class="error"></div>
                                         </label>
                                         <label class="vedor_label">
                                             <select class="vendor_select" value="">
                                                 <option value="" disabled selected>Выберете производителя</option>
                                                 {% for vendor_item in vendor %}
-                                                {% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}{% else %}
-                             {{ item.vendor.id }}{% endif %}
-                                                    <option
-                                                    {% if item.product_new_cart_vendor %}{{item.product_new_cart_vendor}}
-                                                    value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor%}selected{% endif %}
+                                                    {% if item.product_new_cart_vendor %}
+                                                        {{ item.product_new_cart_vendor }}
                                                     {% else %}
-                                                        value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}{% endif %}
-                                                    
-                                                    {% comment %} value="{{ vendor_item.id }}" {% endcomment %}
-                                                            {% comment %} {% if vendor_item.id == item.vendor.id %}selected{% endif %} {% endcomment %}
-                                                            >
+                                                        {{ item.vendor.id }}
+                                                    {% endif %}
+                                                    <option {% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }} value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor %}selected{% endif %} {% else %} value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}{% endif %}  {% comment %} value="{{ vendor_item.id }}" {% endcomment %} {% comment %} {% if vendor_item.id == item.vendor.id %}selected{% endif %} {% endcomment %}>
                                                         {{ vendor_item.name }}
                                                     </option>
                                                 {% endfor %}
@@ -465,7 +474,11 @@
                                     {% endif %}
                                 </label>
                             </div>
-                            <div class="item_value"><span class="marginality">0</span> ₽</div>
+                            <div class="item_value">
+                                <span class="marginality">0</span> ₽ /
+                                <br>
+                                <span class="marginality-persent">0</span> %
+                            </div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -641,7 +654,11 @@
                                     {% endif %}
                                 </label>
                             </div>
-                            <div class="item_value"><span class="marginality">0</span> ₽</div>
+                            <div class="item_value">
+                                <span class="marginality">0</span> ₽ /
+                                <br>
+                                <span class="marginality-persent">0</span> %
+                            </div>
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
@@ -790,8 +807,15 @@
                     </div>
                 </div>
                 <div class="price_description">
-                    <div>Итого: <span class="price">0</span> <span class="total-price-description">₽</span></div>
-                    <div>Маржа: <span class="marginality_value">0</span> <span class="total-price-description">₽</span></div>
+                    <div>
+                        Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
+                    </div>
+                    <div>
+                        Маржа: <span class="marginality_value">0</span> <span class="total-price-description">₽</span>
+                    </div>
+                    <div>
+                        Процент маржи: <span class="marginality_prcent_value">0</span> <span class="total-price-description">%</span>
+                    </div>
                 </div>
                 <div class="add_new_product_container">
                     <div class="search_label_container">
@@ -883,14 +907,10 @@
                     <div class="motrum-info">
                         <div>
                             Доставка:
-                            <select
-                                    class="select_delevery"
-                                    name='delevery-requisit'
-                                    value="1">
-                                    
+                            <select class="select_delevery" name='delevery-requisit' value="1">
                                 {% for delivery in type_delivery %}
-                                <option {% if order.type_delivery.id == delivery %}selected{% endif %}
-                                        value="{{delivery.id}}">{{delivery.text}}</option>
+                                    <option {% if order.type_delivery.id == delivery %}selected{% endif %}
+                                            value="{{ delivery.id }}">{{ delivery.text }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -918,9 +938,7 @@
                             </div>
                             <button class="exit_button">Выйти без изменений</button>
                         {% else %}
-                            <div class="save_button-wrapper "style="
-                            display: none;
-                        ">
+                            <div class="save_button-wrapper "style=" display: none; ">
                                 <button class="save_button">Сохранить спецификацию</button>
                                 <div class="error"></div>
                             </div>
@@ -1011,7 +1029,7 @@
                             <div class="delete_search_details_btn">+</div>
                             <input class="search_input"
                                    placeholder="Введите имя или артикул товара"
-                                   type="text"/>
+                                   type="text" />
                             <div class="search_container"></div>
                         </label>
                         <div class="add_product_container">

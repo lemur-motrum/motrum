@@ -7,7 +7,6 @@
              status="{{ status }}"
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
-             
                 <div class="table_item_value first_table_value">
                         <a href="{{ specification_list.url }}">№ {{ id }} просмотр</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
@@ -77,7 +76,7 @@
                                         {% endif %}
                                 </span>
                                 / {{ specification_list.total_amount }}
-                        </span> 
+                        </span>
                         {% if prepay_persent %}
                                 <div class="paument_tupe">
                                         {% if postpay_persent != 0 %}
@@ -96,20 +95,16 @@
                 </div>
                 <div class="table_item_value invoice-table_item_value">
                         <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
-                   
-                        <!--<button data-specication-id-to-bill="{{ specification }}"
-                                        class="create-bill-button">Создать счет</button>    -->
+                        <!--<button data-specication-id-to-bill="{{ specification }}" class="create-bill-button">Создать счет</button>    -->
                         <br>
                         <button data-type-save="update" class="change-bill-button">Изменить счет</button>
-                        <br>                    
+                        <br>
                         <!--{% if status == "PROCESSING" and specification_list.tag_stop == true %}
-                                <button data-specication-id-to-bill="{{ specification }}"
-                                        class="create-bill-button">Создать счет</button>
+                                <button data-specication-id-to-bill="{{ specification }}" class="create-bill-button">Создать счет</button>
                         {% elif status == "PROCESSING" and specification_list.tag_stop == false %}
                                 <span class="table_item_value_span">Срок действия спецификации истек. Для выставления счета необходимо актуализировать спецификацию </span>
                         {% elif status == "PAYMENT" and bill_sum_paid == 0 %}
-                                <button data-specication-id-to-bill="{{ specification }}"
-                                        class="create-bill-button">Обновить счет</button>
+                                <button data-specication-id-to-bill="{{ specification }}" class="create-bill-button">Обновить счет</button>
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
                         {% elif status == "PAYMENT" and bill_sum_paid != 0 %}
                                 <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
@@ -144,45 +139,45 @@
                         {% if bill_sum %}
                                 <span class="table_item_value_span description">при редактировании заказа текущие документы становятся не действительны</span>
                         {% endif %}-->
-                {% endif %}
-        </div>
-        <!-- корзины без заказа-->
+        {% endif %}
+</div>
+<!-- корзины без заказа-->
 {% else %}
-        <div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
-             specification-id="{{ specification_list.id }}"
-             order-id="{{ id }}"
-             status="{{ status }}"
-             data-cart-id="{{ cart_list.id }}"
-             superuser="{% if is_superuser == true %}true{% endif %}"
-             specification-elem="specification-item">
-                <div class="table_item_value" style="width: 30.875rem";>
-                        <a data-cart-id="{{ cart }}" href=""></a>
-                        <p>Корзина № {{ id }}</p>
-                        {% if superuser != false %}
-                                <br>
-                                <span class="table_item_value_span">Создал:{{ cart_list.admin_creator_name }}</span>
-                                <br>
-                        {% endif %}
-                        <div class="">
-                                Товары:
-                                {% for productcart in cart_list.productcart_set %}
-                                        {% if productcart.product_id_name %}
-                                                <div class="">- {{ productcart.product_id_name }}</div>
-                                        {% else %}
-                                                <div class="">- {{ productcart.product_new_article }} {{ productcart.product_new }}</div>
-                                        {% endif %}
-                                {% endfor %}
-                        </div>
-                </div>
-                <div class="table_item_value">
-                        {% if name_req_full %}<div class="">Клиент: {{ name_req_full }}</div>{% endif %}
-                </div>
-                <div class="table_item_value">
-                        Статус: {{ status_full }}
+<div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
+     specification-id="{{ specification_list.id }}"
+     order-id="{{ id }}"
+     status="{{ status }}"
+     data-cart-id="{{ cart_list.id }}"
+     superuser="{% if is_superuser == true %}true{% endif %}"
+     specification-elem="specification-item">
+        <div class="table_item_value" style="width: 30.875rem";>
+                <a data-cart-id="{{ cart }}" href=""></a>
+                <p>Корзина № {{ id }}</p>
+                {% if superuser != false %}
                         <br>
+                        <span class="table_item_value_span">Создал:{{ cart_list.admin_creator_name }}</span>
+                        <br>
+                {% endif %}
+                <div class="">
+                        Товары:
+                        {% for productcart in cart_list.productcart_set %}
+                                {% if productcart.product_id_name %}
+                                        <div class="">- {{ productcart.product_id_name }}</div>
+                                {% else %}
+                                        <div class="">- {{ productcart.product_new_article }} {{ productcart.product_new }}</div>
+                                {% endif %}
+                        {% endfor %}
                 </div>
-                <div class="table_item_value "></div>
-                <div class="table_item_value invoice-table_item_value"></div>
-                <button class="change-specification-button">продолжить оформление заказа</button>
         </div>
+        <div class="table_item_value">
+                {% if name_req_full %}<div class="">Клиент: {{ name_req_full }}</div>{% endif %}
+        </div>
+        <div class="table_item_value">
+                Статус: {{ status_full }}
+                <br>
+        </div>
+        <div class="table_item_value "></div>
+        <div class="table_item_value invoice-table_item_value"></div>
+        <button class="change-specification-button">продолжить оформление заказа</button>
+</div>
 {% endif %}

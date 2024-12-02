@@ -558,8 +558,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {
             "type_save": "new",
             "login": {
-                "bitrix_id": 13,
-                "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
+                "email_bitrix_manager": "ruslan.ovcharov1111@motrum.ru",
+                "token": "pbkdf2_sha256$870000$8c5Ju3yEMaktAggkBLPT66$aqeyhwhI6kOxAm+dLhVDGy5LwTcto11l/RN9t3e9qQM=",
             },
             "company": {
                 "id_bitrix": 69,

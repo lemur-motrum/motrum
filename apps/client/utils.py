@@ -71,7 +71,7 @@ def crete_pdf_bill(
             specification=specification
         ).order_by("id")
         print(type_delivery)
-        type_delivery = TypeDelivery.objects.get(id=type_delivery)
+        # type_delivery = TypeDelivery.objects.get(id=type_delivery)
         print(11111111111)
 
         order = Order.objects.get(specification=specification)
@@ -698,12 +698,25 @@ def crete_pdf_bill(
                     normal_style,
                 )
             )
-            story.append(
-                Paragraph(
-                    f"Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.",
-                    normal_style,
+
+            if type_delivery.company_delivery is None:
+                story.append(
+                    story.append(
+                        Paragraph(
+                            f"Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.",
+                            normal_style,
+                        )
+                    )
                 )
-            )
+            else:
+
+                story.append(
+                    Paragraph(
+                        f"Условия доставки: {type_delivery.text_long}",
+                        normal_style,
+                    )
+                )
+
         else:
             story.append(
                 Paragraph(
@@ -736,21 +749,21 @@ def crete_pdf_bill(
                 )
             )
 
-            # if type_delivery.company_delivery is None:
-            #     story.append(
-            #         Paragraph(
-            #             f"7. Доставка товара самовывозом со склада Поставщика",
-            #             normal_style,
-            #         )
-            #     )
-            # else:
+            if type_delivery.company_delivery is None:
+                story.append(
+                    Paragraph(
+                        f"7. Доставка товара самовывозом со склада Поставщика",
+                        normal_style,
+                    )
+                )
+            else:
 
-            #     story.append(
-            #         Paragraph(
-            #             f"7.{type_delivery.text_long}",
-            #             normal_style,
-            #         )
-            #     )
+                story.append(
+                    Paragraph(
+                        f"7.{type_delivery.text_long}",
+                        normal_style,
+                    )
+                )
 
             story.append(
                 Paragraph(

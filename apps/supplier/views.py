@@ -42,8 +42,11 @@ def add_iek(request):
     title = "TEST"
     
 
-    result = actual_info_order_product()
-    if result == None:
+    get_motrum_nomenclature()
+    result = 1
+    if result:
+        pass
+    else:
         result = 1
     context = {
         "title": title,

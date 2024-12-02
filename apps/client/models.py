@@ -10,7 +10,7 @@ from simple_history.models import HistoricalRecords
 # Create your models here.
 
 
-from apps.core.models import BaseInfoAccountRequisites
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path
 from apps.supplier.models import Discount
@@ -396,19 +396,36 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    type_delivery = models.CharField(
-        "Тип доставки",
-        max_length=1000,
-        blank=True,
-        null=True,
-    )
-    motrum_requisites = models.ForeignKey(
-        BaseInfoAccountRequisites,
-        verbose_name="Реквизиты мотрум для сделки",
+    # type_delivery = models.CharField(
+    #     "Тип доставки",
+    #     max_length=1000,
+    #     blank=True,
+    #     null=True,
+    # )
+    type_delivery = models.ForeignKey(
+        TypeDelivery,
+        verbose_name="Тип доставки ",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
+    
+    # motrum_requisites = models.ForeignKey(
+    #     BaseInfoAccountRequisites,
+    #     verbose_name="Реквизиты мотрум ",
+    #     on_delete=models.CASCADE,
+    #     blank=True,
+    #     null=True,
+    # )
+
+    motrum_requisites = models.ForeignKey(
+        BaseInfoAccountRequisites,
+        verbose_name="Реквизиты мотрум ",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
     bill_name = models.PositiveIntegerField(
         "Номер счета",
         default=None,

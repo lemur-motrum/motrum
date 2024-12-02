@@ -649,7 +649,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         id_bitrix = int(data["id_bitrix"])
         print("type_delivery")
         # type_delivery = data["type_delivery"]
-        type_delivery = 2
+        type_delivery = int(2)
         print(type_delivery)
         id_specification = data["id_specification"]
         type_save = data["type_save"]
@@ -734,36 +734,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
 
         if specification:
-            print(specification)
-
-            # if post_update:
-            #     data_order = {
-            #         "comment": data["comment"],
-            #         "name": 123131,
-            #     }
-            # else:
-            #     data_order = {
-            #         # "client": client,
-            #         "name": 123131,
-            #         "specification": specification.id,
-            #         # "requisites": requisites.id,
-            #         # "account_requisites": account_requisites.id,
-            #         "status": "PROCESSING",
-            #         # "cart": cart.id,
-            #         # "bill_name": None,
-            #         # "bill_file": None,
-            #         # "bill_date_start": None,
-            #         # "bill_date_stop": None,
-            #         # "bill_sum": None,
-            #         # "comment": data["comment"],
-            #         # "prepay_persent": requisites.prepay_persent,
-            #         # "postpay_persent": requisites.postpay_persent,
-            #         "motrum_requisites": motrum_requisites.id,
-            #         # "id_bitrix": id_bitrix,
-            #         # "type_delivery": type_delivery,
-            #     }
-        
             try:
+                print(type_delivery)
                 data_order = {
                     "comment": data["comment"],
                     "name": 123131,
@@ -774,8 +746,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "prepay_persent": requisites.prepay_persent,
                     "postpay_persent": requisites.postpay_persent,
                     "motrum_requisites": motrum_requisites.id,
-                    "type_delivery_id": type_delivery,
+                    "type_delivery": type_delivery,
                 }
+                print(data)
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
@@ -811,8 +784,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "postpay_persent": requisites.postpay_persent,
                     "motrum_requisites": motrum_requisites.id,
                     "id_bitrix": id_bitrix,
-                    "type_delivery_id": type_delivery,
+                    "type_delivery": type_delivery,
                 }
+                print(data)
                 serializer = self.serializer_class(data=data_order, many=False)
                 print(000000)
                 if serializer.is_valid():

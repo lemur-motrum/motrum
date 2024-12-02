@@ -30,9 +30,6 @@ export function getMarginality(wrapper) {
       const marginality = totalCost - priceMotrum;
 
       getDigitsNumber(marginalityContainer, marginality);
-      // if ((marginalityContainer.textContent = "-0,00")) {
-      //   marginalityContainer.textContent = "0,00";
-      // }
     });
   }
 }

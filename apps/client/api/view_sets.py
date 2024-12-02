@@ -660,7 +660,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         motrum_requisites = BaseInfoAccountRequisites.objects.get(
             id=motrum_requisites_data
         )
-        requisites = account_requisites.requisites
+        requisites = account_requisites.requisitesKpp.requisites
 
         if requisites.prepay_persent == 100:
             pre_sale = True
@@ -671,16 +671,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             client = requisites.client
         else:
             client = None
-
-        # if requisites.contract:
-        #     if type_save == "new":
-        #         specification_name = requisites.number_spec + 1
-        #         requisites.number_spec = specification_name
-        #         requisites.save()
-        #     elif type_save == "update":
-        #         specification_name = Specification.objects.get(id=id_specification).number
-        # else:
-        #     specification_name = None
 
         try:
 
@@ -745,10 +735,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             print(specification)
-            
-            
-            
-            
+
             # if post_update:
             #     data_order = {
             #         "comment": data["comment"],
@@ -781,6 +768,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "comment": data["comment"],
                     "name": 123131,
                     "specification": specification.id,
+                    "requisites": requisites.id,
+                    "account_requisites": account_requisites.id,
+                    "comment": data["comment"],
+                    "prepay_persent": requisites.prepay_persent,
+                    "postpay_persent": requisites.postpay_persent,
+                    "motrum_requisites": motrum_requisites.id,
+                    "type_delivery_id": type_delivery,
                 }
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)

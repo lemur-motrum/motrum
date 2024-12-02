@@ -73,17 +73,18 @@ def crete_pdf_bill(
         print(type_delivery)
         type_delivery = TypeDelivery.objects.get(id=type_delivery)
         print(11111111111)
-        
+
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
         motrum_info_req = order.motrum_requisites
 
         client_info = order.requisites
+        client_info_req_kpp = order.account_requisites.requisitesKpp
         client_info_req = order.account_requisites
-        
+
         date_now = transform_date(datetime.date.today().isoformat())
         date_name_dot = datetime.datetime.today().strftime("%d.%m.%Y")
-       
+
         # if post_update:
         #     date_now = order.bill_date_start.isoformat()
         #     date_now = transform_date(date_now)
@@ -94,13 +95,13 @@ def crete_pdf_bill(
         if order.requisites.contract:
             type_bill = "Счет"
             bill_name = motrum_info.counter_bill + 1
-            motrum_info.counter_bill =  bill_name
+            motrum_info.counter_bill = bill_name
         else:
             type_bill = "Счет-оферта"
             bill_name = motrum_info.counter_bill_offer + 1
             motrum_info.counter_bill_offer = bill_name
-                
-        print(123)        
+
+        print(123)
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
             motrum_info.save()
@@ -108,35 +109,42 @@ def crete_pdf_bill(
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
         elif type_save == "hard_update":
-           name_bill_text = f"{type_bill} № {bill_name}"
-           motrum_info.save()
+            name_bill_text = f"{type_bill} № {bill_name}"
+            motrum_info.save()
         else:
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
         print(2222)
-        older_doc = OrderDocumentBill.objects.filter(order=order,bill_name=bill_name,bill_file_no_signature ="",bill_date_start=datetime.datetime.today())
+        older_doc = OrderDocumentBill.objects.filter(
+            order=order,
+            bill_name=bill_name,
+            bill_file_no_signature="",
+            bill_date_start=datetime.datetime.today(),
+        )
         if older_doc:
-            print(1,older_doc)
+            print(1, older_doc)
             older_doc_ver = older_doc.last()
-            print(2,older_doc_ver)
+            print(2, older_doc_ver)
             version = older_doc_ver.version + 1
-            print(2,older_doc_ver)
+            print(2, older_doc_ver)
             text_version = f"_{version}"
         else:
-            print(2,older_doc)
+            print(2, older_doc)
             version = 1
             text_version = ""
         print(older_doc)
         print(version)
         print(text_version)
-        
+
         name_bill = f"{name_bill_text} от {date_now}{text_version}.pdf"
-        name_bill_no_signature = f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
+        name_bill_no_signature = (
+            f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
+        )
         document_info = BaseImage.objects.filter().first()
         print(8999999999999)
         fileName = os.path.join(directory, name_bill)
         fileName_no_sign = os.path.join(directory, name_bill_no_signature)
-        
+
         story = []
 
         pdfmetrics.registerFont(TTFont("Roboto", "Roboto-Regular.ttf", "UTF-8"))
@@ -242,7 +250,7 @@ def crete_pdf_bill(
         bold_style = styles["Roboto-Bold"]
         normal_style = styles["Roboto"]
         normal_style_centre = styles["Roboto-centre"]
-     
+
         normal_style_left = styles["Roboto-left"]
         normal_style_right = styles["Roboto-right"]
         normal_style_6 = styles["Roboto-Center-Gray-6"]
@@ -375,10 +383,10 @@ def crete_pdf_bill(
                 ),
             )
         )
-        if client_info.tel:
-            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}, тел.: {client_info.tel}"
+        if client_info_req_kpp.tel:
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}, тел.: {client_info_req_kpp.tel}"
         else:
-            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info.kpp}, {client_info.legal_post_code}, {client_info.legal_city} {client_info.legal_address}"
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
 
         data_info.append(
             (
@@ -407,7 +415,6 @@ def crete_pdf_bill(
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
-                    
                     # ("TOPPADDING", (0, 0), (-1, 0), 1, )
                 ]
             )
@@ -450,13 +457,6 @@ def crete_pdf_bill(
             except Stock.DoesNotExist:
                 product_stock = "шт"
 
-            # date_delivery = product.date_delivery
-            # if date_delivery:
-            #     if date_delivery > date_ship:
-            #         date_ship = date_delivery
-            # else:
-            #     is_none_date_delivery = True
-
             if product.product:
                 if IS_TESTING:
                     link = product.product.get_url_document_test()
@@ -483,9 +483,13 @@ def crete_pdf_bill(
                 product_code = (Paragraph(product_code, normal_style_left),)
 
             product_price = product.price_one
-            product_price = "{0:,.2f}".format(product_price).replace(",", " ").replace('.', ',')
+            product_price = (
+                "{0:,.2f}".format(product_price).replace(",", " ").replace(".", ",")
+            )
             product_price_all = product.price_all
-            product_price_all = "{0:,.2f}".format(product_price_all).replace(",", " ").replace('.', ',')
+            product_price_all = (
+                "{0:,.2f}".format(product_price_all).replace(",", " ").replace(".", ",")
+            )
             product_quantity = product.quantity
             product_data = product.text_delivery
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
@@ -500,7 +504,6 @@ def crete_pdf_bill(
                     product_name,
                     product_code,
                     Paragraph(f"{str(product_quantity)}", normal_style_right),
-                    
                     # product_quantity,
                     Paragraph(f"{str(product_stock)}.", normal_style_left),
                     # product_stock,
@@ -508,13 +511,14 @@ def crete_pdf_bill(
                     # product_price,
                     Paragraph(f"{product_price_all}", normal_style_right),
                     # product_price_all,
-     
                     product_data,
                 )
             )
-        total_amount_str = "{0:,.2f}".format(specifications.total_amount).replace(
-            ",", " "
-        ).replace('.', ',')
+        total_amount_str = (
+            "{0:,.2f}".format(specifications.total_amount)
+            .replace(",", " ")
+            .replace(".", ",")
+        )
         # if is_none_date_delivery:
         #     final_date_ship = "-"
         # else:
@@ -542,8 +546,8 @@ def crete_pdf_bill(
             colWidths=[
                 1 * cm,
                 6 * cm,
-                3* cm,
-                1.5* cm,
+                3 * cm,
+                1.5 * cm,
                 1 * cm,
                 2.5 * cm,
                 2.5 * cm,
@@ -563,8 +567,7 @@ def crete_pdf_bill(
                     ("BOX", (-1, 1), (0, 0), 2, colors.red),
                     # ('BOX',(-2,-1),(-1,1),2,colors.red),
                     ("BOX", (-1, 0), (-1, -1), 2, colors.black),
-                    ('VALIGN',(0,0),(-1,-1),'TOP'),
-                    
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
                     # ('LINEABOVE',(0,2),(-1,2),2,colors.black)
                     # ('LINEABOVE',(0,-2),(-1,2),2,colors.black)
                 ]
@@ -585,8 +588,14 @@ def crete_pdf_bill(
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
-        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ").replace('.', ',')
-        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace('.', ',')
+        total_amount = (
+            "{0:,.2f}".format(specifications.total_amount)
+            .replace(",", " ")
+            .replace(".", ",")
+        )
+        total_amount_nds = (
+            "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace(".", ",")
+        )
         final_table_all = []
         final_table_all.append(
             (
@@ -735,14 +744,13 @@ def crete_pdf_bill(
             #         )
             #     )
             # else:
-            
+
             #     story.append(
             #         Paragraph(
             #             f"7.{type_delivery.text_long}",
             #             normal_style,
             #         )
             #     )
-           
 
             story.append(
                 Paragraph(
@@ -775,9 +783,7 @@ def crete_pdf_bill(
                 )
             )
 
-
         story_no_sign = story.copy()
-
 
         name_image = request.build_absolute_uri(motrum_info.signature.url)
         signature_motrum = Paragraph(
@@ -785,7 +791,7 @@ def crete_pdf_bill(
             normal_style,
         )
         signature_motrum_name = Paragraph(f"Старостина В. П.", normal_style)
-       
+
         name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
 
         press_motrum = Paragraph(
@@ -833,8 +839,6 @@ def crete_pdf_bill(
         )
         story.append(table_signature)
 
-        
-    
         pdf = doc
         pdf = pdf.build(story, canvasmaker=MyCanvas)
 
@@ -844,51 +848,38 @@ def crete_pdf_bill(
             name_bill,
         )
         print(file_path)
-        
-      
+
         print(333333333333333333)
-        
+
         data_signature = [
             (
                 Paragraph(f"<br /><br />Руководитель:", bold_style),
+                Paragraph(f"________________________________", normal_style_centre),
                 Paragraph(
-                    f"________________________________", normal_style_centre
-                ),
-                Paragraph(
-                    f"__________________________________________________________", normal_style_centre
+                    f"__________________________________________________________",
+                    normal_style_centre,
                 ),
             ),
             (
                 None,
-                Paragraph(
-                    f"   подпись           ", normal_style_centre
-                ),
-                Paragraph(
-                    f"       расшифровка подписи      ", normal_style_centre
-                ),
+                Paragraph(f"   подпись           ", normal_style_centre),
+                Paragraph(f"       расшифровка подписи      ", normal_style_centre),
             ),
             (
                 Paragraph("Бухгалтер:", bold_style),
+                Paragraph(f"________________________________", normal_style_centre),
                 Paragraph(
-                    f"________________________________", normal_style_centre
-                ),
-                Paragraph(
-                    f"__________________________________________________________", normal_style_centre
-                ),
-            ),
-             (
-                None,
-                Paragraph(
-                    f"   подпись           ", normal_style_centre
-                ),
-                Paragraph(
-                    f"       расшифровка подписи      ", normal_style_centre
+                    f"__________________________________________________________",
+                    normal_style_centre,
                 ),
             ),
             (
-                Paragraph(
-                    f"<br /><br /><br /><br />МП.", normal_style_right
-                ),
+                None,
+                Paragraph(f"   подпись           ", normal_style_centre),
+                Paragraph(f"       расшифровка подписи      ", normal_style_centre),
+            ),
+            (
+                Paragraph(f"<br /><br /><br /><br />МП.", normal_style_right),
                 None,
                 None,
             ),
@@ -914,10 +905,9 @@ def crete_pdf_bill(
                 ]
             )
         )
-    
+
         story_no_sign.append(table_signature)
 
-   
         pdf_no_sign = doc_2
         pdf_no_sign = pdf_no_sign.build(story_no_sign, canvasmaker=MyCanvas)
 
@@ -927,7 +917,7 @@ def crete_pdf_bill(
             name_bill_no_signature,
         )
         print(4)
-        return (file_path, bill_name,file_path_no_sign,version)
+        return (file_path, bill_name, file_path_no_sign, version)
 
     except Exception as e:
 
@@ -953,7 +943,7 @@ def crete_pdf_bill(
 #         elif type_save == "hard_update":
 #             if order.requisites.contract:
 #                 bill_name = motrum_info.counter_bill + 1
-                
+
 #                 name_bill_text = f"Счет № {bill_name}"
 #                 motrum_info.counter_bill =  bill_name
 #             else:

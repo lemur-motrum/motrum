@@ -1624,6 +1624,58 @@ def client_info_bitrix(data):
     return (client_req,acc_req)
 
 
+def send_requests(url,headers,data):
+    import requests
+    response = requests.post(url, headers=headers, data=data,json=data)
+
+    return response.status_code
+    # print(response.status_code)
+    # print(response.text)
+    # if response.status_code == requests.codes.ok:
+        
+    # else:
+    #     print('Request failed with status code:', response.status_code)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #      def save_specification(
 #     received_data,
 #     pre_sale,

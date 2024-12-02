@@ -70,11 +70,8 @@ class CalendarHoliday(models.Model):
 
 
 SLIDER_TYPE = (
-    ("MAIN", "Только изображение"),
-    ("VIDEO", "Видео"),
-    ("PHOTO", "Фото право"),
-    ("PHOTO_2", "Фото лево"),
-    ("PHOTO_2", "Фото лево"),
+    ("MAIN", "Лево-изображение. Право-видео или изображение + текст 2 строки"),
+    
     ("PROMOTE", "Продвижение товара"),
 )
 
@@ -84,16 +81,36 @@ class SliderMain(models.Model):
     slug = models.CharField(
         max_length=200,
     )
-    title = models.CharField("Заголовок слайда", max_length=200, blank=True, null=True)
-    text = models.CharField("Описание слайда", max_length=200, blank=True, null=True)
+    # title = models.CharField("Заголовок слайда", max_length=200, blank=True, null=True)
+    # text = models.CharField("Описание слайда", max_length=200, blank=True, null=True)
+    text1 = models.CharField("Текст 1 строка", max_length=200, blank=True, null=True)
+    text2 = models.CharField("Текст в обводке", max_length=200, blank=True, null=True)
+    icon3 = models.ImageField(
+        "Изображение вторая строка текста",
+        upload_to=get_file_path_slider_web,
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    text4 = models.CharField("Текст 2 строка", max_length=200, blank=True, null=True)
+    
+    
+    
     image = models.ImageField(
-        "Изображение",
+        "Изображение левое",
         upload_to=get_file_path_slider_web,
         max_length=255,
         blank=True,
         null=True,
     )
     video = models.CharField("Ссылка на видео", max_length=200, blank=True, null=True)
+    image_right = models.ImageField(
+        "Изображение правое",
+        upload_to=get_file_path_slider_web,
+        max_length=255,
+        blank=True,
+        null=True,
+    )
     link = models.CharField(
         "Ссылка для перехода", max_length=200, blank=True, null=True
     )
@@ -250,3 +267,31 @@ class BaseImage(models.Model):
     class Meta:
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
+
+class TypeDelivery(models.Model):
+    text = models.CharField(
+        "Способ доставки ",
+        max_length=250,
+    )
+    text_long = models.CharField(
+        "Способ доставки с описанием для документов",
+        max_length=1500,
+    )
+    
+    company_delivery = models.CharField(
+        "Компания осуществляющая доставку",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = "Типы доставки"
+        verbose_name_plural = "Типы доставок"
+
+
+    def __str__(self):
+        return self.text
+
+
+

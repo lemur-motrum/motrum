@@ -6,6 +6,7 @@ from simple_history.utils import update_change_reason
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import get_file_price_path_add
+from apps.core.utils_web import get_file_path_catalog_web
 # from middlewares.middlewares import RequestMiddleware
 
 
@@ -59,6 +60,7 @@ class Vendor(models.Model):
         blank=True,
         null=True,
     )
+    img = models.ImageField("Изображение", upload_to=get_file_path_catalog_web, null=True)
 
     class Meta:
         verbose_name = "Производитель"

@@ -19,7 +19,7 @@ from django.db.models import Prefetch, OuterRef
 def get_currency(self):
   
     try:
-        del_currency()
+        # del_currency()
         currency_list = Currency.objects.exclude(words_code="RUB")
         resp = "https://www.cbr.ru/scripts/XML_daily.asp"
         response = urlopen(resp)

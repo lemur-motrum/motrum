@@ -276,7 +276,8 @@ class CartViewSet(viewsets.ModelViewSet):
             # корзина админов
             if request.user.is_staff:
                 # try:
-                cart = Cart.objects.filter(session_key=session, is_active=False).last()
+                # cart = Cart.objects.filter(session_key=session, is_active=False).last()
+                cart = None
                 if cart:
                     response = Response()
                     response.data = cart.id

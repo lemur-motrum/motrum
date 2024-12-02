@@ -42,6 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const deliveryRequsits = document
         .querySelector("[name='delevery-requisit']")
         .getAttribute("value");
+        
       specificationItems.forEach((specificationItem) => {
         const itemQuantity =
           specificationItem.querySelector(".input-quantity").value;

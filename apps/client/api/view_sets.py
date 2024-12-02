@@ -558,8 +558,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {
             "type_save": "new",
             "login": {
-                "bitrix_id": 13,
-                "token": "pbkdf2_sha256$870000$ICTtR17wFHiGIj2sKT2g7d$OM5H9t4fgyMZl8gZVbAcVUB3+GL92fSVg2da03SyhHk=",
+                "email_bitrix_manager": "ruslan.ovcharov1111@motrum.ru",
+                "token": "pbkdf2_sha256$870000$8c5Ju3yEMaktAggkBLPT66$aqeyhwhI6kOxAm+dLhVDGy5LwTcto11l/RN9t3e9qQM=",
             },
             "company": {
                 "id_bitrix": 69,
@@ -645,7 +645,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
-        type_delivery = data["type_delivery"]
+        print("type_delivery")
+        # type_delivery = data["type_delivery"]
+        type_delivery = 2
+        print(type_delivery)
         id_specification = data["id_specification"]
         type_save = data["type_save"]
 
@@ -812,7 +815,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "postpay_persent": requisites.postpay_persent,
                     "motrum_requisites": motrum_requisites.id,
                     "id_bitrix": id_bitrix,
-                    "type_delivery": type_delivery,
+                    "type_delivery_id": type_delivery,
                 }
                 serializer = self.serializer_class(data=data_order, many=False)
                 print(000000)
@@ -1586,7 +1589,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
     # получение статусов заказов из битрикс
-    @action(detail=False, url_path=r"status-order-bitrix")
+    @action(detail=False,methods=["post"], url_path=r"status-order-bitrix")
     def get_status_order_bitrix(self, request, *args, **kwargs):
         # data = request.data
         data = [
@@ -1616,7 +1619,15 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(data, status=status.HTTP_200_OK)
 
-
+    @action(detail=False, methods=["post"], url_path=r"test")
+    def test(self, request, *args, **kwargs):
+        print("action test")
+        data= request.data
+        
+        print(data)
+        return Response(None, status=status.HTTP_200_OK)
+        
+              
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer

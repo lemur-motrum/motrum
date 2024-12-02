@@ -3,6 +3,7 @@ from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
 from apps.client.models import Order
+from apps.client.task import actual_info_order_product
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -39,10 +40,14 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    counter_bill_new_year()
- 
+    
+
+    result = actual_info_order_product()
+    if result == None:
+        result = 1
     context = {
         "title": title,
+        "result":result
     }
     return render(request, "supplier/supplier.html", context)
 

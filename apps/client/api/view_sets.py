@@ -40,6 +40,7 @@ from apps.client.api.serializers import (
     OrderSaveCartSerializer,
     OrderSerializer,
     RequisitesSerializer,
+    RequisitesToOktOrderSerializer,
 )
 from django.contrib.sessions.models import Session
 from apps.client.models import (
@@ -195,7 +196,8 @@ class ClientViewSet(viewsets.ModelViewSet):
             Q(legal_entity__icontains=requisites_serch)
             | Q(inn__icontains=requisites_serch)
         )
-        serializer = AllAccountRequisitesSerializer(queryset, many=True)
+        serializer = RequisitesToOktOrderSerializer(queryset, many=True)
+        print(serializer.data,)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # # добавление клиента через б24
@@ -1472,7 +1474,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 Prefetch("cart__productcart_set"),
                 Prefetch("cart__productcart_set__product"),
                 Prefetch("cart__cart_admin"),
-                Prefetch("requisites__accountrequisites_set"),
+                # Prefetch("requisites__accountrequisites_set"),
             )
             .filter(q_object)
             .order_by("-id")[count : count + count_last]

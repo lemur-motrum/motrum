@@ -474,9 +474,10 @@ def create_specification(request):
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
+            requisites_kpp = client_req.requisitesKpp
             requisites = order.requisites
-            client_req_all = AccountRequisites.objects.filter(requisites=requisites)
-
+            client_req_all = AccountRequisites.objects.filter(requisitesKpp__requisites=requisites)
+            print(client_req_all)
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )

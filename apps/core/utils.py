@@ -1581,13 +1581,7 @@ def client_info_bitrix(data):
             # "contract": data["contract"],
             "legal_entity": data["legal_entity"],
             "inn": data["inn"],
-            # "kpp": data["kpp"],
-            # "legal_post_code": data["legal_post_code"],
-            # "legal_city": data["legal_city"],
-            # "legal_address": data["legal_address"],
-            # "postal_post_code": data["postal_post_code"],
-            # "postal_city": data["postal_city"],
-            # "postal_address": data["postal_address"],
+   
             
         },
         create_defaults={"contract": data["contract"],"contract_date":data_contract,}

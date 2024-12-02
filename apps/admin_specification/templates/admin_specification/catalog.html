@@ -832,7 +832,7 @@
                                 <input {% if bill_upd %}disabled{% endif %}
                                        type="text"
                                        name="serch-client_input"
-                                       value="{% if client_req %}{{ client_req.requisites.legal_entity }}{% endif %}">
+                                       value="{% if client_req %}{{ client_req.requisitesKpp.requisites.legal_entity }}{% endif %}">
                             </div>
                             <div class="clients"></div>
                             <label class="select-client-requsits_label">
@@ -846,7 +846,7 @@
                                             <option class="client-option"
                                                     {% if client_req.id == recusits.id %}selected{% endif %}
                                                     value="{{ recusits.id }}">
-                                                {{ recusits.account_requisites }}
+                                                    КПП:{{ recusits.requisitesKpp.kpp }} Р/c:{{ recusits.account_requisites }}
                                             </option>
                                         {% endfor %}
                                     {% endif %}
@@ -854,9 +854,9 @@
                             </label>
                             <div class="client-info">
                                 {% if client_req %}
-                                    <div>Предоплата: {{ client_req.requisites.prepay_persent }}%</div>
-                                    <div>1111111111
-                                        Доставка:
+                                    <div>Предоплата: {{ client_req.requisitesKpp.requisites.prepay_persent }}%</div>
+                                    <div>
+                                        {% comment %} Доставка: {% endcomment %}
                                         {% comment %} <select {% if bill_upd %}disabled{% endif %}
                                                 class="select_delevery"
                                                 name='delevery-requisit'>

@@ -474,7 +474,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const allElems = spetificationTable.querySelectorAll(".total_cost");
         const allElemsMarginaliry =
           spetificationTable.querySelectorAll(".marginality");
-
+        const allMarginalityPercent = spetificationTable.querySelector(
+          ".marginality_prcent_value"
+        );
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
@@ -486,6 +488,10 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         getDigitsNumber(valueContainer, +sum);
         getDigitsNumber(marginality, +margSum);
+        allMarginalityPercent.textContent = (
+          (+sum / (+sum - +margSum)) * 100 -
+          100
+        ).toFixed(2);
       }
 
       function saveSpecification(elems) {
@@ -509,7 +515,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const deliveryRequsits = document
           .querySelector("[name='delevery-requisit']")
           .getAttribute("value");
-          
+
         const bitrixInput = document.querySelector(".bitrix-input");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -913,10 +919,10 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
+            getMarginality(spetificationTable);
             getResult();
           };
 
@@ -947,9 +953,9 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             updateProduct();
             changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
+            getMarginality(spetificationTable);
             getResult();
           };
 
@@ -990,9 +996,9 @@ window.addEventListener("DOMContentLoaded", () => {
             getMarginality(spetificationTable);
             updateProduct();
             // changeDateInOrder(spetificationTable);
-            getResult();
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
+            getResult();
           });
 
           const allPrice = inputPrice.value * countQuantity;
@@ -1380,22 +1386,23 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
-    const selectDelevery = searhClientForm.querySelector(".select_delevery");
+    const selectDelevery = document.querySelector(".select_delevery");
     changeSelect(selectDelevery);
 
     const motrumRequsits = document.querySelector(".select_motrum_requisites");
-    const clientOptions = motrumRequsits.querySelectorAll("option");
-    motrumRequsits.setAttribute(
-      "value",
-      clientOptions[0].getAttribute("data-account-requisites-id")
-    );
-    clientOptions.forEach((el) => {
-      motrumRequsits.addEventListener("change", function () {
-        if (el.selected) {
-          motrumRequsits.setAttribute("value", el.getAttribute("value"));
-        }
-      });
-    });
+    changeSelect(motrumRequsits);
+    //const clientOptions = motrumRequsits.querySelectorAll("option");
+    // motrumRequsits.setAttribute(
+    //   "value",
+    //   clientOptions[0].getAttribute("data-account-requisites-id")
+    // );
+    // clientOptions.forEach((el) => {
+    //   motrumRequsits.addEventListener("change", function () {
+    //     if (el.selected) {
+    //       motrumRequsits.setAttribute("value", el.getAttribute("value"));
+    //     }
+    //   });
+    // });
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButtonContainer = document.querySelector(".save_button-wrapper");

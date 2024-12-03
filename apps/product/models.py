@@ -833,10 +833,11 @@ class Cart(models.Model):
         return str(self.id)
 
     @classmethod
-    def create_cart_admin(cls, session,admin):
+    def create_cart_admin(cls, session, admin):
         cart = cls.objects.create(session_key=None, is_active=False,client=None,cart_admin=admin)
         
         return  cart
+
 
 class ProductCart(models.Model):
     cart = models.ForeignKey(

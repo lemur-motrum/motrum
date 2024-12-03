@@ -192,7 +192,8 @@
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
                              data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
-                             data-product-pk=""
+                             data-product-pk="{% if item.product %}{{item.product.id}}
+                             {% endif %}"
                              data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                              data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
                              data-product-id-cart="{{ item.id_product_cart }}"
@@ -368,7 +369,7 @@
                                     <div class="change_item_container_value">
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
-                                            Cкидка
+                                            Cкидка 
                                             <input class="persent_sale"
                                                    type="text"
                                                    placeholder="%"
@@ -388,7 +389,7 @@
                         <!--когда новая спецификация-->
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
-                             data-product-pk="{{ item.id }}"
+                             data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id }}"
                              data-product-article-new="{{ item.product_new_article }}"
@@ -841,11 +842,16 @@
                               class="comment-input-all"
                               name="comment-input-name-all"
                               placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
-                    <textarea style="width: 200px;
+                    <textarea 
+                        {% if order.requisites.contract %}
+                        onkeypress='validate(event)'
+                        {% endif %}
+                            style="width: 200px;
                                      height: 50px;
                                      border-radius: 10px"
                               class="delivery-date-all-input-all"
                               name="delivery-date-all-input-name-all"
+                              
                               placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
                 </div>
                 <div class="submit-container">
@@ -853,7 +859,7 @@
                         <label class="serch-client">
                             <div class="client-prev">
                                 <span>Клиент</span>
-                                <input {% if bill_upd %}disabled{% endif %}
+                                <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                        type="text"
                                        name="serch-client_input"
                                        value="{% if client_req %}{{ client_req.requisitesKpp.requisites.legal_entity }}{% endif %}">
@@ -861,7 +867,7 @@
                             <div class="clients"></div>
                             <label class="select-client-requsits_label">
                                 <span>Расчетный счет</span>
-                                <select {% if bill_upd %}disabled{% endif %}
+                                <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                         class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
                                         name="client-requisit">
@@ -897,7 +903,7 @@
                         </label>
                         <label class="bitrix-id-label">
                             <span>Номер сделки Bitrix</span>
-                            <input {% if bill_upd %}disabled{% endif %}
+                            <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                    class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'

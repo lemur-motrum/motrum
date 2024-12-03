@@ -217,6 +217,19 @@ class ProductSpecification(models.Model):
         null=True,
     )
     date_delivery_bill = models.DateField(verbose_name="Дата поставки товара в счете", null=True)
+    reserve = models.IntegerField(
+        "Зарезервировано на складе мотрум",
+        blank=True,
+        null=True,
+    )
+    client_shipment = models.IntegerField(
+        "Отгружено клиенту",
+        blank=True,
+        null=True,
+    )
+    date_shipment = models.DateField(verbose_name="Дата поставки товара", null=True)
+    
+    
     
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 

@@ -41,8 +41,32 @@ from apps.user.views import login_bitrix
 def add_iek(request):
     title = "TEST"
     
+    currency_list = Currency.objects.exclude(words_code="RUB")
+    resp = "https://www.cbr.ru/scripts/XML_daily.asp"
+    response = urlopen(resp)
+    item = ET.parse(response)
+    root = item.getroot()
+    ElementInclude.include(root)
+    date = datetime.datetime.now()
+    for current in currency_list:
+        current_world_code = current.words_code
+        value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
+        vunit_rate = item.findtext(
+            f".//Valute[CharCode='{current_world_code}']/VunitRate"
+        )
+        count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
+        
+        v = float(value.replace(",", "."))
+        vi = float(vunit_rate.replace(",", "."))
 
-    get_motrum_nomenclature()
+        now_rate = CurrencyRate.objects.get_or_create(
+            currency=current ,
+            date=date,
+            defaults={"value": v, "vunit_rate": vi, "count": int(count)},
+        )
+        # update_currency_price(current, current_world_code)
+        # currency_chek(current, now_rate[0])
+
     result = 1
     if result:
         pass

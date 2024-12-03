@@ -1,4 +1,5 @@
 import datetime
+import email
 import math
 from operator import itemgetter
 import os
@@ -55,7 +56,10 @@ from apps.client.models import (
     Requisites,
 )
 from apps.core.utils import (
+    after_save_order_products,
     client_info_bitrix,
+    create_info_request_order_1c,
+    create_info_request_order_bitrix,
     create_time_stop_specification,
     get_presale_discount,
     loc_mem_cache,
@@ -73,7 +77,7 @@ from apps.core.utils_web import (
     send_pin,
 )
 from apps.product.api.serializers import ProductCartSerializer
-from apps.product.models import Cart, Lot, Price, Product, ProductCart
+from apps.product.models import Cart, CurrencyRate, Lot, Price, Product, ProductCart
 from apps.specification.api.serializers import (
     ProductSpecificationSerializer,
     ProductSpecificationToAddBillSerializer,
@@ -198,7 +202,9 @@ class ClientViewSet(viewsets.ModelViewSet):
             | Q(inn__icontains=requisites_serch)
         )
         serializer = RequisitesToOktOrderSerializer(queryset, many=True)
-        print(serializer.data,)
+        print(
+            serializer.data,
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # # добавление клиента через б24
@@ -570,7 +576,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
                 # "contract": "",
                 # "contract_date": "",
-                "contract": "07-04/25",
+                "contract": "07-06/25",
                 "contract_date": "2024-04-24",
                 "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
                 "inn": "1650236125",
@@ -590,10 +596,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             },
             "order": {
                 "id_bitrix": random_int,
-                "manager_id": "13",
+                "manager": "ruslan.ovcharov1111@motrum.ru",
                 "satatus": "PROCESSING",
-                # "id_client_bitrix": 69,
-                # "account_requisites": 40702810762030005446,
             },
         }
         result = "ok"
@@ -604,24 +608,30 @@ class OrderViewSet(viewsets.ModelViewSet):
         data_admin = AdminUser.login_bitrix(data["login"], None, request)
         if data_admin["status_admin"] == 200:
             client_req, acc_req = client_info_bitrix(company_info)
+            manager = AdminUser.objects.get(email=data["order"]["manager"])
 
+            data_order = {
+                "id_bitrix": order_info["id_bitrix"],
+                "name": 123131,
+                "requisites": client_req.id,
+                "account_requisites": acc_req.id,
+                "status": "",
+                # "cart": cart.id,
+                "prepay_persent": client_req.prepay_persent,
+                "postpay_persent": client_req.postpay_persent,
+                "manager": manager,
+            }
             try:
                 order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
-
+                cart = order.cart
+                data_order["cart"] = cart.id
+                serializer = self.serializer_class(order, data=data_order, many=False)
             except Order.DoesNotExist:
                 cart = Cart.create_cart_admin(None, data_admin["admin"])
-                data_order = {
-                    "id_bitrix": order_info["id_bitrix"],
-                    "name": 123131,
-                    "requisites": client_req.id,
-                    "account_requisites": acc_req.id,
-                    "status": "",
-                    "cart": cart.id,
-                    "prepay_persent": client_req.prepay_persent,
-                    "postpay_persent": client_req.postpay_persent,
-                    # "type_delivery": client_req.type_delivery,
-                }
+                data_order["cart"] = cart.id
                 serializer = self.serializer_class(data=data_order, many=False)
+
+            finally:
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
                     order = serializer.save()
@@ -728,7 +738,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         #     new.save()
                         else:
                             pass
-            tr =  traceback.format_exc()
+            tr = traceback.format_exc()
             error = "error"
             location = "Сохранение спецификации админам окт"
             info = f" ошибка {e}{tr}"
@@ -924,55 +934,31 @@ class OrderViewSet(viewsets.ModelViewSet):
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                 pdf_signed = request.build_absolute_uri(order.bill_file.url)
-                document_specification = request.build_absolute_uri(
-                    order.specification.file.url
-                )
+                if order.specification.file:
+                    document_specification = request.build_absolute_uri(
+                        order.specification.file.url
+                    )
+                else:
+                    document_specification = None
                 data = {"pdf": pdf, "name_bill": order.bill_name}
 
                 # сохранение товара в окт нового
-                order_products = {}
-                i = 0
-                for obj in products:
-                    i += 1
-                    prod = ProductSpecification.objects.get(id=obj["id"])
+                order_products = after_save_order_products(products)
 
-                    if prod.product_new_article != None:
-
-                        new_prod_db = save_new_product_okt(prod)
-                        prod.product = new_prod_db
-                        prod.save()
-                    data_prod_to_1c = {
-                        # "vendor": prod.product.vendor.name,
-                        # "article": prod.product.article_supplier,
-                        # "article_motrum": prod.product.article,
-                        # # "name": prod.product.name,
-                        # "price_one": prod.price_one,
-                        # "quantity": prod.quantity,
-                        # "price_all": prod.price_all,
-                        # "text_delivery": prod.text_delivery,
-                    }
-                    # order_products[prod.product.article] = data_prod_to_1c
-                print(order_products)
-                data_for_bitrix = {
-                    "name_bill": order.bill_name,
-                    "pdf": pdf,
-                    "pdf_signed": pdf_signed,
-                    "bill_date_create": order.bill_date_start,
-                    "document_specification": document_specification,
-                    "order_products": order_products,
-                    "currency": {},
-                }
-
-                print(999)
-
+                print("order_products", order_products)
+                data_for_bitrix = create_info_request_order_bitrix(
+                    order, pdf, pdf_signed, document_specification, order_products
+                )
+                data_for_1c = create_info_request_order_1c(order, order_products)
                 print(data_for_bitrix)
+                print(data_for_1c)
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             print(e)
-            tr =  traceback.format_exc()
+            tr = traceback.format_exc()
             error = "error"
             location = "Сохранение счета админам окт"
             info = f"Сохранение счета админам окт ошибка {e}{tr}"
@@ -1561,7 +1547,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
     # получение статусов заказов из битрикс
-    @action(detail=False,methods=["post"], url_path=r"status-order-bitrix")
+    @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
     def get_status_order_bitrix(self, request, *args, **kwargs):
         # data = request.data
         data = [
@@ -1594,12 +1580,58 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"test")
     def test(self, request, *args, **kwargs):
         print("action test")
-        data= request.data
-        
+        data = request.data
+
         print(data)
         return Response(None, status=status.HTTP_200_OK)
-        
-              
+
+    @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
+    def add_info_order_1c(self, request, *args, **kwargs):
+        # data = request.data
+        data = {
+            "bitrix_id": "2373",
+            "order_products": [
+                {
+                    "article_motrum": "001537",
+                    "date_delivery": "22-11-2024",
+                    "reserve": "1",
+                    "client_shipment": "0",
+                    "date_shipment": "22-11-2024",
+                },
+            ],
+        }
+        order = Order.objects.get(id_bitrix=int(data["bitrix_id"]))
+        product_spesif  = ProductSpecification.objects.filter(specification=order.specification)
+        print(product_spesif)
+        for order_products_item in data["order_products"]:
+            print(int(order_products_item["article_motrum"]))
+            prod = product_spesif.filter(product__article=order_products_item["article_motrum"])
+            if order_products_item["date_delivery"]:
+                date_delivery = datetime.datetime.strptime(order_products_item["date_delivery"], "%d-%m-%Y").date()
+                print(date_delivery)
+                prod.date_delivery_bill = date_delivery
+            
+            if order_products_item["date_shipment"]:
+                date_shipment = datetime.datetime.strptime(order_products_item["date_shipment"], "%d-%m-%Y").date()
+                print(date_shipment)
+                prod.date_shipment = date_shipment
+            
+            if order_products_item["reserve"]:
+                prod.reserve = int(order_products_item["reserve"]) 
+            
+            if order_products_item["client_shipment"]:
+                prod.client_shipment = int(order_products_item["client_shipment"])     
+            
+            prod.save()
+        # for data_item in data:
+        #     print(data_item)
+        #     order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
+        #     print(order)
+           
+
+        return Response(None, status=status.HTTP_200_OK)
+
+
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer

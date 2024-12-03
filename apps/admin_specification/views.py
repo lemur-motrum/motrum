@@ -610,6 +610,7 @@ def create_specification(request):
                                 ),
                             ),
                         ),
+                        
                     )
                     .order_by("id")
                 )

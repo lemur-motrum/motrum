@@ -84,6 +84,8 @@ def crete_pdf_specification(
     from apps.core.models import TypeDelivery
 
     try:
+        print("create document spesif")
+        print("specification_name", specification_name)
         directory = check_spesc_directory_exist(
             "specification",
         )
@@ -93,8 +95,9 @@ def crete_pdf_specification(
         ).order_by("id")
         type_delivery = TypeDelivery.objects.get(id=type_delivery)
         type_delivery_name = type_delivery.text
-
+        kpp_req = account_requisites.requisitesKpp
         motrum_info = motrum_requisites.requisites
+   
         motrum_info_req = motrum_requisites
         
         
@@ -442,9 +445,9 @@ def crete_pdf_specification(
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
         text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
         if requisites:
-            text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {requisites.legal_post_code}, г. {requisites.legal_city}, {requisites.legal_address}<br></br><br></br>"
-            text_buyer_post = f"Почтовый адрес: {requisites.postal_post_code}, г. {requisites.postal_city}, {requisites.postal_address}<br></br><br></br>"
-            text_buyer_inn = f"ИНН {requisites.inn} КПП {requisites.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
+            text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {kpp_req.legal_post_code}, г. {kpp_req.legal_city}, {kpp_req.legal_address}<br></br><br></br>"
+            text_buyer_post = f"Почтовый адрес: {kpp_req.postal_post_code}, г. {kpp_req.postal_city}, {kpp_req.postal_address}<br></br><br></br>"
+            text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
         else:
 
             text_buyer_ur = f"<br />Юридический адрес: , г. , <br></br><br></br>"

@@ -143,7 +143,9 @@ class Requisites(models.Model):
     inn = models.CharField(
         "ИНН",
         max_length=12,
+        # unique=True
     )
+    
 
     # kpp = models.CharField(
     #     "КПП",
@@ -396,12 +398,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    # type_delivery = models.CharField(
-    #     "Тип доставки",
-    #     max_length=1000,
-    #     blank=True,
-    #     null=True,
-    # )
+
     type_delivery = models.ForeignKey(
         TypeDelivery,
         verbose_name="Тип доставки ",
@@ -409,14 +406,6 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    
-    # motrum_requisites = models.ForeignKey(
-    #     BaseInfoAccountRequisites,
-    #     verbose_name="Реквизиты мотрум ",
-    #     on_delete=models.CASCADE,
-    #     blank=True,
-    #     null=True,
-    # )
 
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,

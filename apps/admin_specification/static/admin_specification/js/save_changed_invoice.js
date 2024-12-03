@@ -26,9 +26,6 @@ window.addEventListener("DOMContentLoaded", () => {
       ).value;
 
       const products = [];
-      const motrumRequsits = document
-        .querySelector("[name='mortum_req']")
-        .getAttribute("value");
 
       const bitrixInput = document.querySelector(".bitrix-input");
       const specificationWrapepr = document.querySelector(
@@ -44,6 +41,9 @@ window.addEventListener("DOMContentLoaded", () => {
           .getAttribute("value");
         const deliveryRequsits = document
           .querySelector("[name='delevery-requisit']")
+          .getAttribute("value");
+        const motrumRequsits = document
+          .querySelector("[name='mortum_req']")
           .getAttribute("value");
         specificationItems.forEach((specificationItem) => {
           const itemQuantity =

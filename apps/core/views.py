@@ -1,5 +1,6 @@
 from itertools import product
 import json
+from multiprocessing import context
 import os
 import random
 from django.db.models import Prefetch
@@ -11,6 +12,7 @@ from django.db.models import OuterRef, Subquery
 
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
+from apps.core.models import SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -43,9 +45,14 @@ def index(request):
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
+    promoslider = SliderMain.objects.all()
+
+    print(promoslider)
+
     context = {
         "categories": categories,
         "projects": projects,
+        "slider": promoslider,
     }
     return render(request, "core/index.html", context)
 
@@ -67,10 +74,11 @@ def cart(request):
             requisites = (
                 Requisites.objects.filter(client=client)
                 .prefetch_related("accountrequisites_set")
-                .annotate(accountrequisit=F("accountrequisites__account_requisites"),accountrequisit_id=F("accountrequisites__id"))
-                
+                .annotate(
+                    accountrequisit=F("accountrequisites__account_requisites"),
+                    accountrequisit_id=F("accountrequisites__id"),
+                )
             )
-
 
         else:
             requisites = None
@@ -100,9 +108,10 @@ def cart(request):
                 Prefetch(
                     "productproperty_set",
                     # queryset=prefetch_queryset_property,
-                ),Prefetch(
+                ),
+                Prefetch(
                     "productimage_set",
-                )
+                ),
             )
             .annotate(
                 quantity=product_cart.filter(product=OuterRef("pk")).values(
@@ -141,6 +150,11 @@ def cart(request):
     }
 
     return render(request, "core/cart.html", context)
+
+
+# def promo_slider(request):
+
+#     return render(request, "core/includes/promo_slider.html", context)
 
 
 def company(request):

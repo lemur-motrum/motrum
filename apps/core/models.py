@@ -60,7 +60,6 @@ class Vat(models.Model):
         return str(self.name) + "%"
 
 
-
 class CalendarHoliday(models.Model):
     year = models.CharField("Год", max_length=30)
     json_date = models.JSONField("Список выходных из консультанта")
@@ -71,9 +70,9 @@ class CalendarHoliday(models.Model):
 
 SLIDER_TYPE = (
     ("MAIN", "Лево-изображение. Право-видео или изображение + текст 2 строки"),
-    
     ("PROMOTE", "Продвижение товара"),
 )
+
 
 class SliderMain(models.Model):
     active = models.BooleanField("Активно", default=True)
@@ -93,9 +92,7 @@ class SliderMain(models.Model):
         null=True,
     )
     text4 = models.CharField("Текст 2 строка", max_length=200, blank=True, null=True)
-    
-    
-    
+
     image = models.ImageField(
         "Изображение левое",
         upload_to=get_file_path_slider_web,
@@ -103,7 +100,7 @@ class SliderMain(models.Model):
         blank=True,
         null=True,
     )
-    video = models.CharField("Ссылка на видео", max_length=200, blank=True, null=True)
+    video = models.CharField("Ссылка на видео", max_length=1000, blank=True, null=True)
     image_right = models.ImageField(
         "Изображение правое",
         upload_to=get_file_path_slider_web,
@@ -203,19 +200,12 @@ class BaseInfo(models.Model):
         "Телефон",
         max_length=200,
     )
-    counter_bill =  models.PositiveIntegerField(
-        "Номер счета клиента",
-        null=True,
-        blank=True,
-        default=0
+    counter_bill = models.PositiveIntegerField(
+        "Номер счета клиента", null=True, blank=True, default=0
     )
-    counter_bill_offer =  models.PositiveIntegerField(
-        "Номер счета клиента",
-        null=True,
-        blank=True,
-        default=0
+    counter_bill_offer = models.PositiveIntegerField(
+        "Номер счета клиента", null=True, blank=True, default=0
     )
-
 
     class Meta:
         verbose_name = "Юридическое лицо"
@@ -268,6 +258,7 @@ class BaseImage(models.Model):
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
 
+
 class TypeDelivery(models.Model):
     text = models.CharField(
         "Способ доставки ",
@@ -277,7 +268,7 @@ class TypeDelivery(models.Model):
         "Способ доставки с описанием для документов",
         max_length=1500,
     )
-    
+
     company_delivery = models.CharField(
         "Компания осуществляющая доставку",
         max_length=250,
@@ -289,9 +280,5 @@ class TypeDelivery(models.Model):
         verbose_name = "Типы доставки"
         verbose_name_plural = "Типы доставок"
 
-
     def __str__(self):
         return self.text
-
-
-

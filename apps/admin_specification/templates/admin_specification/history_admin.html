@@ -1,7 +1,6 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
   {% load number_into_digits %}
-  
   <div class="logout_btn">
     <p>Пользователь: {{ request.user.username }}</p>
     <a href="{% url "user:logout_admin" %}">Выход</a>
@@ -158,7 +157,7 @@
                             {% if change.new == "None" %}
                               нет
                             {% else %}
-                              {{ change.new|number_into_digits}}
+                              {{ change.new|number_into_digits }}
                             {% endif %}
                           </li>
                         {% endfor %}

@@ -20,7 +20,9 @@
     <div class="order_invoice_details_container">
         {% if bill_sum %}
             <div class="bill_sum_details">
-                <span class="price">{{ bill_sum_paid }}</span> ₽ <br>/
+                <span class="price">{{ bill_sum_paid }}</span> ₽
+                <br>
+                /
                 <span class="price">{{ bill_sum }}</span> ₽
             </div>
         {% else %}

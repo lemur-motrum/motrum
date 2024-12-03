@@ -876,7 +876,7 @@
                                             <option class="client-option"
                                                     {% if client_req.id == recusits.id %}selected{% endif %}
                                                     value="{{ recusits.id }}">
-                                                    КПП:{{ recusits.requisitesKpp.kpp }} Р/c:{{ recusits.account_requisites }}
+                                                КПП:{{ recusits.requisitesKpp.kpp }} Р/c:{{ recusits.account_requisites }}
                                             </option>
                                         {% endfor %}
                                     {% endif %}
@@ -887,13 +887,9 @@
                                     <div>Предоплата: {{ client_req.requisitesKpp.requisites.prepay_persent }}%</div>
                                     <div>
                                         {% comment %} Доставка: {% endcomment %}
-                                        {% comment %} <select {% if bill_upd %}disabled{% endif %}
-                                                class="select_delevery"
-                                                name='delevery-requisit'>
-                                            <option {% if order.type_delivery == "pickup" %}selected{% endif %}
-                                                    value="pickup">Самовывоз</option>
-                                            <option {% if order.type_delivery == "paid_delivery" %}selected{% endif %}
-                                                    value="paid_delivery">
+                                        {% comment %} <select {% if bill_upd %}disabled{% endif %} class="select_delevery" name='delevery-requisit'>
+                                            <option {% if order.type_delivery == "pickup" %}selected{% endif %} value="pickup">Самовывоз</option>
+                                            <option {% if order.type_delivery == "paid_delivery" %}selected{% endif %} value="paid_delivery">
                                                 Доставка до терминала за счет покупателя
                                             </option>
                                         </select> {% endcomment %}

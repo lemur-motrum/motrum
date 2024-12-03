@@ -24,9 +24,6 @@ window.addEventListener("DOMContentLoaded", () => {
     ).value;
 
     const products = [];
-    const motrumRequsits = document
-      .querySelector("[name='mortum_req']")
-      .getAttribute("value");
 
     const bitrixInput = document.querySelector(".bitrix-input");
 
@@ -42,7 +39,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const deliveryRequsits = document
         .querySelector("[name='delevery-requisit']")
         .getAttribute("value");
-        
+      const motrumRequsits = document
+        .querySelector("[name='mortum_req']")
+        .getAttribute("value");
+
       specificationItems.forEach((specificationItem) => {
         const itemQuantity =
           specificationItem.querySelector(".input-quantity").value;
@@ -257,7 +257,6 @@ window.addEventListener("DOMContentLoaded", () => {
                   }
                 ).then((response3) => {
                   if (response3.status == 200 || response2.status == 201) {
-                    
                     window.location.href =
                       "/admin_specification/all_specifications/";
                   } else {

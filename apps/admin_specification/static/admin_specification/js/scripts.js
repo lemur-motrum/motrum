@@ -1474,15 +1474,19 @@ window.addEventListener("DOMContentLoaded", () => {
                         "client-id",
                         client.getAttribute("data-client-id")
                       );
-                      if (el.accountrequisites_set.length > 0) {
+                      if (el.requisitesotherkpp_set.length > 0) {
                         clientRequsitsSelect.innerHTML = "";
-                        el.accountrequisites_set.forEach((elem) => {
+                        el.requisitesotherkpp_set.forEach((elem) => {
                           if (
                             +searchClientInput.getAttribute("client-id") ===
                             +elem.requisites
                           ) {
                             clientRequsitsSelectLabel.classList.add("show");
-                            clientRequsitsSelect.innerHTML += `<option class="client-option" value="${elem.id}">${elem.account_requisites}</option>`;
+                            elem.accountrequisites_set.forEach(
+                              (accountrequisit) => {
+                                clientRequsitsSelect.innerHTML += `<option class="client-option" value="${accountrequisit.id}">КПП: ${elem.kpp}, Р/С: ${accountrequisit.account_requisites}</option>`;
+                              }
+                            );
                           }
                         });
 
@@ -1496,10 +1500,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       //        <div>Предоплата: ${el.prepay_persent}%</div>
                       //        <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
                       //        `;
-                      clientInfo.innerHTML = `
-                             <div>Предоплата: ${el.prepay_persent}%</div>
-                            
-                             `;
+                      clientInfo.innerHTML = `<div>Предоплата: ${el.prepay_persent}%</div>`;
                       const selectDelevery =
                         searhClientForm.querySelector(".select_delevery");
                       changeSelect(selectDelevery);

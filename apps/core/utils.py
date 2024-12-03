@@ -864,9 +864,10 @@ def save_update_product_attr(
         product.save()
     except Exception as e:
         print(e)
+        tr =  traceback.format_exc()
         error = "file_api_error"
         location = "Загрузка фаилов IEK"
-        info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}"
+        info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")
 
@@ -1518,9 +1519,10 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 return ("error", None, None)
     except Exception as e:
         print(e)
+        tr =  traceback.format_exc()
         error = "error"
         location = "Сохранение спецификации в корзине сайта"
-        info = f" ошибка {e}"
+        info = f" ошибка {e}{tr}"
 
         e = error_alert(error, location, info)
         return ("error", None, None)
@@ -1576,15 +1578,21 @@ def client_info_bitrix(data):
         data_contract = None
     
     client_req, client_req_created = Requisites.objects.update_or_create(
-        id_bitrix=data["id_bitrix"],
+        # id_bitrix=data["id_bitrix"],
+        inn = data["inn"],
         defaults={
-            # "contract": data["contract"],
+            "contract": data["contract"],
+            "legal_entity": data["legal_entity"],
+            "contract": data["contract"],
+            "contract_date":data_contract,
+        },
+        create_defaults={
+            "contract": data["contract"],
             "legal_entity": data["legal_entity"],
             "inn": data["inn"],
-   
-            
-        },
-        create_defaults={"contract": data["contract"],"contract_date":data_contract,}
+            "contract": data["contract"],
+            "contract_date":data_contract,
+            "id_bitrix" : data["id_bitrix"],}
     )
     if data["contract"]!="" and client_req.contract != data["contract"]:
         client_req.contract = data["contract"]
@@ -1595,8 +1603,9 @@ def client_info_bitrix(data):
     
     client_req_kpp, client_req_kpp_created = RequisitesOtherKpp.objects.update_or_create(
         requisites=client_req,
+        kpp=data["kpp"],
         defaults={
-            "kpp": data["kpp"],
+            # "kpp": data["kpp"],
             "legal_post_code": data["legal_post_code"],
             "legal_city": data["legal_city"],
             "legal_address": data["legal_address"],
@@ -1608,7 +1617,8 @@ def client_info_bitrix(data):
         },)
     
     acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
-        requisites=client_req, account_requisites=data["account_requisites"],
+        requisitesKpp=client_req_kpp,
+        account_requisites=data["account_requisites"],
          defaults={
             "bank": data["bank"],
             "kpp": data["ks"],

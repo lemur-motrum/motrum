@@ -9,7 +9,7 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
-from apps.client.models import AccountRequisites, Client, Order
+from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
@@ -623,8 +623,10 @@ def create_specification(request):
 
                 if order.account_requisites:
                     requisites = order.requisites
+                    req_kpp = RequisitesOtherKpp.objects.filter(requisites=requisites).values("id")
+                    print(req_kpp)
                     client_req_all = AccountRequisites.objects.filter(
-                        requisites=requisites
+                        requisitesKpp__in=req_kpp
                     )
                 else:
                     client_req_all = None
@@ -1390,6 +1392,11 @@ def load_products(request):
     current_products = json.dumps(products)
     out = {"status": "ok", "products": current_products}
     return JsonResponse(out, safe=False)
+
+
+
+
+
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

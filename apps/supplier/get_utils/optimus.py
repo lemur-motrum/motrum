@@ -3,6 +3,7 @@ from fileinput import filename
 import os
 import re
 import threading
+import traceback
 import zipfile
 import csv
 from simple_history.utils import update_change_reason
@@ -17,7 +18,6 @@ from apps.logs.utils import error_alert
 from apps.product.models import Lot
 from apps.supplier.models import SupplierGroupProduct
 from project.settings import MEDIA_ROOT
-
 
 
 items_categ = [
@@ -48,6 +48,7 @@ items_categ = [
     },  # HIKROBOT
 ]
 
+
 def add_file_optimus(new_file, obj):
 
     try:
@@ -67,17 +68,19 @@ def add_file_optimus(new_file, obj):
                 return new_dir
 
         else:
-
+          
             error = "file_error"
             location = "Загрузка фаилов optimus"
             info = f"фаил такого формата нельзя считать"
             e = error_alert(error, location, info)
+            
     except Exception as e:
         print(e)
+        tr =  traceback.format_exc()
         error = "file_error"
         location = "Загрузка фаилов optimus"
 
-        info = f"ошибка при чтении фаила"
+        info = f"ошибка при чтении фаила {e}{tr}"
         e = error_alert(error, location, info)
 
 
@@ -98,13 +101,12 @@ def add_optimus_product():
                 categ = SupplierCategoryProduct.objects.get(
                     name=name, slug=slug, supplier=obj
                 )
-                
+
             except SupplierCategoryProduct.DoesNotExist:
                 categ = SupplierCategoryProduct(
                     name=name, slug=slug, supplier=obj, autosave_tag=True
                 )
                 categ.save()
-
 
     # перебор фаилов и считывание
     file_names = []
@@ -115,11 +117,11 @@ def add_optimus_product():
     i = 0
     for file_name in file_names:
         file_name_no_attr = file_name.split(".")
-  
+
         category_supplier = SupplierCategoryProduct.objects.filter(
-                    supplier=obj, slug=file_name_no_attr[0]
-                ).exists()
-        
+            supplier=obj, slug=file_name_no_attr[0]
+        ).exists()
+
         if category_supplier == True:
             i += 1
             if i > 0:
@@ -128,19 +130,21 @@ def add_optimus_product():
 
                 except Exception as e:
                     print(e)
+                    tr =  traceback.format_exc()
                     error = "file_error"
                     location = "Загрузка фаилов Delta"
 
-                    info = f"ошибка при чтении фаила{file_name}"
+                    info = f"ошибка при чтении фаила{file_name}{tr}"
                     e = error_alert(error, location, info)
                 finally:
                     continue
-        else:  
+        else:
             error = "file_error"
             location = "Загрузка фаилов Delta"
 
             info = f"Новый фаил {file_name}"
             e = error_alert(error, location, info)
+
 
 def optimus_written_file(file_name, obj, new_dir):
     from apps.core.utils import (
@@ -155,8 +159,6 @@ def optimus_written_file(file_name, obj, new_dir):
         Vendor,
     )
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
-
-
 
     path = f"{new_dir}/{file_name}"
 
@@ -237,8 +239,8 @@ def optimus_written_file(file_name, obj, new_dir):
                             r"<[^>]+>", "", row2["Краткое описание"], flags=re.S
                         )
                         description = res_description_replace
-                       
-            # если колонка содержимое пустая берем описание
+
+                # если колонка содержимое пустая берем описание
                 else:
                     if "Описание" in row2:
                         description_arr_replace = row2["Описание"].replace(
@@ -250,12 +252,12 @@ def optimus_written_file(file_name, obj, new_dir):
                         description = res_description_arr_replace
                     else:
                         description = None
-                        
+
                 name = row2["Краткое описание"]
                 if name == "":
                     name = description
-               
-                # прайс  
+
+                # прайс
                 price = row2["Цена"].replace(" ", "")
                 if price == "" or price == "n":
                     extra = True
@@ -270,7 +272,8 @@ def optimus_written_file(file_name, obj, new_dir):
 
                 vat_catalog = Vat.objects.get(name=20)
                 currency = Currency.objects.get(words_code="USD")
-# сохранение изображений
+
+                # сохранение изображений
                 def save_image(
                     article,
                 ):
@@ -278,11 +281,19 @@ def optimus_written_file(file_name, obj, new_dir):
                     if "Изображение" in row2:
                         img_big = row2["Изображение"].replace(" ", "")
                         img_small = row2["Изображение при увеличении"].replace(" ", "")
- 
-                        if img_big != "" and img_big != "https://optimusdrive.ru/" and img_big != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg":
+
+                        if (
+                            img_big != ""
+                            and img_big != "https://optimusdrive.ru/"
+                            and img_big
+                            != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg"
+                        ):
                             image_link = img_big
                         elif (
-                            img_small != "" and img_small != "https://optimusdrive.ru/" and img_big != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg"
+                            img_small != ""
+                            and img_small != "https://optimusdrive.ru/"
+                            and img_big
+                            != "https://optimusdrive.ru/imagesod/catalog/nfod3.jpg"
                         ):
                             image_link = img_small
                         print(image_link)
@@ -292,7 +303,7 @@ def optimus_written_file(file_name, obj, new_dir):
                             image = ProductImage.objects.create(product=article)
                             update_change_reason(image, "Автоматическое")
                             image_path = get_file_path_add(image, image_link)
-                          
+
                             p = save_file_product(image_link, image_path)
                             image.photo = image_path
                             image.link = image_link
@@ -327,21 +338,21 @@ def optimus_written_file(file_name, obj, new_dir):
                     save_image(article)
                     try:
                         stock_prod = Stock.objects.get(prod=article)
-                        
+
                     except Stock.DoesNotExist:
                         stock_supplier = None
                         lot = Lot.objects.get(name="штука")
-                        
+
                         stock_prod = Stock(
-                            prod=article, 
-                            lot=lot, 
-                            stock_supplier = stock_supplier,
-                            data_update = datetime.datetime.now()
+                            prod=article,
+                            lot=lot,
+                            stock_supplier=stock_supplier,
+                            data_update=datetime.datetime.now(),
                         )
-                        stock_prod._change_reason = 'Автоматическое'
-                        stock_prod.save() 
-                    
-                # свойства из из общей колонки    
+                        stock_prod._change_reason = "Автоматическое"
+                        stock_prod.save()
+
+                # свойства из из общей колонки
                 props_product = ProductProperty.objects.filter(product=article).exists()
                 if props_product == False:
 
@@ -353,7 +364,9 @@ def optimus_written_file(file_name, obj, new_dir):
                                 if td != []:
                                     print(td)
                                     value_props_no_br = str(td[1]).replace("<br>", ". ")
-                                    value_props_no_br = str(td[1]).replace("<br/>", ". ")
+                                    value_props_no_br = str(td[1]).replace(
+                                        "<br/>", ". "
+                                    )
                                     name_props = re.sub(
                                         r"<[^>]+>", "", str(td[0]), flags=re.S
                                     )
@@ -386,21 +399,24 @@ def optimus_written_file(file_name, obj, new_dir):
                     price_product.extra_price = extra
                     price_product._change_reason = "Автоматическое"
                     price_product.save()
-                    
-                    
+
             except Exception as e:
                 print(e)
+                tr =  traceback.format_exc()
                 error = "file_error"
                 location = "Загрузка фаилов Delta"
 
-                info = f"ошибка при чтении строки артикул {row2["Модель"]}"
+                info = f"ошибка при чтении строки артикул {row2["Модель"]}{tr}"
                 e = error_alert(error, location, info)
             finally:
                 continue
-# свойсва если есть колонки со свойствами            
+
+
+# свойсва если есть колонки со свойствами
 def save_optimus_props(row2, article):
     from apps.product.models import ProductProperty
-# колонки кроме основных
+
+    # колонки кроме основных
     row_list = list(row2)
     remove_list = {
         "Модель",
@@ -420,15 +436,15 @@ def save_optimus_props(row2, article):
         for remove_item in remove_list:
             if remove_item in row_list:
                 row_list.remove(remove_item)
-       
+
         for row_row_list in row_list:
             name_props = row_row_list
             value_props = row2[row_row_list]
-       
+
             if row_row_list != None and name_props != "":
                 if "<br>" in name_props:
                     name_props = name_props.replace("<br>", " ,")
-                    
+
                 if "<br>" in value_props:
                     value_props = value_props.replace("<br>", " ,")
 

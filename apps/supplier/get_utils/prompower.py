@@ -1,5 +1,6 @@
 import datetime
 import os
+import traceback
 import requests
 import json
 from simple_history.utils import update_change_reason
@@ -433,9 +434,10 @@ def prompower_api():
                     
             except Exception as e: 
                 print(e)
+                tr =  traceback.format_exc()
                 error = "file_api_error"
                 location = "Загрузка фаилов Prompower"
-                info = f"ошибка при чтении товара артикул: {data_item["article"]}. Тип ошибки:{e}"
+                info = f"ошибка при чтении товара артикул: {data_item["article"]}. Тип ошибки:{e}{tr}"
                 e = error_alert(error, location, info)
             finally:    
                 continue 

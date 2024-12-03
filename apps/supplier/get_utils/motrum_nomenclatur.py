@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import traceback
 import zipfile
 import csv
 from simple_history.utils import update_change_reason
@@ -17,180 +18,190 @@ from project.settings import MEDIA_ROOT
 
 
 def get_motrum_nomenclature():
-    new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-    path_nomenclature = f"{new_dir}/Справочник номенклатуры Мотрум.csv"
-    path_nomenclature_write_file = f"{new_dir}/Справочник номенклатуры Мотрум — копия.csv"
-    arr_nomenclature = []
-    # fieldnames_nomenclature = [
-    #     "Номенклатура",
-    #     None,
-    #     None,
-    #     "Артикул",
-    #     None,
-    #     "Единица измерения",
-    #     "Изготовитель",
-    #     "Категория",
-    #     "Описание",
-    #     "Страна происхождения",
-    #     "Производитель",
-    #     "В группе",
-    # ]
-    fieldnames_nomenclature = [
-        "Номенклатура",
-        None,
-        None,
-        None,
-        "Артикул",
-        "Единица измерения",
-        "Категория",
-        "Тип",
-        "В группе",
-    ]
-    
-    fieldnames_nomenclature_written = [
-        "Номенклатура",
-        None,
-        None,
-        None,
-        "Артикул",
-        "Единица измерения",
-        "Категория",
-        "Тип",
-        "В группе",
-        "Артикул мотрум",
-    ]
-
-    # with open(path_nomenclature, "r", newline="", encoding="MACCYRILLIC") as csvfile:
-    with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
-        path_nomenclature_write_file, "w", newline="", encoding="UTF-8"
-    ) as writerFile:
-        reader_nomenk = csv.DictReader(
-            csvfile, delimiter=",", fieldnames=fieldnames_nomenclature
-        )
-        writer_nomenk = csv.DictWriter(
-            writerFile, delimiter=",",fieldnames=fieldnames_nomenclature_written
-        )
-        writer_nomenk.writeheader()
+    try:
+        new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
+        path_nomenclature = f"{new_dir}/Справочник номенклатуры Мотрум.csv"
+        path_nomenclature_write_file = f"{new_dir}/Справочник номенклатуры Мотрум — копия.csv"
+        arr_nomenclature = []
+        # fieldnames_nomenclature = [
+        #     "Номенклатура",
+        #     None,
+        #     None,
+        #     "Артикул",
+        #     None,
+        #     "Единица измерения",
+        #     "Изготовитель",
+        #     "Категория",
+        #     "Описание",
+        #     "Страна происхождения",
+        #     "Производитель",
+        #     "В группе",
+        # ]
+        fieldnames_nomenclature = [
+            "Номенклатура",
+            None,
+            None,
+            None,
+            "Артикул",
+            "Единица измерения",
+            "Категория",
+            "Тип",
+            "В группе",
+        ]
         
+        fieldnames_nomenclature_written = [
+            "Номенклатура",
+            None,
+            None,
+            None,
+            "Артикул",
+            "Единица измерения",
+            "Категория",
+            "Тип",
+            "В группе",
+            "Артикул мотрум",
+        ]
+     
+        # with open(path_nomenclature, "r", newline="", encoding="MACCYRILLIC") as csvfile:
+        with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
+            path_nomenclature_write_file, "w", encoding="UTF-8"
+        ) as writerFile:
+            reader_nomenk = csv.DictReader(
+                csvfile, delimiter=",", fieldnames=fieldnames_nomenclature
+            )
+            writer_nomenk = csv.DictWriter(
+                writerFile, delimiter=",",fieldnames=fieldnames_nomenclature_written
+            )
+            # writer_nomenk.writeheader()
+            
+          
+            i = 0
+            vendor = ""
+            vendor_arr = []
+            for row_nomenk in reader_nomenk:
+                i += 1
+                try:
+                        
 
-        i = 0
-        vendor = ""
-        vendor_arr = []
-        for row_nomenk in reader_nomenk:
-            i += 1
-            try:
-                    
+                    if (
+                        i > 7 and i < 1000
+                        and row_nomenk["Артикул"] != ""
+                        and row_nomenk["Артикул"] != None
+                    ):
+                        
+                        vendor_row = str(row_nomenk["В группе"]).strip()
 
-                if (
-                    i > 7 and i < 10
-                    and row_nomenk["Артикул"] != ""
-                    and row_nomenk["Артикул"] != None
-                ):
-                    
-                    vendor_row = str(row_nomenk["В группе"]).strip()
+                        supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
 
-                    supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
-
-                    article_supplier = str(row_nomenk["Артикул"]).strip()
-                    article_supplier = " ".join(article_supplier.split())
-               
-                    lot_str = (
-                        str(row_nomenk["Единица измерения"]).replace(".", "").strip()
-                    )
-                    lot = Lot.objects.get_or_create(
-                        name_shorts=lot_str, defaults={"name": lot_str}
-                    )[0]
-
-                    name = str(row_nomenk["Номенклатура"]).strip()
-
-                    description = None
-                    if row_nomenk["Описание"] != "":
-                        description = str(row_nomenk["Описание"]).strip()
-
-                    # поиск товара в окт:
-
-                    if vendor_qs.slug == "emas" or vendor_qs.slug == "tbloc":
-
-                        product = Product.objects.filter(
-                            supplier=supplier_qs, article_supplier=article_supplier
-                        )
-
-                        if product:
-                            print(9999)
-                            product = product[0]
-                            product.vendor = vendor_qs
-                            if (
-                                product.name == article_supplier
-                                and article_supplier != name
-                            ):
-                                product.name = name
-                            if product.description != None and description:
-                                product.description = description
-                        else:
-
-                            product = add_new_product(
-                                supplier_qs,
-                                article_supplier,
-                                vendor_qs,
-                            )
-                            product.name = name
-                            product.description = description
-                    else:
-                        product = Product.objects.filter(
-                            vendor=vendor_qs, article_supplier=article_supplier
-                        )
-
-                        if product:
-                            product = product[0]
-                            if (
-                                product.name == article_supplier
-                                and article_supplier != name
-                            ):
-                                product.name = name
-                            if product.description != None and description:
-                                product.description = description
-                        else:
-                            product = add_new_product(
-                                supplier_qs,
-                                article_supplier,
-                                vendor_qs,
-                            )
-                            product.name = name
-                            product.description = description
-                    product.autosave_tag = False
-                    product._change_reason = "Автоматическое"
-                    product.save()
-
-                    # update_change_reason(product, "Автоматическое")
-
-                    add_stok_motrum_article(
-                        product,
-                        lot,
-                    )
-                    print(row_nomenk)
-                    row_nomenk["Артикул мотрум"] = product.article
-                    writer_nomenk.writerow(row_nomenk)
-                    
-                elif i == 7:
-      
-                    row_nomenk["Артикул мотрум"] = "Артикул мотрум"
+                        article_supplier = str(row_nomenk["Артикул"]).strip()
+                        article_supplier = " ".join(article_supplier.split())
                 
-                    writer_nomenk.writerow(row_nomenk)
-                elif i < 7:
-                  
-                    writer_nomenk.writerow(row_nomenk)
-                else:
-                    pass
-            except Exception as e:
-                print(e)
-                error = "file_error"
-                location = "Загрузка фаилов номенклатура "
+                        lot_str = (
+                            str(row_nomenk["Единица измерения"]).replace(".", "").strip()
+                        )
+                        lot = Lot.objects.get_or_create(
+                            name_shorts=lot_str, defaults={"name": lot_str}
+                        )[0]
 
-                info = f"ошибка при чтении фаила{i}-{e}"
-                e = error_alert(error, location, info)
+                        name = str(row_nomenk["Номенклатура"]).strip()
 
-    csvfile.close()
-    writerFile.close()
+                        description = None
+                        # if row_nomenk["Описание"] != "":
+                        #     description = str(row_nomenk["Описание"]).strip()
+
+                        # поиск товара в окт:
+
+                        if vendor_qs.slug == "emas" or vendor_qs.slug == "tbloc":
+
+                            product = Product.objects.filter(
+                                supplier=supplier_qs, article_supplier=article_supplier
+                            )
+
+                            if product:
+                                product = product[0]
+                                product.vendor = vendor_qs
+                                if (
+                                    product.name == article_supplier
+                                    and article_supplier != name
+                                ):
+                                    product.name = name
+                                if product.description != None and description:
+                                    product.description = description
+                            else:
+
+                                product = add_new_product(
+                                    supplier_qs,
+                                    article_supplier,
+                                    vendor_qs,
+                                )
+                                product.name = name
+                                product.description = description
+                        else:
+                            product = Product.objects.filter(
+                                vendor=vendor_qs, article_supplier=article_supplier
+                            )
+
+                            if product:
+                                product = product[0]
+                                if (
+                                    product.name == article_supplier
+                                    and article_supplier != name
+                                ):
+                                    product.name = name
+                                if product.description != None and description:
+                                    product.description = description
+                            else:
+                                product = add_new_product(
+                                    supplier_qs,
+                                    article_supplier,
+                                    vendor_qs,
+                                )
+                                product.name = name
+                                product.description = description
+                        product.autosave_tag = False
+                        product._change_reason = "Автоматическое"
+                        product.save()
+                
+                        # update_change_reason(product, "Автоматическое")
+
+                        add_stok_motrum_article(
+                            product,
+                            lot,
+                        )
+                    
+                        row_nomenk["Артикул мотрум"] = product.article
+                        writer_nomenk.writerow(row_nomenk)
+                        
+                    elif i == 7:
+        
+                        row_nomenk["Артикул мотрум"] = "Артикул мотрум"
+                    
+                        writer_nomenk.writerow(row_nomenk)
+                    elif i < 7:
+                    
+                        writer_nomenk.writerow(row_nomenk)
+                    else:
+                        pass
+                except Exception as e:
+                    tr =  traceback.format_exc()
+                    print(e)
+                    error = "file_error"
+                    location = "Загрузка фаилов номенклатура "
+
+                    info = f"ошибка при чтении фаила{i}-{e}{tr}"
+                    e = error_alert(error, location, info)
+
+        csvfile.close()
+        writerFile.close()
+    except Exception as e:
+        print(e)
+        tr =  traceback.format_exc()
+        error = "file_error"
+        location = "Обработка фаилов номенклатура мотрум"
+
+        info = f"ошибка при чтении фаила{e} { tr}"
+        e = error_alert(error, location, info)    
+    
 def add_new_product(
     supplier_qs,
     article_supplier,

@@ -1271,11 +1271,11 @@ def iek_api():
                         is_none_error = False
                         return (stock,to_order,is_none_error)
                 except Exception as e:
-
+                    tr =  traceback.format_exc()
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
 
-                    info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}"
+                    info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}{tr}"
                     e = error_alert(error, location, info)
                     stock = None
                     to_order = False
@@ -1288,9 +1288,10 @@ def iek_api():
                 return (stock,to_order,is_none_error)
                
         except Exception as e:
+            tr =  traceback.format_exc()
             error = "file_api_error"
             location = "Загрузка фаилов IEK"
-            info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}"
+            info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}{tr}"
             e = error_alert(error, location, info)
             stock = None
             to_order = False
@@ -1357,9 +1358,10 @@ def iek_api():
                         pass
                 except Exception as e:
                     print(e)
+                    tr =  traceback.format_exc()
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении свойств: .{url_params} Тип ошибки:{e}"
+                    info = f"ошибка при чтении свойств: .{url_params} Тип ошибки:{e}{tr}"
                     e = error_alert(error, location, info)
                 finally:
                     continue

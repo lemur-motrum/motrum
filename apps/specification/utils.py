@@ -4,6 +4,7 @@ from enum import auto
 import itertools
 import os
 from re import T
+import traceback
 
 
 from PIL import Image
@@ -534,10 +535,10 @@ def crete_pdf_specification(
         print("file_path", file_path)
         return file_path
     except Exception as e:
-
+        tr =  traceback.format_exc()
         error = "error"
         location = "Сохранение документа спецификации админам окт"
-        info = f"Сохранение документа спецификации админам окт ошибка {e}"
+        info = f"Сохранение документа спецификации админам окт ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
         return None

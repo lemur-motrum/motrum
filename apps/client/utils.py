@@ -7,6 +7,7 @@ import os
 from pickle import NONE
 from re import T
 import re
+import traceback
 
 from apps.client.models import Order, OrderDocumentBill
 from apps.core.models import BaseImage, BaseInfo, TypeDelivery
@@ -933,10 +934,10 @@ def crete_pdf_bill(
         return (file_path, bill_name, file_path_no_sign, version)
 
     except Exception as e:
-
+        tr =  traceback.format_exc()
         error = "error"
         location = "Сохранение пдф счета "
-        info = f"Сохранение пдф счета  ошибка {e}"
+        info = f"Сохранение пдф счета  ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
 

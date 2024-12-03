@@ -1,5 +1,6 @@
 import os
 import re
+import traceback
 import unicodedata
 from django.urls import reverse
 from django.utils import timezone
@@ -179,6 +180,7 @@ class Product(models.Model):
 
         except Exception as e:
             print(e)
+           
             error = "file_error"
             location = "Обновление слагов"
 

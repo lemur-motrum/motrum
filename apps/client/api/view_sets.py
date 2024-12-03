@@ -5,6 +5,7 @@ import os
 import random
 import re
 from itertools import chain
+import traceback
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
@@ -569,20 +570,20 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
                 # "contract": "",
                 # "contract_date": "",
-                "contract": "07-05/25",
+                "contract": "07-04/25",
                 "contract_date": "2024-04-24",
                 "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
                 "inn": "1650236125",
-                "kpp": "165001001",
+                "kpp": "88888888",
                 "ogrn": "",
                 "legal_post_code": "423800",
                 "legal_city": "Республика Татарстан, г. Набережные Челны",
                 "legal_address": "ул. Профильная, дом 53",
-                "postal_post_code": "",
-                "postal_city": "",
-                "postal_address": "",
-                "tel": "",
-                "account_requisites": "40702810762030005445",
+                "postal_post_code": "443099",
+                "postal_city": "Республика Татарстан, г. Набережные Челны",
+                "postal_address": "ул. Профильная, дом 55",
+                "tel": "89276892277",
+                "account_requisites": "40702810762030005449",
                 "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
                 "ks": "30101810600000000603",
                 "bic": "049205603",
@@ -618,7 +619,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "cart": cart.id,
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
-                    "type_delivery": client_req.type_delivery,
+                    # "type_delivery": client_req.type_delivery,
                 }
                 serializer = self.serializer_class(data=data_order, many=False)
                 if serializer.is_valid():
@@ -727,10 +728,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                         #     new.save()
                         else:
                             pass
-
+            tr =  traceback.format_exc()
             error = "error"
             location = "Сохранение спецификации админам окт"
-            info = f" ошибка {e}"
+            info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
 
         if specification:
@@ -971,9 +972,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             print(e)
+            tr =  traceback.format_exc()
             error = "error"
             location = "Сохранение счета админам окт"
-            info = f"Сохранение счета админам окт ошибка {e}"
+            info = f"Сохранение счета админам окт ошибка {e}{tr}"
             e = error_alert(error, location, info)
 
             return Response(e, status=status.HTTP_400_BAD_REQUEST)

@@ -34,12 +34,14 @@ from project.settings import MEDIA_ROOT, MEDIA_URL
 def catalog_all(request):
     print("catalog_all")
     category = CategoryProduct.objects.all().order_by("article_name")
+    vendors = Vendor.objects.filter(is_view_index_web=True)
 
     print(category)
 
     context = {
         "category": category,
         "title": "Товары",
+        "vendors": vendors,
     }
 
     return render(request, "product/product_catalog.html", context)
@@ -74,7 +76,7 @@ def catalog_group(request, category):
     else:
         # vendor = Vendor.objects.filter()
         q_object = Q()
-        q_object &= Q(check_to_order=True,in_view_website=True)
+        q_object &= Q(check_to_order=True, in_view_website=True)
         print(q_object)
         if category is not None:
             # q_object &= Q(category__slug=category)
@@ -93,7 +95,7 @@ def catalog_group(request, category):
             .filter(q_object)
             .order_by("vendor__name")
             .distinct("vendor__name")
-            .values("vendor", "vendor__name", "vendor__slug","vendor__img")
+            .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
         print(product_vendor)
         try:
@@ -110,7 +112,7 @@ def catalog_group(request, category):
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
-            "media_url":media_url
+            "media_url": media_url,
         }
         return render(request, "product/catalog.html", context)
 
@@ -120,7 +122,7 @@ def products_items(request, category, group):
     print("products_items")
     media_url = MEDIA_URL
     q_object = Q()
-    q_object &= Q(check_to_order=True,in_view_website=True)
+    q_object &= Q(check_to_order=True, in_view_website=True)
     if category is not None:
         q_object &= Q(category__slug=category)
     if group is not None:
@@ -159,7 +161,7 @@ def products_items(request, category, group):
         "product_vendor": product_vendor,
         "another_groups": get_another_groups(),
         "title": current_group.name,
-        "media_url":media_url
+        "media_url": media_url,
     }
 
     return render(request, "product/catalog.html", context)

@@ -124,7 +124,7 @@
                                        value="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one }}{% else %}{% endif %}" />
                                 <label for="price-input-extra">
                                     <br>
-                                    {% if item.old_price_one %}{{ item.old_date }} - {{ item.old_price_one }}{% endif %}
+                                    {% if item.old_price_one_full %}{{ item.old_date }} - {{ item.old_price_one_full }}{% endif %}
                                 </label>
                             </div>
                             <div class="item_value input_quantity quantity">
@@ -136,7 +136,12 @@
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
-                        <div class="item_value price price_once">{{item.price_cart}}</div> <input class="change_input_price" value="{{item.price_cart}}" />
+                        <div class="item_value price price_once">
+                            {{item.price_cart}}
+                        
+                        </div> 
+
+                        <input class="change_input_price" value="{{item.price_cart}}" />
                   
                          {% if item.price_cart != item.actual_price %}
                              <span style="

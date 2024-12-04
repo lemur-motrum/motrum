@@ -812,7 +812,7 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-
+    hard_upd = False
     if type_save_cookee == "new":
         bill_upd = False
         if order:
@@ -833,6 +833,7 @@ def create_specification(request):
 
     elif type_save_cookee == "hard_update":
         bill_upd = False
+        hard_upd = True
         # title = f"Заказ № {order.id} - новый счет"
         if order.requisites.contract:
             title = f"Заказ № {order.id}: счет + спецификация"
@@ -866,6 +867,7 @@ def create_specification(request):
         "type_save": type_save,
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
+        "hard_upd":hard_upd,
     }
 
     return render(request, "admin_specification/catalog.html", context)

@@ -16,6 +16,7 @@ from apps.product.models import (
     Cart,
     CategoryProduct,
     GroupProduct,
+    Price,
     Product,
     ProductCart,
     ProductProperty,
@@ -370,9 +371,16 @@ class CartViewSet(viewsets.ModelViewSet):
         # товар без записи в окт
         if "product_new" in data:
             product_new = data["product_new"]
+            product_price = None
+            product_sale_motrum = None
         # товар из окт
         else:
+            product_price_okt = Price.objects.get(prod=data["product"] )
+            product_price = product_price_okt.rub_price_supplier
+            product_sale_motrum = product_price_okt.sale.percent
             product_new = None
+            
+            # data["product_price"] = 
         # обновление товара
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
@@ -389,7 +397,8 @@ class CartViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
         except ProductCart.DoesNotExist:
-
+            data["product_price"] = product_price
+            data["product_sale_motrum"] = product_sale_motrum
             serializer = serializer_class(data=data, many=False)
             if serializer.is_valid():
                 cart_product = serializer.save()

@@ -660,13 +660,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         account_requisites_data = int(data["client_requisites"])
         motrum_requisites_data = int(data["motrum_requisites"])
         id_bitrix = int(data["id_bitrix"])
-        print("type_delivery")
-        # type_delivery = data["type_delivery"]
-        type_delivery = int(2)
-        print(type_delivery)
+
+        type_delivery = data["type_delivery"]
+     
         id_specification = data["id_specification"]
         type_save = data["type_save"]
-
+        admin_creator_id = data["admin_creator_id"]
         post_update = data["post_update"]
         type_save = request.COOKIES.get("type_save")
         account_requisites = AccountRequisites.objects.get(id=account_requisites_data)
@@ -748,7 +747,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             try:
-                print(type_delivery)
+          
                 data_order = {
                     "comment": data["comment"],
                     "name": 123131,
@@ -761,7 +760,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "motrum_requisites": motrum_requisites.id,
                     "type_delivery": type_delivery,
                 }
-                print(data)
+       
                 order = Order.objects.get(cart_id=cart)
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
@@ -769,12 +768,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     cart.is_active = True
                     cart.save()
-                    print(1)
-                    print(serializer.data)
+            
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
-                    print(2)
-                    print(serializer.errors)
+
                     return Response(
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
@@ -798,10 +795,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "motrum_requisites": motrum_requisites.id,
                     "id_bitrix": id_bitrix,
                     "type_delivery": type_delivery,
+                    "manager":admin_creator_id
                 }
-                print(data)
+  
                 serializer = self.serializer_class(data=data_order, many=False)
-                print(000000)
+       
                 if serializer.is_valid():
                     print("serializer.is_valid():")
                     cart.is_active = True

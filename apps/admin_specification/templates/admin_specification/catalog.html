@@ -15,6 +15,7 @@
             <div class="">
             </div>
         {% endif %}
+        {{type_save_cookee}}
         {% if product or product_new %}
             <div class="spetification_table">
                 <div class="spetification_titles">
@@ -35,7 +36,26 @@
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
                          data-id="{{ item.id_product_cart }}"
-                         data-price="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one_full }}{% else %}{% if item.price.rub_price_supplier %}{{ item.price.rub_price_supplier }}{% else %}0{% endif %}{% endif %}"
+                         data-price="
+                         {% if item.price_cart %}
+                           {{item.price_cart}}
+                        {% else %}
+                          {% if item.id_product_spesif %}
+                          {{ item.old_price_one_full }}
+                          {% else %}
+                           0
+                          {% endif %}
+                        {% endif %}
+                         {% comment %} {% if bill_upd and item.id_product_spesif %}
+                          {{ item.old_price_one_full }}
+                        {% else %}
+                            {% if item.price.rub_price_supplier %}
+                            {{ item.price.rub_price_supplier }}
+                            {% else %}
+                            0
+                            {% endif %}
+                        {% endif %} {% endcomment %}
+                         "
                          data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
@@ -87,7 +107,8 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %}
+                        {% if item.price_cart  == 0 or item.price_cart  == None or item.is_prise is None %}
+                        {% comment %} {% if item.price.rub_price_supplier == 0 or item.price.rub_price_supplier == None or item.is_prise is None %} {% endcomment %}
                             <div class="item_value">
                                 <input class="price-input"
                                        name="price-input-extra"
@@ -109,11 +130,19 @@
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
-                            {% if bill_upd and item.id_product_spesif %}
+                        <div class="item_value price price_once">{{item.price_cart}}</div>
+                        <!--
+                         {% if item.price_cart != item.actual_price %}
+                             <span> Цена товара в окт: {{item.actual_price}}</span>
+                         {% endif %}
+                         -->
+
+                            {% comment %} {% if bill_upd and item.id_product_spesif %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
                             {% else %}
                                 <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
+
                             <div class="item_value quantity">
                                 <div class="input-container">
                                     <button class="minus-button">-</button>
@@ -125,9 +154,16 @@
                         {% endif %}
                     
                         <div class="item_value">
-                            <div price-motrum=" {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }} {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %}"
-                                 class="price_motrum">
-                                {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
+                            <div class="price_motrum" 
+                            price-motrum="
+                            
+
+                            {% if item.price_motrum %} {{item.price_motrum}} {% else %} 0 {% endif %}
+                            {% comment %} {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }} {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %} {% endcomment %}
+                             "
+                            >
+                            {% if item.price_motrum %} {{item.price_motrum}} {% else %} 0 {% endif %}
+                                {% comment %} {% if item.price.price_motrum == 0 or item.price.price_motrum == None or item.is_prise is None %}
                                     0
                                 {% else %}
                                     {% if bill_upd and item.id_product_spesif %}
@@ -135,13 +171,17 @@
                                     {% else %}
                                         {{ item.price.price_motrum }}
                                     {% endif %}
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                             </div>
                             <div class="">
-                                {% if item.price.sale %}
-                                    скидка <span class="motrum_sale_persent">{{ item.price.sale.percent }}</span>%
-                                {% else %}
+                                
+                                {% if item.sale_motrum %}
+                                    скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span>%
                                 {% endif %}
+                                <!-- {% if item.sale_motrum != item.price.sale.percent %}
+                             <span> Скидка motrum в OKT:{{item.price.sale.percent}} </span>
+                         {% endif %} -->
+
                             </div>
                         </div>
                         <div class="item_value">
@@ -847,9 +887,6 @@
                               name="comment-input-name-all"
                               placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
                     <textarea 
-                        {% if order.requisites.contract %}
-                        onkeypress='validate(event)'
-                        {% endif %}
                             style="width: 200px;
                                      height: 50px;
                                      border-radius: 10px"
@@ -915,7 +952,7 @@
                             Доставка:
                             <select class="select_delevery" name='delevery-requisit' value="1">
                                 {% for delivery in type_delivery %}
-                                    <option {% if order.type_delivery.id == delivery %}selected{% endif %}
+                                    <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
                                             value="{{ delivery.id }}">{{ delivery.text }}</option>
                                 {% endfor %}
                             </select>
@@ -939,7 +976,7 @@
                     <div class="button_specification-wrapper">
                         {% if bill_upd %}
                             <div class="save_upd_bill-wrapper">
-                                <button class="save_upd_bill">Сохранить изменения в счете</button>
+                                <button class="save_upd_bill">Сохранить изменения</button>
                                 <div class="save_upd_bill-error"></div>
                             </div>
                             <button class="exit_button">Выйти без изменений</button>

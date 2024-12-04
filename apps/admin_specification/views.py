@@ -477,7 +477,7 @@ def create_specification(request):
             requisites_kpp = client_req.requisitesKpp
             requisites = order.requisites
             client_req_all = AccountRequisites.objects.filter(requisitesKpp__requisites=requisites)
-            print(client_req_all)
+       
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -625,7 +625,7 @@ def create_specification(request):
                 if order.account_requisites:
                     requisites = order.requisites
                     req_kpp = RequisitesOtherKpp.objects.filter(requisites=requisites).values("id")
-                    print(req_kpp)
+                
                     client_req_all = AccountRequisites.objects.filter(
                         requisitesKpp__in=req_kpp
                     )
@@ -770,7 +770,17 @@ def create_specification(request):
                 ).values(
                     "date_delivery_bill",
                 ),
-            
+                sale_motrum = product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "product_sale_motrum",
+                ),
+                price_cart = product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "product_price",
+                ),
+                price_motrum = Round(
+                            F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
+                            2,
+                        ),
+                
             )
             # .order_by("id_product_cart")
         )
@@ -791,20 +801,6 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-
-    # bill_upd = False
-    # if order:
-    #     if order.requisites.contract:
-    #         title = f"Новый заказ: счет + спецификация"
-    #         type_save = "счет + спецификация"
-    #     else:
-    #         title = f"Новый заказ: счет-оферта"
-    #         type_save = " счет-оферта"
-
-    #     if order.bill_sum_paid != 0:
-    #         bill_upd = True
-    #         title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
-    #         type_save = "??"
             
     if type_save_cookee == "new":
         bill_upd = False
@@ -814,7 +810,7 @@ def create_specification(request):
                 type_save = "счет + спецификация"
             else:
                 title = f"Новый заказ: счет-оферта"
-                type_save = " счет-оферта" 
+                type_save = "счет-оферта" 
         else:
             title = f"Новый заказ"
             type_save = "" 
@@ -823,9 +819,7 @@ def create_specification(request):
         bill_upd = True
         title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
         type_save = " изменения"
-        
-    elif type_save_cookee == "update_info":
-        pass
+
     elif type_save_cookee == "hard_update":
         bill_upd = False
         # title = f"Заказ № {order.id} - новый счет"
@@ -836,6 +830,7 @@ def create_specification(request):
             title = f"Заказ № {order.id}: счет-оферта"
             type_save = " счет-оферта" 
     else:
+        type_save_cookee = "new"
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
@@ -858,7 +853,8 @@ def create_specification(request):
         "bill_upd": bill_upd,
         "vendor": vendor,
         "type_save": type_save,
-        "type_delivery":type_delivery
+        "type_delivery":type_delivery,
+        "type_save_cookee":type_save_cookee,
     }
    
 

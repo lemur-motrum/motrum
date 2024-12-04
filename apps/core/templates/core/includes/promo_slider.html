@@ -36,6 +36,15 @@
                                 {{ slider_elem.video }}
                             {% endautoescape %}
                         {% endif %}
+                        {% if slider_elem.video_file %}
+                            <video
+                                playsinline
+                                loop
+                                autoplay
+                             >
+                             <source src="{{ slider_elem.video_file.url }}" type="video/mp4"/>
+                            </video>
+                        {% endif %}
                         <div class="promoslider-two-elem-description">
                             <div class="promoslider-two-elem-description-up">
                                 {% if slider_elem.text1 %}<span class="bold-text">{{ slider_elem.text1 }}</span>{% endif %}

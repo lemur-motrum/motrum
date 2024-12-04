@@ -30,7 +30,7 @@
                     <div class="title_item">Срок поставки:</div>
                 </div>
                 {% for item in product %}
-                    <div class="item_container"
+                    <div class="item_container data-base-product-container"
                          data-vendor=""
                          data-product-name-new=""
                          data-product-id-cart="{{ item.id_product_cart }}"
@@ -60,6 +60,12 @@
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+                        <div title="Редактировать элемент" class="change_icon_container">
+                            <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+                        </div>
+                        <div title="Cохранить элемент" class="save_icon_container">
+                            <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
+                        </div>
                         <div class="item_value">
                             {{ item.name }}
                             <br>
@@ -139,8 +145,10 @@
 
                             {% comment %} {% if bill_upd and item.id_product_spesif %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
+                                <input class="change_input_price" value="{{ item.old_price_one_full }}" />
                             {% else %}
                                 <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
+                                <input class="change_input_price" value="{{ item.price.rub_price_supplier }}" />
                             {% endif %} {% endcomment %}
 
                             <div class="item_value quantity">
@@ -152,7 +160,6 @@
                             </div>
                             <div class="item_value total_cost price"></div>
                         {% endif %}
-                    
                         <div class="item_value">
                             <div class="price_motrum" 
                             price-motrum="
@@ -176,7 +183,10 @@
                             <div class="">
                                 
                                 {% if item.sale_motrum %}
-                                    скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span>%
+                                    скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span> <input class="change-input-sale-percent-motrum" value="{{item.price.sale.percent}}" />%
+                                <span class="change-motrum-sale-percent-without-sale">
+                                    скидка <input class="change-input-sale-percent-motrum" value="0" />%
+                                </span>
                                 {% endif %}
                                 <!-- {% if item.sale_motrum != item.price.sale.percent %}
                              <span> Скидка motrum в OKT:{{item.price.sale.percent}} </span>
@@ -208,10 +218,10 @@
                             <label>
                                 {% if bill_upd %}
                                     <input placeholder="Укажите срок поставки"
-                                    {% if item.date_delivery_bill %}disabled{% endif %}
+                                           {% if item.date_delivery_bill %}disabled{% endif %}
                                            class="invoice-data-input"
                                            type="text"
-                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
+                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                     {% if item.date_delivery %}
@@ -230,8 +240,7 @@
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
                              data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
-                             data-product-pk="{% if item.product %}{{item.product.id}}
-                             {% endif %}"
+                             data-product-pk="{% if item.product %}{{ item.product.id }} {% endif %}"
                              data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                              data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
                              data-product-id-cart="{{ item.id_product_cart }}"
@@ -288,6 +297,7 @@
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
+                               
                                 <div class="item_value quantity">
                                     <div class="input-container">
                                         <button class="minus-button">-</button>
@@ -335,17 +345,11 @@
                             </div>
                             <div class="item_value">
                                 <label>
-                              
                                     {% if bill_upd %}
                                         <input placeholder="Укажите срок поставки"
                                                class="invoice-data-input"
                                                type="text"
-                                               value="
-                                               {% if item.id_product_spesif %}
-                                                
-                                                 {{ item.text_delivery }}
-                                              
-                                               {% endif %}">
+                                               value=" {% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                         {% if item.date_delivery %}
@@ -413,7 +417,7 @@
                                     <div class="change_item_container_value">
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
-                                            Cкидка 
+                                            Cкидка
                                             <input class="persent_sale"
                                                    type="text"
                                                    placeholder="%"
@@ -892,7 +896,6 @@
                                      border-radius: 10px"
                               class="delivery-date-all-input-all"
                               name="delivery-date-all-input-name-all"
-                              
                               placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
                 </div>
                 <div class="submit-container">

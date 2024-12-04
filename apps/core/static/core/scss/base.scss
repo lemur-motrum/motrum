@@ -1069,9 +1069,9 @@ a {
   padding: 1.625rem 3.125rem 0 3.125rem;
   display: flex;
   flex-direction: column;
-
+  overflow: hidden;
   .promo-slider {
-    width: 99.1vw;
+    width: 99.5vw;
     height: 24.546rem;
     background-color: #000;
     display: flex;
@@ -1294,6 +1294,72 @@ a {
       }
     }
   }
+  .vendors-index-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3.704rem;
+    .vendors {
+      display: flex;
+      gap: 1rem;
+      .vendor-container {
+        display: flex;
+        .vendor-img-container {
+          width: 3.563rem;
+          height: 3.563rem;
+          border-radius: 100%;
+          border: 0.094rem solid black;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50%;
+            height: 50%;
+            -o-object-fit: contain;
+            object-fit: contain;
+          }
+        }
+        .vendor-name-container {
+          height: 3.563rem;
+          border: 0.094rem solid black;
+          border-radius: 2.813rem;
+          display: flex;
+          align-items: center;
+          padding-left: 1.808rem;
+          padding-right: 2.5rem;
+          .vendor-name {
+            font-size: 1.313rem;
+          }
+        }
+      }
+    }
+    .all-brands-btn {
+      width: 18.778rem;
+      height: 3.563rem;
+      border: 0.094rem solid black;
+      border-radius: 2.813rem;
+      display: flex;
+      align-items: center;
+      padding-left: 2.764rem;
+      padding-right: 2.764rem;
+      box-sizing: border-box;
+      gap: 1.708rem;
+      cursor: pointer;
+      .all-brands-btn-content {
+        font-size: 1.313rem;
+      }
+      .arrow-container {
+        transform: rotate(180deg);
+        width: 4.015rem;
+        height: 1.601rem;
+        img {
+          width: 100%;
+          height: 100%;
+          -o-object-fit: contain;
+          object-fit: contain;
+        }
+      }
+    }
+  }
   .products {
     display: grid;
     grid-template-columns: 20.188rem 20.188rem 20.188rem 20.188rem;
@@ -1322,7 +1388,7 @@ a {
         height: 3.537rem;
         box-sizing: border-box;
         border-radius: 2.5rem;
-        border: 0.089rem solid #000;
+        border: 0.094rem solid #000;
         padding: 0.801rem 2.749rem;
         .title-link-description {
           color: #000;
@@ -1533,7 +1599,7 @@ a {
         height: 3.537rem;
         box-sizing: border-box;
         border-radius: 30px;
-        border: 0.089rem solid #000;
+        border: 0.094rem solid #000;
         padding: 0.801rem 2.749rem;
         .title-link-description {
           color: #000;

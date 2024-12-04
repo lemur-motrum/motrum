@@ -196,7 +196,6 @@ function catalogLogic(elems) {
           cart: +cart_id,
           quantity: +countQuantityZone.value,
         };
-
         const data = JSON.stringify(dataObj);
         fetch(`/api/v1/cart/${cart_id}/save-product/`, {
           method: "POST",

@@ -1487,9 +1487,10 @@ a {
       .content-elem {
         width: 29.491rem;
         height: 16.193rem;
-        border-radius: 40px;
+        border-radius: 2.5rem;
         border: 0.089rem solid #000;
         position: relative;
+        overflow: hidden;
         .first_item_content {
           height: 4.283rem;
           padding: 1.346rem 2.075rem;
@@ -1599,7 +1600,7 @@ a {
         width: 18.114rem;
         height: 3.537rem;
         box-sizing: border-box;
-        border-radius: 30px;
+        border-radius: 2.813rem;
         border: 0.094rem solid #000;
         padding: 0.801rem 2.749rem;
         .title-link-description {

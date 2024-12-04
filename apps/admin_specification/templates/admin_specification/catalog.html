@@ -137,11 +137,13 @@
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
                         <div class="item_value price price_once">{{item.price_cart}}</div> <input class="change_input_price" value="{{item.price_cart}}" />
-                        <!--
+                  
                          {% if item.price_cart != item.actual_price %}
-                             <span> Цена товара в окт: {{item.actual_price}}</span>
+                             <span style="
+                             color: red;
+                         "> Цена товара в окт: {{item.actual_price}}</span>
                          {% endif %}
-                         -->
+                        
 
                             {% comment %} {% if bill_upd and item.id_product_spesif %}
                                 <div class="item_value price price_once">{{ item.old_price_one_full }}</div>
@@ -160,6 +162,7 @@
                             </div>
                             <div class="item_value total_cost price"></div>
                         {% endif %}
+                     
                         <div class="item_value">
                             <div class="price_motrum" 
                             price-motrum="
@@ -181,14 +184,27 @@
                             <div class="">
                                 
                                 {% if item.sale_motrum %}
-                                    скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span> <input class="change-input-sale-percent-motrum" value="{{item.price.sale.percent}}" />%
+                                    скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span> <input class="change-input-sale-percent-motrum" value="{{ item.sale_motrum }}" />%
+                                {% comment %} <span class="change-motrum-sale-percent-without-sale">
+                                    скидка <input class="change-input-sale-percent-motrum" value="0" />%
+                                </span> {% endcomment %}
+                                {% endif %}
                                 <span class="change-motrum-sale-percent-without-sale">
                                     скидка <input class="change-input-sale-percent-motrum" value="0" />%
                                 </span>
-                                {% endif %}
-                                <!-- {% if item.sale_motrum != item.price.sale.percent %}
-                             <span> Скидка motrum в OKT:{{item.price.sale.percent}} </span>
-                         {% endif %} -->
+                               
+                                {% if item.sale_motrum != item.price.sale.percent %}
+                             <span style="
+                             color: red;
+                         "> Скидка в OKT:
+                         {% if item.price.sale %}
+                          {{item.price.sale.percent}}
+                         {% else %}
+                         Нет
+                         {% endif %}
+                         </span>
+                         {% endif %} 
+                         
 
                             </div>
                         </div>

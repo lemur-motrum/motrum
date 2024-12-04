@@ -461,23 +461,25 @@ def create_specification(request):
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
 
-        product_cart_list = ProductCart.objects.filter(cart=cart,product__isnull=False).values_list(
-            "product__id"
-        )
-   
-        product_cart_prod = ProductCart.objects.filter(cart=cart,product__isnull=False)
+        product_cart_list = ProductCart.objects.filter(
+            cart=cart, product__isnull=False
+        ).values_list("product__id")
+
+        product_cart_prod = ProductCart.objects.filter(cart=cart, product__isnull=False)
         product_cart = ProductCart.objects.filter(cart=cart)
-      
+
         # изменение спецификации
         if type_save_cookee != "new":
-        # try:
+            # try:
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
             requisites_kpp = client_req.requisitesKpp
             requisites = order.requisites
-            client_req_all = AccountRequisites.objects.filter(requisitesKpp__requisites=requisites)
-       
+            client_req_all = AccountRequisites.objects.filter(
+                requisitesKpp__requisites=requisites
+            )
+
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -583,7 +585,7 @@ def create_specification(request):
 
         # новая спецификация
         else:
-        # except Specification.DoesNotExist:
+            # except Specification.DoesNotExist:
 
             try:
                 # если корзина без заказа
@@ -610,7 +612,6 @@ def create_specification(request):
                                 ),
                             ),
                         ),
-                        
                     )
                     .order_by("id")
                 )
@@ -624,8 +625,10 @@ def create_specification(request):
 
                 if order.account_requisites:
                     requisites = order.requisites
-                    req_kpp = RequisitesOtherKpp.objects.filter(requisites=requisites).values("id")
-                
+                    req_kpp = RequisitesOtherKpp.objects.filter(
+                        requisites=requisites
+                    ).values("id")
+
                     client_req_all = AccountRequisites.objects.filter(
                         requisitesKpp__in=req_kpp
                     )
@@ -688,7 +691,7 @@ def create_specification(request):
                 client_req_all = None
 
         # продукты которые есть в окт в корзине
-     
+
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -765,26 +768,34 @@ def create_specification(request):
                     "product__price",
                 ),
                 actual_price=F("price__rub_price_supplier"),
-                date_delivery_bill = product_specification.filter(
+                date_delivery_bill=product_specification.filter(
                     product=OuterRef("pk")
                 ).values(
                     "date_delivery_bill",
                 ),
-                sale_motrum = product_cart_prod.filter(product=OuterRef("pk")).values(
+                sale_motrum=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_sale_motrum",
                 ),
-                price_cart = product_cart_prod.filter(product=OuterRef("pk")).values(
+                price_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_price",
                 ),
-                price_motrum = Round(
-                            F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
-                            2,
+                price_motrum=Case(
+                    When(sale_motrum=None, then="actual_price"),
+                    When(
+                        sale_motrum__isnull=False,
+                        then=Round(
+                            F("price_cart") - (F("price_cart") / 100 * F("sale_motrum")),2
                         ),
-                
+                    ),
+                ),
+                # price_motrum_okt = Round(
+                #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
+                #             2,
+                #         ),
             )
             # .order_by("id_product_cart")
         )
-    
+
     # корзины нет
     else:
 
@@ -801,7 +812,7 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
-            
+
     if type_save_cookee == "new":
         bill_upd = False
         if order:
@@ -810,12 +821,12 @@ def create_specification(request):
                 type_save = "счет + спецификация"
             else:
                 title = f"Новый заказ: счет-оферта"
-                type_save = "счет-оферта" 
+                type_save = "счет-оферта"
         else:
             title = f"Новый заказ"
-            type_save = "" 
-                 
-    elif type_save_cookee == "update" :
+            type_save = ""
+
+    elif type_save_cookee == "update":
         bill_upd = True
         title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
         type_save = " изменения"
@@ -828,13 +839,13 @@ def create_specification(request):
             type_save = "счет + спецификация"
         else:
             title = f"Заказ № {order.id}: счет-оферта"
-            type_save = " счет-оферта" 
+            type_save = " счет-оферта"
     else:
         type_save_cookee = "new"
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
-    type_delivery = TypeDelivery.objects.all()          
+    type_delivery = TypeDelivery.objects.all()
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -853,10 +864,9 @@ def create_specification(request):
         "bill_upd": bill_upd,
         "vendor": vendor,
         "type_save": type_save,
-        "type_delivery":type_delivery,
-        "type_save_cookee":type_save_cookee,
+        "type_delivery": type_delivery,
+        "type_save_cookee": type_save_cookee,
     }
-   
 
     return render(request, "admin_specification/catalog.html", context)
 
@@ -1050,7 +1060,7 @@ def instruments(request, cat):
     # if request.GET.get("vendor") != None:
     #     vendor_urls = request.GET.get("vendor")
     #     vendor_get = vendor_urls.split(",")
-    #  
+    #
     #     product_list = product_list.filter(vendor__slug__in=vendor_get)
     #     vendor_url = vendor_urls
     # else:
@@ -1395,11 +1405,6 @@ def load_products(request):
     return JsonResponse(out, safe=False)
 
 
-
-
-
-
-
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 # def update_specification(request):
@@ -1597,7 +1602,6 @@ def history_admin(request, pk):
         return element.history_date
 
     result_list_sorted = result_list.sort(key=get_date, reverse=True)
-
 
     context = {
         "specification": specification,

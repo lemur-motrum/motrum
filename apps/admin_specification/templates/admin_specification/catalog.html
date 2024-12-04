@@ -136,7 +136,7 @@
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
-                        <div class="item_value price price_once">{{item.price_cart}}</div>
+                        <div class="item_value price price_once">{{item.price_cart}}</div> <input class="change_input_price" value="{{item.price_cart}}" />
                         <!--
                          {% if item.price_cart != item.actual_price %}
                              <span> Цена товара в окт: {{item.actual_price}}</span>
@@ -163,8 +163,6 @@
                         <div class="item_value">
                             <div class="price_motrum" 
                             price-motrum="
-                            
-
                             {% if item.price_motrum %} {{item.price_motrum}} {% else %} 0 {% endif %}
                             {% comment %} {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }} {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %} {% endcomment %}
                              "

@@ -101,7 +101,12 @@ class SliderMain(models.Model):
         null=True,
     )
     video = models.CharField("Ссылка на видео", max_length=1000, blank=True, null=True)
-    
+    video_file = models.FileField(
+        "Видео фаилом ",
+        upload_to=get_file_path_slider_web,
+        blank=True,
+        null=True,
+    )
     image_right = models.ImageField(
         "Изображение правое",
         upload_to=get_file_path_slider_web,

@@ -75,7 +75,7 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                 {
                     "fields": [
                         "image",
-                        ("image_right","video"),
+                        ("image_right","video","video_file"),
                         ("text1",
                         "text2",),
                         ("text4",

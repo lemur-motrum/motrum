@@ -377,7 +377,11 @@ class CartViewSet(viewsets.ModelViewSet):
         else:
             product_price_okt = Price.objects.get(prod=data["product"] )
             product_price = product_price_okt.rub_price_supplier
-            product_sale_motrum = product_price_okt.sale.percent
+            if product_price_okt.sale:
+                product_sale_motrum = product_price_okt.sale.percent
+            else:
+                product_sale_motrum = None
+                
             product_new = None
             
             # data["product_price"] = 
@@ -465,6 +469,8 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer_class = ProductCartSerializer
 
         data = request.data
+        if data["product_sale_motrum"]=="":
+            data["product_sale_motrum"] = None
         serializer = serializer_class(queryset, data=data, partial=True)
 
         if serializer.is_valid():

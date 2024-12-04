@@ -61,7 +61,7 @@ class Vendor(models.Model):
         null=True,
     )
     img = models.ImageField("Изображение", upload_to=get_file_path_catalog_web, null=True)
-
+    is_view_index_web = models.BooleanField("Отображение на главной сайта", default=False)
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"

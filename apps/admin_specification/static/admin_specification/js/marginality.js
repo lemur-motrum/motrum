@@ -42,7 +42,7 @@ export function getMarginality(wrapper) {
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
 
           marginalityPercentValue =
-            (clientPrice * +quantityInput.value * (100 - discountInput.value)) /
+            (clientPrice * +quantityInput.value * 100) /
               (+quantityInput.value * priceMotrum) -
             100;
         }

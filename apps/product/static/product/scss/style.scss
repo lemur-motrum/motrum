@@ -351,12 +351,13 @@
               cursor: pointer;
               .suplier_elem_content_img_container {
                 width: 3.563rem;
-                height: 100%;
+                height: 3.563rem;
                 border-radius: 100%;
                 border: 0.094rem solid #000;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                overflow: hidden;
                 img {
                   width: 80%;
                   height: 80%;

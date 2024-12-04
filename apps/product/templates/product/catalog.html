@@ -32,10 +32,9 @@
                         <div class="filter_title">Производитель</div>
                         <div class="supplier_content">
                             {% for vendor in product_vendor %}
-                            
                                 <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
                                     <div class="suplier_elem_content_img_container">
-                                        <img src="{{ media_url }}{{vendor.vendor__img}}" alt="">
+                                        {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
                                     </div>
                                     <div class="suplier_elem_content_name">
                                         {% if vendor.vendor__name %}

@@ -93,6 +93,7 @@ def crete_pdf_bill(
         # else:
         #     date_now = transform_date(datetime.date.today().isoformat())
         #     date_name_dot = datetime.datetime.today().strftime("%d.%m.%Y")
+        
         if order.requisites.contract:
             type_bill = "Счет"
             bill_name = motrum_info.counter_bill + 1

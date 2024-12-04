@@ -13,9 +13,6 @@
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}
             <div class="">
-                {% comment %} <h4 style=" color: red; ">
-                    ВНИМАНИЕ! ЕСТЬ ДЕЙСТВУЮЩИЙ СЧЕТ! При редактировании заказа текущие документы становятся не действительны
-                </h4> {% endcomment %}
             </div>
         {% endif %}
         {% if product or product_new %}
@@ -126,7 +123,7 @@
                             </div>
                             <div class="item_value total_cost price"></div>
                         {% endif %}
-                        {% comment %} {% endif %} {% endcomment %}
+                    
                         <div class="item_value">
                             <div price-motrum=" {% if item.price.price_motrum == 0 or item.price.price_motrum == None %} 0 {% else %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_motrum }} {% else %} {{ item.price.price_motrum }} {% endif %} {% endif %}"
                                  class="price_motrum">
@@ -171,9 +168,10 @@
                             <label>
                                 {% if bill_upd %}
                                     <input placeholder="Укажите срок поставки"
+                                    {% if item.date_delivery_bill %}disabled{% endif %}
                                            class="invoice-data-input"
                                            type="text"
-                                           value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
+                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                     {% if item.date_delivery %}
@@ -297,11 +295,17 @@
                             </div>
                             <div class="item_value">
                                 <label>
+                              
                                     {% if bill_upd %}
                                         <input placeholder="Укажите срок поставки"
                                                class="invoice-data-input"
                                                type="text"
-                                               value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
+                                               value="
+                                               {% if item.id_product_spesif %}
+                                                
+                                                 {{ item.text_delivery }}
+                                              
+                                               {% endif %}">
                                     {% else %}
                                         <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
                                         {% if item.date_delivery %}

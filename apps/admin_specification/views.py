@@ -765,7 +765,11 @@ def create_specification(request):
                     "product__price",
                 ),
                 actual_price=F("price__rub_price_supplier"),
-                
+                date_delivery_bill = product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery_bill",
+                ),
             
             )
             # .order_by("id_product_cart")

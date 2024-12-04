@@ -851,6 +851,18 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    product_price = models.FloatField(
+        "Цена товара",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    product_sale_motrum = models.FloatField(
+        "Скидка мотрум товара ",
+        blank=True,
+        null=True,
+        default=None,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",

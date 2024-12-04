@@ -17,6 +17,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template import loader
 from django.template.loader import render_to_string
+from pathspec import PathSpec
 from rest_framework import routers, serializers, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,6 +26,7 @@ from django.contrib.auth import authenticate, login
 from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
 from apps import specification
+from apps.client.utils import crete_pdf_bill
 from apps.core.models import BaseInfoAccountRequisites
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
@@ -1602,18 +1604,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         order = Order.objects.get(id_bitrix=int(data["bitrix_id"]))
         product_spesif  = ProductSpecification.objects.filter(specification=order.specification)
-        print(product_spesif)
+
         for order_products_item in data["order_products"]:
-            print(int(order_products_item["article_motrum"]))
-            prod = product_spesif.filter(product__article=order_products_item["article_motrum"])
+
+            prod = product_spesif.get(product__article=order_products_item["article_motrum"])
             if order_products_item["date_delivery"]:
                 date_delivery = datetime.datetime.strptime(order_products_item["date_delivery"], "%d-%m-%Y").date()
-                print(date_delivery)
                 prod.date_delivery_bill = date_delivery
             
             if order_products_item["date_shipment"]:
                 date_shipment = datetime.datetime.strptime(order_products_item["date_shipment"], "%d-%m-%Y").date()
-                print(date_shipment)
+
                 prod.date_shipment = date_shipment
             
             if order_products_item["reserve"]:
@@ -1623,15 +1624,33 @@ class OrderViewSet(viewsets.ModelViewSet):
                 prod.client_shipment = int(order_products_item["client_shipment"])     
             
             prod.save()
-        # for data_item in data:
-        #     print(data_item)
-        #     order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
-        #     print(order)
-           
+        # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
+   
+        if order.requisites.contract:
+                is_req = True
+        else:
+            is_req = False
+        
+        type_save = request.COOKIES.get("type_save")    
+        order_pdf = order.create_bill(
+            request,
+            is_req,
+            order,
+            # bill_name,
+            None,
+            None,
+        )
+        if order_pdf:
+            pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
+            pdf_signed = request.build_absolute_uri(order.bill_file.url)
+            data["pdf"] = pdf
+            data["pdf_signed"] = pdf_signed
+            print(order_pdf)
 
         return Response(None, status=status.HTTP_200_OK)
 
 
+    
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer

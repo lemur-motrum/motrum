@@ -487,10 +487,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         getDigitsNumber(valueContainer, +sum);
         getDigitsNumber(marginality, +margSum);
-        allMarginalityPercent.textContent = (
-          (+sum / (+sum - +margSum)) * 100 -
-          100
-        ).toFixed(2);
+        allMarginalityPercent.textContent = isNaN(
+          ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
+        )
+          ? 0
+          : ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2);
       }
 
       function saveSpecification(elems) {

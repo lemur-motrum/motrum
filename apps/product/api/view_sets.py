@@ -65,7 +65,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # сортировка по гет параметрам
         q_object = Q()
-        q_object &= Q(check_to_order=True)
+        q_object &= Q(check_to_order=True,in_view_website=True)
 
         if vendor_get is not None:
             if "None" in vendor_get:

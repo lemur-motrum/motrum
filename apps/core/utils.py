@@ -1670,11 +1670,8 @@ def after_save_order_products(products):
         prod = ProductSpecification.objects.get(id=obj["id"])
         print(prod)
         if prod.product_new_article != None:
-            print("prod",prod)
             new_prod_db = save_new_product_okt(prod)
-            print("new_prod_db",new_prod_db) 
-            # prod.product = new_prod_db
-            # prod.save()
+       
         print(prod)    
         data_prod_to_1c = {
             "vendor": prod.product.vendor.name,

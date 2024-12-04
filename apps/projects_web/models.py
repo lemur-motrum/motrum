@@ -16,7 +16,7 @@ class Project(models.Model):
     image_main = models.ImageField(
         "Главное изображение",
         upload_to=get_file_path_project_web,
-        max_length=255,
+        max_length=255, 
         null=True,
     )
     is_view_home_web = models.BooleanField("Показывать на главной сайта", default=True)
@@ -150,3 +150,16 @@ class ClientCategoryProject(models.Model):
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)
+
+class ProjectTextBlock(models.Model):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField("Заголовок абзаца", max_length=500)
+    short_text = models.CharField("Короткий текст вступление", max_length=500)
+    
+
+    class Meta:
+        verbose_name = "Изображение проекта"
+        verbose_name_plural = "Изображения проекта"

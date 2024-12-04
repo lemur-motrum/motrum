@@ -20,6 +20,7 @@ from rest_framework import status
 from apps.product.models import ProductCart
 from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.projects_web.models import Project
+from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 from django.db.models import F
@@ -46,6 +47,7 @@ def index(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
     promoslider = SliderMain.objects.all()
+    vendors = Vendor.objects.filter(is_view_index_web=True)
 
     print(promoslider)
 
@@ -53,6 +55,7 @@ def index(request):
         "categories": categories,
         "projects": projects,
         "slider": promoslider,
+        "vendors": vendors,
     }
     return render(request, "core/index.html", context)
 

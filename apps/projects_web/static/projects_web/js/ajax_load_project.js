@@ -15,8 +15,8 @@ window.addEventListener("DOMContentLoaded", () => {
         ) {
             let data = {
                 count: productCount,
-                category_project: "cborka-shu",
-                client_category_project:"sborka"
+                category_project: "",
+                // client_category_project:""
 
             };
         

@@ -1,8 +1,10 @@
+from django.utils import timezone
 from django.db import models
 from django.urls import reverse
 from pytils import translit
 from django.utils.text import slugify
-
+from django.db import models
+from tinymce import models as tinymce_models
 from apps.core.utils import get_file_path_add
 from apps.core.utils_web import get_file_path_catalog_web, get_file_path_project_web
 
@@ -11,12 +13,12 @@ from apps.core.utils_web import get_file_path_catalog_web, get_file_path_project
 class Project(models.Model):
     name = models.CharField("Название проекта", max_length=200)
     slug = models.SlugField(null=True, max_length=200)
-    short_text = models.CharField("Короткий текст вступление", max_length=500)
-    text = models.TextField("Большой текст")
+    # short_text = models.CharField("Короткий текст вступление", max_length=500)
+    text = models.TextField("Текст открывающий")
     image_main = models.ImageField(
         "Главное изображение",
         upload_to=get_file_path_project_web,
-        max_length=255, 
+        max_length=255,
         null=True,
     )
     is_view_home_web = models.BooleanField("Показывать на главной сайта", default=True)
@@ -27,10 +29,18 @@ class Project(models.Model):
         blank=True,
         null=True,
     )
-    client_category_project = models.ForeignKey(
-        "ClientCategoryProject",
-        verbose_name="Отрасль",
-        on_delete=models.PROTECT,
+    # client_category_project = models.ForeignKey(
+    #     "ClientCategoryProject",
+    #     verbose_name="Отрасль",
+    #     on_delete=models.PROTECT,
+    #     blank=True,
+    #     null=True,
+    # )
+    data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    data_project = models.DateField(verbose_name="Дата реализации проекта")
+    place_object = models.CharField(
+        "Место реализации",
+        max_length=500,
         blank=True,
         null=True,
     )
@@ -120,15 +130,6 @@ class CategoryProject(models.Model):
 class ClientCategoryProject(models.Model):
     name = models.CharField("Название отрасли", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
-
-    image = models.ImageField(
-        "Изображение категории",
-        upload_to=get_file_path_project_web,
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-
     article = models.PositiveIntegerField(
         "Очередность",
         blank=True,
@@ -151,15 +152,85 @@ class ClientCategoryProject(models.Model):
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)
 
+
+class ClientCategoryProjectMarking(models.Model):
+    name = models.CharField("Название маркировки", max_length=100)
+    slug = models.SlugField(null=True, max_length=100)
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Маркировка"
+        verbose_name_plural = "Маркировка"
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.strip()
+        self.name = " ".join(self.name.split())
+
+        slug_text = self.name
+        slugish = translit.translify(slug_text)
+        self.slug = slugify(slugish)
+        super().save(*args, **kwargs)
+
+
 class ProjectTextBlock(models.Model):
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
     )
-    title = models.CharField("Заголовок абзаца", max_length=500)
-    short_text = models.CharField("Короткий текст вступление", max_length=500)
-    
+    title = models.CharField(
+        max_length=2000,
+        verbose_name="Заголовок абзаца",
+        blank=True,
+        null=True,
+    )
+    # short_text = models.TextField(
+    #     "Короткий текст вступление",
+    #     blank=True,
+    #     null=True,
+    # )
+    text = tinymce_models.HTMLField(
+        "Текст абзаца",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
-        verbose_name = "Изображение проекта"
-        verbose_name_plural = "Изображения проекта"
+        verbose_name = "Абзацы проекта"
+        verbose_name_plural = "Абзацы проекта"
+
+
+class ProjectClientCategoryProject(models.Model):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+    client_category = models.ForeignKey(
+        ClientCategoryProject,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Отрасль"
+        verbose_name_plural = "Отрасли"
+
+
+class ProjectClientCategoryProjectMarking(models.Model):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+    client_category_marking = models.ForeignKey(
+        ClientCategoryProjectMarking,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Маркировка"
+        verbose_name_plural = "Маркировка"

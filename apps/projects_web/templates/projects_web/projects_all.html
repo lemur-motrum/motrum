@@ -3,14 +3,22 @@
     <div class="">
         тут фильтры
         <div class="category_projects">
-            {% for category_project in category_projects %}{{ category_project }}{{ category_project.slug }}{% endfor %}
+            {% for category_project in category_projects %}
+            1{{ category_project }}
+            {{ category_project.slug }}{% endfor %}
         </div>
         <div class="client_category_projects">
             {% for client_category_project in client_category_projects %}
-                {{ client_category_project }} {{ client_category_project.slug }}
+                2{{ client_category_project }} {{ client_category_project.slug }}
+            {% endfor %}
+        </div>
+        <div class="client_category_projects_marking">
+            {% for marking in marking_category %}
+                -{{ marking.name }} 
             {% endfor %}
         </div>
     </div>
+    
     <div class="">тут проекты</div>
     <div class="project_container">
         <div class="project_wrapper" project-elem="wrapper">

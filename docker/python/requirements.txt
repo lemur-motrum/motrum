@@ -18,6 +18,7 @@ django-simple-history
 beautifulsoup4
 djangorestframework
 num2words
+django-tinymce
 
 djlint
 libsass 

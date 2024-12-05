@@ -2,6 +2,11 @@
      project-id="{{ id }}"
      project-elem="project-item">
         <a href="{{ url }}">{{ name }}
-                <img src="{{ image_main }}" alt="">
+                
         </a>
+        {{data_project}}
+        {{place_object}}
+        {% for client_category in projectclientcategoryproject_set %}
+                {{client_category.client_category_name}}
+        {% endfor %}
 </div>

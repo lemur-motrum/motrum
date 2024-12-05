@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "simple_history",
     "sass_processor",
     "rest_framework",
+    "tinymce",
 ]
 
 STATICFILES_FINDERS = [

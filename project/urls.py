@@ -62,6 +62,7 @@ urlpatterns = [
     
     # апи
     path("api/", include(router.urls)),
+    path('tinymce/', include('tinymce.urls')),
     
 ]
 

@@ -1,8 +1,35 @@
 {% extends "core/base.html" %}
 {% block content %}
     {{ project.name }}
-    <img src="{{ project.image_main.url }}" alt="">
-    {{ project.short_text }}
+    {% for image in  project_image %}
+        <img src="{{image.image.url}}" alt="">
+    {% endfor %}
+    {{project.category_project}}
+    {% for client_category in  client_category_project %}
+    <p>{{client_category.client_category.name}}</p>
+
+
+    {% endfor %}
+     
     {{ project.text }}
-    {% for project_image in project.image_main %}<img src="{{ project_image.ulr }}" alt="">{% endfor %}
-{% endblock content %}
+    {% for project_text in project.projecttextblock_set.all %}
+        {{project_text.title}}
+        {{project_text.text|safe}}
+    {% endfor %}
+
+    Похожие проекты
+    {% for other_project in other_projects %}
+    <a href="{{other_project.get_absolute_url}}">{{other_project.name}}</a>
+        
+        {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}
+            {{client_categ_proj.client_category.name}}
+        {% endfor %}
+        {{other_project.data_project|date:"Y"}}
+        {{other_project.place_object}}
+    
+    {% endfor %}
+    
+
+
+
+    {% endblock content %}

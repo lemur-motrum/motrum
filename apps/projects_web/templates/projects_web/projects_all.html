@@ -1,36 +1,45 @@
 {% extends "core/base.html" %}
 {% block content %}
-    <div class="">
-        тут фильтры
+    <div class="projects_wrapper">
+        <div class="title_container">
+            <div class="bread_crumbs">
+                <a href={% url "core:index" %}>главная</a>
+            </div>
+            <h1 class="title">Проекты</h1>
+        </div>
         <div class="category_projects">
-            {% for category_project in category_projects %}
-            1{{ category_project }}
-            {{ category_project.slug }}{% endfor %}
-        </div>
-        <div class="client_category_projects">
-            {% for client_category_project in client_category_projects %}
-                2{{ client_category_project }} {{ client_category_project.slug }}
-            {% endfor %}
-        </div>
-    
-
-        <div class="client_category_projects_marking">
-            {% for marking in marking_category %}
-                -{{ marking.name }} 
-            {% endfor %}
-        </div>
-    </div>
-    
-    <div class="">тут проекты</div>
-    <div class="project_container">
-        <div class="project_wrapper" project-elem="wrapper">
-            <div class="site_project_container" project-elem="container">
-                {% for project in project_list %}
-                    {% include "projects_web/include/project_item.html" with project=project %}
+            <div class="swiper-wrapper">
+                <div class="swiper-slide all_categories_elem active">Все категории</div>
+                {% for category_project in category_projects %}
+                    <div slug="{{ category_project.slug }}"
+                         class="swiper-slide category_project_slide_elem">{{ category_project }}</div>
                 {% endfor %}
             </div>
-            <div class="end_content">
-                <button class="add_more" project-elem="button">загрузить еще</button>
+        </div>
+        <div class="projects_wrapper_content">
+            <div class="filters_container">тут фильтры</div>
+            <div class="projects_container">
+                <div class="project_wrapper" project-elem="wrapper">
+                    <div class="loader"></div>
+                    <div class="site_project_container" project-elem="container">
+                        {% for project in project_list %}
+                            {% include "projects_web/include/project_item.html" with project=project %}
+                        {% endfor %}
+                    </div>
+                    <div class="small_loader"></div>
+                    <div class="end_content">
+                        <button class="add_more" catalog-elem="button">загрузить еще</button>
+                        <div class="pagination">
+                            <div class="first">1</div>
+                            <div class="dots first_dots">...</div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="dots last_dots">...</div>
+                            <div class="last">578</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -97,7 +97,9 @@
                                    <div class="img-container">
                                           <img src="{{ project.image_main.url }}" alt="img">
                                    </div>
-                                   <div class="project_name">{{ project.name }}</div>
+                                   <div class="project_name">
+                                          <p>{{ project.name }}</p>
+                                   </div>
                             </a>
                      {% endfor %}
               </div>
@@ -204,7 +206,7 @@
                      <div class="dynamics_content-container">
                             <div class="dynamics_content-elem">
                                    <div class="number_container">
-                                          <span data-quantity="{{motrum_in_numbers.tech_project}}" class="quantity">0</span>
+                                          <span data-quantity="{{ motrum_in_numbers.tech_project }}" class="quantity">0</span>
                                    </div>
                                    <div class="content">
                                           реализованных проектов
@@ -214,7 +216,8 @@
                             </div>
                             <div class="dynamics_content-elem">
                                    <div class="number_container">
-                                          <span data-quantity="{{motrum_in_numbers.modernization}}" class="quantity">0</span>
+                                          <span data-quantity="{{ motrum_in_numbers.modernization }}"
+                                                class="quantity">0</span>
                                    </div>
                                    <div class="content">
                                           модернизировано
@@ -229,7 +232,8 @@
                                           управления
                                    </div>
                                    <div class="number_container long_number">
-                                          <span data-quantity="{{motrum_in_numbers.shkaf_upravleniya}}" class="quantity">0</span>
+                                          <span data-quantity="{{ motrum_in_numbers.shkaf_upravleniya }}"
+                                                class="quantity">0</span>
                                    </div>
                             </div>
                             <div class="dynamics_content-elem">
@@ -239,7 +243,7 @@
                                           установок
                                    </div>
                                    <div class="number_container long_number">
-                                          <span data-quantity="{{motrum_in_numbers.installation}}" class="quantity">0</span>
+                                          <span data-quantity="{{ motrum_in_numbers.installation }}" class="quantity">0</span>
                                    </div>
                             </div>
                      </div>

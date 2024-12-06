@@ -1,37 +1,107 @@
 {% extends "core/base.html" %}
 {% block content %}
-    {{ project.name }}
-    {% for image in  project_image %}
-        <img src="{{image.image.url}}" alt="">
-    {% endfor %}
-    <a href="{% url 'projects_web:projects'%}">{{project.category_project}}</a>
-    <a href="{% url 'projects_web:projects'%}?category_project={{project.category_project.slug}}">{{project.category_project}}</a>
-    {% for client_category in  client_category_project %}
-    
-    <p>{{client_category.client_category.name}}</p>
-
-
-    {% endfor %}
-     
-    {{ project.text }}
-    {% for project_text in project.projecttextblock_set.all %}
-        {{project_text.title}}
-        {{project_text.text|safe}}
-    {% endfor %}
-
-    Похожие проекты
-    {% for other_project in other_projects %}
-    <a href="{{other_project.get_absolute_url}}">{{other_project.name}}</a>
-        
-        {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}
-            {{client_categ_proj.client_category.name}}
-        {% endfor %}
-        {{other_project.data_project|date:"Y"}}
-        {{other_project.place_object}}
-    
-    {% endfor %}
-    
-
-
-
-    {% endblock content %}
+    <div class="project_one_wrapper">
+        <div class="title_container">
+            <div class="bread_crumbs">
+                <a href={% url "core:index" %}>главная</a>
+                <a href={% url "projects_web:projects" %}>проекты</a>
+            </div>
+            <h1 class="title">{{ project.name }}</h1>
+        </div>
+        <div class="project_one_image_wrapper">
+            <div class="swiper-wrapper">
+                <div class="project_one_title_image swiper-slide product_one_slider_elem">
+                    <img src="{{ project.image_main.url }}" alt="img" />
+                </div>
+                {% for image in project_image %}
+                    <div class="project_one_img-container swiper-slide product_one_slider_elem">
+                        <img src="{{ image.image.url }}" alt="img" />
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="procject_one_image_wrapper_galery_overlay">
+            <div class="close_btn">+</div>
+            <div class="procject_one_image_wrapper_galery">
+                <div class="swiper-wrapper">
+                    <div class="project_one_gallery_first_image swiper-slide product_one_gallery_elem">
+                        <img src="{{ project.image_main.url }}" alt="img" />
+                    </div>
+                    {% for image in project_image %}
+                        <div class="project_one_gallery_image swiper-slide product_one_gallery_elem">
+                            <img src="{{ image.image.url }}" alt="img" />
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="prev_btn">
+                    <
+                </div>
+                <div class="next_btn">></div>
+            </div>
+        </div>
+        <div class="project_one_content">
+            <div class="project_one_tags">
+                <div class="project_one_description_tags">
+                    <a class="project_one_tag"
+                       href="{% url 'projects_web:projects' %}?category_project={{ project.category_project.slug }}">{{ project.category_project }}</a>
+                    {% for client_category in  client_category_project %}
+                        <div class="project_one_tag">{{ client_category.client_category.name }}</div>
+                    {% endfor %}
+                </div>
+                <div class="project_one_tags_question">
+                    <div class="question">У вас похожая задача?</div>
+                    <a class="question-link" href="#form">Расчитать проект</a>
+                </div>
+            </div>
+            <div class="project_one_description_content">
+                <div class="project_one_description">
+                    <div class="project_one_first_description">{{ project.text }}</div>
+                    {% for project_text in project.projecttextblock_set.all %}
+                        <div class="project_one_paragraph">
+                            {% if project_text.title %}<div class="project_one_description_title">{{ project_text.title }}</div>{% endif %}
+                            {{ project_text.text|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div id="form" class="arhor">
+                    <div class="project_one_form">
+                        <div class="form-title">У ВАС ПОХОЖАЯ ЗАДАЧА? ОСТАВЬТЕ ЗАЯВКУ И МЫ РАСЧИТАЕМ ПРОЕКТ</div>
+                        <form class="project_one_submiting_form">
+                            <label>
+                                <input class="name_input" type="text" placeholder="Ваше имя" />
+                                <div class="error name_error"></div>
+                            </label>
+                            <label>
+                                <input class="phone_input" type="text" placeholder="Ваш телефон" />
+                                <div class="error phone_error"></div>
+                            </label>
+                            <button type="submit">оформить заказ</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="onter_projects">
+                    <div class="other_projects_title">Похожие проекты</div>
+                    <div class="other_projects_list">
+                        {% for other_project in other_projects %}
+                            <div class="other_project_elem">
+                                <a class="other_project_name"
+                                   href="{{ other_project.get_absolute_url }}">{{ other_project.name }}</a>
+                                <div class="other_project_description">
+                                    <div class="other_project_tags">
+                                        {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}
+                                            <div class="other_project_tag">{{ client_categ_proj.client_category.name }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="other_project_place">
+                                        <div>{{ other_project.place_object }}</div>
+                                        <div>{{ other_project.data_project|date:"Y" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

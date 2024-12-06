@@ -39,3 +39,6 @@ import "/static/product/js/cart_logic.js";
 import "/static/core/js/scripts/cart-logic.js";
 import "/static/client/js/modal/call_back_modal.js";
 import "/static/client/js/modal/manager_email.js";
+import "/static/projects_web/js/slider.js";
+import "/static/projects_web/js/ajax_load_project.js";
+import "/static/projects_web/js/form_logic.js";

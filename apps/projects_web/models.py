@@ -14,7 +14,8 @@ class Project(models.Model):
     name = models.CharField("Название проекта", max_length=200)
     slug = models.SlugField(null=True, max_length=200)
     # short_text = models.CharField("Короткий текст вступление", max_length=500)
-    text = models.TextField("Текст открывающий")
+    text = models.TextField("Текст открывающий",blank=True,
+        null=True,)
     image_main = models.ImageField(
         "Главное изображение",
         upload_to=get_file_path_project_web,
@@ -85,6 +86,18 @@ class ProjectImage(models.Model):
         verbose_name = "Изображение проекта"
         verbose_name_plural = "Изображения проекта"
 
+class ProjectVideo(models.Model):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+    video = models.FileField(
+        "Видео", upload_to=get_file_path_project_web, max_length=255, null=True
+    )
+
+    class Meta:
+        verbose_name = "Видео проекта"
+        verbose_name_plural = "Видео проекта"
 
 class CategoryProject(models.Model):
     name = models.CharField("Название решений", max_length=200)
@@ -210,6 +223,7 @@ class ProjectClientCategoryProject(models.Model):
     )
     client_category = models.ForeignKey(
         ClientCategoryProject,
+        verbose_name="Отрасль",
         on_delete=models.CASCADE,
     )
 
@@ -225,6 +239,7 @@ class ProjectClientCategoryProjectMarking(models.Model):
     )
     client_category_marking = models.ForeignKey(
         ClientCategoryProjectMarking,
+        verbose_name="Маркировка",
         on_delete=models.CASCADE,
     )
     

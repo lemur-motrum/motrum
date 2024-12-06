@@ -11,6 +11,7 @@ from apps.projects_web.models import (
     ProjectClientCategoryProjectMarking,
     ProjectImage,
     ProjectTextBlock,
+    ProjectVideo,
 )
 from project.admin import website_admin
 
@@ -20,6 +21,11 @@ class ProjectImageInlineWeb(admin.TabularInline):
     model = ProjectImage
     extra = 1
     fields = ("image",)
+    
+class ProjectVideoInlineWeb(admin.TabularInline):
+    model = ProjectVideo
+    extra = 1
+    fields = ("video",)
     
 class ProjectTextBlockWeb(admin.TabularInline):
     model = ProjectTextBlock
@@ -64,6 +70,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
                     "is_view_home_web",
                     "image_main",
                     "name",
+                    "text",
                     ("data_project","place_object"),
                     "category_project",
 
@@ -75,6 +82,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
         ProjectClientCategoryProjectInlineWeb,
         ProjectClientCategoryProjectMarkingeWeb,
         ProjectImageInlineWeb,
+        ProjectVideoInlineWeb,
         ProjectTextBlockWeb,
         
     ]

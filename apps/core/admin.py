@@ -7,6 +7,7 @@ from apps.core.models import (
     BaseInfoAccountRequisites,
     Currency,
     CurrencyPercent,
+    IndexInfoWeb,
     SliderMain,
     TypeDelivery,
     Vat,
@@ -125,6 +126,24 @@ class SliderMainAdminWeb(admin.ModelAdmin):
         return False
 
 
+class IndexInfoWebAdminWeb(admin.ModelAdmin):
+    # model = CurrencyPercent
+    # list_display = ("percent",)
+
+    def has_add_permission(
+        self,
+        request,
+    ):
+        info_web = IndexInfoWeb.objects.filter().exists()
+        if info_web == True:
+            return False
+        else:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 # Register your models here.
 
 admin.site.register(BaseImage)
@@ -135,3 +154,4 @@ admin.site.register(Vat, VatAdmin)
 admin.site.register(TypeDelivery, TypeDeliveryAdmin)
 
 website_admin.register(SliderMain, SliderMainAdminWeb)
+website_admin.register(IndexInfoWeb, IndexInfoWebAdminWeb)

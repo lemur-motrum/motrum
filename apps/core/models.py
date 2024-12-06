@@ -288,3 +288,21 @@ class TypeDelivery(models.Model):
 
     def __str__(self):
         return self.text
+    
+    
+class IndexInfoWeb(models.Model):
+    tech_project = models .SmallIntegerField("реализованных проектов технического зрения")
+    modernization = models.SmallIntegerField("модернизировано установок")
+
+    shkaf_upravleniya = models.SmallIntegerField("изготовлено шкафов         управления")
+    installation = models.SmallIntegerField("запущенных установок")
+
+    class Meta:
+        verbose_name = "Инфа для главной страницы"
+        verbose_name_plural = "Инфа для главной страницы"
+
+    def __str__(self):
+        return f"Счетчики"
+
+
+

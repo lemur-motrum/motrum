@@ -39,7 +39,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-
+        print(request)    
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
@@ -84,6 +84,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                 q_object &= Q(article__isnull=False)
             elif category_get == "other":
                 q_object &= Q(category=None)
+            elif category_get == "":
+                pass
             else:
                 q_object &= Q(category__id=category_get)
 
@@ -113,7 +115,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         #         descending="-".startswith("-"),
         #         nulls_last=True,
         #     )
-
+        print(q_object)
         queryset = (
             Product.objects.select_related(
                 "supplier",

@@ -243,6 +243,25 @@ def product_one_without_group(request, category, article):
     return render(request, "product/product_one.html", context)
 
 
+def brand_all(request):
+    brands =  Vendor.objects.all().order_by("article","name")
+    print(brands)
+    context = {
+        "brands":brands,
+    }
+    
+    return render(request, "product/brand_all.html", context)
+
+def brand_one(request,vendor):
+    brand =  Vendor.objects.get(slug=vendor)
+    
+    print(brand)
+    context = {
+        "brand":brand,
+    }
+    return render(request, "product/brand_one.html", context)
+
+
 def add_document_admin(request):
     from pytils import translit
     from django.core.files import File

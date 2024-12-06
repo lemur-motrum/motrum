@@ -41,11 +41,13 @@ class Supplier(models.Model):
 
 class Vendor(models.Model):
 
-    name = models.CharField("Название производителя", max_length=40)
-    slug = models.SlugField(null=True, max_length=40)
+    name = models.CharField("Название производителя", max_length=100)
+    name_web = models.CharField("Название на сайте", max_length=100, blank=True,
+        null=True,)
+    slug = models.SlugField(null=True, max_length=100)
     supplier = models.ForeignKey(
         Supplier,
-        verbose_name="Поставщик`",
+        verbose_name="Поставщик",
         on_delete=models.PROTECT,
     )
     currency_catalog = models.ForeignKey(
@@ -62,6 +64,11 @@ class Vendor(models.Model):
     )
     img = models.ImageField("Изображение", upload_to=get_file_path_catalog_web, null=True)
     is_view_index_web = models.BooleanField("Отображение на главной сайта", default=False)
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"

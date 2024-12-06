@@ -15,8 +15,9 @@ window.addEventListener("DOMContentLoaded", () => {
         ) {
             let data = {
                 count: productCount,
-                category_project: "",
-                // client_category_project:""
+                // category_project: "markirovka-chestnyij-znak",
+                client_category_project:["sborka"],
+                // category_project_marking: ["markirovka1"]
 
             };
         

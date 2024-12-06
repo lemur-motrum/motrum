@@ -4,8 +4,10 @@
     {% for image in  project_image %}
         <img src="{{image.image.url}}" alt="">
     {% endfor %}
-    {{project.category_project}}
+    <a href="{% url 'projects_web:projects'%}">{{project.category_project}}</a>
+    <a href="{% url 'projects_web:projects'%}?category_project={{project.category_project.slug}}">{{project.category_project}}</a>
     {% for client_category in  client_category_project %}
+    
     <p>{{client_category.client_category.name}}</p>
 
 

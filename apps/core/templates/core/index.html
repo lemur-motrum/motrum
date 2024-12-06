@@ -6,22 +6,24 @@
               <div class="vendors-index-container">
                      <div class="vendors">
                             {% for vendor in vendors %}
-                                   <div class="vendor-container">
+                          
+                                   <a href="{% url "core:brand_one" vendor.slug %}?vendor={{vendor.slug}}" class="vendor-container">
                                           <div class="vendor-img-container">
                                                  <img src="{{ vendor.img.url }}" alt="img">
                                           </div>
                                           <div class="vendor-name-container">
                                                  <div class="vendor-name">{{ vendor.name }}</div>
                                           </div>
-                                   </div>
+                                   </a>
                             {% endfor %}
                      </div>
-                     <div class="all-brands-btn">
+                  
+                     <a href="{% url "core:brand" %}" class="all-brands-btn">
                             <div class="all-brands-btn-content">все бренды</div>
                             <div class="arrow-container">
                                    <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
                             </div>
-                     </div>
+                     </a>
               </div>
               <div class="products">
                      <div class="title-container">
@@ -223,7 +225,7 @@
                      <div class="dynamics_content-container">
                             <div class="dynamics_content-elem">
                                    <div class="number_container">
-                                          <span data-quantity="55" class="quantity">0</span>
+                                          <span data-quantity="{{motrum_in_numbers.tech_project}}" class="quantity">0</span>
                                    </div>
                                    <div class="content">
                                           реализованных проектов
@@ -233,7 +235,7 @@
                             </div>
                             <div class="dynamics_content-elem">
                                    <div class="number_container">
-                                          <span data-quantity="26" class="quantity">0</span>
+                                          <span data-quantity="{{motrum_in_numbers.modernization}}" class="quantity">0</span>
                                    </div>
                                    <div class="content">
                                           модернизировано
@@ -248,7 +250,7 @@
                                           управления
                                    </div>
                                    <div class="number_container long_number">
-                                          <span data-quantity="353" class="quantity">0</span>
+                                          <span data-quantity="{{motrum_in_numbers.shkaf_upravleniya}}" class="quantity">0</span>
                                    </div>
                             </div>
                             <div class="dynamics_content-elem">
@@ -258,7 +260,7 @@
                                           установок
                                    </div>
                                    <div class="number_container long_number">
-                                          <span data-quantity="113" class="quantity">0</span>
+                                          <span data-quantity="{{motrum_in_numbers.installation}}" class="quantity">0</span>
                                    </div>
                             </div>
                      </div>

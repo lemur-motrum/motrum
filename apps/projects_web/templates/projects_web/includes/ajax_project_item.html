@@ -1,12 +1,25 @@
 <div class="project_item"
      project-id="{{ id }}"
      project-elem="project-item">
-        <a href="{{ url }}">{{ name }}
+        <a href="{{ url }}">
+                {{category_name}}.
+                {% if projectclientcategoryprojectmarking_set|length > 0 %}
+                       {% for marking_categ in projectclientcategoryprojectmarking_set %}
+                       {{marking_categ.category_name}} 
+                       {% if loop.last %}:{% else %},{% endif %}
+                       {% endfor %}
+                {% endif %}
+                {{ name }}
                 
         </a>
         {{data_project}}
         {{place_object}}
         {% for client_category in projectclientcategoryproject_set %}
+        <div class="{% if client_category.category_check %}check{% endif %}">
                 {{client_category.client_category_name}}
+        </div>
+              
+        
         {% endfor %}
+        {{category_project_marking_get}}
 </div>

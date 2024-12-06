@@ -8,6 +8,7 @@ from apps.projects_web.models import (
     ClientCategoryProjectMarking,
     Project,
     ProjectClientCategoryProject,
+    ProjectClientCategoryProjectMarking,
     ProjectImage,
 )
 
@@ -18,8 +19,16 @@ def projects(request):
     projects = Project.objects.all()
     category_projects = CategoryProject.objects.all()
     client_category_projects = ClientCategoryProject.objects.all()
-    marking_category = ClientCategoryProjectMarking.objects.all()
-
+    marking_category = None
+    
+    # if request.get("category_project"):
+    #     category_project_get = request.query_params.get("category_project")
+    #     if category_project_get == "markirovka-chestnyij-znak":
+    #         marking_category = ClientCategoryProjectMarking.objects.all()
+    # else:
+    #     category_project_get = None
+            
+            
     context = {
         "projects": projects,
         "category_projects": category_projects,

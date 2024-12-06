@@ -12,7 +12,7 @@ from django.db.models import OuterRef, Subquery
 
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
-from apps.core.models import SliderMain
+from apps.core.models import IndexInfoWeb, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -49,15 +49,36 @@ def index(request):
     promoslider = SliderMain.objects.all()
     vendors = Vendor.objects.filter(is_view_index_web=True)
 
-    print(promoslider)
+    motrum_in_numbers = IndexInfoWeb.objects.all().last()
 
     context = {
         "categories": categories,
         "projects": projects,
         "slider": promoslider,
         "vendors": vendors,
+        "motrum_in_numbers":motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
+
+# def brand_all(request):
+#     brands =  Vendor.objects.all()
+#     # .order_by("article","name")
+#     print(brands)
+#     context = {
+#         "brands":brands,
+#     }
+#     return render(request, "product/brand_all.html", context)
+
+# def brand_one(request):
+#     brands =  Vendor.objects.all()
+#     # .order_by("article","name")
+#     print(brands)
+#     context = {
+#         "brands":brands,
+#     }
+#     return render(request, "product/brand_all.html", context)
+
+
 
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ

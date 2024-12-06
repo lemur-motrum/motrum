@@ -29,13 +29,7 @@ class Project(models.Model):
         blank=True,
         null=True,
     )
-    # client_category_project = models.ForeignKey(
-    #     "ClientCategoryProject",
-    #     verbose_name="Отрасль",
-    #     on_delete=models.PROTECT,
-    #     blank=True,
-    #     null=True,
-    # )
+
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     data_project = models.DateField(verbose_name="Дата реализации проекта")
     place_object = models.CharField(
@@ -93,8 +87,9 @@ class ProjectImage(models.Model):
 
 
 class CategoryProject(models.Model):
-    name = models.CharField("Название решений", max_length=100)
+    name = models.CharField("Название решений", max_length=200)
     slug = models.SlugField(null=True, max_length=100)
+    short_name = models.CharField("Короткое название решений", max_length=100)
 
     image = models.ImageField(
         "Изображение решений",
@@ -128,7 +123,8 @@ class CategoryProject(models.Model):
 
 
 class ClientCategoryProject(models.Model):
-    name = models.CharField("Название отрасли", max_length=100)
+    name = models.CharField("Название отрасли", max_length=200)
+    short_name = models.CharField("Короткое название ", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
     article = models.PositiveIntegerField(
         "Очередность",
@@ -154,7 +150,8 @@ class ClientCategoryProject(models.Model):
 
 
 class ClientCategoryProjectMarking(models.Model):
-    name = models.CharField("Название маркировки", max_length=100)
+    name = models.CharField("Название маркировки", max_length=200)
+    short_name = models.CharField("Короткое название решений", max_length=100)
     slug = models.SlugField(null=True, max_length=100)
     article = models.PositiveIntegerField(
         "Очередность",
@@ -230,7 +227,7 @@ class ProjectClientCategoryProjectMarking(models.Model):
         ClientCategoryProjectMarking,
         on_delete=models.CASCADE,
     )
-
+    
     class Meta:
         verbose_name = "Маркировка"
         verbose_name_plural = "Маркировка"

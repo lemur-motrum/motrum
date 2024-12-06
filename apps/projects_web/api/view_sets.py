@@ -27,6 +27,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def load_ajax_project_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
         count_last = 10
+        page_get = request.query_params.get("page")
 
         if request.query_params.get("category_project"):
             category_project_get = request.query_params.get("category_project")
@@ -70,21 +71,40 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 Prefetch("projectclientcategoryproject_set"),
                 Prefetch("projectclientcategoryproject_set__client_category"),
                 Prefetch("projectclientcategoryprojectmarking_set"),
-                Prefetch("projectclientcategoryprojectmarking_set__client_category_marking"),
-                )
-            .filter(q_object).order_by("-data_project")[count : count + count_last]
+                Prefetch(
+                    "projectclientcategoryprojectmarking_set__client_category_marking"
+                ),
+            )
+            .filter(q_object)
+            .order_by("-data_project")[count : count + count_last]
         )
-        queryset_next = Project.objects.filter(q_object).order_by("-data_project")[
-            count + count_last : count + count_last + 1
-        ].exists()
+        queryset_next = (
+            Project.objects.filter(q_object)
+            .order_by("-data_project")[count + count_last : count + count_last + 1]
+            .exists()
+        )
 
         serializer = ProjectSerializer(
             queryset, context={"request": request}, many=True
         )
 
+        page_count = Project.objects.filter(q_object).count()
+
+        if page_count % count_last == 0:
+            count = page_count / count_last
+        else:
+            count = math.trunc(page_count / count_last) + 1
+
+        if page_count <= 20:
+            small = True
+        else:
+            small = False
+
         data_response = {
             "data": serializer.data,
             "next": queryset_next,
-            
+            "count": math.ceil(page_count / 10),
+            "page": page_get,
+            "small": small,
         }
         return Response(data=data_response, status=status.HTTP_200_OK)

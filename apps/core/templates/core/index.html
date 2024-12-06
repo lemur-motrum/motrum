@@ -3,28 +3,7 @@
 {% block content %}
        <div class="head-page-container">
               {% include "core/includes/promo_slider.html" %}
-              <div class="vendors-index-container">
-                     <div class="vendors">
-                            {% for vendor in vendors %}
-                          
-                                   <a href="{% url "core:brand_one" vendor.slug %}?vendor={{vendor.slug}}" class="vendor-container">
-                                          <div class="vendor-img-container">
-                                                 <img src="{{ vendor.img.url }}" alt="img">
-                                          </div>
-                                          <div class="vendor-name-container">
-                                                 <div class="vendor-name">{{ vendor.name }}</div>
-                                          </div>
-                                   </a>
-                            {% endfor %}
-                     </div>
-                  
-                     <a href="{% url "core:brand" %}" class="all-brands-btn">
-                            <div class="all-brands-btn-content">все бренды</div>
-                            <div class="arrow-container">
-                                   <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
-                            </div>
-                     </a>
-              </div>
+              {% include "core/includes/vendors.html" %}
               <div class="products">
                      <div class="title-container">
                             <div class="title">товары</div>

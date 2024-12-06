@@ -10,6 +10,7 @@ from apps.projects_web.models import (
     ProjectClientCategoryProject,
     ProjectClientCategoryProjectMarking,
     ProjectImage,
+    ProjectVideo,
 )
 
 
@@ -41,6 +42,7 @@ def projects(request):
 def project(request, project):
     project_one = Project.objects.get(slug=project)
     project_image = ProjectImage.objects.filter(project=project_one)
+    project_video = ProjectVideo.objects.filter(project=project_one)
     client_category_project = ProjectClientCategoryProject.objects.filter(
         project=project_one
     ).order_by("client_category__article")
@@ -79,5 +81,6 @@ def project(request, project):
         "project_image": project_image,
         "client_category_project": client_category_project,
         "other_projects": other_project,
+        "project_video":project_video,
     }
     return render(request, "projects_web/project_one.html", context)

@@ -4,6 +4,13 @@
     {% for image in  project_image %}
         <img src="{{image.image.url}}" alt="">
     {% endfor %}
+    {% for video in  project_video %}
+        {% comment %} <video src="{{video.video.url}}"></video> {% endcomment %}
+        <img src="{{ video.video.url }}" alt="">
+        <video id="intro" type="video/mp4" controls preload autoplay>
+            <source src="{{ video.video.url }}" type="video/mp4">
+        </video>
+    {% endfor %}
     <a href="{% url 'projects_web:projects'%}">{{project.category_project}}</a>
     <a href="{% url 'projects_web:projects'%}?category_project={{project.category_project.slug}}">{{project.category_project}}</a>
     {% for client_category in  client_category_project %}

@@ -24,8 +24,23 @@ from apps.logs.utils import error_alert
 from apps.specification.utils import crete_pdf_specification
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
+from django.utils.text import slugify
+from pytils import translit
 
-
+def create_slug(name,arr_other_name):
+    slug_text = name
+    slugish = translit.translify(slug_text)
+    slugish_name = slugish
+    i = 0
+    print(3,slugish)
+    
+    while slugish in arr_other_name:
+        i+= 1
+        slugish = f"{slugish}_{i}"
+     
+        print(2,slugish)
+    
+    return slugish
 # цена мотрум со скидкой
 def get_price_motrum(
     item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier

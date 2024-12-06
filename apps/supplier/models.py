@@ -139,6 +139,7 @@ class SupplierCategoryProduct(models.Model):
             return f"{self.name}"
 
     def save(self, *args, **kwargs):
+        
         if self.slug == None:
             slug_text = self.name
             slugish = translit.translify(slug_text)

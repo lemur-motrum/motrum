@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.contrib.sessions.models import Session
 
 
+
 from project.settings import MEDIA_ROOT
 
 
@@ -38,6 +39,7 @@ def get_file_path_project_web(instance, filename):
         ProjectImage,
         CategoryProject,
         ClientCategoryProject,
+        ProjectVideo
     )
 
     if isinstance(instance, Project):
@@ -45,11 +47,21 @@ def get_file_path_project_web(instance, filename):
         filenames = f"{instance.slug}_main"
         type_dir = f"{instance.slug}"
 
-    elif isinstance(instance, ProjectImage):
+    elif isinstance(instance, ProjectImage) :
         base_dir = "website/project"
         project = Project.objects.get(id=instance.project.id)
         # number_project = int(project.id)
         project_img = ProjectImage.objects.filter(project=project).count()
+        number_image = int(project_img) + 1
+
+        type_dir = f"{instance.project.slug}"
+        filenames = f"{instance.project.slug}__{number_image}"
+    
+    elif isinstance(instance, ProjectVideo):
+        base_dir = "website/project"
+        project = Project.objects.get(id=instance.project.id)
+        # number_project = int(project.id)
+        project_img = ProjectVideo.objects.filter(project=project).count()
         number_image = int(project_img) + 1
 
         type_dir = f"{instance.project.slug}"

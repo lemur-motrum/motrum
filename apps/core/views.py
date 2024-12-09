@@ -46,7 +46,7 @@ def index(request):
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
-    promoslider = SliderMain.objects.all()
+    promoslider = SliderMain.objects.filter(active=True).order_by("article")
     vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")
 
     motrum_in_numbers = IndexInfoWeb.objects.all().last()

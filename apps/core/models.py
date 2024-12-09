@@ -126,7 +126,11 @@ class SliderMain(models.Model):
     )
 
     type_slider = models.CharField(max_length=7, choices=SLIDER_TYPE, default="MAIN")
-
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Слайдер на главной"
         verbose_name_plural = "Слайдер на главной"

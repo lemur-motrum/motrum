@@ -46,13 +46,18 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         page_get = request.query_params.get("page")
         sort_price = request.query_params.get("sort")
+        price_none = request.query_params.get("pricenone")
+        price_to = float(request.query_params.get("priceto"))
+        price_from = float(request.query_params.get("pricefrom"))
+        
+        
         # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
             vendor_get = vendor_get.split(",")
         else:
             vendor_get = None
-
+        print(vendor_get)
         category_get = request.query_params.get("category")
 
         if request.query_params.get("group"):
@@ -101,6 +106,18 @@ class ProductViewSet(viewsets.ModelViewSet):
                 sorting = F("price__rub_price_supplier").asc(nulls_last=True)
             else:
                 sorting = F("price__rub_price_supplier").desc(nulls_last=True)
+        
+        # сортировка из блока с ценами
+       
+        if price_none == "false":
+            q_object &= Q(price__rub_price_supplier__isnull=False) 
+        
+        if price_from != 0:
+            q_object &= Q(price__rub_price_supplier__gte=price_from)
+        
+        if price_to != 0:
+            q_object &= Q(price__rub_price_supplier__lte=price_to)    
+        
         # if sort_price:
         #     sort = "price__rub_price_supplier"
         #     ordering_filter = OrderBy(

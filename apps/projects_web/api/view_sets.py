@@ -28,8 +28,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
         count = int(request.query_params.get("count"))
         count_last = 10
         page_get = request.query_params.get("page")
-
-        if request.query_params.get("category_project"):
+        client_category_project_get = None
+        category_project_marking_get = None
+        
+        if request.query_params.get("category_project") :
             category_project_get = request.query_params.get("category_project")
         else:
             category_project_get = None
@@ -38,23 +40,24 @@ class ProjectViewSet(viewsets.ModelViewSet):
             client_category_project_get = request.query_params.get(
                 "client_category_project"
             )
-            client_category_project_get = client_category_project_get.split(",")
-            client_category = ProjectClientCategoryProject.objects.filter(
-                client_category__slug__in=client_category_project_get
-            ).distinct("project")
-        else:
-            client_category_project_get = None
+            if client_category_project_get != "":
+                client_category_project_get = client_category_project_get.split(",")
+                client_category = ProjectClientCategoryProject.objects.filter(
+                    client_category__slug__in=client_category_project_get
+                ).distinct("project")
+        
+            
 
         if request.query_params.get("category_project_marking"):
             category_project_marking_get = request.query_params.get(
                 "category_project_marking"
             )
-            category_project_marking_get = category_project_marking_get.split(",")
-            category_marking = ProjectClientCategoryProjectMarking.objects.filter(
-                client_category_marking__slug__in=category_project_marking_get
-            ).distinct("project")
-        else:
-            category_project_marking_get = None
+            if category_project_marking_get != "":
+                category_project_marking_get = category_project_marking_get.split(",")
+                category_marking = ProjectClientCategoryProjectMarking.objects.filter(
+                    client_category_marking__slug__in=category_project_marking_get
+                ).distinct("project")
+        
 
         q_object = Q()
         if category_project_get is not None:

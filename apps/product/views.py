@@ -244,23 +244,28 @@ def product_one_without_group(request, category, article):
     }
     return render(request, "product/product_one.html", context)
 
+
 # страница брендов общая
 def brand_all(request):
-    brands =  Vendor.objects.all().order_by("article","name")
+    brands = (
+        Vendor.objects.all()
+        .order_by("article", "name")
+    )
     print(brands)
     context = {
-        "brands":brands,
+        "brands": brands,
     }
-    
+
     return render(request, "product/brand_all.html", context)
 
-# страница бренда одного с товарами 
-def brand_one(request,vendor):
-    brand =  Vendor.objects.get(slug=vendor)
-    
+
+# страница бренда одного с товарами
+def brand_one(request, vendor):
+    brand = Vendor.objects.get(slug=vendor)
+
     print(brand)
     context = {
-        "brand":brand,
+        "brand": brand,
     }
     return render(request, "product/brand_one.html", context)
 

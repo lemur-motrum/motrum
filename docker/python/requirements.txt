@@ -19,6 +19,7 @@ beautifulsoup4
 djangorestframework
 num2words
 django-tinymce
+fast-bitrix24
 
 djlint
 libsass 

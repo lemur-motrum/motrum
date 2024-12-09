@@ -21,15 +21,14 @@ def projects(request):
     category_projects = CategoryProject.objects.all()
     client_category_projects = ClientCategoryProject.objects.all()
     marking_category = None
-    
+
     # if request.get("category_project"):
     #     category_project_get = request.query_params.get("category_project")
     #     if category_project_get == "markirovka-chestnyij-znak":
     #         marking_category = ClientCategoryProjectMarking.objects.all()
     # else:
     #     category_project_get = None
-            
-            
+
     context = {
         "projects": projects,
         "category_projects": category_projects,
@@ -64,7 +63,12 @@ def project(request, project):
     )
     project_in_client_category = Project.objects.filter(
         id__in=category_project_in_client
-    ).filter(category_project__slug__in=["robototehnicheskie-yachejki","markirovka-chestnyij-znak",])
+    ).filter(
+        category_project__slug__in=[
+            "robototehnicheskie-yachejki",
+            "markirovka-chestnyij-znak",
+        ]
+    )
 
     print(category_project_in_client)
     if project_in_client_category.count() > 0:
@@ -73,7 +77,11 @@ def project(request, project):
         other_project = None
         other_project = Project.objects.filter(
             category_project=project_one.category_project
-        )
+        ).prefetch_related(
+            Prefetch("projectclientcategoryprojectmarking_set"),
+            Prefetch("projectclientcategoryprojectmarking_set__name")
+            
+            )
 
     print(other_project)
     context = {
@@ -81,6 +89,6 @@ def project(request, project):
         "project_image": project_image,
         "client_category_project": client_category_project,
         "other_projects": other_project,
-        "project_video":project_video,
+        "project_video": project_video,
     }
     return render(request, "projects_web/project_one.html", context)

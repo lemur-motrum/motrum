@@ -2,7 +2,7 @@
      project-id="{{ id }}"
      project-elem="project-item">
         <a class="title_link" href="{{ url }}">
-                {{ category_name }}
+                {{ category_name }}.     
                 {% if projectclientcategoryprojectmarking_set|length > 0 %}
                         {% for marking_categ in projectclientcategoryprojectmarking_set %}
                                 {{ marking_categ.category_name }}

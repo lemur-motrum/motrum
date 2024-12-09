@@ -19,6 +19,7 @@ urlpatterns = [
     path(
         "all_specifications/", views.get_all_specifications, name="all_specifications"
     ),
+    path("error-b24/", views.error_b24, name="error-b24"),
     path(
         "save_specification_view_admin/",
         views.save_specification_view_admin,
@@ -40,4 +41,5 @@ urlpatterns = [
         views.history_admin_bill,
         name="history_admin_bill",
     ),
+    
 ]

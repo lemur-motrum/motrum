@@ -14,7 +14,7 @@ from django.db import IntegrityError, transaction
 
 # from regex import F
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template import loader
 from django.template.loader import render_to_string
 from pathspec import PathSpec
@@ -27,6 +27,7 @@ from django.db.models import Q, F, OrderBy, Count
 from django.db.models import Case, When, Value, IntegerField
 from apps import specification
 from apps.client.utils import crete_pdf_bill
+from apps.core.bitrix_api import order_bitrix
 from apps.core.models import BaseInfoAccountRequisites
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
@@ -565,7 +566,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
         random_int = random.randint(1, 9999)
-        next_url = "/admin_specification/current_specification/"
         data = {
             "type_save": "new",
             "login": {
@@ -602,56 +602,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "satatus": "PROCESSING",
             },
         }
-        result = "ok"
-        order_info = data["order"]
-        company_info = data["company"]
-        type_save = data["type_save"]
-
-        data_admin = AdminUser.login_bitrix(data["login"], None, request)
-        if data_admin["status_admin"] == 200:
-            client_req, acc_req = client_info_bitrix(company_info)
-            manager = AdminUser.objects.get(email=data["order"]["manager"])
-
-            data_order = {
-                "id_bitrix": order_info["id_bitrix"],
-                "name": 123131,
-                "requisites": client_req.id,
-                "account_requisites": acc_req.id,
-                "status": "",
-                # "cart": cart.id,
-                "prepay_persent": client_req.prepay_persent,
-                "postpay_persent": client_req.postpay_persent,
-                "manager": manager,
-            }
-            try:
-                order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
-                cart = order.cart
-                data_order["cart"] = cart.id
-                serializer = self.serializer_class(order, data=data_order, many=False)
-            except Order.DoesNotExist:
-                cart = Cart.create_cart_admin(None, data_admin["admin"])
-                data_order["cart"] = cart.id
-                serializer = self.serializer_class(data=data_order, many=False)
-
-            finally:
-                if serializer.is_valid():
-                    serializer._change_reason = "Ручное"
-                    order = serializer.save()
-                    response = HttpResponseRedirect(next_url)
-
-                    response.set_cookie("client_id", max_age=-1)
-                    response.set_cookie("cart", cart.id, max_age=1000)
-                    response.set_cookie("specificationId", max_age=-1)
-                    response.set_cookie("type_save", type_save, max_age=1000)
-                    return response
-                else:
-                    return Response(
-                        serializer.error_messages, status=status.HTTP_400_BAD_REQUEST
-                    )
-
+        
+        next_url,context,error = order_bitrix(data,request)
+        if error:
+            return render(request,"admin_specification/error.html", context)
         else:
-            return Response(data_admin, status=data_admin["status_admin"])
-
+            return context
+        
+      
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):

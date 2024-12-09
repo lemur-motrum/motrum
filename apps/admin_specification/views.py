@@ -784,7 +784,9 @@ def create_specification(request):
                     When(
                         sale_motrum__isnull=False,
                         then=Round(
-                            F("price_cart") - (F("price_cart") / 100 * F("sale_motrum")),2
+                            F("price_cart")
+                            - (F("price_cart") / 100 * F("sale_motrum")),
+                            2,
                         ),
                     ),
                 ),
@@ -867,7 +869,7 @@ def create_specification(request):
         "type_save": type_save,
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
-        "hard_upd":hard_upd,
+        "hard_upd": hard_upd,
     }
 
     return render(request, "admin_specification/catalog.html", context)
@@ -1407,103 +1409,6 @@ def load_products(request):
     return JsonResponse(out, safe=False)
 
 
-# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def update_specification(request):
-#     if request.method == "POST":
-#         id_specification = json.loads(request.body)
-#         current_id = id_specification["specification_id"]
-
-#         products = []
-
-#         current_specification = Specification.objects.filter(pk=current_id)[0]
-
-#         get_products = ProductSpecification.objects.filter(
-#             specification=current_specification.pk
-#         )
-
-#         for product in get_products:
-#             product_id = product.product.pk
-#             product_pk = product.pk
-#             product_name = product.product.name
-#             product_prices = Price.objects.get(prod=product_id)
-#             product_price = product_prices.rub_price_supplier
-#             product_quantity = product.quantity
-#             product_totla_cost = int(product_quantity) * float(product_price)
-#             product_id_motrum = product.product.article
-#             product_id_suppler = product.product.article_supplier
-#             specification_id = current_specification.pk
-
-#             product_individual_sale = product.extra_discount
-
-#             product_price = str(product_price).replace(",", ".")
-
-#             if (
-#                 product_individual_sale != "0"
-#                 and product_individual_sale != ""
-#                 and product_individual_sale != None
-#             ):
-#                 product_price_extra_old_before = product.price_one / (
-#                     1 - float(product_individual_sale) / 100
-#                 )
-
-#             else:
-#                 product_price_extra_old_before = product.price_one
-
-#             product_price_extra_old = str(product_price_extra_old_before).replace(
-#                 ",", "."
-#             )
-#             product_totla_cost = str(product_totla_cost).replace(",", ".")
-#             product_multiplicity_item = Stock.objects.get(prod=product_id)
-#             if product_multiplicity_item.is_one_sale == True:
-#                 product_multiplicity = 1
-#             else:
-#                 product_multiplicity = Stock.objects.get(
-#                     prod=product_id
-#                 ).order_multiplicity
-#             discount_item = get_price_motrum(
-#                 product.product.category_supplier,
-#                 product.product.group_supplier,
-#                 product.product.vendor,
-#                 product_prices.rub_price_supplier,
-#                 product.product.category_supplier_all,
-#                 product.product.supplier,
-#             )[1]
-#             if discount_item == None:
-#                 discount = None
-#             else:
-#                 discount = discount_item.percent
-
-#             data_old = current_specification.date.strftime("%m.%d.%Y")
-
-#             product_item = {
-#                 "discount": discount,
-#                 "id": product_id,
-#                 "idMotrum": product_id_motrum,
-#                 "idSaler": product_id_suppler,
-#                 "name": product_name,
-#                 "price": product_price,
-#                 "quantity": product_quantity,
-#                 "totalCost": product_totla_cost,
-#                 "productSpecificationId": product_pk,
-#                 "specificationId": specification_id,
-#                 "multiplicity": product_multiplicity,
-#                 "product_price_extra_old": product_price_extra_old,
-#                 "data_old": data_old,
-#                 "product_individual_sale": product_individual_sale,
-#             }
-
-#             products.append(product_item)
-
-#     current_products = json.dumps(products)
-
-#     out = {
-#         "status": "ok",
-#         "products": current_products,
-#     }
-#     return JsonResponse(out)
-
-
 # исторические записи для страниц история
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
@@ -1657,6 +1562,108 @@ def history_admin_bill(request, pk):
 
     return render(request, "admin_specification/history_admin_bill.html", context)
 
+
+def error_b24(request,error):
+    context={
+        "error":1
+    }
+    return render(request, "admin_specification/error.html", context)
+    
+# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def update_specification(request):
+#     if request.method == "POST":
+#         id_specification = json.loads(request.body)
+#         current_id = id_specification["specification_id"]
+
+#         products = []
+
+#         current_specification = Specification.objects.filter(pk=current_id)[0]
+
+#         get_products = ProductSpecification.objects.filter(
+#             specification=current_specification.pk
+#         )
+
+#         for product in get_products:
+#             product_id = product.product.pk
+#             product_pk = product.pk
+#             product_name = product.product.name
+#             product_prices = Price.objects.get(prod=product_id)
+#             product_price = product_prices.rub_price_supplier
+#             product_quantity = product.quantity
+#             product_totla_cost = int(product_quantity) * float(product_price)
+#             product_id_motrum = product.product.article
+#             product_id_suppler = product.product.article_supplier
+#             specification_id = current_specification.pk
+
+#             product_individual_sale = product.extra_discount
+
+#             product_price = str(product_price).replace(",", ".")
+
+#             if (
+#                 product_individual_sale != "0"
+#                 and product_individual_sale != ""
+#                 and product_individual_sale != None
+#             ):
+#                 product_price_extra_old_before = product.price_one / (
+#                     1 - float(product_individual_sale) / 100
+#                 )
+
+#             else:
+#                 product_price_extra_old_before = product.price_one
+
+#             product_price_extra_old = str(product_price_extra_old_before).replace(
+#                 ",", "."
+#             )
+#             product_totla_cost = str(product_totla_cost).replace(",", ".")
+#             product_multiplicity_item = Stock.objects.get(prod=product_id)
+#             if product_multiplicity_item.is_one_sale == True:
+#                 product_multiplicity = 1
+#             else:
+#                 product_multiplicity = Stock.objects.get(
+#                     prod=product_id
+#                 ).order_multiplicity
+#             discount_item = get_price_motrum(
+#                 product.product.category_supplier,
+#                 product.product.group_supplier,
+#                 product.product.vendor,
+#                 product_prices.rub_price_supplier,
+#                 product.product.category_supplier_all,
+#                 product.product.supplier,
+#             )[1]
+#             if discount_item == None:
+#                 discount = None
+#             else:
+#                 discount = discount_item.percent
+
+#             data_old = current_specification.date.strftime("%m.%d.%Y")
+
+#             product_item = {
+#                 "discount": discount,
+#                 "id": product_id,
+#                 "idMotrum": product_id_motrum,
+#                 "idSaler": product_id_suppler,
+#                 "name": product_name,
+#                 "price": product_price,
+#                 "quantity": product_quantity,
+#                 "totalCost": product_totla_cost,
+#                 "productSpecificationId": product_pk,
+#                 "specificationId": specification_id,
+#                 "multiplicity": product_multiplicity,
+#                 "product_price_extra_old": product_price_extra_old,
+#                 "data_old": data_old,
+#                 "product_individual_sale": product_individual_sale,
+#             }
+
+#             products.append(product_item)
+
+#     current_products = json.dumps(products)
+
+#     out = {
+#         "status": "ok",
+#         "products": current_products,
+#     }
+#     return JsonResponse(out)
 
 # def load_products(request):
 #     data = json.loads(request.body)

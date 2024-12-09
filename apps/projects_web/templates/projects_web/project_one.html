@@ -85,7 +85,24 @@
                         {% for other_project in other_projects %}
                             <div class="other_project_elem">
                                 <a class="other_project_name"
-                                   href="{{ other_project.get_absolute_url }}">{{ other_project.name }}</a>
+                                   href="{{ other_project.get_absolute_url }}">
+                                   {{ other_project.category_project }}.
+                   
+                                   {% if other_project.projectclientcategoryprojectmarking_set.all|length > 0 %}
+                                   {% for marking_categ in other_project.projectclientcategoryprojectmarking_set.all %}
+                                            
+                                            {{ marking_categ.client_category_marking.name }}
+                                            {% if forloop.last %}
+                                                    :
+                                            {% else %}
+                                                    ,
+                                            {% endif %}
+                                    {% endfor %}
+                                       
+                                    {% endif %}
+                                   {{ other_project.name }}
+                                
+                                </a>
                                 <div class="other_project_description">
                                     <div class="other_project_tags">
                                         {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}

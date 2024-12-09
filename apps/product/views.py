@@ -244,7 +244,7 @@ def product_one_without_group(request, category, article):
     }
     return render(request, "product/product_one.html", context)
 
-
+# страница брендов общая
 def brand_all(request):
     brands =  Vendor.objects.all().order_by("article","name")
     print(brands)
@@ -254,6 +254,7 @@ def brand_all(request):
     
     return render(request, "product/brand_all.html", context)
 
+# страница бренда одного с товарами 
 def brand_one(request,vendor):
     brand =  Vendor.objects.get(slug=vendor)
     

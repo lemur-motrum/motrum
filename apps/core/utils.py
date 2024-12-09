@@ -32,13 +32,13 @@ def create_slug(name,arr_other_name):
     slugish = translit.translify(slug_text)
     slugish_name = slugish
     i = 0
-    print(3,slugish)
+
     
     while slugish in arr_other_name:
         i+= 1
         slugish = f"{slugish}_{i}"
      
-        print(2,slugish)
+    
     
     return slugish
 # цена мотрум со скидкой
@@ -719,16 +719,18 @@ def get_motrum_category(self):
         group_catalog = self.category_supplier_all.group_catalog
 
     if self.group_supplier != None:
-
+        print(self.group_supplier)
         if category_catalog == None and group_catalog == None:
             category_catalog = self.group_supplier.category_catalog
+            print(category_catalog)
             group_catalog = self.group_supplier.group_catalog
+            print(group_catalog)
 
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
-
+    print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
 
@@ -993,7 +995,7 @@ def save_specification(
                 sale_motrum_data = 0.00
                 
             # sale_motrum_data = float(product_item["sale_motrum"].replace(",", "."))
-            print(sale_motrum_data)
+           
             price_okt = Price.objects.get(prod=product)
       
             # если цена по запросу взять ее если нет взять цену из бд
@@ -1021,7 +1023,7 @@ def save_specification(
 
                 price_one_sale = price_one - (price_one / 100 * persent_sale)
                 price_one = round(price_one_sale, 2)
-                print(price_one)
+        
 
             # если есть предоплата найти скидку по предоплате мотрум
             persent_pre_sale = 0
@@ -1051,7 +1053,7 @@ def save_specification(
                 product_spes = ProductSpecification.objects.get(
                     id=int(product_item["product_specif_id"]),
                 )
-                print("product_spes",product_spes)
+            
             else:
                 product_spes = ProductSpecification(
                     specification=specification,
@@ -1190,7 +1192,7 @@ def save_specification(
     specification.date_delivery = date_delivery_all
     specification.id_bitrix = id_bitrix
     specification._change_reason = "Ручное"
-    print(333333)
+
     specification.save()
     if requisites.contract:
         if type_save == "new":
@@ -1208,7 +1210,7 @@ def save_specification(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
                 
-        print("specification_name" , specification_name)
+    
         pdf = crete_pdf_specification(
             specification.id,
             requisites,
@@ -1220,7 +1222,7 @@ def save_specification(
             post_update,
             specification_name,
         )
-        print(pdf)
+     
         if pdf:
             specification.file = pdf
             specification._change_reason = "Ручное"
@@ -1683,11 +1685,11 @@ def after_save_order_products(products):
     
     for obj in products:
         prod = ProductSpecification.objects.get(id=obj["id"])
-        print(prod)
+
         if prod.product_new_article != None:
             new_prod_db = save_new_product_okt(prod)
        
-        print(prod)    
+       
         data_prod_to_1c = {
             "vendor": prod.product.vendor.name,
             "article": prod.product.article_supplier,
@@ -1720,7 +1722,7 @@ def create_info_request_order_bitrix(order,pdf,pdf_signed,document_specification
     date_now = datetime.datetime.today()
     currency_rate = CurrencyRate.objects.filter(date=date_now)
     for currency_rate_item in currency_rate:
-        print(currency_rate_item)
+       
         data_curr = {
             "currency_name": currency_rate_item.currency.words_code,
             "currency_rate": currency_rate_item.vunit_rate,

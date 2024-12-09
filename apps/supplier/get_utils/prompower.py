@@ -39,8 +39,6 @@ def prompower_api():
     vendors = Vendor.objects.filter(supplier=prompower)
     for vendors_item in vendors:
         if vendors_item.slug == "prompower":
-            vendor_ids = vendors_item.id
-            vendor_names = vendors_item.slug
             vendoris = vendors_item
 
     # ОБЩАЯ КАТЕГОРИЯ
@@ -57,7 +55,7 @@ def prompower_api():
         data = response.json()
 
         for data_item in data:
-            print(data_item)
+            
             try:
                 categ = SupplierCategoryProduct.objects.get(
                     supplier=prompower,
@@ -189,21 +187,26 @@ def prompower_api():
         response = requests.request("POST", url, headers=headers, data=payload)
         data = response.json()
 
-        vendor = Vendor.objects.filter(supplier=prompower)
+        # vendor = Vendor.objects.filter(supplier=prompower)
         vat_catalog = Vat.objects.get(name="20")
         vat_catalog_int = int(vat_catalog.name)
         currency = Currency.objects.get(words_code="RUB")
         base_adress = "https://prompower.ru"
-        for vendor_item in vendor:
-            if vendor_item.slug == "prompower":
-                vendor_id = vendor_item.id
-                vendor_name = vendor_item.slug
-                vendori = vendor_item
-
+        vendori = Vendor.objects.get(slug="prompower") 
+        vendor_item = vendori
+        # for vendor_item in vendor:
+        #     print(1,vendor_item)
+        #     if vendor_item.slug == "prompower":
+        #         print(2,vendor_item)
+        #         vendori = vendor_item
+        #     else:
+        #         vendori = Vendor.objects.filter(slug="prompower") 
+          
+        # print(3,vendori)
         for data_item in data:
 
             try:
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["categoryId"] == 54:
                     # основная инфа
                     article_suppliers = data_item["article"]
                     name = data_item["title"]
@@ -253,7 +256,7 @@ def prompower_api():
                         path_name = "document_group"
                         base_dir_supplier = product.supplier.slug
                         base_dir_vendor = product.vendor.slug
-                        print(categ)
+                    
                         if categ[1] != None:
                             group_name = categ[1].slug
                             url = f"https://prompower.ru/api/docfiles?dir={group_name}&filenameFilter"
@@ -297,7 +300,7 @@ def prompower_api():
                             )
                             if not os.path.exists(new_dir):
                                 os.makedirs(new_dir)
-                        print(url)
+                      
                         response = requests.request(
                             "GET",
                             url,
@@ -315,7 +318,7 @@ def prompower_api():
                             type_file = "." + images_last_list[-1]
                             link_file = f"{new_dir}/{doc_name}"
 
-                            print(link_file)
+                      
 
                             if os.path.isfile(link_file):
                                 print("Файл существует")
@@ -325,7 +328,7 @@ def prompower_api():
                                     ofile.write(r.content)
 
                             type_doc = item_doc["type"].capitalize()
-                            print(link_file)
+                       
                             doc.document = f"{dir_no_path}/{doc_name}"
                             doc.link = doc_link
                             doc.name = item_doc["title"]
@@ -344,7 +347,7 @@ def prompower_api():
                                 image = ProductDocument.objects.create(product=article)
                                 update_change_reason(image, "Автоматическое")
                                 image_path = get_file_path_add(image, img)
-                                print(image_path)
+                              
                                 p = save_file_product(img, image_path)
                                 image.photo = image_path
                                 image.link = img
@@ -480,3 +483,4 @@ def prompower_api():
     add_category_groupe()
     add_category()
     add_products()
+    

@@ -413,12 +413,15 @@ class VendorWebAdmin(admin.ModelAdmin):
     model = Vendor
     list_display = (
         "name",
-        "is_view_index_web"
+        "is_view_index_web",
+        "article",
     )
     fields = (
         "name",
+        "name_web",
         "img",
-        "is_view_index_web"
+        "is_view_index_web",
+        "article",
     )
     def has_delete_permission(self, request,obj=None):
         return False   

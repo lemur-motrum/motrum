@@ -206,7 +206,7 @@ def prompower_api():
         for data_item in data:
 
             try:
-                if data_item["article"] != None and data_item["categoryId"] == 54:
+                if data_item["article"] != None:
                     # основная инфа
                     article_suppliers = data_item["article"]
                     name = data_item["title"]

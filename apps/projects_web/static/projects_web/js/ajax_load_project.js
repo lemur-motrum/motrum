@@ -4,26 +4,30 @@ const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;
 
 window.addEventListener("DOMContentLoaded", () => {
-  const catalogWrapper = document.querySelector('[project-elem="wrapper"]');
-  if (catalogWrapper) {
-    const loader = catalogWrapper.querySelector(".loader");
-    const smallLoader = catalogWrapper.querySelector(".small_loader");
-    const endContent = catalogWrapper.querySelector(".end_content");
+  const wrapper = document.querySelector(".projects_wrapper");
+  if (wrapper) {
+    const loader = wrapper.querySelector(".loader");
+    const smallLoader = wrapper.querySelector(".small_loader");
+    const endContent = wrapper.querySelector(".end_content");
+    const noneContentText = wrapper.querySelector(".none_content_data");
     const catalogButton = endContent.querySelector('[catalog-elem="button"]');
-    const pagination = catalogWrapper.querySelector(".pagination");
+    const pagination = wrapper.querySelector(".pagination");
     const paginationElems = pagination.querySelectorAll(".elem");
     const paginationFirstElem = pagination.querySelector(".first");
     const paginationLastElem = pagination.querySelector(".last");
     const firstDots = pagination.querySelector(".first_dots");
     const lastDots = pagination.querySelector(".last_dots");
-    let paramsArray = [];
-    const btn = catalogWrapper.querySelector(".add_more");
-    const catalogContainer = catalogWrapper.querySelector(
+    const btn = wrapper.querySelector(".add_more");
+    const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );
     let pageCount = 0;
     let projectsCount = 0;
     let lastPage = 0;
+
+    let categoryProjectSlug;
+    let clientCategoryProjectArray = [];
+    let categoryProjectMarkingArray = [];
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -40,45 +44,65 @@ window.addEventListener("DOMContentLoaded", () => {
       if (pageCount >= 2) {
         paginationFirstElem.classList.add("show");
         firstDots.classList.add("show");
+        console.log("Вариант 1");
       } else {
         paginationFirstElem.classList.remove("show");
         firstDots.classList.remove("show");
+        console.log("Вариант 2");
       }
       if (pageCount >= 0 && pageCount < 4) {
         if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
+          console.log("Вариант 3");
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
+            console.log("Вариант 4");
             if (paginationElems[1].textContent == "") {
               paginationElems[1].style.display = "none";
+              console.log("Вариант 5");
+            } else {
+              paginationElems[1].style.display = "flex";
+              console.log("Вариант 13");
             }
           } else {
+            if (paginationElems[1].textContent == "") {
+              paginationElems[1].style.display = "none";
+              console.log("Вариант 5");
+            } else {
+              paginationElems[1].style.display = "flex";
+              console.log("Вариант 13");
+            }
             if (paginationElems[2].textContent == "") {
               paginationElems[2].style.display = "none";
+              console.log("Вариант 6");
             } else {
               paginationElems[2].style.display = "flex";
+              console.log("Вариант 7");
             }
           }
         } else {
           paginationElems[2].style.display = "flex";
           paginationLastElem.classList.add("show");
           lastDots.classList.add("show");
+          console.log("Вариант 8");
         }
       } else {
         if (pageCount >= lastPage - 2) {
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
+          console.log("Вариант 9");
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
+            console.log("Вариант 10");
           } else {
             paginationElems[2].style.display = "flex";
+            console.log("Вариант 11");
           }
         } else {
           paginationLastElem.classList.add("show");
           lastDots.classList.add("show");
+          console.log("Вариант 12");
         }
       }
     }
@@ -88,6 +112,15 @@ window.addEventListener("DOMContentLoaded", () => {
         count: projectsCount,
         page: pageCount,
         addMoreBtn: addMoreBtn ? true : false,
+        category_project: categoryProjectSlug ? categoryProjectSlug : "",
+        client_category_project:
+          clientCategoryProjectArray.length !== 0
+            ? clientCategoryProjectArray
+            : "",
+        category_project_marking:
+          categoryProjectMarkingArray.length !== 0
+            ? categoryProjectMarkingArray
+            : "",
       };
 
       let params = new URLSearchParams(data);
@@ -100,43 +133,47 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => response.json())
         .then(function (data) {
-          lastPage = +data.count;
-          const paginationArray = [];
-          paginationLastElem.textContent = `${lastPage}`;
-          loader.classList.add("hide");
-          endContent.classList.add("show");
-          smallLoader.classList.remove("show");
-          for (let i in data.data) {
-            console.log(data.data[i]);
-            addAjaxCatalogItem(data.data[i]);
-          }
-          if (data.next) {
-            catalogButton.disabled = false;
+          if (data.data.length == 0) {
+            loader.classList.add("hide");
+            noneContentText.classList.add("show");
           } else {
-            catalogButton.disabled = true;
-          }
-          for (
-            let i = pageCount == 0 ? pageCount : pageCount - 1;
-            !data.small
-              ? i < pageCount + 3
-              : +data.count > 1
-              ? i <= pageCount + 1
-              : i <= pageCount;
-            i++
-          ) {
-            paginationArray.push(i);
-          }
-
-          paginationElems.forEach((el) => (el.textContent = ""));
-          paginationArray.forEach((el, i) => {
-            if (paginationElems[i]) {
-              paginationElems[i].textContent = +el + 1;
+            lastPage = +data.count;
+            const paginationArray = [];
+            paginationLastElem.textContent = `${lastPage}`;
+            loader.classList.add("hide");
+            endContent.classList.add("show");
+            smallLoader.classList.remove("show");
+            for (let i in data.data) {
+              addAjaxCatalogItem(data.data[i]);
             }
-          });
-          getActivePaginationElem();
-          loader.classList.add("hide");
-          urlParams.set("page", pageCount + 1);
-          history.pushState({}, "", currentUrl);
+            if (data.next) {
+              catalogButton.disabled = false;
+            } else {
+              catalogButton.disabled = true;
+            }
+            for (
+              let i = pageCount == 0 ? pageCount : pageCount - 1;
+              !data.small
+                ? i < pageCount + 3
+                : +data.count > 1
+                ? i <= pageCount + 1
+                : i <= pageCount;
+              i++
+            ) {
+              paginationArray.push(i);
+            }
+
+            paginationElems.forEach((el) => (el.textContent = ""));
+            paginationArray.forEach((el, i) => {
+              if (paginationElems[i]) {
+                paginationElems[i].textContent = +el + 1;
+              }
+            });
+            loader.classList.add("hide");
+            urlParams.set("page", pageCount + 1);
+            getActivePaginationElem();
+            history.pushState({}, "", currentUrl);
+          }
         });
     }
 
@@ -155,8 +192,8 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!elem.classList.contains("active")) {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
-          console.log(pageCount);
           projectsCount = pageCount * 10;
+          noneContentText.classList.remove("show");
           endContent.classList.remove("show");
           catalogContainer.innerHTML = "";
           loader.classList.remove("hide");
@@ -168,6 +205,7 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationFirstElem.onclick = () => {
       pageCount = 0;
       projectsCount = 0;
+      noneContentText.classList.remove("show");
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.classList.remove("hide");
@@ -177,6 +215,7 @@ window.addEventListener("DOMContentLoaded", () => {
     catalogButton.onclick = () => {
       projectsCount += 10;
       +pageCount++;
+      noneContentText.classList.remove("show");
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
       loadItems(true);
@@ -185,11 +224,157 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
       projectsCount = pageCount * 10;
+      noneContentText.classList.remove("show");
       endContent.classList.remove("hide");
       catalogContainer.innerHTML = "";
       loader.classList.remove("hide");
       loadItems(true);
     };
+
+    const markingCategoryWrapper = wrapper.querySelector(".marking_category");
+    const clientCategoryWrapper = wrapper.querySelector(".clients_category");
+    const categoryProjectsSlider = wrapper.querySelector(".category_projects");
+    const sliderWrapper =
+      categoryProjectsSlider.querySelector(".swiper-wrapper");
+    const categriesElems = sliderWrapper.querySelectorAll(
+      ".category_project_slide_elem"
+    );
+    const allCategoriesElem = sliderWrapper.querySelector(
+      ".all_categories_elem"
+    );
+
+    categriesElems.forEach((elem) => {
+      elem.onclick = () => {
+        const slug = elem.getAttribute("slug");
+        sliderWrapper.style.transform = "translate3d(0px, 0px, 0px)";
+
+        if (slug) {
+          if (!elem.classList.contains("active")) {
+            for (let i = 0; i < categriesElems.length; i++) {
+              categriesElems[i].classList.remove("active");
+            }
+            allCategoriesElem.classList.remove("active");
+            elem.classList.add("active");
+            sliderWrapper.prepend(elem);
+            categoryProjectSlug = slug;
+
+            urlParams.set("category", slug);
+            loader.classList.remove("hide");
+            catalogContainer.innerHTML = "";
+            noneContentText.classList.remove("show");
+            endContent.classList.remove("show");
+            loadItems(true);
+          } else {
+            elem.classList.remove("active");
+            allCategoriesElem.classList.add("active");
+            sliderWrapper.prepend(allCategoriesElem);
+            categoryProjectSlug = "";
+            urlParams.delete("category");
+            loader.classList.remove("hide");
+            catalogContainer.innerHTML = "";
+            noneContentText.classList.remove("show");
+            endContent.classList.remove("show");
+            loadItems(true);
+          }
+        } else {
+          for (let i = 0; i < categriesElems.length; i++) {
+            categriesElems[i].classList.remove("active");
+          }
+          allCategoriesElem.classList.add("active");
+          sliderWrapper.prepend(allCategoriesElem);
+          categoryProjectSlug = "";
+          urlParams.delete("category");
+          loader.classList.remove("hide");
+          catalogContainer.innerHTML = "";
+          noneContentText.classList.remove("show");
+          endContent.classList.remove("show");
+          loadItems(true);
+        }
+
+        if (categoryProjectSlug == "markirovka-chestnyij-znak") {
+          markingCategoryWrapper.classList.add("show");
+        } else {
+          markingCategoryWrapper.classList.remove("show");
+        }
+      };
+    });
+
+    filterLogic(clientCategoryWrapper, clientCategoryProjectArray);
+    filterLogic(markingCategoryWrapper, categoryProjectMarkingArray, true);
+
+    function filterLogic(wrapper, array, marking = false) {
+      openAllFilterElems(wrapper);
+      const heigtContainer = wrapper.querySelector(
+        ".category_elem_container_max_height"
+      );
+      const categoryElems = wrapper.querySelectorAll(".category_elem");
+
+      categoryElems.forEach((elem) => {
+        elem.onclick = () => {
+          elem.classList.toggle("active");
+          const filterParam = elem.getAttribute("param");
+          if (elem.classList.contains("active")) {
+            heigtContainer.prepend(elem);
+            array.push(filterParam);
+            const filterString = urlParams.get(
+              marking ? "marking" : "industry"
+            );
+            if (filterString) {
+              urlParams.set(marking ? "marking" : "industry", array.join());
+              loader.classList.remove("hide");
+              catalogContainer.innerHTML = "";
+              noneContentText.classList.remove("show");
+              endContent.classList.remove("show");
+              pageCount = 0;
+              marking
+                ? (categoryProjectMarkingArray = array)
+                : (clientCategoryProjectArray = array);
+              loadItems();
+            } else {
+              urlParams.set(marking ? "marking" : "industry", array.join(","));
+              loader.classList.remove("hide");
+              catalogContainer.innerHTML = "";
+              noneContentText.classList.remove("show");
+              endContent.classList.remove("show");
+              pageCount = 0;
+              marking
+                ? (categoryProjectMarkingArray = array)
+                : (clientCategoryProjectArray = array);
+              loadItems();
+            }
+          } else {
+            const activeClientsCatigoriesElems =
+              heigtContainer.querySelectorAll(".active");
+            if (
+              activeClientsCatigoriesElems[
+                activeClientsCatigoriesElems.length - 1
+              ]
+            ) {
+              activeClientsCatigoriesElems[
+                activeClientsCatigoriesElems.length - 1
+              ].after(elem);
+            }
+
+            const filteredParamsArray = array.filter((el) => el != filterParam);
+            array = filteredParamsArray;
+
+            loader.classList.remove("hide");
+            catalogContainer.innerHTML = "";
+            noneContentText.classList.remove("show");
+            endContent.classList.remove("show");
+            if (filteredParamsArray.length == 0) {
+              urlParams.delete(marking ? "marking" : "industry");
+            } else {
+              urlParams.set(marking ? "marking" : "industry", array.join());
+            }
+            marking
+              ? (categoryProjectMarkingArray = array)
+              : (clientCategoryProjectArray = array);
+            loadItems();
+          }
+        };
+      });
+    }
 
     function renderCatalogItem(orderData) {
       let ajaxTemplateWrapper = document.querySelector(
@@ -205,6 +390,17 @@ window.addEventListener("DOMContentLoaded", () => {
     function addAjaxCatalogItem(ajaxElemData) {
       let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+    }
+
+    function openAllFilterElems(filterWrapper) {
+      const clientCategoryContainer = filterWrapper.querySelector(
+        ".category_elem_container"
+      );
+      const addMoreBtn = filterWrapper.querySelector(".filters_add_more_btn");
+      addMoreBtn.onclick = () => {
+        clientCategoryContainer.classList.add("is_open");
+        addMoreBtn.classList.add("hide");
+      };
     }
   }
 });

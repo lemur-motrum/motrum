@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
     <div class="projects_wrapper">
         <div class="title_container">
@@ -9,7 +10,7 @@
         </div>
         <div class="category_projects">
             <div class="swiper-wrapper">
-                <div class="swiper-slide all_categories_elem active">Все категории</div>
+                <div class="swiper-slide all_categories_elem active category_project_slide_elem">Все категории</div>
                 {% for category_project in category_projects %}
                     <div slug="{{ category_project.slug }}"
                          class="swiper-slide category_project_slide_elem">{{ category_project }}</div>
@@ -17,7 +18,45 @@
             </div>
         </div>
         <div class="projects_wrapper_content">
-            <div class="filters_container">тут фильтры</div>
+            <div class="filters_container">
+                <div class="filters_category marking_category">
+                    <div class="filters_category_title">Виды маркировок</div>
+                    <div class="category_elem_container">
+                        <div>
+                            <div class="category_elem_container_max_height">
+                                {% for category in marking_category %}
+                                    <div param="{{ category.slug }}"
+                                         class="category_elem marking_category_elem">{{ category.name }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filters_add_more_btn">
+                        <span>все отрасли</span>
+                        <div>
+                            <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                        </div>
+                    </div>
+                </div>
+                <div class="filters_category clients_category">
+                    <div class="filters_category_title">Отрасли</div>
+                    <div class="category_elem_container">
+                        <div>
+                            <div class="category_elem_container_max_height">
+                                {% for category in client_category_projects %}
+                                    <div param="{{ category.slug }}" class="category_elem">{{ category.name }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filters_add_more_btn">
+                        <span>все отрасли</span>
+                        <div>
+                            <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="projects_container">
                 <div class="project_wrapper" project-elem="wrapper">
                     <div class="loader"></div>
@@ -39,6 +78,7 @@
                             <div class="last">578</div>
                         </div>
                     </div>
+                    <div class="none_content_data">Таких проектов нет</div>
                 </div>
             </div>
         </div>

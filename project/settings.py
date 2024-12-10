@@ -240,6 +240,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 # CART_SESSION_ID = 'cart'
-
+BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
 
 

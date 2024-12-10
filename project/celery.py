@@ -12,6 +12,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    #таски битрикс
+    'get_status_order_bx': {
+        'task': 'apps.core.tasks.get_status_order_bx',
+        'schedule': crontab(minute=0, hour='6-21'),
+    },
+    #таски ночные для обновления окт
     'counter_bill_new_year': {
         'task': 'apps.core.tasks.counter_bill_new_year',
         'schedule': crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
@@ -44,38 +50,5 @@ app.conf.beat_schedule = {
         'task': 'apps.supplier.tasks.add_prompower',
         'schedule': crontab(minute=00, hour=2),
     },
-    # таски днем повторы для теста
-    
-    # 'current_rate2': {
-    #     'task': 'apps.core.tasks.get_currency',
-    #     'schedule': crontab(minute=10, hour=12),
-    # },
-    # 'specification_stop2': {
-    #     'task': 'apps.specification.tasks.specification_date_stop',
-    #     'schedule': crontab(minute=20, hour=12),
-    # },
-    # 'add_iek4': {
-    #     'task': 'apps.supplier.tasks.add_iek',
-    #     'schedule': crontab(minute=45, hour=6),
-    # },
-    # 'add_iek3': {
-    #     'task': 'apps.supplier.tasks.add_iek',
-    #     'schedule': crontab(minute=45, hour=11),
-    # },
-    # 'add_iek2': {
-    #     'task': 'apps.supplier.tasks.add_iek',
-    #     'schedule': crontab(minute=00, hour=15),
-    # },
-    # 'add_veda2': {
-    #     'task': 'apps.supplier.tasks.add_veda',
-    #     'schedule': crontab(minute=00, hour=14),
-    # },
-    # 'add_prompower2': {
-    #     'task': 'apps.supplier.tasks.add_prompower',
-    #     'schedule': crontab(minute=00, hour=13),
-    # },
-    # 'add_iek3': {
-    #     'task': 'apps.supplier.tasks.add_iek',
-    #     'schedule': crontab(minute=00, hour=9),
-    # },
+   
 }

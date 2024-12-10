@@ -308,7 +308,11 @@ STATUS_ORDER_BITRIX = (
     ("SHIPMENT_", "Отгрузка оборудования заказчику"),
     ("CANCELED", "Отложенные"),
     ("CANCELED", "Провальные"),
-    ("COMPLETED", "Сделка успешна"),)
+    ("COMPLETED", "Сделка успешна"),
+
+    ("COMPLETED", "PREPAYMENT_INVOICE"),
+    ("COMPLETED", "PREPARATION"),
+)
 STATUS_ORDER_INT = (
     (1, "PROCESSING"),
     (2, "PAYMENT"),

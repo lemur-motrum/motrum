@@ -4,6 +4,7 @@ import threading
 from django.shortcuts import render
 from apps.client.models import Order
 from apps.client.task import actual_info_order_product
+from apps.core.bitrix_api import get_status_order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -41,7 +42,7 @@ from apps.user.views import login_bitrix
 def add_iek(request):
     title = "TEST"
     
-    prompower_api()
+    get_status_order()
     result = 1
     if result:
         pass

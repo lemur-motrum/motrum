@@ -2,6 +2,7 @@ import datetime
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
+from apps.core.bitrix_api import get_status_order
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
@@ -239,3 +240,10 @@ def del_void_cart(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)    
     
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def get_status_order_bx(self):
+    print("SALARY ! HOORE")
+    get_status_order()

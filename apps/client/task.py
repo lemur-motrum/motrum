@@ -5,6 +5,7 @@ from django.http import Http404, JsonResponse
 from requests import HTTPError
 import requests
 from apps.client.models import Order
+from apps.core.bitrix_api import get_status_order
 from apps.core.models import Currency
 from apps.core.utils import send_requests
 from apps.logs.utils import error_alert
@@ -75,3 +76,5 @@ def actual_info_order_product(self):
             info = f"отправка в б24 Критичные изменения цен и курса валют{exc}"
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
+
+

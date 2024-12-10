@@ -91,6 +91,7 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                 "Текст в слайде",
                 {
                     "fields": [
+                        "article",
                         "name",
                         "active",
                         "image",

@@ -1,15 +1,20 @@
+import os
 import random
-
+import traceback
+from django.conf import settings
+from fast_bitrix24 import Bitrix
 from django.http import HttpResponseRedirect
 from requests import Response
 
 from apps.client.api.serializers import OrderSerializer
-from apps.client.models import Order
-from apps.core.utils import client_info_bitrix
+from apps.client.models import STATUS_ORDER_BITRIX, Order
+from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
+from apps.logs.utils import error_alert
 from apps.product.models import Cart
 from apps.user.models import AdminUser
 
 
+# проверка и получение основной инфы для создания заказа
 def order_bitrix(data, request):
 
     next_url = "/admin_specification/current_specification/"
@@ -31,7 +36,7 @@ def order_bitrix(data, request):
                 error_text += ", ".join(error_order)
 
             context = {"error": error_text}
-            return (next_url, context,True)
+            return (next_url, context, True)
         else:
 
             client_req, acc_req = client_info_bitrix(company_info)
@@ -70,11 +75,13 @@ def order_bitrix(data, request):
                     response.set_cookie("cart", cart.id, max_age=1000)
                     response.set_cookie("specificationId", max_age=-1)
                     response.set_cookie("type_save", type_save, max_age=1000)
-                    return (next_url, response,False)
+                    return (next_url, response, False)
                 else:
                     next_url = "/admin_specification/error-b24/"
-                    context = {"error": "Неприведенная ошибка во время создания заказа. Повторите. "}
-                    return (next_url, response,True)
+                    context = {
+                        "error": "Неприведенная ошибка во время создания заказа. Повторите. "
+                    }
+                    return (next_url, response, True)
 
     else:
         next_url = "/admin_specification/error-b24/"
@@ -85,9 +92,10 @@ def order_bitrix(data, request):
             error_text = "Нет прав доступа к системе"
 
         context = {"error": error_text}
-        return (next_url, context,True)
+        return (next_url, context, True)
 
 
+# проверка полей на заполненность при создании заказа-возврат текста для ошибки
 def order_info_check(company_info, order_info):
     not_info = []
     if company_info["id_bitrix"] == "":
@@ -146,3 +154,69 @@ def order_info_check(company_info, order_info):
     if order_info["satatus"] == "":
         not_info.append("Статус сделки")
     return (not_info, not_info_order)
+
+
+# получение статусов для актуальных заказов
+def get_status_order():
+    try:
+        def get_status_bx(status):
+            for choice in STATUS_ORDER_BITRIX:
+                if choice[1] == status:
+                    return choice[0]
+                
+        def save_new_info(order_bx):
+            print(order_bx)
+            id_bx = order_bx['ID']
+            status_bx = order_bx['STAGE_ID']
+            print(id_bx,status_bx)
+            order = Order.objects.filter(id_bitrix=id_bx).last()
+            if order:
+                status = get_status_bx(status_bx)
+                if status == "SHIPMENT_":
+                    if order.type_delivery == "Самовывоз":
+                        status = "SHIPMENT_PICKUP"
+                    else:
+                        status = "SHIPMENT_AUTO"
+                print(status)
+                order.status = status
+                order.save()
+                
+        not_view_status = ["COMPLETED", "CANCELED"]
+        actual_order = Order.objects.exclude(status__in=not_view_status,id_bitrix__isnull=True).values("id_bitrix")
+
+        webhook = settings.BITRIX_WEBHOOK
+
+        bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+        orders = [d["id_bitrix"] for d in actual_order]
+        # orders_bx = bx.get_by_ID("crm.deal.get", orders)
+        # orders_bx = bx.get_all("crm.deal.list")
+        orders_bx = bx.get_by_ID("crm.deal.get", [2,])
+        
+        if type(orders_bx) == dict:
+            orders_bx = [orders_bx]
+            print(orders_bx)
+            save_new_info(orders_bx)
+      
+        for order_bx  in orders_bx:
+                save_new_info(order_bx)
+
+    except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Получение статусов битрикс24"
+            info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"  
+            e = error_alert(error, location, info)
+            
+            
+def add_info_order(request,order):
+    pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
+    pdf_signed = request.build_absolute_uri(order.bill_file.url)
+    if order.specification.file:
+        document_specification = request.build_absolute_uri(
+            order.specification.file.url
+        )
+    else:
+        document_specification = None
+
+    

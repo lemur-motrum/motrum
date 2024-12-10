@@ -20,7 +20,7 @@ def projects(request):
     projects = Project.objects.all()
     category_projects = CategoryProject.objects.all()
     client_category_projects = ClientCategoryProject.objects.all()
-    marking_category = None
+    marking_category = ClientCategoryProjectMarking.objects.all()
 
     # if request.get("category_project"):
     #     category_project_get = request.query_params.get("category_project")

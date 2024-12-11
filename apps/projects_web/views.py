@@ -68,11 +68,11 @@ def project(request, project):
             "robototehnicheskie-yachejki",
             "markirovka-chestnyij-znak",
         ]
-    ).exclude(id=project_one.id)
+    )
 
     print(category_project_in_client)
     if project_in_client_category.count() > 0:
-        other_project = project_in_client_category
+        other_project = project_in_client_category.exclude(id=project_one.id)
     else:
         other_project = None
         other_project = Project.objects.filter(
@@ -81,7 +81,7 @@ def project(request, project):
             Prefetch("projectclientcategoryprojectmarking_set"),
             Prefetch("projectclientcategoryprojectmarking_set__name")
             
-            )
+            ).exclude(id=project_one.id)
 
     print(other_project)
     context = {

@@ -1,3 +1,4 @@
+from ast import Try
 import os
 import random
 import traceback
@@ -209,8 +210,9 @@ def get_status_order():
         info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
 
-
-def add_info_order(request, order):
+# сохранение всех данных по заказу:
+def add_info_order(request, order,type_save):
+    
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
     # pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
@@ -223,6 +225,17 @@ def add_info_order(request, order):
     #     document_specification = None
 
     # ТОВАРЫ СДЕЛКИ
+    is_order_pros_bx = save_product_order_bx(bx,order)
+
+    
+    if is_order_pros_bx:
+        return True
+    else:
+        return False
+    
+
+# add_info_order сохранение товаров  в заказ битрикс
+def save_product_order_bx(bx,order):
     order_products = ProductSpecification.objects.filter(
         specification=order.specification
     )
@@ -256,8 +269,27 @@ def add_info_order(request, order):
     #         }
     #     },
     # )
-    print(product_bx)
+    # print(product_bx)
     
     # product_bx = bx.call("crm.item.get", data_bx_product)
     # product_bx_get = bx.call("crm.deal.productrows.get", data_bx_product)
     # print(product_bx_get)
+    
+    return False
+
+# сохранение информации по товарам после 1с 
+def save_product_info_bx():
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+
+# новые документы после появления точных сроков поставки
+def save_new_doc_bx(pdf,pdf_signed):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+
+
+def save_params_product_bx(data):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    
+    return True

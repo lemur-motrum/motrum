@@ -494,9 +494,13 @@ def crete_pdf_bill(
             )
             product_quantity = product.quantity
             product_data = product.text_delivery
+            
+            if product.date_delivery_bill:
+                product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
+            else:
+                product_data = product.text_delivery
+                
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
-            # if product_data:
-            #     product_data = str(product_data.strftime("%d.%m.%Y"))
             # else:
             #     product_data = str("-")
             total_product_quantity += product_quantity
@@ -521,12 +525,7 @@ def crete_pdf_bill(
             .replace(",", " ")
             .replace(".", ",")
         )
-        # if is_none_date_delivery:
-        #     final_date_ship = "-"
-        # else:
-        #     final_date_ship = str(date_ship.strftime("%d.%m.%Y"))
 
-        # client_info =""
 
         data.append(
             (
@@ -682,18 +681,7 @@ def crete_pdf_bill(
                 f"{total_amount_word} {rub_word} {total_amount_pens} копеек", bold_style
             ),)
         ]
-        print(3333, data_text_info)
-        # data_text_info.append(
-        #     (Paragraph(
-        #         f"Всего наименований {i}, на сумму {total_amount_str} руб.",
-        #         normal_style,
-        #     ))
-        # )
-        # data_text_info.append(
-        #     (Paragraph(
-        #         f"{total_amount_word} {rub_word} {total_amount_pens} копеек", bold_style
-        #     ))
-        # )
+  
         if is_contract:
             data_text_info.append(
                 (Paragraph(

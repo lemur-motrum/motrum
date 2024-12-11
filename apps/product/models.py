@@ -686,11 +686,22 @@ class Stock(models.Model):
         return f"{self.stock_supplier} {self.stock_supplier}"
 
     def save(self, *args, **kwargs):
-        # посчитать комплекты лотов
+        if self.lot_complect == 0:
+            self.lot_complect = 1
+            
+        print(self.stock_supplier_unit)        # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
+            print(999993333)
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
+
+        if self.stock_supplier != None or self.stock_supplier != 0:
+            print(999993333)
+            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
+            self.stock_supplier_unit = lots[1]
+            self.lot_complect = lots[2]
+        
 
         super().save(*args, **kwargs)
 

@@ -68,7 +68,7 @@ def project(request, project):
             "robototehnicheskie-yachejki",
             "markirovka-chestnyij-znak",
         ]
-    )
+    ).exclude(id=project_one.id)
 
     print(category_project_in_client)
     if project_in_client_category.count() > 0:

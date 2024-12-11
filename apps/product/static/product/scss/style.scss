@@ -339,49 +339,94 @@
           .supplier_content {
             margin-top: 1.5rem;
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            .suplier_elem_content {
-              width: 18.313rem;
-              height: -webkit-max-content;
-              height: -moz-max-content;
-              height: max-content;
-              display: flex;
-              align-items: center;
-              cursor: pointer;
-              .suplier_elem_content_img_container {
-                width: 3.563rem;
-                height: 3.563rem;
-                border-radius: 100%;
-                border: 0.094rem solid #000;
+            &.is_open {
+              .suppliers_max_height_container {
+                max-height: 100%;
+              }
+            }
+            div {
+              width: 100%;
+              .suppliers_max_height_container {
                 display: flex;
-                align-items: center;
-                justify-content: center;
+                flex-direction: column;
+                gap: 1rem;
+                max-height: 23rem;
                 overflow: hidden;
-                img {
-                  width: 80%;
-                  height: 80%;
-                  -o-object-fit: contain;
-                  object-fit: contain;
+                transition: 0.6s;
+                .suplier_elem_content {
+                  width: 18.313rem;
+                  height: -webkit-max-content;
+                  height: -moz-max-content;
+                  height: max-content;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  gap: 0;
+                  cursor: pointer;
+                  .suplier_elem_content_img_container {
+                    width: 3.563rem;
+                    height: 3.563rem;
+                    border-radius: 100%;
+                    border: 0.094rem solid #000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                    img {
+                      width: 70%;
+                      height: 70%;
+                      -o-object-fit: contain;
+                      object-fit: contain;
+                    }
+                  }
+                  .suplier_elem_content_name {
+                    width: 14.75rem;
+                    height: -webkit-max-content;
+                    height: -moz-max-content;
+                    height: max-content;
+                    background-color: #fff;
+                    border: 0.094rem solid #000;
+                    box-sizing: border-box;
+                    padding: 0.875rem 1.875rem;
+                    border-radius: 2rem;
+                    font-size: 1.313rem;
+                    transition: 0.6s;
+                    &.show {
+                      background-color: #95bad4;
+                      color: #fff;
+                      border: 0.094rem solid #95bad4;
+                    }
+                  }
                 }
               }
-              .suplier_elem_content_name {
-                width: 14.75rem;
-                height: -webkit-max-content;
-                height: -moz-max-content;
-                height: max-content;
-                background-color: #fff;
-                border: 0.094rem solid #000;
-                box-sizing: border-box;
-                padding: 0.875rem 1.875rem;
-                border-radius: 2rem;
-                font-size: 1.313rem;
-                transition: 0.6s;
-                &.show {
-                  background-color: #95bad4;
-                  color: #fff;
-                  border: 0.094rem solid #95bad4;
-                }
+            }
+          }
+          .suppliers_add_more_btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 1.875rem;
+            box-sizing: border-box;
+            border: 0.094rem solid black;
+            border-radius: 2rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            &.hide {
+              display: none;
+            }
+            span {
+              font-size: 1.313rem;
+            }
+            div {
+              transform: rotate(180deg);
+              width: 3.999rem;
+              height: 1.593rem;
+              overflow: hidden;
+              img {
+                width: 100%;
+                height: 100%;
+                -o-object-fit: contain;
+                object-fit: contain;
               }
             }
           }
@@ -449,10 +494,24 @@
                 border-radius: 0.313rem;
                 border: 0.094rem solid #000;
                 background-color: #fff;
-                transition: 1s;
+                transition: 0.6s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .checker {
+                  width: 0;
+                  height: 0;
+                  background-color: #95bad4;
+                  transition: 0.6s;
+                }
                 &.checked {
                   border: 0.094rem solid #95bad4;
-                  background-color: #95bad4;
+                  .checker {
+                    width: 0.7rem;
+                    height: 0.7rem;
+                    background-color: #95bad4;
+                    border-radius: 0.113rem;
+                  }
                 }
               }
               .price_checkbox_content_description {

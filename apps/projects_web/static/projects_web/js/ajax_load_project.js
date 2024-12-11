@@ -21,6 +21,19 @@ window.addEventListener("DOMContentLoaded", () => {
     const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );
+
+    const markingCategoryWrapper = wrapper.querySelector(".marking_category");
+    const clientCategoryWrapper = wrapper.querySelector(".clients_category");
+    const categoryProjectsSlider = wrapper.querySelector(".category_projects");
+    const sliderWrapper =
+      categoryProjectsSlider.querySelector(".swiper-wrapper");
+    const categriesElems = sliderWrapper.querySelectorAll(
+      ".category_project_slide_elem"
+    );
+    const allCategoriesElem = sliderWrapper.querySelector(
+      ".all_categories_elem"
+    );
+
     let pageCount = 0;
     let projectsCount = 0;
     let lastPage = 0;
@@ -44,65 +57,52 @@ window.addEventListener("DOMContentLoaded", () => {
       if (pageCount >= 2) {
         paginationFirstElem.classList.add("show");
         firstDots.classList.add("show");
-        console.log("Вариант 1");
       } else {
         paginationFirstElem.classList.remove("show");
         firstDots.classList.remove("show");
-        console.log("Вариант 2");
       }
       if (pageCount >= 0 && pageCount < 4) {
         if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log("Вариант 3");
+
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
-            console.log("Вариант 4");
             if (paginationElems[1].textContent == "") {
               paginationElems[1].style.display = "none";
-              console.log("Вариант 5");
             } else {
               paginationElems[1].style.display = "flex";
-              console.log("Вариант 13");
             }
           } else {
             if (paginationElems[1].textContent == "") {
               paginationElems[1].style.display = "none";
-              console.log("Вариант 5");
             } else {
               paginationElems[1].style.display = "flex";
-              console.log("Вариант 13");
             }
             if (paginationElems[2].textContent == "") {
               paginationElems[2].style.display = "none";
-              console.log("Вариант 6");
             } else {
               paginationElems[2].style.display = "flex";
-              console.log("Вариант 7");
             }
           }
         } else {
           paginationElems[2].style.display = "flex";
           paginationLastElem.classList.add("show");
           lastDots.classList.add("show");
-          console.log("Вариант 8");
         }
       } else {
         if (pageCount >= lastPage - 2) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log("Вариант 9");
+
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
-            console.log("Вариант 10");
           } else {
             paginationElems[2].style.display = "flex";
-            console.log("Вариант 11");
           }
         } else {
           paginationLastElem.classList.add("show");
           lastDots.classList.add("show");
-          console.log("Вариант 12");
         }
       }
     }
@@ -172,20 +172,77 @@ window.addEventListener("DOMContentLoaded", () => {
             loader.classList.add("hide");
             urlParams.set("page", pageCount + 1);
             getActivePaginationElem();
-            history.pushState({}, "", currentUrl);
           }
+          history.pushState({}, "", currentUrl);
         });
     }
 
     window.onload = () => {
-      const pageGetParam = currentUrl.searchParams.get("page");
+      const pageGetParam = urlParams.get("page");
+      const industryGetParam = urlParams.get("industry");
+      const categoryGetParam = urlParams.get("category_project");
+      const markingGetParam = urlParams.get("marking");
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
         projectsCount = pageCount * 10;
-        loadItems();
-      } else {
-        loadItems();
       }
+      if (industryGetParam) {
+        const arrayIndustryParams = industryGetParam.split(",");
+        const industryElems =
+          clientCategoryWrapper.querySelectorAll(".category_elem");
+        const industryHeightContainer = clientCategoryWrapper.querySelector(
+          ".category_elem_container_max_height"
+        );
+        arrayIndustryParams.forEach((param) => {
+          for (let i = 0; i < industryElems.length; i++) {
+            if (industryElems[i].getAttribute("param") == param) {
+              industryElems[i].classList.add("active");
+              industryHeightContainer.prepend(industryElems[i]);
+            }
+          }
+        });
+
+        clientCategoryProjectArray = arrayIndustryParams;
+      }
+      if (categoryGetParam) {
+        categoryProjectSlug = categoryGetParam;
+
+        categriesElems.forEach((el) => {
+          if (el.getAttribute("slug") == categoryGetParam) {
+            allCategoriesElem.classList.remove("active");
+            el.classList.add("active");
+            sliderWrapper.prepend(el);
+          }
+        });
+      }
+      if (markingGetParam) {
+        const arrayMarkingParams = markingGetParam.split(",");
+        categoryProjectMarkingArray = arrayMarkingParams;
+
+        const markingElems =
+          markingCategoryWrapper.querySelectorAll(".category_elem");
+        const markingHeightContainer = markingCategoryWrapper.querySelector(
+          ".category_elem_container_max_height"
+        );
+
+        arrayMarkingParams.forEach((param) => {
+          for (let i = 0; i < markingElems.length; i++) {
+            if (markingElems[i].getAttribute("param") == param) {
+              markingElems[i].classList.add("active");
+              markingHeightContainer.prepend(markingElems[i]);
+            }
+          }
+        });
+      }
+      if (categoryProjectSlug == "markirovka-chestnyij-znak") {
+        markingCategoryWrapper.classList.add("show");
+      } else {
+        markingCategoryWrapper.classList.remove("show");
+        urlParams.delete("marking");
+        categoryProjectMarkingArray = "";
+      }
+
+      loadItems();
     };
 
     paginationElems.forEach((elem) => {
@@ -231,18 +288,6 @@ window.addEventListener("DOMContentLoaded", () => {
       loadItems(true);
     };
 
-    const markingCategoryWrapper = wrapper.querySelector(".marking_category");
-    const clientCategoryWrapper = wrapper.querySelector(".clients_category");
-    const categoryProjectsSlider = wrapper.querySelector(".category_projects");
-    const sliderWrapper =
-      categoryProjectsSlider.querySelector(".swiper-wrapper");
-    const categriesElems = sliderWrapper.querySelectorAll(
-      ".category_project_slide_elem"
-    );
-    const allCategoriesElem = sliderWrapper.querySelector(
-      ".all_categories_elem"
-    );
-
     categriesElems.forEach((elem) => {
       elem.onclick = () => {
         const slug = elem.getAttribute("slug");
@@ -256,14 +301,21 @@ window.addEventListener("DOMContentLoaded", () => {
             allCategoriesElem.classList.remove("active");
             elem.classList.add("active");
             sliderWrapper.prepend(elem);
-            categoryProjectSlug = slug;
             urlParams.set("category_project", slug);
+            categoryProjectSlug = slug;
             loader.classList.remove("hide");
             catalogContainer.innerHTML = "";
             noneContentText.classList.remove("show");
             endContent.classList.remove("show");
             pageCount = 0;
             projectsCount = 0;
+            if (categoryProjectSlug == "markirovka-chestnyij-znak") {
+              markingCategoryWrapper.classList.add("show");
+            } else {
+              markingCategoryWrapper.classList.remove("show");
+              urlParams.delete("marking");
+              categoryProjectMarkingArray = "";
+            }
             loadItems(true);
           } else {
             elem.classList.remove("active");
@@ -277,6 +329,13 @@ window.addEventListener("DOMContentLoaded", () => {
             endContent.classList.remove("show");
             pageCount = 0;
             projectsCount = 0;
+            if (categoryProjectSlug == "markirovka-chestnyij-znak") {
+              markingCategoryWrapper.classList.add("show");
+            } else {
+              markingCategoryWrapper.classList.remove("show");
+              urlParams.delete("marking");
+              categoryProjectMarkingArray = "";
+            }
             loadItems(true);
           }
         } else {
@@ -300,6 +359,8 @@ window.addEventListener("DOMContentLoaded", () => {
           markingCategoryWrapper.classList.add("show");
         } else {
           markingCategoryWrapper.classList.remove("show");
+          urlParams.delete("marking");
+          categoryProjectMarkingArray = "";
         }
       };
     });

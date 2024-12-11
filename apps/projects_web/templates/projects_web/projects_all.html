@@ -26,7 +26,13 @@
                             <div class="category_elem_container_max_height">
                                 {% for category in marking_category %}
                                     <div param="{{ category.slug }}"
-                                         class="category_elem marking_category_elem">{{ category.name }}</div>
+                                         class="category_elem marking_category_elem">
+                                         {% if category.short_name %}
+                                            {{ category.category }}
+                                         {% else %}
+                                            {{ category.name }}
+                                         {% endif %}
+                                         </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -44,7 +50,15 @@
                         <div>
                             <div class="category_elem_container_max_height">
                                 {% for category in client_category_projects %}
-                                    <div param="{{ category.slug }}" class="category_elem">{{ category.name }}</div>
+                                    <div param="{{ category.slug }}" class="category_elem">
+                                        {% if category.short_name  %}
+                                        {{ category.short_name }}
+                                        {% else %}
+                                        {{ category.name }}
+                                        {% endif %}
+                                        
+                                    
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>

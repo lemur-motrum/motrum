@@ -201,7 +201,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const priceGetParam = urlParams.get("price");
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
-        productCount = pageCount * 10;
+        productCount = 10;
       }
       if (priceGetParam) {
         sort = priceGetParam == "up" ? "ASC" : "DESC";
@@ -216,15 +216,15 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationFirstElem.onclick = () => {
       pageCount = 0;
       preLoaderLogic();
-      productCount = pageCount * 10;
+      productCount = 10;
     };
 
     paginationElems.forEach((elem) => {
       if (!elem.classList.contains("active")) {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
+          productCount = 10;
           preLoaderLogic();
-          productCount = pageCount * 10;
         };
       }
     });
@@ -238,8 +238,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
+      productCount = 10;
       preLoaderLogic();
-      productCount = pageCount * 10;
     };
 
     const filters = document.querySelectorAll(".filter_elem");

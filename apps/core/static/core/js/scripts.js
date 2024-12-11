@@ -36,6 +36,7 @@ import "/static/product/js/sliders.js";
 import "/static/product/js/filters_logic.js";
 import "/static/product/js/ajax_load_products.js";
 import "/static/product/js/cart_logic.js";
+import "/static/product/js/showFilterElems.js";
 import "/static/core/js/scripts/cart-logic.js";
 import "/static/client/js/modal/call_back_modal.js";
 import "/static/client/js/modal/manager_email.js";

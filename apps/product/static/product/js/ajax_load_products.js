@@ -20,6 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let productCount = 0;
     let lastPage = 0;
     let paramsArray = [];
+    let pricenone = false;
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -106,9 +107,9 @@ window.addEventListener("DOMContentLoaded", () => {
         group: !group ? "" : group,
         vendor: !vendor ? "" : vendor,
         addMoreBtn: addMoreBtn ? true : false,
-        pricefrom:5583.94,
-        priceto:6000,
-        pricenone: true
+        pricefrom: 0,
+        priceto: 0,
+        pricenone: pricenone,
       };
 
       let params = new URLSearchParams(data);
@@ -343,5 +344,22 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       });
     });
+
+    const priceOneFilterContent = document.querySelector(
+      ".price_checkbox_content"
+    );
+    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
+    priceOneFilterContent.onclick = () => {
+      checkboxZone.classList.toggle("checked");
+      if (checkboxZone.classList.contains("checked")) {
+        pricenone = true;
+      } else {
+        pricenone = false;
+      }
+      loader.style.display = "block";
+      catalogContainer.innerHTML = "";
+      endContent.classList.remove("show");
+      loadItems(false, false, false, false);
+    };
   }
 });

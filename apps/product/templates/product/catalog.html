@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
     <div class="products_wrapper">
         <div class="title_container">
@@ -31,21 +32,33 @@
                     <div class="filter_elem">
                         <div class="filter_title">Производитель</div>
                         <div class="supplier_content">
-                            {% for vendor in product_vendor %}
-                                <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
-                                    <div class="suplier_elem_content_img_container">
-                                        {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
-                                    </div>
-                                    <div class="suplier_elem_content_name">
-                                        {% if vendor.vendor__name %}
-                                            {{ vendor.vendor__name }}
-                                        {% else %}
-                                            Неизвестный производитель
-                                        {% endif %}
-                                    </div>
+                            <div>
+                                <div class="suppliers_max_height_container">
+                                    {% for vendor in product_vendor %}
+                                        <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
+                                            <div class="suplier_elem_content_img_container">
+                                                {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
+                                            </div>
+                                            <div class="suplier_elem_content_name">
+                                                {% if vendor.vendor__name %}
+                                                    {{ vendor.vendor__name }}
+                                                {% else %}
+                                                    Неизвестный производитель
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
+                            </div>
                         </div>
+                        {% if product_vendor|length > 4 %}
+                            <div class="suppliers_add_more_btn">
+                                <span>все поставщики</span>
+                                <div>
+                                    <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="filter_elem">
                         <div class="filter_title">Цена</div>
@@ -61,7 +74,9 @@
                                 </div>
                             </div>
                             <div class="price_checkbox_content">
-                                <div class="checkbox"></div>
+                                <div class="checkbox">
+                                    <div class="checker"></div>
+                                </div>
                                 <div class="price_checkbox_content_description">исключить товары с ценой по запросу</div>
                             </div>
                         </div>

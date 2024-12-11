@@ -65,8 +65,9 @@
                 <div class="project_one_description_tags">
                     <a class="project_one_tag"
                        href="{% url 'projects_web:projects' %}?category_project={{ project.category_project.slug }}">{{ project.category_project }}</a>
-                    {% for client_category in  client_category_project %}
-                        <div class="project_one_tag">{{ client_category.client_category.name }}</div>
+                    {% for client_category in client_category_project %}
+                        <a href="{% url 'projects_web:projects' %}?industry={{ client_category.client_category.slug }}"
+                           class="project_one_tag">{{ client_category.client_category.name }}</a>
                     {% endfor %}
                 </div>
                 <div class="project_one_tags_question">

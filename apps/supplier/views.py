@@ -2,9 +2,10 @@ import datetime
 from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
+from regex import D
 from apps.client.models import Order
 from apps.client.task import actual_info_order_product
-from apps.core.bitrix_api import get_status_order
+from apps.core.bitrix_api import add_info_order, get_status_order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -41,8 +42,8 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    
-    get_status_order()
+    order=Order.objects.get(id_bitrix=2)
+    add_info_order(request, order)
     result = 1
     if result:
         pass

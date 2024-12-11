@@ -11,6 +11,7 @@ from apps.client.models import STATUS_ORDER_BITRIX, Order
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
 from apps.logs.utils import error_alert
 from apps.product.models import Cart
+from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
 
 
@@ -159,16 +160,35 @@ def order_info_check(company_info, order_info):
 # получение статусов для актуальных заказов
 def get_status_order():
     try:
+
         def get_status_bx(status):
             for choice in STATUS_ORDER_BITRIX:
                 if choice[1] == status:
                     return choice[0]
-                
-        def save_new_info(order_bx):
+
+        not_view_status = ["COMPLETED", "CANCELED"]
+        actual_order = Order.objects.exclude(
+            status__in=not_view_status, id_bitrix__isnull=True
+        ).values("id_bitrix")
+
+        webhook = settings.BITRIX_WEBHOOK
+
+        bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+        orders = [d["id_bitrix"] for d in actual_order]
+        orders = [2]
+
+        orders_bx = bx.get_by_ID("crm.deal.get", orders)
+
+        if len(orders) == 1:
+            orders_bx = {orders_bx["ID"]: orders_bx}
+
+        for order_bx in orders_bx.values():
+
             print(order_bx)
-            id_bx = order_bx['ID']
-            status_bx = order_bx['STAGE_ID']
-            print(id_bx,status_bx)
+            id_bx = order_bx["ID"]
+
+            status_bx = order_bx["STAGE_ID"]
+            print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
             if order:
                 status = get_status_bx(status_bx)
@@ -180,43 +200,51 @@ def get_status_order():
                 print(status)
                 order.status = status
                 order.save()
-                
-        not_view_status = ["COMPLETED", "CANCELED"]
-        actual_order = Order.objects.exclude(status__in=not_view_status,id_bitrix__isnull=True).values("id_bitrix")
-
-        webhook = settings.BITRIX_WEBHOOK
-
-        bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-        orders = [d["id_bitrix"] for d in actual_order]
-        # orders_bx = bx.get_by_ID("crm.deal.get", orders)
-        # orders_bx = bx.get_all("crm.deal.list")
-        orders_bx = bx.get_by_ID("crm.deal.get", [2,])
-        
-        if type(orders_bx) == dict:
-            orders_bx = [orders_bx]
-            print(orders_bx)
-            save_new_info(orders_bx)
-      
-        for order_bx  in orders_bx:
-                save_new_info(order_bx)
 
     except Exception as e:
-            print(e)
-            tr = traceback.format_exc()
-            error = "file_api_error"
-            location = "Получение статусов битрикс24"
-            info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"  
-            e = error_alert(error, location, info)
-            
-            
-def add_info_order(request,order):
-    pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
-    pdf_signed = request.build_absolute_uri(order.bill_file.url)
-    if order.specification.file:
-        document_specification = request.build_absolute_uri(
-            order.specification.file.url
-        )
-    else:
-        document_specification = None
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Получение статусов битрикс24"
+        info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
 
+
+def add_info_order(request, order):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    # pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
+    # pdf_signed = request.build_absolute_uri(order.bill_file.url)
+    # if order.specification.file:
+    #     document_specification = request.build_absolute_uri(
+    #         order.specification.file.url
+    #     )
+    # else:
+    #     document_specification = None
+
+    # ТОВАРЫ СДЕЛКИ
+    order_products = ProductSpecification.objects.filter(
+        specification=order.specification
+    )
+
+    order_products_data = []
+    for order_products_i in order_products:
+        order_info = {
+            "PRODUCT_ID": 14,
+            "PRICE": 5000,
+            "QUANTITY": order_products_i.quantity,
+            "ORIGINAL_PRODUCT_NAME":order_products_i.product.article,
+            "PRODUCT_NAME":order_products_i.product.name,
+        }
+        order_products_data.append(order_info)
+    data_bx_product = {
+        "id": order.id_bitrix,
+         "rows": order_products_data,
+    }
+    print(data_bx_product)
+   
+    product_bx = bx.call("crm.deal.productrows.update", data_bx_product)
+    print(product_bx)
     
+    # product_bx_get = bx.call("crm.deal.productrows.get", data_bx_product)
+    # print(product_bx_get)

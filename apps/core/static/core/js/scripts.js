@@ -42,4 +42,4 @@ import "/static/client/js/modal/manager_email.js";
 import "/static/projects_web/js/slider.js";
 import "/static/projects_web/js/ajax_load_project.js";
 import "/static/projects_web/js/form_logic.js";
-import "/static/projects_web/js/filtersLogic.js";
+import "/static/projects_web/js/video-logic.js";

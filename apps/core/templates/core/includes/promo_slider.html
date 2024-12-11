@@ -37,12 +37,8 @@
                             {% endautoescape %}
                         {% endif %}
                         {% if slider_elem.video_file %}
-                            <video
-                                playsinline
-                                loop
-                                autoplay
-                             >
-                             <source src="{{ slider_elem.video_file.url }}" type="video/mp4"/>
+                            <video playsinline loop autoplay muted>
+                                <source src="{{ slider_elem.video_file.url }}" type="video/mp4" />
                             </video>
                         {% endif %}
                         <div class="promoslider-two-elem-description">

@@ -10,6 +10,14 @@
         </div>
         <div class="project_one_image_wrapper">
             <div class="swiper-wrapper">
+                {% if project_video|length > 0 %}
+                    {% for video in project_video %}
+                        <div class="project_video_elem swiper-slide product_one_slider_elem">
+                            <video src="{{ video.video.url }}" muted playsinline loop type="video/mp4">
+                            </video>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="project_one_title_image swiper-slide product_one_slider_elem">
                     <img src="{{ project.image_main.url }}" alt="img" />
                 </div>
@@ -24,6 +32,19 @@
             <div class="close_btn">+</div>
             <div class="procject_one_image_wrapper_galery">
                 <div class="swiper-wrapper">
+                    {% if project_video|length > 0 %}
+                        {% for video in project_video %}
+                            <div class="project_video_elem swiper-slide product_one_slider_elem">
+                                <video src="{{ video.video.url }}"
+                                       autoplay
+                                       muted
+                                       playsinline
+                                       loop
+                                       type="video/mp4">
+                                </video>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <div class="project_one_gallery_first_image swiper-slide product_one_gallery_elem">
                         <img src="{{ project.image_main.url }}" alt="img" />
                     </div>
@@ -86,22 +107,18 @@
                             <div class="other_project_elem">
                                 <a class="other_project_name"
                                    href="{{ other_project.get_absolute_url }}">
-                                   {{ other_project.category_project }}.
-                   
-                                   {% if other_project.projectclientcategoryprojectmarking_set.all|length > 0 %}
-                                   {% for marking_categ in other_project.projectclientcategoryprojectmarking_set.all %}
-                                            
+                                    {{ other_project.category_project }}.
+                                    {% if other_project.projectclientcategoryprojectmarking_set.all|length > 0 %}
+                                        {% for marking_categ in other_project.projectclientcategoryprojectmarking_set.all %}
                                             {{ marking_categ.client_category_marking.name }}
                                             {% if forloop.last %}
-                                                    :
+                                                :
                                             {% else %}
-                                                    ,
+                                                ,
                                             {% endif %}
-                                    {% endfor %}
-                                       
+                                        {% endfor %}
                                     {% endif %}
-                                   {{ other_project.name }}
-                                
+                                    {{ other_project.name }}
                                 </a>
                                 <div class="other_project_description">
                                     <div class="other_project_tags">

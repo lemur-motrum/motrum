@@ -243,6 +243,9 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     const filters = document.querySelectorAll(".filter_elem");
+    const supplierNameContainer = document.querySelector(
+      ".suppliers_max_height_container"
+    );
     filters.forEach((filterElem) => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
 

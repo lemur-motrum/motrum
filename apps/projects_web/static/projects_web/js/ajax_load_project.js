@@ -114,11 +114,12 @@ window.addEventListener("DOMContentLoaded", () => {
         addMoreBtn: addMoreBtn ? true : false,
         category_project: categoryProjectSlug ? categoryProjectSlug : "",
         client_category_project:
-          clientCategoryProjectArray.length !== 0
+          clientCategoryProjectArray.length !== 0 && clientCategoryProjectArray
             ? clientCategoryProjectArray
             : "",
         category_project_marking:
-          categoryProjectMarkingArray.length !== 0
+          categoryProjectMarkingArray.length !== 0 &&
+          categoryProjectMarkingArray
             ? categoryProjectMarkingArray
             : "",
       };
@@ -283,7 +284,6 @@ window.addEventListener("DOMContentLoaded", () => {
       elem.onclick = () => {
         const slug = elem.getAttribute("slug");
         sliderWrapper.style.transform = "translate3d(0px, 0px, 0px)";
-
         if (slug) {
           if (!elem.classList.contains("active")) {
             for (let i = 0; i < categriesElems.length; i++) {
@@ -316,6 +316,8 @@ window.addEventListener("DOMContentLoaded", () => {
           sliderWrapper.prepend(allCategoriesElem);
           categoryProjectSlug = "";
           urlParams.delete("category_project");
+          urlParams.delete("marking");
+          categoryProjectMarkingArray = "";
         }
         preLoaderLogic();
         pageCount = 0;

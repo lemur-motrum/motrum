@@ -1310,8 +1310,9 @@
     justify-content: space-between;
     margin-top: 3.704rem;
     .vendors {
-      display: grid;
-      grid-template-columns: repeat(5, auto);
+      display: flex;
+      // grid-template-columns: repeat(5, auto);
+      flex-wrap: wrap;
       gap: 1rem;
       .vendor-container {
         display: flex;

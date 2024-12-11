@@ -1,4 +1,5 @@
 import math
+from django.db.models import Max
 from django.db.models import Prefetch
 from unicodedata import category
 from django.forms import CharField
@@ -147,6 +148,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productproperty_set"),
             )
             .filter(q_object)
+            
             .order_by(sorting)[count : count + count_last]
         )
         # .order_by(ordering_filter)
@@ -158,8 +160,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
-
-        page_count = Product.objects.filter(q_object).count()
+        prod_qs = Product.objects.filter(q_object)
+        price_max = prod_qs.aggregate(Max("price__rub_price_supplier", default=0))
+       
+        page_count = prod_qs.count()
 
         if page_count % 10 == 0:
             count = page_count / 10
@@ -177,6 +181,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count": math.ceil(page_count / 10),
             "page": page_get,
             "small": small,
+            "price_max":price_max
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)

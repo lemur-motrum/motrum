@@ -162,6 +162,7 @@ def products_items(request, category, group):
         "another_groups": get_another_groups(),
         "title": current_group.name,
         "media_url": media_url,
+        
     }
 
     return render(request, "product/catalog.html", context)

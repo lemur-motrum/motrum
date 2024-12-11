@@ -106,9 +106,9 @@ window.addEventListener("DOMContentLoaded", () => {
         group: !group ? "" : group,
         vendor: !vendor ? "" : vendor,
         addMoreBtn: addMoreBtn ? true : false,
-        pricefrom:5583.94,
-        priceto:6000,
-        pricenone: true
+        pricefrom:0,
+        priceto:0,
+        pricenone: false
       };
 
       let params = new URLSearchParams(data);

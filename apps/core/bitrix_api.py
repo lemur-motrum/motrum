@@ -230,21 +230,34 @@ def add_info_order(request, order):
     order_products_data = []
     for order_products_i in order_products:
         order_info = {
-            "PRODUCT_ID": 14,
-            "PRICE": 5000,
+            "ID": "28",
+            "PRODUCT_NAME": order_products_i.product.name,
+            "PRICE": 3000,
             "QUANTITY": order_products_i.quantity,
-            "ORIGINAL_PRODUCT_NAME":order_products_i.product.article,
-            "PRODUCT_NAME":order_products_i.product.name,
+            # "PRODUCT_DESCRIPTION":order_products_i.product.article,
+            "PRODUCT_NAME": order_products_i.product.name,
         }
         order_products_data.append(order_info)
     data_bx_product = {
         "id": order.id_bitrix,
-         "rows": order_products_data,
+        "rows": order_products_data,
     }
-    print(data_bx_product)
-   
-    product_bx = bx.call("crm.deal.productrows.update", data_bx_product)
+
+
+    # product_bx = bx.call("crm.deal.productrows.set", data_bx_product)
+    # print(product_bx)
+    # product_bx = bx.get_all("crm.item.productrow.fields",)
+    # product_bx = bx.call(
+    #     "crm.item.productrow.update",
+    #     {
+    #         "id": 30,
+    #         "fields": {
+    #             "price": "1",
+    #         }
+    #     },
+    # )
     print(product_bx)
     
+    # product_bx = bx.call("crm.item.get", data_bx_product)
     # product_bx_get = bx.call("crm.deal.productrows.get", data_bx_product)
     # print(product_bx_get)

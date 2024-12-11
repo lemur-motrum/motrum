@@ -300,3 +300,5 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
+
+

@@ -60,7 +60,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="filter_elem">
+                    <div class="filter_elem price_filter_elem">
                         <div class="filter_title">Цена</div>
                         <div class="price_content">
                             <div class="price_content_wrapper">
@@ -93,6 +93,10 @@
                        type="hidden"
                        data-group-id="{{ current_group.pk }}" />
                 <div class="catalog_wrapper" catalog-elem="wrapper">
+                    <div class="catalog_sorting">
+                        <div class="catalog_sorting_elem up_price_sorting">по возрастанию цены</div>
+                        <div class="catalog_sorting_elem down_price_sorting">по убыванию цены</div>
+                    </div>
                     <div class="loader">loading</div>
                     <div class="site_catalog_container" catalog-elem="container">
                         {% if product_list %}
@@ -124,6 +128,7 @@
                             <div class="last">578</div>
                         </div>
                     </div>
+                    <div class="none_content_data">Таких товаров нет</div>
                 </div>
             </div>
         </div>

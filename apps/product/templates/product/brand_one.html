@@ -5,11 +5,8 @@
             <div class="bread_crumbs">
                 <a href={% url "core:index" %}>главная</a>
                 <a href={% url "product:catalog" %}>каталог</a>
-               
             </div>
-            <h1>
-                {{brand.name}}
-            </h1>
+            <h1>{{ brand.name }}</h1>
             <div class="site_groups_container">
                 <div class="swiper-wrapper">
                     {% for group in another_groups %}
@@ -24,7 +21,6 @@
         <div class="product_container">
             <div class="filters_and_products_container">
                 <div class="filter_container">
-                    
                     <div class="filter_elem">
                         <div class="filter_title">Цена</div>
                         <div class="price_content">

@@ -21,6 +21,9 @@ window.addEventListener("DOMContentLoaded", () => {
     let lastPage = 0;
     let paramsArray = [];
     let pricenone = false;
+    let priceFrom;
+    let priceTo;
+    let sort;
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -29,6 +32,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const smallLoader = catalogWrapper.querySelector(".small_loader");
     const endContent = catalogWrapper.querySelector(".end_content");
+    const noneContentText = catalogWrapper.querySelector(".none_content_data");
     const catalogButton = endContent.querySelector('[catalog-elem="button"]');
     const pagination = catalogWrapper.querySelector(".pagination");
     const paginationElems = pagination.querySelectorAll(".elem");
@@ -36,6 +40,17 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationLastElem = pagination.querySelector(".last");
     const firstDots = pagination.querySelector(".first_dots");
     const lastDots = pagination.querySelector(".last_dots");
+
+    const producsPriceSortingWrapper =
+      document.querySelector(".catalog_sorting");
+    const sortingElems = producsPriceSortingWrapper.querySelectorAll(
+      ".catalog_sorting_elem"
+    );
+    const upPriceBtn =
+      producsPriceSortingWrapper.querySelector(".up_price_sorting");
+    const downPriceBtn = producsPriceSortingWrapper.querySelector(
+      ".down_price_sorting"
+    );
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -93,22 +108,17 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function loadItems(
-      paginationFn = false,
-      cleanArray = false,
-      vendor = false,
-      addMoreBtn = false
-    ) {
+    function loadItems(addMoreBtn = false) {
       let data = {
-        count: !paginationFn ? productCount : 10,
-        sort: "?",
+        count: productCount,
+        sort: sort ? sort : "?",
         page: pageCount,
         category: category,
         group: !group ? "" : group,
-        vendor: !vendor ? "" : vendor,
+        vendor: paramsArray.length > 0 ? paramsArray : "",
         addMoreBtn: addMoreBtn ? true : false,
-        pricefrom: 0,
-        priceto: 0,
+        pricefrom: priceFrom ? priceFrom : 0,
+        priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
       };
 
@@ -123,58 +133,58 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => response.json())
         .then(function (data) {
-          lastPage = +data.count;
-          const paginationArray = [];
-          paginationLastElem.textContent = `${lastPage}`;
           loader.style.display = "none";
-          endContent.classList.add("show");
-          smallLoader.classList.remove("show");
-
-          for (let i in data.data) {
-            addAjaxCatalogItem(data.data[i]);
-          }
-
-          if (data.next) {
-            catalogButton.disabled = false;
+          if (data.data.length == 0) {
+            noneContentText.classList.add("show");
           } else {
-            catalogButton.disabled = true;
-          }
+            lastPage = +data.count;
+            const paginationArray = [];
+            paginationLastElem.textContent = `${lastPage}`;
+            endContent.classList.add("show");
+            smallLoader.classList.remove("show");
 
-          for (
-            let i = pageCount == 0 ? pageCount : pageCount - 1;
-            !data.small
-              ? i < pageCount + 3
-              : +data.count > 1
-              ? i <= pageCount + 1
-              : i <= pageCount;
-            i++
-          ) {
-            paginationArray.push(i);
-          }
-          if (cleanArray) {
-            paginationElems.forEach((elem) => {
-              elem.textContent = "";
-            });
-          }
-          paginationElems.forEach((el) => (el.textContent = ""));
-          paginationArray.forEach((el, i) => {
-            if (paginationElems[i]) {
-              paginationElems[i].textContent = +el + 1;
+            for (let i in data.data) {
+              addAjaxCatalogItem(data.data[i]);
             }
-          });
 
-          const products = document.querySelectorAll(".product_item");
-          products.forEach((productItem) => {
-            const priceItem = productItem.querySelector(".price_item");
-            if (priceItem) {
-              const currentPrice = +getCurrentPrice(priceItem.textContent);
-              if (!isNaN(currentPrice)) {
-                getDigitsNumber(priceItem, currentPrice);
+            if (data.next) {
+              catalogButton.disabled = false;
+            } else {
+              catalogButton.disabled = true;
+            }
+
+            for (
+              let i = pageCount == 0 ? pageCount : pageCount - 1;
+              !data.small
+                ? i < pageCount + 3
+                : +data.count > 1
+                ? i <= pageCount + 1
+                : i <= pageCount;
+              i++
+            ) {
+              paginationArray.push(i);
+            }
+
+            paginationElems.forEach((el) => (el.textContent = ""));
+            paginationArray.forEach((el, i) => {
+              if (paginationElems[i]) {
+                paginationElems[i].textContent = +el + 1;
               }
-            }
-          });
-          getActivePaginationElem();
-          urlParams.set("page", pageCount + 1);
+            });
+
+            const products = document.querySelectorAll(".product_item");
+            products.forEach((productItem) => {
+              const priceItem = productItem.querySelector(".price_item");
+              if (priceItem) {
+                const currentPrice = +getCurrentPrice(priceItem.textContent);
+                if (!isNaN(currentPrice)) {
+                  getDigitsNumber(priceItem, currentPrice);
+                }
+              }
+            });
+            getActivePaginationElem();
+            urlParams.set("page", pageCount + 1);
+          }
           history.pushState({}, "", currentUrl);
         });
     }
@@ -187,38 +197,25 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     window.onload = () => {
-      const pageGetParam = currentUrl.searchParams.get("page");
-
+      const pageGetParam = urlParams.get("page");
+      const priceGetParam = urlParams.get("price");
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
-        if (paramsArray.length === 0) {
-          loadItems(true, false, false, false);
-          productCount = pageCount * 10;
-        } else {
-          loadItems(true, false, paramsArray, false);
-          productCount = pageCount * 10;
-        }
-      } else {
-        if (paramsArray.length === 0) {
-          loadItems(false, false, false, false);
-        } else {
-          loadItems(false, false, paramsArray, false);
-        }
+        productCount = pageCount * 10;
       }
+      if (priceGetParam) {
+        sort = priceGetParam == "up" ? "ASC" : "DESC";
+        priceGetParam == "up"
+          ? upPriceBtn.classList.add("active")
+          : downPriceBtn.classList.add("active");
+      }
+
+      loadItems();
     };
 
     paginationFirstElem.onclick = () => {
       pageCount = 0;
-      endContent.classList.remove("show");
-      catalogContainer.innerHTML = "";
-      loader.style.display = "block";
-
-      loadItems(
-        true,
-        true,
-        paramsArray.length > 0 ? paramsArray : false,
-        false
-      );
+      preLoaderLogic();
       productCount = pageCount * 10;
     };
 
@@ -226,15 +223,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!elem.classList.contains("active")) {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
-          endContent.classList.remove("show");
-          catalogContainer.innerHTML = "";
-          loader.style.display = "block";
-          loadItems(
-            true,
-            false,
-            paramsArray.length > 0 ? paramsArray : false,
-            false
-          );
+          preLoaderLogic();
           productCount = pageCount * 10;
         };
       }
@@ -244,43 +233,14 @@ window.addEventListener("DOMContentLoaded", () => {
       +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
-      loadItems(
-        false,
-        false,
-        paramsArray.length > 0 ? paramsArray : false,
-        true
-      );
+      loadItems();
     };
 
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
-      endContent.classList.remove("show");
-      catalogContainer.innerHTML = "";
-      loader.style.display = "block";
-      loadItems(
-        true,
-        true,
-        paramsArray.length > 0 ? paramsArray : false,
-        false
-      );
+      preLoaderLogic();
       productCount = pageCount * 10;
     };
-
-    function renderCatalogItem(productData) {
-      let ajaxTemplateWrapper = document.querySelector(
-        '[template-elem="wrapper"]'
-      );
-      let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
-        '[catalog-elem="product-item"]'
-      ).innerText;
-
-      return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
-    }
-
-    function addAjaxCatalogItem(ajaxElemData) {
-      let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
-      catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
-    }
 
     const filters = document.querySelectorAll(".filter_elem");
     filters.forEach((filterElem) => {
@@ -305,47 +265,38 @@ window.addEventListener("DOMContentLoaded", () => {
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
               currentUrl.searchParams.set("vendor", paramsArray.join());
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              pageCount = 0;
-              loadItems(false, false, paramsArray, false);
             } else {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              pageCount = 0;
-              loadItems(false, false, paramsArray, false);
             }
+            pageCount = 0;
+            preLoaderLogic();
           } else {
             const searchParams = currentUrl.searchParams;
             const filteredParamsArray = paramsArray.filter(
               (el) => el !== vendorParam
             );
             paramsArray = filteredParamsArray;
-            searchParams.set("vendor", paramsArray.join());
-            loader.style.display = "block";
-            catalogContainer.innerHTML = "";
-            endContent.classList.remove("show");
-            pageCount = 0;
-
             if (filteredParamsArray.length == 0) {
-              searchParams.delete("vendor", paramsArray.join());
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              loadItems(false, false, false, false);
+              searchParams.delete("vendor");
             } else {
-              loadItems(false, true, paramsArray, false);
+              searchParams.set("vendor", paramsArray.join());
             }
+            preLoaderLogic();
           }
           history.pushState({}, "", currentUrl);
         };
       });
     });
 
-    const priceOneFilterContent = document.querySelector(
+    const priceFilterElemWrapper = document.querySelector(".price_filter_elem");
+    const minInputPrice =
+      priceFilterElemWrapper.querySelector(".small_price_input");
+    const maxInputPrice =
+      priceFilterElemWrapper.querySelector(".big_price_input");
+    inputValidate(minInputPrice);
+    inputValidate(maxInputPrice);
+
+    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
       ".price_checkbox_content"
     );
     const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
@@ -356,10 +307,107 @@ window.addEventListener("DOMContentLoaded", () => {
       } else {
         pricenone = false;
       }
-      loader.style.display = "block";
-      catalogContainer.innerHTML = "";
-      endContent.classList.remove("show");
-      loadItems(false, false, false, false);
     };
+
+    const submitFiltersContainer = document.querySelector(
+      ".submit_filter_container"
+    );
+
+    const filterButton = submitFiltersContainer.querySelector(".submit");
+    const cancelFilterButton =
+      submitFiltersContainer.querySelector(".canceled");
+
+    filterButton.onclick = () => {
+      priceFrom = minInputPrice.value ? +minInputPrice.value : "";
+      priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
+      pageCount = 0;
+      preLoaderLogic();
+    };
+
+    cancelFilterButton.onclick = () => {
+      const filterValues = document.querySelectorAll(".suplier_elem_content");
+      filterValues.forEach((el) => {
+        const nameSupplier = el.querySelector(".suplier_elem_content_name");
+        nameSupplier.classList.remove("show");
+      });
+      priceFrom = "";
+      priceTo = "";
+      maxInputPrice.value = "";
+      minInputPrice.value = "";
+      pageCount = 0;
+      paramsArray = [];
+      pricenone = false;
+      sort = "";
+      sortingElems.forEach((el) => {
+        el.classList.remove("active");
+      });
+      urlParams.delete("price");
+      urlParams.delete("vendor");
+      checkboxZone.classList.remove("checked");
+      preLoaderLogic();
+    };
+
+    sortingByPrice(upPriceBtn);
+    sortingByPrice(downPriceBtn, false);
+
+    function sortingByPrice(btn, up = true) {
+      btn.onclick = () => {
+        if (!btn.classList.contains("active")) {
+          sortingElems.forEach((el) => {
+            el.classList.remove("active");
+          });
+          btn.classList.add("active");
+          urlParams.set("price", up ? "up" : "down");
+          sort = up ? "ASC" : "DESC";
+        } else {
+          btn.classList.remove("active");
+          urlParams.delete("price");
+          sort = "";
+        }
+        preLoaderLogic();
+      };
+    }
+
+    function preLoaderLogic() {
+      noneContentText.classList.remove("show");
+      endContent.classList.remove("show");
+      catalogContainer.innerHTML = "";
+      loader.style.display = "block";
+      loadItems();
+    }
+
+    function renderCatalogItem(productData) {
+      let ajaxTemplateWrapper = document.querySelector(
+        '[template-elem="wrapper"]'
+      );
+      let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
+        '[catalog-elem="product-item"]'
+      ).innerText;
+      return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
+    }
+
+    function addAjaxCatalogItem(ajaxElemData) {
+      let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
+      catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+    }
+
+    function inputValidate(input) {
+      input.addEventListener("input", function (e) {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d.-]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+        input.value = currentValue;
+        if (input.value == ".") {
+          e.target.value = "";
+        }
+        if (input.value == "0") {
+          e.target.value = "";
+        }
+      });
+    }
   }
 });

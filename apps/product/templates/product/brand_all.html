@@ -1,6 +1,5 @@
 {% extends "core/base.html" %}
 {% block content %}
-
     <div class="web_catalog_container">
         <div class="title_content">
             <div class="bread_crumbs">
@@ -9,31 +8,27 @@
             <h1 class="title">Бренды</h1>
         </div>
         <div class="brand_all">
-        <div class="vendors-index-container">
-            <div class="vendors">
-                   {% for brand in brands %}
-                   <a href="{% url "core:brand_one" brand.slug %}?vendor={{brand.slug}}" class="vendor-container">
-                    <div class="vendor-img-container">
-                        {% if brand.img %}
-                        <img src="{{ brand.img.url }}" alt="img">
-                       
-                        {% endif %}
-                        
-                    </div>
-                    <div class="vendor-name-container">
-                        <div class="vendor-name">
-                            {% if brand.name_web %}
-                            {{brand.name_web}}
-                            {% else %}
-                            {{ brand.name }}
-                            {% endif %}
+            <div class="vendors-index-container">
+                <div class="vendors">
+                    {% for brand in brands %}
+                        <a href="{% url "core:brand_one" brand.slug %}?vendor={{ brand.slug }}"
+                           class="vendor-container">
+                            <div class="vendor-img-container">
+                                {% if brand.img %}<img src="{{ brand.img.url }}" alt="img">{% endif %}
                             </div>
-                    </div>
-                </a>
-                   {% endfor %}
+                            <div class="vendor-name-container">
+                                <div class="vendor-name">
+                                    {% if brand.name_web %}
+                                        {{ brand.name_web }}
+                                    {% else %}
+                                        {{ brand.name }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
-         </div>
-           
-     </div>
+        </div>
     </div>
 {% endblock content %}

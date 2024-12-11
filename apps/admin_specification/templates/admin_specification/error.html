@@ -1,12 +1,13 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-<div style = "display: flex;justify-content: center;
-    align-items: center;
-    margin-top: 100px;" class="">
-    {% if error %}
-        {{error}}
-    {% else %}
-    {% endif %}
-
-</div>
+    <div style="display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 100px"
+         class="">
+        {% if error %}
+            {{ error }}
+        {% else %}
+        {% endif %}
+    </div>
 {% endblock content %}

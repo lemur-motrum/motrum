@@ -250,10 +250,7 @@ window.addEventListener("DOMContentLoaded", () => {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
           projectsCount = pageCount * 10;
-          noneContentText.classList.remove("show");
-          endContent.classList.remove("show");
-          catalogContainer.innerHTML = "";
-          loader.classList.remove("hide");
+          preLoaderLogic();
           loadItems(true);
         };
       }
@@ -262,10 +259,7 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationFirstElem.onclick = () => {
       pageCount = 0;
       projectsCount = 0;
-      noneContentText.classList.remove("show");
-      endContent.classList.remove("show");
-      catalogContainer.innerHTML = "";
-      loader.classList.remove("hide");
+      preLoaderLogic();
       loadItems(true);
     };
 
@@ -281,10 +275,7 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
       projectsCount = pageCount * 10;
-      noneContentText.classList.remove("show");
-      endContent.classList.remove("hide");
-      catalogContainer.innerHTML = "";
-      loader.classList.remove("hide");
+      preLoaderLogic();
       loadItems(true);
     };
 
@@ -303,12 +294,6 @@ window.addEventListener("DOMContentLoaded", () => {
             sliderWrapper.prepend(elem);
             urlParams.set("category_project", slug);
             categoryProjectSlug = slug;
-            loader.classList.remove("hide");
-            catalogContainer.innerHTML = "";
-            noneContentText.classList.remove("show");
-            endContent.classList.remove("show");
-            pageCount = 0;
-            projectsCount = 0;
             if (categoryProjectSlug == "markirovka-chestnyij-znak") {
               markingCategoryWrapper.classList.add("show");
             } else {
@@ -316,27 +301,12 @@ window.addEventListener("DOMContentLoaded", () => {
               urlParams.delete("marking");
               categoryProjectMarkingArray = "";
             }
-            loadItems(true);
           } else {
             elem.classList.remove("active");
             allCategoriesElem.classList.add("active");
             sliderWrapper.prepend(allCategoriesElem);
             categoryProjectSlug = "";
             urlParams.delete("category_project");
-            loader.classList.remove("hide");
-            catalogContainer.innerHTML = "";
-            noneContentText.classList.remove("show");
-            endContent.classList.remove("show");
-            pageCount = 0;
-            projectsCount = 0;
-            if (categoryProjectSlug == "markirovka-chestnyij-znak") {
-              markingCategoryWrapper.classList.add("show");
-            } else {
-              markingCategoryWrapper.classList.remove("show");
-              urlParams.delete("marking");
-              categoryProjectMarkingArray = "";
-            }
-            loadItems(true);
           }
         } else {
           for (let i = 0; i < categriesElems.length; i++) {
@@ -346,14 +316,11 @@ window.addEventListener("DOMContentLoaded", () => {
           sliderWrapper.prepend(allCategoriesElem);
           categoryProjectSlug = "";
           urlParams.delete("category_project");
-          loader.classList.remove("hide");
-          catalogContainer.innerHTML = "";
-          noneContentText.classList.remove("show");
-          endContent.classList.remove("show");
-          pageCount = 0;
-          projectsCount = 0;
-          loadItems(true);
         }
+        preLoaderLogic();
+        pageCount = 0;
+        projectsCount = 0;
+        loadItems(true);
 
         if (categoryProjectSlug == "markirovka-chestnyij-znak") {
           markingCategoryWrapper.classList.add("show");
@@ -367,6 +334,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     filterLogic(clientCategoryWrapper, clientCategoryProjectArray);
     filterLogic(markingCategoryWrapper, categoryProjectMarkingArray, true);
+
+    function preLoaderLogic() {
+      loader.classList.remove("hide");
+      catalogContainer.innerHTML = "";
+      noneContentText.classList.remove("show");
+      endContent.classList.remove("show");
+    }
 
     function filterLogic(wrapper, array, marking = false) {
       openAllFilterElems(wrapper);
@@ -387,27 +361,15 @@ window.addEventListener("DOMContentLoaded", () => {
             );
             if (filterString) {
               urlParams.set(marking ? "marking" : "industry", array.join());
-              loader.classList.remove("hide");
-              catalogContainer.innerHTML = "";
-              noneContentText.classList.remove("show");
-              endContent.classList.remove("show");
-              pageCount = 0;
-              marking
-                ? (categoryProjectMarkingArray = array)
-                : (clientCategoryProjectArray = array);
-              loadItems();
             } else {
               urlParams.set(marking ? "marking" : "industry", array.join(","));
-              loader.classList.remove("hide");
-              catalogContainer.innerHTML = "";
-              noneContentText.classList.remove("show");
-              endContent.classList.remove("show");
-              pageCount = 0;
-              marking
-                ? (categoryProjectMarkingArray = array)
-                : (clientCategoryProjectArray = array);
-              loadItems();
             }
+            preLoaderLogic();
+            pageCount = 0;
+            marking
+              ? (categoryProjectMarkingArray = array)
+              : (clientCategoryProjectArray = array);
+            loadItems();
           } else {
             const activeClientsCatigoriesElems =
               heigtContainer.querySelectorAll(".active");
@@ -420,14 +382,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 activeClientsCatigoriesElems.length - 1
               ].after(elem);
             }
-
             const filteredParamsArray = array.filter((el) => el != filterParam);
             array = filteredParamsArray;
-
-            loader.classList.remove("hide");
-            catalogContainer.innerHTML = "";
-            noneContentText.classList.remove("show");
-            endContent.classList.remove("show");
+            preLoaderLogic();
             if (filteredParamsArray.length == 0) {
               urlParams.delete(marking ? "marking" : "industry");
             } else {

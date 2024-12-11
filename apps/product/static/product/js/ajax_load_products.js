@@ -229,7 +229,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
     catalogButton.onclick = () => {
-      productCount += 10;
+      productCount = 10;
       +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");

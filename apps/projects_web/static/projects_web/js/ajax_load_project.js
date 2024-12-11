@@ -239,6 +239,11 @@ window.addEventListener("DOMContentLoaded", () => {
         markingCategoryWrapper.classList.add("show");
       } else {
         markingCategoryWrapper.classList.remove("show");
+        const markingElems =
+          markingCategoryWrapper.querySelectorAll(".category_elem");
+        markingElems.forEach((el) => {
+          el.classList.remove("active");
+        });
         urlParams.delete("marking");
         categoryProjectMarkingArray = "";
       }
@@ -298,6 +303,11 @@ window.addEventListener("DOMContentLoaded", () => {
               markingCategoryWrapper.classList.add("show");
             } else {
               markingCategoryWrapper.classList.remove("show");
+              const markingElems =
+                markingCategoryWrapper.querySelectorAll(".category_elem");
+              markingElems.forEach((el) => {
+                el.classList.remove("active");
+              });
               urlParams.delete("marking");
               categoryProjectMarkingArray = "";
             }
@@ -328,6 +338,11 @@ window.addEventListener("DOMContentLoaded", () => {
           markingCategoryWrapper.classList.add("show");
         } else {
           markingCategoryWrapper.classList.remove("show");
+          const markingElems =
+            markingCategoryWrapper.querySelectorAll(".category_elem");
+          markingElems.forEach((el) => {
+            el.classList.remove("active");
+          });
           urlParams.delete("marking");
           categoryProjectMarkingArray = "";
         }

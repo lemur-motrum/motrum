@@ -223,11 +223,18 @@
               margin-top: 1.438rem;
               .category_content {
                 display: flex;
+                flex-wrap: wrap;
                 gap: 1.25rem;
+                width: 32.875rem;
+                overflow: hidden;
                 .category_elem {
                   font-size: 1.125rem;
                   font-weight: 300;
                   text-transform: lowercase;
+                  &.check {
+                    color: #95bad4;
+                    font-weight: bold;
+                  }
                 }
               }
               .place_content {
@@ -454,6 +461,20 @@
   .project_one_image_wrapper {
     margin-top: 1.563rem;
     .swiper-wrapper {
+      .project_video_elem {
+        height: 16.5rem;
+        width: auto;
+        border-radius: 2.5rem;
+        overflow: hidden;
+        cursor: pointer;
+        margin-right: 1rem;
+        video {
+          width: 100%;
+          height: 100%;
+          -o-object-fit: cover;
+          object-fit: cover;
+        }
+      }
       .project_one_title_image {
         height: 16.5rem;
         width: auto;
@@ -547,6 +568,12 @@
             -o-object-fit: contain;
             object-fit: contain;
           }
+          video {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: contain;
+            object-fit: contain;
+          }
         }
       }
     }
@@ -624,8 +651,8 @@
           display: flex;
           flex-direction: column;
           gap: 0.2rem;
-          font-size: 1.125rem;
-          font-weight: 300;
+          font-size: 1.125rem !important;
+          font-weight: 300 !important;
           .project_one_description_title {
             font-size: 1.5rem;
             font-weight: bold;
@@ -652,6 +679,9 @@
           p {
             margin: 0;
             padding: 0;
+          }
+          span {
+            font-family: "Nunito", sans-serif !important;
           }
           ol {
             margin: 0;

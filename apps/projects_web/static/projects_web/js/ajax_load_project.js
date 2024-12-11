@@ -257,23 +257,26 @@ window.addEventListener("DOMContentLoaded", () => {
             elem.classList.add("active");
             sliderWrapper.prepend(elem);
             categoryProjectSlug = slug;
-
-            urlParams.set("category", slug);
+            urlParams.set("category_project", slug);
             loader.classList.remove("hide");
             catalogContainer.innerHTML = "";
             noneContentText.classList.remove("show");
             endContent.classList.remove("show");
+            pageCount = 0;
+            projectsCount = 0;
             loadItems(true);
           } else {
             elem.classList.remove("active");
             allCategoriesElem.classList.add("active");
             sliderWrapper.prepend(allCategoriesElem);
             categoryProjectSlug = "";
-            urlParams.delete("category");
+            urlParams.delete("category_project");
             loader.classList.remove("hide");
             catalogContainer.innerHTML = "";
             noneContentText.classList.remove("show");
             endContent.classList.remove("show");
+            pageCount = 0;
+            projectsCount = 0;
             loadItems(true);
           }
         } else {
@@ -283,11 +286,13 @@ window.addEventListener("DOMContentLoaded", () => {
           allCategoriesElem.classList.add("active");
           sliderWrapper.prepend(allCategoriesElem);
           categoryProjectSlug = "";
-          urlParams.delete("category");
+          urlParams.delete("category_project");
           loader.classList.remove("hide");
           catalogContainer.innerHTML = "";
           noneContentText.classList.remove("show");
           endContent.classList.remove("show");
+          pageCount = 0;
+          projectsCount = 0;
           loadItems(true);
         }
 

@@ -110,8 +110,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         # сортировка из блока с ценами
        
-        if price_none == "false":
-            q_object &= Q(price__rub_price_supplier__isnull=False) 
+        if price_none == "true":
+            q_object &= Q(price__rub_price_supplier__isnull=False)
         
         if price_from != 0:
             q_object &= Q(price__rub_price_supplier__gte=price_from)

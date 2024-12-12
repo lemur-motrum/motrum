@@ -364,6 +364,13 @@
                   align-items: center;
                   gap: 0;
                   cursor: pointer;
+                  &.show {
+                    .suplier_elem_content_name {
+                      background-color: #95bad4;
+                      color: #fff;
+                      border: 0.094rem solid #95bad4;
+                    }
+                  }
                   .suplier_elem_content_img_container {
                     width: 3.563rem;
                     height: 3.563rem;
@@ -392,11 +399,6 @@
                     border-radius: 2rem;
                     font-size: 1.313rem;
                     transition: 0.6s;
-                    &.show {
-                      background-color: #95bad4;
-                      color: #fff;
-                      border: 0.094rem solid #95bad4;
-                    }
                   }
                 }
               }

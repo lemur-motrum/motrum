@@ -24,6 +24,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let priceFrom;
     let priceTo;
     let sort;
+    let maxValue;
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -51,6 +52,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const downPriceBtn = producsPriceSortingWrapper.querySelector(
       ".down_price_sorting"
     );
+
+    const priceFilterElemWrapper = document.querySelector(".price_filter_elem");
+    const minInputPrice =
+      priceFilterElemWrapper.querySelector(".small_price_input");
+    const maxInputPrice =
+      priceFilterElemWrapper.querySelector(".big_price_input");
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -142,6 +149,7 @@ window.addEventListener("DOMContentLoaded", () => {
             paginationLastElem.textContent = `${lastPage}`;
             endContent.classList.add("show");
             smallLoader.classList.remove("show");
+            maxValue = +data["price_max"]["price__rub_price_supplier__max"];
 
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);
@@ -184,6 +192,8 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
+            inputValidate(minInputPrice);
+            inputValidate(maxInputPrice, true);
           }
           history.pushState({}, "", currentUrl);
         });
@@ -250,21 +260,20 @@ window.addEventListener("DOMContentLoaded", () => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
 
       filterValues.forEach((filterValue) => {
-        const nameContainer = filterValue.querySelector(
-          ".suplier_elem_content_name"
-        );
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
-              nameContainer.classList.add("show");
+              filterValue.classList.add("show");
+              supplierNameContainer.prepend(filterValue);
             }
           });
         }
         filterValue.onclick = () => {
           paramsArray.push(vendorParam);
-          nameContainer.classList.toggle("show");
-          if (nameContainer.classList.contains("show")) {
+          filterValue.classList.toggle("show");
+          if (filterValue.classList.contains("show")) {
+            supplierNameContainer.prepend(filterValue);
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
               currentUrl.searchParams.set("vendor", paramsArray.join());
@@ -274,6 +283,13 @@ window.addEventListener("DOMContentLoaded", () => {
             pageCount = 0;
             preLoaderLogic();
           } else {
+            const activeSupplierElems =
+              supplierNameContainer.querySelectorAll(".show");
+            if (activeSupplierElems[activeSupplierElems.length - 1]) {
+              activeSupplierElems[activeSupplierElems.length - 1].after(
+                filterValue
+              );
+            }
             const searchParams = currentUrl.searchParams;
             const filteredParamsArray = paramsArray.filter(
               (el) => el !== vendorParam
@@ -290,14 +306,6 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       });
     });
-
-    const priceFilterElemWrapper = document.querySelector(".price_filter_elem");
-    const minInputPrice =
-      priceFilterElemWrapper.querySelector(".small_price_input");
-    const maxInputPrice =
-      priceFilterElemWrapper.querySelector(".big_price_input");
-    inputValidate(minInputPrice);
-    inputValidate(maxInputPrice);
 
     const priceOneFilterContent = priceFilterElemWrapper.querySelector(
       ".price_checkbox_content"
@@ -394,7 +402,15 @@ window.addEventListener("DOMContentLoaded", () => {
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
     }
 
-    function inputValidate(input) {
+    function inputValidate(input, max = false) {
+      const intervalMaxValue = setInterval(() => {
+        if (maxValue) {
+          clearInterval(intervalMaxValue);
+          if (max) {
+            input.placeholder = maxValue.toString();
+          }
+        }
+      }, 5);
       input.addEventListener("input", function (e) {
         const currentValue = this.value
           .replace(",", ".")
@@ -409,6 +425,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         if (input.value == "0") {
           e.target.value = "";
+        }
+        if (maxValue) {
+          if (+input.value >= maxValue) {
+            e.target.value = maxValue;
+          }
         }
       });
     }

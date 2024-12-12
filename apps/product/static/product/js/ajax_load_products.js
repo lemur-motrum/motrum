@@ -59,6 +59,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const maxInputPrice =
       priceFilterElemWrapper.querySelector(".big_price_input");
 
+    const offsetTop =
+      document.querySelector(".bread_crumbs").getBoundingClientRect().top +
+      window.scrollY;
+
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
         if (paginationElems[i].textContent == pageCount + 1) {
@@ -219,7 +223,6 @@ window.addEventListener("DOMContentLoaded", () => {
           ? upPriceBtn.classList.add("active")
           : downPriceBtn.classList.add("active");
       }
-
       loadItems();
     };
 
@@ -273,6 +276,7 @@ window.addEventListener("DOMContentLoaded", () => {
           paramsArray.push(vendorParam);
           filterValue.classList.toggle("show");
           if (filterValue.classList.contains("show")) {
+            scrollToTop(offsetTop);
             supplierNameContainer.prepend(filterValue);
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
@@ -332,14 +336,14 @@ window.addEventListener("DOMContentLoaded", () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
       pageCount = 0;
+      scrollToTop(offsetTop);
       preLoaderLogic();
     };
 
     cancelFilterButton.onclick = () => {
       const filterValues = document.querySelectorAll(".suplier_elem_content");
       filterValues.forEach((el) => {
-        const nameSupplier = el.querySelector(".suplier_elem_content_name");
-        nameSupplier.classList.remove("show");
+        el.classList.remove("show");
       });
       priceFrom = "";
       priceTo = "";
@@ -355,6 +359,7 @@ window.addEventListener("DOMContentLoaded", () => {
       urlParams.delete("price");
       urlParams.delete("vendor");
       checkboxZone.classList.remove("checked");
+      scrollToTop(offsetTop);
       preLoaderLogic();
     };
 
@@ -400,6 +405,13 @@ window.addEventListener("DOMContentLoaded", () => {
     function addAjaxCatalogItem(ajaxElemData) {
       let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+    }
+
+    function scrollToTop(arhor) {
+      window.scrollTo({
+        top: arhor,
+        behavior: "smooth",
+      });
     }
 
     function inputValidate(input, max = false) {

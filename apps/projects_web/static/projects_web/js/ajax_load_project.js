@@ -34,6 +34,10 @@ window.addEventListener("DOMContentLoaded", () => {
       ".all_categories_elem"
     );
 
+    const offsetTop =
+      document.querySelector(".bread_crumbs").getBoundingClientRect().top +
+      window.scrollY;
+
     let pageCount = 0;
     let projectsCount = 0;
     let lastPage = 0;
@@ -369,6 +373,7 @@ window.addEventListener("DOMContentLoaded", () => {
       categoryElems.forEach((elem) => {
         elem.onclick = () => {
           elem.classList.toggle("active");
+          scrollToTop(offsetTop);
           const filterParam = elem.getAttribute("param");
           if (elem.classList.contains("active")) {
             heigtContainer.prepend(elem);
@@ -413,6 +418,13 @@ window.addEventListener("DOMContentLoaded", () => {
             loadItems();
           }
         };
+      });
+    }
+
+    function scrollToTop(arhor) {
+      window.scrollTo({
+        top: arhor,
+        behavior: "smooth",
       });
     }
 

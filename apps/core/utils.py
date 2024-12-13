@@ -986,6 +986,7 @@ def save_specification(
 
             product = Product.objects.get(id=product_item["product_id"])
             price_data = float(product_item["price_one"])
+            
             if product_item["sale_motrum"]:
                 sale_motrum_data = product_item["sale_motrum"]
                 sale_motrum_data = sale_motrum_data.replace(".", "")
@@ -1007,11 +1008,18 @@ def save_specification(
                 price_one = price_data
                 price_one_motrum =  price_one - (price_one / 100 * sale_motrum_data)
                 price_one_motrum = round(price_one_motrum, 2)
+                product_price_catalog = None
+                
+                
             else:
                 price_one = product_item["price_one"]
                 price_one_motrum = price_one - (price_one / 100 * sale_motrum_data)
                 price_one_motrum = round(price_one_motrum, 2)
-        
+                product_price_catalog = Price.objects.get(prod=product).rub_price_supplier
+                
+                
+  
+            
             # если есть доп скидка отнять от цены поставщика
             if (
                 product_item["extra_discount"] != "0"
@@ -1081,6 +1089,7 @@ def save_specification(
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
             product_spes.id_cart_id = int(product_item["id_cart"])
+            product_spes.product_price_catalog = product_price_catalog
 
             # запись дат
             date_delivery = product_item["date_delivery"]
@@ -1170,6 +1179,8 @@ def save_specification(
             product_spes.comment = product_item["comment"]
             product_spes.vendor_id = int(product_item["vendor"])
             product_spes.id_cart_id = int(product_item["id_cart"])
+            
+            
             date_delivery = product_item["date_delivery"]
             if date_delivery != "" and date_delivery != None:
                 product_spes.date_delivery = datetime.datetime.strptime(

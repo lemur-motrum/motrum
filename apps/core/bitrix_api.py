@@ -1,4 +1,5 @@
 from ast import Try
+import datetime
 import os
 import random
 import traceback
@@ -9,9 +10,10 @@ from requests import Response
 
 from apps.client.api.serializers import OrderSerializer
 from apps.client.models import STATUS_ORDER_BITRIX, Order
+from apps.core.models import Currency
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
 from apps.logs.utils import error_alert
-from apps.product.models import Cart
+from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
 
@@ -210,9 +212,10 @@ def get_status_order():
         info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
 
+
 # сохранение всех данных по заказу:
-def add_info_order(request, order,type_save):
-    
+def add_info_order(request, order, type_save):
+
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
     # pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
@@ -225,17 +228,16 @@ def add_info_order(request, order,type_save):
     #     document_specification = None
 
     # ТОВАРЫ СДЕЛКИ
-    is_order_pros_bx = save_product_order_bx(bx,order)
+    is_order_pros_bx = save_product_order_bx(bx, order)
 
-    
     if is_order_pros_bx:
         return True
     else:
         return False
-    
+
 
 # add_info_order сохранение товаров  в заказ битрикс
-def save_product_order_bx(bx,order):
+def save_product_order_bx(bx, order):
     order_products = ProductSpecification.objects.filter(
         specification=order.specification
     )
@@ -256,7 +258,6 @@ def save_product_order_bx(bx,order):
         "rows": order_products_data,
     }
 
-
     # product_bx = bx.call("crm.deal.productrows.set", data_bx_product)
     # print(product_bx)
     # product_bx = bx.get_all("crm.item.productrow.fields",)
@@ -270,38 +271,111 @@ def save_product_order_bx(bx,order):
     #     },
     # )
     # print(product_bx)
-    
+
     # product_bx = bx.call("crm.item.get", data_bx_product)
     # product_bx_get = bx.call("crm.deal.productrows.get", data_bx_product)
     # print(product_bx_get)
-    
+
     return False
 
-# сохранение информации по товарам после 1с 
+
+# сохранение информации по товарам после 1с
 def save_product_info_bx():
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
 
+
 # новые документы после появления точных сроков поставки
-def save_new_doc_bx(pdf,pdf_signed):
+def save_new_doc_bx(pdf, pdf_signed):
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
 
 
+# выгрузка в битрикс данных по товарам
 def save_params_product_bx(data):
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-    
+
     return True
 
+
+# выгрузка в битрикс данных по оплатам
 def save_payment_order_bx(data):
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-    
+
     return True
 
+
+# выгрузка в битрикс данных по отгурзке товаров
 def save_shipment_order_bx(data):
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-    
+
     return True
+
+
+def currency_check_bx():
+    
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    
+    get_order_carrency_up()
+
+    return True
+
+
+def get_order_carrency_up():
+    data_order_curr = {}
+    currency_list = Currency.objects.exclude(words_code="RUB")
+
+    now = datetime.datetime.now()
+    three_days = datetime.timedelta(3)
+    in_three_days = now - three_days
+    data_old = in_three_days.strftime("%Y-%m-%d")
+    print(data_old)
+
+    for currency in currency_list:
+        curr_name =  currency.words_code
+        print(curr_name)
+        old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
+        now_rate = CurrencyRate.objects.get(currency=currency, date=now)
+        old_rate_count = old_rate.vunit_rate
+        new_rate_count = now_rate.vunit_rate
+        difference_count = new_rate_count - old_rate_count
+        count_percent = old_rate_count / 100 * 3
+        if difference_count > count_percent:
+            product_specification = (
+                ProductSpecification.objects.filter(
+                    product_currency=now_rate.currency,
+                )
+                .exclude(specification__order__status__in=["CANCELED", "COMPLETED"])
+                .distinct("specification__order")
+                .values("specification__order","specification__order__id_bitrix")
+                .exclude(specification__order=None)
+            )
+            data_order_curr[curr_name] = product_specification
+        
+    
+    print(data_order_curr)
+
+def get_product_price_up():
+    order = Order.objects.exclude(status__in=["COMPLETED","CANCELED"])
+    data_order = []
+    for order_item in order:
+        order_item_data = {
+            "order":order_item.id,
+            "bitrix_id_order":order_item.id_bitrix,
+            "order_item_data": []
+        }
+        products = ProductSpecification.objects.filter(specification=order.specification)
+        for prod in products:
+            if prod.product_price_catalog:
+                now_price = Price.objects.get(prod=prod.product).rub_price_supplier
+                difference_count = now_price - prod.product_price_catalog
+                count_percent = prod.product_price_catalog / 100 * 3
+                if difference_count > count_percent:
+                    d = {
+                        "prod":prod
+                    }
+                    order_item_data["order_item_data"].append 

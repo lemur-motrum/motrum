@@ -13,10 +13,11 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     #таски битрикс
-    'get_status_order_bx': {
-        'task': 'apps.core.tasks.get_status_order_bx',
-        'schedule': crontab(minute=0, hour='6-21'),
-    },
+    # 'get_status_order_bx': {
+    #     'task': 'apps.core.tasks.get_status_order_bx',
+    #     'schedule': crontab(minute=0, hour='6-21'),
+    # },
+    
     #таски ночные для обновления окт
     'counter_bill_new_year': {
         'task': 'apps.core.tasks.counter_bill_new_year',

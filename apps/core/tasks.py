@@ -1,4 +1,5 @@
 import datetime
+from trace import Trace
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
@@ -18,7 +19,7 @@ from django.db.models import Prefetch, OuterRef
     max_retries=10,
 )
 def get_currency(self):
-  
+    print("get_currency")
     try:
         # del_currency()
         currency_list = Currency.objects.exclude(words_code="RUB")
@@ -29,6 +30,7 @@ def get_currency(self):
         ElementInclude.include(root)
         date = datetime.datetime.now()
         for current in currency_list:
+            print(current)
             current_world_code = current.words_code
             value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
             vunit_rate = item.findtext(
@@ -44,8 +46,10 @@ def get_currency(self):
                 date=date,
                 defaults={"value": v, "vunit_rate": vi, "count": int(count)},
             )
+            print(now_rate)
             update_currency_price(current, current_world_code)
-            currency_chek(current, now_rate[0])
+            print(current, now_rate[0])
+            # currency_chek(current, now_rate[0])
 
     except Exception as exc:
         if self.request.retries >= self.max_retries:
@@ -78,21 +82,33 @@ def update_currency_price(currency, current_world_code):
 
 # проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны
 def currency_chek(current, now_rate):
-
-    old_rate = CurrencyRate.objects.filter(
-        currency=current,
-    ).earliest("date")
+    now = datetime.datetime.now()
+    three_days = datetime.timedelta(3)
+    in_three_days = now - three_days
+    data_old = in_three_days.strftime("%Y-%m-%d")
+    print(data_old)
+    old_rate = CurrencyRate.objects.get(
+        currency=current,date=data_old
+    )
+    print(old_rate)
+    # old_rate = CurrencyRate.objects.filter(
+    #     currency=current,
+    # ).earliest("date")
     old_rate_count = old_rate.vunit_rate
     new_rate_count = now_rate.vunit_rate
     # difference_count = old_rate_count - new_rate_count
     difference_count = new_rate_count - old_rate_count
 
     count_percent = old_rate_count / 100 * 3
-    
+    print(difference_count,count_percent)
     if difference_count > count_percent:
        
         try:
-            pass
+            print(difference_count)
+            
+            product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, ).exclude(specification__order__status__in=["CANCELED","COMPLETED"]).distinct("specification__order").values('specification',"specification__order").exclude(specification__order=None)
+            print(product_specification)
+            
             # product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
             # for prod in product_specification:
             #     specification = Specification.objects.get(

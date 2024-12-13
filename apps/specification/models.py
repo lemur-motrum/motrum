@@ -132,6 +132,11 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    product_price_catalog = models.FloatField(
+        "Цена в каталоге в момент покупки",
+        blank=True,
+        null=True,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -177,7 +182,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
-
+    
     price_one = models.FloatField("Цена одного на момент формирования")
     price_one_original_new = models.FloatField("Цена одного для нового товара без скидки",blank=True,
         null=True,)

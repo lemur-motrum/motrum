@@ -5,13 +5,13 @@ from django.shortcuts import render
 from regex import D
 from apps.client.models import Order
 from apps.client.task import actual_info_order_product
-from apps.core.bitrix_api import add_info_order, get_status_order
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_status_order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
-from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, update_currency_price
+from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
@@ -42,8 +42,7 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    order=Order.objects.get(id_bitrix=2)
-    add_info_order(request, order)
+    currency_check_bx()
     result = 1
     if result:
         pass
@@ -147,35 +146,35 @@ def add_holidays(request):
 
 
 # получение валют вручную
-def get_currency(request):
-    del_currency()
-    currency_list = Currency.objects.exclude(words_code="RUB")
-    resp = "https://www.cbr.ru/scripts/XML_daily.asp"
-    response = urlopen(resp)
-    item = ET.parse(response)
-    root = item.getroot()
-    ElementInclude.include(root)
-    date = datetime.datetime.now()
-    for current in currency_list:
-        current_world_code = current.words_code
-        value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
-        vunit_rate = item.findtext(
-            f".//Valute[CharCode='{current_world_code}']/VunitRate"
-        )
-        count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
+# def get_currency(request):
+#     del_currency()
+#     currency_list = Currency.objects.exclude(words_code="RUB")
+#     resp = "https://www.cbr.ru/scripts/XML_daily.asp"
+#     response = urlopen(resp)
+#     item = ET.parse(response)
+#     root = item.getroot()
+#     ElementInclude.include(root)
+#     date = datetime.datetime.now()
+#     for current in currency_list:
+#         current_world_code = current.words_code
+#         value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
+#         vunit_rate = item.findtext(
+#             f".//Valute[CharCode='{current_world_code}']/VunitRate"
+#         )
+#         count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
 
-        v = float(value.replace(",", "."))
-        vi = float(vunit_rate.replace(",", "."))
+#         v = float(value.replace(",", "."))
+#         vi = float(vunit_rate.replace(",", "."))
 
-        now_rate = CurrencyRate.objects.get_or_create(
-            currency=current,
-            date=date,
-            defaults={"value": v, "vunit_rate": vi, "count": int(count)},
-        )
-        update_currency_price(current, current_world_code)
-        currency_chek(current, now_rate[0])
-    context = {}
-    return render(request, "supplier/supplier.html", context)
+#         now_rate = CurrencyRate.objects.get_or_create(
+#             currency=current,
+#             date=date,
+#             defaults={"value": v, "vunit_rate": vi, "count": int(count)},
+#         )
+#         update_currency_price(current, current_world_code)
+#         currency_chek(current, now_rate[0])
+#     context = {}
+#     return render(request, "supplier/supplier.html", context)
 
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):

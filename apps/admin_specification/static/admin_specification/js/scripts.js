@@ -50,11 +50,8 @@ function setCurrentPriceCataloItem(elems) {
 //логика страницы каталога
 function catalogLogic(elems) {
   elems.forEach((catalogItem) => {
-    showInformation(catalogItem);
-
     const productId = catalogItem.getAttribute("data-id");
     const buttonContainer = catalogItem.querySelector(".quantity-buttons");
-
     const plusButton = buttonContainer.querySelector(".plus-button");
     const minusButton = buttonContainer.querySelector(".minus-button");
     const addSpecificationButton = catalogItem.querySelector(
@@ -419,17 +416,20 @@ window.addEventListener("DOMContentLoaded", () => {
                                 }
                                 </div>
                             </div>
-                            <div class="item-buttons_container">
-                                <div class="quantity-buttons">
-                                    <button disabled class="minus-button">-</button>
-                                    <input type="number"
-                                           value="0"
-                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                           maxlength="3"
-                                           onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                                <div class="item_button_container">
+                                <div class="first_display_button">
+                                    <span class="descr">в корзину</span>
+                                    <span class="plus_icon"></span>
                                 </div>
-                                <button disabled class="add-specification-button">В корзину</button>
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button"></button>
+                                    <input type="number"
+                                           value="1"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="5"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button"></button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
@@ -1120,6 +1120,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     function openSearchWindow() {
       searchDescriptionField.style.display = "flex";
+      searchDescriptionField.style.gap = "";
       searchDescriptionField.style.opacity = "1";
     }
     function closeSearchWindow() {

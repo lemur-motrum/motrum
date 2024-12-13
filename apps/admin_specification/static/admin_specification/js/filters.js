@@ -1,20 +1,29 @@
 import { getCookie } from "/static/core/js/functions.js";
-let currentUrl = new URL(window.location.href);
+const currentUrl = new URL(window.location);
+const urlParams = currentUrl.searchParams;
 
 window.addEventListener("DOMContentLoaded", () => {
   const adminSpecificationsFilters = document.querySelector(
     ".admin_specification_filters"
   );
   if (adminSpecificationsFilters) {
+    const sliderFilters = new Swiper(".vendor_filters", {
+      slidesPerView: "auto",
+      navigation: {
+        nextEl: ".next_btn_verndor_filter",
+      },
+    });
     const vendorsFilter =
       adminSpecificationsFilters.querySelector(".vendor_filters");
+    const resertBtn =
+      adminSpecificationsFilters.querySelector(".resert_filters");
     if (vendorsFilter) {
+      const sliderWrapper = vendorsFilter.querySelector(".swiper-wrapper");
       const filterValues = vendorsFilter.querySelectorAll(
         ".filter_elem_content"
       );
 
       let paramsArray = [];
-      const urlParams = new URL(document.location).searchParams;
 
       if (urlParams.get("vendor")) {
         const urlsParamArray = urlParams.get("vendor").split(",");
@@ -24,33 +33,41 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       filterValues.forEach((filterValue) => {
-        const checkbox = filterValue.querySelector(".checked");
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
-              checkbox.classList.add("show");
+              filterValue.classList.add("active");
+              sliderWrapper.prepend(filterValue);
+              resertBtn.classList.add("show");
             }
           });
         }
+        resertBtn.onclick = () => {
+          paramsArray = [];
+          filterValue.classList.remove("active");
+          urlParams.delete("vendor");
+          history.pushState({}, "", currentUrl);
+          window.location.reload();
+        };
+
         filterValue.onclick = () => {
           paramsArray.push(vendorParam);
-          checkbox.classList.toggle("show");
-          if (checkbox.classList.contains("show")) {
-            if (window.location.href.includes("?vendor")) {
-              currentUrl.searchParams.set("vendor", paramsArray.join());
+          filterValue.classList.toggle("active");
+          if (filterValue.classList.contains("active")) {
+            if (urlParams.has("vendor")) {
+              urlParams.set("vendor", paramsArray.join());
             } else {
-              currentUrl.searchParams.set("vendor", paramsArray.join(","));
+              urlParams.set("vendor", paramsArray.join(","));
             }
           } else {
-            const searchParams = currentUrl.searchParams;
             const filteredParamsArray = paramsArray.filter(
               (el) => el !== vendorParam
             );
             paramsArray = filteredParamsArray;
-            searchParams.set("vendor", paramsArray.join());
+            urlParams.set("vendor", paramsArray.join());
             if (filteredParamsArray.length == 0) {
-              searchParams.delete("vendor", paramsArray.join());
+              urlParams.delete("vendor");
             }
           }
           history.pushState({}, "", currentUrl);
@@ -58,6 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       });
     }
+
     const productCatalogArticles = document.querySelector(
       ".product-catalog-articles"
     );

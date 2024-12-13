@@ -1,14 +1,7 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="specification-content">
-        {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
             {% if group %}
                 <a href="{% url "admin_specification:groups" group.category.pk %}">Назад</a>

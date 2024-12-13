@@ -1,19 +1,26 @@
+{% load static %}
 <div class="admin_specification_filters">
-    <div class="filter_content vendor_filters">
-        {% for vendor in product_vendor %}
-            <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
-                <div class="checkbox">
-                    <div class="checked"></div>
-                </div>
-                <div class="filter_name">
+    <div class="admin_specification_filters_title">
+        Фильтр по производителям <span class="resert_filters">Сбросить</span>
+    </div>
+    <div class="vendor_filters">
+        <div class="swiper-wrapper">
+            {% for vendor in product_vendor %}
+                <div param="{{ vendor.vendor__slug }}"
+                     class="filter_elem_content swiper-slide">
                     {% if vendor.vendor__name %}
                         {{ vendor.vendor__name }}
                     {% else %}
                         Неизвестный производитель
                     {% endif %}
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="next_btn_verndor_filter">
+        <div class="img_container">
+            <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+        </div>
     </div>
 </div>
 <div class="catalog_container">
@@ -24,7 +31,8 @@
         <div class="article">Остатки</div>
         <div class="article">Упак.</div>
         <div class="article">
-            Цена закуп. <span param="" class="price_arrow">&uarr;</span>
+            Закуп.
+            <span style="display:none" param="" class="price_arrow">&uarr;</span>
         </div>
         <div class="article">Цена</div>
     </div>
@@ -94,15 +102,17 @@
                                 </div>
                                 <div class="lot">
                                     {% if product.stock %}
+                                        <span>
+                                            {% if product.stock.lot_complect != 1 %}
+                                                {{ product.stock.lot_complect }}{{ product.stock.lot.name_shorts }}.
+                                            {% else %}
+                                                {{ product.stock.lot_complect }}
+                                                {{ product.stock.lot.name_shorts }}.
+                                            {% endif %}
+                                        </span>
                                         {% if product.stock.order_multiplicity != 1 and product.stock.is_one_sale == False %}
-                                            <span class="span-min">Заказ по {{ product.stock.order_multiplicity }}
+                                            <span class="span-min">заказ по {{ product.stock.order_multiplicity }}
                                             {{ product.stock.lot.name_shorts }}</span>
-                                        {% endif %}
-                                        {% if product.stock.lot_complect != 1 %}
-                                            {{ product.stock.lot_complect }}{{ product.stock.lot.name_shorts }}.
-                                        {% else %}
-                                            {{ product.stock.lot_complect }}
-                                            {{ product.stock.lot.name_shorts }}.
                                         {% endif %}
                                     {% else %}
                                         -
@@ -110,21 +120,36 @@
                                 </div>
                                 <div class="suppler-price">
                                     {% if product.price.price_motrum and product.price.price_motrum != 0 %}
-                                        <span class="price-suppler-count">{{ product.price.price_motrum }}</span> 
+                                        <span class="price-suppler-count">{{ product.price.price_motrum }}</span>
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}
                                 </div>
                                 <div class="price">
                                     {% if product.price.rub_price_supplier and product.price.rub_price_supplier != 0 %}
-                                        <span class="span-update">{{ product.price.data_update|date:"d.m.Y" }}</span>
-                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span> 
+                                        <span class="price-count">{{ product.price.rub_price_supplier }}</span>
+                                        <span class="span-update">от {{ product.price.data_update|date:"d.m.Y" }}</span>
                                     {% else %}
                                         <span>По запросу</span>
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="item-buttons_container">
+                            <div class="item_button_container">
+                                <div class="first_display_button">
+                                    <span class="descr">в корзину</span>
+                                    <span class="plus_icon"></span>
+                                </div>
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button"></button>
+                                    <input type="number"
+                                           value="1"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="5"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button"></button>
+                                </div>
+                            </div>
+                            <div style="display:none" class="item-buttons_container">
                                 <div class="quantity-buttons">
                                     <button disabled class="minus-button">-</button>
                                     <input type="number"

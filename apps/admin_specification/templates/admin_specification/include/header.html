@@ -1,0 +1,16 @@
+{% load static %}
+{% load cart %}
+<div class="header_okt">
+    <div class="header-left-content">
+        <div class="logo-container">
+            <img src="{% static "core/images/logo.png" %}" />
+        </div>
+        {% include "admin_specification/include/bread_crumbs.html" %}
+    </div>
+    <div class="header-right-content">
+        <div class="specification-link-container">{% cart %}</div>
+        <a class="logout_btn" title="Выйти" href="{% url "user:logout_admin" %}">
+            <img src="{% static "core/images/header_account.png" %}" />
+        </a>
+    </div>
+</div>

@@ -2,16 +2,8 @@
 {% block content %}
     {% load cart %}
     {% load number_into_digits %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="all_specifications_container">
-        {% include "admin_specification/include/bread_crumbs.html" %}
-        <div class="specification-link-container">{% cart %}</div>
         <h1 class="title">
             <span class="all_orders active">{{ title }}</span><span class="orders_without_specifications">Корзины без заказа</span>
         </h1>
@@ -53,4 +45,3 @@
         </div>
     </div>
 {% endblock content %}
-

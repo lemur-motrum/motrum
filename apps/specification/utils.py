@@ -24,6 +24,7 @@ from django.conf import settings
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from django.db.models import Prefetch, OuterRef
+import requests
 
 
 from apps.logs.utils import error_alert
@@ -569,3 +570,39 @@ def get_document_bill_path(instance, filename):
     name_specification = f"счет_{instance.id}.pdf"
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
+
+def get_shipment_doc_path(instance, filename):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
+
+    directory = check_spesc_directory_exist(
+        "shipment",
+    )
+    name_specification = f"отгрузка_{instance.id}{instance.date}.pdf"
+    file_last_list = filename.split(".")
+    type_file = "." + file_last_list[-1]
+    
+def save_shipment_doc(link,document_shipment):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
+    print(link,document_shipment)
+    print(document_shipment.id)
+    print(document_shipment.date)
+    directory = check_spesc_directory_exist(
+        "shipment",
+    )
+    name = f"отгрузка_{document_shipment.id}{document_shipment.date}.pdf"
+    print(name)
+    # file_last_list = filename.split(".")
+    # type_file = "." + file_last_list[-1]
+    name_doc = f"{name}"
+    path_doc = "{0}/{1}".format(
+        directory,
+        name_doc,
+    )
+    r = requests.get(link, stream=True)
+    with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
+        ofile.write(r.content)
+    
+    return "{0}/{1}".format(
+        "shipment",
+        name_doc,
+    )

@@ -32,6 +32,8 @@ from apps.core.bitrix_api import (
     order_bitrix,
     save_new_doc_bx,
     save_params_product_bx,
+    save_payment_order_bx,
+    save_shipment_order_bx,
 )
 from apps.core.models import BaseInfoAccountRequisites
 from apps.logs.utils import error_alert
@@ -59,8 +61,10 @@ from apps.client.models import (
     STATUS_ORDER_INT,
     AccountRequisites,
     Client,
+    DocumentShipment,
     EmailsCallBack,
     Order,
+    PaymentTransaction,
     Requisites,
 )
 from apps.core.utils import (
@@ -92,7 +96,7 @@ from apps.specification.api.serializers import (
     SpecificationSerializer,
 )
 from apps.specification.models import ProductSpecification, Specification
-from apps.specification.utils import crete_pdf_specification
+from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 
 
@@ -1451,16 +1455,23 @@ class OrderViewSet(viewsets.ModelViewSet):
     def save_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
         data = request.data
-        bill_sum_paid = data["bill_sum_paid"]
+        bill_sum_paid = float(data["bill_sum_paid"])
+        date_tarnsaction = datetime.datetime.now()
+
         old_sum = order.bill_sum_paid
-        new_sum = old_sum + float(bill_sum_paid)
+        new_sum = old_sum + bill_sum_paid
+        tarnsaction = PaymentTransaction.objects.create(
+            order=order, date=date_tarnsaction, amount=bill_sum_paid
+        )
         order.bill_sum_paid = new_sum
         order._change_reason = "Ручное"
         order.save()
+
         if order.bill_sum_paid == order.bill_sum:
             is_all_sum = True
         else:
             is_all_sum = False
+
         data = {"all_bill_sum_paid": new_sum, "is_all_sum": is_all_sum}
         if new_sum:
             return Response(data, status=status.HTTP_200_OK)
@@ -1651,7 +1662,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 #     birtix_ok = False
 
     @action(detail=False, methods=["post"], url_path=r"add-payment-info-1c")
-    def add_info_order_1c(self, request, *args, **kwargs):
+    def add_payment_order_1c(self, request, *args, **kwargs):
         try:
             data = [
                 {
@@ -1660,23 +1671,56 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "date_transaction": "22-11-2024",
                 },
             ]
+
             for data_item in data:
-                order = Order.objects.filter()
-            
+                print(data_item)
+                order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
+                amount_sum = float(data_item["amount_sum"])
+                date_tarnsaction = datetime.datetime.strptime(
+                    data_item["date_transaction"], "%d-%m-%Y"
+                ).date()
+                tarnsaction = PaymentTransaction.objects.create(
+                    order=order, date=date_tarnsaction, amount=data_item["amount_sum"]
+                )
+                order.bill_sum_paid = order.bill_sum_paid + amount_sum
+                order.save()
+                print(tarnsaction)
+            return Response(None, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
             error = "file_api_error"
-            location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
+            location = "Получение\сохранение данных o оплатах 1с "
+            info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
+        finally:
+            save_payment_order_bx(data)
 
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
-    def add_info_order_1c(self, request, *args, **kwargs):
+    def add_shipment_order_1c(self, request, *args, **kwargs):
         try:
-            pass
+            data = [
+                {
+                    "bitrix_id": "2373",
+                    "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
+                    "date": "22-11-2024",
+                },
+            ]
+            for data_item in data:
+                print(data_item)
+                order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
+                date = datetime.datetime.strptime(data_item["date"], "%d-%m-%Y").date()
+                document_shipment = DocumentShipment.objects.create(
+                    order=order, date=date
+                )
+                image_path = save_shipment_doc(data_item["pdf"], document_shipment)
+                print(image_path)
+                document_shipment.file = image_path
+                document_shipment.save()
+
+            return Response(None, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -1685,6 +1729,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
+        finally:
+            save_shipment_order_bx(data)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

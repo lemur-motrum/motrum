@@ -36,8 +36,6 @@ def catalog_all(request):
     category = CategoryProduct.objects.all().order_by("article_name")
     vendors = Vendor.objects.filter(is_view_index_web=True)
 
-    
-
     context = {
         "category": category,
         "title": "Товары",
@@ -77,7 +75,7 @@ def catalog_group(request, category):
         # vendor = Vendor.objects.filter()
         q_object = Q()
         q_object &= Q(check_to_order=True, in_view_website=True)
- 
+
         if category is not None:
             # q_object &= Q(category__slug=category)
             if category == "other":
@@ -97,7 +95,7 @@ def catalog_group(request, category):
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-      
+
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -162,7 +160,6 @@ def products_items(request, category, group):
         "another_groups": get_another_groups(),
         "title": current_group.name,
         "media_url": media_url,
-        
     }
 
     return render(request, "product/catalog.html", context)
@@ -248,11 +245,13 @@ def product_one_without_group(request, category, article):
 
 # страница брендов общая
 def brand_all(request):
+
     brands = (
-        Vendor.objects.all()
+        Vendor.objects.filter(product__isnull=False, product__in_view_website=True)
+        .distinct()
         .order_by("article", "name")
     )
-  
+
     context = {
         "brands": brands,
     }
@@ -263,7 +262,6 @@ def brand_all(request):
 # страница бренда одного с товарами
 def brand_one(request, vendor):
     brand = Vendor.objects.get(slug=vendor)
-
 
     context = {
         "brand": brand,

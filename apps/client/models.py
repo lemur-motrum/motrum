@@ -12,7 +12,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.specification.models import Specification
-from apps.specification.utils import get_document_bill_path
+from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 
@@ -625,3 +625,23 @@ class PaymentTransaction(models.Model):
         null=True,
     )
     
+    
+class DocumentShipment(models.Model):
+    order = models.ForeignKey(
+        Order,
+        verbose_name="Заказ",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        verbose_name="Дата оплаты",
+        blank=True,
+        null=True,
+    )
+    file = models.FileField(
+        "Фаил счета",
+        upload_to=get_shipment_doc_path,
+        blank=True,
+        null=True,
+    )

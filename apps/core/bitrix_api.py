@@ -293,3 +293,15 @@ def save_params_product_bx(data):
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
     
     return True
+
+def save_payment_order_bx(data):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    
+    return True
+
+def save_shipment_order_bx(data):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    
+    return True

@@ -1,17 +1,8 @@
 {% extends "core/base_okt.html" %}
+{% load static %}
 {% block content %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="all-categories-content">
-        <div class="all-categories-content_top-menu">
-            {% include "admin_specification/include/bread_crumbs.html" %}
-            {% include "admin_specification/include/search_form.html" %}
-        </div>
         <div class="categories-container">
             {% for category in categories %}
                 <a href="{% if category.groupproduct_set.all %}{% url "admin_specification:groups" category.pk %} {% else %} {% url "admin_specification:instruments" category.pk %} {% endif %}"
@@ -19,7 +10,19 @@
                     <span>{{ category.name }}</span>
                 </a>
             {% endfor %}
+            <div class="category_show_container show">
+                <span class="show">развернуть
+                    <br>
+                все разделы</span>
+                <span class="hide">свернуть
+                    <br>
+                разделы</span>
+                <div class="img-arrow-container">
+                    <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                </div>
+            </div>
         </div>
+        <div class="all-categories-content_top-menu">{% include "admin_specification/include/search_form.html" %}</div>
         {% include "admin_specification/include/catalog_items.html" %}
     </div>
 {% endblock content %}

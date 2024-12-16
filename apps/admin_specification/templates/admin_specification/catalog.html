@@ -1,15 +1,8 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div order={{ order }} class="specification-container okt_cart_container">
-        {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
         {{ type_save_cookee }}

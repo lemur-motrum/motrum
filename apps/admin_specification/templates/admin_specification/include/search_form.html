@@ -1,5 +1,5 @@
-{% load cart %}
 <div class="search-container">
+    <div class="search-container-title">Поиск</div>
     <form class="search-form-container"
           category="{% if category %}{{ category.pk }}{% endif %}"
           group="{% if group %}{{ group.pk }}{% endif %}"
@@ -17,8 +17,6 @@
             <div class="search-elem-fields">
                 <div class="loader">loading</div>
             </div>
-            <button type="submit">Найти</button>
         </div>
     </form>
-    <div class="specification-link-container">{% cart %}</div>
 </div>

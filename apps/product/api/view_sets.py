@@ -382,8 +382,9 @@ class CartViewSet(viewsets.ModelViewSet):
     # добавить товар в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product")
     def add_product_cart(self, request, *args, **kwargs):
-
+        print(111111111111)
         queryset = ProductCart.objects.filter(cart_id=kwargs["cart"])
+        print(queryset)
         serializer_class = ProductCartSerializer
         data = request.data
         # товар без записи в окт
@@ -404,23 +405,25 @@ class CartViewSet(viewsets.ModelViewSet):
 
             # data["product_price"] =
         # обновление товара
+        print(data["product"])
+        print(queryset)
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-
+            print(product)
             data["id"] = product.id
-
             serializer = serializer_class(product, data=data, many=False)
             if serializer.is_valid():
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"])
+                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"],product=data["product"])
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
         except ProductCart.DoesNotExist:
+            print(88888888888)
             data["product_price"] = product_price
             data["product_sale_motrum"] = product_sale_motrum
             serializer = serializer_class(data=data, many=False)
@@ -428,7 +431,7 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"])
+                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"],product=data["product"])
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:

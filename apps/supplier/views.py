@@ -42,7 +42,9 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    currency_check_bx()
+    order = Order.objects.get(id_bitrix=34534)
+    type_save = "new"
+    add_info_order(request, order, type_save)
     result = 1
     if result:
         pass

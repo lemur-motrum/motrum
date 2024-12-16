@@ -218,6 +218,9 @@ def add_info_order(request, order, type_save):
 
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
+    orders = [2]
+    orders_bx = bx.get_by_ID("crm.deal.get", orders)
+    print(orders_bx)
     # pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
     # pdf_signed = request.build_absolute_uri(order.bill_file.url)
     # if order.specification.file:

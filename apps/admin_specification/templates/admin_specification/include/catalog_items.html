@@ -46,7 +46,7 @@
                          data-motrum-id="{{ product.article }}"
                          data-saler-id="{{ product.article_supplier }}"
                          data-discoutnt="{% if product.price.sale %}{{ product.price.sale.percent }}{% endif %}"
-                         data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}">
+                         data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}" data-cart-product = "{{product.id_product_cart}}">
                         <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">
@@ -145,7 +145,7 @@
                                            value="1"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
-                                           onkeypress='validate(event)'>
+                                           onkeypress='validate(event)' class="quantity_input" />
                                     <button class="plus-button"></button>
                                 </div>
                             </div>

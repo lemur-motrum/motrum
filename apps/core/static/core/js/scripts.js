@@ -22,6 +22,7 @@ import "/static/admin_specification/js/error_modal.js";
 import "/static/admin_specification/js/marginality.js";
 import "/static/admin_specification/js/chage-price-&-motum-discount.js";
 import "/static/admin_specification/js/category_open_content.js";
+import "/static/admin_specification/js/add_product_in_cart.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
 import "/static/core/js/scripts/motrum-in-numbers-script.js";

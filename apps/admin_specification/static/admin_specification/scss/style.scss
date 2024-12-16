@@ -3026,6 +3026,9 @@ h1 {
                 &:hover {
                   background-color: #ff5b00;
                 }
+                &.hide {
+                  display: none;
+                }
                 .descr {
                   font-size: 1rem;
                   color: #fff;
@@ -3067,6 +3070,9 @@ h1 {
                 width: 9.1rem;
                 padding: 1.25rem;
                 box-sizing: border-box;
+                &.show {
+                  display: flex;
+                }
                 input {
                   width: 4rem;
                   height: 135%;

@@ -136,92 +136,92 @@ function catalogLogic(elems) {
         addSpecificationButton.disabled = false;
       }
     };
-    addSpecificationButton.onclick = () => {
-      if (!getCookie("cart")) {
-        fetch("/api/v1/cart/add-cart/", {
-          method: "GET",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((cart_id) => {
-            if (cart_id) {
-              const dataObj = {
-                product: +productId,
-                cart: +cart_id,
-                quantity: countQuantityZone.value,
-              };
+    // addSpecificationButton.onclick = () => {
+    //   if (!getCookie("cart")) {
+    //     fetch("/api/v1/cart/add-cart/", {
+    //       method: "GET",
+    //       headers: {
+    //         "X-CSRFToken": csrfToken,
+    //       },
+    //     })
+    //       .then((response) => response.json())
+    //       .then((cart_id) => {
+    //         if (cart_id) {
+    //           const dataObj = {
+    //             product: +productId,
+    //             cart: +cart_id,
+    //             quantity: countQuantityZone.value,
+    //           };
 
-              const data = JSON.stringify(dataObj);
-              fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-                method: "POST",
-                body: data,
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-CSRFToken": csrfToken,
-                },
-              })
-                .then((response) => {
-                  if (response.status == 200) {
-                    return response.json();
-                  } else {
-                    setErrorModal();
-                    throw new Error("Ошибка");
-                  }
-                })
-                .then(
-                  (response) =>
-                    (document.querySelector(
-                      ".admin_specification_cart_length"
-                    ).textContent = response.cart_len)
-                )
-                .catch((error) => {
-                  setErrorModal();
-                  console.error(error);
-                });
-            }
-          })
-          .catch((error) => {
-            setErrorModal();
-            console.error(error);
-          });
-      } else {
-        const cart_id = getCookie("cart");
-        const dataObj = {
-          product: +productId,
-          cart: +cart_id,
-          quantity: +countQuantityZone.value,
-        };
-        const data = JSON.stringify(dataObj);
-        fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          })
-          .then(
-            (response) =>
-              (document.querySelector(
-                ".admin_specification_cart_length"
-              ).textContent = response.cart_len)
-          )
-          .catch((error) => {
-            setErrorModal();
-            console.error(error);
-          });
-      }
-    };
+    //           const data = JSON.stringify(dataObj);
+    //           fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+    //             method: "POST",
+    //             body: data,
+    //             headers: {
+    //               "Content-Type": "application/json",
+    //               "X-CSRFToken": csrfToken,
+    //             },
+    //           })
+    //             .then((response) => {
+    //               if (response.status == 200) {
+    //                 return response.json();
+    //               } else {
+    //                 setErrorModal();
+    //                 throw new Error("Ошибка");
+    //               }
+    //             })
+    //             .then(
+    //               (response) =>
+    //                 (document.querySelector(
+    //                   ".admin_specification_cart_length"
+    //                 ).textContent = response.cart_len)
+    //             )
+    //             .catch((error) => {
+    //               setErrorModal();
+    //               console.error(error);
+    //             });
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         setErrorModal();
+    //         console.error(error);
+    //       });
+    //   } else {
+    //     const cart_id = getCookie("cart");
+    //     const dataObj = {
+    //       product: +productId,
+    //       cart: +cart_id,
+    //       quantity: +countQuantityZone.value,
+    //     };
+    //     const data = JSON.stringify(dataObj);
+    //     fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+    //       method: "POST",
+    //       body: data,
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         "X-CSRFToken": csrfToken,
+    //       },
+    //     })
+    //       .then((response) => {
+    //         if (response.status == 200) {
+    //           return response.json();
+    //         } else {
+    //           setErrorModal();
+    //           throw new Error("Ошибка");
+    //         }
+    //       })
+    //       .then(
+    //         (response) =>
+    //           (document.querySelector(
+    //             ".admin_specification_cart_length"
+    //           ).textContent = response.cart_len)
+    //       )
+    //       .catch((error) => {
+    //         setErrorModal();
+    //         console.error(error);
+    //       });
+    //   }
+    // };
   });
 }
 

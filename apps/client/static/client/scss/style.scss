@@ -27,7 +27,6 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 3.375rem;
-
       .nav-elem {
         font-size: 1.125rem;
         font-weight: 300;
@@ -94,58 +93,58 @@
   }
   .document_container {
     .document_wrapper {
+      .loader {
+        overflow: hidden;
+        font-size: 0.625rem;
+        margin: 0.0125rem auto;
+        text-indent: -9999em;
+        width: 13rem;
+        height: 13rem;
+        border-radius: 50%;
+        background: #65abf8;
+        background: linear-gradient(
+          to right,
+          #bdbdbd 10%,
+          rgba(101, 171, 248, 0) 42%
+        );
+        position: relative;
+        -webkit-animation: load3 1.4s infinite linear;
+        animation: load3 1.4s infinite linear;
+        transform: translateZ(0);
+        &.remove {
+          display: none;
+        }
+        &:before {
+          width: 50%;
+          height: 50%;
+          background: #bdbdbd;
+          border-radius: 100% 0 0 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          content: "";
+        }
+        &:after {
+          background: white;
+          width: 75%;
+          height: 75%;
+          border-radius: 50%;
+          content: "";
+          margin: auto;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+        }
+        &.hide {
+          display: none;
+        }
+      }
       .site_document_container {
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        .loader {
-          overflow: hidden;
-          font-size: 0.625rem;
-          margin: 0.0125rem auto;
-          text-indent: -9999em;
-          width: 13rem;
-          height: 13rem;
-          border-radius: 50%;
-          background: #65abf8;
-          background: linear-gradient(
-            to right,
-            #bdbdbd 10%,
-            rgba(101, 171, 248, 0) 42%
-          );
-          position: relative;
-          -webkit-animation: load3 1.4s infinite linear;
-          animation: load3 1.4s infinite linear;
-          transform: translateZ(0);
-          &.remove {
-            display: none;
-          }
-          &:before {
-            width: 50%;
-            height: 50%;
-            background: #bdbdbd;
-            border-radius: 100% 0 0 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-          }
-          &:after {
-            background: white;
-            width: 75%;
-            height: 75%;
-            border-radius: 50%;
-            content: "";
-            margin: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-          }
-          &.hide {
-            display: none;
-          }
-        }
         .document_item {
           height: 6.813rem;
           width: 100%;
@@ -189,8 +188,54 @@
         }
       }
     }
+    .small_loader {
+      display: none;
+      overflow: hidden;
+      font-size: 10px;
+      margin: 50px auto;
+      text-indent: -9999em;
+      width: 7rem;
+      height: 7rem;
+      border-radius: 50%;
+      background: #65abf8;
+      background: linear-gradient(
+        to right,
+        #bdbdbd 10%,
+        rgba(101, 171, 248, 0) 42%
+      );
+      position: relative;
+      -webkit-animation: load3 1.4s infinite linear;
+      animation: load3 1.4s infinite linear;
+      transform: translateZ(0);
+      &:before {
+        width: 50%;
+        height: 50%;
+        background: #bdbdbd;
+        border-radius: 100% 0 0 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: "";
+      }
+      &:after {
+        background: white;
+        width: 75%;
+        height: 75%;
+        border-radius: 50%;
+        content: "";
+        margin: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+      }
+      &.show {
+        display: block;
+      }
+    }
     .end_content {
-      display: flex;
+      display: none;
       justify-content: space-between;
       margin-top: 1.688rem;
       &.show {
@@ -321,58 +366,58 @@
   }
   .order_container {
     .order_wrapper {
+      .loader {
+        overflow: hidden;
+        font-size: 0.625rem;
+        margin: 0.0125rem auto;
+        text-indent: -9999em;
+        width: 13rem;
+        height: 13rem;
+        border-radius: 50%;
+        background: #65abf8;
+        background: linear-gradient(
+          to right,
+          #bdbdbd 10%,
+          rgba(101, 171, 248, 0) 42%
+        );
+        position: relative;
+        -webkit-animation: load3 1.4s infinite linear;
+        animation: load3 1.4s infinite linear;
+        transform: translateZ(0);
+        &.remove {
+          display: none;
+        }
+        &:before {
+          width: 50%;
+          height: 50%;
+          background: #bdbdbd;
+          border-radius: 100% 0 0 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          content: "";
+        }
+        &:after {
+          background: white;
+          width: 75%;
+          height: 75%;
+          border-radius: 50%;
+          content: "";
+          margin: auto;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+        }
+        &.hide {
+          display: none;
+        }
+      }
       .site_order_container {
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        .loader {
-          overflow: hidden;
-          font-size: 0.625rem;
-          margin: 0.0125rem auto;
-          text-indent: -9999em;
-          width: 13rem;
-          height: 13rem;
-          border-radius: 50%;
-          background: #65abf8;
-          background: linear-gradient(
-            to right,
-            #bdbdbd 10%,
-            rgba(101, 171, 248, 0) 42%
-          );
-          position: relative;
-          -webkit-animation: load3 1.4s infinite linear;
-          animation: load3 1.4s infinite linear;
-          transform: translateZ(0);
-          &.remove {
-            display: none;
-          }
-          &:before {
-            width: 50%;
-            height: 50%;
-            background: #bdbdbd;
-            border-radius: 100% 0 0 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "";
-          }
-          &:after {
-            background: white;
-            width: 75%;
-            height: 75%;
-            border-radius: 50%;
-            content: "";
-            margin: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-          }
-          &.hide {
-            display: none;
-          }
-        }
         .order_item {
           width: 100%;
           border: 0.094rem solid #000;
@@ -434,8 +479,54 @@
           }
         }
       }
+      .small_loader {
+        display: none;
+        overflow: hidden;
+        font-size: 10px;
+        margin: 50px auto;
+        text-indent: -9999em;
+        width: 7rem;
+        height: 7rem;
+        border-radius: 50%;
+        background: #65abf8;
+        background: linear-gradient(
+          to right,
+          #bdbdbd 10%,
+          rgba(101, 171, 248, 0) 42%
+        );
+        position: relative;
+        -webkit-animation: load3 1.4s infinite linear;
+        animation: load3 1.4s infinite linear;
+        transform: translateZ(0);
+        &:before {
+          width: 50%;
+          height: 50%;
+          background: #bdbdbd;
+          border-radius: 100% 0 0 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          content: "";
+        }
+        &:after {
+          background: white;
+          width: 75%;
+          height: 75%;
+          border-radius: 50%;
+          content: "";
+          margin: auto;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+        }
+        &.show {
+          display: block;
+        }
+      }
       .end_content {
-        display: flex;
+        display: none;
         justify-content: space-between;
         margin-top: 1.688rem;
         &.show {

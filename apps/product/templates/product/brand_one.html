@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+{% block content %}
+    <div class="products_wrapper">
+        <div class="title_container">
+            <div class="bread_crumbs">
+                <a href={% url "core:index" %}>главная</a>
+                <a href={% url "product:catalog" %}>каталог</a>
+            </div>
+            <h1>{{ brand.name }}</h1>
+            <div class="site_groups_container">
+                <div class="swiper-wrapper">
+                    {% for group in another_groups %}
+                        <a href="{% url "product:products_items" current_category.slug group.slug %}"
+                           class="swiper-slide group">
+                            <span>{{ group.name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="product_container">
+            <div class="filters_and_products_container">
+                <div class="filter_container">
+                    <div class="filter_elem  price_filter_elem">
+                        <div class="filter_title">Цена</div>
+                        <div class="price_content">
+                            <div class="price_content_wrapper">
+                                <div class="price_content_wrapper_elem">
+                                    от
+                                    <input placeholder="1000" class="small_price_input" type="text" />
+                                </div>
+                                <div class="price_content_wrapper_elem">
+                                    до
+                                    <input placeholder="500000" class="big_price_input" type="text" />
+                                </div>
+                            </div>
+                            <div class="price_checkbox_content">
+                                <div class="checkbox"></div>
+                                <div class="price_checkbox_content_description">исключить товары с ценой по запросу</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit_filter_container">
+                        <button class="submit">Применить фильтры</button>
+                        <button class="canceled">Сбросить</button>
+                    </div>
+                </div>
+                <input id="category-product"
+                       type="hidden"
+                       data-category-id="{% if current_category.pk %}{{ current_category.pk }}{% else %}{{ current_category.slug }}{% endif %}" />
+                <input id="group-product"
+                       type="hidden"
+                       data-group-id="{{ current_group.pk }}" />
+                <div class="catalog_wrapper" catalog-elem="wrapper">
+                    <div class="catalog_sorting">
+                        <div class="catalog_sorting_elem up_price_sorting">по возрастанию цены</div>
+                        <div class="catalog_sorting_elem down_price_sorting">по убыванию цены</div>
+                    </div>
+                    <div class="loader">loading</div>
+                    <div class="site_catalog_container" catalog-elem="container">
+                        {% if product_list %}
+                            {% for product in product_list %}
+                                {% include "product/includes/product_item.html" with product=product %}
+                            {% endfor %}
+                        {% else %}
+                            {% comment %} <div class="none-products">
+                            Товаров в разделе "
+                            {% if current_group %}
+                            {{ current_group.name }}
+                        {% else %}
+                            {{ current_category.name }}
+                        {% endif %}
+                            " пока нет
+                            </div> {% endcomment %}
+                        {% endif %}
+                    </div>
+                    <div class="small_loader">loading</div>
+                    <div class="end_content">
+                        <button class="add_more" catalog-elem="button">загрузить еще</button>
+                        <div class="pagination">
+                            <div class="first">1</div>
+                            <div class="dots first_dots">...</div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="elem"></div>
+                            <div class="dots last_dots">...</div>
+                            <div class="last">578</div>
+                        </div>
+                    </div>
+                    <div class="none_content_data">Таких товаров нет</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

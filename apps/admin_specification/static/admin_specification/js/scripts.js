@@ -196,7 +196,6 @@ function catalogLogic(elems) {
           cart: +cart_id,
           quantity: +countQuantityZone.value,
         };
-
         const data = JSON.stringify(dataObj);
         fetch(`/api/v1/cart/${cart_id}/save-product/`, {
           method: "POST",
@@ -474,7 +473,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const allElems = spetificationTable.querySelectorAll(".total_cost");
         const allElemsMarginaliry =
           spetificationTable.querySelectorAll(".marginality");
-
+        const allMarginalityPercent = spetificationTable.querySelector(
+          ".marginality_prcent_value"
+        );
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
@@ -486,6 +487,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         getDigitsNumber(valueContainer, +sum);
         getDigitsNumber(marginality, +margSum);
+        allMarginalityPercent.textContent = isNaN(
+          ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
+        )
+          ? 0
+          : ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2);
       }
 
       function saveSpecification(elems) {
@@ -509,6 +515,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const deliveryRequsits = document
           .querySelector("[name='delevery-requisit']")
           .getAttribute("value");
+
         const bitrixInput = document.querySelector(".bitrix-input");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
@@ -912,10 +919,10 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
             updateProduct();
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
+            getMarginality(spetificationTable);
             getResult();
           };
 
@@ -946,9 +953,9 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             updateProduct();
             changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
+            getMarginality(spetificationTable);
             getResult();
           };
 
@@ -989,9 +996,9 @@ window.addEventListener("DOMContentLoaded", () => {
             getMarginality(spetificationTable);
             updateProduct();
             // changeDateInOrder(spetificationTable);
-            getResult();
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
+            getResult();
           });
 
           const allPrice = inputPrice.value * countQuantity;
@@ -1379,22 +1386,23 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
-    const selectDelevery = searhClientForm.querySelector(".select_delevery");
+    const selectDelevery = document.querySelector(".select_delevery");
     changeSelect(selectDelevery);
 
     const motrumRequsits = document.querySelector(".select_motrum_requisites");
-    const clientOptions = motrumRequsits.querySelectorAll("option");
-    motrumRequsits.setAttribute(
-      "value",
-      clientOptions[0].getAttribute("data-account-requisites-id")
-    );
-    clientOptions.forEach((el) => {
-      motrumRequsits.addEventListener("change", function () {
-        if (el.selected) {
-          motrumRequsits.setAttribute("value", el.getAttribute("value"));
-        }
-      });
-    });
+    changeSelect(motrumRequsits);
+    //const clientOptions = motrumRequsits.querySelectorAll("option");
+    // motrumRequsits.setAttribute(
+    //   "value",
+    //   clientOptions[0].getAttribute("data-account-requisites-id")
+    // );
+    // clientOptions.forEach((el) => {
+    //   motrumRequsits.addEventListener("change", function () {
+    //     if (el.selected) {
+    //       motrumRequsits.setAttribute("value", el.getAttribute("value"));
+    //     }
+    //   });
+    // });
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButtonContainer = document.querySelector(".save_button-wrapper");
@@ -1466,15 +1474,19 @@ window.addEventListener("DOMContentLoaded", () => {
                         "client-id",
                         client.getAttribute("data-client-id")
                       );
-                      if (el.accountrequisites_set.length > 0) {
+                      if (el.requisitesotherkpp_set.length > 0) {
                         clientRequsitsSelect.innerHTML = "";
-                        el.accountrequisites_set.forEach((elem) => {
+                        el.requisitesotherkpp_set.forEach((elem) => {
                           if (
                             +searchClientInput.getAttribute("client-id") ===
                             +elem.requisites
                           ) {
                             clientRequsitsSelectLabel.classList.add("show");
-                            clientRequsitsSelect.innerHTML += `<option class="client-option" value="${elem.id}">${elem.account_requisites}</option>`;
+                            elem.accountrequisites_set.forEach(
+                              (accountrequisit) => {
+                                clientRequsitsSelect.innerHTML += `<option class="client-option" value="${accountrequisit.id}">КПП: ${elem.kpp}, Р/С: ${accountrequisit.account_requisites}</option>`;
+                              }
+                            );
                           }
                         });
 
@@ -1484,10 +1496,11 @@ window.addEventListener("DOMContentLoaded", () => {
                       } else {
                         clientRequsitsSelect.innerHTML = "";
                       }
-                      clientInfo.innerHTML = `
-                             <div>Предоплата: ${el.prepay_persent}%</div>
-                             <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
-                             `;
+                      // clientInfo.innerHTML = `
+                      //        <div>Предоплата: ${el.prepay_persent}%</div>
+                      //        <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
+                      //        `;
+                      clientInfo.innerHTML = `<div>Предоплата: ${el.prepay_persent}%</div>`;
                       const selectDelevery =
                         searhClientForm.querySelector(".select_delevery");
                       changeSelect(selectDelevery);

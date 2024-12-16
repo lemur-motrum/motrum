@@ -1,5 +1,6 @@
 import datetime
 from pyexpat import model
+from sys import version
 from token import TYPE_COMMENT
 from django.db import models
 from django.db.models import Case, Value, When
@@ -9,9 +10,9 @@ from simple_history.models import HistoricalRecords
 # Create your models here.
 
 
-from apps.core.models import BaseInfoAccountRequisites
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.specification.models import Specification
-from apps.specification.utils import get_document_bill_path
+from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 
@@ -85,10 +86,23 @@ class Requisites(models.Model):
         null=True,
         blank=True,
     )
+    id_bitrix = models.PositiveIntegerField(
+        "Номер клиента битрикс",
+        null=True,
+        blank=True,
+    )
+    number_spec = models.PositiveIntegerField(
+        "Номер спецификации клиента", null=True, blank=True, default=0
+    )
 
     contract = models.CharField(
         "Договор",
         max_length=50,
+        blank=True,
+        null=True,
+    )
+    contract_date = models.DateField(
+        "Договор дата",
         blank=True,
         null=True,
     )
@@ -114,12 +128,12 @@ class Requisites(models.Model):
         null=True,
     )
 
-    type_delivery = models.CharField(
-        "Тип доставки",
-        max_length=1000,
-        blank=True,
-        null=True,
-    )
+    # type_delivery = models.CharField(
+    #     "Тип доставки",
+    #     max_length=1000,
+    #     blank=True,
+    #     null=True,
+    # )
 
     legal_entity = models.CharField(
         "Юридическое лицо",
@@ -129,6 +143,67 @@ class Requisites(models.Model):
     inn = models.CharField(
         "ИНН",
         max_length=12,
+        # unique=True
+    )
+    
+
+    # kpp = models.CharField(
+    #     "КПП",
+    #     max_length=10,
+    # )
+    # ogrn = models.CharField(
+    #     "ОГРН",
+    #     max_length=15,
+    #     blank=True,
+    #     null=True,
+    # )
+    # legal_post_code = models.PositiveIntegerField(
+    #     "Юридический адрес :индекс",
+    # )
+    # legal_city = models.CharField(
+    #     "Юридический адрес : город",
+    #     max_length=50,
+    # )
+    # legal_address = models.CharField(
+    #     "Юридический адрес : адрес",
+    #     max_length=200,
+    # )
+    # postal_post_code = models.CharField(
+    #     "Почтовый адрес :индекс",
+    #     max_length=10,
+    # )
+    # postal_city = models.CharField(
+    #     "Почтовый адрес : город",
+    #     max_length=50,
+    # )
+    # postal_address = models.CharField(
+    #     "Почтовый адрес : адрес",
+    #     max_length=200,
+    # )
+    # tel = models.CharField(
+    #     "Телефон",
+    #     max_length=200,
+    #     blank=True,
+    #     null=True,
+    # )
+
+    class Meta:
+        verbose_name = "Юридическое лицо"
+        verbose_name_plural = "Юридические лица"
+
+    def __str__(self):
+        return self.legal_entity
+
+    def get_type_payment(self):
+        for choice in TYPE_PAYMENT:
+            if choice[0] == self.type_payment:
+                return choice[1]
+        return ""
+
+
+class RequisitesOtherKpp(models.Model):
+    requisites = models.ForeignKey(
+        Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
     )
     kpp = models.CharField(
         "КПП",
@@ -169,25 +244,17 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
-
-    class Meta:
-        verbose_name = "Реквизиты"
-        verbose_name_plural = "Реквизиты"
-
+    
     def __str__(self):
-        return self.legal_entity
-
-    def get_type_payment(self):
-        for choice in TYPE_PAYMENT:
-            if choice[0] == self.type_payment:
-                return choice[1]
-        return ""
-
+        return f"{self.requisites.legal_entity} {self.kpp}"
 
 class AccountRequisites(models.Model):
-    requisites = models.ForeignKey(
-        Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
+    requisitesKpp = models.ForeignKey(
+        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
     )
+    # requisites = models.ForeignKey(
+    #     Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
+    # )
     account_requisites = models.CharField(
         "Расчётный счёт",
         max_length=30,
@@ -231,6 +298,21 @@ STATUS_ORDER = (
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
 )
+STATUS_ORDER_BITRIX = (
+    ("PROCESSING", "Квалификация"),
+    ("PROCESSING", "Не обработано"),
+    ("PROCESSING", "Подготовка предложения"),
+    ("PROCESSING", "КП отправлено"),
+    ("PAYMENT", "Счёт отправлен"),
+    ("IN_MOTRUM", "Поставка оборудования в Мотрум"),
+    ("SHIPMENT_", "Отгрузка оборудования заказчику"),
+    ("CANCELED", "Отложенные"),
+    ("CANCELED", "Провальные"),
+    ("COMPLETED", "Сделка успешна"),
+
+    ("COMPLETED", "PREPAYMENT_INVOICE"),
+    ("COMPLETED", "PREPARATION"),
+)
 STATUS_ORDER_INT = (
     (1, "PROCESSING"),
     (2, "PAYMENT"),
@@ -256,6 +338,9 @@ class Order(models.Model):
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
         null=True,
+    )
+    manager = models.ForeignKey(
+        AdminUser, blank=True, null=True, on_delete=models.CASCADE
     )
     date_order = models.DateField(
         default=datetime.date.today,
@@ -317,19 +402,23 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    type_delivery = models.CharField(
-        "Тип доставки",
-        max_length=1000,
-        blank=True,
-        null=True,
-    )
-    motrum_requisites = models.ForeignKey(
-        BaseInfoAccountRequisites,
-        verbose_name="Реквизиты мотрум для сделки",
+
+    type_delivery = models.ForeignKey(
+        TypeDelivery,
+        verbose_name="Тип доставки ",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
+
+    motrum_requisites = models.ForeignKey(
+        BaseInfoAccountRequisites,
+        verbose_name="Реквизиты мотрум ",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
     bill_name = models.PositiveIntegerField(
         "Номер счета",
         default=None,
@@ -337,6 +426,12 @@ class Order(models.Model):
     )
     bill_file = models.FileField(
         "Фаил счета",
+        upload_to=get_document_bill_path,
+        blank=True,
+        null=True,
+    )
+    bill_file_no_signature = models.FileField(
+        "Фаил счета без печатей",
         upload_to=get_document_bill_path,
         blank=True,
         null=True,
@@ -372,40 +467,88 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def create_bill(self, request, is_contract, order, bill_name, post_update):
+    def create_bill(
+        self,
+        request,
+        is_contract,
+        order,
+        # bill_name,
+        post_update,
+        type_save,
+    ):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
 
-
-
-        pdf = crete_pdf_bill(
+        pdf_file, pdf_name,file_path_no_sign,version = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
             order,
-            bill_name,
+            # bill_name,
             self.type_delivery,
             post_update,
+            type_save,
         )
-        if pdf[0]:
-            if post_update:
-                pass
-            else:
-                self.bill_date_start = datetime.date.today()
-                data_stop = create_time_stop_specification()
-                self.bill_date_stop = data_stop          
-                self.status = "PAYMENT"
+        if pdf_file:
+            # if post_update:
+            #     bill_date_start = self.bill_date_start
+            #     data_stop = self.bill_date_stop
+            # else:
+            #     self.bill_date_start = datetime.date.today()
+            #     bill_date_start = datetime.date.today()
+            #     data_stop = create_time_stop_specification()
+            #     self.bill_date_stop = data_stop
+            #     self.status = "PAYMENT"
+            self.bill_date_start = datetime.date.today()
+            bill_date_start = datetime.date.today()
+            data_stop = create_time_stop_specification()
+            self.bill_date_stop = data_stop
             
-            self.bill_file = pdf[0]
+            if type_save == "new":
+                self.status = "PAYMENT"
+            elif type_save == "update":
+                pass
+            elif type_save == "hard_update":
+                self.status = "PAYMENT"
+
+
+            self.bill_file = pdf_file
+            self.bill_file_no_signature = file_path_no_sign
             self.bill_sum = self.specification.total_amount
-            self.bill_name = pdf[1]
+            self.bill_name = pdf_name
 
             if self.client:
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
             self._change_reason = "Ручное"
             self.save()
+            
+            old_document = OrderDocumentBill.objects.filter(order=self)
+            if old_document:
+                old_document.update(
+                is_active=False
+            )
 
+            OrderDocumentBill.objects.create(
+                order=self,
+                bill_name=pdf_name,
+                bill_file=pdf_file,
+                bill_date_start=bill_date_start,
+                bill_date_stop=data_stop,
+                bill_file_no_signature=None,
+                bill_sum=self.bill_sum,
+                version = version
+            )
+            OrderDocumentBill.objects.create(
+                order=self,
+                bill_name=pdf_name,
+                bill_file=None,
+                bill_file_no_signature=file_path_no_sign,
+                bill_date_start=bill_date_start,
+                bill_date_stop=data_stop,
+                bill_sum=self.bill_sum,
+                version = version
+            )
             return self.id
         else:
             return None
@@ -416,3 +559,89 @@ class Order(models.Model):
                 return choice[1]
         return ""
 
+
+class OrderDocumentBill(models.Model):
+    order = models.ForeignKey(
+        Order,
+        verbose_name="Заказ",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    is_active = models.BooleanField("Активно", default=True)
+    bill_name = models.PositiveIntegerField(
+        "Номер счета",
+        default=None,
+        null=True,
+    )
+    bill_file = models.FileField(
+        "Фаил счета",
+        default=None,
+        null=True,
+    )
+    bill_file_no_signature = models.FileField(
+        "Фаил счета без печатей",
+        default=None,
+        null=True,
+    )
+    bill_date_start = models.DateField(
+        verbose_name="Дата создания счета",
+        blank=True,
+        null=True,
+    )
+    bill_date_stop = models.DateField(
+        verbose_name="Дата окончания счета",
+        blank=True,
+        null=True,
+    )
+    bill_sum = models.FloatField(
+        "Сумма счета",
+        blank=True,
+        null=True,
+    )
+    version = models.PositiveIntegerField(
+        "Версия в одну дату",
+        default=None,
+        null=True,
+    )
+    
+
+class PaymentTransaction(models.Model):
+    order = models.ForeignKey(
+        Order,
+        verbose_name="Заказ",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        verbose_name="Дата оплаты",
+        blank=True,
+        null=True,
+    )
+    amount = models.FloatField(
+        "Сумма счета",
+        blank=True,
+        null=True,
+    )
+    
+    
+class DocumentShipment(models.Model):
+    order = models.ForeignKey(
+        Order,
+        verbose_name="Заказ",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        verbose_name="Дата оплаты",
+        blank=True,
+        null=True,
+    )
+    file = models.FileField(
+        "Фаил счета",
+        upload_to=get_shipment_doc_path,
+        blank=True,
+        null=True,
+    )

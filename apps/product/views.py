@@ -27,19 +27,19 @@ from apps.supplier.models import (
     Vendor,
 )
 from apps.user import forms
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, MEDIA_URL
 
 
 # все категории
 def catalog_all(request):
     print("catalog_all")
     category = CategoryProduct.objects.all().order_by("article_name")
-
-    print(category)
+    vendors = Vendor.objects.filter(is_view_index_web=True)
 
     context = {
         "category": category,
         "title": "Товары",
+        "vendors": vendors,
     }
 
     return render(request, "product/product_catalog.html", context)
@@ -48,6 +48,7 @@ def catalog_all(request):
 # группы категорий
 def catalog_group(request, category):
     print("catalog_group")
+    media_url = MEDIA_URL
     group = GroupProduct.objects.filter(category__slug=category).order_by(
         "article_name"
     )
@@ -73,7 +74,7 @@ def catalog_group(request, category):
     else:
         # vendor = Vendor.objects.filter()
         q_object = Q()
-        q_object &= Q(check_to_order=True)
+        q_object &= Q(check_to_order=True, in_view_website=True)
 
         if category is not None:
             # q_object &= Q(category__slug=category)
@@ -90,10 +91,11 @@ def catalog_group(request, category):
                 "category",
             )
             .filter(q_object)
-            .distinct("vendor")
-            .values("vendor", "vendor__name", "vendor__slug")
+            .order_by("vendor__name")
+            .distinct("vendor__name")
+            .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-        print(product_vendor)
+
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -108,6 +110,7 @@ def catalog_group(request, category):
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
+            "media_url": media_url,
         }
         return render(request, "product/catalog.html", context)
 
@@ -115,9 +118,9 @@ def catalog_group(request, category):
 # страница всех продуктов в категории\группе
 def products_items(request, category, group):
     print("products_items")
-
+    media_url = MEDIA_URL
     q_object = Q()
-    q_object &= Q(check_to_order=True)
+    q_object &= Q(check_to_order=True, in_view_website=True)
     if category is not None:
         q_object &= Q(category__slug=category)
     if group is not None:
@@ -130,8 +133,9 @@ def products_items(request, category, group):
             "group",
         )
         .filter(q_object)
-        .distinct("vendor")
-        .values("vendor", "vendor__name", "vendor__slug")
+        .order_by("vendor__name")
+        .distinct("vendor__name")
+        .values("vendor", "vendor__name", "vendor__slug","vendor__img")
     )
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
@@ -155,14 +159,13 @@ def products_items(request, category, group):
         "product_vendor": product_vendor,
         "another_groups": get_another_groups(),
         "title": current_group.name,
+        "media_url": media_url,
     }
 
     return render(request, "product/catalog.html", context)
 
 
 # страница отдельного продукта
-
-
 def product_one(request, category, group, article):
     print("product_one")
     product = Product.objects.get(article=article)
@@ -185,14 +188,12 @@ def product_one(request, category, group, article):
     )
     product_document = ProductDocument.objects.filter(product=product)
 
-
     context = {
         "product": product,
         "current_category": product.category,
         "current_group": product.group,
         "title": product.name,
-        "product_document":product_document
-
+        "product_document": product_document,
     }
     return render(request, "product/product_one.html", context)
 
@@ -242,15 +243,43 @@ def product_one_without_group(request, category, article):
     return render(request, "product/product_one.html", context)
 
 
+# страница брендов общая
+def brand_all(request):
+
+    brands = (
+        Vendor.objects.filter(product__isnull=False, product__in_view_website=True)
+        .distinct()
+        .order_by("article", "name")
+    )
+
+    context = {
+        "brands": brands,
+    }
+
+    return render(request, "product/brand_all.html", context)
+
+
+# страница бренда одного с товарами
+def brand_one(request, vendor):
+    brand = Vendor.objects.get(slug=vendor)
+
+    context = {
+        "brand": brand,
+    }
+    return render(request, "product/brand_one.html", context)
+
+
 def add_document_admin(request):
     from pytils import translit
     from django.core.files import File
+
     id_selected = request.GET.get("context")
     id_selected = list(
         map(int, id_selected[1:-1].split(", "))
     )  # No need for list call in Py2
     form = DocumentForm()
     from django.core.files.storage import FileSystemStorage
+
     if request.method == "POST":
         file_path = None
         for id_select in id_selected:
@@ -261,28 +290,29 @@ def add_document_admin(request):
                 file_name = request.FILES["document"].name
                 images_last_list = file_name.split(".")
                 type_file = "." + images_last_list[-1]
-              
-                name = get_file_path_add_more_doc(product, profile.type_doc, profile.name)
-                
+
+                name = get_file_path_add_more_doc(
+                    product, profile.type_doc, profile.name
+                )
+
                 in_memory_file_obj = request.FILES["document"]
-                FileSystemStorage(location="/").save(in_memory_file_obj.name, in_memory_file_obj)
-                
-                
-                
-                    # for chunk in request.FILES["document"].chunks():
-                    #     dest.write(chunk)
-                
+                FileSystemStorage(location="/").save(
+                    in_memory_file_obj.name, in_memory_file_obj
+                )
+
+                # for chunk in request.FILES["document"].chunks():
+                #     dest.write(chunk)
+
                 # with open(f"{name[0]}{type_file}", "wb+") as destination:
                 #     for chunk in request.FILES["document"].chunks():
                 #         destination.write(chunk)
                 # ProductDocument.image.save("image.jpg", File(img_temp), save=True)
-                
-                
+
                 # if file_path:
                 #     document = ProductDocument.objects.create(product=product,document = file_path,type_doc=profile.type_doc,name=profile.name, )
 
                 #     # document.document.field.upload_to = get_file_path_add_more_doc(product,profile.type_doc,request.FILES["document"],file_path)
-                
+
                 # else:
                 #     profile.product = product
                 #     profile.save()

@@ -96,7 +96,7 @@ class SpecificationViewSet(viewsets.ModelViewSet):
 #                             "cart", cart.id, max_age=2629800
 #                         )
 #                     return response
-                
+
 #                 except Cart.DoesNotExist:
 #                     data = {"session_key": session, "save_cart": False, "client": None}
 #                     serializer = self.serializer_class(data=data, many=False)
@@ -116,7 +116,7 @@ class SpecificationViewSet(viewsets.ModelViewSet):
 #                         return Response(
 #                             serializer.errors, status=status.HTTP_400_BAD_REQUEST
 #                         )
-                        
+
 #                 # cart = Cart.objects.get_or_create(session_key=session, save_cart=False)
 #                 # response.set_cookie("cart", cart[0].id, max_age=2629800)
 #             else:
@@ -129,7 +129,7 @@ class SpecificationViewSet(viewsets.ModelViewSet):
 #                             "cart", cart.id, max_age=2629800
 #                         )
 #                     return response
-                
+
 #                 except Cart.DoesNotExist:
 #                     data = {"session_key": None, "save_cart": False, "client": request.user}
 #                     serializer = self.serializer_class(data=data, many=False)
@@ -188,18 +188,17 @@ class SpecificationViewSet(viewsets.ModelViewSet):
 
 #         data = request.data
 #         serializer = serializer_class(queryset, data=data, partial=True)
-    
+
 #         if serializer.is_valid():
 #             serializer.save()
 #             return Response(serializer.data, status=status.HTTP_200_OK)
 #         else:
-     
+
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #     @action(detail=True, methods=["delete"], url_path=r"delete-product")
 #     def delete_product_cart(self, request, pk=None, *args, **kwargs):
 #         queryset = ProductCart.objects.get(pk=pk)
 #         queryset.delete()
-        
-#         return Response(None, status=status.HTTP_200_OK)
 
+#         return Response(None, status=status.HTTP_200_OK)

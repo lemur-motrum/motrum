@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Client, Requisites, RequisitesOtherKpp
 from project.admin import website_admin
 from django.template.loader import get_template
 
@@ -38,15 +38,27 @@ class ClientAdminWeb(admin.ModelAdmin):
 class AccountRequisitesAdminInline(admin.TabularInline):
     extra = 1
     model = AccountRequisites
+    
+class RequisitesOtherKppAdminInline(admin.TabularInline):
+    extra = 1
+    model = RequisitesOtherKpp
 
 class RequisitesAdmin(admin.ModelAdmin):
     list_display = [
         "legal_entity",
         "client"
     ]
-    inlines = AccountRequisitesAdminInline,
+    inlines = RequisitesOtherKppAdminInline,
     exclude = ["discount"]
     # fields = 'legal_entity'
+
+class AccountRequisitesAdmin(admin.ModelAdmin):
+    list_display = [
+        "requisitesKpp",
+        "account_requisites"
+    ]
+  
+    # fields = 'legal_entity'    
 
 
 
@@ -93,3 +105,4 @@ class RequisitesAdmin(admin.ModelAdmin):
 
 admin.site.register(Client, ClientAdminWeb)
 admin.site.register(Requisites,RequisitesAdmin)
+admin.site.register(AccountRequisites,AccountRequisitesAdmin)

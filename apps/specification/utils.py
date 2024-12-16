@@ -4,6 +4,7 @@ from enum import auto
 import itertools
 import os
 from re import T
+import traceback
 
 
 from PIL import Image
@@ -23,6 +24,8 @@ from django.conf import settings
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from django.db.models import Prefetch, OuterRef
+import requests
+
 
 from apps.logs.utils import error_alert
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL
@@ -79,8 +82,11 @@ def crete_pdf_specification(
     from reportlab.platypus import ListFlowable, ListItem
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
+    from apps.core.models import TypeDelivery
 
     try:
+        print("create document spesif")
+        print("specification_name", specification_name)
         directory = check_spesc_directory_exist(
             "specification",
         )
@@ -88,20 +94,30 @@ def crete_pdf_specification(
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         ).order_by("id")
-
+        type_delivery = TypeDelivery.objects.get(id=type_delivery)
+        type_delivery_name = type_delivery.text
+        kpp_req = account_requisites.requisitesKpp
         motrum_info = motrum_requisites.requisites
+   
         motrum_info_req = motrum_requisites
+        
+        
+        date_title = datetime.datetime.today().strftime("%d.%m.%Y")
+        date_data = datetime.date.today().isoformat()
+        date = transform_date(date_data)
+        date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
+        # if post_update:
+        #     date_title = specifications.date_create_pdf.strftime("%d.%m.%Y")
+        #     date_data = specifications.date_create_pdf.isoformat()
+        #     date = transform_date(date_data)
+        #     date_name_file = specifications.date_create_pdf.strftime("%d.%m.%Y")
+        # else:
+        #     date_title = datetime.datetime.today().strftime("%d.%m.%Y")
+        #     date_data = datetime.date.today().isoformat()
+        #     date = transform_date(date_data)
+        #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
-        if post_update:
-            date_title = specifications.date_create_pdf.strftime("%d/%m/%Y")
-            date_data = specifications.date_create_pdf.isoformat()
-            date = transform_date(date_data)
-        else:
-            date_title = datetime.datetime.today().strftime("%d/%m/%Y")
-            date_data = datetime.date.today().isoformat()
-            date = transform_date(date_data)
-
-        name_specification = f"specification_{specification_name}.pdf"
+        name_specification = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
         fileName = os.path.join(directory, name_specification)
         story = []
 
@@ -130,10 +146,18 @@ def crete_pdf_specification(
         )
         styles.add(
             ParagraphStyle(
-                name="Roboto-Bold-left",
+                name="Roboto-Bold-right",
                 fontName="Roboto-Bold",
                 fontSize=10,
                 alignment=TA_RIGHT,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-Bold-left",
+                fontName="Roboto-Bold",
+                fontSize=10,
+                alignment=TA_LEFT,
             )
         )
         styles.add(
@@ -144,12 +168,40 @@ def crete_pdf_specification(
                 alignment=TA_CENTER,
             )
         )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-Center",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_CENTER,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-right",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_RIGHT,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="Roboto-norm-left",
+                fontName="Roboto",
+                fontSize=10,
+                alignment=TA_LEFT,
+            )
+        )
 
         bold_style = styles["Roboto-Bold"]
         normal_style = styles["Roboto"]
         bold_left_style = styles["Roboto-Bold-left"]
+        bold_right_style = styles["Roboto-Bold-right"]
         bold_style_center = styles["Roboto-Bold-Center"]
         normal_style_8 = styles["Roboto-8"]
+        norm10_left_style = styles["Roboto-norm-left"]
+        norm10_right_style = styles["Roboto-norm-right"]
+        norm10_style_center = styles["Roboto-norm-Center"]
 
         doc_title = copy.copy(styles["Heading1"])
         doc_title.fontName = "Roboto-Bold"
@@ -157,8 +209,15 @@ def crete_pdf_specification(
 
         if requisites.contract:
             to_contract = requisites.contract
+            if requisites.contract_date:
+                date_contract = requisites.contract_date
+                date_contract = date_contract.isoformat()
+                date_contract = transform_date(date_contract)
+            else:
+                date_contract = None
         else:
             to_contract = None
+            
         if requisites:
             to_address = requisites.legal_entity
         else:
@@ -167,11 +226,11 @@ def crete_pdf_specification(
         story.append(
             Paragraph(
                 f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>",
-                bold_left_style,
+                bold_right_style,
             )
         )
         if to_contract:
-            story.append(Paragraph(f"К договору № {to_contract}", normal_style))
+            story.append(Paragraph(f"К договору № {to_contract} от {date_contract}", normal_style))
 
         story.append(
             Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
@@ -225,40 +284,40 @@ def crete_pdf_specification(
                     product_name = (
                         Paragraph(
                             f'<a href="{link}" color="blue">{product_name_str}</a>',
-                            bold_style_center,
+                            norm10_left_style,
                         ),
                     )
                 else:
                     product_name = Paragraph(
                         f"{product_name_str}",
-                        bold_style_center,
+                        norm10_left_style,
                     )
-            # else:
-            #     product_name_str = str(product.product.name)
-
-            #     product_name = (Paragraph(f"{product_name_str}", bold_style_center),)
             else:
                 product_name = product.product_new
-                product_name = (Paragraph(f"{product_name}", bold_style_center),)
+                product_name = (Paragraph(f"{product_name}", norm10_left_style),)
 
             product_price = product.price_one
-            product_price = "{0:,.2f}".format(product_price).replace(",", " ")
+            product_price = "{0:,.2f}".format(product_price).replace(",", " ").replace('.', ',')
             product_price_all = product.price_all
 
             product_price_all = "{0:,.2f}".format(product_price_all, ".2f").replace(
                 ",", " "
-            )
+            ).replace('.', ',')
 
             product_quantity = product.quantity
             data.append(
                 (
-                    i,
+            
+                    Paragraph(f"{str(i)}", norm10_style_center),
                     product_name,
-                    # Paragraph(product_name, normal_style),
-                    product_stock,
-                    product_quantity,
-                    product_price,
-                    product_price_all,
+                    # product_stock,
+                    Paragraph(f"{str(product_stock)}.", norm10_left_style),
+                    Paragraph(f"{str(product_quantity)}", norm10_right_style),
+
+                    Paragraph(product_price, norm10_right_style),
+                    # product_price,
+                    Paragraph(product_price_all, norm10_right_style),
+                    # product_price_all,
                 )
             )
 
@@ -281,8 +340,8 @@ def crete_pdf_specification(
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
-        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ")
-        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ")
+        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ").replace('.', ',')
+        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace('.', ',')
 
         final_price_no_nds_table = [
             (
@@ -355,21 +414,27 @@ def crete_pdf_specification(
             i_dop_info += 1
 
         if type_delivery:
-            if type_delivery == "pickup":
-                story.append(
+            story.append(
                     Paragraph(
-                        f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
+                        f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}", normal_style
                     )
                 )
-            elif type_delivery == "paid_delivery":
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
-                        normal_style,
-                    )
-                )
-            else:
-                pass
+            
+            # if type_delivery == "pickup":
+            #     story.append(
+            #         Paragraph(
+            #             f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
+            #         )
+            #     )
+            # elif type_delivery == "paid_delivery":
+            #     story.append(
+            #         Paragraph(
+            #             f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
+            #             normal_style,
+            #         )
+            #     )
+            # else:
+            #     pass
 
         data_address = [
             (
@@ -381,9 +446,9 @@ def crete_pdf_specification(
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
         text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
         if requisites:
-            text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {requisites.legal_post_code}, г. {requisites.legal_city}, {requisites.legal_address}<br></br><br></br>"
-            text_buyer_post = f"Почтовый адрес: {requisites.postal_post_code}, г. {requisites.postal_city}, {requisites.postal_address}<br></br><br></br>"
-            text_buyer_inn = f"ИНН {requisites.inn} КПП {requisites.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
+            text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {kpp_req.legal_post_code}, г. {kpp_req.legal_city}, {kpp_req.legal_address}<br></br><br></br>"
+            text_buyer_post = f"Почтовый адрес: {kpp_req.postal_post_code}, г. {kpp_req.postal_city}, {kpp_req.postal_address}<br></br><br></br>"
+            text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
         else:
 
             text_buyer_ur = f"<br />Юридический адрес: , г. , <br></br><br></br>"
@@ -474,10 +539,10 @@ def crete_pdf_specification(
         print("file_path", file_path)
         return file_path
     except Exception as e:
-
+        tr =  traceback.format_exc()
         error = "error"
         location = "Сохранение документа спецификации админам окт"
-        info = f"Сохранение документа спецификации админам окт ошибка {e}"
+        info = f"Сохранение документа спецификации админам окт ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
         return None
@@ -505,3 +570,39 @@ def get_document_bill_path(instance, filename):
     name_specification = f"счет_{instance.id}.pdf"
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
+
+def get_shipment_doc_path(instance, filename):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
+
+    directory = check_spesc_directory_exist(
+        "shipment",
+    )
+    name_specification = f"отгрузка_{instance.id}{instance.date}.pdf"
+    file_last_list = filename.split(".")
+    type_file = "." + file_last_list[-1]
+    
+def save_shipment_doc(link,document_shipment):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
+    print(link,document_shipment)
+    print(document_shipment.id)
+    print(document_shipment.date)
+    directory = check_spesc_directory_exist(
+        "shipment",
+    )
+    name = f"отгрузка_{document_shipment.id}{document_shipment.date}.pdf"
+    print(name)
+    # file_last_list = filename.split(".")
+    # type_file = "." + file_last_list[-1]
+    name_doc = f"{name}"
+    path_doc = "{0}/{1}".format(
+        directory,
+        name_doc,
+    )
+    r = requests.get(link, stream=True)
+    with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
+        ofile.write(r.content)
+    
+    return "{0}/{1}".format(
+        "shipment",
+        name_doc,
+    )

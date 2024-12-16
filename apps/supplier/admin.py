@@ -31,7 +31,7 @@ from .models import (
     Vendor,
 )
 from django.utils.html import mark_safe
-
+from project.admin import website_admin
 
 class VendorInline(admin.TabularInline):
     model = Vendor
@@ -409,9 +409,28 @@ class DiscountAdmin(admin.ModelAdmin):
         daemon_thread.start()
 
 
+class VendorWebAdmin(admin.ModelAdmin):
+    model = Vendor
+    list_display = (
+        "name",
+        "is_view_index_web",
+        "article",
+    )
+    fields = (
+        "name",
+        "name_web",
+        "img",
+        "is_view_index_web",
+        "article",
+    )
+    def has_delete_permission(self, request,obj=None):
+        return False   
+
+
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Vendor, SupplierVendor)
 admin.site.register(SupplierCategoryProductAll, SupplierCategoryProductAllAdmin)
 admin.site.register(Discount, DiscountAdmin)
 admin.site.register(SupplierCategoryProduct, SupplierCategoryProductAdmin)
 admin.site.register(SupplierGroupProduct, SupplierGroupProductAdmin)
+website_admin.register(Vendor, VendorWebAdmin)

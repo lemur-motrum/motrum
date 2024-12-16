@@ -1,5 +1,6 @@
 from itertools import product
 import json
+from multiprocessing import context
 import os
 import random
 from django.db.models import Prefetch
@@ -11,6 +12,7 @@ from django.db.models import OuterRef, Subquery
 
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
+from apps.core.models import IndexInfoWeb, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -18,6 +20,7 @@ from rest_framework import status
 from apps.product.models import ProductCart
 from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.projects_web.models import Project
+from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
 from project.settings import EMAIL_BACKEND
 from django.db.models import F
@@ -43,11 +46,39 @@ def index(request):
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
+    promoslider = SliderMain.objects.filter(active=True).order_by("article")
+    vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")
+
+    motrum_in_numbers = IndexInfoWeb.objects.all().last()
+
     context = {
         "categories": categories,
         "projects": projects,
+        "slider": promoslider,
+        "vendors": vendors,
+        "motrum_in_numbers":motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
+
+# def brand_all(request):
+#     brands =  Vendor.objects.all()
+#     # .order_by("article","name")
+#     print(brands)
+#     context = {
+#         "brands":brands,
+#     }
+#     return render(request, "product/brand_all.html", context)
+
+# def brand_one(request):
+#     brands =  Vendor.objects.all()
+#     # .order_by("article","name")
+#     print(brands)
+#     context = {
+#         "brands":brands,
+#     }
+#     return render(request, "product/brand_all.html", context)
+
+
 
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
@@ -67,10 +98,11 @@ def cart(request):
             requisites = (
                 Requisites.objects.filter(client=client)
                 .prefetch_related("accountrequisites_set")
-                .annotate(accountrequisit=F("accountrequisites__account_requisites"),accountrequisit_id=F("accountrequisites__id"))
-                
+                .annotate(
+                    accountrequisit=F("accountrequisites__account_requisites"),
+                    accountrequisit_id=F("accountrequisites__id"),
+                )
             )
-
 
         else:
             requisites = None
@@ -100,9 +132,10 @@ def cart(request):
                 Prefetch(
                     "productproperty_set",
                     # queryset=prefetch_queryset_property,
-                ),Prefetch(
+                ),
+                Prefetch(
                     "productimage_set",
-                )
+                ),
             )
             .annotate(
                 quantity=product_cart.filter(product=OuterRef("pk")).values(
@@ -141,6 +174,11 @@ def cart(request):
     }
 
     return render(request, "core/cart.html", context)
+
+
+# def promo_slider(request):
+
+#     return render(request, "core/includes/promo_slider.html", context)
 
 
 def company(request):

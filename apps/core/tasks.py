@@ -1,11 +1,13 @@
 import datetime
+from trace import Trace
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
+from apps.core.bitrix_api import get_status_order
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
-from apps.core.models import CalendarHoliday, Currency
+from apps.core.models import BaseInfo, CalendarHoliday, Currency
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
@@ -17,9 +19,9 @@ from django.db.models import Prefetch, OuterRef
     max_retries=10,
 )
 def get_currency(self):
-  
+    print("get_currency")
     try:
-        del_currency()
+        # del_currency()
         currency_list = Currency.objects.exclude(words_code="RUB")
         resp = "https://www.cbr.ru/scripts/XML_daily.asp"
         response = urlopen(resp)
@@ -28,6 +30,7 @@ def get_currency(self):
         ElementInclude.include(root)
         date = datetime.datetime.now()
         for current in currency_list:
+            print(current)
             current_world_code = current.words_code
             value = item.findtext(f".//Valute[CharCode='{current_world_code}']/Value")
             vunit_rate = item.findtext(
@@ -43,8 +46,10 @@ def get_currency(self):
                 date=date,
                 defaults={"value": v, "vunit_rate": vi, "count": int(count)},
             )
+            print(now_rate)
             update_currency_price(current, current_world_code)
-            currency_chek(current, now_rate[0])
+            print(current, now_rate[0])
+            # currency_chek(current, now_rate[0])
 
     except Exception as exc:
         if self.request.retries >= self.max_retries:
@@ -77,36 +82,49 @@ def update_currency_price(currency, current_world_code):
 
 # проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны
 def currency_chek(current, now_rate):
-
-    old_rate = CurrencyRate.objects.filter(
-        currency=current,
-    ).earliest("date")
+    now = datetime.datetime.now()
+    three_days = datetime.timedelta(3)
+    in_three_days = now - three_days
+    data_old = in_three_days.strftime("%Y-%m-%d")
+    print(data_old)
+    old_rate = CurrencyRate.objects.get(
+        currency=current,date=data_old
+    )
+    print(old_rate)
+    # old_rate = CurrencyRate.objects.filter(
+    #     currency=current,
+    # ).earliest("date")
     old_rate_count = old_rate.vunit_rate
     new_rate_count = now_rate.vunit_rate
     # difference_count = old_rate_count - new_rate_count
     difference_count = new_rate_count - old_rate_count
 
     count_percent = old_rate_count / 100 * 3
-    
+    print(difference_count,count_percent)
     if difference_count > count_percent:
        
         try:
-            product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
-            for prod in product_specification:
-                specification = Specification.objects.get(
-                tag_stop=True, id=prod["specification"]
-            )
-                specification.tag_stop = False
-                specification._change_reason = "Автоматическое"
+            print(difference_count)
+            
+            product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, ).exclude(specification__order__status__in=["CANCELED","COMPLETED"]).distinct("specification__order").values('specification',"specification__order").exclude(specification__order=None)
+            print(product_specification)
+            
+            # product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
+            # for prod in product_specification:
+            #     specification = Specification.objects.get(
+            #     tag_stop=True, id=prod["specification"]
+            # )
+            #     specification.tag_stop = False
+            #     specification._change_reason = "Автоматическое"
                
-                specification.save()
-                try:
-                    order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
-                    order.tag_stop = False
-                    order.status = "CANCELED"
-                    order._change_reason = "Автоматическое"
-                except Order.DoesNotExist:
-                     pass
+            #     specification.save()
+            #     try:
+            #         order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
+            #         order.tag_stop = False
+            #         order.status = "CANCELED"
+            #         order._change_reason = "Автоматическое"
+            #     except Order.DoesNotExist:
+            #          pass
         except  ProductSpecification.DoesNotExist:
             pass
 
@@ -204,6 +222,24 @@ def get_next_year_holiday(self):
     bind=True,
     max_retries=10,
 )
+def counter_bill_new_year(self):
+    try:
+       вase_info = BaseInfo.objects.filter().update(counter_bill=0,counter_bill_offer=0)
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Обнуление счетчика счетов"
+
+            info = f"Обнуление счетчика счетов"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=160)    
+
+
+
+@app.task(
+    bind=True,
+    max_retries=10,
+)
 def del_void_cart(self):
     try:
         carts = Cart.objects.prefetch_related(Prefetch("productcart_set")).filter().order_by("id")
@@ -220,3 +256,10 @@ def del_void_cart(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)    
     
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def get_status_order_bx(self):
+    print("SALARY ! HOORE")
+    get_status_order()

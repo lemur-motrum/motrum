@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
     <div class="products_wrapper">
         <div class="title_container">
@@ -26,36 +27,64 @@
             </div>
         </div>
         <div class="product_container">
-            <div class="titles">
-                <div class="small_title">Фильтр</div>
-                <div class="small_title">товар</div>
-                <div class="small_title">артикул</div>
-                <div class="small_title">характеристики</div>
-                <div class="small_title">упак</div>
-                <div class="small_title">цена</div>
-            </div>
             <div class="filters_and_products_container">
                 <div class="filter_container">
                     <div class="filter_elem">
                         <div class="filter_title">Производитель</div>
-                        <div class="filter-wrapper-content">
-                            <div class="filter_content">
-                                {% for vendor in product_vendor %}
-                                    <div param="{{ vendor.vendor__slug }}" class="filter_elem_content">
-                                        <div class="checkbox">
-                                            <div class="checked"></div>
+                      
+                        <div class="supplier_content">
+                            <div>
+                                <div class="suppliers_max_height_container">
+                                    {% for vendor in product_vendor %}
+                                        <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
+                                            <div class="suplier_elem_content_img_container">
+                                                {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
+                                            </div>
+                                            <div class="suplier_elem_content_name">
+                                                {% if vendor.vendor__name %}
+                                                    {{ vendor.vendor__name }}
+                                                {% else %}
+                                                    Другое
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        <div class="filter_name">
-                                            {% if vendor.vendor__name %}
-                                                {{ vendor.vendor__name }}
-                                            {% else %}
-                                                Неизвестный производитель
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
+                        {% if product_vendor|length > 4 %}
+                            <div class="suppliers_add_more_btn">
+                                <span>все поставщики</span>
+                                <div>
+                                    <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="filter_elem price_filter_elem">
+                        <div class="filter_title">Цена</div>
+                        <div class="price_content">
+                            <div class="price_content_wrapper">
+                                <div class="price_content_wrapper_elem">
+                                    от
+                                    <input placeholder="1000" class="small_price_input" type="text" />
+                                </div>
+                                <div class="price_content_wrapper_elem">
+                                    до
+                                    <input placeholder="500000" class="big_price_input" type="text" />
+                                </div>
+                            </div>
+                            <div class="price_checkbox_content">
+                                <div class="checkbox">
+                                    <div class="checker"></div>
+                                </div>
+                                <div class="price_checkbox_content_description">исключить товары с ценой по запросу</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit_filter_container">
+                        <button class="submit">Применить фильтры</button>
+                        <button class="canceled">Сбросить</button>
                     </div>
                 </div>
                 <input id="category-product"
@@ -65,6 +94,10 @@
                        type="hidden"
                        data-group-id="{{ current_group.pk }}" />
                 <div class="catalog_wrapper" catalog-elem="wrapper">
+                    <div class="catalog_sorting">
+                        <div class="catalog_sorting_elem up_price_sorting">по возрастанию цены</div>
+                        <div class="catalog_sorting_elem down_price_sorting">по убыванию цены</div>
+                    </div>
                     <div class="loader">loading</div>
                     <div class="site_catalog_container" catalog-elem="container">
                         {% if product_list %}
@@ -94,9 +127,9 @@
                             <div class="elem"></div>
                             <div class="dots last_dots">...</div>
                             <div class="last">578</div>
-                            {% comment %} <div class="next">далее</div> {% endcomment %}
                         </div>
                     </div>
+                    <div class="none_content_data">Таких товаров нет</div>
                 </div>
             </div>
         </div>

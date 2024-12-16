@@ -9,8 +9,8 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps import specification
-from apps.client.models import AccountRequisites, Client, Order
-from apps.core.models import BaseInfo, BaseInfoAccountRequisites
+from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
+from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
@@ -453,27 +453,32 @@ def specifications(request, cat, gr):
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
+    type_save_cookee = request.COOKIES.get("type_save")
 
     # если есть корзина
     if cart != None:
-
         cart_qs = Cart.objects.get(id=cart)
-        discount_client = 0
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
 
-        product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
-            "product__id"
-        )
+        product_cart_list = ProductCart.objects.filter(
+            cart=cart, product__isnull=False
+        ).values_list("product__id")
 
+        product_cart_prod = ProductCart.objects.filter(cart=cart, product__isnull=False)
         product_cart = ProductCart.objects.filter(cart=cart)
+
         # изменение спецификации
-        try:
+        if type_save_cookee != "new":
+            # try:
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
+            requisites_kpp = client_req.requisitesKpp
             requisites = order.requisites
-            client_req_all = AccountRequisites.objects.filter(requisites=requisites)
+            client_req_all = AccountRequisites.objects.filter(
+                requisitesKpp__requisites=requisites
+            )
 
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
@@ -490,7 +495,8 @@ def create_specification(request):
             product_new = (
                 ProductSpecification.objects.filter(
                     specification=specification,
-                    product=None,
+                    # product=None,
+                    product_new_article__isnull=False,
                 )
                 .annotate(
                     id_product_spesif=F("id"),
@@ -547,7 +553,11 @@ def create_specification(request):
 
             # список товаров без щаписи в окт которые новые еще на записанны
             product_new_more = (
-                ProductCart.objects.filter(cart=cart, product=None)
+                ProductCart.objects.filter(
+                    cart=cart,
+                    #    product=None
+                    product_new_article__isnull=False,
+                )
                 .exclude(id__in=product_new_value_id)
                 .annotate(
                     price_motrum=Case(
@@ -574,7 +584,8 @@ def create_specification(request):
             update_spesif = True
 
         # новая спецификация
-        except Specification.DoesNotExist:
+        else:
+            # except Specification.DoesNotExist:
 
             try:
                 # если корзина без заказа
@@ -614,8 +625,12 @@ def create_specification(request):
 
                 if order.account_requisites:
                     requisites = order.requisites
-                    client_req_all = AccountRequisites.objects.filter(
+                    req_kpp = RequisitesOtherKpp.objects.filter(
                         requisites=requisites
+                    ).values("id")
+
+                    client_req_all = AccountRequisites.objects.filter(
+                        requisitesKpp__in=req_kpp
                     )
                 else:
                     client_req_all = None
@@ -676,6 +691,7 @@ def create_specification(request):
                 client_req_all = None
 
         # продукты которые есть в окт в корзине
+
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(
@@ -696,10 +712,10 @@ def create_specification(request):
                 Prefetch("price__sale"),
             )
             .annotate(
-                quantity=product_cart.filter(product=OuterRef("pk")).values(
+                quantity=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "quantity",
                 ),
-                id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
+                id_product_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "id",
                 ),
                 id_product_spesif=product_specification.filter(
@@ -748,11 +764,38 @@ def create_specification(request):
                 ).values(
                     "date_delivery",
                 ),
-                is_prise=product_cart.filter(product=OuterRef("pk")).values(
+                is_prise=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product__price",
                 ),
+                actual_price=F("price__rub_price_supplier"),
+                date_delivery_bill=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery_bill",
+                ),
+                sale_motrum=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "product_sale_motrum",
+                ),
+                price_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "product_price",
+                ),
+                price_motrum=Case(
+                    When(sale_motrum=None, then="actual_price"),
+                    When(
+                        sale_motrum__isnull=False,
+                        then=Round(
+                            F("price_cart")
+                            - (F("price_cart") / 100 * F("sale_motrum")),
+                            2,
+                        ),
+                    ),
+                ),
+                # price_motrum_okt = Round(
+                #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
+                #             2,
+                #         ),
             )
-            .order_by("id_product_cart")
+            # .order_by("id_product_cart")
         )
 
     # корзины нет
@@ -771,13 +814,41 @@ def create_specification(request):
         order = None
 
     current_date = datetime.date.today().isoformat()
+    hard_upd = False
+    if type_save_cookee == "new":
+        bill_upd = False
+        if order:
+            if order.requisites.contract:
+                title = f"Новый заказ: счет + спецификация"
+                type_save = "счет + спецификация"
+            else:
+                title = f"Новый заказ: счет-оферта"
+                type_save = "счет-оферта"
+        else:
+            title = f"Новый заказ"
+            type_save = ""
 
-    bill_upd = False
-    if order:
-        if order.bill_sum_paid != 0:
-            bill_upd = True
-            title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+    elif type_save_cookee == "update":
+        bill_upd = True
+        title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+        type_save = " изменения"
 
+    elif type_save_cookee == "hard_update":
+        bill_upd = False
+        hard_upd = True
+        # title = f"Заказ № {order.id} - новый счет"
+        if order.requisites.contract:
+            title = f"Заказ № {order.id}: счет + спецификация"
+            type_save = "счет + спецификация"
+        else:
+            title = f"Заказ № {order.id}: счет-оферта"
+            type_save = " счет-оферта"
+    else:
+        type_save_cookee = "new"
+        bill_upd = False
+        title = f"Новый заказ"
+        type_save = "счет"
+    type_delivery = TypeDelivery.objects.all()
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -795,6 +866,10 @@ def create_specification(request):
         "client_req_all": client_req_all,
         "bill_upd": bill_upd,
         "vendor": vendor,
+        "type_save": type_save,
+        "type_delivery": type_delivery,
+        "type_save_cookee": type_save_cookee,
+        "hard_upd": hard_upd,
     }
 
     return render(request, "admin_specification/catalog.html", context)
@@ -989,7 +1064,7 @@ def instruments(request, cat):
     # if request.GET.get("vendor") != None:
     #     vendor_urls = request.GET.get("vendor")
     #     vendor_get = vendor_urls.split(",")
-    #     print(vendor_urls)
+    #
     #     product_list = product_list.filter(vendor__slug__in=vendor_get)
     #     vendor_url = vendor_urls
     # else:
@@ -1334,103 +1409,6 @@ def load_products(request):
     return JsonResponse(out, safe=False)
 
 
-# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def update_specification(request):
-#     if request.method == "POST":
-#         id_specification = json.loads(request.body)
-#         current_id = id_specification["specification_id"]
-
-#         products = []
-
-#         current_specification = Specification.objects.filter(pk=current_id)[0]
-
-#         get_products = ProductSpecification.objects.filter(
-#             specification=current_specification.pk
-#         )
-
-#         for product in get_products:
-#             product_id = product.product.pk
-#             product_pk = product.pk
-#             product_name = product.product.name
-#             product_prices = Price.objects.get(prod=product_id)
-#             product_price = product_prices.rub_price_supplier
-#             product_quantity = product.quantity
-#             product_totla_cost = int(product_quantity) * float(product_price)
-#             product_id_motrum = product.product.article
-#             product_id_suppler = product.product.article_supplier
-#             specification_id = current_specification.pk
-
-#             product_individual_sale = product.extra_discount
-
-#             product_price = str(product_price).replace(",", ".")
-
-#             if (
-#                 product_individual_sale != "0"
-#                 and product_individual_sale != ""
-#                 and product_individual_sale != None
-#             ):
-#                 product_price_extra_old_before = product.price_one / (
-#                     1 - float(product_individual_sale) / 100
-#                 )
-
-#             else:
-#                 product_price_extra_old_before = product.price_one
-
-#             product_price_extra_old = str(product_price_extra_old_before).replace(
-#                 ",", "."
-#             )
-#             product_totla_cost = str(product_totla_cost).replace(",", ".")
-#             product_multiplicity_item = Stock.objects.get(prod=product_id)
-#             if product_multiplicity_item.is_one_sale == True:
-#                 product_multiplicity = 1
-#             else:
-#                 product_multiplicity = Stock.objects.get(
-#                     prod=product_id
-#                 ).order_multiplicity
-#             discount_item = get_price_motrum(
-#                 product.product.category_supplier,
-#                 product.product.group_supplier,
-#                 product.product.vendor,
-#                 product_prices.rub_price_supplier,
-#                 product.product.category_supplier_all,
-#                 product.product.supplier,
-#             )[1]
-#             if discount_item == None:
-#                 discount = None
-#             else:
-#                 discount = discount_item.percent
-
-#             data_old = current_specification.date.strftime("%m.%d.%Y")
-
-#             product_item = {
-#                 "discount": discount,
-#                 "id": product_id,
-#                 "idMotrum": product_id_motrum,
-#                 "idSaler": product_id_suppler,
-#                 "name": product_name,
-#                 "price": product_price,
-#                 "quantity": product_quantity,
-#                 "totalCost": product_totla_cost,
-#                 "productSpecificationId": product_pk,
-#                 "specificationId": specification_id,
-#                 "multiplicity": product_multiplicity,
-#                 "product_price_extra_old": product_price_extra_old,
-#                 "data_old": data_old,
-#                 "product_individual_sale": product_individual_sale,
-#             }
-
-#             products.append(product_item)
-
-#     current_products = json.dumps(products)
-
-#     out = {
-#         "status": "ok",
-#         "products": current_products,
-#     }
-#     return JsonResponse(out)
-
-
 # исторические записи для страниц история
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin(request, pk):
@@ -1532,7 +1510,6 @@ def history_admin(request, pk):
 
     result_list_sorted = result_list.sort(key=get_date, reverse=True)
 
-    print(object_id)
     context = {
         "specification": specification,
         "historical_records": result_list,
@@ -1585,6 +1562,108 @@ def history_admin_bill(request, pk):
 
     return render(request, "admin_specification/history_admin_bill.html", context)
 
+
+def error_b24(request,error):
+    context={
+        "error":1
+    }
+    return render(request, "admin_specification/error.html", context)
+    
+# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def update_specification(request):
+#     if request.method == "POST":
+#         id_specification = json.loads(request.body)
+#         current_id = id_specification["specification_id"]
+
+#         products = []
+
+#         current_specification = Specification.objects.filter(pk=current_id)[0]
+
+#         get_products = ProductSpecification.objects.filter(
+#             specification=current_specification.pk
+#         )
+
+#         for product in get_products:
+#             product_id = product.product.pk
+#             product_pk = product.pk
+#             product_name = product.product.name
+#             product_prices = Price.objects.get(prod=product_id)
+#             product_price = product_prices.rub_price_supplier
+#             product_quantity = product.quantity
+#             product_totla_cost = int(product_quantity) * float(product_price)
+#             product_id_motrum = product.product.article
+#             product_id_suppler = product.product.article_supplier
+#             specification_id = current_specification.pk
+
+#             product_individual_sale = product.extra_discount
+
+#             product_price = str(product_price).replace(",", ".")
+
+#             if (
+#                 product_individual_sale != "0"
+#                 and product_individual_sale != ""
+#                 and product_individual_sale != None
+#             ):
+#                 product_price_extra_old_before = product.price_one / (
+#                     1 - float(product_individual_sale) / 100
+#                 )
+
+#             else:
+#                 product_price_extra_old_before = product.price_one
+
+#             product_price_extra_old = str(product_price_extra_old_before).replace(
+#                 ",", "."
+#             )
+#             product_totla_cost = str(product_totla_cost).replace(",", ".")
+#             product_multiplicity_item = Stock.objects.get(prod=product_id)
+#             if product_multiplicity_item.is_one_sale == True:
+#                 product_multiplicity = 1
+#             else:
+#                 product_multiplicity = Stock.objects.get(
+#                     prod=product_id
+#                 ).order_multiplicity
+#             discount_item = get_price_motrum(
+#                 product.product.category_supplier,
+#                 product.product.group_supplier,
+#                 product.product.vendor,
+#                 product_prices.rub_price_supplier,
+#                 product.product.category_supplier_all,
+#                 product.product.supplier,
+#             )[1]
+#             if discount_item == None:
+#                 discount = None
+#             else:
+#                 discount = discount_item.percent
+
+#             data_old = current_specification.date.strftime("%m.%d.%Y")
+
+#             product_item = {
+#                 "discount": discount,
+#                 "id": product_id,
+#                 "idMotrum": product_id_motrum,
+#                 "idSaler": product_id_suppler,
+#                 "name": product_name,
+#                 "price": product_price,
+#                 "quantity": product_quantity,
+#                 "totalCost": product_totla_cost,
+#                 "productSpecificationId": product_pk,
+#                 "specificationId": specification_id,
+#                 "multiplicity": product_multiplicity,
+#                 "product_price_extra_old": product_price_extra_old,
+#                 "data_old": data_old,
+#                 "product_individual_sale": product_individual_sale,
+#             }
+
+#             products.append(product_item)
+
+#     current_products = json.dumps(products)
+
+#     out = {
+#         "status": "ok",
+#         "products": current_products,
+#     }
+#     return JsonResponse(out)
 
 # def load_products(request):
 #     data = json.loads(request.body)

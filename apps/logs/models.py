@@ -10,6 +10,7 @@ TYPE_LOGS_ERROR = (
     ("file_structure_error", "фаил не соответствует нужной структуре"),
     ("file_api_error", "ошибка при загрузке с api"),
     ("error", "Ошибка"),
+    
 )
 
 
@@ -95,3 +96,30 @@ class LogsAddProduct(models.Model):
 
     def __str__(self):
         return f"Товар: {self.product} "
+
+class LogsInfoError(models.Model):
+
+    date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    type_error = models.CharField(
+        max_length=20, choices=TYPE_LOGS_ERROR, default="error"
+    )
+    location = models.CharField(
+        "Место ошибки",
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    info = models.CharField(
+        "Инфо о ошибке",
+        max_length=5000,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Информационные сообщения"
+        verbose_name_plural = "Информационные сообщения"
+
+    def __str__(self):
+        return f"Тип ошибки: {self.type_error},{self.date} "
+

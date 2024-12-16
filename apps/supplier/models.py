@@ -6,6 +6,9 @@ from simple_history.utils import update_change_reason
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import get_file_price_path_add
+from apps.core.utils_web import get_file_path_catalog_web
+from apps.core.validators import validate_file_extension_image
+
 # from middlewares.middlewares import RequestMiddleware
 
 
@@ -40,11 +43,17 @@ class Supplier(models.Model):
 
 class Vendor(models.Model):
 
-    name = models.CharField("Название производителя", max_length=40)
-    slug = models.SlugField(null=True, max_length=40)
+    name = models.CharField("Название производителя", max_length=100)
+    name_web = models.CharField(
+        "Название на сайте",
+        max_length=100,
+        blank=True,
+        null=True,
+    )
+    slug = models.SlugField(null=True, max_length=100)
     supplier = models.ForeignKey(
         Supplier,
-        verbose_name="Поставщик`",
+        verbose_name="Поставщик",
         on_delete=models.PROTECT,
     )
     currency_catalog = models.ForeignKey(
@@ -56,6 +65,21 @@ class Vendor(models.Model):
         Vat,
         verbose_name="Ндс в каталоге",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    img = models.FileField(
+        "Изображение",
+        upload_to=get_file_path_catalog_web,
+        validators=[validate_file_extension_image],
+        blank=True,
+        null=True,
+    )
+    is_view_index_web = models.BooleanField(
+        "Отображение на главной сайта", default=False
+    )
+    article = models.PositiveIntegerField(
+        "Очередность",
         blank=True,
         null=True,
     )
@@ -130,6 +154,7 @@ class SupplierCategoryProduct(models.Model):
             return f"{self.name}"
 
     def save(self, *args, **kwargs):
+
         if self.slug == None:
             slug_text = self.name
             slugish = translit.translify(slug_text)
@@ -318,17 +343,15 @@ class SupplierCategoryProductAll(models.Model):
     def __str__(self):
         return f"{self.name}"
         # return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
-        
-        
-        
+
         # request = RequestMiddleware(get_response=None)
         # request = request.thread_local.current_request
-    
+
         # if request.path == "/admin/product/product/":
         #     return f"{self.name}"
         # else:
         #     return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
-  
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
@@ -411,7 +434,7 @@ class Discount(models.Model):
 
     def __str__(self):
         # вывод примененной категории в название скидки в админку
-        
+
         name = ""
         if self.category_supplier_all:
             name = self.category_supplier_all.name
@@ -447,7 +470,7 @@ class Discount(models.Model):
             def background_task():
                 # Долгосрочная фоновая задача
                 for price_one in price:
-               
+
                     price_one._change_reason = "Автоматическое"
                     price_one.save()
 

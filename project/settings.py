@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "simple_history",
     "sass_processor",
     "rest_framework",
+    "tinymce",
 ]
 
 STATICFILES_FINDERS = [
@@ -239,3 +240,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 # CART_SESSION_ID = 'cart'
+BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+
+

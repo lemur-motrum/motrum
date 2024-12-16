@@ -799,6 +799,7 @@ def iek_api():
                                     stock_prod.order_multiplicity = order_multiplicity
                                     stock_prod.is_one_sale = is_one_sale
                                     stock_prod._change_reason = "Автоматическое"
+                                    stock_prod.data_update = datetime.datetime.now()
                                     stock_prod.save()
 
                                     # update_change_reason(stock_prod, "Автоматическое")
@@ -1251,7 +1252,7 @@ def iek_api():
                                     location = "Загрузка фаилов IEK"
                                     info = f"[zakaz] == 1{prod.article_supplier}"
                                     e = error_alert(error, location, info)
-                                    print(f"[zakaz] == 1{prod.article_supplier}")
+                                   
                                 else:
                                     to_order = False
 
@@ -1271,11 +1272,11 @@ def iek_api():
                         is_none_error = False
                         return (stock,to_order,is_none_error)
                 except Exception as e:
-
+                    tr =  traceback.format_exc()
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
 
-                    info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}"
+                    info = f"ошибка при чтении остатков3333 Тип ошибки:{e}Артикул{prod.article_supplier}{tr}"
                     e = error_alert(error, location, info)
                     stock = None
                     to_order = False
@@ -1288,9 +1289,10 @@ def iek_api():
                 return (stock,to_order,is_none_error)
                
         except Exception as e:
+            tr =  traceback.format_exc()
             error = "file_api_error"
             location = "Загрузка фаилов IEK"
-            info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}"
+            info = f"ошибка при чтении остатков Тип ошибки:{e}{response.text}{response.content} Артикул{prod.article_supplier}{tr}"
             e = error_alert(error, location, info)
             stock = None
             to_order = False
@@ -1357,9 +1359,10 @@ def iek_api():
                         pass
                 except Exception as e:
                     print(e)
+                    tr =  traceback.format_exc()
                     error = "file_api_error"
                     location = "Загрузка фаилов IEK"
-                    info = f"ошибка при чтении свойств: .{url_params} Тип ошибки:{e}"
+                    info = f"ошибка при чтении свойств: .{url_params} Тип ошибки:{e}{tr}"
                     e = error_alert(error, location, info)
                 finally:
                     continue
@@ -1412,7 +1415,7 @@ def get_iek_stock():
             )
             data = response.json()
             if data:
-                if data["shopItems"] != []:
+                if len(data["shopItems"]) > 0:
                     for data_item in data["shopItems"]:
                         if data_item["zakaz"] == 1:
                             to_order = True
@@ -1429,11 +1432,17 @@ def get_iek_stock():
                     to_order = False
 
                 try:
-
                     stock_prod = Stock.objects.get(prod=product_item)
-
+                    if stock != 0:
+                        stock_prod_stock_supplier = stock / int(
+                            stock.order_multiplicity
+                        )
+                    else:
+                        stock_prod_stock_supplier = 0
+                        
                     # stock_prod = Stock.objects.get(prod_id=product_item.article_supplier)
-                    stock_prod.stock_supplier = stock
+                    stock_prod.stock_supplier = stock_prod_stock_supplier
+                    stock_prod.stock_supplier_unit = stock
                     stock_prod.to_order = to_order
                     stock_prod.data_update = datetime.datetime.now()
                     stock_prod._change_reason = "Автоматическое"
@@ -1441,7 +1450,8 @@ def get_iek_stock():
 
                 except Stock.DoesNotExist:
                     pass
-
+            else:
+                pass
     except Exception as e:
         print(e)
         error = "file_api_error"

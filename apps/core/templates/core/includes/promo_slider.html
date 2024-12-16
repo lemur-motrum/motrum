@@ -1,0 +1,75 @@
+{% load static %}
+<div class="promo-slider">
+    <div class="motrum-slider-requsites">
+        <div class="motrum-slider-requisites-up-content">
+            <div class="circle">
+                <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}" />
+            </div>
+            <button class="phone-button">Обратный звонок</button>
+        </div>
+        <div class="motrum-slider-requisites-down-content">
+            <a class="phone-link" href="tel:+78463004117">+7 (846) 300 41 17</a>
+        </div>
+    </div>
+    <div class="motrum-promoslider-one">
+        <div class="swiper-wrapper">
+            {% for slider_elem in slider %}
+                {% if slider_elem.active %}
+                    <div class="promoslider-one-elem swiper-slide">
+                        <img src="{{ slider_elem.image.url }}" alt="image" />
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="motrum-promosilder-middle-content">
+        <img src="{% static "core/images/promo-slider/motrum-slider-lightning.png" %}" alt="image" />
+    </div>
+    <div class="motrum-promosilder-two">
+        <div class="swiper-wrapper">
+            {% for slider_elem in slider %}
+                {% if slider_elem.active %}
+                    <div class="promoslider-two-elem swiper-slide">
+                        {% if slider_elem.image_right %}<img src="{{ slider_elem.image_right.url }}" alt="image" />{% endif %}
+                        {% if slider_elem.video %}
+                            {% autoescape off %}
+                                {{ slider_elem.video }}
+                            {% endautoescape %}
+                        {% endif %}
+                        {% if slider_elem.video_file %}
+                            <video playsinline loop autoplay muted>
+                                <source src="{{ slider_elem.video_file.url }}" type="video/mp4" />
+                            </video>
+                        {% endif %}
+                        <div class="promoslider-two-elem-description">
+                            <div class="promoslider-two-elem-description-up">
+                                {% if slider_elem.text1 %}<span class="bold-text">{{ slider_elem.text1 }}</span>{% endif %}
+                                {% if slider_elem.text2 %}
+                                    <div class="circle">
+                                        <span class="circle-text">{{ slider_elem.text2 }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="promoslider-two-elem-description-down">
+                                {% if slider_elem.icon3 %}
+                                    <div class="icon-container">
+                                        <img src="{{ slider_elem.icon3.url }}" alt="icon" />
+                                    </div>
+                                {% endif %}
+                                {% if slider_elem.text4 %}<span class="bold-text">{{ slider_elem.text4 }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="navigation">
+            <div class="nav_prew">
+                <img src="{% static "core/images/promo-slider/prew-arrow.png" %}" alt="arrow" />
+            </div>
+            <div class="nav_next">
+                <img src="{% static "core/images/promo-slider/next-arrow.png" %}" alt="arrow" />
+            </div>
+        </div>
+    </div>
+</div>

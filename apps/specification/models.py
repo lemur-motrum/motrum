@@ -132,6 +132,11 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    product_price_catalog = models.FloatField(
+        "Цена в каталоге в момент покупки",
+        blank=True,
+        null=True,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -177,7 +182,7 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
-
+    
     price_one = models.FloatField("Цена одного на момент формирования")
     price_one_original_new = models.FloatField("Цена одного для нового товара без скидки",blank=True,
         null=True,)
@@ -216,6 +221,20 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    date_delivery_bill = models.DateField(verbose_name="Дата поставки товара в счете", null=True)
+    reserve = models.IntegerField(
+        "Зарезервировано на складе мотрум",
+        blank=True,
+        null=True,
+    )
+    client_shipment = models.IntegerField(
+        "Отгружено клиенту",
+        blank=True,
+        null=True,
+    )
+    date_shipment = models.DateField(verbose_name="Дата поставки товара", null=True)
+    
+    
     
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 

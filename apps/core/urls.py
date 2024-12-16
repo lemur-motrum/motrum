@@ -1,4 +1,6 @@
 from django.urls import include, path
+
+from apps import product
 from . import views
 from django.views.generic.base import TemplateView
 
@@ -48,6 +50,10 @@ urlpatterns = [
     path(
         "privacy-policy", views.privacy_policy, name="privacy-policy"
     ),  # политика конфиденциальности
+    
+    path("brand/",  product.views.brand_all, name="brand"),
+    path("brand/<slug:vendor>",  product.views.brand_one, name="brand_one"),
+    
     # path("cart", views.cart,name="cart"),
     # path("/cart", include("apps.client.urls", namespace="cart")),
     # проекты в app project_web namespace="project"

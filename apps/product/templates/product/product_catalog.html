@@ -7,12 +7,14 @@
             </div>
             <h1 class="title">Товары</h1>
         </div>
+        {% include "core/includes/vendors.html" %}
         <div class="category_container">
             {% if category %}
                 {% for category_item in category %}
                     <a href="{% url "product:group" category_item.slug %}"
                        class="category"
                        data-category="category_item.id">
+                      
                         {% if category_item.image %}
                             <img src="{{ category_item.image.url }}" alt="img">
                         {% else %}
@@ -25,6 +27,7 @@
                 <a href="{% url "product:group" "other" %}"
                    class="category"
                    data-category="category_item.id">
+                    <div class="gray-bg"></div>
                     <div class="background-container"></div>
                     <div class="hover_container"></div>
                     <span class="name">товары без катетегории</span></a>
@@ -32,6 +35,7 @@
             <a href="{% url "product:group" "all" %}"
                class="category"
                data-category="category_item.id">
+                <div class="gray-bg"></div>
                 <div class="background-container"></div>
                 <div class="hover_container"></div>
                 <span class="name">все товары</span></a>

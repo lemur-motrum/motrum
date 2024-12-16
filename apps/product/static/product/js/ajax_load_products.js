@@ -20,6 +20,11 @@ window.addEventListener("DOMContentLoaded", () => {
     let productCount = 0;
     let lastPage = 0;
     let paramsArray = [];
+    let pricenone = false;
+    let priceFrom;
+    let priceTo;
+    let sort;
+    let maxValue;
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -28,6 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const smallLoader = catalogWrapper.querySelector(".small_loader");
     const endContent = catalogWrapper.querySelector(".end_content");
+    const noneContentText = catalogWrapper.querySelector(".none_content_data");
     const catalogButton = endContent.querySelector('[catalog-elem="button"]');
     const pagination = catalogWrapper.querySelector(".pagination");
     const paginationElems = pagination.querySelectorAll(".elem");
@@ -35,6 +41,27 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationLastElem = pagination.querySelector(".last");
     const firstDots = pagination.querySelector(".first_dots");
     const lastDots = pagination.querySelector(".last_dots");
+
+    const producsPriceSortingWrapper =
+      document.querySelector(".catalog_sorting");
+    const sortingElems = producsPriceSortingWrapper.querySelectorAll(
+      ".catalog_sorting_elem"
+    );
+    const upPriceBtn =
+      producsPriceSortingWrapper.querySelector(".up_price_sorting");
+    const downPriceBtn = producsPriceSortingWrapper.querySelector(
+      ".down_price_sorting"
+    );
+
+    const priceFilterElemWrapper = document.querySelector(".price_filter_elem");
+    const minInputPrice =
+      priceFilterElemWrapper.querySelector(".small_price_input");
+    const maxInputPrice =
+      priceFilterElemWrapper.querySelector(".big_price_input");
+
+    const offsetTop =
+      document.querySelector(".bread_crumbs").getBoundingClientRect().top +
+      window.scrollY;
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -65,7 +92,11 @@ window.addEventListener("DOMContentLoaded", () => {
               paginationElems[1].style.display = "none";
             }
           } else {
-            paginationElems[2].style.display = "flex";
+            if (paginationElems[2].textContent == "") {
+              paginationElems[2].style.display = "none";
+            } else {
+              paginationElems[2].style.display = "flex";
+            }
           }
         } else {
           paginationElems[2].style.display = "flex";
@@ -88,20 +119,18 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function loadItems(
-      paginationFn = false,
-      cleanArray = false,
-      vendor = false,
-      addMoreBtn = false
-    ) {
+    function loadItems(addMoreBtn = false) {
       let data = {
-        count: !paginationFn ? productCount : 10,
-        sort: "?",
+        count: productCount,
+        sort: sort ? sort : "?",
         page: pageCount,
         category: category,
         group: !group ? "" : group,
-        vendor: !vendor ? "" : vendor,
+        vendor: paramsArray.length > 0 ? paramsArray : "",
         addMoreBtn: addMoreBtn ? true : false,
+        pricefrom: priceFrom ? priceFrom : 0,
+        priceto: priceTo ? priceTo : 0,
+        pricenone: pricenone,
       };
 
       let params = new URLSearchParams(data);
@@ -115,58 +144,61 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => response.json())
         .then(function (data) {
-          lastPage = +data.count;
-          const paginationArray = [];
-          paginationLastElem.textContent = `${lastPage}`;
           loader.style.display = "none";
-          endContent.classList.add("show");
-          smallLoader.classList.remove("show");
-
-          for (let i in data.data) {
-            addAjaxCatalogItem(data.data[i]);
-          }
-
-          if (data.next) {
-            catalogButton.disabled = false;
+          if (data.data.length == 0) {
+            noneContentText.classList.add("show");
           } else {
-            catalogButton.disabled = true;
-          }
+            lastPage = +data.count;
+            const paginationArray = [];
+            paginationLastElem.textContent = `${lastPage}`;
+            endContent.classList.add("show");
+            smallLoader.classList.remove("show");
+            maxValue = +data["price_max"]["price__rub_price_supplier__max"];
 
-          for (
-            let i = pageCount == 0 ? pageCount : pageCount - 1;
-            !data.small
-              ? i < pageCount + 3
-              : +data.count > 1
-              ? i <= pageCount + 1
-              : i <= pageCount;
-            i++
-          ) {
-            paginationArray.push(i);
-          }
-          if (cleanArray) {
-            paginationElems.forEach((elem) => {
-              elem.textContent = "";
-            });
-          }
-          paginationElems.forEach((el) => (el.textContent = ""));
-          paginationArray.forEach((el, i) => {
-            if (paginationElems[i]) {
-              paginationElems[i].textContent = +el + 1;
+            for (let i in data.data) {
+              addAjaxCatalogItem(data.data[i]);
             }
-          });
 
-          const products = document.querySelectorAll(".product_item");
-          products.forEach((productItem) => {
-            const priceItem = productItem.querySelector(".price_item");
-            if (priceItem) {
-              const currentPrice = +getCurrentPrice(priceItem.textContent);
-              if (!isNaN(currentPrice)) {
-                getDigitsNumber(priceItem, currentPrice);
+            if (data.next) {
+              catalogButton.disabled = false;
+            } else {
+              catalogButton.disabled = true;
+            }
+
+            for (
+              let i = pageCount == 0 ? pageCount : pageCount - 1;
+              !data.small
+                ? i < pageCount + 3
+                : +data.count > 1
+                ? i <= pageCount + 1
+                : i <= pageCount;
+              i++
+            ) {
+              paginationArray.push(i);
+            }
+
+            paginationElems.forEach((el) => (el.textContent = ""));
+            paginationArray.forEach((el, i) => {
+              if (paginationElems[i]) {
+                paginationElems[i].textContent = +el + 1;
               }
-            }
-          });
-          getActivePaginationElem();
-          urlParams.set("page", pageCount + 1);
+            });
+
+            const products = document.querySelectorAll(".product_item");
+            products.forEach((productItem) => {
+              const priceItem = productItem.querySelector(".price_item");
+              if (priceItem) {
+                const currentPrice = +getCurrentPrice(priceItem.textContent);
+                if (!isNaN(currentPrice)) {
+                  getDigitsNumber(priceItem, currentPrice);
+                }
+              }
+            });
+            getActivePaginationElem();
+            urlParams.set("page", pageCount + 1);
+            inputValidate(minInputPrice);
+            inputValidate(maxInputPrice, true);
+          }
           history.pushState({}, "", currentUrl);
         });
     }
@@ -179,84 +211,186 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     window.onload = () => {
-      const pageGetParam = currentUrl.searchParams.get("page");
-
+      const pageGetParam = urlParams.get("page");
+      const priceGetParam = urlParams.get("price");
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
-        if (paramsArray.length === 0) {
-          loadItems(true, false, false, false);
-          productCount = pageCount * 10;
-        } else {
-          loadItems(true, false, paramsArray, false);
-          productCount = pageCount * 10;
-        }
-      } else {
-        if (paramsArray.length === 0) {
-          loadItems(false, false, false, false);
-        } else {
-          loadItems(false, false, paramsArray, false);
-        }
+        productCount = 10;
       }
+      if (priceGetParam) {
+        sort = priceGetParam == "up" ? "ASC" : "DESC";
+        priceGetParam == "up"
+          ? upPriceBtn.classList.add("active")
+          : downPriceBtn.classList.add("active");
+      }
+      loadItems();
     };
 
     paginationFirstElem.onclick = () => {
       pageCount = 0;
-      endContent.classList.remove("show");
-      catalogContainer.innerHTML = "";
-      loader.style.display = "block";
-
-      loadItems(
-        true,
-        true,
-        paramsArray.length > 0 ? paramsArray : false,
-        false
-      );
-      productCount = pageCount * 10;
+      preLoaderLogic();
+      productCount = 10;
     };
 
     paginationElems.forEach((elem) => {
       if (!elem.classList.contains("active")) {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
-          endContent.classList.remove("show");
-          catalogContainer.innerHTML = "";
-          loader.style.display = "block";
-          loadItems(
-            true,
-            false,
-            paramsArray.length > 0 ? paramsArray : false,
-            false
-          );
-          productCount = pageCount * 10;
+          productCount = 10;
+          preLoaderLogic();
         };
       }
     });
     catalogButton.onclick = () => {
-      productCount += 10;
+      productCount = 10;
       +pageCount++;
       endContent.classList.remove("show");
       smallLoader.classList.add("show");
-      loadItems(
-        false,
-        false,
-        paramsArray.length > 0 ? paramsArray : false,
-        true
-      );
+      loadItems();
     };
 
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
+      productCount = 10;
+      preLoaderLogic();
+    };
+
+    const filters = document.querySelectorAll(".filter_elem");
+    const supplierNameContainer = document.querySelector(
+      ".suppliers_max_height_container"
+    );
+    filters.forEach((filterElem) => {
+      const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
+
+      filterValues.forEach((filterValue) => {
+        const vendorParam = filterValue.getAttribute("param");
+        if (paramsArray.length > 0) {
+          paramsArray.forEach((param) => {
+            if (vendorParam == param) {
+              filterValue.classList.add("show");
+              supplierNameContainer.prepend(filterValue);
+            }
+          });
+        }
+        filterValue.onclick = () => {
+          paramsArray.push(vendorParam);
+          filterValue.classList.toggle("show");
+          if (filterValue.classList.contains("show")) {
+            scrollToTop(offsetTop);
+            supplierNameContainer.prepend(filterValue);
+            const vendorsString = currentUrl.searchParams.get("vendor");
+            if (vendorsString) {
+              currentUrl.searchParams.set("vendor", paramsArray.join());
+            } else {
+              currentUrl.searchParams.set("vendor", paramsArray.join(","));
+            }
+            pageCount = 0;
+            preLoaderLogic();
+          } else {
+            const activeSupplierElems =
+              supplierNameContainer.querySelectorAll(".show");
+            if (activeSupplierElems[activeSupplierElems.length - 1]) {
+              activeSupplierElems[activeSupplierElems.length - 1].after(
+                filterValue
+              );
+            }
+            const searchParams = currentUrl.searchParams;
+            const filteredParamsArray = paramsArray.filter(
+              (el) => el !== vendorParam
+            );
+            paramsArray = filteredParamsArray;
+            if (filteredParamsArray.length == 0) {
+              searchParams.delete("vendor");
+            } else {
+              searchParams.set("vendor", paramsArray.join());
+            }
+            preLoaderLogic();
+          }
+          history.pushState({}, "", currentUrl);
+        };
+      });
+    });
+
+    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
+      ".price_checkbox_content"
+    );
+    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
+    priceOneFilterContent.onclick = () => {
+      checkboxZone.classList.toggle("checked");
+      if (checkboxZone.classList.contains("checked")) {
+        pricenone = true;
+      } else {
+        pricenone = false;
+      }
+    };
+
+    const submitFiltersContainer = document.querySelector(
+      ".submit_filter_container"
+    );
+
+    const filterButton = submitFiltersContainer.querySelector(".submit");
+    const cancelFilterButton =
+      submitFiltersContainer.querySelector(".canceled");
+
+    filterButton.onclick = () => {
+      priceFrom = minInputPrice.value ? +minInputPrice.value : "";
+      priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
+      pageCount = 0;
+      scrollToTop(offsetTop);
+      preLoaderLogic();
+    };
+
+    cancelFilterButton.onclick = () => {
+      const filterValues = document.querySelectorAll(".suplier_elem_content");
+      filterValues.forEach((el) => {
+        el.classList.remove("show");
+      });
+      priceFrom = "";
+      priceTo = "";
+      maxInputPrice.value = "";
+      minInputPrice.value = "";
+      pageCount = 0;
+      paramsArray = [];
+      pricenone = false;
+      sort = "";
+      sortingElems.forEach((el) => {
+        el.classList.remove("active");
+      });
+      urlParams.delete("price");
+      urlParams.delete("vendor");
+      checkboxZone.classList.remove("checked");
+      scrollToTop(offsetTop);
+      preLoaderLogic();
+    };
+
+    sortingByPrice(upPriceBtn);
+    sortingByPrice(downPriceBtn, false);
+
+    function sortingByPrice(btn, up = true) {
+      btn.onclick = () => {
+        if (!btn.classList.contains("active")) {
+          sortingElems.forEach((el) => {
+            el.classList.remove("active");
+          });
+          btn.classList.add("active");
+          urlParams.set("price", up ? "up" : "down");
+          sort = up ? "ASC" : "DESC";
+        } else {
+          btn.classList.remove("active");
+          urlParams.delete("price");
+          sort = "";
+        }
+        preLoaderLogic();
+      };
+    }
+
+    function preLoaderLogic() {
+      noneContentText.classList.remove("show");
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      loadItems(
-        true,
-        true,
-        paramsArray.length > 0 ? paramsArray : false,
-        false
-      );
-      productCount = pageCount * 10;
-    };
+      loadItems();
+    }
 
     function renderCatalogItem(productData) {
       let ajaxTemplateWrapper = document.querySelector(
@@ -265,7 +399,6 @@ window.addEventListener("DOMContentLoaded", () => {
       let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
         '[catalog-elem="product-item"]'
       ).innerText;
-
       return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
     }
 
@@ -274,72 +407,43 @@ window.addEventListener("DOMContentLoaded", () => {
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
     }
 
-    const filters = document.querySelectorAll(".filter_elem");
-    filters.forEach((filterElem) => {
-      const title = filterElem.querySelector(".filter_title");
-      const filterContent = filterElem.querySelector(".filter-wrapper-content");
-      const arrow = filterElem.querySelector(".arrow");
-      const filterValues = filterElem.querySelectorAll(".filter_elem_content");
-
-      filterValues.forEach((filterValue) => {
-        const checkbox = filterValue.querySelector(".checked");
-        const vendorParam = filterValue.getAttribute("param");
-        if (paramsArray.length > 0) {
-          paramsArray.forEach((param) => {
-            if (vendorParam == param) {
-              checkbox.classList.add("show");
-            }
-          });
-        }
-        filterValue.onclick = () => {
-          paramsArray.push(vendorParam);
-          checkbox.classList.toggle("show");
-          if (checkbox.classList.contains("show")) {
-            const vendorsString = currentUrl.searchParams.get("vendor");
-            if (vendorsString) {
-              currentUrl.searchParams.set("vendor", paramsArray.join());
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              pageCount = 0;
-              loadItems(false, false, paramsArray, false);
-            } else {
-              currentUrl.searchParams.set("vendor", paramsArray.join(","));
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              pageCount = 0;
-              loadItems(false, false, paramsArray, false);
-            }
-          } else {
-            const searchParams = currentUrl.searchParams;
-            const filteredParamsArray = paramsArray.filter(
-              (el) => el !== vendorParam
-            );
-            paramsArray = filteredParamsArray;
-            searchParams.set("vendor", paramsArray.join());
-            loader.style.display = "block";
-            catalogContainer.innerHTML = "";
-            endContent.classList.remove("show");
-            pageCount = 0;
-
-            if (filteredParamsArray.length == 0) {
-              searchParams.delete("vendor", paramsArray.join());
-              loader.style.display = "block";
-              catalogContainer.innerHTML = "";
-              endContent.classList.remove("show");
-              loadItems(false, false, false, false);
-            } else {
-              loadItems(false, true, paramsArray, false);
-            }
-          }
-          history.pushState({}, "", currentUrl);
-        };
+    function scrollToTop(arhor) {
+      window.scrollTo({
+        top: arhor,
+        behavior: "smooth",
       });
-      // title.onclick = () => {
-      //   filterContent.classList.toggle("is_open");
-      //   arrow.classList.toggle("rotate");
-      // };
-    });
+    }
+
+    function inputValidate(input, max = false) {
+      const intervalMaxValue = setInterval(() => {
+        if (maxValue) {
+          clearInterval(intervalMaxValue);
+          if (max) {
+            input.placeholder = maxValue.toString();
+          }
+        }
+      }, 5);
+      input.addEventListener("input", function (e) {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d.-]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+        input.value = currentValue;
+        if (input.value == ".") {
+          e.target.value = "";
+        }
+        if (input.value == "0") {
+          e.target.value = "";
+        }
+        if (maxValue) {
+          if (+input.value >= maxValue) {
+            e.target.value = maxValue;
+          }
+        }
+      });
+    }
   }
 });

@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsCallBack, Order
+from apps.client.models import Client, EmailsCallBack, Order, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -37,15 +37,33 @@ class AccountRequisitesSerializer(serializers.ModelSerializer):
         fields = "__all__"
         # exclude = ('requisites',)
 
+class RequisitesOtherKppSerializer(serializers.ModelSerializer):
+    accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
+    class Meta:
+        model = RequisitesOtherKpp
+        fields = "__all__"
+        # exclude = ('requisites',)        
+
 
 class AllAccountRequisitesSerializer(serializers.ModelSerializer):
     type_payment_full = serializers.CharField(source="get_type_payment")
-    accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
+    # requisitesotherkpp_set = RequisitesOtherKppSerializer(read_only=False, many=True)
+    # accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
 
     class Meta:
         model = Requisites
         exclude = ("client",)
-
+        
+        
+class RequisitesToOktOrderSerializer(serializers.ModelSerializer):
+    type_payment_full = serializers.CharField(source="get_type_payment")
+    requisitesotherkpp_set = RequisitesOtherKppSerializer(read_only=False, many=True)
+    
+    class Meta:
+        model = Requisites
+        fields = "__all__"
+        
+        
 
 class ClientRequisitesSerializer(serializers.ModelSerializer):
     requisites_set = AllAccountRequisitesSerializer(read_only=False, many=True)
@@ -111,6 +129,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "status",
             "status_full",
             "specification_list",
+            "bill_name",
             "bill_sum",
             "bill_sum_paid",
             "bill_file",

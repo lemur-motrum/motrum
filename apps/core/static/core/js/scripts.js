@@ -18,6 +18,7 @@ import "/static/admin_specification/js/complete_order.js";
 import "/static/admin_specification/js/save_without_spec.js";
 import "/static/admin_specification/js/save_changed_invoice.js";
 import "/static/admin_specification/js/fixed_titles_in_cart.js";
+import "/static/admin_specification/js/search_logic.js";
 import "/static/admin_specification/js/error_modal.js";
 import "/static/admin_specification/js/marginality.js";
 import "/static/admin_specification/js/chage-price-&-motum-discount.js";

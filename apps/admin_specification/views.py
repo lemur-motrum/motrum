@@ -1195,7 +1195,7 @@ def search_product(request):
     #     | Q(article_supplier__icontains=value)
     #     | Q(additional_article_supplier__icontains=value)
     # )
-    product_list = Product.objects.filter(
+    product_list = product_list.filter(
         Q(name__icontains=search_input[0])
         | Q(article__icontains=search_input[0])
         | Q(article_supplier__icontains=search_input[0])

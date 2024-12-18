@@ -137,9 +137,7 @@ window.addEventListener("DOMContentLoaded", () => {
                         cart: cart_id,
                         quantity: countInput.value,
                       };
-
                       const data = JSON.stringify(dataObj);
-
                       fetch(`/api/v1/cart/${cart_id}/save-product/`, {
                         method: "POST",
                         body: data,

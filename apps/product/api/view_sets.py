@@ -414,7 +414,9 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"])
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
@@ -428,7 +430,9 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"])
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:

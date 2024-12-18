@@ -151,7 +151,9 @@ window.addEventListener("DOMContentLoaded", () => {
             lastPage = +data.count;
             const paginationArray = [];
             paginationLastElem.textContent = `${lastPage}`;
-            endContent.classList.add("show");
+            if (data.count > 1) {
+              endContent.classList.add("show");
+            }
             smallLoader.classList.remove("show");
             maxValue = +data["price_max"]["price__rub_price_supplier__max"];
 
@@ -419,7 +421,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (maxValue) {
           clearInterval(intervalMaxValue);
           if (max) {
-            input.placeholder = maxValue.toString();
+            input.placeholder = `до ${maxValue.toString()}`;
           }
         }
       }, 5);

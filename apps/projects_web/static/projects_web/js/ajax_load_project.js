@@ -146,7 +146,9 @@ window.addEventListener("DOMContentLoaded", () => {
             const paginationArray = [];
             paginationLastElem.textContent = `${lastPage}`;
             loader.classList.add("hide");
-            endContent.classList.add("show");
+            if (data.count > 1) {
+              endContent.classList.add("show");
+            }
             smallLoader.classList.remove("show");
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);

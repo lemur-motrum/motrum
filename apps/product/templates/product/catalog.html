@@ -54,7 +54,7 @@
                         {% if product_vendor|length > 4 %}
                             <div class="suppliers_add_more_btn">
                                 <span>все поставщики</span>
-                                <div>
+                                <div class="arrow-container">
                                     <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
                                 </div>
                             </div>
@@ -65,12 +65,11 @@
                         <div class="price_content">
                             <div class="price_content_wrapper">
                                 <div class="price_content_wrapper_elem">
-                                    от
-                                    <input placeholder="1000" class="small_price_input" type="text" />
+
+                                    <input placeholder="от 1000" class="small_price_input" type="text" />
                                 </div>
                                 <div class="price_content_wrapper_elem">
-                                    до
-                                    <input placeholder="500000" class="big_price_input" type="text" />
+                                    <input placeholder="до 500000" class="big_price_input" type="text" />
                                 </div>
                             </div>
                             <div class="price_checkbox_content">

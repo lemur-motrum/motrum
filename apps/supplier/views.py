@@ -5,7 +5,7 @@ from django.shortcuts import render
 from regex import D
 from apps.client.models import Order
 from apps.client.task import actual_info_order_product
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_status_order
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_order_carrency_up, get_product_price_up, get_status_order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -42,9 +42,10 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    order = Order.objects.get(id_bitrix=34534)
-    type_save = "new"
-    add_info_order(request, order, type_save)
+    order = Order.objects.get(id_bitrix=2)
+    # type_save = "new"
+    # add_info_order(request, order, type_save)
+    currency_check_bx()
     result = 1
     if result:
         pass

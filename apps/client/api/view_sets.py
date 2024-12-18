@@ -1786,37 +1786,50 @@ class EmailsViewSet(viewsets.ModelViewSet):
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
 
+    # if type_save == "specification":
+    #     last_spec_name = Specification.objects.filter(number__isnull=False).last()
 
-# if type_save == "specification":
-#     last_spec_name = Specification.objects.filter(number__isnull=False).last()
+    #     if last_spec_name:
+    #         last_spec_name = last_spec_name.number
+    #         specification_name = int(last_spec_name) + 1
+    #     else:
+    #         specification_name = 1
 
-#     if last_spec_name:
-#         last_spec_name = last_spec_name.number
-#         specification_name = int(last_spec_name) + 1
-#     else:
-#         specification_name = 1
+    # elif type_save == "bill":
+    #     specification_name = None
 
-# elif type_save == "bill":
-#     specification_name = None
+    # if order.bill_file and post_update == False:
+    #     bill_name = order.bill_name
+    # else:
+    #     if order.requisites.prepay_persent == 100:
+    #         bill_name = order.motrum_requisites.requisites.counter_bill_offer + 1
+    #     else:
+    #         bill_name = order.motrum_requisites.requisites.counter_bill + 1
 
-# if order.bill_file and post_update == False:
-#     bill_name = order.bill_name
-# else:
-#     if order.requisites.prepay_persent == 100:
-#         bill_name = order.motrum_requisites.requisites.counter_bill_offer + 1
-#     else:
-#         bill_name = order.motrum_requisites.requisites.counter_bill + 1
-
-
-# if post_update:
-#     bill_name = order.bill_name
-# else:
-#     bill_name = (
-#         Order.objects.filter(bill_name__isnull=False)
-#         .order_by("bill_name")
-#         .last()
-#     )
-#     if bill_name:
-#         bill_name = int(bill_name.bill_name) + 1
-#     else:
-#         bill_name = 1
+    # if post_update:
+    #     bill_name = order.bill_name
+    # else:
+    #     bill_name = (
+    #         Order.objects.filter(bill_name__isnull=False)
+    #         .order_by("bill_name")
+    #         .last()
+    #     )
+    #     if bill_name:
+    #         bill_name = int(bill_name.bill_name) + 1
+    #     else:
+    #         bill_name = 1
+    {
+        "id": "ид сделки",
+        "fields": {
+            "название поля": [
+                {"id": "ид фаила который уже записан"},
+                {"id": "ид фаила который уже записан"},
+                {
+                    "fileData": [
+                        "название фаила",
+                        "file_base64",
+                    ],
+                },
+            ]
+        },
+    }

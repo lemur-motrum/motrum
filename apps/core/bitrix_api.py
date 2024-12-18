@@ -1,4 +1,5 @@
 from ast import Try
+import base64
 import datetime
 import os
 import random
@@ -16,6 +17,7 @@ from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
+from project.settings import MEDIA_ROOT
 
 
 # проверка и получение основной инфы для создания заказа
@@ -215,20 +217,35 @@ def get_status_order():
 
 # сохранение всех данных по заказу:
 def add_info_order(request, order, type_save):
-
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-    orders = [2]
-    orders_bx = bx.get_by_ID("crm.deal.get", orders)
+    orders_bx = bx.get_by_ID("crm.deal.fields", [2])
     print(orders_bx)
-    # pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
-    # pdf_signed = request.build_absolute_uri(order.bill_file.url)
-    # if order.specification.file:
-    #     document_specification = request.build_absolute_uri(
-    #         order.specification.file.url
-    #     )
-    # else:
-    #     document_specification = None
+    pdf = f"{MEDIA_ROOT}/{ order.bill_file_no_signature}"
+    save_multi_file_bx(
+        bx, pdf, order.id_bitrix, "crm.deal.update", "UF_CRM_1734415894538"
+    )
+    pdf_signed = f"{MEDIA_ROOT}/{ order.bill_file}"
+
+    if order.specification.file:
+        document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+
+    else:
+        document_specification = None
+
+    print(document_specification)
+
+    orders = [2]
+
+    # orders_bx = save_file_bx(
+    #     bx,
+    #     document_specification,
+    #     order.id_bitrix,
+    #     "crm.deal.update",
+    #     "UF_CRM_1734093516769",
+    # )
+
+    # print(orders_bx)
 
     # ТОВАРЫ СДЕЛКИ
     is_order_pros_bx = save_product_order_bx(bx, order)
@@ -237,6 +254,110 @@ def add_info_order(request, order, type_save):
         return True
     else:
         return False
+
+
+# crm.deal.update UF_CRM_1734093516769
+def save_file_bx(bx, file, id_bx, method, field_name):
+    with open(file, "rb") as f:
+        file_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+    # {
+    # 			"id": 12
+    # 		},
+    # 		{
+    # 			"id": 44
+    # 		},
+    # orders_bx = bx.call(
+    #     method,
+    #     {
+    #         "id": id_bx,
+    #         "fields": {
+    #             field_name: {
+
+    #                 "fileData": [
+    #                     file,
+    #                     file_base64,
+    #                 ]
+    #             }
+    #         },
+    #     },
+    # # )
+    # {"fileData": ["test.txt", "dfgdfgdfgh"]},
+    # 	{"fileData": ["test2.txt", "dfgdfgdfgh"]}
+    orders_bx = bx.call(
+        method,
+        {
+            "id": id_bx,
+            "fields": {
+                field_name: [
+                    {
+                        "fileData": [
+                            "3",
+                            file_base64,
+                        ],
+                    },
+                ]
+            },
+        },
+    )
+    return orders_bx
+
+
+def save_multi_file_bx(bx, file, id_bx, method, field_name):
+    with open(file, "rb") as f:
+        file_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+    orders_bx1 = bx.get_by_ID("crm.deal.get", [2])
+    file_prd = orders_bx1["UF_CRM_1734415894538"]
+    print(file_prd)
+    arr_old = [
+        # {"id": 12},
+        # {"id": 44},
+        # ["myNewFile.pdf", "...base64_encoded_file_content..."],
+    ]
+    for file_pr in file_prd:
+        file_old = {
+            "id": int(file_pr["id"]),
+            # "value": { "showUrl":file_pr["showUrl"],"downloadUrl":file_pr["downloadUrl"]},
+        }
+        arr_old.append(file_old)
+    arr = {
+        # "valueId": 0,
+        "fileData": [
+            "333",
+            file_base64,
+        ],
+    }
+
+    arr_old.append(arr)
+    print(arr_old)
+    ar = (
+        {
+            "id": id_bx,
+            "fields": {
+                field_name: arr_old[
+                    {
+                        "valueId": 0,
+                        "fileData": [
+                            "file333",
+                            file_base64,
+                        ],
+                    },
+                    {
+                        "valueId": 0,
+                        "fileData": [
+                            "3222",
+                            file_base64,
+                        ],
+                    },
+                ]
+            },
+        },
+    )
+    print(ar)
+    orders_bx = bx.call(method, ar)
+    print(orders_bx)
+    return orders_bx
 
 
 # add_info_order сохранение товаров  в заказ битрикс
@@ -318,29 +439,76 @@ def save_shipment_order_bx(data):
     return True
 
 
+# уведомления о повышения цен и валют битрикс
 def currency_check_bx():
-    
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
-    
-    get_order_carrency_up()
 
+    carrency = get_order_carrency_up()
+    product = get_product_price_up()
+
+    data_dict = {}
+    for carrency_item in carrency:
+        data_curr = carrency_item["currency"]
+        for item in carrency_item["order"]:
+            order = item["specification__order"]
+            order_item_data = {
+                "order": item["specification__order"],
+                "bitrix_id_order": item["specification__order__id_bitrix"],
+                "order_product": [],
+                "text": "",
+            }
+            if order not in data_dict:
+                order_item_data["currency"] = [data_curr]
+                # order_item_data["currency"].append(data_curr)
+                data_dict[order] = order_item_data
+            else:
+                data_dict[order]["currency"].append(data_curr)
+
+    for product_item in product:
+        order = product_item["order"]
+        if order in data_dict:
+            data_dict[order]["order_product"] = product_item["order_product"]
+        else:
+            data_dict[order] = product_item
+
+    for key, value in data_dict.items():
+        if len(value["currency"]) > 0:
+            string = ",".join(value["currency"])
+            value["text"] = f"Произошло повышение курса {string}. "
+
+        if len(value["order_product"]) > 0:
+
+            if value["text"] != "":
+                text = f"Повышены цены на следующие товары:"
+                for prod in value["order_product"]:
+                    text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
+                    text = f"{text}{text_prod}"
+                value["text"] = f'{value["text"]}{text}'
+            else:
+                text = f" Уведомление о повышении цен на определенные товары!"
+                for prod in value["order_product"]:
+                    text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на 3%)"
+                    text = f"{text}{text_prod}"
+                value["text"] = f'{value["text"]}{text}'
+
+    print(data_dict)
     return True
 
 
+# дл currency_check_bx получает массив с валютами
 def get_order_carrency_up():
     data_order_curr = {}
+    data_order_all = []
     currency_list = Currency.objects.exclude(words_code="RUB")
 
     now = datetime.datetime.now()
     three_days = datetime.timedelta(3)
     in_three_days = now - three_days
     data_old = in_three_days.strftime("%Y-%m-%d")
-    print(data_old)
 
     for currency in currency_list:
-        curr_name =  currency.words_code
-        print(curr_name)
+        curr_name = currency.words_code
         old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
         now_rate = CurrencyRate.objects.get(currency=currency, date=now)
         old_rate_count = old_rate.vunit_rate
@@ -352,33 +520,66 @@ def get_order_carrency_up():
                 ProductSpecification.objects.filter(
                     product_currency=now_rate.currency,
                 )
-                .exclude(specification__order__status__in=["CANCELED", "COMPLETED"])
+                .filter(
+                    specification__order__status__in=[
+                        "PAYMENT",
+                    ]
+                )
                 .distinct("specification__order")
-                .values("specification__order","specification__order__id_bitrix")
+                .values("specification__order", "specification__order__id_bitrix")
                 .exclude(specification__order=None)
             )
-            data_order_curr[curr_name] = product_specification
-        
-    
-    print(data_order_curr)
 
+            data_it = {
+                "currency": curr_name,
+                "order": product_specification,
+            }
+            data_order_all.append(data_it)
+
+            data_order_curr[curr_name] = product_specification
+
+    return data_order_all
+
+
+# для currency_check_bx массив с товарами
 def get_product_price_up():
-    order = Order.objects.exclude(status__in=["COMPLETED","CANCELED"])
-    data_order = []
+    order = Order.objects.filter(
+        status__in=[
+            "PAYMENT",
+        ]
+    )
+
+    data_order_all = []
     for order_item in order:
         order_item_data = {
-            "order":order_item.id,
-            "bitrix_id_order":order_item.id_bitrix,
-            "order_item_data": []
+            "order": order_item.id,
+            "bitrix_id_order": order_item.id_bitrix,
+            "order_product": [],
+            "currency": [],
+            "text": "",
         }
-        products = ProductSpecification.objects.filter(specification=order.specification)
+        products = ProductSpecification.objects.filter(
+            specification=order_item.specification
+        )
+
         for prod in products:
             if prod.product_price_catalog:
+
                 now_price = Price.objects.get(prod=prod.product).rub_price_supplier
+
                 difference_count = now_price - prod.product_price_catalog
                 count_percent = prod.product_price_catalog / 100 * 3
                 if difference_count > count_percent:
-                    d = {
-                        "prod":prod
+                    data_product = {
+                        "prod": prod.product.article_supplier,
+                        "prod_name": prod.product.name,
+                        "price_old": prod.product_price_catalog,
+                        "price_new": now_price,
                     }
-                    order_item_data["order_item_data"].append 
+                    order_item_data["order_product"].append(data_product)
+
+        if order_item_data["order_product"] != []:
+
+            data_order_all.append(order_item_data)
+
+    return data_order_all

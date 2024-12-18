@@ -3,7 +3,7 @@ from trace import Trace
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
-from apps.core.bitrix_api import get_status_order
+from apps.core.bitrix_api import currency_check_bx, get_status_order
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
@@ -217,7 +217,7 @@ def get_next_year_holiday(self):
         self.retry(exc=exc, countdown=160)    
     
 
-
+# сброс сетчиков документов в начале года 
 @app.task(
     bind=True,
     max_retries=10,
@@ -235,7 +235,7 @@ def counter_bill_new_year(self):
         self.retry(exc=exc, countdown=160)    
 
 
-
+# НЕ ИСПУЛЬЗУЮ
 @app.task(
     bind=True,
     max_retries=10,
@@ -261,5 +261,11 @@ def del_void_cart(self):
     max_retries=1,
 )
 def get_status_order_bx(self):
-    print("SALARY ! HOORE")
     get_status_order()
+    
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def get_curr_price_check_bx(self):
+        currency_check_bx()

@@ -39,9 +39,13 @@ app.conf.beat_schedule = {
     #     'task': 'apps.specification.tasks.bill_date_stop',
     #     'schedule': crontab(minute=40, hour=0),
     # },
+    'image_check': {
+        'task': 'apps.core.tasks.image_error_check_in',
+        'schedule': crontab(minute=20, hour=0),
+    },
     'add_iek': {
         'task': 'apps.supplier.tasks.add_iek',
-        'schedule': crontab(minute=30, hour=0),
+        'schedule': crontab(minute=40, hour=0),
     },
     'add_veda': {
         'task': 'apps.supplier.tasks.add_veda',

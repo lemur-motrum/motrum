@@ -21,6 +21,7 @@
                             <div class="swiper-wrapper">
                                 {% for image in product.productimage_set.all %}
                                     {% if image.photo and image.hide is False  %}
+                                    {% comment %} {{ image.photo.size }} {% endcomment %}
                                         <div class="big_img_item swiper-slide">
                                             <img src="{{ image.photo.url }}" alt="">
                                         </div>

@@ -8,6 +8,7 @@ from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
 from apps.core.models import BaseInfo, CalendarHoliday, Currency
+from apps.core.utils import image_error_check
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
@@ -269,3 +270,10 @@ def get_status_order_bx(self):
 )
 def get_curr_price_check_bx(self):
         currency_check_bx()
+
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def image_error_check_in(self):
+        image_error_check()

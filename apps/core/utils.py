@@ -21,6 +21,7 @@ from apps.logs.utils import error_alert
 
 
 
+
 from apps.specification.utils import crete_pdf_specification
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
@@ -1795,6 +1796,23 @@ def create_info_request_order_1c(order,order_products):
     
     return data_for_1c
    
+def image_error_check():
+    from apps.product.models import ProductImage
+    
+    product_image = ProductImage.objects.all()
+    for img in product_image:
+     
+        dir_img = "{0}/{1}".format(
+        MEDIA_ROOT,
+        img.photo)
+       
+        if not os.path.exists(dir_img):
+            img.delete()
+        else:
+           
+            if os.stat(dir_img).st_size < 1000:
+                img.delete()
+        
 
 
 

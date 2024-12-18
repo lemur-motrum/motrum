@@ -12,7 +12,7 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification
+from apps.core.utils import create_time_stop_specification, image_error_check
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -45,7 +45,8 @@ def add_iek(request):
     order = Order.objects.get(id_bitrix=2)
     # type_save = "new"
     # add_info_order(request, order, type_save)
-    currency_check_bx()
+    # currency_check_bx()
+    image_error_check()
     result = 1
     if result:
         pass

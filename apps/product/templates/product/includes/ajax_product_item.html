@@ -10,9 +10,12 @@
         
             {% for productimage in productimage_set %}
                 {% if productimage.photo and productimage.hide == false %}
+                
                     {% if loop.first %}
+                    
                         <img src="{{ productimage.photo }}">
-                    {% endif %}
+                    {% endif %}111
+                    
                 {% else %}
                     <img src="/static/core/images/nophoto.png">
                 {% endif %}

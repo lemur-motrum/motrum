@@ -31,6 +31,7 @@ import "/static/core/js/scripts/manager-popup-logic.js";
 import "/static/core/js/scripts/get-client-id.js";
 import "/static/core/js/scripts/cookie_popup.js";
 import "/static/core/js/scripts/promo-slider.js";
+import "/static/core/js/scripts/arrow-swipe-button.js";
 import "/static/client/js/contacts.js";
 import "/static/client/js/details.js";
 import "/static/client/js/updateDetails.js";

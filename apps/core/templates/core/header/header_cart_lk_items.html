@@ -25,7 +25,7 @@
         </span>
     </a>
 {% elif request.user.is_staff %}
-    <div class="cart-elem enter-in-site">вход</div>
+    <div class="cart-elem enter-in-site"><img src="{% static "core/images/header_account.png" %}" alt="img"></div>
 {% else %}
     <a href={% url "core:cart" %} class="cart-elem">
         <div class="img-container">
@@ -35,7 +35,7 @@
             {% if count_cart %}{{ count_cart }}{% endif %}
         </span>
     </a>
-    <div class="cart-elem enter-in-site">вход</div>
+    <div class="cart-elem enter-in-site"><img src="{% static "core/images/header_account.png" %}" alt="img"></div>
 {% endif %}
 {% comment %} {% if request.user.username and request.user.is_staff == False %}
         {% order_link %}

@@ -220,11 +220,13 @@
             .project_description_content {
               display: flex;
               justify-content: space-between;
+              align-items: flex-end;
               margin-top: 1.438rem;
               .category_content {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 1.25rem;
+                row-gap: 0.5rem;
                 width: 32.875rem;
                 overflow: hidden;
                 .category_elem {

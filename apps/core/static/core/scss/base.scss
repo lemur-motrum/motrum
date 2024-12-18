@@ -145,6 +145,13 @@ a {
         display: flex;
         align-items: center;
         color: #000;
+        &:hover {
+          .vendor-name-container {
+            border: 0.094rem solid #95bad4;
+            background-color: #95bad4;
+            color: #fff;
+          }
+        }
         .vendor-img-container {
           width: 3.563rem;
           height: 3.563rem;
@@ -168,6 +175,7 @@ a {
           align-items: center;
           padding-left: 1.808rem;
           padding-right: 2.5rem;
+          transition: 0.6s;
           .vendor-name {
             font-size: 1.313rem;
           }
@@ -939,7 +947,7 @@ a {
     margin-left: 2.938rem;
     .navigation {
       display: flex;
-      gap: 1.953rem;
+      gap: 2.493rem;
       .nav-elem {
         text-transform: lowercase;
         color: #a4a4a4;
@@ -948,12 +956,31 @@ a {
           text-decoration: none;
           color: #000;
         }
-        span {
-          border-radius: 30px;
-          border: 0.094rem solid black;
-          color: #000;
-          box-sizing: border-box;
-          padding: 0.884rem 1.125rem 0.866rem 1.188rem;
+        .disabled-link {
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
+          position: relative;
+          .circle {
+            position: absolute;
+            width: 120.39%;
+            height: 3.563rem;
+            border-radius: 1.875rem;
+            border: 0.094rem solid black;
+            top: -50%;
+            left: -50%;
+            transform: translateX(32%);
+          }
+          span {
+            border-radius: 1.875rem;
+            color: #000;
+            box-sizing: border-box;
+            position: relative;
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
+            display: inline-block;
+          }
         }
       }
     }

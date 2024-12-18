@@ -1,15 +1,8 @@
 {% extends "core/base_okt.html" %}
 {% block content %}
     {% load number_into_digits %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="specification-container">
-        {% include "admin_specification/include/bread_crumbs.html" %}
         <h1 class="title">{{ title }} №{{ order.id }}</h1>
         <h2>
             {% if order.bill_name %}Счет №{{ order.bill_name }}{% endif %}

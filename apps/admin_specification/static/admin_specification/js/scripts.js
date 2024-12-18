@@ -13,6 +13,7 @@ import { setErrorModal } from "../js/error_modal.js";
 import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
+import { buttonsLogic } from "../js/add_product_in_cart.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -50,11 +51,8 @@ function setCurrentPriceCataloItem(elems) {
 //логика страницы каталога
 function catalogLogic(elems) {
   elems.forEach((catalogItem) => {
-    showInformation(catalogItem);
-
     const productId = catalogItem.getAttribute("data-id");
     const buttonContainer = catalogItem.querySelector(".quantity-buttons");
-
     const plusButton = buttonContainer.querySelector(".plus-button");
     const minusButton = buttonContainer.querySelector(".minus-button");
     const addSpecificationButton = catalogItem.querySelector(
@@ -67,164 +65,164 @@ function catalogLogic(elems) {
 
     let countQuantity = +countQuantityZone.value;
 
-    countQuantityZone.addEventListener("keyup", function () {
-      if (productMultiplicityQuantity) {
-        let val = parseInt(this.value) || 0;
-        while (val % +productMultiplicityQuantity) {
-          val++;
-          if (val % +productMultiplicityQuantity == 0) {
-            break;
-          }
-        }
-        this.value = val;
-        countQuantity = +val;
-      } else {
-        countQuantity = +countQuantityZone.value;
-      }
+    // countQuantityZone.addEventListener("keyup", function () {
+    //   if (productMultiplicityQuantity) {
+    //     let val = parseInt(this.value) || 0;
+    //     while (val % +productMultiplicityQuantity) {
+    //       val++;
+    //       if (val % +productMultiplicityQuantity == 0) {
+    //         break;
+    //       }
+    //     }
+    //     this.value = val;
+    //     countQuantity = +val;
+    //   } else {
+    //     countQuantity = +countQuantityZone.value;
+    //   }
 
-      if (countQuantity >= 99999) {
-        countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(99999, +productMultiplicityQuantity)
-          : 99999;
-        minusButton.disabled = false;
-        plusButton.disabled = true;
-        addSpecificationButton.disabled = false;
-      } else if (countQuantity <= 0) {
-        countQuantityZone.value = 0;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = true;
-      } else {
-        minusButton.disabled = false;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = false;
-      }
-    });
+    //   if (countQuantity >= 99999) {
+    //     countQuantityZone.value = productMultiplicityQuantity
+    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
+    //       : 99999;
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = true;
+    //     addSpecificationButton.disabled = false;
+    //   } else if (countQuantity <= 0) {
+    //     countQuantityZone.value = 0;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = true;
+    //   } else {
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = false;
+    //   }
+    // });
 
-    plusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity += +productMultiplicityQuantity;
-      } else {
-        countQuantity++;
-      }
-      countQuantityZone.value = +countQuantity;
-      minusButton.disabled = false;
-      addSpecificationButton.disabled = false;
-      if (countQuantity >= 99999) {
-        countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(99999, +productMultiplicityQuantity)
-          : 99999;
-        plusButton.disabled = true;
-        minusButton.disabled = false;
-      } else {
-        plusButton.disabled = false;
-        minusButton.disabled = false;
-      }
-    };
-    minusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity -= +productMultiplicityQuantity;
-      } else {
-        countQuantity--;
-      }
-      countQuantityZone.value = countQuantity;
-      minusButton.disabled = false;
-      if (countQuantity <= 0) {
-        countQuantityZone.value = 0;
-        minusButton.disabled = true;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = true;
-      } else {
-        minusButton.disabled = false;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = false;
-      }
-    };
-    addSpecificationButton.onclick = () => {
-      if (!getCookie("cart")) {
-        fetch("/api/v1/cart/add-cart/", {
-          method: "GET",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((cart_id) => {
-            if (cart_id) {
-              const dataObj = {
-                product: +productId,
-                cart: +cart_id,
-                quantity: countQuantityZone.value,
-              };
+    // plusButton.onclick = () => {
+    //   if (productMultiplicityQuantity) {
+    //     countQuantity += +productMultiplicityQuantity;
+    //   } else {
+    //     countQuantity++;
+    //   }
+    //   countQuantityZone.value = +countQuantity;
+    //   minusButton.disabled = false;
+    //   addSpecificationButton.disabled = false;
+    //   if (countQuantity >= 99999) {
+    //     countQuantityZone.value = productMultiplicityQuantity
+    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
+    //       : 99999;
+    //     plusButton.disabled = true;
+    //     minusButton.disabled = false;
+    //   } else {
+    //     plusButton.disabled = false;
+    //     minusButton.disabled = false;
+    //   }
+    // };
+    // minusButton.onclick = () => {
+    //   if (productMultiplicityQuantity) {
+    //     countQuantity -= +productMultiplicityQuantity;
+    //   } else {
+    //     countQuantity--;
+    //   }
+    //   countQuantityZone.value = countQuantity;
+    //   minusButton.disabled = false;
+    //   if (countQuantity <= 0) {
+    //     countQuantityZone.value = 0;
+    //     minusButton.disabled = true;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = true;
+    //   } else {
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = false;
+    //   }
+    // };
+    // addSpecificationButton.onclick = () => {
+    //   if (!getCookie("cart")) {
+    //     fetch("/api/v1/cart/add-cart/", {
+    //       method: "GET",
+    //       headers: {
+    //         "X-CSRFToken": csrfToken,
+    //       },
+    //     })
+    //       .then((response) => response.json())
+    //       .then((cart_id) => {
+    //         if (cart_id) {
+    //           const dataObj = {
+    //             product: +productId,
+    //             cart: +cart_id,
+    //             quantity: countQuantityZone.value,
+    //           };
 
-              const data = JSON.stringify(dataObj);
-              fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-                method: "POST",
-                body: data,
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-CSRFToken": csrfToken,
-                },
-              })
-                .then((response) => {
-                  if (response.status == 200) {
-                    return response.json();
-                  } else {
-                    setErrorModal();
-                    throw new Error("Ошибка");
-                  }
-                })
-                .then(
-                  (response) =>
-                    (document.querySelector(
-                      ".admin_specification_cart_length"
-                    ).textContent = response.cart_len)
-                )
-                .catch((error) => {
-                  setErrorModal();
-                  console.error(error);
-                });
-            }
-          })
-          .catch((error) => {
-            setErrorModal();
-            console.error(error);
-          });
-      } else {
-        const cart_id = getCookie("cart");
-        const dataObj = {
-          product: +productId,
-          cart: +cart_id,
-          quantity: +countQuantityZone.value,
-        };
-        const data = JSON.stringify(dataObj);
-        fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          })
-          .then(
-            (response) =>
-              (document.querySelector(
-                ".admin_specification_cart_length"
-              ).textContent = response.cart_len)
-          )
-          .catch((error) => {
-            setErrorModal();
-            console.error(error);
-          });
-      }
-    };
+    //           const data = JSON.stringify(dataObj);
+    //           fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+    //             method: "POST",
+    //             body: data,
+    //             headers: {
+    //               "Content-Type": "application/json",
+    //               "X-CSRFToken": csrfToken,
+    //             },
+    //           })
+    //             .then((response) => {
+    //               if (response.status == 200) {
+    //                 return response.json();
+    //               } else {
+    //                 setErrorModal();
+    //                 throw new Error("Ошибка");
+    //               }
+    //             })
+    //             .then(
+    //               (response) =>
+    //                 (document.querySelector(
+    //                   ".admin_specification_cart_length"
+    //                 ).textContent = response.cart_len)
+    //             )
+    //             .catch((error) => {
+    //               setErrorModal();
+    //               console.error(error);
+    //             });
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         setErrorModal();
+    //         console.error(error);
+    //       });
+    //   } else {
+    //     const cart_id = getCookie("cart");
+    //     const dataObj = {
+    //       product: +productId,
+    //       cart: +cart_id,
+    //       quantity: +countQuantityZone.value,
+    //     };
+    //     const data = JSON.stringify(dataObj);
+    //     fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+    //       method: "POST",
+    //       body: data,
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         "X-CSRFToken": csrfToken,
+    //       },
+    //     })
+    //       .then((response) => {
+    //         if (response.status == 200) {
+    //           return response.json();
+    //         } else {
+    //           setErrorModal();
+    //           throw new Error("Ошибка");
+    //         }
+    //       })
+    //       .then(
+    //         (response) =>
+    //           (document.querySelector(
+    //             ".admin_specification_cart_length"
+    //           ).textContent = response.cart_len)
+    //       )
+    //       .catch((error) => {
+    //         setErrorModal();
+    //         console.error(error);
+    //       });
+    //   }
+    // };
   });
 }
 
@@ -419,24 +417,26 @@ window.addEventListener("DOMContentLoaded", () => {
                                 }
                                 </div>
                             </div>
-                            <div class="item-buttons_container">
-                                <div class="quantity-buttons">
-                                    <button disabled class="minus-button">-</button>
-                                    <input type="number"
-                                           value="0"
-                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                           maxlength="3"
-                                           onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                                <div class="item_button_container">
+                                <div class="first_display_button">
+                                    <span class="descr">в корзину</span>
+                                    <span class="plus_icon"></span>
                                 </div>
-                                <button disabled class="add-specification-button">В корзину</button>
+                                <div class="quantity-buttons">
+                                    <button disabled class="minus-button"></button>
+                                    <input type="number"
+                                           value="1"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="5"
+                                           onkeypress='validate(event)'
+                                           class="quantity_input" />
+                                    <button class="plus-button"></button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
                 });
-                const catalogItems =
-                  allProducts.querySelectorAll(".catalog-item");
-                catalogLogic(catalogItems);
+                buttonsLogic(allProducts);
                 setCurrentPriceCataloItem(catalogItems);
               }
             });
@@ -1093,145 +1093,164 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const groupSwiper = new Swiper(".group-slider", {
     slidesPerView: "auto",
+    navigation: {
+      nextEl: ".slider-arrow",
+    },
   });
   //
 
   //выпадающий поиск
-  const searhForm = document.querySelector(".search-form-container");
-  if (searhForm) {
-    const searchInput = searhForm.querySelector(['[name="search_input"]']);
-    const searchEndpoint = "/admin_specification/search_product/";
-    let searchValue;
-    const category = searhForm.getAttribute("category");
-    const group = searhForm.getAttribute("group");
-    const searchDescriptionField = searhForm.querySelector(
-      ".search-elem-fields"
-    );
-    const closebtn = searhForm.querySelector(".close-sreach-field-button");
-    const loader = searhForm.querySelector(".loader");
+  // const searhForm = document.querySelector(".search-form-container");
+  // if (searhForm) {
+  //   const searchInput = searhForm.querySelector(['[name="search_input"]']);
 
-    function searchProduct(arr) {
-      arr.forEach((el) => {
-        el.onclick = () => {
-          searchInput.value = el.textContent;
-          closeSearchWindow();
-        };
-      });
-    }
-    function openSearchWindow() {
-      searchDescriptionField.style.display = "flex";
-      searchDescriptionField.style.opacity = "1";
-    }
-    function closeSearchWindow() {
-      searchDescriptionField.style.opacity = 0;
-      setTimeout(() => {
-        searchDescriptionField.style.display = "none";
-      }, 600);
-      searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
-    }
+  //   let searchValue;
+  //   const category = searhForm.getAttribute("category");
+  //   const group = searhForm.getAttribute("group");
+  //   const searchDescriptionField = searhForm.querySelector(
+  //     ".search-elem-fields"
+  //   );
+  //   const closebtn = searhForm.querySelector(".close-sreach-field-button");
+  //   const loader = searhForm.querySelector(".loader");
 
-    let start = 0;
-    let counter = 10;
-    const objData = {
-      category: category,
-      group: group,
-      value: searchValue,
-      start: start,
-      counter: counter,
-    };
+  //   function searchProduct(arr) {
+  //     arr.forEach((el) => {
+  //       el.onclick = () => {
+  //         searchInput.value = el.textContent;
+  //         closeSearchWindow();
+  //       };
+  //     });
+  //   }
+  //   function openSearchWindow() {
+  //     searchDescriptionField.style.display = "flex";
+  //     searchDescriptionField.style.gap = "";
+  //     searchDescriptionField.style.opacity = "1";
+  //   }
+  //   function closeSearchWindow() {
+  //     searchDescriptionField.style.opacity = 0;
+  //     setTimeout(() => {
+  //       searchDescriptionField.style.display = "none";
+  //     }, 600);
+  //     searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
+  //   }
 
-    function getNewSearchValues() {
-      start += 10;
-      counter += 10;
-      objData.start = start;
-      objData.counter = counter;
-    }
-    searchInput.onkeyup = () => {
-      searchValue = searchInput.value;
-      objData.value = searchValue.trim();
-      objData.value = objData.value.replace(/ {1,}/g, " ");
-      objData.start = start;
-      objData.counter = counter;
-      if (searchInput.value.length > 2) {
-        openSearchWindow();
-        closebtn.classList.add("show");
-        const data = JSON.stringify(objData);
-        fetch(searchEndpoint, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        }).then((response) =>
-          response.json().then((response) => {
-            if (response.status == "ok") {
-              loader.classList.add("remove");
-              start = 0;
-              counter = 10;
-              objData.start = start;
-              objData.counter = counter;
-              const products = JSON.parse(response.products);
-              searchDescriptionField.innerHTML = "";
-              products.forEach((product) => {
-                searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-              });
-              const searchProducts =
-                searchDescriptionField.querySelectorAll(".product");
-              if (searchProducts) {
-                searchProduct(searchProducts);
-                searchDescriptionField.onscroll = () => {
-                  if (
-                    searchDescriptionField.scrollHeight -
-                      searchDescriptionField.scrollTop <=
-                    searchDescriptionField.offsetHeight
-                  ) {
-                    const data = JSON.stringify(objData);
-                    fetch(searchEndpoint, {
-                      method: "POST",
-                      body: data,
-                      headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
-                      },
-                    }).then((response) =>
-                      response.json().then((response) => {
-                        if (response.status == "ok") {
-                          getNewSearchValues();
-                          const products = JSON.parse(response.products);
-                          products.forEach((product) => {
-                            searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-                          });
-                          const searchProducts =
-                            searchDescriptionField.querySelectorAll(".product");
-                          if (searchProducts) {
-                            searchProduct(searchProducts);
-                          }
-                        }
-                      })
-                    );
-                  }
-                };
-                if (products.length == 0) {
-                  searchDescriptionField.innerHTML =
-                    "<div>Таких товаров нет</div>";
-                }
-              }
-            }
-          })
-        );
-      }
-      closebtn.onclick = () => {
-        closeSearchWindow();
-        closebtn.classList.remove("show");
-        searchInput.value = "";
-        start = 0;
-        counter = 10;
-        objData.start = start;
-        objData.counter = counter;
-      };
-    };
-  }
+  //   let start = 0;
+  //   let counter = 10;
+  //   const objData = {
+  //     category: category,
+  //     group: group,
+  //     value: searchValue,
+  //     start: start,
+  //     counter: counter,
+  //   };
+
+  //   function getNewSearchValues() {
+  //     start += 10;
+  //     counter += 10;
+  //     objData.start = start;
+  //     objData.counter = counter;
+  //   }
+  //   searchInput.oninput = () => {
+  //     searchValue = searchInput.value;
+  //     objData.value = searchValue.trim();
+  //     objData.value = objData.value.replace(/ {1,}/g, " ");
+  //     objData.start = start;
+  //     objData.counter = counter;
+  //     if (searchInput.value.length > 2) {
+  //       searchInput.style.borderBottomLeftRadius = 0;
+  //       searchInput.style.borderBottomRightRadius = 0;
+  //       openSearchWindow();
+  //       closebtn.classList.add("show");
+  //       const data = JSON.stringify(objData);
+  //       fetch(searchEndpoint, {
+  //         method: "POST",
+  //         body: data,
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           "X-CSRFToken": csrfToken,
+  //         },
+  //       }).then((response) =>
+  //         response.json().then((response) => {
+  //           if (response.status == "ok") {
+  //             loader.classList.add("remove");
+  //             start = 0;
+  //             counter = 10;
+  //             objData.start = start;
+  //             objData.counter = counter;
+  //             const products = JSON.parse(response.products);
+  //             searchDescriptionField.innerHTML = "";
+  //             products.forEach((product) => {
+  //               searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+  //             });
+  //             const searchProducts =
+  //               searchDescriptionField.querySelectorAll(".product");
+  //             if (searchProducts) {
+  //               searchProduct(searchProducts);
+  //               searchDescriptionField.onscroll = () => {
+  //                 if (
+  //                   searchDescriptionField.scrollHeight -
+  //                     searchDescriptionField.scrollTop <=
+  //                   searchDescriptionField.offsetHeight
+  //                 ) {
+  //                   const data = JSON.stringify(objData);
+  //                   fetch(searchEndpoint, {
+  //                     method: "POST",
+  //                     body: data,
+  //                     headers: {
+  //                       "Content-Type": "application/json",
+  //                       "X-CSRFToken": csrfToken,
+  //                     },
+  //                   }).then((response) =>
+  //                     response.json().then((response) => {
+  //                       if (response.status == "ok") {
+  //                         getNewSearchValues();
+  //                         const products = JSON.parse(response.products);
+  //                         products.forEach((product) => {
+  //                           searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+  //                         });
+  //                         const searchProducts =
+  //                           searchDescriptionField.querySelectorAll(".product");
+  //                         if (searchProducts) {
+  //                           searchProduct(searchProducts);
+  //                         }
+  //                       }
+  //                     })
+  //                   );
+  //                 }
+  //               };
+  //               if (products.length == 0) {
+  //                 searchDescriptionField.innerHTML =
+  //                   "<div>Таких товаров нет</div>";
+  //               }
+  //             }
+  //           }
+  //         })
+  //       );
+  //     } else {
+  //       if (searchInput.value.length < 2) {
+  //         searchInput.style.borderBottomLeftRadius = "1.875rem";
+  //         searchInput.style.borderBottomRightRadius = "1.875rem";
+  //         closebtn.classList.remove("show");
+  //         start = 0;
+  //         counter = 10;
+  //         objData.start = start;
+  //         objData.counter = counter;
+  //         closeSearchWindow();
+  //       }
+  //     }
+  //     closebtn.onclick = () => {
+  //       closeSearchWindow();
+  //       searchInput.style.borderBottomLeftRadius = "1.875rem";
+  //       searchInput.style.borderBottomRightRadius = "1.875rem";
+  //       closebtn.classList.remove("show");
+  //       searchInput.value = "";
+  //       start = 0;
+  //       counter = 10;
+  //       objData.start = start;
+  //       objData.counter = counter;
+  //     };
+  //   };
+  // }
   //
   const allSpecifications = document.querySelector(".all_specifications_table");
   if (allSpecifications) {

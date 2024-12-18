@@ -40,7 +40,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-        print(request)    
+        print(request)
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
@@ -50,8 +50,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_none = request.query_params.get("pricenone")
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
-        
-        
+
         # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
@@ -71,7 +70,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # сортировка по гет параметрам
         q_object = Q()
-        q_object &= Q(check_to_order=True,in_view_website=True)
+        q_object &= Q(check_to_order=True, in_view_website=True)
 
         if vendor_get is not None:
             if "None" in vendor_get:
@@ -107,18 +106,18 @@ class ProductViewSet(viewsets.ModelViewSet):
                 sorting = F("price__rub_price_supplier").asc(nulls_last=True)
             else:
                 sorting = F("price__rub_price_supplier").desc(nulls_last=True)
-        
+
         # сортировка из блока с ценами
-       
+
         if price_none == "true":
             q_object &= Q(price__rub_price_supplier__isnull=False)
-        
+
         if price_from != 0:
             q_object &= Q(price__rub_price_supplier__gte=price_from)
-        
+
         if price_to != 0:
-            q_object &= Q(price__rub_price_supplier__lte=price_to)    
-        
+            q_object &= Q(price__rub_price_supplier__lte=price_to)
+
         # if sort_price:
         #     sort = "price__rub_price_supplier"
         #     ordering_filter = OrderBy(
@@ -148,7 +147,6 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productproperty_set"),
             )
             .filter(q_object)
-            
             .order_by(sorting)[count : count + count_last]
         )
         # .order_by(ordering_filter)
@@ -162,7 +160,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
         prod_qs = Product.objects.filter(q_object)
         price_max = prod_qs.aggregate(Max("price__rub_price_supplier", default=0))
-       
+
         page_count = prod_qs.count()
 
         if page_count % 10 == 0:
@@ -181,7 +179,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count": math.ceil(page_count / 10),
             "page": page_get,
             "small": small,
-            "price_max":price_max
+            "price_max": price_max,
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)
@@ -290,7 +288,7 @@ class CartViewSet(viewsets.ModelViewSet):
                         response.set_cookie(
                             "cart", serializer.data["id"], max_age=2629800
                         )
-                        
+
                         return response
                     else:
                         return Response(
@@ -308,10 +306,8 @@ class CartViewSet(viewsets.ModelViewSet):
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
                     response.set_cookie("cart", cart.id, max_age=2629800)
-                    response.set_cookie(
-                            "type_save", "new", max_age=2629800
-                        )
-                        
+                    response.set_cookie("type_save", "new", max_age=2629800)
+
                     return response
                 else:
 
@@ -334,10 +330,8 @@ class CartViewSet(viewsets.ModelViewSet):
                         response.set_cookie(
                             "cart", serializer.data["id"], max_age=2629800
                         )
-                        response.set_cookie(
-                            "type_save", "new", max_age=2629800
-                        )
-                        
+                        response.set_cookie("type_save", "new", max_age=2629800)
+
                         return response
                     else:
                         return Response(
@@ -399,16 +393,16 @@ class CartViewSet(viewsets.ModelViewSet):
             product_sale_motrum = None
         # товар из окт
         else:
-            product_price_okt = Price.objects.get(prod=data["product"] )
+            product_price_okt = Price.objects.get(prod=data["product"])
             product_price = product_price_okt.rub_price_supplier
             if product_price_okt.sale:
                 product_sale_motrum = product_price_okt.sale.percent
             else:
                 product_sale_motrum = None
-                
+
             product_new = None
-            
-            # data["product_price"] = 
+
+            # data["product_price"] =
         # обновление товара
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
@@ -420,6 +414,10 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
+                data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -432,6 +430,10 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
+                data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -493,7 +495,7 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer_class = ProductCartSerializer
 
         data = request.data
-        if data["product_sale_motrum"]=="":
+        if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = None
         serializer = serializer_class(queryset, data=data, partial=True)
 
@@ -504,7 +506,6 @@ class CartViewSet(viewsets.ModelViewSet):
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
     # изменить количество товаров в корзине
     @action(detail=True, methods=["update"], url_path=r"update-product")
     def update_product_cart(self, request, pk=None, *args, **kwargs):

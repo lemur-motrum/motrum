@@ -45,7 +45,7 @@ from django.db.models.functions import Round
 # Рендер главной страницы каталога с пагинацией
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
-
+    cart = request.COOKIES.get("cart")
     title = "Каталог"
     categories = (
         CategoryProduct.objects.prefetch_related(Prefetch("groupproduct_set"))
@@ -83,10 +83,19 @@ def all_categories(request):
             Prefetch("stock__lot"),
             Prefetch("productproperty_set"),
             Prefetch("price__sale"),
+            Prefetch("productcart_set"),
         )
         .filter(check_to_order=True)
         .order_by("pk")
     )
+
+    if cart:
+        product_cart_prod = ProductCart.objects.filter(cart=cart, product__isnull=False)
+        product_list.annotate(
+            id_product_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
+                "id",
+            ),
+        )
 
     if request.method == "GET":
         form = SearchForm(request.GET)
@@ -1186,7 +1195,7 @@ def search_product(request):
     #     | Q(article_supplier__icontains=value)
     #     | Q(additional_article_supplier__icontains=value)
     # )
-    product_list = Product.objects.filter(
+    product_list = product_list.filter(
         Q(name__icontains=search_input[0])
         | Q(article__icontains=search_input[0])
         | Q(article_supplier__icontains=search_input[0])
@@ -1563,12 +1572,11 @@ def history_admin_bill(request, pk):
     return render(request, "admin_specification/history_admin_bill.html", context)
 
 
-def error_b24(request,error):
-    context={
-        "error":1
-    }
+def error_b24(request, error):
+    context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
-    
+
+
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 # def update_specification(request):

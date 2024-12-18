@@ -267,7 +267,7 @@
       font-weight: bold;
     }
     .site_groups_container {
-      overflow: hidden;
+      // overflow: hidden;
       margin-top: 1.5rem;
       display: flex;
       width: 101%;
@@ -1100,6 +1100,7 @@
         .documentation_items {
           display: flex;
           flex-direction: column;
+          gap: 0.5rem;
           .documentation_item {
             font-size: 1.125rem;
             .documentation_link {

@@ -1,14 +1,8 @@
 {% extends "core/base_okt.html" %}
+{% load static %}
 {% block content %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser  == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="specification-content">
-        {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
             {% if group %}
                 <a href="{% url "admin_specification:groups" group.category.pk %}">Назад</a>
@@ -16,26 +10,29 @@
                 <a href={% url "admin_specification:categories" %}>Назад</a>
             {% endif %}
         </div>
+        {% if group %}
+            <h1 class="head-title">{{ group.name }}</h1>
+        {% else %}
+            <h1 class="head-title">{{ title }}</h1>
+        {% endif %}
+        {% if another_groups %}
+            <div class="swiper">
+                <div class="group-slider">
+                    <div class="swiper-wrapper">
+                        {% for group in another_groups %}
+                            <a class="swiper-slide group-link"
+                               href="{% url "admin_specification:specifications" group.category.pk group.pk %}"><span>{{ group.name }}</span></a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="slider-arrow">
+                    <div class="img_container">
+                        <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         {% include "admin_specification/include/search_form.html" %}
-        <div class="group-slider">
-            <div class="swiper-wrapper">
-                {% if another_groups %}
-                    {% for group in another_groups %}
-                        <a class="swiper-slide group-link"
-                           href="{% url "admin_specification:specifications" group.category.pk group.pk %}">{{ group.name }}</a>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-        <div class="head-content">
-            <div class="container">
-                {% if group %}
-                    <h1 class="head-title">{{ group.name }}</h1>
-                {% else %}
-                    <h1 class="head-title">{{ title }}</h1>
-                {% endif %}
-            </div>
-        </div>
         {% include "admin_specification/include/catalog_items.html" %}
     </div>
 {% endblock content %}

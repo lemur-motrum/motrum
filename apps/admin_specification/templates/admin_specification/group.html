@@ -1,38 +1,51 @@
 {% extends "core/base_okt.html" %}
+{% load static %}
 {% block content %}
-    <div class="logout_btn">
-        {% if request.user.is_superuser == True %}
-            <a class="admin-link" href="{% url 'admin:index' %}">Административная панель</a>
-        {% endif %}
-        <p>Пользователь: {{ request.user.username }}</p>
-        <a href="{% url "user:logout_admin" %}">Выход</a>
-    </div>
+    {% include "admin_specification/include/header.html" %}
     <div class="all_groups-container">
-        {% include "admin_specification/include/bread_crumbs.html" %}
         <div class="bread-crumbs">
             <a href={% url "admin_specification:categories" %}>Назад</a>
         </div>
-        {% include "admin_specification/include/search_form.html" %}
-        <div class="categories_container">
-            <div class="swiper-wrapper">
-                {% for category in categories %}
-                    <a href="{% url "admin_specification:groups" category.pk %}"
-                       class="swiper-slide category">
-                        <span>{{ category.name }}</span>
-                    </a>
-                {% endfor %}
-            </div>
-            <div class="slider-arrow">></div>
-        </div>
         <h1 class="title">{{ title }}</h1>
+        <div class="swiper">
+            <div class="categories_container">
+                <div class="swiper-wrapper">
+                    {% for category in categories %}
+                        <a href="{% url "admin_specification:groups" category.pk %}"
+                           class="swiper-slide category">
+                            <span>{{ category.name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="slider-arrow">
+                <div class="img_container">
+                    <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                </div>
+            </div>
+        </div>
         <div class="group-container">
             {% for group in groups %}
                 <a href="{% url "admin_specification:specifications" group.category.pk group.pk %}"
-                   class="group">
+                   class="group elem-container">
                     <span>{{ group.name }}</span>
                 </a>
             {% endfor %}
+            {% if groups|length > 5 %}
+                <div class="group_show_container add_more_elems_btn show">
+                    <span class="show">развернуть
+                        <br>
+                    все разделы</span>
+                    <span class="hide">свернуть
+                        <br>
+                    разделы</span>
+                    <div class="img-arrow-container">
+                        <img src="{% static "core/images/direction/arrow.png" %}" alt="img" />
+                    </div>
+                </div>
+            {% endif %}
         </div>
+        {% include "admin_specification/include/search_form.html" %}
         {% include "admin_specification/include/catalog_items.html" %}
     </div>
 {% endblock content %}

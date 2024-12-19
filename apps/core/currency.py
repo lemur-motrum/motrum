@@ -21,6 +21,7 @@ from apps.specification.models import Specification
 from project.settings import BASE_DIR, MEDIA_ROOT
 from urllib.error import URLError, HTTPError
 
+
 def pars():
 
     path = os.path.join(BASE_DIR, "docker/emas.xml")

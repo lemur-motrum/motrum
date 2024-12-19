@@ -15,6 +15,7 @@ from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
 from django.db.models import Prefetch, OuterRef
 
+
 @app.task(
     bind=True,
     max_retries=10,
@@ -38,12 +39,12 @@ def get_currency(self):
                 f".//Valute[CharCode='{current_world_code}']/VunitRate"
             )
             count = item.findtext(f".//Valute[CharCode='{current_world_code}']/Nominal")
-            
+
             v = float(value.replace(",", "."))
             vi = float(vunit_rate.replace(",", "."))
 
             now_rate = CurrencyRate.objects.get_or_create(
-                currency=current ,
+                currency=current,
                 date=date,
                 defaults={"value": v, "vunit_rate": vi, "count": int(count)},
             )
@@ -63,7 +64,7 @@ def get_currency(self):
 
 # удаление старых курсов
 def del_currency():
-   
+
     now = datetime.datetime.now()
     three_days = datetime.timedelta(3)
     in_three_days = now - three_days
@@ -76,9 +77,9 @@ def update_currency_price(currency, current_world_code):
     products = Price.objects.filter(currency=currency)
     for product in products:
         price = Price.objects.get(id=product.id)
-        price._change_reason = 'Автоматическое'
+        price._change_reason = "Автоматическое"
         price.save()
-        # update_change_reason(price, "Автоматическое")        
+        # update_change_reason(price, "Автоматическое")
 
 
 # проверка на увелисеие курса на 3% -если да отмерка спецификации не действительны
@@ -88,9 +89,7 @@ def currency_chek(current, now_rate):
     in_three_days = now - three_days
     data_old = in_three_days.strftime("%Y-%m-%d")
     print(data_old)
-    old_rate = CurrencyRate.objects.get(
-        currency=current,date=data_old
-    )
+    old_rate = CurrencyRate.objects.get(currency=current, date=data_old)
     print(old_rate)
     # old_rate = CurrencyRate.objects.filter(
     #     currency=current,
@@ -101,15 +100,23 @@ def currency_chek(current, now_rate):
     difference_count = new_rate_count - old_rate_count
 
     count_percent = old_rate_count / 100 * 3
-    print(difference_count,count_percent)
+    print(difference_count, count_percent)
     if difference_count > count_percent:
-       
+
         try:
             print(difference_count)
-            
-            product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, ).exclude(specification__order__status__in=["CANCELED","COMPLETED"]).distinct("specification__order").values('specification',"specification__order").exclude(specification__order=None)
+
+            product_specification = (
+                ProductSpecification.objects.filter(
+                    product_currency=now_rate.currency,
+                )
+                .exclude(specification__order__status__in=["CANCELED", "COMPLETED"])
+                .distinct("specification__order")
+                .values("specification", "specification__order")
+                .exclude(specification__order=None)
+            )
             print(product_specification)
-            
+
             # product_specification = ProductSpecification.objects.filter(product_currency=now_rate.currency, specification__tag_stop=True).values('specification')
             # for prod in product_specification:
             #     specification = Specification.objects.get(
@@ -117,7 +124,7 @@ def currency_chek(current, now_rate):
             # )
             #     specification.tag_stop = False
             #     specification._change_reason = "Автоматическое"
-               
+
             #     specification.save()
             #     try:
             #         order = Order.objects.get(specification=specification,date_completed__isnull=True,bill_sum__isnull=False,bill_tag_stop=True)
@@ -126,7 +133,7 @@ def currency_chek(current, now_rate):
             #         order._change_reason = "Автоматическое"
             #     except Order.DoesNotExist:
             #          pass
-        except  ProductSpecification.DoesNotExist:
+        except ProductSpecification.DoesNotExist:
             pass
 
 
@@ -138,33 +145,34 @@ def get_year_holiday(self):
     try:
         import json
         import requests
+
         # year_date = datetime.datetime.now().year
         # year = str(year_date)
-        
+
         if datetime.datetime.now().month == 12:
             year_date = datetime.datetime.now() + datetime.timedelta(days=367)
             year_date = year_date.year
-        else:    
-            year_date = datetime.datetime.now().year 
-        year = str(year_date)    
+        else:
+            year_date = datetime.datetime.now().year
+        year = str(year_date)
         url = (
-                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
-                + year
-                + ".json"
-            )
+            "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+            + year
+            + ".json"
+        )
         r = requests.get(url)
         holidays_dict = r.json()
-        
+
         try:
             data_bd = CalendarHoliday.objects.get(year=year)
             data_bd.json_date = holidays_dict
             data_bd.save()
-    
+
         except CalendarHoliday.DoesNotExist:
 
             data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
             data_bd.save()
-            
+
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -172,8 +180,9 @@ def get_year_holiday(self):
 
             info = f"Получение производственного календаря не удалось"
             e = error_alert(error, location, info)
-        self.retry(exc=exc, countdown=160)    
-    
+        self.retry(exc=exc, countdown=160)
+
+
 @app.task(
     bind=True,
     max_retries=10,
@@ -182,32 +191,32 @@ def get_next_year_holiday(self):
     try:
         import json
         import requests
+
         if datetime.datetime.now().month == 12:
             year_date = datetime.datetime.now() + datetime.datetime.timedelta(days=367)
             year_date = year_date.year
-        else:    
-            year_date = datetime.datetime.now().year     
-            
-        
+        else:
+            year_date = datetime.datetime.now().year
+
         year = str(year_date)
         url = (
-                "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
-                + year
-                + ".json"
-            )
+            "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant"
+            + year
+            + ".json"
+        )
         r = requests.get(url)
         holidays_dict = r.json()
-        
+
         try:
             data_bd = CalendarHoliday.objects.get(year=year)
             data_bd.json_date = holidays_dict
             data_bd.save()
-    
+
         except CalendarHoliday.DoesNotExist:
 
             data_bd = CalendarHoliday(year=year, json_date=holidays_dict)
             data_bd.save()
-            
+
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -215,17 +224,19 @@ def get_next_year_holiday(self):
 
             info = f"Получение производственного календаря не удалось"
             e = error_alert(error, location, info)
-        self.retry(exc=exc, countdown=160)    
-    
+        self.retry(exc=exc, countdown=160)
 
-# сброс сетчиков документов в начале года 
+
+# сброс сетчиков документов в начале года
 @app.task(
     bind=True,
     max_retries=10,
 )
 def counter_bill_new_year(self):
     try:
-       вase_info = BaseInfo.objects.filter().update(counter_bill=0,counter_bill_offer=0)
+        вase_info = BaseInfo.objects.filter().update(
+            counter_bill=0, counter_bill_offer=0
+        )
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -233,7 +244,7 @@ def counter_bill_new_year(self):
 
             info = f"Обнуление счетчика счетов"
             e = error_alert(error, location, info)
-        self.retry(exc=exc, countdown=160)    
+        self.retry(exc=exc, countdown=160)
 
 
 # НЕ ИСПУЛЬЗУЮ
@@ -243,7 +254,11 @@ def counter_bill_new_year(self):
 )
 def del_void_cart(self):
     try:
-        carts = Cart.objects.prefetch_related(Prefetch("productcart_set")).filter().order_by("id")
+        carts = (
+            Cart.objects.prefetch_related(Prefetch("productcart_set"))
+            .filter()
+            .order_by("id")
+        )
         print(carts)
         for cart in carts:
             print(cart)
@@ -255,25 +270,28 @@ def del_void_cart(self):
 
             info = f"Удаление пустых корзин"
             e = error_alert(error, location, info)
-        self.retry(exc=exc, countdown=160)    
-    
+        self.retry(exc=exc, countdown=160)
+
+
 @app.task(
     bind=True,
     max_retries=1,
 )
 def get_status_order_bx(self):
     get_status_order()
-    
+
+
 @app.task(
     bind=True,
     max_retries=1,
 )
 def get_curr_price_check_bx(self):
-        currency_check_bx()
+    currency_check_bx()
+
 
 @app.task(
     bind=True,
     max_retries=1,
 )
 def image_error_check_in(self):
-        image_error_check()
+    image_error_check()

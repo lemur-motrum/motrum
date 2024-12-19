@@ -131,6 +131,7 @@ class SliderMain(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Слайдер на главной"
         verbose_name_plural = "Слайдер на главной"
@@ -292,13 +293,17 @@ class TypeDelivery(models.Model):
 
     def __str__(self):
         return self.text
-    
-    
+
+
 class IndexInfoWeb(models.Model):
-    tech_project = models .SmallIntegerField("реализованных проектов технического зрения")
+    tech_project = models.SmallIntegerField(
+        "реализованных проектов технического зрения"
+    )
     modernization = models.SmallIntegerField("модернизировано установок")
 
-    shkaf_upravleniya = models.SmallIntegerField("изготовлено шкафов         управления")
+    shkaf_upravleniya = models.SmallIntegerField(
+        "изготовлено шкафов         управления"
+    )
     installation = models.SmallIntegerField("запущенных установок")
 
     class Meta:
@@ -307,6 +312,3 @@ class IndexInfoWeb(models.Model):
 
     def __str__(self):
         return f"Счетчики"
-
-
-

@@ -20,8 +20,8 @@
                         {% if product.productimage_set.all %}
                             <div class="swiper-wrapper">
                                 {% for image in product.productimage_set.all %}
-                                    {% if image.photo and image.hide is False  %}
-                                    {% comment %} {{ image.photo.size }} {% endcomment %}
+                                    {% if image.photo and image.hide is False %}
+                                        {% comment %} {{ image.photo.size }} {% endcomment %}
                                         <div class="big_img_item swiper-slide">
                                             <img src="{{ image.photo.url }}" alt="">
                                         </div>
@@ -35,10 +35,10 @@
                         {% if product.productimage_set.all %}
                             <div class="swiper-wrapper">
                                 {% for image in product.productimage_set.all %}
-                                    {% if image.photo and image.hide is False  %}
-                                    <div class="small_img swiper-slide">
-                                        <img src="{{ image.photo.url }}" alt="">
-                                    </div>
+                                    {% if image.photo and image.hide is False %}
+                                        <div class="small_img swiper-slide">
+                                            <img src="{{ image.photo.url }}" alt="">
+                                        </div>
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -52,7 +52,7 @@
                         {% for productdocument in product_document %}
                             <div class="documentation_item">
                                 <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
-                                <span class="documentation_link_exe">({{productdocument.extension|upper }}, {{productdocument.document.size|filesizeformat }}) </span>
+                                <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span>
                             </div>
                         {% empty %}
                         {% endfor %}

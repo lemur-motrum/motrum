@@ -106,6 +106,7 @@ class ProductSerializer(serializers.ModelSerializer):
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
     productimage_set = ProductImageSerializer(read_only=False, many=True)
     url = serializers.CharField(source="get_absolute_url", read_only=True)
+
     # max_price = serializers.SerializerMethodField()
     class Meta:
         model = Product

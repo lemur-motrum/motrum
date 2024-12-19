@@ -40,15 +40,8 @@ urlpatterns = [
         views.product_one,
         name="product_one",
     ),
-    
-   
     path("add_document_admin/", views.add_document_admin, name="add_document_admin"),
-
-    
     # url("product_ajax", views.catalog, name="catalog_ajax"),
-    
-    
-    
     # АВТОЗАПОЛНЕНИЕ для бека
     url(
         r"^vendor-autocomplete/$",

@@ -30,8 +30,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         page_get = request.query_params.get("page")
         client_category_project_get = None
         category_project_marking_get = None
-        
-        if request.query_params.get("category_project") :
+
+        if request.query_params.get("category_project"):
             category_project_get = request.query_params.get("category_project")
         else:
             category_project_get = None
@@ -45,8 +45,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 client_category = ProjectClientCategoryProject.objects.filter(
                     client_category__slug__in=client_category_project_get
                 ).distinct("project")
-        
-            
 
         if request.query_params.get("category_project_marking"):
             category_project_marking_get = request.query_params.get(
@@ -57,7 +55,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 category_marking = ProjectClientCategoryProjectMarking.objects.filter(
                     client_category_marking__slug__in=category_project_marking_get
                 ).distinct("project")
-        
 
         q_object = Q()
         if category_project_get is not None:

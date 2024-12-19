@@ -32,7 +32,7 @@ window.addEventListener("DOMContentLoaded", () => {
         );
 
       myMap.behaviors.disable("scrollZoom");
-      myMap.behaviors.disable("drag");
+      // myMap.behaviors.disable("drag");
       myMap.controls.remove("zoomControl");
       myMap.controls.remove("geolocationControl");
       myMap.controls.remove("routeButtonControl");

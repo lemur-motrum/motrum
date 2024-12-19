@@ -131,3 +131,4 @@ def login_bitrix(request, next_url, id_bitrix):
             "error": "Ошибка доступа из Битрикс. Пожалуйста авторизуйтесь заново",
         }
         return form_login(request, context, form)
+

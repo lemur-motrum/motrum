@@ -1,28 +1,20 @@
 {{ in_view_website }}
-
 <div class="product_item"
      product-id="{{ id }}"
      order-multiplicity="{{ stock.order_multiplicity }}"
      catalog-elem="product-item">
     <div class="img-container">
-        
         {% if productimage_set|length > 0 %}
-        
             {% for productimage in productimage_set %}
                 {% if productimage.photo and productimage.hide == false %}
-                
-                    {% if loop.first %}
-                    
-                        <img src="{{ productimage.photo }}">
-                    {% endif %}111
-                    
+                    {% if loop.first %}<img src="{{ productimage.photo }}">{% endif %}
+                    111
                 {% else %}
                     <img src="/static/core/images/nophoto.png">
                 {% endif %}
-                
             {% endfor %}
         {% else %}
-     <img src="/static/core/images/nophoto1.png" alt="img"> 
+            <img src="/static/core/images/nophoto1.png" alt="img">
         {% endif %}
     </div>
     <div class="product-item_description">

@@ -19,8 +19,7 @@ urlpatterns = [
         "okt/",
         TemplateView.as_view(template_name="core/okt.html"),
         name="okt",
-    ), # окт
-
+    ),  # окт
     path("company/", views.company, name="about"),  # компания общая
     path("company/about", views.company_about, name="about_company"),  # компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
@@ -55,10 +54,8 @@ urlpatterns = [
     path(
         "privacy-policy", views.privacy_policy, name="privacy-policy"
     ),  # политика конфиденциальности
-    
-    path("brand/",  product.views.brand_all, name="brand"),
-    path("brand/<slug:vendor>",  product.views.brand_one, name="brand_one"),
-    
+    path("brand/", product.views.brand_all, name="brand"),
+    path("brand/<slug:vendor>", product.views.brand_one, name="brand_one"),
     # path("cart", views.cart,name="cart"),
     # path("/cart", include("apps.client.urls", namespace="cart")),
     # проекты в app project_web namespace="project"

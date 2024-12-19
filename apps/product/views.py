@@ -135,7 +135,7 @@ def products_items(request, category, group):
         .filter(q_object)
         .order_by("vendor__name")
         .distinct("vendor__name")
-        .values("vendor", "vendor__name", "vendor__slug","vendor__img")
+        .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
     )
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)

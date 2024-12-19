@@ -41,5 +41,4 @@ urlpatterns = [
         views.history_admin_bill,
         name="history_admin_bill",
     ),
-    
 ]

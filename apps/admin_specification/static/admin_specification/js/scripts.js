@@ -1329,8 +1329,8 @@ window.addEventListener("DOMContentLoaded", () => {
       updatingBtn.onclick = () => {
         cartId = cartId.getAttribute("data-cart-id");
 
-        document.cookie = `cart=${cartId};path=/;SameSite=None;Secure`;
-        document.cookie = `specificationId=${specificationId};path=/;SameSite=None;Secure`;
+        document.cookie = `cart=${cartId};path=/; SameSite=None; Secure`;
+        document.cookie = `specificationId=${specificationId};path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
           method: "UPDATE",

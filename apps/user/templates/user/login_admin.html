@@ -7,7 +7,7 @@
             <p style=color:red;>{{ context.error }}</p>
             <form method="post" action="./?next={{ redirect_to }}">
                 {{ form.as_p }}
-                {% csrf_token %}
+                {% comment %} {% csrf_token %} {% endcomment %}
                 <p id="login_admin_btn">
                     <input type="submit" value="Войти">
                 </p>

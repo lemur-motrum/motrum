@@ -2,6 +2,7 @@
 {% load manager_client %}
 {% load js_templates %}
 {% load test_display %}
+{% with request.resolver_match.url_name as url_name %}
 <!DOCTYPE html>
 <html lang="ru">
   <head>
@@ -10,12 +11,13 @@
     <!--css инклудить в общий -->
     {% include "core/includes/stylesheets.html" %}
     <title>{{ title }}</title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
   </head>
   <body {% test_display %}>
     <div class="wrapper">
       {% include "core/header/header.html" %}
-      <div class="site-content">
-        <div class="site-description-content">
+      <div class="site-content {% if url_name == "contact" %} no-margin {% endif %}">
+        <div class="site-description-content {% if url_name == "contact" %} no-margin {% endif %}">
           <input id="user_id"
                  type="hidden"
                  data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
@@ -52,3 +54,4 @@
     </script>
   </body>
 </html>
+{% endwith %}

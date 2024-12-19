@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     "b24-j6zvwj.bitrix24.ru",
 ]
 
-
+SESSION_COOKIE_SAMESITE = 'None' 
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -81,7 +81,7 @@ export function setCookie(name, value, options = {}) {
 // функция удаления куки
 export function deleteCookie(name, path, domain) {
   if (getCookie(name)) {
-    document.cookie = `${name}=; Path=${path}; Max-Age=-1;`;
+    document.cookie = `${name}=; Path=${path}; Max-Age=-1; SameSite=None; Secure`;
     // document.cookie =
     // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }

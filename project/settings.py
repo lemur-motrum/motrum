@@ -27,14 +27,14 @@ environ.Env.read_env(os.path.join(BASE_DIR, "docker/.env"))
 SECRET_KEY = "django-insecure-h4ukmjtsu6g4ulu9mlw=(&!&&nhm$m1+l75=j3y_pr9ey#8tkj"
 
 DJANGO_ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] dyugaev.beget.tech"
-
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "213.139.208.116",
-    "motrum.yuriyzhidkov.ru",
-    "b24-j6zvwj.bitrix24.ru",
-]
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = [
+#     "127.0.0.1",
+#     "localhost",
+#     "213.139.208.116",
+#     "motrum.yuriyzhidkov.ru",
+#     "b24-j6zvwj.bitrix24.ru",
+# ]
 
 
 INTERNAL_IPS = ["127.0.0.1", "localhost"]

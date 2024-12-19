@@ -312,3 +312,4 @@ class IndexInfoWeb(models.Model):
 
     def __str__(self):
         return f"Счетчики"
+

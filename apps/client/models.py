@@ -279,6 +279,12 @@ class AccountRequisites(models.Model):
     def __str__(self):
         return self.account_requisites
 
+class EmailsAllWeb(models.Model):
+    name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
+    phone = models.CharField(
+        "Номер телефона",
+        max_length=40,
+    )
 
 class EmailsCallBack(models.Model):
     name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)

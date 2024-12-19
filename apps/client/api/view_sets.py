@@ -45,6 +45,7 @@ from apps.client.api.serializers import (
     ClientRequisitesSerializer,
     ClientSerializer,
     DocumentSerializer,
+    EmailsAllWebSerializer,
     EmailsCallBackSerializer,
     LkOrderDocumentSerializer,
     LkOrderSerializer,
@@ -1786,6 +1787,11 @@ class EmailsViewSet(viewsets.ModelViewSet):
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=["post"], url_path=r"manager-email")
+    def send_email_all(self, request, *args, **kwargs):
+        serializer_class = EmailsAllWebSerializer
+        data = request.data
+        serializer = serializer_class(data=data, many=False)
     # if type_save == "specification":
     #     last_spec_name = Specification.objects.filter(number__isnull=False).last()
 

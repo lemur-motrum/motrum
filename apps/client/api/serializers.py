@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsCallBack, Order, RequisitesOtherKpp
+from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -274,4 +274,9 @@ class DocumentSerializer(serializers.Serializer):
 class EmailsCallBackSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailsCallBack
+        fields = "__all__"
+        
+class EmailsAllWebSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailsAllWeb
         fields = "__all__"

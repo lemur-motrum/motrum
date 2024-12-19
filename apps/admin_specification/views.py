@@ -40,9 +40,10 @@ from django.db.models.functions import Replace
 
 from django.db.models.functions import Coalesce
 from django.db.models.functions import Round
-
+from django.views.decorators.csrf import csrf_exempt
 
 # Рендер главной страницы каталога с пагинацией
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
     cart = request.COOKIES.get("cart")
@@ -459,6 +460,7 @@ def specifications(request, cat, gr):
 
 # рендер страницы корзины
 # @cache_control(max_age=3600)
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
     cart = request.COOKIES.get("cart")
@@ -904,6 +906,7 @@ def save_specification_view_admin(request):
 
 
 # рендер страницы со всеми спецификациями
+@csrf_exempt
 @permission_required(
     "specification.add_specification",
     login_url="/user/login_admin/",
@@ -950,7 +953,7 @@ def get_all_specifications(request):
 
     return render(request, "admin_specification/all_specifications.html", context)
 
-
+@csrf_exempt
 @permission_required(
     "specification.add_specification",
     login_url="/user/login_admin/",

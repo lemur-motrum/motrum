@@ -5,9 +5,11 @@ from django.contrib.auth import logout
 from django.urls import reverse
 from apps.user.forms import LoginAdminForm
 from apps.user.models import AdminUser
+from django.views.decorators.csrf import csrf_exempt
 
 
 # логин админа
+@csrf_exempt
 def login_admin(request):
     form = LoginAdminForm()
     next_url = request.POST.get("next")
@@ -33,6 +35,7 @@ def login_admin(request):
 
 
 # разлогин админа
+@csrf_exempt
 def logout_admin(request):
     logout(request)
     
@@ -40,10 +43,11 @@ def logout_admin(request):
 
 
 # форма для логина
+@csrf_exempt
 def form_login(request, context, form):
     return render(request, "user/login_admin.html", {"form": form, "context": context})
 
-
+@csrf_exempt
 def login_clear(request, next_url, form):
 
     form = LoginAdminForm(request.POST)
@@ -116,7 +120,7 @@ def login_clear(request, next_url, form):
                 request, "user/login_admin.html", {"form": form, "context": context}
             )
 
-
+@csrf_exempt
 def login_bitrix(request, next_url, id_bitrix):
 
     next_url = request.GET.get("next")

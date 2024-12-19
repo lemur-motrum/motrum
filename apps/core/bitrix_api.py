@@ -395,7 +395,7 @@ def save_multi_file_bx(bx, file, id_bx, method, field_name):
 def save_product_order_bx(bx, order,id_bitrix_order):
     
     product_bx = bx.get_all("crm.item.productrow.fields",)
-    # product_bx = bx.get_all("crm.productrow.fields",)
+    # product_bx = bx.get_all("catalog.catalog.get",)
     
     print(product_bx)
     order_products = ProductSpecification.objects.filter(

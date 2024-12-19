@@ -1,4 +1,30 @@
 {% extends "core/base.html" %}
 {% block content %}
-    
+    <div class="contacts-wrapper">
+        <div class="head-content">
+            <div class="bread-crumbs">
+                <a href="{% url "core:index" %}">главная</a>
+            </div>
+            <div class="title">Контакты</div>
+        </div>
+        <div class="absolute-wrapper">
+            <div id="map" class="map-wrapper" style="width: 100%; height: 34.875rem;">
+                <div class="contacts-block">
+                    <div class="contact-elem">
+                        <div class="contact-elem-title">Телефон</div>
+                        <a href="tel:+78462337814" class="contact-elem-descr">+7 (846) 233-78-14</a>
+                    </div>
+                    <div class="contact-elem">
+                        <div class="contact-elem-title">АДРЕС</div>
+                        <div class="contact-elem-descr">Самара, ул. 22 Партсъезда, 207 оф. 3, 1 этаж</div>
+                    </div>
+                    <div class="contact-elem">
+                        <div class="contact-elem-title">EMAIL</div>
+                        <a href="mailto:mail@motrum.ru" class="contact-elem-descr mail-descr">mail@motrum.ru</a>
+                    </div>
+                    <div class="contacts-btn">напишите мне</div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

@@ -1,6 +1,7 @@
 import "/static/core/js/slider.js";
 import "/static/core/js/nunjucks.min.js";
 import "/static/core/js/inputmask.js";
+
 import "/static/admin_specification/js/scripts.js";
 import "/static/admin_specification/js/invoice_elems.js";
 import "/static/admin_specification/js/filters.js";
@@ -32,6 +33,7 @@ import "/static/core/js/scripts/get-client-id.js";
 import "/static/core/js/scripts/cookie_popup.js";
 import "/static/core/js/scripts/promo-slider.js";
 import "/static/core/js/scripts/arrow-swipe-button.js";
+import "/static/core/js/scripts/yandex-map.js";
 import "/static/client/js/contacts.js";
 import "/static/client/js/details.js";
 import "/static/client/js/updateDetails.js";

@@ -1781,15 +1781,17 @@ def image_error_check():
 
     product_image = ProductImage.objects.all()
     for img in product_image:
-
-        dir_img = "{0}/{1}".format(MEDIA_ROOT, img.photo)
-
-        if not os.path.exists(dir_img):
+        if img.photo == "" or img.photo == None:
             img.delete()
         else:
+            dir_img = "{0}/{1}".format(MEDIA_ROOT, img.photo)
 
-            if os.stat(dir_img).st_size < 1000:
+            if not os.path.exists(dir_img):
                 img.delete()
+            else:
+
+                if os.stat(dir_img).st_size < 1000:
+                    img.delete()
 
 
 #      def save_specification(

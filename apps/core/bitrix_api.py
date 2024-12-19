@@ -221,16 +221,16 @@ def add_info_order(request, order, type_save):
     id_bitrix_order = order.id_bitrix
     bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/")
     orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
-    print(orders_bx)
+    # print(orders_bx)
     data_order = {
         "id": id_bitrix_order,
-        "fields":{
-            "OPPORTUNITY":order.bill_sum,
-        }
+        "fields": {
+            "OPPORTUNITY": order.bill_sum,
+        },
     }
     orders_bx = bx.call("crm.deal.update", data_order)
-    print(orders_bx)
-    
+    # print(orders_bx)
+
     pdf = f"{MEDIA_ROOT}/{ order.bill_file_no_signature}"
     # save_multi_file_bx(
     #     bx, pdf, order.id_bitrix, "crm.deal.update", "UF_CRM_1734415894538"
@@ -242,8 +242,6 @@ def add_info_order(request, order, type_save):
 
     else:
         document_specification = None
-
-
 
     orders = [2]
 
@@ -258,23 +256,36 @@ def add_info_order(request, order, type_save):
     # print(orders_bx)
 
     # ТОВАРЫ СДЕЛКИ
-    is_order_pros_bx = save_product_order_bx(bx, order)
+    is_order_pros_bx = save_product_order_bx(bx, order,id_bitrix_order)
 
     # СЧЕТ  СДЕЛКИ
-    if type_save == "new":
-        pass
-    invoice = {
-        "title":order.bill_name,
-        "accountNumber":order.bill_name,
-        "opportunity":order.bill_sum,
-        "parentId2":id_bitrix_order,
-        "closedate":order.bill_date_stop,
-        
-    }
-    # invoice_bx = bx.get_all("crm.item.fields",{"entityTypeId": 31})
-    # invoice_bx = bx.get_all("crm.item.list",{"entityTypeId": 31})
-    invoice_bx = bx.call("crm.item.add",{"entityTypeId": 31,"fields":invoice})
-    print(invoice_bx)
+    if order.bill_id_bx:
+        invoice = {
+            "title": order.bill_name,
+            "accountNumber": order.bill_name,
+            "opportunity": order.bill_sum,
+            # "parentId2": id_bitrix_order,
+            "closedate": order.bill_date_stop,
+        }
+        invoice_bx = bx.call(
+            "crm.item.update",
+            {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
+        )
+    else:
+        invoice = {
+            "title": order.bill_name,
+            "accountNumber": order.bill_name,
+            "opportunity": order.bill_sum,
+            "parentId2": id_bitrix_order,
+            "closedate": order.bill_date_stop,
+        }
+        # invoice_bx = bx.get_all("crm.item.fields",{"entityTypeId": 31})
+        # invoice_bx = bx.get_all("crm.item.list",{"entityTypeId": 31})
+        invoice_bx = bx.call("crm.item.add", {"entityTypeId": 31, "fields": invoice})
+        invoice_bx_id = invoice_bx["id"]
+        order.bill_id_bx = invoice_bx_id
+        order.save()
+
 
 # crm.deal.update UF_CRM_1734093516769
 def save_file_bx(bx, file, id_bx, method, field_name):
@@ -381,7 +392,12 @@ def save_multi_file_bx(bx, file, id_bx, method, field_name):
 
 
 # add_info_order сохранение товаров  в заказ битрикс
-def save_product_order_bx(bx, order):
+def save_product_order_bx(bx, order,id_bitrix_order):
+    
+    product_bx = bx.get_all("crm.item.productrow.fields",)
+    # product_bx = bx.get_all("crm.productrow.fields",)
+    
+    print(product_bx)
     order_products = ProductSpecification.objects.filter(
         specification=order.specification
     )
@@ -389,15 +405,17 @@ def save_product_order_bx(bx, order):
     order_products_data = []
     for order_products_i in order_products:
         order_info = {
-            # "ID": "28",
+            "ID": order_products_i.id_bitrix,
             "PRODUCT_NAME": order_products_i.product.name,
             "PRICE": order_products_i.price_one,
             "QUANTITY": order_products_i.quantity,
-            # "PRODUCT_DESCRIPTION":order_products_i.product.article,
-            "PRODUCT_NAME": order_products_i.product.name,
+            "RESERVE_QUANTITY":255,
         }
+        
+        # if order_products_i.id_bitrix:
+        #     order_info['ID'] = order_products_i.id_bitrix
         order_products_data.append(order_info)
-    
+    print(order_products_data)
     data_bx_product = {
         "id": order.id_bitrix,
         "rows": order_products_data,
@@ -405,6 +423,15 @@ def save_product_order_bx(bx, order):
 
     product_bx = bx.call("crm.deal.productrows.set", data_bx_product)
     print(product_bx)
+    product_bx_get = bx.get_all("crm.deal.productrows.get",{ 'id': id_bitrix_order } )
+    print(product_bx_get)
+    # if len(orders) == 1:
+    #         orders_bx = {orders_bx["ID"]: orders_bx}
+    for prod_bx in product_bx_get:
+        order_products_okt = order_products.filter(product__name=prod_bx['PRODUCT_NAME'])
+        order_products_okt.update(id_bitrix=prod_bx['ID'])
+        
+
     # product_bx = bx.get_all("crm.item.productrow.fields",)
     # product_bx = bx.call(
     #     "crm.item.productrow.update",
@@ -418,8 +445,7 @@ def save_product_order_bx(bx, order):
     # print(product_bx)
 
     # product_bx = bx.call("crm.item.get", data_bx_product)
-    # product_bx_get = bx.call("crm.deal.productrows.get", data_bx_product)
-    # print(product_bx_get)
+
 
     return False
 

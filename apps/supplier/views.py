@@ -42,11 +42,11 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
+  
     order = Order.objects.get(id_bitrix=2)
     type_save = "new"
     add_info_order(request, order, type_save)
-    # currency_check_bx()
-    image_error_check()
+
     result = 1
     if result:
         pass

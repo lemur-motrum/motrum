@@ -455,6 +455,11 @@ class Order(models.Model):
         "Оплаченная сумма", blank=True, null=True, default=0
     )
     bill_tag_stop = models.BooleanField("Действительно", default=True)
+    bill_id_bx = models.PositiveIntegerField(
+        "Номер id счета bitrix",
+        default=None,
+        null=True,
+    )
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )

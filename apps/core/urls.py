@@ -45,7 +45,12 @@ urlpatterns = [
         TemplateView.as_view(template_name="core/solutions/shkaf-upravleniya.html"),
         name="shkaf-upravleniya",
     ),  # сборка шкафов управления
-    path("contact", views.index, name="contact"),  # контакты
+     path(
+        "contact",
+        TemplateView.as_view(template_name="core/contact.html"),
+        name="contact",
+    ),# контакты
+    # path("contact", views.index, name="contact"),  
     path("cart", views.cart, name="cart"),  # корзина
     path(
         "privacy-policy", views.privacy_policy, name="privacy-policy"

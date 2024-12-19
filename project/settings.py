@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from networkx import truncated_cube_graph
 import environ
 import os
 from pathlib import Path
@@ -39,6 +40,8 @@ ALLOWED_HOSTS = [
 SESSION_COOKIE_SAMESITE = 'None' 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None' 
+CSRF_COOKIE_SECURE = True
+
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

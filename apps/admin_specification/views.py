@@ -466,7 +466,8 @@ def specifications(request, cat, gr):
 def create_specification(request):
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
-
+    post_data_bx_id = request.COOKIES.get("bitrix_id_order")
+ 
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
@@ -882,6 +883,7 @@ def create_specification(request):
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
         "hard_upd": hard_upd,
+        "post_data_bx_id": post_data_bx_id,
     }
 
     return render(request, "admin_specification/catalog.html", context)
@@ -1662,7 +1664,7 @@ def bx_save_start_info(request):
             # print(22222)
             # return response
     else:
-        post_data_bx_id = '{"ID":"2"}'
+        post_data_bx_id = '{"ID":"4"}'
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
         try:  # изменения заказа

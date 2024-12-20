@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
     {% include "admin_specification/include/header.html" %}
+    {{post_data_bx_id}}
     <div order={{ order }} class="specification-container okt_cart_container">
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}

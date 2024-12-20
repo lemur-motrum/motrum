@@ -677,8 +677,11 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-            deleteCookie("specificationId", "/", window.location.hostname);
-            deleteCookie("cart", "/", window.location.hostname);
+            document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+            document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+            // document.cookie = `specificationId=; Path=/; Max-Age=-1; SameSite=None; Secure`
+            // deleteCookie("specificationId", "/", window.location.hostname);
+            // deleteCookie("cart", "/", window.location.hostname);
             window.location.href = "/admin_specification/all_specifications/";
           });
       }

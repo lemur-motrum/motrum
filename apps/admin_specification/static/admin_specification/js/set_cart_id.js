@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
         },
       }).then((response) => {
         if (response.status == 200) {
-          setCookie("type_save", "new", { path: "/" });
+          setCookie("type_save", "new", { path: "/", SameSite:None });
           console.log("ok");
         } else {
           setErrorModal();

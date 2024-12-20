@@ -29,6 +29,7 @@ from apps import specification
 from apps.client.utils import crete_pdf_bill
 from apps.core.bitrix_api import (
     add_info_order,
+    get_info_for_order_bitrix,
     order_bitrix,
     save_new_doc_bx,
     save_params_product_bx,
@@ -573,51 +574,21 @@ class OrderViewSet(viewsets.ModelViewSet):
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение Заказа БИТРИКС
-    @action(detail=False, methods=["post"], url_path=r"order-bitrix")
+    @action(detail=False, methods=["post","get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
-        random_int = random.randint(1, 9999)
-        data = {
-            "type_save": "new",
-            "login": {
-                "email_bitrix_manager": "ruslan.ovcharov1111@motrum.ru",
-                "token": "pbkdf2_sha256$870000$8c5Ju3yEMaktAggkBLPT66$aqeyhwhI6kOxAm+dLhVDGy5LwTcto11l/RN9t3e9qQM=",
-            },
-            "company": {
-                "id_bitrix": 69,
-                # "manager": - битрикс ид менеджера
-                "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
-                # "contract": "",
-                # "contract_date": "",
-                "contract": "07-06/25",
-                "contract_date": "2024-04-24",
-                "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
-                "inn": "1650236125",
-                "kpp": "88888888",
-                "ogrn": "",
-                "legal_post_code": "423800",
-                "legal_city": "Республика Татарстан, г. Набережные Челны",
-                "legal_address": "ул. Профильная, дом 53",
-                "postal_post_code": "443099",
-                "postal_city": "Республика Татарстан, г. Набережные Челны",
-                "postal_address": "ул. Профильная, дом 55",
-                "tel": "89276892277",
-                "account_requisites": "40702810762030005449",
-                "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
-                "ks": "30101810600000000603",
-                "bic": "049205603",
-            },
-            "order": {
-                "id_bitrix": random_int,
-                "manager": "ruslan.ovcharov1111@motrum.ru",
-                "satatus": "PROCESSING",
-            },
-        }
+        print("def order_bitrix")
+        data = request.data
+        print(data)
+        bs_id_order = data['bitrix_id_order']
+        
+        get_info_for_order_bitrix(bs_id_order,request)
+       
 
-        next_url, context, error = order_bitrix(data, request)
-        if error:
-            return render(request, "admin_specification/error.html", context)
-        else:
-            return context
+        # next_url, context, error = order_bitrix(data, request)
+        # if error:
+        #     return render(request, "admin_specification/error.html", context)
+        # else:
+        #     return context
 
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")

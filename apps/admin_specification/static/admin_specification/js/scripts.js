@@ -1541,13 +1541,32 @@ window.addEventListener("DOMContentLoaded", () => {
 
     BxUpd.onclick = () => {
       document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
-      window.location.href =
-        "/admin_specification/current_specification/";
+      let endpoint = "/api/v1/order/order-bitrix/";
+      const objData = {
+        bitrix_id_order: getCookie("bitrix_id_order"),
+      };
+      const data = JSON.stringify(objData);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Content-Type": "application/json",
+        },
+      })
+        // .then((response) => response.json())
+        // .then((response) => {
+        //   document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
+        //   // window.location.href =
+        //   //   "/admin_specification/current_specification/";
+        // })
+      // window.location.href =
+      //   "/admin_specification/current_specification/";
     };
     BxHardUpd.onclick = () => {
       document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
-      window.location.href =
-        "/admin_specification/current_specification/";
+      // window.location.href =
+      //   "/admin_specification/current_specification/";
 
 
     };

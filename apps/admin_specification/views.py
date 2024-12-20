@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from apps import specification
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
+from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
@@ -1664,11 +1665,12 @@ def bx_save_start_info(request):
             # print(22222)
             # return response
     else:
-        post_data_bx_id = '{"ID":"4"}'
+        post_data_bx_id = '{"ID":"2"}'
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
         try:  # изменения заказа
             order = Order.objects.get(id_bitrix=post_data_bx_id)
+            print(order)
             # response = HttpResponseRedirect("/admin_specification/current_specification/")
             response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
             response.set_cookie(
@@ -1694,10 +1696,14 @@ def bx_save_start_info(request):
             )
             return response
 
-        except Order.DoesNotExist:  # Новый заказ
-            response = HttpResponseRedirect(
-                "/admin_specification/current_specification/"
-            )
+        except Order.DoesNotExist: # Новый заказ
+            print("Новый заказ")
+            # get_info_for_order_bitrix(post_data_bx_id, request)
+            # if error:
+            #     return render(request, "admin_specification/error.html", context)
+            # else:
+           
+            response = render(request, "admin_specification/bx_start.html",)
             response.set_cookie(
                 "bitrix_id_order",
                 post_data_bx_id,
@@ -1707,6 +1713,22 @@ def bx_save_start_info(request):
             )
 
             return response
+        
+ 
+            
+            
+        # response = HttpResponseRedirect(
+                #     "/admin_specification/current_specification/"
+                # )
+                # response.set_cookie(
+                #     "bitrix_id_order",
+                #     post_data_bx_id,
+                #     max_age=2629800,
+                #     samesite="None",
+                #     secure=True,
+                # )
+
+                # return response
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

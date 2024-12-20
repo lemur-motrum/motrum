@@ -20,85 +20,191 @@ from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 
 
+def get_info_for_order_bitrix(bs_id_order,request):
+    bx = Bitrix("https://b24-j6zvwj.bitrix24.ru/rest/1/qgz6gtuu9qqpyol1/") 
+#    ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
+    orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
+    company = orders_bx['COMPANY_ID']
+   
+   #    ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
+    data = {
+            "company": {
+                "id_bitrix": 69,
+                # "manager": - битрикс ид менеджера
+                "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+                # "contract": "",
+                # "contract_date": "",
+                "contract": "07-06/25",
+                "contract_date": "2024-04-24",
+                "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
+                "inn": "1650236125",
+                "kpp": "88888888",
+                "ogrn": "",
+                "legal_post_code": "423800",
+                "legal_city": "Республика Татарстан, г. Набережные Челны",
+                "legal_address": "ул. Профильная, дом 53",
+                "postal_post_code": "443099",
+                "postal_city": "Республика Татарстан, г. Набережные Челны",
+                "postal_address": "ул. Профильная, дом 55",
+                "tel": "89276892277",
+                "account_requisites": "40702810762030005449",
+                "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
+                "ks": "30101810600000000603",
+                "bic": "049205603",
+            },
+            "order": {
+                "id_bitrix": bs_id_order,
+                "manager": "ruslan.ovcharov1111@motrum.ru",
+                "status": "PROCESSING",
+                
+            },
+        }
+    company_bx = bx.get_by_ID("crm.company.get", [company])
+    
+#    data["company"]['id_bitrix'] = company_bx['ID']
+#    data["company"]['legal_entity'] = company_bx['TITLE']
+    error_company, error_order = order_info_check(data['company'], data['order'])
+    print(error_company, error_order)
+    # if error_company or error_order:
+    #     next_url = "/admin_specification/error-b24/"
+    #     error_text = "Не заполнены поля: "
+    #     error_text += ", ".join(error_company)
+    #     if error_order:
+    #         error_text += ", "
+    #         error_text += ", ".join(error_order)
+
+    #     context = {"error": error_text}
+    #     return (next_url, context, True)
+    
+    # else:
+
+    #     client_req, acc_req = client_info_bitrix(data['company'])
+    #     manager = AdminUser.objects.get(email=data["order"]["manager"])
+
+    #     data_order = {
+    #         "id_bitrix": bs_id_order,
+    #         "name": 123131,
+    #         "requisites": client_req.id,
+    #         "account_requisites": acc_req.id,
+    #         "status": "",
+    #         "prepay_persent": client_req.prepay_persent,
+    #         "postpay_persent": client_req.postpay_persent,
+    #         "manager": manager,
+    #     }
+    #     serializer_class = OrderSerializer
+    #     try:
+    #         order = Order.objects.get(id_bitrix=bs_id_order)
+    #         cart = order.cart
+    #         data_order["cart"] = cart.id
+    #         serializer = serializer_class(order, data=data_order, many=False)
+    #     except Order.DoesNotExist:
+    #         cart = Cart.create_cart_admin(None, data_admin["admin"])
+    #         data_order["cart"] = cart.id
+    #         serializer = serializer_class(data=data_order, many=False)
+
+    #     finally:
+
+    #         if serializer.is_valid():
+    #             serializer._change_reason = "Ручное"
+    #             order = serializer.save()
+    #             response = HttpResponseRedirect(next_url)
+
+    #             response.set_cookie("client_id", max_age=-1)
+    #             response.set_cookie("cart", cart.id, max_age=1000)
+    #             response.set_cookie("specificationId", max_age=-1)
+    #             response.set_cookie("type_save", type_save, max_age=1000)
+    #             return (next_url, response, False)
+    #         else:
+    #             next_url = "/admin_specification/error-b24/"
+    #             context = {
+    #                 "error": "Неприведенная ошибка во время создания заказа. Повторите. "
+    #             }
+    #             return (next_url, response, True)
+
+
+   
+   
 # проверка и получение основной инфы для создания заказа
+
 def order_bitrix(data, request):
+    pass
 
-    next_url = "/admin_specification/current_specification/"
+    # next_url = "/admin_specification/current_specification/"
 
-    result = "ok"
-    order_info = data["order"]
-    company_info = data["company"]
-    type_save = data["type_save"]
-    print(company_info)
-    data_admin = AdminUser.login_bitrix(data["login"], None, request)
-    if data_admin["status_admin"] == 200:
-        error_company, error_order = order_info_check(company_info, order_info)
-        if error_company or error_order:
-            next_url = "/admin_specification/error-b24/"
-            error_text = "Не заполнены поля: "
-            error_text += ", ".join(error_company)
-            if error_order:
-                error_text += ", "
-                error_text += ", ".join(error_order)
+    # result = "ok"
+    # order_info = data["order"]
+    # company_info = data["company"]
+    # type_save = data["type_save"]
+    # print(company_info)
+    # data_admin = AdminUser.login_bitrix(data["login"], None, request)
+    # if data_admin["status_admin"] == 200:
+    #     error_company, error_order = order_info_check(company_info, order_info)
+    #     if error_company or error_order:
+    #         next_url = "/admin_specification/error-b24/"
+    #         error_text = "Не заполнены поля: "
+    #         error_text += ", ".join(error_company)
+    #         if error_order:
+    #             error_text += ", "
+    #             error_text += ", ".join(error_order)
 
-            context = {"error": error_text}
-            return (next_url, context, True)
-        else:
+    #         context = {"error": error_text}
+    #         return (next_url, context, True)
+    #     else:
 
-            client_req, acc_req = client_info_bitrix(company_info)
-            manager = AdminUser.objects.get(email=data["order"]["manager"])
+    #         client_req, acc_req = client_info_bitrix(company_info)
+    #         manager = AdminUser.objects.get(email=data["order"]["manager"])
 
-            data_order = {
-                "id_bitrix": order_info["id_bitrix"],
-                "name": 123131,
-                "requisites": client_req.id,
-                "account_requisites": acc_req.id,
-                "status": "",
-                # "cart": cart.id,
-                "prepay_persent": client_req.prepay_persent,
-                "postpay_persent": client_req.postpay_persent,
-                "manager": manager,
-            }
-            serializer_class = OrderSerializer
-            try:
-                order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
-                cart = order.cart
-                data_order["cart"] = cart.id
-                serializer = serializer_class(order, data=data_order, many=False)
-            except Order.DoesNotExist:
-                cart = Cart.create_cart_admin(None, data_admin["admin"])
-                data_order["cart"] = cart.id
-                serializer = serializer_class(data=data_order, many=False)
+    #         data_order = {
+    #             "id_bitrix": order_info["id_bitrix"],
+    #             "name": 123131,
+    #             "requisites": client_req.id,
+    #             "account_requisites": acc_req.id,
+    #             "status": "",
+    #             # "cart": cart.id,
+    #             "prepay_persent": client_req.prepay_persent,
+    #             "postpay_persent": client_req.postpay_persent,
+    #             "manager": manager,
+    #         }
+    #         serializer_class = OrderSerializer
+    #         try:
+    #             order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
+    #             cart = order.cart
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(order, data=data_order, many=False)
+    #         except Order.DoesNotExist:
+    #             cart = Cart.create_cart_admin(None, data_admin["admin"])
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(data=data_order, many=False)
 
-            finally:
+    #         finally:
 
-                if serializer.is_valid():
-                    serializer._change_reason = "Ручное"
-                    order = serializer.save()
-                    response = HttpResponseRedirect(next_url)
+    #             if serializer.is_valid():
+    #                 serializer._change_reason = "Ручное"
+    #                 order = serializer.save()
+    #                 response = HttpResponseRedirect(next_url)
 
-                    response.set_cookie("client_id", max_age=-1)
-                    response.set_cookie("cart", cart.id, max_age=1000)
-                    response.set_cookie("specificationId", max_age=-1)
-                    response.set_cookie("type_save", type_save, max_age=1000)
-                    return (next_url, response, False)
-                else:
-                    next_url = "/admin_specification/error-b24/"
-                    context = {
-                        "error": "Неприведенная ошибка во время создания заказа. Повторите. "
-                    }
-                    return (next_url, response, True)
+    #                 response.set_cookie("client_id", max_age=-1)
+    #                 response.set_cookie("cart", cart.id, max_age=1000)
+    #                 response.set_cookie("specificationId", max_age=-1)
+    #                 response.set_cookie("type_save", type_save, max_age=1000)
+    #                 return (next_url, response, False)
+    #             else:
+    #                 next_url = "/admin_specification/error-b24/"
+    #                 context = {
+    #                     "error": "Неприведенная ошибка во время создания заказа. Повторите. "
+    #                 }
+    #                 return (next_url, response, True)
 
-    else:
-        next_url = "/admin_specification/error-b24/"
-        error_text = ""
-        if data_admin["status_admin"] == 401:
-            error_text = "Неверные данные для логина. Токен не совпадает с почтой или этого юзера нет в системе окт"
-        elif data_admin["status_admin"] == 403:
-            error_text = "Нет прав доступа к системе"
+    # else:
+    #     next_url = "/admin_specification/error-b24/"
+    #     error_text = ""
+    #     if data_admin["status_admin"] == 401:
+    #         error_text = "Неверные данные для логина. Токен не совпадает с почтой или этого юзера нет в системе окт"
+    #     elif data_admin["status_admin"] == 403:
+    #         error_text = "Нет прав доступа к системе"
 
-        context = {"error": error_text}
-        return (next_url, context, True)
+    #     context = {"error": error_text}
+    #     return (next_url, context, True)
 
 
 # проверка полей на заполненность при создании заказа-возврат текста для ошибки
@@ -157,7 +263,7 @@ def order_info_check(company_info, order_info):
     if order_info["manager"] == "":
         not_info.append("Менеджер сделки")
 
-    if order_info["satatus"] == "":
+    if order_info["status"] == "":
         not_info.append("Статус сделки")
     return (not_info, not_info_order)
 

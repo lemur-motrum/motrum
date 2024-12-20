@@ -325,9 +325,9 @@ export function uptadeOrChanegeSpecification(
     button.disabled = true;
     button.textContent = "";
     button.innerHTML = "<div class='small_loader'></div>";
-    document.cookie = `cart=${idSpecification};path=/;SameSite=None;Secure`;
-    document.cookie = `specificationId=${idCart};path=/;SameSite=None;Secure`;
-    document.cookie = `type_save=${typeSave};path=/;SameSite=None;Secure`;
+    document.cookie = `cart=${idSpecification}; path=/; SameSite=None; Secure`;
+    document.cookie = `specificationId=${idCart}; path=/; SameSite=None; Secure`;
+    document.cookie = `type_save=${typeSave}; path=/; SameSite=None; Secure`;
     
     const endpoint = `/api/v1/order/${idSpecification}/update-order-admin/`;
 

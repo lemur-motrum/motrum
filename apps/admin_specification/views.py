@@ -1588,7 +1588,7 @@ def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
 
-
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
     # bx_id_order = request.GET.get("bitrix_id_order")
@@ -1597,7 +1597,7 @@ def bx_start_page(request):
 
     return render(request, "admin_specification/bx_start.html", context)
 
-
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_save_start_info(request):
     if "POST" in request.method:

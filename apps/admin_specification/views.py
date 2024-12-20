@@ -1587,6 +1587,24 @@ def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
 
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def bx_start_page(request):
+    post_data_bx_id = "post_data_bx_id"
+    if 'POST' in request.method:
+        post_data = request.POST 
+        post_data_bx_place = post_data.get('PLACEMENT')
+        post_data_bx_id = post_data.get('PLACEMENT_OPTIONS')
+        post_data_bx_id = post_data_bx_id['id']
+        if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
+            try:#изменения заказа
+                order = Order.objects.get(id_bitrix=int(post_data_bx_id))
+            except Order.DoesNotExist: # Новый заказ
+               pass
+    else:
+        #выкинуть из окт 
+        pass    
+        
+   
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")

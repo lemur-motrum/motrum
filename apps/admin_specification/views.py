@@ -1606,18 +1606,60 @@ def bx_save_start_info(request):
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
         post_data_bx_id = post_data_bx_id["ID"]
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
-            response = render(
-                request, "admin_specification/bx_start.html"
-            )  # django.http.HttpResponse
-            response.set_cookie(
-                "bitrix_id_order",
-                post_data_bx_id,
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            print(22222)
-            return response
+            try:  # изменения заказа
+                order = Order.objects.get(id_bitrix=post_data_bx_id)
+                # response = HttpResponseRedirect("/admin_specification/current_specification/")
+                response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "cart",
+                    order.cart.id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "order",
+                    order.specification.id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                return response
+
+            except Order.DoesNotExist:  # Новый заказ
+                response = HttpResponseRedirect(
+                    "/admin_specification/current_specification/"
+                )
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+
+                return response
+
+
+            # response = render(
+            #     request, "admin_specification/bx_start.html"
+            # )  # django.http.HttpResponse
+            # response.set_cookie(
+            #     "bitrix_id_order",
+            #     post_data_bx_id,
+            #     max_age=2629800,
+            #     samesite="None",
+            #     secure=True,
+            # )
+            # print(22222)
+            # return response
     else:
         post_data_bx_id = 2
 

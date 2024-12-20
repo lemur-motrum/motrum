@@ -1604,7 +1604,7 @@ def bx_save_start_info(request):
         post_data = request.POST
         post_data_bx_place = post_data.get("PLACEMENT")
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
-        post_data_bx_id = post_data_bx_id["id"]
+        post_data_bx_id = post_data_bx_id["ID"]
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
             response = render(
                 request, "admin_specification/bx_start.html"

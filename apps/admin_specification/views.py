@@ -912,7 +912,14 @@ def save_specification_view_admin(request):
     login_url="/user/login_admin/",
 )
 def get_all_specifications(request):
+    cd =[]
+    post_data_bx_id = "post_data_bx_id"
+    if 'POST' in request.method:
+        post_data = request.POST  # Какой то из подтипов dict, неизменяемый
 
+        post_data_bx_id = post_data.get('PLACEMENT_OPTIONS')
+         
+         
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
@@ -949,6 +956,7 @@ def get_all_specifications(request):
         "media_root": media_root,
         "sort_specif": sort_specif,
         "superuser": superuser,
+        "post_data_bx_id":post_data_bx_id,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)

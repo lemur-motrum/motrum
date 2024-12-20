@@ -1604,6 +1604,7 @@ def bx_save_start_info(request):
         post_data = request.POST
         post_data_bx_place = post_data.get("PLACEMENT")
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+        post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
             try:  # изменения заказа
@@ -1661,8 +1662,9 @@ def bx_save_start_info(request):
             # print(22222)
             # return response
     else:
-        post_data_bx_id = 2
-
+        post_data_bx_id = '{"ID":"2"}'
+        post_data_bx_id = json.loads(post_data_bx_id)
+        post_data_bx_id = post_data_bx_id["ID"]
         try:  # изменения заказа
             order = Order.objects.get(id_bitrix=post_data_bx_id)
             # response = HttpResponseRedirect("/admin_specification/current_specification/")

@@ -305,8 +305,16 @@ class CartViewSet(viewsets.ModelViewSet):
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
-                    response.set_cookie("cart", cart.id, max_age=2629800)
-                    response.set_cookie("type_save", "new", max_age=2629800)
+                    response.set_cookie(
+                        "cart", cart.id, max_age=2629800, samesite="None", secure=True
+                    )
+                    response.set_cookie(
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
 
                     return response
                 else:
@@ -328,9 +336,19 @@ class CartViewSet(viewsets.ModelViewSet):
                         #     "sessionid", serializer.data["session_key"], max_age=2629800
                         # )
                         response.set_cookie(
-                            "cart", serializer.data["id"], max_age=2629800
+                            "cart",
+                            serializer.data["id"],
+                            max_age=2629800,
+                            samesite="None",
+                            secure=True,
                         )
-                        response.set_cookie("type_save", "new", max_age=2629800)
+                        response.set_cookie(
+                            "type_save",
+                            "new",
+                            max_age=2629800,
+                            samesite="None",
+                            secure=True,
+                        )
 
                         return response
                     else:

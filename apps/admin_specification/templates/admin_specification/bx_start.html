@@ -1,0 +1,8 @@
+{% extends "core/base_okt.html" %}
+{% load static %}
+{% block content %}
+<div class="bx-btn" data-cart-id ='{{cart}}' data-spesif-id='{{spes}}' >
+<a href="{% url 'admin_specification:create_specification' %}" class='bx-btn-upd' >Изменить счет(номер остается дата новая)</a>
+<a href="{% url 'admin_specification:create_specification' %}" class='bx-btn-hard-upd'>Выставить новый счет(номер новый)</a>
+</div>
+{% endblock content %}

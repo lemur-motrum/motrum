@@ -41,4 +41,14 @@ urlpatterns = [
         views.history_admin_bill,
         name="history_admin_bill",
     ),
+    path(
+        "bitrix_start/",
+        views.bx_start_page,
+        name="bx_start_page",
+    ),
+    path(
+        "bitrix_start_info/",
+        views.bx_save_start_info,
+        name="bx_save_start_info",
+    ),
 ]

@@ -1530,6 +1530,28 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
   }
+
+  //кнопки из битрикс
+  const BxBtn = document.querySelector(".bx-btn");
+
+  if (BxBtn) {
+    console.log(999999)
+    const BxUpd = document.querySelector(".bx-btn-upd");
+    const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
+
+    BxUpd.onclick = () => {
+      document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
+      window.location.href =
+        "/admin_specification/current_specification/";
+    };
+    BxHardUpd.onclick = () => {
+      document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
+      window.location.href =
+        "/admin_specification/current_specification/";
+
+
+    };
+  }
 });
 
 function changeSelect(select) {

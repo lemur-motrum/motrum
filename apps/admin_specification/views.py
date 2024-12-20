@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.core import serializers
 from django.db.models import Prefetch, OuterRef
 from django.db.models import Sum
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from apps import specification
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
@@ -41,6 +41,7 @@ from django.db.models.functions import Replace
 from django.db.models.functions import Coalesce
 from django.db.models.functions import Round
 from django.views.decorators.csrf import csrf_exempt
+
 
 # Рендер главной страницы каталога с пагинацией
 @csrf_exempt
@@ -912,14 +913,13 @@ def save_specification_view_admin(request):
     login_url="/user/login_admin/",
 )
 def get_all_specifications(request):
-    cd =[]
+    cd = []
     post_data_bx_id = "post_data_bx_id"
-    if 'POST' in request.method:
+    if "POST" in request.method:
         post_data = request.POST  # Какой то из подтипов dict, неизменяемый
 
-        post_data_bx_id = post_data.get('PLACEMENT_OPTIONS')
-         
-         
+        post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
@@ -956,10 +956,11 @@ def get_all_specifications(request):
         "media_root": media_root,
         "sort_specif": sort_specif,
         "superuser": superuser,
-        "post_data_bx_id":post_data_bx_id,
+        "post_data_bx_id": post_data_bx_id,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
+
 
 @csrf_exempt
 @permission_required(
@@ -1587,24 +1588,80 @@ def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
 
+
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
-    post_data_bx_id = "post_data_bx_id"
-    if 'POST' in request.method:
-        post_data = request.POST 
-        post_data_bx_place = post_data.get('PLACEMENT')
-        post_data_bx_id = post_data.get('PLACEMENT_OPTIONS')
-        post_data_bx_id = post_data_bx_id['id']
+    # bx_id_order = request.GET.get("bitrix_id_order")
+    # order = Order.objects.get(id_bitrix=int(bx_id_order))
+    # context = {"cart": order.cart.id, "spes": order.specification.id}
+
+    return render(request, "admin_specification/bx_start.html", context)
+
+
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def bx_save_start_info(request):
+    if "POST" in request.method:
+        post_data = request.POST
+        post_data_bx_place = post_data.get("PLACEMENT")
+        post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+        post_data_bx_id = post_data_bx_id["id"]
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
-            try:#изменения заказа
-                order = Order.objects.get(id_bitrix=int(post_data_bx_id))
-            except Order.DoesNotExist: # Новый заказ
-               pass
+            response = render(
+                request, "admin_specification/bx_start.html"
+            )  # django.http.HttpResponse
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            print(22222)
+            return response
     else:
-        #выкинуть из окт 
-        pass    
-        
-   
+        post_data_bx_id = 2
+
+        try:  # изменения заказа
+            order = Order.objects.get(id_bitrix=post_data_bx_id)
+            # response = HttpResponseRedirect("/admin_specification/current_specification/")
+            response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "cart",
+                order.cart.id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "order",
+                order.specification.id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            return response
+
+        except Order.DoesNotExist:  # Новый заказ
+            response = HttpResponseRedirect(
+                "/admin_specification/current_specification/"
+            )
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+
+            return response
+
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")

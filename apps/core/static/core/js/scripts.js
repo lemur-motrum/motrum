@@ -1,7 +1,6 @@
 import "/static/core/js/slider.js";
 import "/static/core/js/nunjucks.min.js";
 import "/static/core/js/inputmask.js";
-
 import "/static/admin_specification/js/scripts.js";
 import "/static/admin_specification/js/invoice_elems.js";
 import "/static/admin_specification/js/filters.js";
@@ -27,6 +26,7 @@ import "/static/admin_specification/js/category_open_content.js";
 import "/static/admin_specification/js/add_product_in_cart.js";
 import "/static/core/js/scripts/web.js";
 import "/static/core/js/scripts/overlay-logic.js";
+import "/static/core/js/scripts/header-fixed.js";
 import "/static/core/js/scripts/motrum-in-numbers-script.js";
 import "/static/core/js/scripts/manager-popup-logic.js";
 import "/static/core/js/scripts/get-client-id.js";

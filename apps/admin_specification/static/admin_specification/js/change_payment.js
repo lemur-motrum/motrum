@@ -31,6 +31,9 @@ export function changePayment(container, errorFn) {
           const invoiceSpecificationContainer = specification.querySelector(
             ".invoice-table_item_value"
           );
+          const changedItemButtonsContainer = specification.querySelector(
+            ".table_item_value_change_buttons_container"
+          );
           if (paymentLink) {
             getDigitsNumber(
               paymentLink,
@@ -41,10 +44,6 @@ export function changePayment(container, errorFn) {
           const orderId = specification.getAttribute("order-id");
 
           function changePayment() {
-            paymentBtn.disabled = true;
-            paymentBtn.textContent = "";
-            paymentBtn.innerHTML = "<div class='small_loader'></div>";
-
             let finishPromice = false;
             let csrfToken = getCookie("csrftoken");
             fetch(`/api/v1/order/${orderId}/get-payment/`, {
@@ -172,8 +171,6 @@ export function changePayment(container, errorFn) {
                             }
                           });
                           paymentBtn.disabled = false;
-                          paymentBtn.innerHTML = "";
-                          paymentBtn.textContent = "Внести cумму оплаты";
 
                           if (response.is_all_sum == true) {
                             paymentBtn.style.display = "none";
@@ -193,8 +190,8 @@ export function changePayment(container, errorFn) {
                                 .querySelector(".change-bill-button")
                                 .remove();
                             }
-                            invoiceSpecificationContainer.innerHTML +=
-                              "<button class='change-bill-button'>Изменить счет</button>";
+                            changedItemButtonsContainer.innerHTML +=
+                              "<div class='change-bill-button'>Изменить счет</div>";
                             if (
                               specification.querySelector(".change-bill-button")
                             ) {

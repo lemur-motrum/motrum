@@ -1588,7 +1588,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           console.log(data);
           document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
-          window.location.href = "/admin_specification/current_specification/";
+          window.location.href = "https://motrum.yuriyzhidkov.ru/admin_specification/current_specification/";
         });
     };
     BxHardUpd.onclick = () => {
@@ -1604,7 +1604,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then((data) => {
           document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
-          window.location.href = "/admin_specification/current_specification/";
+          window.location.href = "https://motrum.yuriyzhidkov.ru/admin_specification/current_specification/";
         });
     };
   }

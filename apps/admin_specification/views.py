@@ -939,7 +939,7 @@ def get_all_specifications(request):
     # фильтрация если из битрикс 
     http_frame = False
     bitrix_id_order = None
-    if request.META["HTTP_SEC_FETCH_DEST"] == "document":
+    if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
         print(request.META["HTTP_SEC_FETCH_DEST"])
         bitrix_id_order = request.COOKIES['bitrix_id_order']
         http_frame = True
@@ -1689,7 +1689,7 @@ def bx_save_start_info(request):
 
                 return response
     else:
-        post_data_bx_id = '{"ID":"3"}'
+        post_data_bx_id = '{"ID":"1"}'
 
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]

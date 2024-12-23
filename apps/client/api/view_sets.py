@@ -1365,12 +1365,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             q_object &= Q(specification__isnull=False)
         print(33333)
-        print(request.META)
-        if request.META["HTTP_SEC_FETCH_DEST"] == "document":
-
-            bitrix_id_order = request.COOKIES['bitrix_id_order']
-            print(bitrix_id_order)
-            q_object &= Q(id_bitrix=int(bitrix_id_order))
+        iframe = request.query_params.get("frame")
+        bx_id_order = int(request.query_params.get("bx_id_order"))
+        print(iframe)
+        print(bx_id_order)
+        if iframe == "True":
+            
+            q_object &= Q(id_bitrix=int(bx_id_order))
             
         now_date = datetime.datetime.now()
         queryset = (

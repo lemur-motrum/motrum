@@ -103,13 +103,17 @@ window.addEventListener("DOMContentLoaded", () => {
       addMoreBtn = false,
       specification = false
     ) {
-      // const IsFrame = document.getAttribute('data-http-frame')
-      // const BxIdOrder = document.getAttribute('data-bitrix-id-order')
+      const WrapOrders = document.querySelector('.all_specifications_container')
+      const IsFrame = WrapOrders.getAttribute('data-http-frame')
+      const BxIdOrder = WrapOrders.getAttribute('data-bitrix-id-order')
+
       let data = {
         count: !pagintaionFn ? specificationCount : 0,
         page: pageCount,
         addMoreBtn: addMoreBtn ? true : false,
         specification: specification ? "+" : null,
+        frame: IsFrame,
+        bx_id_order:BxIdOrder,
       };
       let params = new URLSearchParams(data);
       

@@ -1697,10 +1697,11 @@ def bx_save_start_info(request):
             print("ERR")
             return render(request, "admin_specification/error.html", context)
         else:
-            if context["type_save"] == "new":
+            if context["type_save"] == "new" or context["spes"] == None:
                 response = HttpResponseRedirect(
                     "/admin_specification/current_specification/"
                 )
+                
                 response.set_cookie(
                     "type_save",
                     "new",

@@ -778,7 +778,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             account_requisites = AccountRequisites.objects.get(
                 id=account_requisites_data
             )
-            requisites = account_requisites.requisites
+            requisites = account_requisites.requisitesKpp.requisites
             requisites_id = requisites.id
             account_requisites_id = account_requisites.id
             prepay_persent = requisites.prepay_persent

@@ -1366,7 +1366,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(specification__isnull=False)
         print(33333)
         iframe = request.query_params.get("frame")
-        bx_id_order = int(request.query_params.get("bx_id_order"))
+        bx_id_order = request.query_params.get("bx_id_order")
         print(iframe)
         print(bx_id_order)
         if iframe == "True":

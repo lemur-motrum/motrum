@@ -103,8 +103,8 @@ window.addEventListener("DOMContentLoaded", () => {
       addMoreBtn = false,
       specification = false
     ) {
-      const IsFrame = document.getAttribute('data-http-frame')
-      const BxIdOrder = document.getAttribute('data-bitrix-id-order')
+      // const IsFrame = document.getAttribute('data-http-frame')
+      // const BxIdOrder = document.getAttribute('data-bitrix-id-order')
       let data = {
         count: !pagintaionFn ? specificationCount : 0,
         page: pageCount,

@@ -1562,15 +1562,23 @@ window.addEventListener("DOMContentLoaded", () => {
   if (BxBtn) {
     console.log(999999);
     const BxUpd = document.querySelector(".bx-btn-upd");
+    console.log(1)
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
+    console.log(2)
     const serialazer = BxBtn.getAttribute("data-serializer-order");
+    console.log(3)
     const bxId = BxBtn.getAttribute("data-bx-id");
+    console.log(4)
     let endpoint = "/api/v1/order/order-bitrix/";
+    console.log(5)
     document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
-      const objData = {
-        bitrix_id_order: +bxId,
-        serializer: serialazer,
-      };
+    console.log(6)
+    const objData = {
+      bitrix_id_order: +bxId,
+      serializer: serialazer,
+    };
+    console.log(objData)
+    console.log(7)
     BxUpd.onclick = () => {
      
       
@@ -1592,8 +1600,9 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     };
     BxHardUpd.onclick = () => {
-      
+      console.log(8)
       const data = JSON.stringify(objData);
+      console.log(9)
       fetch(endpoint, {
         method: "POST",
         body: data,
@@ -1602,10 +1611,11 @@ window.addEventListener("DOMContentLoaded", () => {
         },
       })
         .then((response) => {
-          console.log(response.status)
-          // if (response.status == ){
-
-          // }
+          console.log(8888)
+          console.log(1)
+          if (response.status == 'canceled' ){
+            console.log("canceled")
+          }
         })
 
         // .then((status) => {

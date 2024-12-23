@@ -1564,13 +1564,16 @@ window.addEventListener("DOMContentLoaded", () => {
     const BxUpd = document.querySelector(".bx-btn-upd");
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
     const serialazer = BxBtn.getAttribute("data-serializer-order");
-    BxUpd.onclick = () => {
-      document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
-      let endpoint = "/api/v1/order/order-bitrix/";
+    const bxId = BxBtn.getAttribute("data-bx-id");
+    let endpoint = "/api/v1/order/order-bitrix/";
+    document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
       const objData = {
-        bitrix_id_order: getCookie("bitrix_id_order"),
+        bitrix_id_order: +bxId,
         serializer: serialazer,
       };
+    BxUpd.onclick = () => {
+     
+      
       console.log(objData);
       const data = JSON.stringify(objData);
       fetch(endpoint, {
@@ -1589,12 +1592,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     };
     BxHardUpd.onclick = () => {
-      document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
-      let endpoint = "/api/v1/order/order-bitrix/";
-      const objData = {
-        bitrix_id_order: getCookie("bitrix_id_order"),
-        serializer: serialazer,
-      };
+      
       const data = JSON.stringify(objData);
       fetch(endpoint, {
         method: "POST",

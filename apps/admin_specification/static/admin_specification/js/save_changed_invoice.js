@@ -20,10 +20,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const adminCreatorId = adminCreator.getAttribute("data-user-id");
       const commentAll = document.querySelector(
         'textarea[name="comment-input-name-all"]'
-      ).value;
+      );
       const dateDeliveryAll = document.querySelector(
         'textarea[name="delivery-date-all-input-name-all"]'
-      ).value;
+      );
 
       const products = [];
 
@@ -138,8 +138,8 @@ window.addEventListener("DOMContentLoaded", () => {
             products: products,
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
-            comment: commentAll ? commentAll : null,
-            date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+            comment: commentAll.value,
+            date_delivery: dateDeliveryAll.value,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,

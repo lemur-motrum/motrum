@@ -90,7 +90,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
         # все данные есть 
         else: 
             client_req, acc_req = client_info_bitrix(data['company'])
-            manager = AdminUser.objects.get(email=data["order"]["manager"])
+            # manager = AdminUser.objects.get(email=data["order"]["manager"])
             manager = AdminUser.objects.get(user=request.user)
             data_order = {
                 "id_bitrix": bs_id_order,

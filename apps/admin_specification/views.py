@@ -468,7 +468,7 @@ def create_specification(request):
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")
- 
+
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
@@ -916,43 +916,59 @@ def save_specification_view_admin(request):
     login_url="/user/login_admin/",
 )
 def get_all_specifications(request):
+    print(1111111111111111)
+    print(request.COOKIES)
+    print(request.META["HTTP_SEC_FETCH_DEST"])
     cd = []
     post_data_bx_id = "post_data_bx_id"
     if "POST" in request.method:
-        post_data = request.POST  # Какой то из подтипов dict, неизменяемый
-
+        post_data = request.POST
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
 
+    
+    q_object = Q()
+    # фильтрация по админу
+    user_admin = AdminUser.objects.get(user=request.user)
+    user_admin_type = user_admin.admin_type
+    if user_admin_type == "ALL":
+        superuser = True
+    elif user_admin_type == "BASE":
+        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
+        q_object &= Q(admin_creator_id=request.user.id)
+        superuser = False
+    # фильтрация если из битрикс 
+    http_frame = False
+    if request.META["HTTP_SEC_FETCH_DEST"] == "document":
+        print(request.META["HTTP_SEC_FETCH_DEST"])
+        bitrix_id_order = request.COOKIES['bitrix_id_order']
+        http_frame = True
+        print(bitrix_id_order)
+        q_object &= Q(id_bitrix=int(bitrix_id_order))
+    
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
         .prefetch_related(
             Prefetch("order"),
         )
-        .all()
+        .filter(q_object)
         .order_by("tag_stop", "date_update", "id")
         .reverse()
     )
-
-    # фильтрация по админу
-    user_admin = AdminUser.objects.get(user=request.user)
-    user_admin_type = user_admin.admin_type
-    if user_admin_type == "ALL":
-        superuser = True
-
-    elif user_admin_type == "BASE":
-        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
-        superuser = False
-
+    print(q_object)
+    print(all_specifications)
+    
+    
     media_root = os.path.join(MEDIA_ROOT, "")
 
     title = "Все заказы"
-
+    
     sort_specif = request.GET.get("specification")
     if sort_specif:
         sort_specif = True
     else:
         sort_specif = False
+        
     context = {
         "title": title,
         "specifications": all_specifications,
@@ -960,6 +976,9 @@ def get_all_specifications(request):
         "sort_specif": sort_specif,
         "superuser": superuser,
         "post_data_bx_id": post_data_bx_id,
+        "bitrix_id_order":bitrix_id_order,
+        "http_frame":http_frame,
+        
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
@@ -1591,14 +1610,19 @@ def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
 
+
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
+    print("bx_start_page")
+    print(request)
+
     # bx_id_order = request.GET.get("bitrix_id_order")
     # order = Order.objects.get(id_bitrix=int(bx_id_order))
     # context = {"cart": order.cart.id, "spes": order.specification.id}
 
     return render(request, "admin_specification/bx_start.html", context)
+
 
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -1609,11 +1633,37 @@ def bx_save_start_info(request):
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
+
+        post_data_bx_id = '{"ID":"1"}'
+
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
-            try:  # изменения заказа
-                order = Order.objects.get(id_bitrix=post_data_bx_id)
-                # response = HttpResponseRedirect("/admin_specification/current_specification/")
-                response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
+            next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
+            print(next_url, context, error)
+            if error:
+                print("ERR")
+                return render(request, "admin_specification/error.html", context)
+            else:
+                if context["type_save"] == "new":
+                    response = HttpResponseRedirect("/admin_specification/current_specification/")
+                    response.set_cookie(
+                    "type_save",
+                    'new',
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                else:
+                    response = render(
+                        request,
+                        next_url,
+                        context={
+                            "cart": context["cart"],
+                            "spes": context["spes"],
+                            "serializer": context["serializer"],
+                            "type_save":context["type_save"],
+                        },
+                    )
+                print(11111)
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,
@@ -1623,56 +1673,52 @@ def bx_save_start_info(request):
                 )
                 response.set_cookie(
                     "cart",
-                    order.cart.id,
+                    context["cart"],
                     max_age=2629800,
                     samesite="None",
                     secure=True,
                 )
                 response.set_cookie(
                     "order",
-                    order.specification.id,
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
-                return response
-
-            except Order.DoesNotExist:  # Новый заказ
-                response = HttpResponseRedirect(
-                    "/admin_specification/current_specification/"
-                )
-                response.set_cookie(
-                    "bitrix_id_order",
-                    post_data_bx_id,
+                    context["order"],
                     max_age=2629800,
                     samesite="None",
                     secure=True,
                 )
 
                 return response
-
-
-            # response = render(
-            #     request, "admin_specification/bx_start.html"
-            # )  # django.http.HttpResponse
-            # response.set_cookie(
-            #     "bitrix_id_order",
-            #     post_data_bx_id,
-            #     max_age=2629800,
-            #     samesite="None",
-            #     secure=True,
-            # )
-            # print(22222)
-            # return response
     else:
-        post_data_bx_id = '{"ID":"2"}'
+        post_data_bx_id = '{"ID":"3"}'
+
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
-        try:  # изменения заказа
-            order = Order.objects.get(id_bitrix=post_data_bx_id)
-            print(order)
-            # response = HttpResponseRedirect("/admin_specification/current_specification/")
-            response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
+        next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
+        print(next_url, context, error)
+        if error:
+            print("ERR")
+            return render(request, "admin_specification/error.html", context)
+        else:
+            if context["type_save"] == "new":
+                response = HttpResponseRedirect("/admin_specification/current_specification/")
+                response.set_cookie(
+                "type_save",
+                'new',
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            else:
+                response = render(
+                    request,
+                    next_url,
+                    context={
+                        "cart": context["cart"],
+                        "spes": context["spes"],
+                        "serializer": context["serializer"],
+                        "type_save":context["type_save"],
+                    },
+                )
+            print(11111)
             response.set_cookie(
                 "bitrix_id_order",
                 post_data_bx_id,
@@ -1682,53 +1728,86 @@ def bx_save_start_info(request):
             )
             response.set_cookie(
                 "cart",
-                order.cart.id,
+                context["cart"],
                 max_age=2629800,
                 samesite="None",
                 secure=True,
             )
             response.set_cookie(
                 "order",
-                order.specification.id,
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            return response
-
-        except Order.DoesNotExist: # Новый заказ
-            print("Новый заказ")
-            # get_info_for_order_bitrix(post_data_bx_id, request)
-            # if error:
-            #     return render(request, "admin_specification/error.html", context)
-            # else:
-           
-            response = render(request, "admin_specification/bx_start.html",)
-            response.set_cookie(
-                "bitrix_id_order",
-                post_data_bx_id,
+                context["order"],
                 max_age=2629800,
                 samesite="None",
                 secure=True,
             )
 
             return response
-        
- 
-            
-            
+
+        # try:  #есть заказ # изменения заказа
+        #     order = Order.objects.get(id_bitrix=post_data_bx_id)
+        #     print(order)
+        #     # response = HttpResponseRedirect("/admin_specification/current_specification/")
+        #     response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
+        #     response.set_cookie(
+        #         "bitrix_id_order",
+        #         post_data_bx_id,
+        #         max_age=2629800,
+        #         samesite="None",
+        #         secure=True,
+        #     )
+        #     response.set_cookie(
+        #         "cart",
+        #         order.cart.id,
+        #         max_age=2629800,
+        #         samesite="None",
+        #         secure=True,
+        #     )
+        #     response.set_cookie(
+        #         "order",
+        #         order.specification.id,
+        #         max_age=2629800,
+        #         samesite="None",
+        #         secure=True,
+        #     )
+
+        #     next_url, context, error = get_info_for_order_bitrix(post_data_bx_id,request)
+        #     print(next_url, context, error)
+        #     if error:
+        #         print("ERR")
+        #         return render(request, "admin_specification/error.html", context)
+        #     else:
+        #         return response
+
+        # except Order.DoesNotExist: # Новый заказ
+        #     print("Новый заказ")
+        #     # get_info_for_order_bitrix(post_data_bx_id, request)
+        #     # if error:
+        #     #     return render(request, "admin_specification/error.html", context)
+        #     # else:
+
+        #     response = render(request, "admin_specification/bx_start.html",)
+        #     response.set_cookie(
+        #         "bitrix_id_order",
+        #         post_data_bx_id,
+        #         max_age=2629800,
+        #         samesite="None",
+        #         secure=True,
+        #     )
+
+        #     return response
+
         # response = HttpResponseRedirect(
-                #     "/admin_specification/current_specification/"
-                # )
-                # response.set_cookie(
-                #     "bitrix_id_order",
-                #     post_data_bx_id,
-                #     max_age=2629800,
-                #     samesite="None",
-                #     secure=True,
-                # )
+        #     "/admin_specification/current_specification/"
+        # )
+        # response.set_cookie(
+        #     "bitrix_id_order",
+        #     post_data_bx_id,
+        #     max_age=2629800,
+        #     samesite="None",
+        #     secure=True,
+        # )
 
-                # return response
+        # return response
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

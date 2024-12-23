@@ -66,6 +66,8 @@ window.addEventListener("DOMContentLoaded", () => {
       addMoreBtn = false,
       specification = false
     ) {
+      const IsFrame = document.getAttribute('data-http-frame')
+      const BxIdOrder = document.getAttribute('data-bitrix-id-order')
       let data = {
         count: !pagintaionFn ? specificationCount : 0,
         page: pageCount,
@@ -73,13 +75,14 @@ window.addEventListener("DOMContentLoaded", () => {
         specification: specification ? "+" : null,
       };
       let params = new URLSearchParams(data);
-
+      
       fetch(
         `/api/v1/order/load-ajax-specification-list/?${params.toString()}`,
         {
           method: "GET",
           headers: {
             "X-CSRFToken": csrfToken,
+            Accept: 'application/json',
           },
         }
       )

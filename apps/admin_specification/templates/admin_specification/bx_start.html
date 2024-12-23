@@ -1,8 +1,15 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
-<div class="bx-btn" data-cart-id ='{{cart}}' data-spesif-id='{{spes}}' >
-<a href="" class='bx-btn-upd' >Изменить счет(номер остается дата новая)</a>
-<a href="" class='bx-btn-hard-upd'>Выставить новый счет(номер новый)</a>
+<div style="display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 100px;
+gap: 20px" class="bx-btn" data-cart-id ='{{cart}}' data-spesif-id='{{spes}}' data-serializer-order='{{serializer}}' >
+<a style="border: 1px solid;
+padding: 10px" href="" class='bx-btn-upd' >Изменить счет(номер старый, дата новая)</a>
+<a style="border: 1px solid;
+padding: 10px" href="" class='bx-btn-hard-upd'>Выставить новый счет(номер новый)</a>
 </div>
+
 {% endblock content %}

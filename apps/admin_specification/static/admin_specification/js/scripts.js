@@ -236,6 +236,7 @@ function backendDataFormat(string) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+
   const catalogContainer = document.querySelector(".catalog_container");
   if (catalogContainer) {
     const catalog = catalogContainer.querySelector(
@@ -1538,12 +1539,13 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log(999999)
     const BxUpd = document.querySelector(".bx-btn-upd");
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
-
+    const serialazer =  BxBtn.getAttribute("data-serializer-order");
     BxUpd.onclick = () => {
       document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
       let endpoint = "/api/v1/order/order-bitrix/";
       const objData = {
         bitrix_id_order: getCookie("bitrix_id_order"),
+        serializer: serialazer,
       };
       const data = JSON.stringify(objData);
       fetch(endpoint, {
@@ -1554,19 +1556,37 @@ window.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
         },
       })
-        // .then((response) => response.json())
-        // .then((response) => {
-        //   document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
-        //   // window.location.href =
-        //   //   "/admin_specification/current_specification/";
-        // })
-      // window.location.href =
-      //   "/admin_specification/current_specification/";
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          document.cookie = `specificationId=${data['specification']}; path=/; SameSite=None; Secure`;
+          window.location.href =
+            "/admin_specification/current_specification/";
+        })
+ 
     };
     BxHardUpd.onclick = () => {
       document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
-      // window.location.href =
-      //   "/admin_specification/current_specification/";
+      let endpoint = "/api/v1/order/order-bitrix/";
+      const objData = {
+        bitrix_id_order: getCookie("bitrix_id_order"),
+        serializer: serialazer,
+      };
+      const data = JSON.stringify(objData);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          document.cookie = `specificationId=${data['specification']}; path=/; SameSite=None; Secure`;
+          window.location.href =
+            "/admin_specification/current_specification/";
+        })
 
 
     };

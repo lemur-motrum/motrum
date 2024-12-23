@@ -329,7 +329,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                 account_requisites = []
 
                 for account_requisites_data_item in account_requisites_data:
-
+                    
                     serializer_class_new = AccountRequisitesSerializer
                     queryset = AccountRequisites.objects.get(
                         pk=account_requisites_data_item["id"]
@@ -579,16 +579,18 @@ class OrderViewSet(viewsets.ModelViewSet):
         print("def order_bitrix")
         data = request.data
         print(data)
-        bs_id_order = data['bitrix_id_order']
-        
-        get_info_for_order_bitrix(bs_id_order,request)
-       
-
-        # next_url, context, error = order_bitrix(data, request)
-        # if error:
-        #     return render(request, "admin_specification/error.html", context)
-        # else:
-        #     return context
+        serializer_class = OrderSerializer
+        order = Order.objects.get(id_bitrix=int(data['bitrix_id_order']))
+        serializer = serializer_class(order, data=data, many=False)
+        if serializer.is_valid():
+            order = serializer.save()
+            print(order)
+            print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
 
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
@@ -1338,7 +1340,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(data=data_response, status=status.HTTP_200_OK)
 
     # страница все спецификации окт аякс загрузка
-    @action(detail=False, url_path=r"load-ajax-specification-list")
+    @action(detail=False,  methods=["post","get"], url_path=r"load-ajax-specification-list")
     def load_ajax_specification_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
         count_last = 10
@@ -1362,7 +1364,14 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(specification__isnull=True)
         else:
             q_object &= Q(specification__isnull=False)
+        print(33333)
+        print(request.META)
+        if request.META["HTTP_SEC_FETCH_DEST"] == "document":
 
+            bitrix_id_order = request.COOKIES['bitrix_id_order']
+            print(bitrix_id_order)
+            q_object &= Q(id_bitrix=int(bitrix_id_order))
+            
         now_date = datetime.datetime.now()
         queryset = (
             Order.objects.select_related(

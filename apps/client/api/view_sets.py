@@ -590,6 +590,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 print(serializer.errors)
+                tr = serializer.errors
+                error = "error"
+                location = "взятие заказа при открытие окна битрикс"
+                info = f" ошибка {tr}"
+                e = error_alert(error, location, info)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             tr = traceback.format_exc()

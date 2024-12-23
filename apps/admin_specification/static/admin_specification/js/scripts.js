@@ -1571,13 +1571,14 @@ window.addEventListener("DOMContentLoaded", () => {
         bitrix_id_order: getCookie("bitrix_id_order"),
         serializer: serialazer,
       };
+      console.log(objData);
       const data = JSON.stringify(objData);
       fetch(endpoint, {
         method: "POST",
         body: data,
         headers: {
           "X-CSRFToken": csrfToken,
-          "Content-Type": "application/json",
+         
         },
       })
         .then((response) => response.json())
@@ -1600,7 +1601,6 @@ window.addEventListener("DOMContentLoaded", () => {
         body: data,
         headers: {
           "X-CSRFToken": csrfToken,
-          "Content-Type": "application/json",
         },
       })
         .then((response) => response.json())

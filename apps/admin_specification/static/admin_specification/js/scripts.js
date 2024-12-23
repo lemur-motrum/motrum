@@ -1601,11 +1601,17 @@ window.addEventListener("DOMContentLoaded", () => {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
-          document.location.href = "https://motrum.yuriyzhidkov.ru/admin_specification/current_specification/";
-        });
+        .then((response) => {
+          console.log(response.status)
+          // if (response.status == ){
+
+          // }
+        })
+
+        // .then((status) => {
+        //   // document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
+        //   document.location.href = "https://motrum.yuriyzhidkov.ru/admin_specification/current_specification/";
+        // });
     };
   }
 });

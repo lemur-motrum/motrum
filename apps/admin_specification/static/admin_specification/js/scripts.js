@@ -1560,7 +1560,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const BxBtn = document.querySelector(".bx-btn");
   console.log(3333);
   if (BxBtn) {
-    const iframe = window.frameElement.id
+    const iframe = window.frameElement
     console.log(iframe);
     console.log(66666);
     const BxUpd = document.querySelector(".bx-btn-upd");

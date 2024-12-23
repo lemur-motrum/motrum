@@ -938,6 +938,7 @@ def get_all_specifications(request):
         superuser = False
     # фильтрация если из битрикс 
     http_frame = False
+    bitrix_id_order = None
     if request.META["HTTP_SEC_FETCH_DEST"] == "document":
         print(request.META["HTTP_SEC_FETCH_DEST"])
         bitrix_id_order = request.COOKIES['bitrix_id_order']

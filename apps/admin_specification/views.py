@@ -1634,9 +1634,6 @@ def bx_save_start_info(request):
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
-
-        post_data_bx_id = '{"ID":"1"}'
-
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
             next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
             print(next_url, context, error)

@@ -1560,7 +1560,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const BxBtn = document.querySelector(".bx-btn");
 
   if (BxBtn) {
-    console.log(999999);
+    const iframe = document.getElementById('appframe_cb94980a3124817b9f0789f5fe7ca81f')
+    console.log(iframe);
+    console.log(99999);
     const BxUpd = document.querySelector(".bx-btn-upd");
     console.log(1)
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");

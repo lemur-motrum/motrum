@@ -1,4 +1,3 @@
-from ast import Try
 import base64
 import datetime
 import os
@@ -21,130 +20,135 @@ from project.settings import MEDIA_ROOT
 
 
 def get_info_for_order_bitrix(bs_id_order, request):
-    print("get_info_for_order_bitrix")
-    webhook = settings.BITRIX_WEBHOOK
-    webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
-    print(webhook)
-    bx = Bitrix(webhook)
-    # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
-    # orders_bx = bx.get_all("crm.deal.list")
-    orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
-    print("orders_bx", orders_bx)
-    company = orders_bx["COMPANY_ID"]
-    if company == "0":
-        error_text = "К сделке не прикреплен клиент"
-        next_url = "/admin_specification/error-b24/"
-        context = {"error": error_text}
-        return (next_url, context, True)
-    else:# ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ 
-        data = {
-            "company": {
-                "id_bitrix": 69,
-                # "manager": - битрикс ид менеджера
-                "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
-                # "contract": "",
-                # "contract_date": "",
-                "contract": "07-06/25",
-                "contract_date": "2024-04-24",
-                "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
-                "inn": "1650236125",
-                "kpp": "88888888",
-                "ogrn": "",
-                # "legal_post_code": "",
-                "legal_post_code": "423800",
-                "legal_city": "Республика Татарстан, г. Набережные Челны",
-                "legal_address": "ул. Профильная, дом 53",
-                "postal_post_code": "443099",
-                "postal_city": "Республика Татарстан, г. Набережные Челны",
-                "postal_address": "ул. Профильная, дом 55",
-                "tel": "89276892277",
-                "account_requisites": "40702810762030005449",
-                "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
-                "ks": "30101810600000000603",
-                "bic": "049205603",
-            },
-            "order": {
-                "id_bitrix": bs_id_order,
-                "manager": "ruslan.ovcharov1111@motrum.ru",
-                "status": "PROCESSING",
-                # "status": orders_bx["STAGE_ID"],
-            },
-        }
-        company_bx = bx.get_by_ID("crm.company.get", [company])
-
-        #    data["company"]['id_bitrix'] = company_bx['ID']
-        #    data["company"]['legal_entity'] = company_bx['TITLE']
-        error_company, error_order = order_info_check(data["company"], data["order"])
-        print(error_company, error_order)
-        # ошибка в покупателе
-        if error_company or error_order:
+    try:
+        print("get_info_for_order_bitrix")
+        webhook = settings.BITRIX_WEBHOOK
+        webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+        print(webhook)
+        bx = Bitrix(webhook)
+        # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
+        # orders_bx = bx.get_all("crm.deal.list")
+        orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
+        print("orders_bx", orders_bx)
+        company = orders_bx["COMPANY_ID"]
+        if company == "0":
+            error_text = "К сделке не прикреплен клиент"
             next_url = "/admin_specification/error-b24/"
-            error_text = "Не заполнены поля клиента: "
-            error_text += ", ".join(error_company)
-            if error_order:
-                error_text += ", "
-                error_text += ", ".join(error_order)
-
             context = {"error": error_text}
             return (next_url, context, True)
-        # все данные есть 
-        else: 
-            client_req, acc_req = client_info_bitrix(data['company'])
-            # manager = AdminUser.objects.get(email=data["order"]["manager"])
-            manager = AdminUser.objects.get(user=request.user)
-            data_order = {
-                "id_bitrix": bs_id_order,
-                "name": 123131,
-                "requisites": client_req.id,
-                "account_requisites": acc_req.id,
-                "status":  data['order']['status'],
-                "prepay_persent": client_req.prepay_persent,
-                "postpay_persent": client_req.postpay_persent,
-                # "manager": manager,
+        else:# ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ 
+            data = {
+                "company": {
+                    "id_bitrix": 69,
+                    # "manager": - битрикс ид менеджера
+                    "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+                    # "contract": "",
+                    # "contract_date": "",
+                    "contract": "07-06/25",
+                    "contract_date": "2024-04-24",
+                    "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
+                    "inn": "1650236125",
+                    "kpp": "88888888",
+                    "ogrn": "",
+                    # "legal_post_code": "",
+                    "legal_post_code": "423800",
+                    "legal_city": "Республика Татарстан, г. Набережные Челны",
+                    "legal_address": "ул. Профильная, дом 53",
+                    "postal_post_code": "443099",
+                    "postal_city": "Республика Татарстан, г. Набережные Челны",
+                    "postal_address": "ул. Профильная, дом 55",
+                    "tel": "89276892277",
+                    "account_requisites": "40702810762030005449",
+                    "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
+                    "ks": "30101810600000000603",
+                    "bic": "049205603",
+                },
+                "order": {
+                    "id_bitrix": bs_id_order,
+                    "manager": "ruslan.ovcharov1111@motrum.ru",
+                    "status": "PROCESSING",
+                    # "status": orders_bx["STAGE_ID"],
+                },
             }
-            serializer_class = OrderSerializer
-            try:
-                order = Order.objects.get(id_bitrix=bs_id_order)
-                cart = order.cart
-                data_order["cart"] = cart.id
-                serializer = serializer_class(order, data=data_order, many=False)
-                next_url = "admin_specification/bx_start.html"
-                context = {
-                        "type_save": "old",
-                        "cart":cart.id,
-                        "order":order.id,
-                        "spes":None,
-                        "serializer" : data_order,
-                    }
-                if order.specification:
-                    context['spes']=order.specification.id,
-                return (next_url, context, False)
-            except Order.DoesNotExist:
-                data['order']['manager'] = manager
-                cart = Cart.create_cart_admin(None, manager)
-                data_order["cart"] = cart.id
-                serializer = serializer_class(data=data_order, many=False)
-                
-                if serializer.is_valid():
-                    next_url = "/admin_specification/current_specification/"
-                    serializer._change_reason = "Ручное"
-                    order = serializer.save()
-                    context = {
-                        "type_save": "new",
-                        "cart":cart.id,
-                        "order":order.id,
-                        "spes":None,
-                        "serializer" : None,
-                    }
-                    return (next_url, context, False)
-                else:
-                    next_url = "/admin_specification/error-b24/"
-                    context = {
-                        "error": "Неприведенная ошибка во время создания заказа. Презагрузите страницу. "
-                    }
-                    return (next_url, context, True)
+            company_bx = bx.get_by_ID("crm.company.get", [company])
 
-          
+            #    data["company"]['id_bitrix'] = company_bx['ID']
+            #    data["company"]['legal_entity'] = company_bx['TITLE']
+            error_company, error_order = order_info_check(data["company"], data["order"])
+            print(error_company, error_order)
+            # ошибка в покупателе
+            if error_company or error_order:
+                next_url = "/admin_specification/error-b24/"
+                error_text = "Не заполнены поля клиента: "
+                error_text += ", ".join(error_company)
+                if error_order:
+                    error_text += ", "
+                    error_text += ", ".join(error_order)
+
+                context = {"error": error_text}
+                return (next_url, context, True)
+            # все данные есть 
+            else: 
+                client_req, acc_req = client_info_bitrix(data['company'])
+                # manager = AdminUser.objects.get(email=data["order"]["manager"])
+                manager = AdminUser.objects.get(user=request.user)
+                data_order = {
+                    "id_bitrix": bs_id_order,
+                    "name": 123131,
+                    "requisites": client_req.id,
+                    "account_requisites": acc_req.id,
+                    "status":  data['order']['status'],
+                    "prepay_persent": client_req.prepay_persent,
+                    "postpay_persent": client_req.postpay_persent,
+                    # "manager": manager,
+                }
+                serializer_class = OrderSerializer
+                try:
+                    order = Order.objects.get(id_bitrix=bs_id_order)
+                    cart = order.cart
+                    data_order["cart"] = cart.id
+                    serializer = serializer_class(order, data=data_order, many=False)
+                    next_url = "admin_specification/bx_start.html"
+                    context = {
+                            "type_save": "old",
+                            "cart":cart.id,
+                            "order":order.id,
+                            "spes":None,
+                            "serializer" : data_order,
+                        }
+                    if order.specification:
+                        context['spes']=order.specification.id,
+                    return (next_url, context, False)
+                except Order.DoesNotExist:
+                    data['order']['manager'] = manager
+                    cart = Cart.create_cart_admin(None, manager)
+                    data_order["cart"] = cart.id
+                    serializer = serializer_class(data=data_order, many=False)
+                    
+                    if serializer.is_valid():
+                        next_url = "/admin_specification/current_specification/"
+                        serializer._change_reason = "Ручное"
+                        order = serializer.save()
+                        context = {
+                            "type_save": "new",
+                            "cart":cart.id,
+                            "order":order.id,
+                            "spes":None,
+                            "serializer" : None,
+                        }
+                        return (next_url, context, False)
+                    else:
+                        next_url = "/admin_specification/error-b24/"
+                        context = {
+                            "error": "Неприведенная ошибка во время создания заказа. Презагрузите страницу. "
+                        }
+                        return (next_url, context, True)
+    except Exception as e:
+        tr = traceback.format_exc()
+        error = "error"
+        location = "первичное открытие сделки битрикс"
+        info = f" ошибка {e}{tr}"
+        e = error_alert(error, location, info)      
 
 
 # проверка и получение основной инфы для создания заказа

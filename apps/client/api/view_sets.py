@@ -576,21 +576,27 @@ class OrderViewSet(viewsets.ModelViewSet):
     # сохранение Заказа БИТРИКС
     @action(detail=False, methods=["post","get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
-        print("def order_bitrix")
-        data = request.data
-        print(data)
-        serializer_class = OrderSerializer
-        order = Order.objects.get(id_bitrix=int(data['bitrix_id_order']))
-        serializer = serializer_class(order, data=data, many=False)
-        if serializer.is_valid():
-            order = serializer.save()
-            print(order)
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
- 
+        try:
+            print("def order_bitrix")
+            data = request.data
+            print(data)
+            serializer_class = OrderSerializer
+            order = Order.objects.get(id_bitrix=int(data['bitrix_id_order']))
+            serializer = serializer_class(order, data=data, many=False)
+            if serializer.is_valid():
+                order = serializer.save()
+                print(order)
+                print(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            tr = traceback.format_exc()
+            error = "error"
+            location = "взятие заказа при открытие окна битрикс"
+            info = f" ошибка {e}{tr}"
+            e = error_alert(error, location, info)
 
     # сохранение спецификации дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")

@@ -925,7 +925,6 @@ def get_all_specifications(request):
         post_data = request.POST
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
 
-    
     q_object = Q()
     # фильтрация по админу
     user_admin = AdminUser.objects.get(user=request.user)
@@ -936,16 +935,16 @@ def get_all_specifications(request):
         all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
         q_object &= Q(admin_creator_id=request.user.id)
         superuser = False
-    # фильтрация если из битрикс 
+    # фильтрация если из битрикс
     http_frame = False
     bitrix_id_order = None
-    if request.META["HTTP_SEC_FETCH_DEST"] == "document":
+    if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
         print(request.META["HTTP_SEC_FETCH_DEST"])
-        bitrix_id_order = request.COOKIES['bitrix_id_order']
+        bitrix_id_order = request.COOKIES["bitrix_id_order"]
         http_frame = True
         print(bitrix_id_order)
         q_object &= Q(id_bitrix=int(bitrix_id_order))
-    
+
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
@@ -958,18 +957,17 @@ def get_all_specifications(request):
     )
     print(q_object)
     print(all_specifications)
-    
-    
+
     media_root = os.path.join(MEDIA_ROOT, "")
 
     title = "Все заказы"
-    
+
     sort_specif = request.GET.get("specification")
     if sort_specif:
         sort_specif = True
     else:
         sort_specif = False
-        
+
     context = {
         "title": title,
         "specifications": all_specifications,
@@ -977,9 +975,8 @@ def get_all_specifications(request):
         "sort_specif": sort_specif,
         "superuser": superuser,
         "post_data_bx_id": post_data_bx_id,
-        "bitrix_id_order":bitrix_id_order,
-        "http_frame":http_frame,
-        
+        "bitrix_id_order": bitrix_id_order,
+        "http_frame": http_frame,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
@@ -1638,21 +1635,25 @@ def bx_save_start_info(request):
         post_data_bx_id = '{"ID":"1"}'
 
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
-            next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
+            next_url, context, error = get_info_for_order_bitrix(
+                post_data_bx_id, request
+            )
             print(next_url, context, error)
             if error:
                 print("ERR")
                 return render(request, "admin_specification/error.html", context)
             else:
                 if context["type_save"] == "new":
-                    response = HttpResponseRedirect("/admin_specification/current_specification/")
+                    response = HttpResponseRedirect(
+                        "/admin_specification/current_specification/"
+                    )
                     response.set_cookie(
-                    "type_save",
-                    'new',
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 else:
                     response = render(
                         request,
@@ -1661,7 +1662,7 @@ def bx_save_start_info(request):
                             "cart": context["cart"],
                             "spes": context["spes"],
                             "serializer": context["serializer"],
-                            "type_save":context["type_save"],
+                            "type_save": context["type_save"],
                         },
                     )
                 print(11111)
@@ -1700,14 +1701,16 @@ def bx_save_start_info(request):
             return render(request, "admin_specification/error.html", context)
         else:
             if context["type_save"] == "new":
-                response = HttpResponseRedirect("/admin_specification/current_specification/")
+                response = HttpResponseRedirect(
+                    "/admin_specification/current_specification/"
+                )
                 response.set_cookie(
-                "type_save",
-                'new',
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
+                    "type_save",
+                    "new",
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
             else:
                 response = render(
                     request,
@@ -1716,7 +1719,7 @@ def bx_save_start_info(request):
                         "cart": context["cart"],
                         "spes": context["spes"],
                         "serializer": context["serializer"],
-                        "type_save":context["type_save"],
+                        "type_save": context["type_save"],
                     },
                 )
             print(11111)

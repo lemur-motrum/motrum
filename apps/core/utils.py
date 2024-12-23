@@ -1597,15 +1597,16 @@ def client_info_bitrix(data):
         ).date()
     else:
         data_contract = None
-    req = Requisites.objects.get(
-        inn=data["inn"],
-    )
+        
+    # req = Requisites.objects.get(
+    #     inn=data["inn"],
+    # )
 
-    if data["contract"] != "" and req.contract != data["contract"]:
-        req.contract = data["contract"]
-        req.contract_date = data_contract
-        req.number_spec = 0
-        req.save()
+    # if data["contract"] != "" and req.contract != data["contract"]:
+    #     req.contract = data["contract"]
+    #     req.contract_date = data_contract
+    #     req.number_spec = 0
+    #     req.save()
 
     client_req, client_req_created = Requisites.objects.update_or_create(
         # id_bitrix=data["id_bitrix"],
@@ -1625,11 +1626,11 @@ def client_info_bitrix(data):
             "id_bitrix": data["id_bitrix"],
         },
     )
-    # if data["contract"]!="" and client_req.contract != data["contract"]:
-    #     client_req.contract = data["contract"]
-    #     client_req.contract_date = data_contract
-    #     client_req.number_spec = 0
-    #     client_req.save()
+    if data["contract"]!="" and client_req.contract != data["contract"]:
+        client_req.contract = data["contract"]
+        client_req.contract_date = data_contract
+        client_req.number_spec = 0
+        client_req.save()
 
     client_req_kpp, client_req_kpp_created = (
         RequisitesOtherKpp.objects.update_or_create(

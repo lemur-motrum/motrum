@@ -89,7 +89,6 @@ export function buttonsLogic(wrapper) {
           } else {
             countQuantity = +quantityInput.value;
           }
-
           if (countQuantity >= 99999) {
             quantityInput.value = productMultiplicityQuantity
               ? getClosestInteger(99999, +productMultiplicityQuantity)

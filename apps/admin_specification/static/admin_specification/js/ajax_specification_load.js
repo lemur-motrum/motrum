@@ -29,7 +29,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationElems = pagination.querySelectorAll(".elem");
     const paginationFirstElem = pagination.querySelector(".first");
     const paginationLastElem = pagination.querySelector(".last");
-    const nextBtn = pagination.querySelector(".next");
+    const firstDots = pagination.querySelector(".first_dots");
+    const lastDots = pagination.querySelector(".last_dots");
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -45,18 +46,54 @@ window.addEventListener("DOMContentLoaded", () => {
     function showFirstPagintationElem() {
       if (pageCount >= 2) {
         paginationFirstElem.classList.add("show");
+        firstDots.classList.add("show");
       } else {
         paginationFirstElem.classList.remove("show");
+        firstDots.classList.remove("show");
       }
-      if (pageCount >= lastPage - 2) {
-        paginationLastElem.classList.remove("show");
-        if (pageCount == lastPage - 1) {
-          paginationElems[2].style.display = "none";
+      if (pageCount >= 0 && pageCount < 4) {
+        if (pageCount >= lastPage - 3) {
+          paginationLastElem.classList.remove("show");
+          lastDots.classList.remove("show");
+
+          if (pageCount >= lastPage - 1) {
+            paginationElems[2].style.display = "none";
+            if (paginationElems[1].textContent == "") {
+              paginationElems[1].style.display = "none";
+            } else {
+              paginationElems[1].style.display = "flex";
+            }
+          } else {
+            if (paginationElems[1].textContent == "") {
+              paginationElems[1].style.display = "none";
+            } else {
+              paginationElems[1].style.display = "flex";
+            }
+            if (paginationElems[2].textContent == "") {
+              paginationElems[2].style.display = "none";
+            } else {
+              paginationElems[2].style.display = "flex";
+            }
+          }
         } else {
-          paginationElems[2].style.display = "block";
+          paginationElems[2].style.display = "flex";
+          paginationLastElem.classList.add("show");
+          lastDots.classList.add("show");
         }
       } else {
-        paginationLastElem.classList.add("show");
+        if (pageCount >= lastPage - 2) {
+          paginationLastElem.classList.remove("show");
+          lastDots.classList.remove("show");
+
+          if (pageCount >= lastPage - 1) {
+            paginationElems[2].style.display = "none";
+          } else {
+            paginationElems[2].style.display = "flex";
+          }
+        } else {
+          paginationLastElem.classList.add("show");
+          lastDots.classList.add("show");
+        }
       }
     }
 
@@ -90,8 +127,9 @@ window.addEventListener("DOMContentLoaded", () => {
           lastPage = +data.count;
           const pagintationArray = [];
           paginationLastElem.textContent = `... ${lastPage}`;
-          endContent.classList.add("show");
-
+          if (data.count > 1) {
+            endContent.classList.add("show");
+          }
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
             const currentSpecificatons =
@@ -139,15 +177,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
           if (data.next) {
             catalogButton.disabled = false;
-            nextBtn.classList.add("show");
           } else {
             catalogButton.disabled = true;
-            nextBtn.classList.remove("show");
           }
 
-          if (data.small) {
-            nextBtn.classList.remove("show");
-          }
           for (
             let i = pageCount == 0 ? pageCount : pageCount - 1;
             !data.small
@@ -193,27 +226,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     paginationFirstElem.onclick = () => {
       pageCount = 0;
-      endContent.classList.remove("show");
-      specificationContainer.innerHTML = "";
-      loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
+      preloaderLogic();
       loadItems(true, true, false, false);
-    };
-    nextBtn.onclick = () => {
-      pageCount += 1;
-      endContent.classList.remove("show");
-      specificationContainer.innerHTML = "";
-      loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
-      loadItems(false, false, false, false);
     };
     paginationElems.forEach((elem) => {
       elem.onclick = () => {
         pageCount = +elem.textContent - 1;
-        specificationContainer.innerHTML = "";
-        endContent.classList.remove("show");
-        loader.classList.remove("hide");
-        specificationCount = pageCount * 10;
+        preloaderLogic();
         loadItems(false, false, false, false);
       };
     });
@@ -228,10 +247,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     paginationLastElem.onclick = () => {
       pageCount = lastPage - 1;
-      endContent.classList.remove("show");
-      specificationContainer.innerHTML = "";
-      loader.classList.remove("hide");
-      specificationCount = pageCount * 10;
+      preloaderLogic();
       loadItems(false, true, false, false);
     };
 
@@ -252,6 +268,12 @@ window.addEventListener("DOMContentLoaded", () => {
         "beforeend",
         renderCatalogItemHtml
       );
+    }
+    function preloaderLogic() {
+      endContent.classList.remove("show");
+      specificationContainer.innerHTML = "";
+      loader.classList.remove("hide");
+      specificationCount = pageCount * 10;
     }
     const allSpecificationsContainer = document.querySelector(
       ".all_specifications_container"
@@ -289,10 +311,7 @@ window.addEventListener("DOMContentLoaded", () => {
             pageCount = 0;
             smallAllSpecificationTitles.classList.remove("show");
             smallNoSpecificationTitles.classList.add("show");
-            endContent.classList.remove("show");
-            specificationContainer.innerHTML = "";
-            loader.classList.remove("hide");
-            specificationCount = pageCount * 10;
+            preloaderLogic();
             loadItems(false, false, false, true);
           } else {
             searchParams.delete("specification");
@@ -300,10 +319,7 @@ window.addEventListener("DOMContentLoaded", () => {
             pageCount = 0;
             smallAllSpecificationTitles.classList.add("show");
             smallNoSpecificationTitles.classList.remove("show");
-            endContent.classList.remove("show");
-            specificationContainer.innerHTML = "";
-            loader.classList.remove("hide");
-            specificationCount = pageCount * 10;
+            preloaderLogic();
             loadItems(false, false, false, false);
           }
         };
@@ -319,16 +335,16 @@ export function uptadeOrChanegeSpecification(
   idSpecification
 ) {
   button.onclick = () => {
-    console.log(button)
+    console.log(button);
     button.setAttribute("text-content", button.textContent);
-    const typeSave = button.getAttribute('data-type-save')
+    const typeSave = button.getAttribute("data-type-save");
     button.disabled = true;
     button.textContent = "";
     button.innerHTML = "<div class='small_loader'></div>";
     document.cookie = `cart=${idSpecification};path=/`;
     document.cookie = `specificationId=${idCart};path=/`;
     document.cookie = `type_save=${typeSave};path=/`;
-    
+
     const endpoint = `/api/v1/order/${idSpecification}/update-order-admin/`;
 
     fetch(endpoint, {

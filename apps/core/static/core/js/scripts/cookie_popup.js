@@ -13,7 +13,8 @@ window.addEventListener("DOMContentLoaded", () => {
           cookiePopupContainer.classList.remove("visible");
         }, 700);
       };
-    } else {
     }
+
+    const footer = document.querySelector(".footer");
   }
 });

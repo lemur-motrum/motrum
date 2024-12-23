@@ -23,6 +23,8 @@ window.addEventListener("DOMContentLoaded", () => {
       const pinInput = autificationForm.querySelector(".password-input");
       const maskPinOptions = {
         mask: "0000",
+        lazy: false,
+        overwrite: "shift",
       };
 
       const phoneMask = IMask(phoneInput, maskPhoneOptions);

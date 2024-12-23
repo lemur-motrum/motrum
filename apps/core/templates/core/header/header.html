@@ -12,6 +12,15 @@
       </a>
     {% endif %}
   </div>
+  <div class="fixed-logo-container">
+    {% if request.get_full_path == index_url %}
+      <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+    {% else %}
+      <a class="navbar_menu_item_link" href="/">
+        <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+      </a>
+    {% endif %}
+  </div>
   <div class="user-navigation">
     <div class="navigation">
       <!-- ЭТОТ ТЕГ НАДО ВЗЯТЬ В UL  -->

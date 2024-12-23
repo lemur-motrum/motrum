@@ -585,8 +585,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             serializer = serializer_class(order, data=data, many=False)
             if serializer.is_valid():
                 order = serializer.save()
-                print(order)
-                print(serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 print(serializer.errors)

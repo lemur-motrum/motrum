@@ -1660,6 +1660,7 @@ def bx_save_start_info(request):
                             "spes": context["spes"],
                             "serializer": context["serializer"],
                             "type_save": context["type_save"],
+                            "bitrix_id_order":post_data_bx_id,
                         },
                     )
                 print(11111)

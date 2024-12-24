@@ -1701,7 +1701,7 @@ def bx_save_start_info(request):
             )
             response.set_cookie(
                 "specificationId",
-                context["order"],
+                context["spes"],
                 max_age=2629800,
                 samesite="None",
                 secure=True,

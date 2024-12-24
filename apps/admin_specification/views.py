@@ -1712,6 +1712,7 @@ def bx_save_start_info(request):
             return response
     else:
         # post_data_bx_id = '{"ID":"1"}'
+        post_data = request.POST
         post_data_bx_place = post_data.get("PLACEMENT")
         if post_data_bx_place:
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")

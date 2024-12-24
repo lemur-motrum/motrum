@@ -1636,57 +1636,57 @@ def bx_save_start_info(request):
                 post_data_bx_id, request
             )
             print(next_url, context, error)
-            if error:
-                print("ERR")
-                return render(request, "admin_specification/error.html", context)
+        if error:
+            print("ERR")
+            return render(request, "admin_specification/error.html", context)
+        else:
+            if context["type_save"] == "new" or context["spes"] == None:
+                response = HttpResponseRedirect(
+                    "/admin_specification/current_specification/"
+                )
+                
+                response.set_cookie(
+                    "type_save",
+                    "new",
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
             else:
-                if context["type_save"] == "new":
-                    response = HttpResponseRedirect(
-                        "/admin_specification/current_specification/"
-                    )
-                    response.set_cookie(
-                        "type_save",
-                        "new",
-                        max_age=2629800,
-                        samesite="None",
-                        secure=True,
-                    )
-                else:
-                    response = render(
-                        request,
-                        next_url,
-                        context={
-                            "cart": context["cart"],
-                            "spes": context["spes"],
-                            "serializer": context["serializer"],
-                            "type_save": context["type_save"],
-                            "bitrix_id_order":post_data_bx_id,
-                        },
-                    )
-                print(11111)
-                response.set_cookie(
-                    "bitrix_id_order",
-                    post_data_bx_id,
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
+                response = render(
+                    request,
+                    next_url,
+                    context={
+                        "cart": context["cart"],
+                        "spes": context["spes"],
+                        "serializer": context["serializer"],
+                        "type_save": context["type_save"],
+                    },
                 )
-                response.set_cookie(
-                    "cart",
-                    context["cart"],
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
-                response.set_cookie(
-                    "order",
-                    context["order"],
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
+            print(11111)
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "cart",
+                context["cart"],
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "order",
+                context["order"],
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
 
-                return response
+            return response
     else:
         post_data_bx_id = '{"ID":"1"}'
 

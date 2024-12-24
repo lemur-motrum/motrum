@@ -1688,129 +1688,65 @@ def bx_save_start_info(request):
 
             return response
     else:
-        post_data_bx_id = '{"ID":"1"}'
-
-        post_data_bx_id = json.loads(post_data_bx_id)
-        post_data_bx_id = post_data_bx_id["ID"]
-        next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
-        print(next_url, context, error)
-        if error:
-            print("ERR")
-            return render(request, "admin_specification/error.html", context)
-        else:
-            if context["type_save"] == "new" or context["spes"] == None:
-                response = HttpResponseRedirect(
-                    "/admin_specification/current_specification/"
-                )
-                
+        # post_data_bx_id = '{"ID":"1"}'
+        post_data_bx_id = request.COOKIES.get('bitrix_id_order')
+        if post_data_bx_id:
+            next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
+            print(next_url, context, error)
+            if error:
+                print("ERR")
+                return render(request, "admin_specification/error.html", context)
+            else:
+                if context["type_save"] == "new" or context["spes"] == None:
+                    response = HttpResponseRedirect(
+                        "/admin_specification/current_specification/"
+                    )
+                    
+                    response.set_cookie(
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                else:
+                    response = render(
+                        request,
+                        next_url,
+                        context={
+                            "cart": context["cart"],
+                            "spes": context["spes"],
+                            "serializer": context["serializer"],
+                            "type_save": context["type_save"],
+                        },
+                    )
+                print(11111)
                 response.set_cookie(
-                    "type_save",
-                    "new",
+                    "bitrix_id_order",
+                    post_data_bx_id,
                     max_age=2629800,
                     samesite="None",
                     secure=True,
                 )
-            else:
-                response = render(
-                    request,
-                    next_url,
-                    context={
-                        "cart": context["cart"],
-                        "spes": context["spes"],
-                        "serializer": context["serializer"],
-                        "type_save": context["type_save"],
-                    },
+                response.set_cookie(
+                    "cart",
+                    context["cart"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
                 )
-            print(11111)
-            response.set_cookie(
-                "bitrix_id_order",
-                post_data_bx_id,
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            response.set_cookie(
-                "cart",
-                context["cart"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            response.set_cookie(
-                "order",
-                context["order"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
+                response.set_cookie(
+                    "order",
+                    context["order"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
 
-            return response
+                return response
+        else:
+            pass
 
-        # try:  #есть заказ # изменения заказа
-        #     order = Order.objects.get(id_bitrix=post_data_bx_id)
-        #     print(order)
-        #     # response = HttpResponseRedirect("/admin_specification/current_specification/")
-        #     response = render(request, "admin_specification/bx_start.html",context = {"cart": order.cart.id, "spes": order.specification.id})
-        #     response.set_cookie(
-        #         "bitrix_id_order",
-        #         post_data_bx_id,
-        #         max_age=2629800,
-        #         samesite="None",
-        #         secure=True,
-        #     )
-        #     response.set_cookie(
-        #         "cart",
-        #         order.cart.id,
-        #         max_age=2629800,
-        #         samesite="None",
-        #         secure=True,
-        #     )
-        #     response.set_cookie(
-        #         "order",
-        #         order.specification.id,
-        #         max_age=2629800,
-        #         samesite="None",
-        #         secure=True,
-        #     )
-
-        #     next_url, context, error = get_info_for_order_bitrix(post_data_bx_id,request)
-        #     print(next_url, context, error)
-        #     if error:
-        #         print("ERR")
-        #         return render(request, "admin_specification/error.html", context)
-        #     else:
-        #         return response
-
-        # except Order.DoesNotExist: # Новый заказ
-        #     print("Новый заказ")
-        #     # get_info_for_order_bitrix(post_data_bx_id, request)
-        #     # if error:
-        #     #     return render(request, "admin_specification/error.html", context)
-        #     # else:
-
-        #     response = render(request, "admin_specification/bx_start.html",)
-        #     response.set_cookie(
-        #         "bitrix_id_order",
-        #         post_data_bx_id,
-        #         max_age=2629800,
-        #         samesite="None",
-        #         secure=True,
-        #     )
-
-        #     return response
-
-        # response = HttpResponseRedirect(
-        #     "/admin_specification/current_specification/"
-        # )
-        # response.set_cookie(
-        #     "bitrix_id_order",
-        #     post_data_bx_id,
-        #     max_age=2629800,
-        #     samesite="None",
-        #     secure=True,
-        # )
-
-        # return response
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

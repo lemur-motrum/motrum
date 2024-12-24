@@ -1639,6 +1639,11 @@ def bx_save_start_info(request):
             print(next_url, context, error)
         if error:
             print("ERR")
+            response = render(
+                    request,
+                    "admin_specification/error.html",
+                    context,
+                )
             response.set_cookie(
                 "bitrix_id_order",
                 post_data_bx_id,
@@ -1646,11 +1651,7 @@ def bx_save_start_info(request):
                 samesite="None",
                 secure=True,
             )
-            response = render(
-                    request,
-                    "admin_specification/error.html",
-                    context,
-                )
+            
             return response
         else:
             if context["type_save"] == "new" or context["spes"] == None:

@@ -1623,93 +1623,113 @@ def bx_start_page(request):
 
 
 @csrf_exempt
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_save_start_info(request):
     if "POST" in request.method:
-        post_data = request.POST
-        post_data_bx_place = post_data.get("PLACEMENT")
-        post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
-        post_data_bx_id = json.loads(post_data_bx_id)
-        post_data_bx_id = post_data_bx_id["ID"]
-        
-        if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
-            next_url, context, error = get_info_for_order_bitrix(
-                post_data_bx_id, request
-            )
-            print(context)
-            print(next_url, context, error)
-        if error:
-            print("ERR")
-            response = render(
-                    request,
-                    "admin_specification/error.html",
-                    context,
-                )
-            response.set_cookie(
-                "bitrix_id_order",
-                post_data_bx_id,
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
+        if request.user.is_authenticated:
+            post_data = request.POST
+            post_data_bx_place = post_data.get("PLACEMENT")
+            post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+            post_data_bx_id = json.loads(post_data_bx_id)
+            post_data_bx_id = post_data_bx_id["ID"]
             
-            return response
-        else:
-            if context["type_save"] == "new" or context["spes"] == None:
-                response = HttpResponseRedirect(
-                    "/admin_specification/current_specification/"
+            if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
+                next_url, context, error = get_info_for_order_bitrix(
+                    post_data_bx_id, request
                 )
-                
+                print(context)
+                print(next_url, context, error)
+            if error:
+                print("ERR")
+                response = render(
+                        request,
+                        "admin_specification/error.html",
+                        context,
+                    )
                 response.set_cookie(
-                    "type_save",
-                    "new",
+                    "bitrix_id_order",
+                    post_data_bx_id,
                     max_age=2629800,
                     samesite="None",
                     secure=True,
                 )
-            else:
                 
-                response = render(
-                    request,
-                    next_url,
-                    context={
-                        "cart": context["cart"],
-                        "spes": context["spes"],
-                        "serializer": context["serializer"],
-                        "type_save": context["type_save"],
-                    },
+                return response
+            else:
+                if context["type_save"] == "new" or context["spes"] == None:
+                    response = HttpResponseRedirect(
+                        "/admin_specification/current_specification/"
+                    )
+                    
+                    response.set_cookie(
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                else:
+                    
+                    response = render(
+                        request,
+                        next_url,
+                        context={
+                            "cart": context["cart"],
+                            "spes": context["spes"],
+                            "serializer": context["serializer"],
+                            "type_save": context["type_save"],
+                        },
+                    )
+                print(11111)
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
                 )
-            print(11111)
-            response.set_cookie(
-                "bitrix_id_order",
-                post_data_bx_id,
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            response.set_cookie(
-                "cart",
-                context["cart"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            response.set_cookie(
-                "order",
-                context["order"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
-            response.set_cookie(
-                "specificationId",
-                context["spes"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
+                response.set_cookie(
+                    "cart",
+                    context["cart"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "order",
+                    context["order"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "specificationId",
+                    context["spes"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
 
+                return response
+        else:
+            post_data = request.POST
+            post_data_bx_place = post_data.get("PLACEMENT")
+            post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+            post_data_bx_id = json.loads(post_data_bx_id)
+            post_data_bx_id = post_data_bx_id["ID"]
+            response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+            response = HttpResponseRedirect(
+                        "/user/login_admin/"
+                    )
+                
             return response
+            
     else:
         # post_data_bx_id = '{"ID":"1"}'
         post_data = request.POST

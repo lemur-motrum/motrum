@@ -1,4 +1,3 @@
-import json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login
@@ -26,22 +25,6 @@ def login_admin(request):
         if request.method == "POST":
             # после войти в форме входа
             redirects = login_clear(request, next_url, form)
-            # post_data = request.POST
-
-            # post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
-            # if post_data_bx_id:
-            #     post_data_bx_id = json.loads(post_data_bx_id)
-            #     post_data_bx_id = post_data_bx_id["ID"]
-                
-            #     post_data_bx_id = 1
-                
-            #     redirects.set_cookie(
-            #         "bitrix_id_order",
-            #         post_data_bx_id,
-            #         max_age=2629800,
-            #         samesite="None",
-            #         secure=True,
-            #     )
             return redirects
         # форма входа
         else:

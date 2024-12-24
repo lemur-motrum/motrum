@@ -1,6 +1,7 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
+    {% load number_into_digits %}
     <div class="bitrix_product_container">
         <div class="bitrix_product_titles">
             <div class="title">Название</div>
@@ -9,7 +10,7 @@
             <div class="title">Сумм.</div>
             <div class="title">Готово</div>
             <div class="title">Отгружено</div>
-            <div class="title">Остатолсь</div>
+            <div class="title">Осталось</div>
             <div class="title">Сумм. остатк.</div>
             <div class="title">Дата</div>
         </div>
@@ -17,20 +18,23 @@
             {% for product in products %}
                 <div class="product">
                     <div class="product_item">
-                        <div class="name">{% comment %} название товара {% endcomment %}</div>
-                        <div class="article">{% comment %} артикул {% endcomment %}</div>
+                        <div class="name">{{product.product.name}}</div>
+                        <div class="article">Арт. {{product.product.article_supplier}}</div>
                     </div>
-                    <div class="product_item">{% comment %} цена за одну шт {% endcomment %}</div>
+                    <div class="product_item">{{product.price_one|number_into_digits}} </div>
                     <div class="product_item">
-                        <span class="quantity">{% comment %} количество {% endcomment %}</span>
-                        <span class="lot">{% comment %} лот {% endcomment %}</span>
+                        <span class="quantity">{{product.quantity}}</span>
+                        <span class="lot">{{product.product.stock.lot.name_shorts}}</span>
                     </div>
-                    <div class="product_item">{% comment %} сумма заказа {% endcomment %}</div>
-                    <div class="product_item">{% comment %} готов к отгрузке {% endcomment %}</div>
-                    <div class="product_item">{% comment %} отгружено {% endcomment %}</div>
-                    <div class="product_item">{% comment %} осталось отгрузить {% endcomment %}</div>
-                    <div class="product_item">{% comment %} сумма остатков {% endcomment %}</div>
-                    <div class="product_item">{% comment %} дата отгрузки {% endcomment %}</div>
+                    <div class="product_item">{{product.price_all|number_into_digits}}</div>
+                    <div class="product_item">{% if product.reserve %}{{product.reserve}}{% else %}0{% endif %}</div>
+                    <div class="product_item">{% if product.client_shipment %}{{product.client_shipment}}{% else %}0{% endif %}</div>
+                    <div class="product_item">{% if product.ship_left %}{{product.ship_left}}{% else %}{{product.quantity}}{% endif %}</div>
+                    <div class="product_item">{% if product.ship_amount %}{{product.ship_amount|number_into_digits}}{% else %}{{product.price_all|number_into_digits}}{% endif %}</div>
+                    <div class="product_item">{% if product.date_shipment %}
+                    {{product.date_shipment}}
+                    {% else %} - 
+                    {% endif %}</div>
                     {% comment %} {{ product }} {% endcomment %}
                 </div>
             {% endfor %}

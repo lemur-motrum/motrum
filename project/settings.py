@@ -103,7 +103,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "project.urls"
-X_FRAME_OPTIONS = 'ALLOW-FROM https://b24-j6zvwj.bitrix24.ru/'
+X_FRAME_OPTIONS = 'ALLOW-FROM https://b24-760o6o.bitrix24.ru/'
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

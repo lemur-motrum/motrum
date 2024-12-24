@@ -1653,13 +1653,6 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
-                response.set_cookie(
-                    "next_url",
-                    "/admin_specification/bitrix_start_info/",
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
 
                 return response
             else:
@@ -1728,6 +1721,13 @@ def bx_save_start_info(request):
             response.set_cookie(
                 "bitrix_id_order",
                 post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "next_url",
+                "/admin_specification/bitrix_start_info/",
                 max_age=2629800,
                 samesite="None",
                 secure=True,

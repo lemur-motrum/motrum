@@ -72,7 +72,7 @@ def login_clear(request, next_url, form):
                     cookie_next = request.COOKIES.get("next_url")
                     if cookie_next:
                         next_url = cookie_next
-                        response.set_cookie('next_url', max_age=-1,samesite="None",secure=True,)
+                        
                     response = redirect(next_url)
                     response.set_cookie('client_id', max_age=-1)
                     response.set_cookie('cart', max_age=-1)

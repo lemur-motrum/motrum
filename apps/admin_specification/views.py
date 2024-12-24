@@ -1699,6 +1699,13 @@ def bx_save_start_info(request):
                 samesite="None",
                 secure=True,
             )
+            response.set_cookie(
+                "specificationId",
+                context["order"],
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
 
             return response
     else:

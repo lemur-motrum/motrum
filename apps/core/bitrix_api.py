@@ -114,11 +114,13 @@ def get_info_for_order_bitrix(bs_id_order, request):
                             "type_save": "old",
                             "cart":cart.id,
                             "order":order.id,
-                            "spes":None,
+                            
                             "serializer" : data_order,
                         }
                     if order.specification:
-                        context['spes']=order.specification.id,
+                        context['spes'] = order.specification.id,
+                    else:
+                        context['spes'] = None,
                     return (next_url, context, False)
                 except Order.DoesNotExist:
                     data['order']['manager'] = manager

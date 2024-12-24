@@ -1588,7 +1588,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const BxError = document.querySelector(".error-bx");
   if (BxError) {;
-    console.log("BxError")
+    console.log("BxError2")
      setTimeout(()=>{
       document.location.href = "/admin_specification/bitrix_start_info/"
      },10000)

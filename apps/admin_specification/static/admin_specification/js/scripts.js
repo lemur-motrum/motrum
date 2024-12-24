@@ -1542,6 +1542,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
     const serialazer = BxBtn.getAttribute("data-serializer-order");
     const bxId = BxBtn.getAttribute("data-bx-id");
+    const specificationId = BxBtn.getAttribute("data-spesif-id");
     let endpoint = "/api/v1/order/order-bitrix/";
 
     const objData = {
@@ -1564,7 +1565,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
-          // document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
+          document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
           document.location.href = "/admin_specification/current_specification/";
         });
     };
@@ -1580,7 +1581,7 @@ window.addEventListener("DOMContentLoaded", () => {
       })
       .then((response) => response.json())
       .then((data) => {
-        // document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
+        document.cookie = `specificationId=${data["specification"]}; path=/; SameSite=None; Secure`;
         document.location.href = "/admin_specification/current_specification/";
       });
     };

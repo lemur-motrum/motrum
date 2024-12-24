@@ -1590,8 +1590,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const BxError = document.querySelector(".error-bx");
   if (BxError) {
-    ;
-
     setTimeout(() => {
       document.location.href = "/admin_specification/bitrix_start_info/"
     }, 10000)
@@ -1601,7 +1599,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".bitrix_product_container");
   if (wrapper) {
     setTimeout(() => {
-      window.location.reload();
+      document.location.reload();
     }, 60000);
   }
 

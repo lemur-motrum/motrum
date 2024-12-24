@@ -1579,23 +1579,32 @@ window.addEventListener("DOMContentLoaded", () => {
           "X-CSRFToken": csrfToken,
         },
       })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-        document.location.href = "/admin_specification/current_specification/";
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+          document.location.href = "/admin_specification/current_specification/";
+        });
     };
   }
 
   const BxError = document.querySelector(".error-bx");
-  if (BxError) {;
-  
-     setTimeout(()=>{
-      document.location.href = "/admin_specification/bitrix_start_info/"
-     },10000)
+  if (BxError) {
+    ;
 
-}
+    setTimeout(() => {
+      document.location.href = "/admin_specification/bitrix_start_info/"
+    }, 10000)
+
+  }
+
+  const wrapper = document.querySelector(".bitrix_product_container");
+  if (wrapper) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 60000);
+  }
+
 });
 
 function changeSelect(select) {

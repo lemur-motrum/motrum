@@ -3923,6 +3923,7 @@ h1 {
     gap: 0.625rem;
     .product {
       width: 100%;
+ 
       min-height: 5.125rem;
       padding: 1.25rem;
       box-sizing: border-box;
@@ -3935,7 +3936,7 @@ h1 {
       .product_item {
         &:nth-of-type(1) {
           width: 9rem;
-          height: 1rem;
+     
           display: flex;
           flex-direction: column;
           gap: 0.2rem;

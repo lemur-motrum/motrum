@@ -1636,6 +1636,7 @@ def bx_save_start_info(request):
             next_url, context, error = get_info_for_order_bitrix(
                 post_data_bx_id, request
             )
+            print(context)
             print(next_url, context, error)
         if error:
             print("ERR")
@@ -1667,6 +1668,7 @@ def bx_save_start_info(request):
                     secure=True,
                 )
             else:
+                
                 response = render(
                     request,
                     next_url,
@@ -1763,6 +1765,13 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
+                response.set_cookie(
+                "specificationId",
+                context["spes"],
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
 
                 return response
         else:

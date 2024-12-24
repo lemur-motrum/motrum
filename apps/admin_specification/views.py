@@ -1827,14 +1827,24 @@ def bitrix_product(request):
             bx_id = bx_id_cook
         else:
             bx_id = None
-    # bx_id = 1
-   
+    bx_id = 1
+    #     -Артикул (текст) - product.product.article_supplier
+    # -Номенклатура (текст)product.product.name
+    # - Цена (число\деньги)product.product.price_one   price_one_original_new
+    # -Кол-во в заказе (число)product.quantity
+    # - Ед. измерения (текст)product.product.stock.lot.name
+    # - Сумма  (число\деньги) product.price_all
+    # -Кол-во зарезервированного товара на складе (назвать: "Готово к отгрузке") (число)product.reserve
+    # -Кол-во отгруженного товара со склада  (число)product.client_shipment
+    # -Кол-во оставшегося товара к отгрузке ()  (число) СЧИТАТЬ
+    # - Сумма неотгруженного товара  (число\деньги) СЧИТАТЬ
+    # -Дата полной отгрузки клиенту (дата) date_shipment
     order_product = (
         ProductSpecification.objects.filter(specification__id_bitrix=bx_id)
         .select_related("product")
         .annotate(
             ship_left=F("quantity") - (F("client_shipment")),
-            ship_amount=F("price_all") - (F("client_shipment") * F("price_one")),
+            ship_amount=F("price_all") - (F("client_shipment") * F("price_one"))
         )
     )
     context = {

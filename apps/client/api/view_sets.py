@@ -30,6 +30,7 @@ from apps.client.utils import crete_pdf_bill
 from apps.core.bitrix_api import (
     add_info_order,
     get_info_for_order_bitrix,
+    order_bitrix,
     save_new_doc_bx,
     save_params_product_bx,
     save_payment_order_bx,

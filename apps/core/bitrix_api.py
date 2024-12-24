@@ -119,7 +119,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     if order.specification:
                         context['spes'] = int(order.specification.id)
                     else:
-                        context['spes'] = None
+                        context['spes'] = None,
                     print(context)
                     return (next_url, context, False)
                 except Order.DoesNotExist:
@@ -153,6 +153,89 @@ def get_info_for_order_bitrix(bs_id_order, request):
         info = f" ошибка {e}{tr}"
         e = error_alert(error, location, info)      
 
+
+# проверка и получение основной инфы для создания заказа
+
+
+def order_bitrix(data, request):
+    pass
+
+    # next_url = "/admin_specification/current_specification/"
+
+    # result = "ok"
+    # order_info = data["order"]
+    # company_info = data["company"]
+    # type_save = data["type_save"]
+    # print(company_info)
+    # data_admin = AdminUser.login_bitrix(data["login"], None, request)
+    # if data_admin["status_admin"] == 200:
+    #     error_company, error_order = order_info_check(company_info, order_info)
+    #     if error_company or error_order:
+    #         next_url = "/admin_specification/error-b24/"
+    #         error_text = "Не заполнены поля: "
+    #         error_text += ", ".join(error_company)
+    #         if error_order:
+    #             error_text += ", "
+    #             error_text += ", ".join(error_order)
+
+    #         context = {"error": error_text}
+    #         return (next_url, context, True)
+    #     else:
+
+    #         client_req, acc_req = client_info_bitrix(company_info)
+    #         manager = AdminUser.objects.get(email=data["order"]["manager"])
+
+    #         data_order = {
+    #             "id_bitrix": order_info["id_bitrix"],
+    #             "name": 123131,
+    #             "requisites": client_req.id,
+    #             "account_requisites": acc_req.id,
+    #             "status": "",
+    #             # "cart": cart.id,
+    #             "prepay_persent": client_req.prepay_persent,
+    #             "postpay_persent": client_req.postpay_persent,
+    #             "manager": manager,
+    #         }
+    #         serializer_class = OrderSerializer
+    #         try:
+    #             order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
+    #             cart = order.cart
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(order, data=data_order, many=False)
+    #         except Order.DoesNotExist:
+    #             cart = Cart.create_cart_admin(None, data_admin["admin"])
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(data=data_order, many=False)
+
+    #         finally:
+
+    #             if serializer.is_valid():
+    #                 serializer._change_reason = "Ручное"
+    #                 order = serializer.save()
+    #                 response = HttpResponseRedirect(next_url)
+
+    #                 response.set_cookie("client_id", max_age=-1)
+    #                 response.set_cookie("cart", cart.id, max_age=1000)
+    #                 response.set_cookie("specificationId", max_age=-1)
+    #                 response.set_cookie("type_save", type_save, max_age=1000)
+    #                 return (next_url, response, False)
+    #             else:
+    #                 next_url = "/admin_specification/error-b24/"
+    #                 context = {
+    #                     "error": "Неприведенная ошибка во время создания заказа. Повторите. "
+    #                 }
+    #                 return (next_url, response, True)
+
+    # else:
+    #     next_url = "/admin_specification/error-b24/"
+    #     error_text = ""
+    #     if data_admin["status_admin"] == 401:
+    #         error_text = "Неверные данные для логина. Токен не совпадает с почтой или этого юзера нет в системе окт"
+    #     elif data_admin["status_admin"] == 403:
+    #         error_text = "Нет прав доступа к системе"
+
+    #     context = {"error": error_text}
+    #     return (next_url, context, True)
 
 
 # проверка полей на заполненность при создании заказа-возврат текста для ошибки

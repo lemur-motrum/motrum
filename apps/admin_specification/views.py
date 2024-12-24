@@ -1717,6 +1717,9 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
+            response = HttpResponseRedirect(
+                        "/user/login_admin/"
+                    )
             response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,
@@ -1724,9 +1727,7 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
-            response = HttpResponseRedirect(
-                        "/user/login_admin/"
-                    )
+            
                 
             return response
             

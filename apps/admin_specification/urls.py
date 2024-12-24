@@ -51,4 +51,10 @@ urlpatterns = [
         views.bx_save_start_info,
         name="bx_save_start_info",
     ),
+    path(
+        "bitrix_product/",
+        views.bitrix_product,
+        name="bitrix_product",
+    ),
 ]
+

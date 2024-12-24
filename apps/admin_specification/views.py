@@ -1811,13 +1811,14 @@ def bx_save_start_info(request):
         else:
             pass
 
+
 @csrf_exempt
 def bitrix_product(request):
     bx_id = request.COOKIES.get("bitrix_id_order")
-    bx_id = 1
+    bx_id = 321
     order_product = ProductSpecification.objects.filter(specification__id_bitrix=bx_id)
     context = {
-       "products":order_product, 
+        "products": order_product,
     }
     return render(request, "admin_specification/bitrix_product.html", context)
 

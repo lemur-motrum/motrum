@@ -1,3 +1,39 @@
-{% for product in products %}
-{{product}}
-{% endfor %}
+{% extends "core/base_okt.html" %}
+{% load static %}
+{% block content %}
+    <div class="bitrix_product_container">
+        <div class="bitrix_product_titles">
+            <div class="title">Название</div>
+            <div class="title">Цен.</div>
+            <div class="title">Кол-во</div>
+            <div class="title">Сумм.</div>
+            <div class="title">Готово</div>
+            <div class="title">Отгружено</div>
+            <div class="title">Остатолсь</div>
+            <div class="title">Сумм. остатк.</div>
+            <div class="title">Дата</div>
+        </div>
+        <div class="products_table">
+            {% for product in products %}
+                <div class="product">
+                    <div class="product_item">
+                        <div class="name">{% comment %} название товара {% endcomment %}</div>
+                        <div class="article">{% comment %} артикул {% endcomment %}</div>
+                    </div>
+                    <div class="product_item">{% comment %} цена за одну шт {% endcomment %}</div>
+                    <div class="product_item">
+                        <span class="quantity">{% comment %} количество {% endcomment %}</span>
+                        <span class="lot">{% comment %} лот {% endcomment %}</span>
+                    </div>
+                    <div class="product_item">{% comment %} сумма заказа {% endcomment %}</div>
+                    <div class="product_item">{% comment %} готов к отгрузке {% endcomment %}</div>
+                    <div class="product_item">{% comment %} отгружено {% endcomment %}</div>
+                    <div class="product_item">{% comment %} осталось отгрузить {% endcomment %}</div>
+                    <div class="product_item">{% comment %} сумма остатков {% endcomment %}</div>
+                    <div class="product_item">{% comment %} дата отгрузки {% endcomment %}</div>
+                    {% comment %} {{ product }} {% endcomment %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

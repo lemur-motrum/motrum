@@ -1632,7 +1632,7 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
-            
+
             if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
                 next_url, context, error = get_info_for_order_bitrix(
                     post_data_bx_id, request
@@ -1642,10 +1642,10 @@ def bx_save_start_info(request):
             if error:
                 print("ERR")
                 response = render(
-                        request,
-                        "admin_specification/error.html",
-                        context,
-                    )
+                    request,
+                    "admin_specification/error.html",
+                    context,
+                )
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,
@@ -1653,14 +1653,21 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
-                
+                response.set_cookie(
+                    "next_url",
+                    "/admin_specification/bitrix_start_info/",
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+
                 return response
             else:
                 if context["type_save"] == "new" or context["spes"] == None:
                     response = HttpResponseRedirect(
                         "/admin_specification/current_specification/"
                     )
-                    
+
                     response.set_cookie(
                         "type_save",
                         "new",
@@ -1669,7 +1676,7 @@ def bx_save_start_info(request):
                         secure=True,
                     )
                 else:
-                    
+
                     response = render(
                         request,
                         next_url,
@@ -1717,20 +1724,17 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
-            response = HttpResponseRedirect(
-                        "/user/login_admin/"
-                    )
+            response = HttpResponseRedirect("/user/login_admin/")
             response.set_cookie(
-                    "bitrix_id_order",
-                    post_data_bx_id,
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
-            
-                
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+
             return response
-            
+
     else:
         # post_data_bx_id = '{"ID":"1"}'
         post_data = request.POST
@@ -1740,9 +1744,11 @@ def bx_save_start_info(request):
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
         else:
-            post_data_bx_id = request.COOKIES.get('bitrix_id_order')
+            post_data_bx_id = request.COOKIES.get("bitrix_id_order")
         if post_data_bx_id:
-            next_url, context, error = get_info_for_order_bitrix(post_data_bx_id, request)
+            next_url, context, error = get_info_for_order_bitrix(
+                post_data_bx_id, request
+            )
             print(next_url, context, error)
             if error:
                 print("ERR")
@@ -1752,7 +1758,7 @@ def bx_save_start_info(request):
                     response = HttpResponseRedirect(
                         "/admin_specification/current_specification/"
                     )
-                    
+
                     response.set_cookie(
                         "type_save",
                         "new",
@@ -1794,17 +1800,16 @@ def bx_save_start_info(request):
                     secure=True,
                 )
                 response.set_cookie(
-                "specificationId",
-                context["spes"],
-                max_age=2629800,
-                samesite="None",
-                secure=True,
-            )
+                    "specificationId",
+                    context["spes"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
 
                 return response
         else:
             pass
-
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

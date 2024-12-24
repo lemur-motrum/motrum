@@ -18,23 +18,50 @@
             {% for product in products %}
                 <div class="product">
                     <div class="product_item">
-                        <div class="name">{{product.product.name}}</div>
-                        <div class="article">Арт. {{product.product.article_supplier}}</div>
+                        <div class="name">{{ product.product.name }}</div>
+                        <div class="article">Арт. {{ product.product.article_supplier }}</div>
                     </div>
-                    <div class="product_item">{{product.price_one|number_into_digits}} </div>
+                    <div class="product_item">{{ product.price_one|number_into_digits }}</div>
                     <div class="product_item">
-                        <span class="quantity">{{product.quantity}}</span>
-                        <span class="lot">{{product.product.stock.lot.name_shorts}}</span>
+                        <span class="quantity">{{ product.quantity }}</span>
+                        <span class="lot">{{ product.product.stock.lot.name_shorts }}</span>
                     </div>
-                    <div class="product_item">{{product.price_all|number_into_digits}}</div>
-                    <div class="product_item">{% if product.reserve %}{{product.reserve}}{% else %}0{% endif %}</div>
-                    <div class="product_item">{% if product.client_shipment %}{{product.client_shipment}}{% else %}0{% endif %}</div>
-                    <div class="product_item">{% if product.ship_left %}{{product.ship_left}}{% else %}{{product.quantity}}{% endif %}</div>
-                    <div class="product_item">{% if product.ship_amount %}{{product.ship_amount|number_into_digits}}{% else %}{{product.price_all|number_into_digits}}{% endif %}</div>
-                    <div class="product_item">{% if product.date_shipment %}
-                    {{product.date_shipment}}
-                    {% else %} - 
-                    {% endif %}</div>
+                    <div class="product_item">{{ product.price_all|number_into_digits }}</div>
+                    <div class="product_item">
+                        {% if product.reserve %}
+                            {{ product.reserve }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="product_item">
+                        {% if product.client_shipment %}
+                            {{ product.client_shipment }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="product_item">
+                        {% if product.ship_left %}
+                            {{ product.ship_left }}
+                        {% else %}
+                            {{ product.quantity }}
+                        {% endif %}
+                    </div>
+                    <div class="product_item">
+                        {% if product.ship_amount %}
+                            {{ product.ship_amount|number_into_digits }}
+                        {% else %}
+                            {{ product.price_all|number_into_digits }}
+                        {% endif %}
+                    </div>
+                    <div class="product_item">
+                        {% if product.date_shipment %}
+                            {{ product.date_shipment }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
                     {% comment %} {{ product }} {% endcomment %}
                 </div>
             {% endfor %}

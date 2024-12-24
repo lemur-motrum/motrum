@@ -1631,6 +1631,7 @@ def bx_save_start_info(request):
         post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
         post_data_bx_id = json.loads(post_data_bx_id)
         post_data_bx_id = post_data_bx_id["ID"]
+        
         if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
             next_url, context, error = get_info_for_order_bitrix(
                 post_data_bx_id, request
@@ -1638,7 +1639,19 @@ def bx_save_start_info(request):
             print(next_url, context, error)
         if error:
             print("ERR")
-            return render(request, "admin_specification/error.html", context)
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response = render(
+                    request,
+                    "admin_specification/error.html",
+                    context,
+                )
+            return response
         else:
             if context["type_save"] == "new" or context["spes"] == None:
                 response = HttpResponseRedirect(

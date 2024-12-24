@@ -1745,7 +1745,7 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data_bx_id["ID"]
         else:
             post_data_bx_id = request.COOKIES.get("bitrix_id_order")
-            post_data_bx_id = 1
+           
         if post_data_bx_id:
             next_url, context, error = get_info_for_order_bitrix(
                 post_data_bx_id, request

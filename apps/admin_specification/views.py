@@ -1814,7 +1814,28 @@ def bx_save_start_info(request):
 @csrf_exempt
 def bitrix_product(request):
     bx_id = request.COOKIES.get("bitrix_id_order")
-    bx_id = 1
+    if "POST" in request.method:
+        post_data = request.POST
+        bx_id = json.loads(bx_id)
+        bx_id = bx_id["ID"]
+    else:
+        bx_id_cook = request.COOKIES.get("bitrix_id_order")
+        if bx_id_cook:
+            bx_id = bx_id_cook
+        else:
+            bx_id = None
+    # bx_id = 1  
+#     -Артикул (текст) - product.product.article_supplier
+# -Номенклатура (текст)product.product.name
+# - Цена (число\деньги)product.product.price_one   price_one_original_new
+# -Кол-во в заказе (число)product.quantity
+# - Ед. измерения (текст)product.product.stock.lot.name
+# - Сумма  (число\деньги) product.price_all
+# -Кол-во зарезервированного товара на складе (назвать: "Готово к отгрузке") (число)product.reserve
+# -Кол-во отгруженного товара со склада  (число)product.client_shipment
+# -Кол-во оставшегося товара к отгрузке ()  (число) СЧИТАТЬ
+# - Сумма неотгруженного товара  (число\деньги) СЧИТАТЬ
+# -Дата полной отгрузки клиенту (дата) date_shipment      
     order_product = ProductSpecification.objects.filter(specification__id_bitrix=bx_id)
     context = {
        "products":order_product, 

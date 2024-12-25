@@ -897,6 +897,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # data_for_1c = create_info_request_order_1c(order, order_products)
 
                 is_order_bx = True
+                type_save = request.COOKIES.get("type_save")
                 add_info_order(request, order, type_save)
                 
                 return Response(data, status=status.HTTP_200_OK)

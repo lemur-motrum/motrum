@@ -1680,6 +1680,13 @@ def bx_save_start_info(request):
                             "type_save": context["type_save"],
                         },
                     )
+                    response.set_cookie(
+                        "specificationId",
+                        context["spes"],
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 print(11111)
                 response.set_cookie(
                     "bitrix_id_order",
@@ -1698,13 +1705,6 @@ def bx_save_start_info(request):
                 response.set_cookie(
                     "order",
                     context["order"],
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
-                response.set_cookie(
-                    "specificationId",
-                    context["spes"],
                     max_age=2629800,
                     samesite="None",
                     secure=True,
@@ -1778,6 +1778,13 @@ def bx_save_start_info(request):
                             "type_save": context["type_save"],
                         },
                     )
+                    response.set_cookie(
+                    "specificationId",
+                    context["spes"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
                 print(11111)
                 response.set_cookie(
                     "bitrix_id_order",
@@ -1800,13 +1807,7 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
-                response.set_cookie(
-                    "specificationId",
-                    context["spes"],
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
+
 
                 return response
         else:
@@ -1844,7 +1845,7 @@ def bitrix_product(request):
         .select_related("product")
         .annotate(
             ship_left=F("quantity") - (F("client_shipment")),
-            ship_amount=F("price_all") - (F("client_shipment") * F("price_one"))
+            ship_amount=F("price_all") - (F("client_shipment") * F("price_one")),
         )
     )
     context = {

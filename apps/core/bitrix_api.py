@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from requests import Response
 
 from apps.client.api.serializers import OrderSerializer
-from apps.client.models import STATUS_ORDER_BITRIX, Order
+from apps.client.models import STATUS_ORDER_BITRIX, Order, OrderDocumentBill
 from apps.core.models import Currency
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
 from apps.logs.utils import error_alert
@@ -36,34 +36,8 @@ def get_info_for_order_bitrix(bs_id_order, request):
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
             return (next_url, context, True)
-        else:# ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ 
+        else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
             data = {
-                "company": {
-                    "id_bitrix": 69,
-                    # "manager": - битрикс ид менеджера
-                    "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
-                    # "contract": "",
-                    # "contract_date": "",
-                    "contract": "07-06/25",
-                    "contract_date": "2024-04-24",
-                    # "legal_entity": '',
-                    "legal_entity": 'ООО "АЛСТАР СЕРВИС"',
-                    "inn": "1650236125",
-                    "kpp": "88888888",
-                    "ogrn": "",
-                    # "legal_post_code": "",
-                    "legal_post_code": "423800",
-                    "legal_city": "Республика Татарстан, г. Набережные Челны",
-                    "legal_address": "ул. Профильная, дом 53",
-                    "postal_post_code": "443099",
-                    "postal_city": "Республика Татарстан, г. Набережные Челны",
-                    "postal_address": "ул. Профильная, дом 55",
-                    "tel": "89276892277",
-                    "account_requisites": "40702810762030005449",
-                    "bank": 'ОТДЕЛЕНИЕ "БАНК ТАТАРСТАН" N8610 ПАО СБЕРБАНК',
-                    "ks": "30101810600000000603",
-                    "bic": "049205603",
-                },
                 "order": {
                     "id_bitrix": bs_id_order,
                     "manager": "ruslan.ovcharov1111@motrum.ru",
@@ -74,8 +48,23 @@ def get_info_for_order_bitrix(bs_id_order, request):
             company_bx = bx.get_by_ID("crm.company.get", [company])
 
             #    data["company"]['id_bitrix'] = company_bx['ID']
-            #    data["company"]['legal_entity'] = company_bx['TITLE']
-            error_company, error_order = order_info_check(data["company"], data["order"])
+            req_error, place, data_company = get_req_info_bx(bs_id_order)
+            print(3311)
+            # print("req_err", req_error, place, data_company)
+            print(344)
+            if req_error:
+                print(544)
+                if place != "Адреса":
+                    error_text = f"к сделке не прикреплен {place}"
+                else:
+                    error_text = f"В выбранных реквизитах не заполнены адреса"
+                next_url = "/admin_specification/error-b24/"
+                context = {"error": error_text}
+                return (next_url, context, True)
+            print(3333333)
+            error_company, error_order = order_info_check(
+                data_company["data_commpany"], data["order"]
+            )
             print(error_company, error_order)
             # ошибка в покупателе
             if error_company or error_order:
@@ -88,9 +77,14 @@ def get_info_for_order_bitrix(bs_id_order, request):
 
                 context = {"error": error_text}
                 return (next_url, context, True)
-            # все данные есть 
-            else: 
-                client_req, acc_req = client_info_bitrix(data['company'])
+
+            # все данные есть
+            else:
+                print("все данные есть")
+                client_req, acc_req = client_info_bitrix(
+                    data_company["data_commpany"], data_company["company_adress"]
+                )
+                print(client_req, acc_req)
                 # manager = AdminUser.objects.get(email=data["order"]["manager"])
                 manager = AdminUser.objects.get(user=request.user)
                 data_order = {
@@ -98,7 +92,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "name": 123131,
                     "requisites": client_req.id,
                     "account_requisites": acc_req.id,
-                    "status":  data['order']['status'],
+                    "status": data["order"]["status"],
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
                     # "manager": manager,
@@ -111,33 +105,33 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     serializer = serializer_class(order, data=data_order, many=False)
                     next_url = "admin_specification/bx_start.html"
                     context = {
-                            "type_save": "old",
-                            "cart":cart.id,
-                            "order":order.id,
-                            "serializer" : data_order,
-                        }
+                        "type_save": "old",
+                        "cart": cart.id,
+                        "order": order.id,
+                        "serializer": data_order,
+                    }
                     if order.specification:
-                        context['spes'] = int(order.specification.id)
+                        context["spes"] = int(order.specification.id)
                     else:
-                        context['spes'] = None,
+                        context["spes"] = (None,)
                     print(context)
                     return (next_url, context, False)
                 except Order.DoesNotExist:
-                    data['order']['manager'] = manager
+                    data["order"]["manager"] = manager
                     cart = Cart.create_cart_admin(None, manager)
                     data_order["cart"] = cart.id
                     serializer = serializer_class(data=data_order, many=False)
-                    
+
                     if serializer.is_valid():
                         next_url = "/admin_specification/current_specification/"
                         serializer._change_reason = "Ручное"
                         order = serializer.save()
                         context = {
                             "type_save": "new",
-                            "cart":cart.id,
-                            "order":order.id,
-                            "spes":None,
-                            "serializer" : None,
+                            "cart": cart.id,
+                            "order": order.id,
+                            "spes": None,
+                            "serializer": None,
                         }
                         return (next_url, context, False)
                     else:
@@ -151,12 +145,129 @@ def get_info_for_order_bitrix(bs_id_order, request):
         error = "error"
         location = "первичное открытие сделки битрикс"
         info = f" ошибка {e}{tr}"
-        e = error_alert(error, location, info)      
+        e = error_alert(error, location, info)
+
+
+def get_req_info_bx(bs_id_order):
+    print("get_req_info_bx")
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    # реквизиты привязанные к сделке
+    req_bx_order = bx.call(
+        "crm.requisite.link.list",
+        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
+    )
+    print("req_bx_order", req_bx_order)
+    req_bx_id = req_bx_order["REQUISITE_ID"]
+    req_acc_bx_id = req_bx_order["BANK_DETAIL_ID"]
+    # адреса привязанные к рекуизитам
+    adress_bx = bx.get_all(
+        "crm.address.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
+        },
+    )
+    print("adress_bx", adress_bx)
+    print("req_bx_id", req_bx_id)
+    if req_bx_id == "0":
+        return (True, "Реквизиты", None)
+    elif req_acc_bx_id == "0":
+        return (True, "Банковские реквизиты", None)
+    elif len(adress_bx) == 0:
+        print("error adress_bx")
+        return (True, "Адреса", None)
+    else:
+        print("OK")
+        # значение реквизитов
+        req_bx = bx.call(
+            "crm.requisite.get",
+            {"id": int(req_bx_id)},
+        )
+        print("req_bx", req_bx)
+        for k, v in req_bx.items():
+            legal_entity = v["RQ_COMPANY_NAME"]
+            inn = v["RQ_INN"]
+            kpp = v["RQ_KPP"]
+            ogrn = v["RQ_OGRN"]
+            tel = v["RQ_PHONE"]
+            # contract = ??
+            # contract_date = ??
+
+        company_adress_all = []
+        for adress in adress_bx:
+            company_adress = {
+                "requisitesKpp": None,
+                "type_address_bx": adress["TYPE_ID"],
+                "country": adress["COUNTRY"],
+                "post_code": adress["POSTAL_CODE"],
+                "region": adress["REGION"],
+                "province": adress["PROVINCE"],
+                "city": adress["CITY"],
+                "address1": adress["ADDRESS_1"],
+                "address2": adress["ADDRESS_2"],
+            }
+            company_adress_all.append(company_adress)
+            print(adress["TYPE_ID"])
+            if adress["TYPE_ID"] == "6":
+                legal_post_code = adress["POSTAL_CODE"]
+                legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+
+                postal_post_code = adress["POSTAL_CODE"]
+                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+
+            if adress["TYPE_ID"] == "4":
+                postal_post_code = adress["POSTAL_CODE"]
+                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+        print("company_adress_all", company_adress_all)
+        print("legal_post_code", legal_post_code)
+        # банковские реквизиыт привязанные к сделки значение
+        req_bank = bx.get_by_ID(
+            "crm.requisite.bankdetail.get",
+            [req_acc_bx_id],
+        )
+        print("req_bank", req_bank)
+        account_requisites = req_bank["RQ_ACC_NUM"]
+        bank = req_bank["RQ_BANK_NAME"]
+        ks = req_bank["RQ_COR_ACC_NUM"]
+        bic = req_bank["RQ_BIK"]
+
+        company = {
+            # "id_bitrix": 69,
+            # "manager": - битрикс ид менеджера
+            "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+            "contract": "",
+            "contract_date": "",
+            "legal_entity": legal_entity,
+            "inn": inn,
+            "kpp": kpp,
+            "ogrn": ogrn,
+            "legal_post_code": legal_post_code,
+            "legal_city": postal_city,
+            "legal_address": postal_address,
+            "postal_post_code": postal_post_code,
+            "postal_city": postal_city,
+            "postal_address": postal_address,
+            "tel": tel,
+            "account_requisites": account_requisites,
+            "bank": bank,
+            "ks": ks,
+            "bic": bic,
+        }
+
+        context = {
+            "data_commpany": company,
+            "company_adress": company_adress_all,
+        }
+        print(context)
+        print(5555555)
+        return (False, "All", context)
+        # company["legal_entity"] = req_bx["RQ_COMPANY_NAME"]
 
 
 # проверка и получение основной инфы для создания заказа
-
-
 def order_bitrix(data, request):
     pass
 
@@ -243,8 +354,8 @@ def order_info_check(company_info, order_info):
     print("order_info_check")
     print(company_info, order_info)
     not_info = []
-    if company_info["id_bitrix"] == "":
-        not_info.append("Битрикс номер компании")
+    # if company_info["id_bitrix"] == "":
+    #     not_info.append("Битрикс номер компании")
 
     if company_info["legal_entity"] == "":
         not_info.append("Юридическое название клиента")
@@ -298,9 +409,8 @@ def order_info_check(company_info, order_info):
 
     if order_info["status"] == "":
         not_info.append("Статус сделки")
-    
-  
-    print(not_info,not_info_order)
+
+    print(not_info, not_info_order)
     return (not_info, not_info_order)
 
 
@@ -361,44 +471,68 @@ def get_status_order():
 def add_info_order(request, order, type_save):
     webhook = settings.BITRIX_WEBHOOK
     id_bitrix_order = order.id_bitrix
-    bx = Bitrix(webhook)
+    print("add_info_order")
+
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
     orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
-    # print(orders_bx)
+    print(orders_bx)
+    orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
+    print(orders_bx)
+    company = orders_bx["COMPANY_ID"]
+    company_bx = bx.get_by_ID("crm.company.get", [company])
+    print("company_bx")
+    print(company_bx)
+
+    order_debt = order.bill_sum - order.bill_sum_paid
     data_order = {
         "id": id_bitrix_order,
         "fields": {
             "OPPORTUNITY": order.bill_sum,
+            "UF_CRM_1735027683353": order.bill_sum_paid,
+            "UF_CRM_1735027695061": order_debt,
         },
     }
     orders_bx = bx.call("crm.deal.update", data_order)
-    # print(orders_bx)
+    print(orders_bx)
 
-    pdf = f"{MEDIA_ROOT}/{ order.bill_file_no_signature}"
-    # save_multi_file_bx(
-    #     bx, pdf, order.id_bitrix, "crm.deal.update", "UF_CRM_1734415894538"
-    # )
-    pdf_signed = f"{MEDIA_ROOT}/{ order.bill_file}"
+    file_dict = OrderDocumentBill.objects.filter(order=order)
+    file_dict_signed = file_dict.exclude(bill_file="")
+    file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
 
+    save_multi_file_all_bx(
+        bx,
+        "file_dict_signed",
+        file_dict_signed,
+        id_bitrix_order,
+        "crm.deal.update",
+        "UF_CRM_1735027585527",
+    )
+    save_multi_file_all_bx(
+        bx,
+        "file_dict_no_signed",
+        file_dict_no_signed,
+        id_bitrix_order,
+        "crm.deal.update",
+        "UF_CRM_1735027614423",
+    )
+    print(999999999999)
     if order.specification.file:
         document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+        print("document_specification", document_specification)
+        orders_bx = save_file_bx(
+            bx,
+            document_specification,
+            order.id_bitrix,
+            "crm.deal.update",
+            "UF_CRM_1735027633966",
+        )
+        print(orders_bx)
 
     else:
         document_specification = None
 
-    orders = [2]
-
-    # orders_bx = save_file_bx(
-    #     bx,
-    #     document_specification,
-    #     order.id_bitrix,
-    #     "crm.deal.update",
-    #     "UF_CRM_1734093516769",
-    # )
-
     # print(orders_bx)
-
-    # ТОВАРЫ СДЕЛКИ
-    is_order_pros_bx = save_product_order_bx(bx, order, id_bitrix_order)
 
     # СЧЕТ  СДЕЛКИ
     if order.bill_id_bx:
@@ -421,8 +555,7 @@ def add_info_order(request, order, type_save):
             "parentId2": id_bitrix_order,
             "closedate": order.bill_date_stop,
         }
-        # invoice_bx = bx.get_all("crm.item.fields",{"entityTypeId": 31})
-        # invoice_bx = bx.get_all("crm.item.list",{"entityTypeId": 31})
+
         invoice_bx = bx.call("crm.item.add", {"entityTypeId": 31, "fields": invoice})
         invoice_bx_id = invoice_bx["id"]
         order.bill_id_bx = invoice_bx_id
@@ -430,186 +563,198 @@ def add_info_order(request, order, type_save):
 
 
 # crm.deal.update UF_CRM_1734093516769
+def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
+    print("save_multi_file_all_bx")
+    files_arr = []
+    for file in file_dict:
+        if type_file == "file_dict_signed":
+            name = file.bill_file
+            file = f"{MEDIA_ROOT}/{ file.bill_file}"
+        elif type_file == "file_dict_no_signed":
+            name = file.bill_file_no_signature
+            file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
+        else:
+            name = "1"
+
+        with open(file, "rb") as f:
+            file_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+        file_arr = {
+            "fileData": [
+                name,
+                file_base64,
+            ]
+        }
+
+        files_arr.append(file_arr)
+
+    orders_bx = bx.call(
+        method,
+        {
+            "id": id_bx,
+            "fields": {field_name: files_arr},
+        },
+    )
+
+
 def save_file_bx(bx, file, id_bx, method, field_name):
+    print("save_file_bx")
     with open(file, "rb") as f:
         file_base64 = base64.b64encode(f.read()).decode("utf-8")
-
-    # {
-    # 			"id": 12
-    # 		},
-    # 		{
-    # 			"id": 44
-    # 		},
-    # orders_bx = bx.call(
-    #     method,
-    #     {
-    #         "id": id_bx,
-    #         "fields": {
-    #             field_name: {
-
-    #                 "fileData": [
-    #                     file,
-    #                     file_base64,
-    #                 ]
-    #             }
-    #         },
-    #     },
-    # # )
-    # {"fileData": ["test.txt", "dfgdfgdfgh"]},
-    # 	{"fileData": ["test2.txt", "dfgdfgdfgh"]}
+    print(file_base64)
     orders_bx = bx.call(
         method,
         {
             "id": id_bx,
             "fields": {
-                field_name: [
-                    {
-                        "fileData": [
-                            "3",
-                            file_base64,
-                        ],
-                    },
-                ]
+                field_name: {
+                    "fileData": [
+                        file,
+                        file_base64,
+                    ],
+                },
             },
         },
     )
-    return orders_bx
-
-
-def save_multi_file_bx(bx, file, id_bx, method, field_name):
-    with open(file, "rb") as f:
-        file_base64 = base64.b64encode(f.read()).decode("utf-8")
-
-    orders_bx1 = bx.get_by_ID("crm.deal.get", [2])
-    file_prd = orders_bx1["UF_CRM_1734415894538"]
-    print(file_prd)
-    arr_old = [
-        # {"id": 12},
-        # {"id": 44},
-        # ["myNewFile.pdf", "...base64_encoded_file_content..."],
-    ]
-    for file_pr in file_prd:
-        file_old = {
-            "id": int(file_pr["id"]),
-            # "value": { "showUrl":file_pr["showUrl"],"downloadUrl":file_pr["downloadUrl"]},
-        }
-        arr_old.append(file_old)
-    arr = {
-        # "valueId": 0,
-        "fileData": [
-            "333",
-            file_base64,
-        ],
-    }
-
-    arr_old.append(arr)
-    print(arr_old)
-    ar = (
-        {
-            "id": id_bx,
-            "fields": {
-                field_name: arr_old[
-                    {
-                        "valueId": 0,
-                        "fileData": [
-                            "file333",
-                            file_base64,
-                        ],
-                    },
-                    {
-                        "valueId": 0,
-                        "fileData": [
-                            "3222",
-                            file_base64,
-                        ],
-                    },
-                ]
-            },
-        },
-    )
-    print(ar)
-    orders_bx = bx.call(method, ar)
     print(orders_bx)
+    print(7777)
     return orders_bx
 
 
-# add_info_order сохранение товаров  в заказ битрикс
-def save_product_order_bx(bx, order, id_bitrix_order):
+# def save_multi_file_bx(bx, file, id_bx, method, field_name):
+#     with open(file, "rb") as f:
+#         file_base64 = base64.b64encode(f.read()).decode("utf-8")
 
-    product_bx = bx.get_all(
-        "crm.item.productrow.fields",
-    )
-    # product_bx = bx.get_all("catalog.catalog.get",)
+#     orders_bx1 = bx.get_by_ID("crm.deal.get", [2])
+#     file_prd = orders_bx1["UF_CRM_1734415894538"]
+#     print(file_prd)
+#     arr_old = [
+#         # {"id": 12},
+#         # {"id": 44},
+#         # ["myNewFile.pdf", "...base64_encoded_file_content..."],
+#     ]
+#     for file_pr in file_prd:
+#         file_old = {
+#             "id": int(file_pr["id"]),
+#             # "value": { "showUrl":file_pr["showUrl"],"downloadUrl":file_pr["downloadUrl"]},
+#         }
+#         arr_old.append(file_old)
+#     arr = {
+#         # "valueId": 0,
+#         "fileData": [
+#             "333",
+#             file_base64,
+#         ],
+#     }
 
-    print(product_bx)
-    order_products = ProductSpecification.objects.filter(
-        specification=order.specification
-    )
+#     arr_old.append(arr)
+#     print(arr_old)
+#     ar = (
+#         {
+#             "id": id_bx,
+#             "fields": {
+#                 field_name: arr_old[
+#                     {
+#                         "valueId": 0,
+#                         "fileData": [
+#                             "file333",
+#                             file_base64,
+#                         ],
+#                     },
+#                     {
+#                         "valueId": 0,
+#                         "fileData": [
+#                             "3222",
+#                             file_base64,
+#                         ],
+#                     },
+#                 ]
+#             },
+#         },
+#     )
+#     print(ar)
+#     orders_bx = bx.call(method, ar)
+#     print(orders_bx)
+#     return orders_bx
 
-    order_products_data = []
-    for order_products_i in order_products:
-        order_info = {
-            "ID": order_products_i.id_bitrix,
-            "PRODUCT_NAME": order_products_i.product.name,
-            "PRICE": order_products_i.price_one,
-            "QUANTITY": order_products_i.quantity,
-            "RESERVE_QUANTITY": 255,
-        }
 
-        # if order_products_i.id_bitrix:
-        #     order_info['ID'] = order_products_i.id_bitrix
-        order_products_data.append(order_info)
-    print(order_products_data)
-    data_bx_product = {
-        "id": order.id_bitrix,
-        "rows": order_products_data,
-    }
+# # add_info_order сохранение товаров  в заказ битрикс
+# def save_product_order_bx(bx, order, id_bitrix_order):
 
-    product_bx = bx.call("crm.deal.productrows.set", data_bx_product)
-    print(product_bx)
-    product_bx_get = bx.get_all("crm.deal.productrows.get", {"id": id_bitrix_order})
-    print(product_bx_get)
-    # if len(orders) == 1:
-    #         orders_bx = {orders_bx["ID"]: orders_bx}
-    for prod_bx in product_bx_get:
-        order_products_okt = order_products.filter(
-            product__name=prod_bx["PRODUCT_NAME"]
-        )
-        order_products_okt.update(id_bitrix=prod_bx["ID"])
+#     product_bx = bx.get_all(
+#         "crm.item.productrow.fields",
+#     )
+#     # product_bx = bx.get_all("catalog.catalog.get",)
 
-    # product_bx = bx.get_all("crm.item.productrow.fields",)
-    # product_bx = bx.call(
-    #     "crm.item.productrow.update",
-    #     {
-    #         "id": 30,
-    #         "fields": {
-    #             "price": "1",
-    #         }
-    #     },
-    # )
-    # print(product_bx)
+#     print(product_bx)
+#     order_products = ProductSpecification.objects.filter(
+#         specification=order.specification
+#     )
 
-    # product_bx = bx.call("crm.item.get", data_bx_product)
+#     order_products_data = []
+#     for order_products_i in order_products:
+#         order_info = {
+#             "ID": order_products_i.id_bitrix,
+#             "PRODUCT_NAME": order_products_i.product.name,
+#             "PRICE": order_products_i.price_one,
+#             "QUANTITY": order_products_i.quantity,
+#             "RESERVE_QUANTITY": 255,
+#         }
 
-    return False
+#         # if order_products_i.id_bitrix:
+#         #     order_info['ID'] = order_products_i.id_bitrix
+#         order_products_data.append(order_info)
+#     print(order_products_data)
+#     data_bx_product = {
+#         "id": order.id_bitrix,
+#         "rows": order_products_data,
+#     }
+
+#     product_bx = bx.call("crm.deal.productrows.set", data_bx_product)
+#     print(product_bx)
+#     product_bx_get = bx.get_all("crm.deal.productrows.get", {"id": id_bitrix_order})
+#     print(product_bx_get)
+#     # if len(orders) == 1:
+#     #         orders_bx = {orders_bx["ID"]: orders_bx}
+#     for prod_bx in product_bx_get:
+#         order_products_okt = order_products.filter(
+#             product__name=prod_bx["PRODUCT_NAME"]
+#         )
+#         order_products_okt.update(id_bitrix=prod_bx["ID"])
+
+#     # product_bx = bx.get_all("crm.item.productrow.fields",)
+#     # product_bx = bx.call(
+#     #     "crm.item.productrow.update",
+#     #     {
+#     #         "id": 30,
+#     #         "fields": {
+#     #             "price": "1",
+#     #         }
+#     #     },
+#     # )
+#     # print(product_bx)
+
+#     # product_bx = bx.call("crm.item.get", data_bx_product)
+
+#     return False
 
 
 # сохранение информации по товарам после 1с
 def save_product_info_bx():
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
 
 # новые документы после появления точных сроков поставки
 def save_new_doc_bx(pdf, pdf_signed):
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
 
 # выгрузка в битрикс данных по товарам
 def save_params_product_bx(data):
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
     return True
 
@@ -617,7 +762,7 @@ def save_params_product_bx(data):
 # выгрузка в битрикс данных по оплатам
 def save_payment_order_bx(data):
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
     return True
 
@@ -625,7 +770,7 @@ def save_payment_order_bx(data):
 # выгрузка в битрикс данных по отгурзке товаров
 def save_shipment_order_bx(data):
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
     return True
 
@@ -633,7 +778,7 @@ def save_shipment_order_bx(data):
 # уведомления о повышения цен и валют битрикс
 def currency_check_bx():
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
 
     carrency = get_order_carrency_up()
     product = get_product_price_up()

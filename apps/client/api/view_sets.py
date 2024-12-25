@@ -860,17 +860,17 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-            print("orderorder")
+
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
                 )
-            print(order.requisites)
+
             if order.requisites.contract:
                 is_req = True
             else:
                 is_req = False
-            print(1)
+
             order_pdf = order.create_bill(
                 request,
                 is_req,
@@ -879,7 +879,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 post_update,
                 type_save,
             )
-            print(2)
+
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                 pdf_signed = request.build_absolute_uri(order.bill_file.url)
@@ -894,15 +894,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # сохранение товара в окт нового
                 order_products = after_save_order_products(products)
 
-                # print("order_products", order_products)
-                # data_for_bitrix = create_info_request_order_bitrix(
-                #     order, pdf, pdf_signed, document_specification, order_products
-                # )
                 # data_for_1c = create_info_request_order_1c(order, order_products)
-                # print(data_for_bitrix)
-                # print(data_for_1c)
+
                 is_order_bx = True
-                # is_order_bx = add_info_order(request, order,type_save)
+                is_order_bx = add_info_order(request, order, type_save)
+                
                 if is_order_bx:
                     return Response(data, status=status.HTTP_200_OK)
                 else:

@@ -13,6 +13,7 @@ import traceback
 from django.db import IntegrityError, transaction
 
 
+
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
@@ -1588,8 +1589,13 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def client_info_bitrix(data):
+def client_info_bitrix(data,company_adress):
+    from apps.client.models import RequisitesAddress
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
+    print("client_info_bitrix")
+    print("data",data)
+
+    print("company_adress",company_adress)
 
     if data["contract_date"]:
         data_contract = datetime.datetime.strptime(
@@ -1597,16 +1603,6 @@ def client_info_bitrix(data):
         ).date()
     else:
         data_contract = None
-        
-    # req = Requisites.objects.get(
-    #     inn=data["inn"],
-    # )
-
-    # if data["contract"] != "" and req.contract != data["contract"]:
-    #     req.contract = data["contract"]
-    #     req.contract_date = data_contract
-    #     req.number_spec = 0
-    #     req.save()
 
     client_req, client_req_created = Requisites.objects.update_or_create(
         # id_bitrix=data["id_bitrix"],
@@ -1623,9 +1619,11 @@ def client_info_bitrix(data):
             "inn": data["inn"],
             "contract": data["contract"],
             "contract_date": data_contract,
-            "id_bitrix": data["id_bitrix"],
+            # "id_bitrix": data["id_bitrix"],
         },
     )
+    print("client_req, client_req_created",client_req, client_req_created)
+    
     if data["contract"]!="" and client_req.contract != data["contract"]:
         client_req.contract = data["contract"]
         client_req.contract_date = data_contract
@@ -1648,7 +1646,28 @@ def client_info_bitrix(data):
             },
         )
     )
-
+    print("client_req_kpp, client_req_kpp_created",client_req_kpp, client_req_kpp_created)
+    for company_bx_adress in company_adress:
+        print(company_bx_adress)
+        print(company_bx_adress["type_address_bx"])
+        client_req_kpp_address, client_req_kpp_created_address = (
+            RequisitesAddress.objects.update_or_create(
+                requisitesKpp=client_req_kpp,
+                type_address_bx = '6',
+                defaults={
+                    
+                    "country": company_bx_adress["country"],
+                    "post_code": int(company_bx_adress["post_code"]),
+                    "region": company_bx_adress["region"],
+                    "province": company_bx_adress["province"],
+                    "city": company_bx_adress["city"],
+                    "address1": company_bx_adress["address1"],
+                    "address2": company_bx_adress["address2"],
+                },
+            )
+        )
+        print("client_req_kpp_address, client_req_kpp_created_address",client_req_kpp_address, client_req_kpp_created_address)
+        
     acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
         requisitesKpp=client_req_kpp,
         account_requisites=data["account_requisites"],

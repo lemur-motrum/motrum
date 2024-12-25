@@ -145,7 +145,6 @@ class Requisites(models.Model):
         max_length=12,
         # unique=True
     )
-    
 
     # kpp = models.CharField(
     #     "КПП",
@@ -244,9 +243,54 @@ class RequisitesOtherKpp(models.Model):
         blank=True,
         null=True,
     )
-    
+
     def __str__(self):
         return f"{self.requisites.legal_entity} {self.kpp}"
+
+
+TYPE_ADDRESS = (
+    (1, "Фактический адрес"),
+    (4, "Адрес регистрации"),
+    (6, "Юридический адрес"),
+    (9, "Адрес бенефициара"),
+)
+
+
+class RequisitesAddress(models.Model):
+    requisitesKpp = models.ForeignKey(
+        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
+    )
+    type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=4)
+    country = models.CharField(
+        "Страна",
+        max_length=100,
+    )
+    post_code = models.PositiveIntegerField(
+        "Индекс",
+    )
+    region = models.CharField(
+        "Регион",
+        max_length=150,
+    )
+    province = models.CharField(
+        "Область",
+        max_length=150,
+    )
+    city = models.CharField(
+        "Город",
+        max_length=150,
+    )
+    address1 = models.CharField(
+        "Адрес",
+        max_length=200,
+    )
+    address2 = models.CharField(
+        "Дом",
+        max_length=200,
+    )
+
+
+
 
 class AccountRequisites(models.Model):
     requisitesKpp = models.ForeignKey(
@@ -279,12 +323,15 @@ class AccountRequisites(models.Model):
     def __str__(self):
         return self.account_requisites
 
+
 class EmailsAllWeb(models.Model):
     name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
     phone = models.CharField(
         "Номер телефона",
         max_length=40,
     )
+
+
 
 class EmailsCallBack(models.Model):
     name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
@@ -315,7 +362,6 @@ STATUS_ORDER_BITRIX = (
     ("CANCELED", "Отложенные"),
     ("CANCELED", "Провальные"),
     ("COMPLETED", "Сделка успешна"),
-
     ("COMPLETED", "PREPAYMENT_INVOICE"),
     ("COMPLETED", "PREPARATION"),
 )
@@ -491,7 +537,7 @@ class Order(models.Model):
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
 
-        pdf_file, pdf_name,file_path_no_sign,version = crete_pdf_bill(
+        pdf_file, pdf_name, file_path_no_sign, version = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
@@ -515,14 +561,13 @@ class Order(models.Model):
             bill_date_start = datetime.date.today()
             data_stop = create_time_stop_specification()
             self.bill_date_stop = data_stop
-            
+
             if type_save == "new":
                 self.status = "PAYMENT"
             elif type_save == "update":
                 pass
             elif type_save == "hard_update":
                 self.status = "PAYMENT"
-
 
             self.bill_file = pdf_file
             self.bill_file_no_signature = file_path_no_sign
@@ -533,12 +578,10 @@ class Order(models.Model):
                 Notification.add_notification(self.id, "DOCUMENT_BILL")
             self._change_reason = "Ручное"
             self.save()
-            
+
             old_document = OrderDocumentBill.objects.filter(order=self)
             if old_document:
-                old_document.update(
-                is_active=False
-            )
+                old_document.update(is_active=False)
 
             OrderDocumentBill.objects.create(
                 order=self,
@@ -548,7 +591,7 @@ class Order(models.Model):
                 bill_date_stop=data_stop,
                 bill_file_no_signature=None,
                 bill_sum=self.bill_sum,
-                version = version
+                version=version,
             )
             OrderDocumentBill.objects.create(
                 order=self,
@@ -558,7 +601,7 @@ class Order(models.Model):
                 bill_date_start=bill_date_start,
                 bill_date_stop=data_stop,
                 bill_sum=self.bill_sum,
-                version = version
+                version=version,
             )
             return self.id
         else:
@@ -615,7 +658,7 @@ class OrderDocumentBill(models.Model):
         default=None,
         null=True,
     )
-    
+
 
 class PaymentTransaction(models.Model):
     order = models.ForeignKey(
@@ -635,8 +678,8 @@ class PaymentTransaction(models.Model):
         blank=True,
         null=True,
     )
-    
-    
+
+
 class DocumentShipment(models.Model):
     order = models.ForeignKey(
         Order,

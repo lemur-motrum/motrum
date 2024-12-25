@@ -897,12 +897,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # data_for_1c = create_info_request_order_1c(order, order_products)
 
                 is_order_bx = True
-                is_order_bx = add_info_order(request, order, type_save)
+                add_info_order(request, order, type_save)
                 
-                if is_order_bx:
-                    return Response(data, status=status.HTTP_200_OK)
-                else:
-                    return Response(None, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data, status=status.HTTP_200_OK)
+               
             else:
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 

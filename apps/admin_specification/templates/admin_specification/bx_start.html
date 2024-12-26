@@ -1,15 +1,18 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
-<div style="display: flex;
-align-items: center;
-justify-content: center;
-margin-top: 100px;
-gap: 20px" class="bx-btn"  data-bx-id ='{{bitrix_id_order}}' data-cart-id ='{{cart}}' data-spesif-id='{{spes}}' data-serializer-order='{{serializer}}' >
-<a style="border: 1px solid;
-padding: 10px" href="" class='bx-btn-upd' >Изменить счет(номер старый, дата новая)</a>
-<a style="border: 1px solid;
-padding: 10px" href="" class='bx-btn-hard-upd'>Выставить новый счет(номер новый)</a>
-</div>
-
+    <div class="bx-btn"
+         data-bx-id='{{ bitrix_id_order }}'
+         data-cart-id='{{ cart }}'
+         data-spesif-id='{{ spes }}'
+         data-serializer-order='{{ serializer }}'>
+        <div class='bx-btn-upd'>
+            <span class="first">Изменить счет</span>
+            <span class="second">(номер старый, дата новая)</span>
+        </div>
+        <div class='bx-btn-hard-upd'>
+            <span class="first">Выставить новый счет</span>
+            <span class="second">(номер новый)</span>
+        </div>
+    </div>
 {% endblock content %}

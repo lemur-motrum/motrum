@@ -1614,7 +1614,9 @@ def error_b24(request, error):
 def bx_start_page(request):
     print("bx_start_page")
     print(request)
-
+    context = {
+        
+    }
     # bx_id_order = request.GET.get("bitrix_id_order")
     # order = Order.objects.get(id_bitrix=int(bx_id_order))
     # context = {"cart": order.cart.id, "spes": order.specification.id}

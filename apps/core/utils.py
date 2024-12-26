@@ -1760,10 +1760,10 @@ def create_info_request_order_1c(order, order_products):
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
         },
         "client": {
-            "id_bitrix": None,
-            "legal_entity_motrum": None,
-            "contract": order.requisites.contract,
-            "contract_date": order.requisites.contract_date,
+            # "id_bitrix": order.id_bitrix,
+            # "legal_entity_motrum": None,
+            # "contract": order.requisites.contract,
+            # "contract_date": order.requisites.contract_date,
             "legal_entity": order.requisites.legal_entity,
             "inn": order.requisites.inn,
             "kpp": order.account_requisites.requisitesKpp.kpp,
@@ -1788,10 +1788,14 @@ def create_info_request_order_1c(order, order_products):
             "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "number_invoice": order.bill_name,
             "data_invoice": order.bill_date_start,
-            "manager_invoice": f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+            # "manager_invoice": f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
         },
         "order_products": order_products,
     }
+    if order.manager:
+        data_for_1c["invoice_options"]["manager_invoice"] = f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+    else:
+        data_for_1c["invoice_options"]["manager_invoice"] = ""
 
     return data_for_1c
 

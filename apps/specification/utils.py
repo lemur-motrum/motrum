@@ -589,7 +589,7 @@ def save_shipment_doc(link,document_shipment):
     directory = check_spesc_directory_exist(
         "shipment",
     )
-    name = f"отгрузка_{document_shipment.id}{document_shipment.date}.pdf"
+    name = f"отгрузка_{document_shipment.id}_{document_shipment.date}.pdf"
     print(name)
     # file_last_list = filename.split(".")
     # type_file = "." + file_last_list[-1]
@@ -602,7 +602,8 @@ def save_shipment_doc(link,document_shipment):
     with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
         ofile.write(r.content)
     
-    return "{0}/{1}".format(
+    return "{0}/{1}/{2}".format(
+        "documents",
         "shipment",
         name_doc,
     )

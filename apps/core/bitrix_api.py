@@ -8,8 +8,14 @@ from fast_bitrix24 import Bitrix
 from django.http import HttpResponseRedirect
 from requests import Response
 
+
 from apps.client.api.serializers import OrderSerializer
-from apps.client.models import STATUS_ORDER_BITRIX, Order, OrderDocumentBill
+from apps.client.models import (
+    STATUS_ORDER_BITRIX,
+    DocumentShipment,
+    Order,
+    OrderDocumentBill,
+)
 from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
 from apps.logs.utils import error_alert
@@ -498,9 +504,14 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
         if type_file == "file_dict_signed":
             name = file.bill_file
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
+
         elif type_file == "file_dict_no_signed":
             name = file.bill_file_no_signature
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
+
+        elif type_file == "file_dict_shipment":
+            name = file.file
+            file = f"{MEDIA_ROOT}/{ file.file}"
         else:
             name = "1"
 
@@ -557,18 +568,58 @@ def save_new_doc_bx(pdf, pdf_signed):
 
 # выгрузка в битрикс данных по оплатам
 def save_payment_order_bx(data):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    try:
 
-    return True
+        webhook = settings.BITRIX_WEBHOOK
+        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
+        for data_item in data:
+            order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
+            id_bitrix_order = order.id_bitrix
+            order_debt = order.bill_sum - order.bill_sum_paid
+
+            data_order = {
+                "id": id_bitrix_order,
+                "fields": {
+                    "UF_CRM_1735027683353": order.bill_sum_paid,
+                    "UF_CRM_1735027695061": order_debt,
+                },
+            }
+            orders_bx = bx.call("crm.deal.update", data_order)
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Отправка данных об оплатах окт - б24 "
+        info = f"Отправка данных об оплатах окт - б24. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
 
 
 # выгрузка в битрикс данных по отгурзке товаров
 def save_shipment_order_bx(data):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    try:
+        webhook = settings.BITRIX_WEBHOOK
+        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        for data_item in data:
+            order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
+            id_bitrix_order = order.id_bitrix
+            document_shipment = DocumentShipment.objects.filter(order=order)
+            save_multi_file_all_bx(
+                bx,
+                "file_dict_shipment",
+                document_shipment,
+                id_bitrix_order,
+                "crm.deal.update",
+                "UF_CRM_1735027585527",
+            )
 
-    return True
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Отправка документов выдачи окт - б24 "
+        info = f"Отправка документов выдачи  окт - б24. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
 
 
 # уведомления о повышения цен и валют битрикс
@@ -762,15 +813,12 @@ def get_stage_info_bx():
             # print("stage_one_bx",stage_one_bx)
             print("id_stage_var", id_stage_var)
             if id_stage_var == 0:
-                filter_status = {
-                    "CATEGORY_ID": id_stage_var, 
-                    "ENTITY_ID": "DEAL_STAGE"
-                    }
+                filter_status = {"CATEGORY_ID": id_stage_var, "ENTITY_ID": "DEAL_STAGE"}
 
             else:
                 filter_status = {
                     "CATEGORY_ID": id_stage_var,
-                     "ENTITY_ID": f"DEAL_STAGE_{id_stage_var}"
+                    "ENTITY_ID": f"DEAL_STAGE_{id_stage_var}",
                 }
 
             status_stage_bx = bx.get_all(

@@ -562,12 +562,12 @@ class Order(models.Model):
             data_stop = create_time_stop_specification()
             self.bill_date_stop = data_stop
 
-            if type_save == "new":
-                self.status = "PAYMENT"
-            elif type_save == "update":
-                pass
-            elif type_save == "hard_update":
-                self.status = "PAYMENT"
+            # if type_save == "new":
+            #     self.status = "PAYMENT"
+            # elif type_save == "update":
+            #     pass
+            # elif type_save == "hard_update":
+            #     self.status = "PAYMENT"
 
             self.bill_file = pdf_file
             self.bill_file_no_signature = file_path_no_sign

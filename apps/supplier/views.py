@@ -48,7 +48,7 @@ def add_iek(request):
     # p = add_info_order(request, order, type_save)
     # print("add_iek",p)
    
-    get_status_order()
+   
     result = 1
     if result:
         pass

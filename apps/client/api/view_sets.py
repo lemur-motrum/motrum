@@ -1649,7 +1649,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             data = [
                 {
-                    "bitrix_id": "2373",
+                    "bitrix_id": "1",
                     "amount_sum": "55.22",
                     "date_transaction": "22-11-2024",
                 },

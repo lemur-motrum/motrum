@@ -278,7 +278,14 @@ def del_void_cart(self):
     max_retries=1,
 )
 def get_status_order_bx(self):
-    get_status_order()
+    try:
+        get_status_order()
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"получение в б24 статусов"
+
+        info = f"получение в б24 статусов{exc}"
+        e = error_alert(error, location, info)
 
 
 @app.task(
@@ -286,7 +293,15 @@ def get_status_order_bx(self):
     max_retries=1,
 )
 def get_curr_price_check_bx(self):
-    currency_check_bx()
+    try:
+        currency_check_bx()
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"отправка в б24 Критичные изменения цен и курса валют {exc}"
+
+        info = f"отправка в б24 Критичные изменения цен и курса валют{exc}"
+        e = error_alert(error, location, info)
+       
 
 
 @app.task(

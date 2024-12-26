@@ -32,7 +32,7 @@ from apps.core.bitrix_api import (
     get_info_for_order_bitrix,
     order_bitrix,
     save_new_doc_bx,
-    save_params_product_bx,
+
     save_payment_order_bx,
     save_shipment_order_bx,
 )
@@ -1643,9 +1643,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # if is_save_new_doc_bx == False:
                 #     birtix_ok = False
 
-                is_save_params_product_bx = save_params_product_bx(data)
-                # if is_save_new_doc_bx == False:
-                #     birtix_ok = False
 
     @action(detail=False, methods=["post"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):

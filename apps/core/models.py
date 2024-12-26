@@ -312,3 +312,58 @@ class IndexInfoWeb(models.Model):
 
     def __str__(self):
         return f"Счетчики"
+
+
+# {
+#     "ID": "187",
+#     "ENTITY_ID": "DEAL_STAGE_1",
+#     "STATUS_ID": "C1:LOSE",
+#     "NAME": "Сделка провалена",
+#     "NAME_INIT": "Сделка провалена",
+#     "SORT": "70",
+#     "SYSTEM": "Y",
+#     "COLOR": "#FF5752",
+#     "SEMANTICS": "F",
+#     "CATEGORY_ID": "1",
+#     "EXTRA": {"SEMANTICS": "failure", "COLOR": "#FF5752"},
+# }
+
+
+class StageDealBx(models.Model):
+    bitrix_id = models.SmallIntegerField("ID bitrix")
+    name = models.CharField(
+        "NAME -Имя",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    entity_id = models.CharField(
+        "ENTITY_ID - название воронки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    category_id = models.CharField(
+        "CATEGORY_ID - id воронки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    status_id = models.CharField(
+        "STATUS_ID - название статуса техническое- пишется в статусе сделки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    name_web = models.CharField(
+        "Имя на сайте",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    name_web_eng = models.CharField(
+        "Имя техническое сат англ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )

@@ -10,7 +10,7 @@ from requests import Response
 
 from apps.client.api.serializers import OrderSerializer
 from apps.client.models import STATUS_ORDER_BITRIX, Order, OrderDocumentBill
-from apps.core.models import Currency
+from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
@@ -19,6 +19,7 @@ from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 
 
+# проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
         print("get_info_for_order_bitrix")
@@ -148,6 +149,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
         e = error_alert(error, location, info)
 
 
+# для get_info_for_order_bitrix получение реквизитов к сделке
 def get_req_info_bx(bs_id_order):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
@@ -267,89 +269,7 @@ def get_req_info_bx(bs_id_order):
         # company["legal_entity"] = req_bx["RQ_COMPANY_NAME"]
 
 
-# проверка и получение основной инфы для создания заказа
-def order_bitrix(data, request):
-    pass
-
-    # next_url = "/admin_specification/current_specification/"
-
-    # result = "ok"
-    # order_info = data["order"]
-    # company_info = data["company"]
-    # type_save = data["type_save"]
-    # print(company_info)
-    # data_admin = AdminUser.login_bitrix(data["login"], None, request)
-    # if data_admin["status_admin"] == 200:
-    #     error_company, error_order = order_info_check(company_info, order_info)
-    #     if error_company or error_order:
-    #         next_url = "/admin_specification/error-b24/"
-    #         error_text = "Не заполнены поля: "
-    #         error_text += ", ".join(error_company)
-    #         if error_order:
-    #             error_text += ", "
-    #             error_text += ", ".join(error_order)
-
-    #         context = {"error": error_text}
-    #         return (next_url, context, True)
-    #     else:
-
-    #         client_req, acc_req = client_info_bitrix(company_info)
-    #         manager = AdminUser.objects.get(email=data["order"]["manager"])
-
-    #         data_order = {
-    #             "id_bitrix": order_info["id_bitrix"],
-    #             "name": 123131,
-    #             "requisites": client_req.id,
-    #             "account_requisites": acc_req.id,
-    #             "status": "",
-    #             # "cart": cart.id,
-    #             "prepay_persent": client_req.prepay_persent,
-    #             "postpay_persent": client_req.postpay_persent,
-    #             "manager": manager,
-    #         }
-    #         serializer_class = OrderSerializer
-    #         try:
-    #             order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
-    #             cart = order.cart
-    #             data_order["cart"] = cart.id
-    #             serializer = serializer_class(order, data=data_order, many=False)
-    #         except Order.DoesNotExist:
-    #             cart = Cart.create_cart_admin(None, data_admin["admin"])
-    #             data_order["cart"] = cart.id
-    #             serializer = serializer_class(data=data_order, many=False)
-
-    #         finally:
-
-    #             if serializer.is_valid():
-    #                 serializer._change_reason = "Ручное"
-    #                 order = serializer.save()
-    #                 response = HttpResponseRedirect(next_url)
-
-    #                 response.set_cookie("client_id", max_age=-1)
-    #                 response.set_cookie("cart", cart.id, max_age=1000)
-    #                 response.set_cookie("specificationId", max_age=-1)
-    #                 response.set_cookie("type_save", type_save, max_age=1000)
-    #                 return (next_url, response, False)
-    #             else:
-    #                 next_url = "/admin_specification/error-b24/"
-    #                 context = {
-    #                     "error": "Неприведенная ошибка во время создания заказа. Повторите. "
-    #                 }
-    #                 return (next_url, response, True)
-
-    # else:
-    #     next_url = "/admin_specification/error-b24/"
-    #     error_text = ""
-    #     if data_admin["status_admin"] == 401:
-    #         error_text = "Неверные данные для логина. Токен не совпадает с почтой или этого юзера нет в системе окт"
-    #     elif data_admin["status_admin"] == 403:
-    #         error_text = "Нет прав доступа к системе"
-
-    #     context = {"error": error_text}
-    #     return (next_url, context, True)
-
-
-# проверка полей на заполненность при создании заказа-возврат текста для ошибки
+# для get_info_for_order_bitrix   проверка полей на заполненность при создании заказа-возврат текста для ошибки
 def order_info_check(company_info, order_info):
     print("order_info_check")
     print(company_info, order_info)
@@ -430,9 +350,10 @@ def get_status_order():
 
         webhook = settings.BITRIX_WEBHOOK
 
-        bx = Bitrix(webhook)
+        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
         orders = [d["id_bitrix"] for d in actual_order]
-        orders = [2]
+
+        # orders = [1]
 
         orders_bx = bx.get_by_ID("crm.deal.get", orders)
 
@@ -445,8 +366,12 @@ def get_status_order():
             id_bx = order_bx["ID"]
 
             status_bx = order_bx["STAGE_ID"]
+            stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
+            # stage_bd  = StageDealBx.objects.get(entity_id="Квалификация", status_id = status_bx)
+            print("stage_bd", stage_bd)
             print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
+
             if order:
                 status = get_status_bx(status_bx)
                 if status == "SHIPMENT_":
@@ -557,11 +482,13 @@ def add_info_order(request, order, type_save):
                 "closedate": order.bill_date_stop,
             }
 
-            invoice_bx = bx.call("crm.item.add", {"entityTypeId": 31, "fields": invoice})
+            invoice_bx = bx.call(
+                "crm.item.add", {"entityTypeId": 31, "fields": invoice}
+            )
             invoice_bx_id = invoice_bx["id"]
             order.bill_id_bx = invoice_bx_id
             order.save()
-    
+
 
 # crm.deal.update UF_CRM_1734093516769
 def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
@@ -622,6 +549,281 @@ def save_file_bx(bx, file, id_bx, method, field_name):
     return orders_bx
 
 
+# новые документы после появления точных сроков поставки
+def save_new_doc_bx(pdf, pdf_signed):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
+
+# выгрузка в битрикс данных по оплатам
+def save_payment_order_bx(data):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
+    return True
+
+
+# выгрузка в битрикс данных по отгурзке товаров
+def save_shipment_order_bx(data):
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
+    return True
+
+
+# уведомления о повышения цен и валют битрикс
+def currency_check_bx():
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+
+    carrency = get_order_carrency_up()
+    product = get_product_price_up()
+    print(carrency)
+    print(product)
+    data_dict = {}
+    for carrency_item in carrency:
+        data_curr = carrency_item["currency"]
+        for item in carrency_item["order"]:
+            order = item["specification__order"]
+            order_item_data = {
+                "order": item["specification__order"],
+                "bitrix_id_order": item["specification__order__id_bitrix"],
+                "order_product": [],
+                "text": "",
+            }
+            if order not in data_dict:
+                order_item_data["currency"] = [data_curr]
+                # order_item_data["currency"].append(data_curr)
+                data_dict[order] = order_item_data
+            else:
+                data_dict[order]["currency"].append(data_curr)
+
+    for product_item in product:
+        order = product_item["order"]
+        if order in data_dict:
+            data_dict[order]["order_product"] = product_item["order_product"]
+        else:
+            data_dict[order] = product_item
+
+    for key, value in data_dict.items():
+        if len(value["currency"]) > 0:
+            string = ",".join(value["currency"])
+            value["text"] = f"Произошло повышение курса {string}. "
+
+        if len(value["order_product"]) > 0:
+
+            if value["text"] != "":
+                text = f"Повышены цены на следующие товары:"
+                for prod in value["order_product"]:
+                    text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
+                    text = f"{text}{text_prod}"
+                value["text"] = f'{value["text"]}{text}'
+            else:
+                text = f" Уведомление о повышении цен на определенные товары!"
+                for prod in value["order_product"]:
+                    text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
+                    text = f"{text}{text_prod}"
+                value["text"] = f'{value["text"]}{text}'
+        print("value", value)
+        print("value", value["text"])
+        print("value", value["bitrix_id_order"])
+
+        save_currency_check_bx(value["text"], value["bitrix_id_order"])
+
+        error = "info_error"
+        location = "отправка в б24 Критичные изменения цен и курса валют"
+        info = f"отправка в б24 Критичные изменения цен и курса валют{value["bitrix_id_order"],value["text"]}"
+        e = error_alert(error, location, info)
+
+    return True
+
+
+# дл currency_check_bx получает массив с валютами
+def get_order_carrency_up():
+    data_order_curr = {}
+    data_order_all = []
+    currency_list = Currency.objects.exclude(words_code="RUB")
+
+    now = datetime.datetime.now()
+    three_days = datetime.timedelta(3)
+    in_three_days = now - three_days
+    data_old = in_three_days.strftime("%Y-%m-%d")
+
+    for currency in currency_list:
+        curr_name = currency.words_code
+        old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
+        now_rate = CurrencyRate.objects.get(currency=currency, date=now)
+        old_rate_count = old_rate.vunit_rate
+        new_rate_count = now_rate.vunit_rate
+        difference_count = new_rate_count - old_rate_count
+        count_percent = old_rate_count / 100 * 3
+        if difference_count > count_percent:
+            product_specification = (
+                ProductSpecification.objects.filter(
+                    product_currency=now_rate.currency,
+                )
+                .filter(
+                    specification__order__status__in=[
+                        "PAYMENT",
+                    ]
+                )
+                .distinct("specification__order")
+                .values("specification__order", "specification__order__id_bitrix")
+                .exclude(specification__order=None)
+            )
+
+            data_it = {
+                "currency": curr_name,
+                "order": product_specification,
+            }
+            data_order_all.append(data_it)
+
+            data_order_curr[curr_name] = product_specification
+
+    return data_order_all
+
+
+# для currency_check_bx массив с товарами
+def get_product_price_up():
+    order = Order.objects.filter(
+        status__in=[
+            "PAYMENT",
+        ]
+    )
+    print(order)
+    data_order_all = []
+    for order_item in order:
+        order_item_data = {
+            "order": order_item.id,
+            "bitrix_id_order": order_item.id_bitrix,
+            "order_product": [],
+            "currency": [],
+            "text": "",
+        }
+        products = ProductSpecification.objects.filter(
+            specification=order_item.specification
+        )
+
+        for prod in products:
+            if prod.product_price_catalog:
+
+                now_price = Price.objects.get(prod=prod.product).rub_price_supplier
+                print("now_price", now_price)
+                print("product_price_catalog", prod.product_price_catalog)
+                difference_count = now_price - prod.product_price_catalog
+                count_percent = prod.product_price_catalog / 100 * 3
+                if difference_count > count_percent:
+                    percent_up = difference_count * 100 / prod.product_price_catalog
+                    percent_up = round(percent_up, 2)
+                    data_product = {
+                        "prod": prod.product.article_supplier,
+                        "prod_name": prod.product.name,
+                        "price_old": prod.product_price_catalog,
+                        "price_new": now_price,
+                        "percent_up": percent_up,
+                    }
+                    order_item_data["order_product"].append(data_product)
+
+        if order_item_data["order_product"] != []:
+
+            data_order_all.append(order_item_data)
+
+    return data_order_all
+
+
+# для currency_check_bx отпарвка в битрикс данных в сделку
+def save_currency_check_bx(info, id_bitrix_order):
+    webhook = settings.BITRIX_WEBHOOK
+    webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+    print(webhook)
+    bx = Bitrix(webhook)
+    data_order = {
+        "id": id_bitrix_order,
+        "fields": {
+            "UF_CRM_1734772618817": info,
+        },
+    }
+    orders_bx = bx.call("crm.deal.update", data_order)
+
+
+# первичное полуние названий стадий в воронках
+def get_stage_info_bx():
+    print("get_stage_info_bx")
+    try:
+
+        def save_stage_bd(id_stage_var, name_var):
+            # stage_one_bx = bx.call(
+            #     "crm.category.get",
+            #     {
+            #         "entityTypeId": 2,
+            #         "id": id_stage_var,
+            #     },
+            # )
+            # print("stage_one_bx",stage_one_bx)
+            print("id_stage_var", id_stage_var)
+            if id_stage_var == 0:
+                filter_status = {
+                    "CATEGORY_ID": id_stage_var, 
+                    "ENTITY_ID": "DEAL_STAGE"
+                    }
+
+            else:
+                filter_status = {
+                    "CATEGORY_ID": id_stage_var,
+                     "ENTITY_ID": f"DEAL_STAGE_{id_stage_var}"
+                }
+
+            status_stage_bx = bx.get_all(
+                "crm.status.list",
+                params={
+                    "filter": filter_status,
+                },
+            )
+            print(status_stage_bx)
+            for status_stage in status_stage_bx:
+                # print(status_stage)
+                stage_okt = StageDealBx.objects.get_or_create(
+                    bitrix_id=status_stage["ID"],
+                    category_id=id_stage_var,
+                    defaults={
+                        "name": status_stage["NAME"],
+                        "entity_id": name_var,
+                        # "category_id": status_stage['CATEGORY_ID'],
+                        "status_id": status_stage["STATUS_ID"],
+                    },
+                )
+                # print(stage_okt)
+
+        webhook = settings.BITRIX_WEBHOOK
+        webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+        bx = Bitrix(webhook)
+        stage_all_bx = bx.get_all(
+            "crm.category.list",
+            params={
+                "entityTypeId": 2,
+            },
+        )
+
+        for stage_one in stage_all_bx:
+            print(stage_one)
+            id_stage_var = stage_one["id"]
+            if stage_one["name"] == "Квалификация":
+                save_stage_bd(id_stage_var, stage_one["name"])
+            elif stage_one["name"] == "Дистрибьюция":
+                save_stage_bd(id_stage_var, stage_one["name"])
+
+            save_stage_bd(id_stage_var, stage_one["name"])
+
+    except Exception as e:
+
+        tr = traceback.format_exc()
+        print(e, tr)
+        error = "error"
+        location = "Получение статсов битрикс в бд"
+        info = f" Получение статсов битрикс в бд {e}{tr}"
+        e = error_alert(error, location, info)
+
+
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:
 #         file_base64 = base64.b64encode(f.read()).decode("utf-8")
@@ -678,8 +880,7 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 #     print(orders_bx)
 #     return orders_bx
 
-
-# # add_info_order сохранение товаров  в заказ битрикс
+# add_info_order сохранение товаров  в заказ битрикс
 # def save_product_order_bx(bx, order, id_bitrix_order):
 
 #     product_bx = bx.get_all(
@@ -740,183 +941,83 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 #     return False
 
 
-# сохранение информации по товарам после 1с
-def save_product_info_bx():
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+# проверка и получение основной инфы для создания заказа
+def order_bitrix(data, request):
+    pass
 
+    # next_url = "/admin_specification/current_specification/"
 
-# новые документы после появления точных сроков поставки
-def save_new_doc_bx(pdf, pdf_signed):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    # result = "ok"
+    # order_info = data["order"]
+    # company_info = data["company"]
+    # type_save = data["type_save"]
+    # print(company_info)
+    # data_admin = AdminUser.login_bitrix(data["login"], None, request)
+    # if data_admin["status_admin"] == 200:
+    #     error_company, error_order = order_info_check(company_info, order_info)
+    #     if error_company or error_order:
+    #         next_url = "/admin_specification/error-b24/"
+    #         error_text = "Не заполнены поля: "
+    #         error_text += ", ".join(error_company)
+    #         if error_order:
+    #             error_text += ", "
+    #             error_text += ", ".join(error_order)
 
+    #         context = {"error": error_text}
+    #         return (next_url, context, True)
+    #     else:
 
-# выгрузка в битрикс данных по товарам
-def save_params_product_bx(data):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    #         client_req, acc_req = client_info_bitrix(company_info)
+    #         manager = AdminUser.objects.get(email=data["order"]["manager"])
 
-    return True
+    #         data_order = {
+    #             "id_bitrix": order_info["id_bitrix"],
+    #             "name": 123131,
+    #             "requisites": client_req.id,
+    #             "account_requisites": acc_req.id,
+    #             "status": "",
+    #             # "cart": cart.id,
+    #             "prepay_persent": client_req.prepay_persent,
+    #             "postpay_persent": client_req.postpay_persent,
+    #             "manager": manager,
+    #         }
+    #         serializer_class = OrderSerializer
+    #         try:
+    #             order = Order.objects.get(id_bitrix=order_info["id_bitrix"])
+    #             cart = order.cart
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(order, data=data_order, many=False)
+    #         except Order.DoesNotExist:
+    #             cart = Cart.create_cart_admin(None, data_admin["admin"])
+    #             data_order["cart"] = cart.id
+    #             serializer = serializer_class(data=data_order, many=False)
 
+    #         finally:
 
-# выгрузка в битрикс данных по оплатам
-def save_payment_order_bx(data):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    #             if serializer.is_valid():
+    #                 serializer._change_reason = "Ручное"
+    #                 order = serializer.save()
+    #                 response = HttpResponseRedirect(next_url)
 
-    return True
+    #                 response.set_cookie("client_id", max_age=-1)
+    #                 response.set_cookie("cart", cart.id, max_age=1000)
+    #                 response.set_cookie("specificationId", max_age=-1)
+    #                 response.set_cookie("type_save", type_save, max_age=1000)
+    #                 return (next_url, response, False)
+    #             else:
+    #                 next_url = "/admin_specification/error-b24/"
+    #                 context = {
+    #                     "error": "Неприведенная ошибка во время создания заказа. Повторите. "
+    #                 }
+    #                 return (next_url, response, True)
 
+    # else:
+    #     next_url = "/admin_specification/error-b24/"
+    #     error_text = ""
+    #     if data_admin["status_admin"] == 401:
+    #         error_text = "Неверные данные для логина. Токен не совпадает с почтой или этого юзера нет в системе окт"
+    #     elif data_admin["status_admin"] == 403:
+    #         error_text = "Нет прав доступа к системе"
 
-# выгрузка в битрикс данных по отгурзке товаров
-def save_shipment_order_bx(data):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
-
-    return True
-
-
-# уведомления о повышения цен и валют битрикс
-def currency_check_bx():
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
-
-    carrency = get_order_carrency_up()
-    product = get_product_price_up()
-
-    data_dict = {}
-    for carrency_item in carrency:
-        data_curr = carrency_item["currency"]
-        for item in carrency_item["order"]:
-            order = item["specification__order"]
-            order_item_data = {
-                "order": item["specification__order"],
-                "bitrix_id_order": item["specification__order__id_bitrix"],
-                "order_product": [],
-                "text": "",
-            }
-            if order not in data_dict:
-                order_item_data["currency"] = [data_curr]
-                # order_item_data["currency"].append(data_curr)
-                data_dict[order] = order_item_data
-            else:
-                data_dict[order]["currency"].append(data_curr)
-
-    for product_item in product:
-        order = product_item["order"]
-        if order in data_dict:
-            data_dict[order]["order_product"] = product_item["order_product"]
-        else:
-            data_dict[order] = product_item
-
-    for key, value in data_dict.items():
-        if len(value["currency"]) > 0:
-            string = ",".join(value["currency"])
-            value["text"] = f"Произошло повышение курса {string}. "
-
-        if len(value["order_product"]) > 0:
-
-            if value["text"] != "":
-                text = f"Повышены цены на следующие товары:"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-            else:
-                text = f" Уведомление о повышении цен на определенные товары!"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на 3%)"
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-
-    print(data_dict)
-    return True
-
-
-# дл currency_check_bx получает массив с валютами
-def get_order_carrency_up():
-    data_order_curr = {}
-    data_order_all = []
-    currency_list = Currency.objects.exclude(words_code="RUB")
-
-    now = datetime.datetime.now()
-    three_days = datetime.timedelta(3)
-    in_three_days = now - three_days
-    data_old = in_three_days.strftime("%Y-%m-%d")
-
-    for currency in currency_list:
-        curr_name = currency.words_code
-        old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
-        now_rate = CurrencyRate.objects.get(currency=currency, date=now)
-        old_rate_count = old_rate.vunit_rate
-        new_rate_count = now_rate.vunit_rate
-        difference_count = new_rate_count - old_rate_count
-        count_percent = old_rate_count / 100 * 3
-        if difference_count > count_percent:
-            product_specification = (
-                ProductSpecification.objects.filter(
-                    product_currency=now_rate.currency,
-                )
-                .filter(
-                    specification__order__status__in=[
-                        "PAYMENT",
-                    ]
-                )
-                .distinct("specification__order")
-                .values("specification__order", "specification__order__id_bitrix")
-                .exclude(specification__order=None)
-            )
-
-            data_it = {
-                "currency": curr_name,
-                "order": product_specification,
-            }
-            data_order_all.append(data_it)
-
-            data_order_curr[curr_name] = product_specification
-
-    return data_order_all
-
-
-# для currency_check_bx массив с товарами
-def get_product_price_up():
-    order = Order.objects.filter(
-        status__in=[
-            "PAYMENT",
-        ]
-    )
-
-    data_order_all = []
-    for order_item in order:
-        order_item_data = {
-            "order": order_item.id,
-            "bitrix_id_order": order_item.id_bitrix,
-            "order_product": [],
-            "currency": [],
-            "text": "",
-        }
-        products = ProductSpecification.objects.filter(
-            specification=order_item.specification
-        )
-
-        for prod in products:
-            if prod.product_price_catalog:
-
-                now_price = Price.objects.get(prod=prod.product).rub_price_supplier
-
-                difference_count = now_price - prod.product_price_catalog
-                count_percent = prod.product_price_catalog / 100 * 3
-                if difference_count > count_percent:
-                    data_product = {
-                        "prod": prod.product.article_supplier,
-                        "prod_name": prod.product.name,
-                        "price_old": prod.product_price_catalog,
-                        "price_new": now_price,
-                    }
-                    order_item_data["order_product"].append(data_product)
-
-        if order_item_data["order_product"] != []:
-
-            data_order_all.append(order_item_data)
-
-    return data_order_all
+    #     context = {"error": error_text}
+    #     return (next_url, context, True)

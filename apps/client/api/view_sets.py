@@ -899,7 +899,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 type_save = request.COOKIES.get("type_save")
                 
                 
-                # add_info_order(request, order, type_save)
+                add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
 

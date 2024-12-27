@@ -1822,7 +1822,7 @@ def bx_save_start_info(request):
         else:
             pass
 
-
+# страница товаров заказа только для трансляции битрикс
 @csrf_exempt
 def bitrix_product(request):
     bx_id = request.COOKIES.get("bitrix_id_order")

@@ -114,7 +114,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     if order.specification:
                         context["spes"] = int(order.specification.id)
                     else:
-                        context["spes"] = (None,)
+                        context["spes"] = None
                     print(context)
                     return (next_url, context, False)
                 except Order.DoesNotExist:

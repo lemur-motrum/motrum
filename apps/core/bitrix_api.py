@@ -31,10 +31,9 @@ def get_info_for_order_bitrix(bs_id_order, request):
         print("get_info_for_order_bitrix")
         webhook = settings.BITRIX_WEBHOOK
         webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
-        print(webhook)
         bx = Bitrix(webhook)
+        
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
-        # orders_bx = bx.get_all("crm.deal.list")
         orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
         print("orders_bx", orders_bx)
         company = orders_bx["COMPANY_ID"]
@@ -44,23 +43,18 @@ def get_info_for_order_bitrix(bs_id_order, request):
             context = {"error": error_text}
             return (next_url, context, True)
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
+            
             data = {
                 "order": {
                     "id_bitrix": bs_id_order,
-                    "manager": "ruslan.ovcharov1111@motrum.ru",
+                    "manager": orders_bx['ASSIGNED_BY_ID'],
                     "status": "PROCESSING",
                     # "status": orders_bx["STAGE_ID"],
                 },
             }
             company_bx = bx.get_by_ID("crm.company.get", [company])
-
-            #    data["company"]['id_bitrix'] = company_bx['ID']
             req_error, place, data_company = get_req_info_bx(bs_id_order)
-            print(3311)
-            # print("req_err", req_error, place, data_company)
-            print(344)
             if req_error:
-                print(544)
                 if place != "Адреса":
                     error_text = f"к сделке не прикреплен {place}"
                 else:
@@ -68,11 +62,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 next_url = "/admin_specification/error-b24/"
                 context = {"error": error_text}
                 return (next_url, context, True)
-            print(3333333)
             error_company, error_order = order_info_check(
                 data_company["data_commpany"], data["order"]
             )
-            print(error_company, error_order)
+            
             # ошибка в покупателе
             if error_company or error_order:
                 next_url = "/admin_specification/error-b24/"
@@ -93,7 +86,8 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 )
                 print(client_req, acc_req)
                 # manager = AdminUser.objects.get(email=data["order"]["manager"])
-                manager = AdminUser.objects.get(user=request.user)
+                # manager = AdminUser.objects.get(user=request.user)
+                manager = AdminUser.objects.get(bitrix_id=orders_bx['ASSIGNED_BY_ID'])
                 data_order = {
                     "id_bitrix": bs_id_order,
                     "name": 123131,
@@ -102,7 +96,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "status": data["order"]["status"],
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
-                    # "manager": manager,
+                    "manager": manager,
                 }
                 serializer_class = OrderSerializer
                 try:
@@ -269,8 +263,6 @@ def get_req_info_bx(bs_id_order):
             "data_commpany": company,
             "company_adress": company_adress_all,
         }
-        print(context)
-        print(5555555)
         return (False, "All", context)
         # company["legal_entity"] = req_bx["RQ_COMPANY_NAME"]
 
@@ -459,7 +451,7 @@ def add_info_order(request, order, type_save):
                 "crm.deal.update",
                 "UF_CRM_1735027633966",
             )
-            print(orders_bx)
+            # print(orders_bx)
 
         else:
             document_specification = None
@@ -540,7 +532,7 @@ def save_file_bx(bx, file, id_bx, method, field_name):
     print("save_file_bx")
     with open(file, "rb") as f:
         file_base64 = base64.b64encode(f.read()).decode("utf-8")
-    print(file_base64)
+    # print(file_base64)
     orders_bx = bx.call(
         method,
         {
@@ -561,10 +553,39 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 
 
 # новые документы после появления точных сроков поставки
-def save_new_doc_bx(pdf, pdf_signed):
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
-
+def save_new_doc_bx(order):
+    try:
+        webhook = settings.BITRIX_WEBHOOK
+        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        
+        id_bitrix_order = order.id_bitrix
+        file_dict = OrderDocumentBill.objects.filter(order=order)
+        file_dict_signed = file_dict.exclude(bill_file="")
+        file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
+        save_multi_file_all_bx(
+                bx,
+                "file_dict_signed",
+                file_dict_signed,
+                id_bitrix_order,
+                "crm.deal.update",
+                "UF_CRM_1735027585527",
+            )
+        save_multi_file_all_bx(
+            bx,
+            "file_dict_no_signed",
+            file_dict_no_signed,
+            id_bitrix_order,
+            "crm.deal.update",
+            "UF_CRM_1735027614423",
+        )
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Документы с новой датой после 1с б24 "
+        info = f"Документы с новой датой после 1с б24. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+    
 
 # выгрузка в битрикс данных по оплатам
 def save_payment_order_bx(data):
@@ -870,6 +891,39 @@ def get_stage_info_bx():
         location = "Получение статсов битрикс в бд"
         info = f" Получение статсов битрикс в бд {e}{tr}"
         e = error_alert(error, location, info)
+
+
+#  'ASSIGNED_BY_ID': '1',
+
+
+def get_manager():
+    try:
+        webhook = settings.BITRIX_WEBHOOK
+        webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+        bx = Bitrix(webhook)
+        manager_all_bx = bx.get_all(
+            "user.get",
+            params={
+                # "entityTypeId": 2,
+            },
+        )
+        for manager in manager_all_bx:
+            print(manager)
+            admin_okt = AdminUser.objects.filter(username=manager['EMAIL'])    
+            admin_okt = AdminUser.objects.filter(email=manager['EMAIL']).last() 
+            admin_okt.bitrix_id = manager['ID']
+            admin_okt.save()
+    except Exception as e:
+
+        tr = traceback.format_exc()
+        print(e, tr)
+        error = "error"
+        location = "Менеджеры битрикс"
+        info = f" Получение Менеджеры битрикс в бд {e}{tr}"
+        e = error_alert(error, location, info)
+
+       
+
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

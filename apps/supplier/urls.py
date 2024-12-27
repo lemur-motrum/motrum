@@ -24,6 +24,7 @@ urlpatterns = [
     path("add_holidays", views.add_holidays, name="add_holidays"),  # права админа
     path("get_currency", views.get_currency, name="get_currency"),
     path("add_stage_bx", views.add_stage_bx, name="add_stage_bx"),
+    path("add_admin_okt", views.add_admin_okt, name="add_admin_okt"),
     # url для автозаполнения
     url(
         r"^vendor-autocomplete/$",

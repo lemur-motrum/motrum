@@ -5,7 +5,7 @@ from django.shortcuts import render
 from regex import D
 from apps.client.models import Order
 from apps.client.task import actual_info_order_product
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -43,11 +43,11 @@ from apps.user.views import login_bitrix
 def add_iek(request):
     title = "TEST"
   
-    # order = Order.objects.get(id_bitrix=1)
-    # type_save = "new"
-    # p = add_info_order(request, order, type_save)
-    # print("add_iek",p)
-   
+    order = Order.objects.get(id_bitrix=1)
+    type_save = "new"
+    p = add_info_order(request, order, type_save)
+    print("add_iek",p)
+    
    
     result = 1
     if result:
@@ -123,6 +123,9 @@ def add_permission(request):
 
 def add_stage_bx(request):
     get_stage_info_bx()
+    
+def add_admin_okt(request):
+    get_manager()
 # добавление праздников вручную
 def add_holidays(request):
     import json

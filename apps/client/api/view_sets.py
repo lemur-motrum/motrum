@@ -1560,11 +1560,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
 
             data = {
-                "bitrix_id": "2373",
+                "bitrix_id": "1",
                 "order_products": [
                     {
-                        "article_motrum": "001926",
-                        "date_delivery": "26-11-2024",
+                        "article_motrum": "001777",
+                        "date_delivery": "24-11-2024",
                         "reserve": "1",
                         "client_shipment": "0",
                         "date_shipment": "22-11-2024",
@@ -1624,8 +1624,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if order_pdf:
                     pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
-                    # data["pdf"] = pdf
-                    # data["pdf_signed"] = pdf_signed
+
                     print(order_pdf)
             return Response(None, status=status.HTTP_200_OK)
         except Exception as e:
@@ -1639,10 +1638,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         finally:
             # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
             # если есть изденения даты для переделки счета:
-            birtix_ok = True
 
             if pdf:
-                is_save_new_doc_bx = save_new_doc_bx(pdf, pdf_signed)
+                is_save_new_doc_bx = save_new_doc_bx(order)
                 # if is_save_new_doc_bx == False:
                 #     birtix_ok = False
 

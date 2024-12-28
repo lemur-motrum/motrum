@@ -890,25 +890,6 @@ def create_specification(request):
     return render(request, "admin_specification/catalog.html", context)
 
 
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
-def update_order(request):
-    pass
-
-
-# Вьюха для сохранения спецификации
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
-def save_specification_view_admin(request):
-    from apps.specification.models import ProductSpecification, Specification
-
-    received_data = json.loads(request.body)
-
-    # сохранение спецификации
-    save_specification(received_data, request)
-
-    out = {"status": "ok", "data": received_data}
-    return JsonResponse(out)
-
-
 # рендер страницы со всеми спецификациями
 @csrf_exempt
 @permission_required(
@@ -982,6 +963,7 @@ def get_all_specifications(request):
     return render(request, "admin_specification/all_specifications.html", context)
 
 
+# одна спецификация
 @csrf_exempt
 @permission_required(
     "specification.add_specification",
@@ -1604,19 +1586,19 @@ def history_admin_bill(request, pk):
     return render(request, "admin_specification/history_admin_bill.html", context)
 
 
+# ошибки при получение инфо битрикс24
 def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
 
 
+# распределительная стартовая страница битрикса проверка инфо определения типа сохранения
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
     print("bx_start_page")
     print(request)
-    context = {
-        
-    }
+    context = {}
     # bx_id_order = request.GET.get("bitrix_id_order")
     # order = Order.objects.get(id_bitrix=int(bx_id_order))
     # context = {"cart": order.cart.id, "spes": order.specification.id}
@@ -1624,6 +1606,7 @@ def bx_start_page(request):
     return render(request, "admin_specification/bx_start.html", context)
 
 
+# стартовая страница битрикса проверка инфо определения типа сохранения
 @csrf_exempt
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_save_start_info(request):
@@ -1770,12 +1753,12 @@ def bx_save_start_info(request):
                         secure=True,
                     )
                     response.set_cookie(
-                    "specificationId",
-                    0,
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
+                        "specificationId",
+                        0,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 else:
                     response = render(
                         request,
@@ -1788,12 +1771,12 @@ def bx_save_start_info(request):
                         },
                     )
                     response.set_cookie(
-                    "specificationId",
-                    context["spes"],
-                    max_age=2629800,
-                    samesite="None",
-                    secure=True,
-                )
+                        "specificationId",
+                        context["spes"],
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 print(11111)
                 response.set_cookie(
                     "bitrix_id_order",
@@ -1816,11 +1799,11 @@ def bx_save_start_info(request):
                     samesite="None",
                     secure=True,
                 )
-                
 
                 return response
         else:
             pass
+
 
 # страница товаров заказа только для трансляции битрикс
 @csrf_exempt
@@ -1850,6 +1833,25 @@ def bitrix_product(request):
         "products": order_product,
     }
     return render(request, "admin_specification/bitrix_product.html", context)
+
+
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def update_order(request):
+#     pass
+
+
+# # Вьюха для сохранения спецификации
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def save_specification_view_admin(request):
+#     from apps.specification.models import ProductSpecification, Specification
+
+#     received_data = json.loads(request.body)
+
+#     # сохранение спецификации
+#     save_specification(received_data, request)
+
+#     out = {"status": "ok", "data": received_data}
+#     return JsonResponse(out)
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

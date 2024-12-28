@@ -22,3 +22,12 @@ RUN mkdir /home/sites/
 WORKDIR /home/sites/
 ADD requirements.txt /home/sites/
 RUN pip install -r requirements.txt
+
+# шрифты для PDF
+COPY Roboto-Bold.ttf /usr/share/fonts/
+COPY Roboto-Bold.ttf /usr/share/fonts/truetype/
+COPY Roboto-Bold.ttf /usr/share/fonts/truetype/dejavu
+
+COPY Roboto-Regular.ttf /usr/share/fonts/
+COPY Roboto-Regular.ttf /usr/share/fonts/truetype/
+COPY Roboto-Regular.ttf /usr/share/fonts/truetype/dejavu

@@ -182,7 +182,7 @@ def get_year_holiday(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
-
+# НЕ ИСПУЛЬЗУЮ  рабочие дня на след год(теперь внутри ежемесячной проверки берет за в )
 @app.task(
     bind=True,
     max_retries=10,
@@ -272,7 +272,7 @@ def del_void_cart(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
-
+# получение статусов б24 к сделкам
 @app.task(
     bind=True,
     max_retries=1,
@@ -287,7 +287,7 @@ def get_status_order_bx(self):
         info = f"получение в б24 статусов{exc}"
         e = error_alert(error, location, info)
 
-
+# проверка и запись в Б24 курса валют и измеения цен на товары 
 @app.task(
     bind=True,
     max_retries=1,
@@ -301,9 +301,9 @@ def get_curr_price_check_bx(self):
 
         info = f"отправка в б24 Критичные изменения цен и курса валют{exc}"
         e = error_alert(error, location, info)
+  
        
-
-
+# проверка битых изображений - удаление
 @app.task(
     bind=True,
     max_retries=1,

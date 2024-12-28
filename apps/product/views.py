@@ -17,6 +17,7 @@ from apps.product.models import (
     GroupProduct,
     Product,
     ProductDocument,
+    ProductImage,
     ProductProperty,
     Stock,
 )
@@ -282,23 +283,41 @@ def add_document_admin(request):
 
     if request.method == "POST":
         file_path = None
-        for id_select in id_selected:
-            form = DocumentForm(request.POST, request.FILES)
-            if form.is_valid():
-                product = Product.objects.get(id=id_select)
-                profile = form.save(commit=False)
-                file_name = request.FILES["document"].name
-                images_last_list = file_name.split(".")
-                type_file = "." + images_last_list[-1]
+    
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+          
+            profile = form.save(commit=False)
+            file_name = request.FILES["document"].name
+            print("request.POST",request.POST)
+            type_doc = request.POST["type_doc"]
+            name_doc = request.POST["name"]
+            
+            images_last_list = file_name.split(".")
+            type_file = "." + images_last_list[-1]
 
-                name = get_file_path_add_more_doc(
-                    product, profile.type_doc, profile.name
-                )
+            new_dir, link, slugish = get_file_path_add_more_doc(
+                product, profile.type_doc, profile.name
+            )
 
-                in_memory_file_obj = request.FILES["document"]
-                FileSystemStorage(location="/").save(
-                    in_memory_file_obj.name, in_memory_file_obj
+            in_memory_file_obj = request.FILES["document"]
+            # f = FileSystemStorage(location=new_dir).save(
+            #     in_memory_file_obj.name, in_memory_file_obj
+            # )
+            doc_name = f"{slugish}{type_file}"
+            f = FileSystemStorage(location=new_dir).save(
+                doc_name, in_memory_file_obj
+            )
+            print(f)
+            for id_prod in id_selected:
+                doc = f"{link}/{f}"
+                product_doc = ProductDocument.objects.create(
+                    product_id=int(id_prod),
+                    type_doc = type_doc,
+                    name = name_doc,
+                    document = doc
                 )
+                print(product_doc)
 
                 # for chunk in request.FILES["document"].chunks():
                 #     dest.write(chunk)

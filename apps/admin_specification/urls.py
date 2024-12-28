@@ -20,11 +20,11 @@ urlpatterns = [
         "all_specifications/", views.get_all_specifications, name="all_specifications"
     ),
     path("error-b24/", views.error_b24, name="error-b24"),
-    path(
-        "save_specification_view_admin/",
-        views.save_specification_view_admin,
-        name="save_specification_view_admin",
-    ),
+    # path(
+    #     "save_specification_view_admin/",
+    #     views.save_specification_view_admin,
+    #     name="save_specification_view_admin",
+    # ),
     path("search_product/", views.search_product, name="search_product"),
     path("load_products/", views.load_products, name="load_products"),
     # path(

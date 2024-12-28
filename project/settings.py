@@ -36,20 +36,17 @@ ALLOWED_HOSTS = [
     "b24-j6zvwj.bitrix24.ru",
 ]
 
-SESSION_COOKIE_SAMESITE = 'None' 
+SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None' 
+CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
+
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
-
-
-# ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -99,11 +96,11 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "middlewares.middlewares.RequestMiddleware",
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
-X_FRAME_OPTIONS = 'ALLOW-FROM https://b24-760o6o.bitrix24.ru/'
+X_FRAME_OPTIONS = "ALLOW-FROM https://b24-760o6o.bitrix24.ru/"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -165,11 +162,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = "ru-RU"
-
 TIME_ZONE = "Europe/Samara"
 
 USE_I18N = True
-
 USE_TZ = True
 
 AUTH_USER_MODEL = "user.CustomUser"
@@ -183,6 +178,7 @@ SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
 USE_DJANGO_JQUERY = True
 
@@ -243,5 +239,5 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-# CART_SESSION_ID = 'cart'
+
 BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")

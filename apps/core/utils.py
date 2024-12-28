@@ -476,16 +476,16 @@ def get_file_path_add_more_doc(product, type_doc, filename):
 
     base_dir = "products"
     path_name = "document_group"
-    base_dir_supplier = product.supplier.slug
-    if product.vendor:
-        base_dir_vendor = product.vendor.slug
-    else:
-        base_dir_vendor = "vendor-name"
+    # base_dir_supplier = product.supplier.slug
+    # if product.vendor:
+    #     base_dir_vendor = product.vendor.slug
+    # else:
+    #     base_dir_vendor = "vendor-name"
 
-    if product.category:
-        base_dir_vendor = product.category.slug
-    else:
-        base_dir_vendor = "category-name"
+    # if product.category:
+    #     base_dir_vendor = product.category.slug
+    # else:
+    #     base_dir_vendor = "category-name"
 
     type_doc = type_doc
 
@@ -493,28 +493,30 @@ def get_file_path_add_more_doc(product, type_doc, filename):
     regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
     slugish = re.sub(regex, "", slug_text)
     slugish = translit.translify(slugish)
+    slugish = slugify(slugish)
 
     # link_file = f"{new_dir}/{slugish}"
-    new_dir = "{0}/{1}/{2}/{3}/{4}/{5}".format(
+    new_dir = "{0}/{1}/{2}/{3}".format(
         MEDIA_ROOT,
         base_dir,
-        base_dir_supplier,
-        base_dir_vendor,
+        # base_dir_supplier,
+        # base_dir_vendor,
         path_name,
         type_doc,
     )
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
-    link = "{0}/{1}/{2}/{3}/{4}".format(
+    link = "{0}/{1}/{2}".format(
         base_dir,
-        base_dir_supplier,
-        base_dir_vendor,
+        # base_dir_supplier,
+        # base_dir_vendor,
         path_name,
         type_doc,
     )
+    print(new_dir, link, slugish)
 
-    return (link, slugish)
+    return (new_dir, link, slugish)
 
 
 # сохранение изображений и докуметов из админки и общее

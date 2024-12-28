@@ -369,7 +369,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     http_method_names = ["get", "post", "put", "update"]
 
-    # сохранение заказа с сайта
+    # сохранение заказа с сайта 
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
@@ -572,7 +572,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         # else:
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # сохранение Заказа БИТРИКС
+    # сохранение рыбы Заказа БИТРИКС
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
         try:
@@ -600,7 +600,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
 
-    # сохранение спецификации дмин специф
+    # сохранение спецификации OKT дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")
     def add_order_admin(self, request, *args, **kwargs):
         data = request.data
@@ -763,7 +763,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # сохранение заказа в корзины без документов для дальнейшего использования
+    # сохранение заказа в корзины отложенные без документов для дальнейшего использования
     @action(detail=False, methods=["post"], url_path=r"add-order-no-spec-admin")
     def add_order_no_spec_admin(self, request, *args, **kwargs):
         data = request.data
@@ -899,7 +899,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 type_save = request.COOKIES.get("type_save")
                 
                 
-                add_info_order(request, order, type_save)
+                # add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
 
@@ -916,7 +916,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
 
-    # изменение спецификации дмин специф
+    #ОКТ изменение спецификации дмин специф
     @action(detail=True, methods=["update"], url_path=r"update-order-admin")
     def update_order_admin(self, request, pk=None, *args, **kwargs):
         data = request.data
@@ -924,14 +924,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart = Cart.objects.filter(id=cart_id).update(is_active=False)
         return Response(cart, status=status.HTTP_200_OK)
 
-    # выйти из изменения без сохранения спецификации дмин специф
+    #ОКТ выйти из изменения без сохранения спецификации дмин специф
     @action(detail=False, methods=["update"], url_path=r"exit-order-admin")
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
         return Response(cart, status=status.HTTP_200_OK)
 
-    # получить список товаров для создания счета с датами псотавки
+    #ОКТ получить список товаров для создания счета с датами псотавки НА УДАЛЕНИЕ
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
 
@@ -944,7 +944,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # страница мои заказов аякс загрузка
+    #САЙТ страница мои заказов  аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
         from django.db.models.functions import Length
@@ -1164,7 +1164,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    # страница мои документы аякс загрузка
+    #САЙТ страница мои документы аякс загрузка
     @action(detail=False, url_path="load-ajax-document-list")
     def load_ajax_document_list(self, request):
         current_count = int(request.query_params.get("count"))
@@ -1344,7 +1344,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    # страница все спецификации окт аякс загрузка
+    #ОКТ страница все спецификации окт аякс загрузка
     @action(
         detail=False, methods=["post", "get"], url_path=r"load-ajax-specification-list"
     )
@@ -1425,7 +1425,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    # добавление оплаты открыть получить отстаок суммы
+    #ОКТ добавление оплаты открыть получить отстаок суммы
     @action(detail=True, methods=["get"], url_path=r"get-payment")
     def get_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1439,7 +1439,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # сохранение суммы оплаты счета
+    #ОКТ сохранение суммы оплаты счета
     @action(detail=True, methods=["post"], url_path=r"save-payment")
     def save_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1467,7 +1467,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # получение суммы уже оплаченной при открытии модалки внесения оплаты
+    #ОКТ получение суммы уже оплаченной при открытии модалки внесения оплаты
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
@@ -1513,45 +1513,46 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {}
         return Response(data, status=status.HTTP_200_OK)
 
-    # получение статусов заказов из битрикс
-    @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
-    def get_status_order_bitrix(self, request, *args, **kwargs):
-        # data = request.data
-        data = [
-            {"id_bitrix": "232", "status": "Отгрузка оборудования заказчику"},
-            {"id_bitrix": "5924", "status": "Отгрузка оборудования заказчику"},
-        ]
+    # #ОКТ Б24 получение статусов заказов из битрикс
+    # @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
+    # def get_status_order_bitrix(self, request, *args, **kwargs):
+    #     # data = request.data
+    #     data = [
+    #         {"id_bitrix": "232", "status": "Отгрузка оборудования заказчику"},
+    #         {"id_bitrix": "5924", "status": "Отгрузка оборудования заказчику"},
+    #     ]
 
-        def get_status_bx(status):
-            for choice in STATUS_ORDER_BITRIX:
-                if choice[1] == status:
-                    return choice[0]
+    #     def get_status_bx(status):
+    #         for choice in STATUS_ORDER_BITRIX:
+    #             if choice[1] == status:
+    #                 return choice[0]
 
-        for data_order in data:
-            print(data_order["id_bitrix"])
-            order = Order.objects.filter(id_bitrix=data_order["id_bitrix"]).last()
+    #     for data_order in data:
+    #         print(data_order["id_bitrix"])
+    #         order = Order.objects.filter(id_bitrix=data_order["id_bitrix"]).last()
 
-            if order:
-                status_bx = get_status_bx(data_order["status"])
-                if status == "SHIPMENT_":
-                    if order.type_delivery == "Самовывоз":
-                        status = "SHIPMENT_PICKUP"
-                    else:
-                        status = "SHIPMENT_AUTO"
+    #         if order:
+    #             status_bx = get_status_bx(data_order["status"])
+    #             if status == "SHIPMENT_":
+    #                 if order.type_delivery == "Самовывоз":
+    #                     status = "SHIPMENT_PICKUP"
+    #                 else:
+    #                     status = "SHIPMENT_AUTO"
 
-                    order.status = status
-                    order.save()
+    #                 order.status = status
+    #                 order.save()
 
-        return Response(data, status=status.HTTP_200_OK)
+    #     return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["post"], url_path=r"test")
-    def test(self, request, *args, **kwargs):
-        print("action test")
-        data = request.data
+    # @action(detail=False, methods=["post"], url_path=r"test")
+    # def test(self, request, *args, **kwargs):
+    #     print("action test")
+    #     data = request.data
 
-        print(data)
-        return Response(None, status=status.HTTP_200_OK)
-
+    #     print(data)
+    #     return Response(None, status=status.HTTP_200_OK)
+    
+    #ОКТ 1С сроки поставки товаров ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
     def add_info_order_1c(self, request, *args, **kwargs):
         # data = request.data
@@ -1643,7 +1644,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 is_save_new_doc_bx = save_new_doc_bx(order)
                 # if is_save_new_doc_bx == False:
                 #     birtix_ok = False
-
+    
+    #ОКТ 1С получение оплат ОКТ Б24 
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         try:
@@ -1683,6 +1685,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         finally:
             save_payment_order_bx(data)
 
+    #ОКТ 1С получение документов откгрузки ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         try:

@@ -3,8 +3,10 @@
     {% load cart %}
     {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
-    <div class="all_specifications_container" data-http-frame = "{{http_frame}}" data-bitrix-id-order = "{{bitrix_id_order}}">
-        {{post_data_bx_id}}
+    <div class="all_specifications_container"
+         data-http-frame="{{ http_frame }}"
+         data-bitrix-id-order="{{ bitrix_id_order }}">
+        {{ post_data_bx_id }}
         <h1 class="title">
             <span class="all_orders active">сформированные заказы</span><span class="orders_without_specifications">отложенные закзаы</span>
         </h1>
@@ -18,8 +20,6 @@
             </div>
             <div class="table-titles no_specification_titles">
                 <div class="table-title">Заказ</div>
-                <div class="table-title">Клиент</div>
-                <div class="table-title">Статус</div>
             </div>
             <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">

@@ -961,6 +961,10 @@ def get_manager():
 
 
 def _status_to_order_replace(name_status,id_bx):
+    error = "error"
+    location = "0"
+    info = f"0{STATUS_ORDER_BITRIX}"
+    e = error_alert(error, location, info)
     for choice in STATUS_ORDER_BITRIX:
         error = "error"
         location = "1"

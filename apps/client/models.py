@@ -273,36 +273,43 @@ class RequisitesAddress(models.Model):
     country = models.CharField(
         "Страна",
         max_length=100,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     post_code = models.PositiveIntegerField(
         "Индекс",
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     region = models.CharField(
         "Регион",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     province = models.CharField(
         "Область",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     city = models.CharField(
         "Город",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     address1 = models.CharField(
         "Адрес",
         max_length=200,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     address2 = models.CharField(
         "Дом",
         max_length=200,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
 
 
@@ -369,49 +376,28 @@ STATUS_ORDER = (
     ("COMPLETED", "Заказ завершен"),
 )
 # статусы которые есть в битрикс
-# STATUS_ORDER_BITRIX = (
-#     ("PROCESSING", "Квалификация"),
-#     ("PROCESSING", "Не обработано"),
-    
-#     ("PROCESSING", "Подготовка предложения"),
-#     ("PROCESSING", "КП отправлено"),
-#     ("PAYMENT", "Счёт отправлен"),
-#     ("IN_MOTRUM", "Поставка оборудования в Мотрум"),
-#     ("SHIPMENT_", "Отгрузка оборудования заказчику"),
-#     ("CANCELED", "Отложенные"),
-#     ("CANCELED", "Провальные"),
-#     ("COMPLETED", "Сделка успешна"),
-#     ("COMPLETED", "PREPAYMENT_INVOICE"),
-#     ("COMPLETED", "PREPARATION"),
-# )
 STATUS_ORDER_BITRIX = (
     ("PROCESSING", "NEW"),
     ("PROCESSING", "PREPARATION"),
     ("PROCESSING", "C8:NEW"),
-    
     ("PROCESSING", "C8:PREPARATION"),
-    ("PROCESSING", "C8:PREPAYMENT_INVOICE"),#На удаление
+    ("PROCESSING", "C8:PREPAYMENT_INVOICE"),  # На удаление
     ("PAYMENT", "C8:EXECUTING"),
     ("IN_MOTRUM", "C8:FINAL_INVOICE"),
     ("SHIPMENT_", "C8:1"),
     ("CANCELED", "C8:LOSE"),
     ("CANCELED", "C8:2"),
     ("COMPLETED", "C8:WON"),
-  
 )
 CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
-    
-    
     ("C8:NEW", "Не обработано"),
     ("C8:PREPARATION", "Подготовка расчета (счета)"),
-    ("C8:PREPAYMENT_INVOICE", "КП отправлено"),#На удаление
+    ("C8:PREPAYMENT_INVOICE", "КП отправлено"),  # На удаление
     ("C8:EXECUTING", "Счёт отправлен"),
-
     ("C8:FINAL_INVOICE", "Поставка оборудования в Мотрум"),
     ("C8:1", "Отгрузка оборудования заказчику"),
-    
     ("C8:LOSE", "Отложенные"),
     ("C8:2", "Провальные"),
     ("C8:WON", "Сделка успешна"),
@@ -440,7 +426,8 @@ class Order(models.Model):
     )
     text_name = models.CharField(
         max_length=500,
-        blank=True, null=True,
+        blank=True,
+        null=True,
     )
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",

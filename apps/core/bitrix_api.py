@@ -96,7 +96,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
                 data_order = {
                     "id_bitrix": bs_id_order,
-                    "name": name_order_bx,
+                    "name": bs_id_order,
                     "requisites": client_req.id,
                     "account_requisites": acc_req.id,
                     "status": status_okt,

@@ -438,6 +438,10 @@ class Order(models.Model):
     name = models.PositiveIntegerField(
         "номер заказа",
     )
+    text_name = models.CharField(
+        max_length=500,
+        blank=True, null=True,
+    )
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
         null=True,

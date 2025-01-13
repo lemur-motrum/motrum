@@ -969,6 +969,9 @@ def _status_to_order_replace(name_status,id_bx):
                 else:
                     # TODO:Как будто не правильно вписывать автошипмент
                     status = "SHIPMENT_AUTO"
+            return status
+        else:
+            return "PROCESSING"
 
 
 

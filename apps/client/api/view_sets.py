@@ -582,7 +582,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             print(data)
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))
-            serializer = serializer_class(order, data=data["serializer"], many=False)
+            serializer = serializer_class(order, data=data, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)

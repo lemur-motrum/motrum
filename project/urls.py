@@ -31,7 +31,7 @@ from apps.notifications.urls import router as notifications_router
 from apps.projects_web.urls import router as projects_web_router
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = routers.DefaultRouter()
 router.registry.extend(client_router.registry)
@@ -64,6 +64,11 @@ urlpatterns = [
     # апи
     path("api/", include(router.urls)),
     path("tinymce/", include("tinymce.urls")),
+    # схемы апи
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'), 
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 

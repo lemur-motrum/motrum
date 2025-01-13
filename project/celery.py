@@ -23,6 +23,7 @@ app.conf.beat_schedule = {
     #     'task': 'apps.core.tasks.currency_check_bx',
     #     'schedule': crontab(minute=00, hour=5),
     # },
+    
     # ТАСКИ ночные для обновления окт ежедневные
     # курсы валют
     "current_rate": {

@@ -149,7 +149,7 @@ function UpdateProductCart() {
 
         let endpoint = `/api/v1/cart/${el}/update-product/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          method: "POST",
           body: data,
           headers: {
             "Content-Type": "application/json",

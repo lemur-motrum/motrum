@@ -59,7 +59,7 @@ from django.contrib.sessions.models import Session
 from apps.client.models import (
     STATUS_ORDER,
     STATUS_ORDER_BITRIX,
-    STATUS_ORDER_INT,
+
     AccountRequisites,
     Client,
     DocumentShipment,
@@ -99,13 +99,13 @@ from apps.specification.api.serializers import (
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
-
+from openpyxl import load_workbook
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
-    http_method_names = ["get", "post", "put", "update"]
+    http_method_names = ["get", "post", "put"]
 
     # РЕГИСТРАЦИЯ ИЛИ АВТОРИЗАЦИЯ
     @action(detail=False, methods=["post"], url_path=r"login")
@@ -253,13 +253,13 @@ class ClientViewSet(viewsets.ModelViewSet):
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientRequisitesSerializer
-    http_method_names = ["get", "post", "update"]
+    http_method_names = ["get", "post",]
 
 
 class RequisitesViewSet(viewsets.ModelViewSet):
     queryset = Requisites.objects.all()
     serializer_class = RequisitesSerializer
-    http_method_names = ["get", "post", "update"]
+    http_method_names = ["get", "post"]
 
     def get_serializer(self, *args, **kwargs):
         # add many=True if the data is of type list
@@ -309,7 +309,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
         if valid_all:
             return Response(serializer_data_new, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["update"], url_path=r"update")
+    @action(detail=True, methods=["post","get"], url_path=r"update")
     def update_requisites(self, request, pk=None, *args, **kwargs):
 
         queryset = Requisites.objects.get(pk=pk)
@@ -360,14 +360,14 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
     serializer_class = AccountRequisitesSerializer
 
-    http_method_names = ["get", "post", "put", "update"]
+    http_method_names = ["get", "post", "put",]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    http_method_names = ["get", "post", "put", "update"]
+    http_method_names = ["get", "post", "put",]
 
     # сохранение заказа с сайта 
     @action(detail=False, methods=["post"], url_path=r"add_order")
@@ -851,7 +851,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # создание счета к заказу
-    @action(detail=True, methods=["update"], url_path=r"create-bill-admin")
+    @action(detail=True, methods=["get", "post",], url_path=r"create-bill-admin")
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
             data_get = request.data
@@ -917,7 +917,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
 
     #ОКТ изменение спецификации дмин специф
-    @action(detail=True, methods=["update"], url_path=r"update-order-admin")
+    @action(detail=True, methods=["get", "post",], url_path=r"update-order-admin")
     def update_order_admin(self, request, pk=None, *args, **kwargs):
         data = request.data
         cart_id = request.COOKIES.get("cart")
@@ -925,7 +925,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(cart, status=status.HTTP_200_OK)
 
     #ОКТ выйти из изменения без сохранения спецификации дмин специф
-    @action(detail=False, methods=["update"], url_path=r"exit-order-admin")
+    @action(detail=False, methods=["get", "post",], url_path=r"exit-order-admin")
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
@@ -1513,6 +1513,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {}
         return Response(data, status=status.HTTP_200_OK)
 
+    
+    @action(detail=True, methods=["post"], url_path=r"add-file-dowlad")
+    def add_file_dowlad(self, request, pk=None, *args, **kwargs):
+        pass
+        data = request.data
+        up_file = data['file']
+
+        workbook = load_workbook(up_file)
+        data_sheet = workbook.active
+        
+        for index in range(3, data_sheet.max_row):
+            row_level = data_sheet.row_dimensions[index].outline_level + 1
+            item_value = data_sheet.cell(row=index, column=2).value
+            
+            if row_level == 1:
+                    vendor_str = data_sheet.cell(row=index, column=1).value
+            
+            
+            
     # #ОКТ Б24 получение статусов заказов из битрикс
     # @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
     # def get_status_order_bitrix(self, request, *args, **kwargs):
@@ -1724,7 +1743,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer
-    http_method_names = ["get", "post", "put", "update"]
+    http_method_names = ["get", "post", "put",]
 
     @action(detail=False, methods=["post"], url_path=r"call-back-email")
     def send_email_callback(self, request, *args, **kwargs):

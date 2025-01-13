@@ -309,4 +309,12 @@ def get_curr_price_check_bx(self):
     max_retries=1,
 )
 def image_error_check_in(self):
-    image_error_check()
+    try:
+        image_error_check()
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"удаление битых картинок {exc}"
+
+        info = f"удаление битых картинок {exc}"
+        e = error_alert(error, location, info)
+  

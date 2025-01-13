@@ -17,6 +17,7 @@ from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 
 
+# клиент на сайте
 class Client(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     contact_name = models.CharField(
@@ -46,11 +47,13 @@ class Client(CustomUser):
     def __str__(self):
         return self.phone
 
+    # добавление менеджера клиенту рандом
     def add_manager(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
-
             old_user_manager = old_user.manager
+
+            # не такой как у последнего клиента
             if old_user_manager:
                 admin = (
                     AdminUser.objects.filter(admin_type="BASE")
@@ -78,6 +81,8 @@ TYPE_PAYMENT = (
 )
 
 
+# TODO: unique=True вернуть
+# юрлицо  клиента главна сущность ИНН
 class Requisites(models.Model):
     client = models.ForeignKey(
         Client,
@@ -193,6 +198,7 @@ class Requisites(models.Model):
     def __str__(self):
         return self.legal_entity
 
+    # получить название типа оплаты в шаблон
     def get_type_payment(self):
         for choice in TYPE_PAYMENT:
             if choice[0] == self.type_payment:
@@ -200,6 +206,7 @@ class Requisites(models.Model):
         return ""
 
 
+# реквизиты компании прикрепленные к кпп
 class RequisitesOtherKpp(models.Model):
     requisites = models.ForeignKey(
         Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
@@ -248,6 +255,7 @@ class RequisitesOtherKpp(models.Model):
         return f"{self.requisites.legal_entity} {self.kpp}"
 
 
+# типы адресов битрикс
 TYPE_ADDRESS = (
     (1, "Фактический адрес"),
     (4, "Адрес регистрации"),
@@ -256,6 +264,7 @@ TYPE_ADDRESS = (
 )
 
 
+# адреса реквизитов кпп
 class RequisitesAddress(models.Model):
     requisitesKpp = models.ForeignKey(
         RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
@@ -290,8 +299,7 @@ class RequisitesAddress(models.Model):
     )
 
 
-
-
+# банковские реквизиты прикрепленны к рекам с кпп
 class AccountRequisites(models.Model):
     requisitesKpp = models.ForeignKey(
         RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
@@ -324,6 +332,7 @@ class AccountRequisites(models.Model):
         return self.account_requisites
 
 
+# хранение номеров телефон всех кто осатвил контактные данные на сайте
 class EmailsAllWeb(models.Model):
     name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
     phone = models.CharField(
@@ -332,7 +341,7 @@ class EmailsAllWeb(models.Model):
     )
 
 
-
+# контакты оставленные для связаться
 class EmailsCallBack(models.Model):
     name = models.CharField("Контактное лицо", max_length=40, blank=True, null=True)
     phone = models.CharField(
@@ -341,6 +350,7 @@ class EmailsCallBack(models.Model):
     )
 
 
+# статусы которые в окт и на сайте- конвертация из статусов битрикс
 STATUS_ORDER = (
     ("", "----"),
     ("PROCESSING", "В обработке"),
@@ -351,9 +361,11 @@ STATUS_ORDER = (
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
 )
+# статусы которые есть в битрикс
 STATUS_ORDER_BITRIX = (
     ("PROCESSING", "Квалификация"),
     ("PROCESSING", "Не обработано"),
+    
     ("PROCESSING", "Подготовка предложения"),
     ("PROCESSING", "КП отправлено"),
     ("PAYMENT", "Счёт отправлен"),
@@ -365,15 +377,32 @@ STATUS_ORDER_BITRIX = (
     ("COMPLETED", "PREPAYMENT_INVOICE"),
     ("COMPLETED", "PREPARATION"),
 )
-STATUS_ORDER_INT = (
-    (1, "PROCESSING"),
-    (2, "PAYMENT"),
-    (3, "IN_MOTRUM"),
-    (4, "SHIPMENT_AUTO"),
-    (5, "SHIPMENT_PICKUP"),
-    (6, "CANCELED"),
-    (7, "COMPLETED"),
+NOT____STATUS_ORDER_BITRIX = (
+    ("NEW", "Квалификация"),
+    ("PREPARATION", "Квалификация"),
+    
+    
+    ("C8:NEW", "Не обработано"),
+    ("C8:PREPARATION", "Подготовка расчета (счета)"),
+    ("C8:PREPAYMENT_INVOICE", "КП отправлено"),#На удаление
+    ("C8:EXECUTING", "Счёт отправлен"),
+
+    ("C8:FINAL_INVOICE", "Поставка оборудования в Мотрум"),
+    ("C8:1", "Отгрузка оборудования заказчику"),
+    
+    ("C8:LOSE", "Отложенные"),
+    ("C8:2", "Провальные"),
+    ("C8:WON", "Сделка успешна"),
 )
+# STATUS_ORDER_INT = (
+#     (1, "PROCESSING"),
+#     (2, "PAYMENT"),
+#     (3, "IN_MOTRUM"),
+#     (4, "SHIPMENT_AUTO"),
+#     (5, "SHIPMENT_PICKUP"),
+#     (6, "CANCELED"),
+#     (7, "COMPLETED"),
+# )
 
 
 class Order(models.Model):
@@ -524,6 +553,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
+    # создание документов счета
     def create_bill(
         self,
         request,
@@ -533,6 +563,7 @@ class Order(models.Model):
         post_update,
         type_save,
     ):
+
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
@@ -607,6 +638,7 @@ class Order(models.Model):
         else:
             return None
 
+    # Получение руского названия статуса в шаблоны
     def get_status_name(self):
         for choice in STATUS_ORDER:
             if choice[0] == self.status:
@@ -614,6 +646,7 @@ class Order(models.Model):
         return ""
 
 
+# фаилы счетов все версии
 class OrderDocumentBill(models.Model):
     order = models.ForeignKey(
         Order,
@@ -678,6 +711,7 @@ class PaymentTransaction(models.Model):
         blank=True,
         null=True,
     )
+    # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
 
 class DocumentShipment(models.Model):
@@ -699,3 +733,4 @@ class DocumentShipment(models.Model):
         blank=True,
         null=True,
     )
+    # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))

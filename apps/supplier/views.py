@@ -42,11 +42,11 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-  
-    order = Order.objects.get(id_bitrix=1)
-    type_save = "new"
-    p = add_info_order(request, order, type_save)
-    print("add_iek",p)
+    iek_api()
+    # order = Order.objects.get(id_bitrix=1)
+    # type_save = "new"
+    # p = add_info_order(request, order, type_save)
+    # print("add_iek",p)
     
    
     result = 1
@@ -126,6 +126,7 @@ def add_stage_bx(request):
     
 def add_admin_okt(request):
     get_manager()
+    
 # добавление праздников вручную
 def add_holidays(request):
     import json

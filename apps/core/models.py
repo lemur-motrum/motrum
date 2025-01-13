@@ -268,7 +268,9 @@ class BaseImage(models.Model):
     class Meta:
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
-
+    
+    def __str__(self):
+        return "Базовые изображения для документов"
 
 class TypeDelivery(models.Model):
     text = models.CharField(

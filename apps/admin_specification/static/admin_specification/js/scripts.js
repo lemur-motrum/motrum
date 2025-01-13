@@ -676,7 +676,8 @@ window.addEventListener("DOMContentLoaded", () => {
       function exitSpecification(elems) {
         const endpoint = `/api/v1/order/exit-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -741,7 +742,8 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              method: "UPDATE",
+              // изменила метод 
+              method: "POST",
               body: data,
               headers: {
                 "Content-Type": "application/json",
@@ -1290,7 +1292,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1320,7 +1323,8 @@ window.addEventListener("DOMContentLoaded", () => {
       changeButton.onclick = () => {
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1348,7 +1352,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,

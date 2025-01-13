@@ -63,7 +63,8 @@ window.addEventListener("DOMContentLoaded", () => {
           const data = JSON.stringify(dataObj);
 
           fetch(`/api/v1/client/${clientId}/`, {
-            method: "UPDATE",
+            // изменила метод 
+            method: "POST",
             body: data,
             headers: {
               "Content-Type": "application/json",

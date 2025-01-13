@@ -66,7 +66,8 @@ window.addEventListener("DOMContentLoaded", () => {
             const data = JSON.stringify(dataObj);
 
             fetch(`/api/v1/requisites/${detailsId}/update/`, {
-              method: "UPDATE",
+              // изменила метод 
+              method: "POST",
               body: data,
               headers: {
                 "Content-Type": "application/json",
@@ -138,7 +139,8 @@ window.addEventListener("DOMContentLoaded", () => {
               const data = JSON.stringify(dataObj);
 
               fetch(`/api/v1/requisites/${detailsId}/update/`, {
-                method: "UPDATE",
+                // изменила метод 
+                method: "POST",
                 body: data,
                 headers: {
                   "Content-Type": "application/json",
@@ -234,7 +236,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 const data = JSON.stringify(dataObj);
 
                 fetch(`/api/v1/requisites/${detailsId}/update/`, {
-                  method: "UPDATE",
+                  // изменила метод 
+                  method: "POST",
                   body: data,
                   headers: {
                     "Content-Type": "application/json",
@@ -327,7 +330,8 @@ window.addEventListener("DOMContentLoaded", () => {
               ];
               const data = JSON.stringify(dataObj);
               fetch(`/api/v1/requisites/${detailsId}/update/`, {
-                method: "UPDATE",
+                // изменила метод 
+                method: "POST",
                 body: data,
                 headers: {
                   "Content-Type": "application/json",

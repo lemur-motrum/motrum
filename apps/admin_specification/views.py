@@ -465,6 +465,7 @@ def specifications(request, cat, gr):
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
+    
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")

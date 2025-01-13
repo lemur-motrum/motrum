@@ -109,7 +109,8 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productId}/update-product/`, {
-              method: "UPDATE",
+               // изменила метод 
+              method: "POST",
               body: data,
               headers: {
                 "Content-Type": "application/json",

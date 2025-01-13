@@ -355,7 +355,8 @@ export function uptadeOrChanegeSpecification(
     const endpoint = `/api/v1/order/${idSpecification}/update-order-admin/`;
 
     fetch(endpoint, {
-      method: "UPDATE",
+      // изменила метод 
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,

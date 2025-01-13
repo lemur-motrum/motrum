@@ -1435,7 +1435,7 @@ def get_iek_stock():
                     stock_prod = Stock.objects.get(prod=product_item)
                     if stock != 0:
                         stock_prod_stock_supplier = stock / int(
-                            stock.order_multiplicity
+                            stock_prod.order_multiplicity
                         )
                     else:
                         stock_prod_stock_supplier = 0

@@ -57,7 +57,8 @@ function updateClient() {
       let csrfToken = getCookie("csrftoken");
       console.log(data);
       fetch(endpoint, {
-        method: "UPDATE",
+        // изменила метод 
+        method: "POST",
         body: data,
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +212,8 @@ function updateRequisites() {
       let csrfToken = getCookie("csrftoken");
       console.log(data);
       fetch(endpoint, {
-        method: "UPDATE",
+        // изменила метод 
+        method: "POST",
         body: data,
         headers: {
           "Content-Type": "application/json",

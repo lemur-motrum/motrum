@@ -937,7 +937,7 @@
                             <select class="select_delevery" name='delevery-requisit' value="1">
                                 {% for delivery in type_delivery %}
                                     <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
-                                            value="{{ delivery.id }}">{{ delivery.text }}</option>
+                                            value="{{ delivery.id }}">{{ delivery.text }} {% if delivery.company_delivery %} {{delivery.company_delivery}} {% endif %}</option>
                                 {% endfor %}
                             </select>
                         </div>

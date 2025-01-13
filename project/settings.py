@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "213.139.208.116",
     "motrum.yuriyzhidkov.ru",
     "b24-j6zvwj.bitrix24.ru",
+    "pmn.bitrix24.ru",
 ]
 
 SESSION_COOKIE_SAMESITE = "None"
@@ -77,6 +78,7 @@ INSTALLED_APPS = [
     "sass_processor",
     "rest_framework",
     "tinymce",
+    'drf_spectacular', 
 ]
 
 STATICFILES_FINDERS = [
@@ -100,7 +102,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "project.urls"
-X_FRAME_OPTIONS = "ALLOW-FROM https://b24-760o6o.bitrix24.ru/"
+X_FRAME_OPTIONS = "ALLOW-FROM https://pmn.bitrix24.ru/"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -163,6 +165,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ru-RU"
 TIME_ZONE = "Europe/Samara"
+CELERY_TIMEZONE = "Europe/Samara"
 
 USE_I18N = True
 USE_TZ = True
@@ -241,3 +244,20 @@ EMAIL_USE_SSL = False
 
 
 BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Doctorsystem API",
+    "DESCRIPTION": "",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SCHEMA_PATH_PREFIX": "/api/",
+    "SERVE_PUBLIC": False,
+    
+    # "GET_MOCK_REQUEST": "doctorsystem.apps.core.schema.build_mock_request",
+    # drf_spectacular.plumbing.build_mock_request
+    
+}
+REST_FRAMEWORK = {     
+    # ВАШИ НАСТРОЙКИ     
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}

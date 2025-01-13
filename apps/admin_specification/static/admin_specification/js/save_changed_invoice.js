@@ -203,7 +203,8 @@ window.addEventListener("DOMContentLoaded", () => {
                   fetch(
                     `/api/v1/order/${response1.specification}/create-bill-admin/`,
                     {
-                      method: "UPDATE",
+                      // изменила метод 
+                      method: "POST",
                       body: data,
                       headers: {
                         "X-CSRFToken": csrfToken,

@@ -233,10 +233,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(data_response, status=status.HTTP_200_OK)
 
 
-class CartViewSet(viewsets.ModelViewSet):
+class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
-    http_method_names = ["get", "post", "update", "delete"]
+    http_method_names = ["get", "post", "delete"]
 
     # создать корзину
     @action(detail=False, methods=["get"], url_path=r"add-cart")
@@ -525,7 +525,7 @@ class CartViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # изменить количество товаров в корзине
-    @action(detail=True, methods=["update"], url_path=r"update-product")
+    @action(detail=True, methods=["get", "post"], url_path=r"update-product")
     def update_product_cart(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
         serializer_class = ProductCartSerializer

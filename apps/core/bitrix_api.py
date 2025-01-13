@@ -364,8 +364,8 @@ def get_status_order():
             id_bx = order_bx["ID"]
 
             status_bx = order_bx["STAGE_ID"]
-            stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
-            # stage_bd  = StageDealBx.objects.get(entity_id="Квалификация", status_id = status_bx)
+            # stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
+            stage_bd  = StageDealBx.objects.get(entity_id="Квалификация", status_id = status_bx)
             print("stage_bd", stage_bd)
             print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()

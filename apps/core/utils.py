@@ -1652,6 +1652,16 @@ def client_info_bitrix(data,company_adress):
     for company_bx_adress in company_adress:
         print(company_bx_adress)
         print(company_bx_adress["type_address_bx"])
+        if company_bx_adress["region"]:
+            pass
+        else :
+            company_bx_adress["region"] == None
+        
+        if company_bx_adress["province"]:
+            pass
+        else :
+            company_bx_adress["province"] == None
+            
         client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,

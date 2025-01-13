@@ -119,16 +119,16 @@ window.addEventListener("DOMContentLoaded", () => {
         if (deliveryDate) {
           if (!deliveryDate.value) {
             validate = false;
-            deliveryDate.style.border = "1px solid red";
-            deliveryDate.style.borderRadius = "10px";
+            deliveryDate.style.border = "0.063rem solid red";
+            deliveryDate.style.borderRadius = "0.625rem";
           }
         }
 
         if (inputPrice) {
           if (!inputPrice.value) {
             validate = false;
-            inputPrice.style.border = "1px solid red";
-            inputPrice.style.borderRadius = "10px";
+            inputPrice.style.border = "0.063rem solid red";
+            inputPrice.style.borderRadius = "0.625rem";
           }
         }
         if (validate === true) {
@@ -138,8 +138,8 @@ window.addEventListener("DOMContentLoaded", () => {
       if (bitrixInput) {
         if (!bitrixInput.value) {
           validate = false;
-          bitrixInput.style.border = "1px solid red";
-          bitrixInput.style.borderRadius = "10px";
+          bitrixInput.style.border = "0.063rem solid red";
+          bitrixInput.style.borderRadius = "0.625rem";
         }
       }
       if (validate == false) {

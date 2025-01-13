@@ -973,6 +973,196 @@ a {
       }
     }
   }
+  .contacts_modal_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 1s;
+    z-index: 100;
+    &.visible {
+      opacity: 1;
+    }
+    &.show {
+      display: flex;
+    }
+    .close_btn {
+      position: absolute;
+      top: 2.5%;
+      right: 5%;
+      transform: rotate(45deg);
+      font-weight: 300;
+      font-size: 6rem;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.6s;
+      &:hover {
+        color: #a4a4a4;
+      }
+    }
+    .modal_container {
+      width: 23.75rem;
+      height: auto;
+      padding: 1.813rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+      align-items: center;
+      background-color: #fff;
+      border-radius: 2.5rem;
+      .title {
+        font-size: 2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        width: 15.625rem;
+        text-align: center;
+        line-height: 1em;
+      }
+      label {
+        position: relative;
+        width: 13.938rem;
+        height: 3.563rem;
+        input {
+          width: 100%;
+          height: 100%;
+          border-radius: 2rem;
+          border: 0.094rem solid #000;
+          padding: 1.125rem 1.938rem;
+          font-size: 1.125rem;
+          font-weight: 300;
+          font-family: "Nunito", sans-serif;
+          box-sizing: border-box;
+          text-align: center;
+          &::-webkit-input-placeholder {
+            color: #000;
+            font-size: 1.313rem;
+          }
+          &::-moz-placeholder {
+            color: #000;
+            font-size: 1.313rem;
+          }
+          &:-ms-input-placeholder {
+            color: #000;
+            font-size: 1.313rem;
+          }
+          &::-ms-input-placeholder {
+            color: #000;
+            font-size: 1.313rem;
+          }
+          &::placeholder {
+            color: #000;
+            font-size: 1.313rem;
+          }
+          &:focus {
+            outline: none;
+            &::-webkit-input-placeholder {
+              color: transparent;
+            }
+            &::-moz-placeholder {
+              color: transparent;
+            }
+            &:-ms-input-placeholder {
+              color: transparent;
+            }
+            &::-ms-input-placeholder {
+              color: transparent;
+            }
+            &::placeholder {
+              color: transparent;
+            }
+          }
+        }
+        .error {
+          color: red;
+          font-size: 0.6rem;
+          position: absolute;
+          top: 101%;
+          left: 50%;
+          transform: translateX(-50%);
+          transition: 0.6s;
+          opacity: 0;
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
+
+          &.show {
+            opacity: 1;
+          }
+        }
+      }
+      textarea {
+        width: 13.938rem;
+        height: 7.126rem;
+        border-radius: 2rem;
+        border: 0.094rem solid #000;
+        padding: 1.125rem 1.938rem;
+        box-sizing: border-box;
+        font-family: "Nunito", sans-serif;
+        font-size: 0.625rem;
+        &::-webkit-input-placeholder {
+          color: #000;
+        }
+        &::-moz-placeholder {
+          color: #000;
+        }
+        &:-ms-input-placeholder {
+          color: #000;
+        }
+        &::-ms-input-placeholder {
+          color: #000;
+        }
+        &::placeholder {
+          color: #000;
+        }
+        &:focus {
+          outline: none;
+          &::-webkit-input-placeholder {
+            color: transparent;
+          }
+          &::-moz-placeholder {
+            color: transparent;
+          }
+          &:-ms-input-placeholder {
+            color: transparent;
+          }
+          &::-ms-input-placeholder {
+            color: transparent;
+          }
+          &::placeholder {
+            color: transparent;
+          }
+        }
+        &::-webkit-resizer {
+          display: none;
+        }
+      }
+      button {
+        width: 13.938rem;
+        height: 3.563rem;
+        border: 0.094rem solid;
+        border-radius: 2rem;
+        background-color: #95bad4;
+        border-color: #95bad4;
+        color: #fff;
+        text-transform: lowercase;
+        font-size: 1.313rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.6s;
+        cursor: pointer;
+        &:hover {
+          background-color: #ff5b00;
+          border-color: #ff5b00;
+        }
+      }
+    }
+  }
 
   div[window-elem="cookie"] {
     margin: 0 auto;
@@ -1101,6 +1291,16 @@ a {
       display: flex;
       gap: 1.125rem;
       // margin-left: 5.419rem;
+      div {
+        width: 2.75rem;
+        height: 2.35rem;
+        img {
+          width: 100%;
+          height: 100%;
+          -o-object-fit: contain;
+          object-fit: contain;
+        }
+      }
       .cart-elem {
         font-size: 0.938rem;
         text-transform: uppercase;
@@ -2294,7 +2494,41 @@ a {
     }
   }
 }
-
+.privacy_policy_container {
+  margin: 1.625rem 3.125rem;
+  .head-content {
+    .bread-crumbs {
+      a {
+        font-size: 0.938rem;
+        text-transform: lowercase;
+        font-weight: 300;
+        color: #000;
+      }
+    }
+    .title {
+      margin: 0;
+      padding: 0;
+      font-size: 3rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      width: 100%;
+    }
+  }
+  .privacy_policy_text {
+    margin-top: 2rem;
+    width: 59.875rem;
+    font-size: 1.313rem;
+    font-weight: 300;
+    .br {
+      height: 1.313rem;
+    }
+    a {
+      color: #95bad4;
+      cursor: pointer;
+      font-weight: 900;
+    }
+  }
+}
 .cart_container {
   margin: 1.625rem 3.125rem;
   .title_container {

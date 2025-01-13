@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     {% include "admin_specification/include/header.html" %}
-    {{post_data_bx_id}}
+    {{ post_data_bx_id }}
     <div order={{ order }} class="specification-container okt_cart_container">
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
@@ -27,7 +27,7 @@
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
                          data-id="{{ item.id_product_cart }}"
-                         data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %} {% comment %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} {% if item.price.rub_price_supplier %} {{ item.price.rub_price_supplier }} {% else %} 0 {% endif %} {% endif %} {% endcomment %} "
+                         data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %}{% comment %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} {% if item.price.rub_price_supplier %} {{ item.price.rub_price_supplier }} {% else %} 0 {% endif %} {% endif %} {% endcomment %}"
                          data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
                          data-product-specification-id="{{ item.id_product_spesif }}"
                          data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">

@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
       console.log(headerHeigth);
       window.onscroll = () => {
         let windowScrollY = window.scrollY;
-        if (windowScrollY > headerHeigth) {
+        if (windowScrollY > headerHeigth * 7) {
           header.classList.add("fixed");
         } else {
           header.classList.remove("fixed");

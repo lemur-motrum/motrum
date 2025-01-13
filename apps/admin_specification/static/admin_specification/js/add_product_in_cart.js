@@ -233,7 +233,5 @@ function cartItemsQuantity() {
     if (cartItemsQuantity.textContent != 0) {
       cartItemsQuantity.classList.add("orange");
     }
-  } else {
-    return;
   }
 }

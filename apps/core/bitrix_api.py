@@ -956,9 +956,17 @@ def get_manager():
 
 
 def _status_to_order_replace(name_status,id_bx):
+    error = "error"
+    location = "1"
+    info = f"1{name_status}"
+    e = error_alert(error, location, info)
     for choice in STATUS_ORDER_BITRIX:
         if choice[1] == name_status:
             status = choice[0]
+            error = "error"
+            location = "1"
+            info = f"1{status}"
+            e = error_alert(error, location, info)
             order = Order.objects.filter(id_bitrix=id_bx).last()
             if status == "SHIPMENT_":
                 if order:

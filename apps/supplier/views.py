@@ -3,7 +3,7 @@ from locale import LC_ALL, setlocale
 import threading
 from django.shortcuts import render
 from regex import D
-from apps.client.models import Order
+from apps.client.models import STATUS_ORDER_BITRIX, Order
 
 from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order
 from apps.logs.utils import error_alert
@@ -42,12 +42,15 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    iek_api()
-    # order = Order.objects.get(id_bitrix=1)
-    # type_save = "new"
-    # p = add_info_order(request, order, type_save)
-    # print("add_iek",p)
-    
+    name_status = "C8:PREPARATION"
+    print("name_stat",name_status)
+    for choice in STATUS_ORDER_BITRIX:
+        if choice[1] == name_status:
+            status = choice[0]
+            print("2", status)
+            
+            
+ 
    
     result = 1
     if result:

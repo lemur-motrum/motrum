@@ -395,98 +395,99 @@ def add_info_order(request, order, type_save):
     try:
         webhook = settings.BITRIX_WEBHOOK
         id_bitrix_order = order.id_bitrix
-        print("add_info_order")
+        if id_bitrix_order == 10568:
+            print("add_info_order")
 
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
-        orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
-        if len(orders_bx) > 0:
-            orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
-            print(orders_bx)
+            bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
             orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
-            print(orders_bx)
-            company = orders_bx["COMPANY_ID"]
-            company_bx = bx.get_by_ID("crm.company.get", [company])
-            print("company_bx")
-            print(company_bx)
+            if len(orders_bx) > 0:
+                orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
+                print(orders_bx)
+                orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
+                print(orders_bx)
+                company = orders_bx["COMPANY_ID"]
+                company_bx = bx.get_by_ID("crm.company.get", [company])
+                print("company_bx")
+                print(company_bx)
 
-            order_debt = order.bill_sum - order.bill_sum_paid
-            data_order = {
-                "id": id_bitrix_order,
-                "fields": {
-                    "OPPORTUNITY": order.bill_sum,
-                    "UF_CRM_1735027683353": order.bill_sum_paid,
-                    "UF_CRM_1735027695061": order_debt,
-                },
-            }
-            orders_bx = bx.call("crm.deal.update", data_order)
-            print(orders_bx)
+                order_debt = order.bill_sum - order.bill_sum_paid
+                data_order = {
+                    "id": id_bitrix_order,
+                    "fields": {
+                        "OPPORTUNITY": order.bill_sum,
+                        "UF_CRM_1734772155723": order.bill_sum_paid,
+                        "UF_CRM_1734772173389": order_debt,
+                    },
+                }
+                orders_bx = bx.call("crm.deal.update", data_order)
+                print(orders_bx)
 
-            file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
-            file_dict_signed = file_dict.exclude(bill_file="")
-            file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
+                file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
+                file_dict_signed = file_dict.exclude(bill_file="")
+                file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
 
-            save_multi_file_all_bx(
-                bx,
-                "file_dict_signed",
-                file_dict_signed,
-                id_bitrix_order,
-                "crm.deal.update",
-                "UF_CRM_1735027585527",
-            )
-            save_multi_file_all_bx(
-                bx,
-                "file_dict_no_signed",
-                file_dict_no_signed,
-                id_bitrix_order,
-                "crm.deal.update",
-                "UF_CRM_1735027614423",
-            )
-            print(999999999999)
-            if order.specification.file:
-                document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
-                print("document_specification", document_specification)
-                orders_bx = save_file_bx(
+                save_multi_file_all_bx(
                     bx,
-                    document_specification,
-                    order.id_bitrix,
+                    "file_dict_signed",
+                    file_dict_signed,
+                    id_bitrix_order,
                     "crm.deal.update",
-                    "UF_CRM_1735027633966",
+                    "UF_CRM_1734772516954",
                 )
+                save_multi_file_all_bx(
+                    bx,
+                    "file_dict_no_signed",
+                    file_dict_no_signed,
+                    id_bitrix_order,
+                    "crm.deal.update",
+                    "UF_CRM_1734772537613",
+                )
+                print(999999999999)
+                if order.specification.file:
+                    document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+                    print("document_specification", document_specification)
+                    orders_bx = save_file_bx(
+                        bx,
+                        document_specification,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1715001959646",
+                    )
+                    # print(orders_bx)
+
+                else:
+                    document_specification = None
+
                 # print(orders_bx)
 
-            else:
-                document_specification = None
+                # СЧЕТ  СДЕЛКИ
+                if order.bill_id_bx:
+                    invoice = {
+                        "title": order.bill_name,
+                        "accountNumber": order.bill_name,
+                        "opportunity": order.bill_sum,
+                        # "parentId2": id_bitrix_order,
+                        "closedate": order.bill_date_stop,
+                    }
+                    invoice_bx = bx.call(
+                        "crm.item.update",
+                        {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
+                    )
+                else:
+                    invoice = {
+                        "title": order.bill_name,
+                        "accountNumber": order.bill_name,
+                        "opportunity": order.bill_sum,
+                        "parentId2": id_bitrix_order,
+                        "closedate": order.bill_date_stop,
+                    }
 
-            # print(orders_bx)
-
-            # СЧЕТ  СДЕЛКИ
-            if order.bill_id_bx:
-                invoice = {
-                    "title": order.bill_name,
-                    "accountNumber": order.bill_name,
-                    "opportunity": order.bill_sum,
-                    # "parentId2": id_bitrix_order,
-                    "closedate": order.bill_date_stop,
-                }
-                invoice_bx = bx.call(
-                    "crm.item.update",
-                    {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
-                )
-            else:
-                invoice = {
-                    "title": order.bill_name,
-                    "accountNumber": order.bill_name,
-                    "opportunity": order.bill_sum,
-                    "parentId2": id_bitrix_order,
-                    "closedate": order.bill_date_stop,
-                }
-
-                invoice_bx = bx.call(
-                    "crm.item.add", {"entityTypeId": 31, "fields": invoice}
-                )
-                invoice_bx_id = invoice_bx["id"]
-                order.bill_id_bx = invoice_bx_id
-                order.save()
+                    invoice_bx = bx.call(
+                        "crm.item.add", {"entityTypeId": 31, "fields": invoice}
+                    )
+                    invoice_bx_id = invoice_bx["id"]
+                    order.bill_id_bx = invoice_bx_id
+                    order.save()
 
     except Exception as e:
         print(e)

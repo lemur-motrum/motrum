@@ -578,10 +578,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             print("def order_bitrix")
             data = request.data
+            id_bitrix = request.COOKIES.get("bitrix_id_order")
             print(data)
             serializer_class = OrderSerializer
-            order = Order.objects.get(id_bitrix=int(data["bitrix_id_order"]))
-            serializer = serializer_class(order, data=data, many=False)
+            order = Order.objects.get(id_bitrix=int(id_bitrix))
+            serializer = serializer_class(order, data=data["serializer"], many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)

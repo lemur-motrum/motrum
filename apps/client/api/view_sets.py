@@ -1,5 +1,6 @@
 import datetime
 import email
+import json
 import math
 from operator import itemgetter
 import os
@@ -579,10 +580,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             print("def order_bitrix")
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
-            print(data)
+            s = data['serializer']
+            json_acceptable_string = s.replace("'", "\"")
+            d = json.loads(json_acceptable_string)
+            
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))
-            serializer = serializer_class(order, data=data, many=False)
+            serializer = serializer_class(order, data=d, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)

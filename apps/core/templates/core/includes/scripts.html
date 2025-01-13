@@ -1,26 +1,23 @@
 {% load static %}
 <!--functions  -->
 <script type="module"
-        src="{% static 'core/js/functions.js' %}"
-        ver="{% now 'u' %}"></script>
+        src="{% static 'core/js/functions.js' %}?ver={% now 'u' %}"
+        </script>
 <!--core  -->
 {% comment %} <script type="module" src={% static 'core/js/scripts.js' %}?ver={% now 'u' %}></script> {% endcomment %}
 <script type="module" src="{% static 'core/js/scripts.js' %}?ver={% now 'u' %}"></script>
 <!--клиенты  -->
 <script type="module"
-        src="{% static 'client/js/modal/login_client_modal.js' %}"
-        ver="{% now 'u' %}"></script>
+        src="{% static 'client/js/modal/login_client_modal.js' %}?ver={% now 'u' %}"></script>
 <script type="module"
-        src="{% static 'client/js/ajax_load_order.js' %}"
-        ver="{% now 'u' %}"></script>
+        src="{% static 'client/js/ajax_load_order.js' %}?ver={% now 'u' %}"></script>
 <script type="module"
-        src="{% static 'client/js/ajax_load_document.js' %}"
-        ver="{% now 'u' %}"></script>
+        src="{% static 'client/js/ajax_load_document.js' %}?ver={% now 'u' %}"
+    ></script>
 <!--продукты -->
 <script type="module"
-        src="{% static 'product/js/load_catalog_items.js' %}"
-        ver="{% now 'u' %}"></script>
+        src="{% static 'product/js/load_catalog_items.js' %}?ver={% now 'u' %}"></script>
 <!--проекты -->
-{% comment %} <script type="module"
-        src="{% static 'projects_web/js/ajax_load_project.js' %}"
-        ver="{% now 'u' %}"></script> {% endcomment %}
+<script type="module"
+        src="{% static 'projects_web/js/ajax_load_project.js' %}?ver={% now 'u' %}"
+       ></script> 

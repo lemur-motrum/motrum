@@ -961,21 +961,11 @@ def get_manager():
 
 
 def _status_to_order_replace(name_status,id_bx):
-    error = "error"
-    location = "0"
-    info = f"0{STATUS_ORDER_BITRIX}"
-    e = error_alert(error, location, info)
+    status = None
     for choice in STATUS_ORDER_BITRIX:
-        error = "error"
-        location = "1"
-        info = f"1{status}"
-        e = error_alert(error, location, info)
         if choice[1] == name_status:
             status = choice[0]
-            error = "error"
-            location = "2"
-            info = f"2{status}"
-            e = error_alert(error, location, info)
+
             # order = Order.objects.filter(id_bitrix=id_bx).last()
             # if status == "SHIPMENT_":
             #     if order:
@@ -986,13 +976,14 @@ def _status_to_order_replace(name_status,id_bx):
             #     else:
             #         # TODO:Как будто не правильно вписывать автошипмент
             #         status = "SHIPMENT_AUTO"
+       
             
-            return status
-        else:
-            return None
-            # return "PROCESSING"
 
-
+    if status:
+        return status
+    else:
+        return "None"
+        # return "PROCESSING"
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

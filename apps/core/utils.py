@@ -1665,7 +1665,7 @@ def client_info_bitrix(data,company_adress):
         client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,
-                type_address_bx = '6',
+                type_address_bx = company_bx_adress["type_address_bx"],
                 defaults={
                     
                     "country": company_bx_adress["country"],

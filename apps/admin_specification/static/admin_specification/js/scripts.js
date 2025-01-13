@@ -1589,6 +1589,7 @@ window.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: data,
         headers: {
+          "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
       })

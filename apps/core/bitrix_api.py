@@ -90,8 +90,8 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 # manager = AdminUser.objects.get(user=request.user)
                 status_okt = _status_to_order_replace(data["order"]["status"],bs_id_order)
                 error = "error"
-                location = "1"
-                info = f"1{status_okt}"
+                location = "3"
+                info = f"3{status_okt}"
                 e = error_alert(error, location, info)
                 manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
                 data_order = {

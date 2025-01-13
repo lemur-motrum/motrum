@@ -103,6 +103,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
                     "manager": manager.id,
+                    "text_name": name_order_bx,
                 }
                 serializer_class = OrderSerializer
                 try:

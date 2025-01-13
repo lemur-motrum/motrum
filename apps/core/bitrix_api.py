@@ -966,8 +966,9 @@ def _status_to_order_replace(name_status,id_bx):
     info = f"1{name_status}"
     e = error_alert(error, location, info)
     for choice in STATUS_ORDER_BITRIX:
-        if choice[0] == name_status:
-            status = choice[1]
+        if choice[1] == name_status:
+            status = choice[2]
+            
             error = "error"
             location = "2"
             info = f"2{status}"

@@ -273,29 +273,36 @@ class RequisitesAddress(models.Model):
     country = models.CharField(
         "Страна",
         max_length=100,
+        null=True, blank=True,
     )
     post_code = models.PositiveIntegerField(
         "Индекс",
+        null=True, blank=True,
     )
     region = models.CharField(
         "Регион",
         max_length=150,
+        null=True, blank=True,
     )
     province = models.CharField(
         "Область",
         max_length=150,
+        null=True, blank=True,
     )
     city = models.CharField(
         "Город",
         max_length=150,
+        null=True, blank=True,
     )
     address1 = models.CharField(
         "Адрес",
         max_length=200,
+        null=True, blank=True,
     )
     address2 = models.CharField(
         "Дом",
         max_length=200,
+        null=True, blank=True,
     )
 
 

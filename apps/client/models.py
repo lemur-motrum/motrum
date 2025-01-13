@@ -399,7 +399,7 @@ STATUS_ORDER_BITRIX = (
     ("COMPLETED", "C8:WON"),
   
 )
-NOT____STATUS_ORDER_BITRIX = (
+CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
     

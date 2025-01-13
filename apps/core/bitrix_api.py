@@ -973,20 +973,21 @@ def _status_to_order_replace(name_status,id_bx):
             location = "2"
             info = f"2{status}"
             e = error_alert(error, location, info)
-            order = Order.objects.filter(id_bitrix=id_bx).last()
-            if status == "SHIPMENT_":
-                if order:
-                    if order.type_delivery == "Самовывоз":
-                        status = "SHIPMENT_PICKUP"
-                    else:
-                        status = "SHIPMENT_AUTO"
-                else:
-                    # TODO:Как будто не правильно вписывать автошипмент
-                    status = "SHIPMENT_AUTO"
+            # order = Order.objects.filter(id_bitrix=id_bx).last()
+            # if status == "SHIPMENT_":
+            #     if order:
+            #         if order.type_delivery == "Самовывоз":
+            #             status = "SHIPMENT_PICKUP"
+            #         else:
+            #             status = "SHIPMENT_AUTO"
+            #     else:
+            #         # TODO:Как будто не правильно вписывать автошипмент
+            #         status = "SHIPMENT_AUTO"
             
             return status
         else:
-            return "PROCESSING"
+            return "None"
+            # return "PROCESSING"
 
 
 

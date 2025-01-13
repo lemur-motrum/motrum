@@ -89,6 +89,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 # manager = AdminUser.objects.get(email=data["order"]["manager"])
                 # manager = AdminUser.objects.get(user=request.user)
                 status_okt = _status_to_order_replace(data["order"]["status"],bs_id_order)
+                error = "error"
+                location = "1"
+                info = f"1{status_okt}"
+                e = error_alert(error, location, info)
                 manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
                 data_order = {
                     "id_bitrix": bs_id_order,
@@ -964,8 +968,8 @@ def _status_to_order_replace(name_status,id_bx):
         if choice[0] == name_status:
             status = choice[1]
             error = "error"
-            location = "1"
-            info = f"1{status}"
+            location = "2"
+            info = f"2{status}"
             e = error_alert(error, location, info)
             order = Order.objects.filter(id_bitrix=id_bx).last()
             if status == "SHIPMENT_":
@@ -977,6 +981,7 @@ def _status_to_order_replace(name_status,id_bx):
                 else:
                     # TODO:Как будто не правильно вписывать автошипмент
                     status = "SHIPMENT_AUTO"
+            
             return status
         else:
             return "PROCESSING"

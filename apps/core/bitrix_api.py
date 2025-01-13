@@ -37,6 +37,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
         orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
         print("orders_bx", orders_bx)
         company = orders_bx["COMPANY_ID"]
+        name_order_bx = orders_bx["TITLE"]
         if company == "0":
             error_text = "К сделке не прикреплен клиент"
             next_url = "/admin_specification/error-b24/"
@@ -48,8 +49,8 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 "order": {
                     "id_bitrix": bs_id_order,
                     "manager": orders_bx["ASSIGNED_BY_ID"],
-                    "status": "PROCESSING",
-                    # "status": orders_bx["STAGE_ID"],
+                    # "status": "PROCESSING",
+                    "status": orders_bx["STAGE_ID"],
                 },
             }
             company_bx = bx.get_by_ID("crm.company.get", [company])
@@ -87,13 +88,14 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 print(client_req, acc_req)
                 # manager = AdminUser.objects.get(email=data["order"]["manager"])
                 # manager = AdminUser.objects.get(user=request.user)
+                status_okt = _status_to_order_replace(data["order"]["status"],bs_id_order)
                 manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
                 data_order = {
                     "id_bitrix": bs_id_order,
-                    "name": 123131,
+                    "name": name_order_bx,
                     "requisites": client_req.id,
                     "account_requisites": acc_req.id,
-                    "status": data["order"]["status"],
+                    "status": status_okt,
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
                     "manager": manager,
@@ -517,6 +519,8 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
     for file in file_dict:
         if type_file == "file_dict_signed":
             name = file.bill_file
+            if file.is_active == False:
+                name = f"{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
@@ -527,8 +531,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
 
         elif type_file == "file_dict_shipment":
             name = file.file
-            if file.is_active == False:
-                name = f"{name}_не-актуально"
+            
             file = f"{MEDIA_ROOT}/{ file.file}"
         else:
             name = "1"
@@ -950,6 +953,24 @@ def get_manager():
         location = "Менеджеры битрикс"
         info = f" Получение Менеджеры битрикс в бд {e}{tr}"
         e = error_alert(error, location, info)
+
+
+def _status_to_order_replace(name_status,id_bx):
+    for choice in STATUS_ORDER_BITRIX:
+        if choice[1] == name_status:
+            status = choice[0]
+            order = Order.objects.filter(id_bitrix=id_bx).last()
+            if status == "SHIPMENT_":
+                if order:
+                    if order.type_delivery == "Самовывоз":
+                        status = "SHIPMENT_PICKUP"
+                    else:
+                        status = "SHIPMENT_AUTO"
+                else:
+                    # TODO:Как будто не правильно вписывать автошипмент
+                    status = "SHIPMENT_AUTO"
+
+
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

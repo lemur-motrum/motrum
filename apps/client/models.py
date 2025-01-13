@@ -369,20 +369,35 @@ STATUS_ORDER = (
     ("COMPLETED", "Заказ завершен"),
 )
 # статусы которые есть в битрикс
-STATUS_ORDER_BITRIX = (
-    ("PROCESSING", "Квалификация"),
-    ("PROCESSING", "Не обработано"),
+# STATUS_ORDER_BITRIX = (
+#     ("PROCESSING", "Квалификация"),
+#     ("PROCESSING", "Не обработано"),
     
-    ("PROCESSING", "Подготовка предложения"),
-    ("PROCESSING", "КП отправлено"),
-    ("PAYMENT", "Счёт отправлен"),
-    ("IN_MOTRUM", "Поставка оборудования в Мотрум"),
-    ("SHIPMENT_", "Отгрузка оборудования заказчику"),
-    ("CANCELED", "Отложенные"),
-    ("CANCELED", "Провальные"),
-    ("COMPLETED", "Сделка успешна"),
-    ("COMPLETED", "PREPAYMENT_INVOICE"),
-    ("COMPLETED", "PREPARATION"),
+#     ("PROCESSING", "Подготовка предложения"),
+#     ("PROCESSING", "КП отправлено"),
+#     ("PAYMENT", "Счёт отправлен"),
+#     ("IN_MOTRUM", "Поставка оборудования в Мотрум"),
+#     ("SHIPMENT_", "Отгрузка оборудования заказчику"),
+#     ("CANCELED", "Отложенные"),
+#     ("CANCELED", "Провальные"),
+#     ("COMPLETED", "Сделка успешна"),
+#     ("COMPLETED", "PREPAYMENT_INVOICE"),
+#     ("COMPLETED", "PREPARATION"),
+# )
+STATUS_ORDER_BITRIX = (
+    ("PROCESSING", "NEW"),
+    ("PROCESSING", "PREPARATION"),
+    ("PROCESSING", "C8:NEW"),
+    
+    ("PROCESSING", "C8:PREPARATION"),
+    ("PROCESSING", "C8:PREPAYMENT_INVOICE"),#На удаление
+    ("PAYMENT", "C8:EXECUTING"),
+    ("IN_MOTRUM", "C8:FINAL_INVOICE"),
+    ("SHIPMENT_", "C8:1"),
+    ("CANCELED", "C8:LOSE"),
+    ("CANCELED", "C8:2"),
+    ("COMPLETED", "C8:WON"),
+  
 )
 NOT____STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),

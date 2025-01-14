@@ -1614,6 +1614,7 @@ def client_info_bitrix(data,company_adress):
             "legal_entity": data["legal_entity"],
             "contract": data["contract"],
             "contract_date": data_contract,
+            "type_client":data["type_client"]
         },
         create_defaults={
             "contract": data["contract"],
@@ -1621,6 +1622,7 @@ def client_info_bitrix(data,company_adress):
             "inn": data["inn"],
             "contract": data["contract"],
             "contract_date": data_contract,
+            "type_client":data["type_client"]
             # "id_bitrix": data["id_bitrix"],
         },
     )

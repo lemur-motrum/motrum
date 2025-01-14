@@ -901,7 +901,10 @@
                                             <option class="client-option"
                                                     {% if client_req.id == recusits.id %}selected{% endif %}
                                                     value="{{ recusits.id }}">
-                                                КПП:{{ recusits.requisitesKpp.kpp }} Р/c:{{ recusits.account_requisites }}
+                                                    {% if recusits.requisitesKpp.kpp %}
+                                                    КПП:{{ recusits.requisitesKpp.kpp }}
+                                                    {% endif %}
+                                                    Р/c:{{ recusits.account_requisites }}
                                             </option>
                                         {% endfor %}
                                     {% endif %}
@@ -942,7 +945,8 @@
                             </select>
                         </div>
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-                        <select {% if bill_upd %}disabled{% endif %}
+                        <select 
+                        {% comment %} {% if bill_upd %}disabled{% endif %} {% endcomment %}
                                 class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;

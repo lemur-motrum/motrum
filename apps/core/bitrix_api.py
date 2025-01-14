@@ -743,11 +743,13 @@ def save_shipment_order_bx(data):
 # уведомления о повышения цен и валют битрикс
 def currency_check_bx():
     try:
+        
         webhook = settings.BITRIX_WEBHOOK
         bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
+        print(carrency,product)
         error = "info_error"
         location = "отправка в б24 Критичные изменения цен и курса валют"
         info = f"{carrency}{product}"
@@ -798,7 +800,7 @@ def currency_check_bx():
                     value["text"] = f'{value["text"]}{text}'
 
 
-            save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            # save_currency_check_bx(value["text"], value["bitrix_id_order"])
 
             error = "info_error"
             location = "отправка в б24 Критичные изменения цен и курса валют"

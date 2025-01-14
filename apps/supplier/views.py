@@ -44,13 +44,13 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-
+    
     data_dict = currency_check_bx()
     error = "info_error"
     location = "отправка в б24 Критичные изменения цен и курса валют"
     info = f"{data_dict}"
     e = error_alert(error, location, info)
-    result = 1
+    result = data_dict
     if result:
         pass
     else:

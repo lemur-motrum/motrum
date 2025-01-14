@@ -186,17 +186,14 @@ def get_req_info_bx(bs_id_order):
     elif len(adress_bx) == 0:
         return (True, "Адреса", None)
     else:
-        print("OK")
+
         # значение реквизитов
         req_bx = bx.call(
             "crm.requisite.get",
             {"id": int(req_bx_id)},
         )
-        print("req_bx", req_bx)
-        error = "file_api_error"
-        location = "req_bx"
-        info = f"{req_bx}"
-        e = error_alert(error, location, info)
+
+
         for k, v in req_bx.items():
 
             type_preset_req = v["PRESET_ID"]
@@ -236,9 +233,10 @@ def get_req_info_bx(bs_id_order):
                 "address2": adress["ADDRESS_2"],
             }
             company_adress_all.append(company_adress)
-            print(adress["TYPE_ID"])
+
             if adress["TYPE_ID"] == "6":
                 legal_post_code = adress["POSTAL_CODE"]
+                bx_city = adress['CITY']
                 if adress['REGION']:
                     legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
@@ -251,6 +249,7 @@ def get_req_info_bx(bs_id_order):
 
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
+                bx_city_post = adress['CITY']
                 if adress['REGION']:
                     postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
@@ -290,6 +289,11 @@ def get_req_info_bx(bs_id_order):
             "bank": bank,
             "ks": ks,
             "bic": bic,
+            "postal_post_code":postal_post_code,
+            "legal_post_code":legal_post_code,
+            "bx_city":bx_city,
+            "bx_city_post":bx_city_post,
+            
         }
 
         context = {
@@ -349,6 +353,18 @@ def order_info_check(company_info, order_info):
 
     if company_info["bic"] == "":
         not_info.append("БИК")
+    
+    if company_info["postal_post_code"] == "":
+        not_info.append("Индекс")
+    
+    if company_info["legal_post_code"] == "":
+        not_info.append("Индекс")
+    
+    if company_info["bx_city"] == "":
+        not_info.append("Город")
+        
+    if company_info["bx_city_post"] == "":
+        not_info.append("Город")
 
     not_info_order = []
 

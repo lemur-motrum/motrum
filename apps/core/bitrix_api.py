@@ -715,7 +715,7 @@ def save_payment_order_bx(data):
 def save_shipment_order_bx(data):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
         for data_item in data:
             order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
             id_bitrix_order = order.id_bitrix
@@ -728,7 +728,7 @@ def save_shipment_order_bx(data):
                 document_shipment,
                 id_bitrix_order,
                 "crm.deal.update",
-                "UF_CRM_1735027585527",
+                "UF_CRM_1734772575764",
             )
 
     except Exception as e:

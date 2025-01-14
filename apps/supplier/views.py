@@ -4,9 +4,9 @@ import threading
 import traceback
 from django.shortcuts import render
 from regex import D
-from apps.client.models import STATUS_ORDER_BITRIX, Order, PaymentTransaction
+from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
 
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, save_new_doc_bx, save_payment_order_bx
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -17,6 +17,7 @@ from apps.core.utils import create_time_stop_specification, image_error_check
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
+from apps.specification.utils import save_shipment_doc
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
@@ -44,41 +45,36 @@ from apps.user.views import login_bitrix
 def add_iek(request):
     title = "TEST"
     try:
-        print("add_payment_order_1c")
         data = [
             {
                 "bitrix_id": "10568",
-                "amount_sum": "1000.22",
-                "date_transaction": "22-12-2024",
+                "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
+                "date": "22-11-2024",
             },
         ]
-        
         for data_item in data:
             print(data_item)
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
-            amount_sum = float(data_item["amount_sum"])
-            date_tarnsaction = datetime.datetime.strptime(
-                data_item["date_transaction"], "%d-%m-%Y"
-            ).date()
-            tarnsaction = PaymentTransaction.objects.create(
-                order=order, date=date_tarnsaction, amount=data_item["amount_sum"]
+            date = datetime.datetime.strptime(data_item["date"], "%d-%m-%Y").date()
+            document_shipment = DocumentShipment.objects.create(
+                order=order, date=date
             )
-            order.bill_sum_paid = order.bill_sum_paid + amount_sum
-            order.save()
-            print(tarnsaction)
-
-        
+            image_path = save_shipment_doc(data_item["pdf"], document_shipment)
+            print(image_path)
+            document_shipment.file = image_path
+            document_shipment.save()
+            
 
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
         error = "file_api_error"
-        location = "Получение\сохранение данных o оплатах 1с "
-        info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr}"
+        location = "Получение\сохранение данных o товаратах 1с "
+        info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
         
     finally:
-        save_payment_order_bx(data)
+        save_shipment_order_bx(data)
 
 
 

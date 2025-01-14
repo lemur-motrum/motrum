@@ -1677,7 +1677,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             data = [
                 {
-                    "bitrix_id": "1",
+                    "bitrix_id": "10568",
                     "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
                     "date": "22-11-2024",
                 },

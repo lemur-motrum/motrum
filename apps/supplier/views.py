@@ -55,7 +55,7 @@ def add_iek(request):
                     "date_delivery": "24-02-2025",
                     "reserve": "1",
                     "client_shipment": "0",
-                    # "date_shipment": "22-11-2024",
+                    "date_shipment": "",
                 },
             ],
         }
@@ -80,11 +80,12 @@ def add_iek(request):
                     prod.date_delivery_bill = date_delivery
 
             if order_products_item["date_shipment"]:
-                date_shipment = datetime.datetime.strptime(
-                    order_products_item["date_shipment"], "%d-%m-%Y"
-                ).date()
+                if date_shipment != "":
+                    date_shipment = datetime.datetime.strptime(
+                        order_products_item["date_shipment"], "%d-%m-%Y"
+                    ).date()
 
-                prod.date_shipment = date_shipment
+                    prod.date_shipment = date_shipment
 
             if order_products_item["reserve"]:
                 prod.reserve = int(order_products_item["reserve"])

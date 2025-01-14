@@ -237,6 +237,8 @@ def get_req_info_bx(bs_id_order):
             if adress["TYPE_ID"] == "6":
                 legal_post_code = adress["POSTAL_CODE"]
                 bx_city = adress['CITY']
+                bx_city_post = adress['CITY']
+                
                 if adress['REGION']:
                     legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:

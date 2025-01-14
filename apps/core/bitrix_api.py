@@ -535,7 +535,7 @@ def add_info_order(request, order, type_save):
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
                         "begindate":begindate,
-                        "closedate": closedate,
+                        "closedate": begindate,
                     }
                     invoice_bx = bx.call(
                         "crm.item.update",

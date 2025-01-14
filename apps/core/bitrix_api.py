@@ -525,12 +525,10 @@ def add_info_order(request, order, type_save):
 
                 # СЧЕТ  СДЕЛКИ
                 
-                
+              
                 begindate = datetime.datetime.fromisoformat(order.date_order.isoformat())
-                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
-                error = "file_api_error"
-                location = "сохранение всех данных по заказу ОКТ- битрикс24"
-                info = f"{closedate}{type(closedate)}"
+                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat())
+                
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
@@ -540,18 +538,12 @@ def add_info_order(request, order, type_save):
                         "begindate":begindate,
                         "closedate": closedate,
                     }
-                    error = "file_api_error"
-                    location = "сохранение всех данных по заказу ОКТ- битрикс24"
-                    info = f"{invoice}"
-                    e = error_alert(error, location, info)
+                 
                     invoice_bx = bx.call(
                         "crm.item.update",
                         {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
                     )
-                    error = "file_api_error"
-                    location = "сохранение всех данных по заказу ОКТ- битрикс24"
-                    info = f"{invoice}"
-                    e = error_alert(error, location, info)
+                  
                 else:
                     invoice = {
                         "title": order.bill_name,

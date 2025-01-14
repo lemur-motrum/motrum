@@ -51,7 +51,7 @@ def add_iek(request):
             "bitrix_id": "10568",
             "order_products": [
                 {
-                    "article_motrum": "72019",
+                    "article_motrum": "0012",
                     "date_delivery": "24-02-2025",
                     "reserve": "1",
                     "client_shipment": "0",

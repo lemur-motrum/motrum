@@ -530,7 +530,8 @@ def add_info_order(request, order, type_save):
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
-                        "closedate": order.bill_date_stop,
+                        "begindate":datetime.datetime.fromisoformat(order.date_update.isoformat()),
+                        "closedate": datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
                     }
                     invoice_bx = bx.call(
                         "crm.item.update",
@@ -542,7 +543,7 @@ def add_info_order(request, order, type_save):
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         "parentId2": id_bitrix_order,
-                        "closedate": order.bill_date_stop,
+                        "closedate": datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
                     }
 
                     invoice_bx = bx.call(

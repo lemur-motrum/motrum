@@ -197,15 +197,20 @@ def get_req_info_bx(bs_id_order):
             type_preset_req = v["PRESET_ID"]
             if type_preset_req == "1":#Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
+                tel = v["RQ_PHONE"]
+                kpp = v["RQ_KPP"]
             elif type_preset_req == "2":#ИП
                 legal_entity = v["RQ_NAME"]
+                tel = None
+                
             elif type_preset_req == "3":#Физ. лицо
                 legal_entity = v["RQ_NAME"]
+                tel = None
+                kpp = None
                 
             inn = v["RQ_INN"]
-            kpp = v["RQ_KPP"]
             ogrn = v["RQ_OGRN"]
-            tel = v["RQ_PHONE"]
+          
             # contract = ??
             # contract_date = ??
 

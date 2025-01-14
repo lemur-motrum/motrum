@@ -526,8 +526,8 @@ def add_info_order(request, order, type_save):
                 # СЧЕТ  СДЕЛКИ
                 
                 
-                begindate = datetime.datetime.fromisoformat(order.bill_date_start)
-                closedate = datetime.datetime.fromisoformat(order.bill_date_stop),
+                begindate = datetime.datetime.fromisoformat(order.date_order.isoformat())
+                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
 
                 if order.bill_id_bx:
                     invoice = {
@@ -548,7 +548,7 @@ def add_info_order(request, order, type_save):
                     )
                     error = "file_api_error"
                     location = "сохранение всех данных по заказу ОКТ- битрикс24"
-                    info = f"{invoice_bx}"
+                    info = f"{invoice}"
                     e = error_alert(error, location, info)
                 else:
                     invoice = {

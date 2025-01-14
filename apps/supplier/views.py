@@ -51,7 +51,7 @@ def add_iek(request):
             "bitrix_id": "10568",
             "order_products": [
                 {
-                    "article_motrum": "0012",
+                    "article_motrum": "0011",
                     "date_delivery": "24-02-2025",
                     "reserve": "1",
                     "client_shipment": "0",
@@ -110,10 +110,19 @@ def add_iek(request):
                 None,
                 None,
             )
+            
+            error = "file_api_error"
+            location = "Получение\сохранение данных o товаратах 1с "
+            info = f"{order_pdf}"
+            e = error_alert(error, location, info)
+            
+            
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                 pdf_signed = request.build_absolute_uri(order.bill_file.url)
+                
 
+                
                 print(order_pdf)
         
     except Exception as e:

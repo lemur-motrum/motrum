@@ -687,7 +687,7 @@ def save_payment_order_bx(data):
     try:
 
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
         for data_item in data:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -697,8 +697,8 @@ def save_payment_order_bx(data):
             data_order = {
                 "id": id_bitrix_order,
                 "fields": {
-                    "UF_CRM_1735027683353": order.bill_sum_paid,
-                    "UF_CRM_1735027695061": order_debt,
+                    "UF_CRM_1734772155723": order.bill_sum_paid,
+                    "UF_CRM_1734772173389": order_debt,
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)

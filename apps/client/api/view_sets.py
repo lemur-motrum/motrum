@@ -1548,11 +1548,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "bitrix_id": "10568",
                 "order_products": [
                     {
-                        "article_motrum": "72019",
-                        "date_delivery": "24-02-2025",
+                        "article_motrum": "0011",
+                        "date_delivery": "25-02-2025",
                         "reserve": "1",
                         "client_shipment": "0",
-                        # "date_shipment": "22-11-2024",
+                        "date_shipment": "",
                     },
                 ],
             }
@@ -1577,11 +1577,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                         prod.date_delivery_bill = date_delivery
 
                 if order_products_item["date_shipment"]:
-                    date_shipment = datetime.datetime.strptime(
-                        order_products_item["date_shipment"], "%d-%m-%Y"
-                    ).date()
+                    if date_shipment != "":
+                        date_shipment = datetime.datetime.strptime(
+                            order_products_item["date_shipment"], "%d-%m-%Y"
+                        ).date()
 
-                    prod.date_shipment = date_shipment
+                        prod.date_shipment = date_shipment
 
                 if order_products_item["reserve"]:
                     prod.reserve = int(order_products_item["reserve"])
@@ -1611,7 +1612,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
 
                     print(order_pdf)
-            return Response(None, status=status.HTTP_200_OK)
+            return Response(None, status=status.HTTP_200_OK)  
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -1620,6 +1621,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            
         finally:
             # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
             # если есть изденения даты для переделки счета:
@@ -1636,9 +1638,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             print("add_payment_order_1c")
             data = [
                 {
-                    "bitrix_id": "1",
+                    "bitrix_id": "10568",
                     "amount_sum": "1000.22",
-                    "date_transaction": "22-11-2024",
+                    "date_transaction": "22-12-2024",
                 },
             ]
 

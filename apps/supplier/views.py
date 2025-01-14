@@ -42,14 +42,7 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    name_status = "C8:PREPARATION"
-    print("name_stat",name_status)
-    for choice in STATUS_ORDER_BITRIX:
-        if choice[1] == name_status:
-            status = choice[0]
-            print("2", status)
-            
-            
+    
  
    
     result = 1

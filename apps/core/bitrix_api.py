@@ -88,7 +88,9 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 print(client_req, acc_req)
                 # manager = AdminUser.objects.get(email=data["order"]["manager"])
                 # manager = AdminUser.objects.get(user=request.user)
-                status_okt = _status_to_order_replace(data["order"]["status"],bs_id_order)
+                status_okt = _status_to_order_replace(
+                    data["order"]["status"], bs_id_order
+                )
                 error = "error"
                 location = "3"
                 info = f"3{status_okt}"
@@ -219,7 +221,10 @@ def get_req_info_bx(bs_id_order):
             print(adress["TYPE_ID"])
             if adress["TYPE_ID"] == "6":
                 legal_post_code = adress["POSTAL_CODE"]
-                legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                if adress['REGION']:
+                    legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                else:
+                    legal_city = f"г.{adress['CITY']}"
                 legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
@@ -228,16 +233,18 @@ def get_req_info_bx(bs_id_order):
 
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                if adress['REGION']:
+                    postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                else:
+                    postal_city = f"г.{adress['CITY']}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
-        print("company_adress_all", company_adress_all)
-        print("legal_post_code", legal_post_code)
+
         # банковские реквизиыт привязанные к сделки значение
         req_bank = bx.get_by_ID(
             "crm.requisite.bankdetail.get",
             [req_acc_bx_id],
         )
-        print("req_bank", req_bank)
+
         account_requisites = req_bank["RQ_ACC_NUM"]
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
@@ -372,7 +379,9 @@ def get_status_order():
 
             status_bx = order_bx["STAGE_ID"]
             # stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
-            stage_bd  = StageDealBx.objects.get(entity_id="Квалификация", status_id = status_bx)
+            stage_bd = StageDealBx.objects.get(
+                entity_id="Квалификация", status_id=status_bx
+            )
             print("stage_bd", stage_bd)
             print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
@@ -536,7 +545,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
 
         elif type_file == "file_dict_shipment":
             name = file.file
-            
+
             file = f"{MEDIA_ROOT}/{ file.file}"
         else:
             name = "1"
@@ -960,30 +969,28 @@ def get_manager():
         e = error_alert(error, location, info)
 
 
-def _status_to_order_replace(name_status,id_bx):
+def _status_to_order_replace(name_status, id_bx):
     status = None
     for choice in STATUS_ORDER_BITRIX:
         if choice[1] == name_status:
             status = choice[0]
 
-            # order = Order.objects.filter(id_bitrix=id_bx).last()
-            # if status == "SHIPMENT_":
-            #     if order:
-            #         if order.type_delivery == "Самовывоз":
-            #             status = "SHIPMENT_PICKUP"
-            #         else:
-            #             status = "SHIPMENT_AUTO"
-            #     else:
-            #         # TODO:Как будто не правильно вписывать автошипмент
-            #         status = "SHIPMENT_AUTO"
-       
-            
+            order = Order.objects.filter(id_bitrix=id_bx).last()
+            if status == "SHIPMENT_":
+                if order:
+                    if order.type_delivery == "Самовывоз":
+                        status = "SHIPMENT_PICKUP"
+                    else:
+                        status = "SHIPMENT_AUTO"
+                else:
+                    # TODO:Как будто не правильно вписывать автошипмент
+                    status = "SHIPMENT_AUTO"
 
     if status:
         return status
     else:
-        return "None"
-        # return "PROCESSING"
+
+        return "PROCESSING"
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

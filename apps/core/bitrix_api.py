@@ -527,7 +527,7 @@ def add_info_order(request, order, type_save):
                 bill_date_start = order.bill_date_start
                 bill_date_stop = order.bill_date_stop
                 begindate = datetime.datetime.fromisoformat(bill_date_start.isoformat())
-                closedate = datetime.datetime.fromisoformat(bill_date_stop.isoformat()),
+                # closedate = datetime.datetime.fromisoformat(bill_date_stop.isoformat()),
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
@@ -547,7 +547,7 @@ def add_info_order(request, order, type_save):
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         "parentId2": id_bitrix_order,
-                        "closedate": closedate,
+                        "closedate": begindate,
                     }
 
                     invoice_bx = bx.call(

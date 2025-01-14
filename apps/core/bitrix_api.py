@@ -526,14 +526,14 @@ def add_info_order(request, order, type_save):
                 # СЧЕТ  СДЕЛКИ
                 
               
-                begindate = datetime.datetime.fromisoformat(order.date_order.isoformat())
+                begindate = datetime.datetime.fromisoformat(order.bill_date_start.isoformat())
                 closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat())
                 
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
-                        "opportunity": order.bill_sum - 1000,
+                        "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
                         "begindate":begindate,
                         "closedate": closedate,
@@ -648,7 +648,7 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 def save_new_doc_bx(order):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
         id_bitrix_order = order.id_bitrix
         file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")

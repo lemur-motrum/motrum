@@ -1,11 +1,12 @@
 import datetime
 from locale import LC_ALL, setlocale
 import threading
+import traceback
 from django.shortcuts import render
 from regex import D
 from apps.client.models import STATUS_ORDER_BITRIX, Order
 
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, save_new_doc_bx
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -14,7 +15,7 @@ from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification, image_error_check
 from apps.product.models import CurrencyRate, GroupProduct, Product
-from apps.specification.models import Specification
+from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
@@ -42,12 +43,100 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    # date = Product.objects.filter().last().data_update
-    # print(date)
-    # dt = datetime.datetime.fromisoformat(date.isoformat())
-    data_stop ="2024-01-22"
-    data_stop = datetime.datetime.strptime(data_stop, "%Y-%m-%d").date()
-    print(data_stop)
+    pdf = None
+    pdf_signed = None
+    try:
+
+        data = {
+            "bitrix_id": "10568",
+            "order_products": [
+                {
+                    "article_motrum": "72019",
+                    "date_delivery": "24-02-2025",
+                    "reserve": "1",
+                    "client_shipment": "0",
+                    # "date_shipment": "22-11-2024",
+                },
+            ],
+        }
+        order = Order.objects.get(id_bitrix=int(data["bitrix_id"]))
+        product_spesif = ProductSpecification.objects.filter(
+            specification=order.specification
+        )
+        is_need_new_pdf = False
+        for order_products_item in data["order_products"]:
+
+            prod = product_spesif.get(
+                product__article=order_products_item["article_motrum"]
+            )
+            print(prod)
+            if order_products_item["date_delivery"]:
+                date_delivery = datetime.datetime.strptime(
+                    order_products_item["date_delivery"], "%d-%m-%Y"
+                ).date()
+                if prod.date_delivery_bill != date_delivery:
+                    is_need_new_pdf = True
+
+                    prod.date_delivery_bill = date_delivery
+
+            if order_products_item["date_shipment"]:
+                date_shipment = datetime.datetime.strptime(
+                    order_products_item["date_shipment"], "%d-%m-%Y"
+                ).date()
+
+                prod.date_shipment = date_shipment
+
+            if order_products_item["reserve"]:
+                prod.reserve = int(order_products_item["reserve"])
+
+            if order_products_item["client_shipment"]:
+                prod.client_shipment = int(order_products_item["client_shipment"])
+
+            prod.save()
+
+        if is_need_new_pdf:
+            if order.requisites.contract:
+                is_req = True
+            else:
+                is_req = False
+
+            type_save = request.COOKIES.get("type_save")
+            order_pdf = order.create_bill(
+                request,
+                is_req,
+                order,
+                # bill_name,
+                None,
+                None,
+            )
+            if order_pdf:
+                pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
+                pdf_signed = request.build_absolute_uri(order.bill_file.url)
+
+                print(order_pdf)
+        
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Получение\сохранение данных o товаратах 1с "
+        info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+        
+    finally:
+        # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
+        # если есть изденения даты для переделки счета:
+
+        if pdf:
+            is_save_new_doc_bx = save_new_doc_bx(order)
+            # if is_save_new_doc_bx == False:
+            #     birtix_ok = False
+
+
+
+
+
+
     result = 1
     if result:
         pass

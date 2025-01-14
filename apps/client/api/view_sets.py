@@ -1535,46 +1535,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             if row_level == 1:
                     vendor_str = data_sheet.cell(row=index, column=1).value
             
-            
-            
-    # #ОКТ Б24 получение статусов заказов из битрикс
-    # @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
-    # def get_status_order_bitrix(self, request, *args, **kwargs):
-    #     # data = request.data
-    #     data = [
-    #         {"id_bitrix": "232", "status": "Отгрузка оборудования заказчику"},
-    #         {"id_bitrix": "5924", "status": "Отгрузка оборудования заказчику"},
-    #     ]
-
-    #     def get_status_bx(status):
-    #         for choice in STATUS_ORDER_BITRIX:
-    #             if choice[1] == status:
-    #                 return choice[0]
-
-    #     for data_order in data:
-    #         print(data_order["id_bitrix"])
-    #         order = Order.objects.filter(id_bitrix=data_order["id_bitrix"]).last()
-
-    #         if order:
-    #             status_bx = get_status_bx(data_order["status"])
-    #             if status == "SHIPMENT_":
-    #                 if order.type_delivery == "Самовывоз":
-    #                     status = "SHIPMENT_PICKUP"
-    #                 else:
-    #                     status = "SHIPMENT_AUTO"
-
-    #                 order.status = status
-    #                 order.save()
-
-    #     return Response(data, status=status.HTTP_200_OK)
-
-    # @action(detail=False, methods=["post"], url_path=r"test")
-    # def test(self, request, *args, **kwargs):
-    #     print("action test")
-    #     data = request.data
-
-    #     print(data)
-    #     return Response(None, status=status.HTTP_200_OK)
     
     #ОКТ 1С сроки поставки товаров ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
@@ -1585,14 +1545,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
 
             data = {
-                "bitrix_id": "1",
+                "bitrix_id": "10568",
                 "order_products": [
                     {
-                        "article_motrum": "001777",
-                        "date_delivery": "24-11-2024",
+                        "article_motrum": "72019",
+                        "date_delivery": "24-02-2025",
                         "reserve": "1",
                         "client_shipment": "0",
-                        "date_shipment": "22-11-2024",
+                        # "date_shipment": "22-11-2024",
                     },
                 ],
             }

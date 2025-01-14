@@ -524,26 +524,29 @@ def add_info_order(request, order, type_save):
                 # print(orders_bx)
 
                 # СЧЕТ  СДЕЛКИ
-                
-              
-                begindate = datetime.datetime.fromisoformat(order.bill_date_start.isoformat())
-                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat())
-                
+
+                begindate = datetime.datetime.fromisoformat(
+                    order.bill_date_start.isoformat()
+                )
+                closedate = datetime.datetime.fromisoformat(
+                    order.bill_date_stop.isoformat()
+                )
+
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
-                        "begindate":begindate,
+                        "begindate": begindate,
                         "closedate": closedate,
                     }
-                 
+
                     invoice_bx = bx.call(
                         "crm.item.update",
                         {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
                     )
-                  
+
                 else:
                     invoice = {
                         "title": order.bill_name,
@@ -743,17 +746,14 @@ def save_shipment_order_bx(data):
 # уведомления о повышения цен и валют битрикс
 def currency_check_bx():
     try:
-        
+
         webhook = settings.BITRIX_WEBHOOK
         bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
-    
-        error = "file_api_error"
-        location = "отправка в б24 Критичные изменения цен и курса валют"
-        info = f"{carrency}{product}"
-        e = error_alert(error, location, info)
+
+
         data_dict = {}
         for carrency_item in carrency:
             data_curr = carrency_item["currency"]
@@ -799,14 +799,7 @@ def currency_check_bx():
                         text = f"{text}{text_prod}"
                     value["text"] = f'{value["text"]}{text}'
 
-
-            # save_currency_check_bx(value["text"], value["bitrix_id_order"])
-
-            error = "file_api_error"
-            location = "отправка в б24 Критичные изменения цен и курса валют"
-            info = f"{value["bitrix_id_order"],value["text"]}"
-            e = error_alert(error, location, info)
-        return data_dict
+            save_currency_check_bx(value["text"], value["bitrix_id_order"])
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -868,12 +861,7 @@ def get_product_price_up():
             "PAYMENT",
         ]
     )
-    error = "file_api_error"
-    location = "о"
-    info = f"{order}"
-    e = error_alert(error, location, info)
-    
-    print(order)
+
     data_order_all = []
     for order_item in order:
         order_item_data = {

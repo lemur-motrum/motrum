@@ -205,11 +205,11 @@ def get_req_info_bx(bs_id_order):
                 tel = v["RQ_PHONE"]
                 kpp = v["RQ_KPP"]
             elif type_preset_req == "2":#ИП
-                legal_entity = v["RQ_NAME"]
+                legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 tel = None
                 
             elif type_preset_req == "3":#Физ. лицо
-                legal_entity = v["RQ_NAME"]
+                legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 tel = None
                 kpp = None
                 

@@ -649,7 +649,10 @@ def save_new_doc_bx(order):
     try:
         webhook = settings.BITRIX_WEBHOOK
         bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
-
+        error = "file_api_error"
+        location = "Получение\сохранение данных o товаратах 1с "
+        info = f"{bx}bx"
+        e = error_alert(error, location, info)
         id_bitrix_order = order.id_bitrix
         file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
         file_dict_signed = file_dict.exclude(bill_file="")
@@ -660,7 +663,7 @@ def save_new_doc_bx(order):
             file_dict_signed,
             id_bitrix_order,
             "crm.deal.update",
-            "UF_CRM_1735027585527",
+            "UF_CRM_1734772516954",
         )
         save_multi_file_all_bx(
             bx,
@@ -668,7 +671,7 @@ def save_new_doc_bx(order):
             file_dict_no_signed,
             id_bitrix_order,
             "crm.deal.update",
-            "UF_CRM_1735027614423",
+            "UF_CRM_1734772537613",
         )
     except Exception as e:
         print(e)

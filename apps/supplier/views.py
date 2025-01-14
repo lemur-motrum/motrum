@@ -138,6 +138,10 @@ def add_iek(request):
         # если есть изденения даты для переделки счета:
 
         if pdf:
+            error = "file_api_error"
+            location = "Получение\сохранение данных o товаратах 1с "
+            info = f"if pdf"
+            e = error_alert(error, location, info)
             is_save_new_doc_bx = save_new_doc_bx(order)
             # if is_save_new_doc_bx == False:
             #     birtix_ok = False

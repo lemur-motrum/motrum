@@ -44,43 +44,8 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    try:
-        data = [
-            {
-                "bitrix_id": "10568",
-                "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
-                "date": "22-11-2024",
-            },
-        ]
-        for data_item in data:
-            print(data_item)
-            order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
-            date = datetime.datetime.strptime(data_item["date"], "%d-%m-%Y").date()
-            document_shipment = DocumentShipment.objects.create(
-                order=order, date=date
-            )
-            image_path = save_shipment_doc(data_item["pdf"], document_shipment)
-            print(image_path)
-            document_shipment.file = image_path
-            document_shipment.save()
-            
 
-    except Exception as e:
-        print(e)
-        tr = traceback.format_exc()
-        error = "file_api_error"
-        location = "Получение\сохранение данных o товаратах 1с "
-        info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
-        e = error_alert(error, location, info)
-        
-    finally:
-        save_shipment_order_bx(data)
-
-
-
-
-
-
+    currency_check_bx()
 
     result = 1
     if result:

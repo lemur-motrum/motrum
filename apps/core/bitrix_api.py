@@ -742,69 +742,73 @@ def save_shipment_order_bx(data):
 
 # уведомления о повышения цен и валют битрикс
 def currency_check_bx():
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    try:
+        webhook = settings.BITRIX_WEBHOOK
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
-    carrency = get_order_carrency_up()
-    product = get_product_price_up()
-    print(carrency)
-    print(product)
-    data_dict = {}
-    for carrency_item in carrency:
-        data_curr = carrency_item["currency"]
-        for item in carrency_item["order"]:
-            order = item["specification__order"]
-            order_item_data = {
-                "order": item["specification__order"],
-                "bitrix_id_order": item["specification__order__id_bitrix"],
-                "order_product": [],
-                "text": "",
-            }
-            if order not in data_dict:
-                order_item_data["currency"] = [data_curr]
-                # order_item_data["currency"].append(data_curr)
-                data_dict[order] = order_item_data
+        carrency = get_order_carrency_up()
+        product = get_product_price_up()
+
+        data_dict = {}
+        for carrency_item in carrency:
+            data_curr = carrency_item["currency"]
+            for item in carrency_item["order"]:
+                order = item["specification__order"]
+                order_item_data = {
+                    "order": item["specification__order"],
+                    "bitrix_id_order": item["specification__order__id_bitrix"],
+                    "order_product": [],
+                    "text": "",
+                }
+                if order not in data_dict:
+                    order_item_data["currency"] = [data_curr]
+                    # order_item_data["currency"].append(data_curr)
+                    data_dict[order] = order_item_data
+                else:
+                    data_dict[order]["currency"].append(data_curr)
+
+        for product_item in product:
+            order = product_item["order"]
+            if order in data_dict:
+                data_dict[order]["order_product"] = product_item["order_product"]
             else:
-                data_dict[order]["currency"].append(data_curr)
+                data_dict[order] = product_item
 
-    for product_item in product:
-        order = product_item["order"]
-        if order in data_dict:
-            data_dict[order]["order_product"] = product_item["order_product"]
-        else:
-            data_dict[order] = product_item
+        for key, value in data_dict.items():
+            if len(value["currency"]) > 0:
+                string = ",".join(value["currency"])
+                value["text"] = f"Произошло повышение курса {string}. "
 
-    for key, value in data_dict.items():
-        if len(value["currency"]) > 0:
-            string = ",".join(value["currency"])
-            value["text"] = f"Произошло повышение курса {string}. "
+            if len(value["order_product"]) > 0:
 
-        if len(value["order_product"]) > 0:
+                if value["text"] != "":
+                    text = f"Повышены цены на следующие товары:"
+                    for prod in value["order_product"]:
+                        text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
+                        text = f"{text}{text_prod}"
+                    value["text"] = f'{value["text"]}{text}'
+                else:
+                    text = f" Уведомление о повышении цен на определенные товары!"
+                    for prod in value["order_product"]:
+                        text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
+                        text = f"{text}{text_prod}"
+                    value["text"] = f'{value["text"]}{text}'
 
-            if value["text"] != "":
-                text = f"Повышены цены на следующие товары:"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-            else:
-                text = f" Уведомление о повышении цен на определенные товары!"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-        print("value", value)
-        print("value", value["text"])
-        print("value", value["bitrix_id_order"])
 
-        save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            save_currency_check_bx(value["text"], value["bitrix_id_order"])
 
+            error = "info_error"
+            location = "отправка в б24 Критичные изменения цен и курса валют"
+            info = f"{value["bitrix_id_order"],value["text"]}"
+            e = error_alert(error, location, info)
+
+        # return True
+    except Exception as e:
+        tr = traceback.format_exc()
         error = "info_error"
         location = "отправка в б24 Критичные изменения цен и курса валют"
-        info = f"отправка в б24 Критичные изменения цен и курса валют{value["bitrix_id_order"],value["text"]}"
+        info = f"отправка в б24 Критичные изменения цен и курса валют{tr}{e}"
         e = error_alert(error, location, info)
-
-    return True
 
 
 # дл currency_check_bx получает массив с валютами
@@ -903,7 +907,7 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = settings.BITRIX_WEBHOOK
-    webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+    webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
     print(webhook)
     bx = Bitrix(webhook)
     data_order = {

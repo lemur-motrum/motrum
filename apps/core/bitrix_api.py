@@ -193,29 +193,32 @@ def get_req_info_bx(bs_id_order):
             {"id": int(req_bx_id)},
         )
 
-
         for k, v in req_bx.items():
 
             type_preset_req = v["PRESET_ID"]
-            if type_preset_req == "1":#Организация
+            if type_preset_req == "1":  # Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
                 tel = v["RQ_PHONE"]
                 kpp = v["RQ_KPP"]
                 type_client = "1"
-            elif type_preset_req == "2":#ИП
-                legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+            elif type_preset_req == "2":  # ИП
+                legal_entity = (
+                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                )
                 tel = None
                 type_client = "2"
-                
-            elif type_preset_req == "3":#Физ. лицо
-                legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+
+            elif type_preset_req == "3":  # Физ. лицо
+                legal_entity = (
+                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                )
                 tel = None
                 kpp = None
                 type_client = "2"
-                
+
             inn = v["RQ_INN"]
             ogrn = v["RQ_OGRN"]
-          
+
             # contract = ??
             # contract_date = ??
 
@@ -236,10 +239,10 @@ def get_req_info_bx(bs_id_order):
 
             if adress["TYPE_ID"] == "6":
                 legal_post_code = adress["POSTAL_CODE"]
-                bx_city = adress['CITY']
-                bx_city_post = adress['CITY']
-                
-                if adress['REGION']:
+                bx_city = adress["CITY"]
+                bx_city_post = adress["CITY"]
+
+                if adress["REGION"]:
                     legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
                     legal_city = f"г.{adress['CITY']}"
@@ -251,8 +254,8 @@ def get_req_info_bx(bs_id_order):
 
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
-                bx_city_post = adress['CITY']
-                if adress['REGION']:
+                bx_city_post = adress["CITY"]
+                if adress["REGION"]:
                     postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
                     postal_city = f"г.{adress['CITY']}"
@@ -273,7 +276,7 @@ def get_req_info_bx(bs_id_order):
             # "id_bitrix": 69,
             # "manager": - битрикс ид менеджера
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
-            "type_client":type_client,
+            "type_client": type_client,
             "contract": "",
             "contract_date": "",
             "legal_entity": legal_entity,
@@ -291,11 +294,10 @@ def get_req_info_bx(bs_id_order):
             "bank": bank,
             "ks": ks,
             "bic": bic,
-            "postal_post_code":postal_post_code,
-            "legal_post_code":legal_post_code,
-            "bx_city":bx_city,
-            "bx_city_post":bx_city_post,
-            
+            "postal_post_code": postal_post_code,
+            "legal_post_code": legal_post_code,
+            "bx_city": bx_city,
+            "bx_city_post": bx_city_post,
         }
 
         context = {
@@ -355,16 +357,16 @@ def order_info_check(company_info, order_info):
 
     if company_info["bic"] == "":
         not_info.append("БИК")
-    
+
     if company_info["postal_post_code"] == "":
         not_info.append("Индекс")
-    
+
     if company_info["legal_post_code"] == "":
         not_info.append("Индекс")
-    
+
     if company_info["bx_city"] == "":
         not_info.append("Город")
-        
+
     if company_info["bx_city_post"] == "":
         not_info.append("Город")
 
@@ -416,10 +418,10 @@ def get_status_order():
 
             status_bx = order_bx["STAGE_ID"]
             # stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
-            stage_bd = StageDealBx.objects.get(
-                entity_id="Квалификация", status_id=status_bx
-            )
-            print("stage_bd", stage_bd)
+            # stage_bd = StageDealBx.objects.get(
+            #     entity_id="Квалификация", status_id=status_bx
+            # )
+            # print("stage_bd", stage_bd)
             print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
 

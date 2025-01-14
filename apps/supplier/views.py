@@ -42,8 +42,8 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
+    get_status_order()
     
- 
    
     result = 1
     if result:

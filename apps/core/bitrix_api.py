@@ -749,8 +749,8 @@ def currency_check_bx():
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
-        print(carrency,product)
-        error = "info_error"
+    
+        error = "file_api_error"
         location = "отправка в б24 Критичные изменения цен и курса валют"
         info = f"{carrency}{product}"
         e = error_alert(error, location, info)
@@ -802,7 +802,7 @@ def currency_check_bx():
 
             # save_currency_check_bx(value["text"], value["bitrix_id_order"])
 
-            error = "info_error"
+            error = "file_api_error"
             location = "отправка в б24 Критичные изменения цен и курса валют"
             info = f"{value["bitrix_id_order"],value["text"]}"
             e = error_alert(error, location, info)
@@ -810,7 +810,7 @@ def currency_check_bx():
 
     except Exception as e:
         tr = traceback.format_exc()
-        error = "info_error"
+        error = "file_api_error"
         location = "отправка в б24 Критичные изменения цен и курса валют"
         info = f"отправка в б24 Критичные изменения цен и курса валют{tr}{e}"
         e = error_alert(error, location, info)
@@ -868,6 +868,11 @@ def get_product_price_up():
             "PAYMENT",
         ]
     )
+    error = "file_api_error"
+    location = "о"
+    info = f"{order}"
+    e = error_alert(error, location, info)
+    
     print(order)
     data_order_all = []
     for order_item in order:
@@ -886,8 +891,7 @@ def get_product_price_up():
             if prod.product_price_catalog:
 
                 now_price = Price.objects.get(prod=prod.product).rub_price_supplier
-                print("now_price", now_price)
-                print("product_price_catalog", prod.product_price_catalog)
+
                 difference_count = now_price - prod.product_price_catalog
                 count_percent = prod.product_price_catalog / 100 * 3
                 if difference_count > count_percent:

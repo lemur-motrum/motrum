@@ -178,14 +178,12 @@ def get_req_info_bx(bs_id_order):
             "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
         },
     )
-    print("adress_bx", adress_bx)
-    print("req_bx_id", req_bx_id)
+
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
     elif req_acc_bx_id == "0":
         return (True, "Банковские реквизиты", None)
     elif len(adress_bx) == 0:
-        print("error adress_bx")
         return (True, "Адреса", None)
     else:
         print("OK")
@@ -196,7 +194,14 @@ def get_req_info_bx(bs_id_order):
         )
         print("req_bx", req_bx)
         for k, v in req_bx.items():
-            legal_entity = v["RQ_COMPANY_NAME"]
+            type_preset_req = v["PRESET_ID"]
+            if type_preset_req == "1":#Организация
+                legal_entity = v["RQ_COMPANY_NAME"]
+            elif type_preset_req == "2":#ИП
+                legal_entity = v["RQ_NAME"]
+            elif type_preset_req == "3":#Физ. лицо
+                legal_entity = v["RQ_NAME"]
+                
             inn = v["RQ_INN"]
             kpp = v["RQ_KPP"]
             ogrn = v["RQ_OGRN"]

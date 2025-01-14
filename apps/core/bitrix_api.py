@@ -533,7 +533,7 @@ def add_info_order(request, order, type_save):
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
-                        "opportunity": order.bill_sum,
+                        "opportunity": order.bill_sum - 1000,
                         # "parentId2": id_bitrix_order,
                         "begindate":begindate,
                         "closedate": closedate,
@@ -546,6 +546,10 @@ def add_info_order(request, order, type_save):
                         "crm.item.update",
                         {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
                     )
+                    error = "file_api_error"
+                    location = "сохранение всех данных по заказу ОКТ- битрикс24"
+                    info = f"{invoice_bx}"
+                    e = error_alert(error, location, info)
                 else:
                     invoice = {
                         "title": order.bill_name,

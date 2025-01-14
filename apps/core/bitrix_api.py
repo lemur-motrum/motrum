@@ -526,8 +526,8 @@ def add_info_order(request, order, type_save):
                 # СЧЕТ  СДЕЛКИ
                 
                 
-                begindate = datetime.datetime.fromisoformat(order.bill_date_start.isoformat())
-                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
+                begindate = datetime.datetime.fromisoformat(order.bill_date_start)
+                closedate = datetime.datetime.fromisoformat(order.bill_date_stop),
 
                 if order.bill_id_bx:
                     invoice = {

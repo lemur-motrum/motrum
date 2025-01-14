@@ -193,7 +193,12 @@ def get_req_info_bx(bs_id_order):
             {"id": int(req_bx_id)},
         )
         print("req_bx", req_bx)
+        error = "file_api_error"
+        location = "req_bx"
+        info = f"{req_bx}"
+        e = error_alert(error, location, info)
         for k, v in req_bx.items():
+
             type_preset_req = v["PRESET_ID"]
             if type_preset_req == "1":#Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
@@ -263,7 +268,7 @@ def get_req_info_bx(bs_id_order):
         company = {
             # "id_bitrix": 69,
             # "manager": - битрикс ид менеджера
-            "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+            # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
             "contract": "",
             "contract_date": "",
             "legal_entity": legal_entity,

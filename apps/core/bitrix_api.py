@@ -401,7 +401,7 @@ def get_status_order():
 
         webhook = settings.BITRIX_WEBHOOK
 
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
         orders = [d["id_bitrix"] for d in actual_order]
 
         # orders = [1]

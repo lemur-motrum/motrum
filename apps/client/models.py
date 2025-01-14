@@ -79,6 +79,26 @@ TYPE_PAYMENT = (
     ("payment in installments", "Оплата частями"),
     ("100% postpay", "100% постоплата"),
 )
+TYPE_CLIENT = (
+    ("1", "Юридическое лицо"),
+    ("2", "ИП"),
+)
+#   {
+#             "ID": "1",
+#             "NAME": "Организация"
+#         },
+#         {
+#             "ID": "2",
+#             "NAME": "ИП"
+#         },
+#         {
+#             "ID": "3",
+#             "NAME": "Физ. лицо"
+#         },
+#         {
+#             "ID": "4",
+#             "NAME": "Организация (доп.)"
+#         }
 
 
 # TODO: unique=True вернуть
@@ -149,6 +169,9 @@ class Requisites(models.Model):
         "ИНН",
         max_length=12,
         # unique=True
+    )
+    type_client = models.CharField(
+        "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
     )
 
     # kpp = models.CharField(

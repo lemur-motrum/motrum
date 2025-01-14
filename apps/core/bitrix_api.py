@@ -204,14 +204,17 @@ def get_req_info_bx(bs_id_order):
                 legal_entity = v["RQ_COMPANY_NAME"]
                 tel = v["RQ_PHONE"]
                 kpp = v["RQ_KPP"]
+                type_client = "1"
             elif type_preset_req == "2":#ИП
                 legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 tel = None
+                type_client = "2"
                 
             elif type_preset_req == "3":#Физ. лицо
                 legal_entity = f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 tel = None
                 kpp = None
+                type_client = "2"
                 
             inn = v["RQ_INN"]
             ogrn = v["RQ_OGRN"]
@@ -269,6 +272,7 @@ def get_req_info_bx(bs_id_order):
             # "id_bitrix": 69,
             # "manager": - битрикс ид менеджера
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+            "type_client":type_client,
             "contract": "",
             "contract_date": "",
             "legal_entity": legal_entity,

@@ -528,7 +528,9 @@ def add_info_order(request, order, type_save):
                 
                 begindate = datetime.datetime.fromisoformat(order.date_order.isoformat())
                 closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
-
+                error = "file_api_error"
+                location = "сохранение всех данных по заказу ОКТ- битрикс24"
+                info = f"{closedate}{type(closedate)}"
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,

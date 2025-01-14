@@ -524,14 +524,16 @@ def add_info_order(request, order, type_save):
                 # print(orders_bx)
 
                 # СЧЕТ  СДЕЛКИ
+                begindate = datetime.datetime.fromisoformat(order.bill_date_start.isoformat())
+                closedate = datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
-                        "begindate":datetime.datetime.fromisoformat(order.date_update.isoformat()),
-                        "closedate": datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
+                        "begindate":begindate,
+                        "closedate": closedate,
                     }
                     invoice_bx = bx.call(
                         "crm.item.update",
@@ -543,7 +545,7 @@ def add_info_order(request, order, type_save):
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         "parentId2": id_bitrix_order,
-                        "closedate": datetime.datetime.fromisoformat(order.bill_date_stop.isoformat()),
+                        "closedate": closedate,
                     }
 
                     invoice_bx = bx.call(

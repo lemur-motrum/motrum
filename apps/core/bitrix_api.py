@@ -748,7 +748,10 @@ def currency_check_bx():
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
-
+        error = "info_error"
+        location = "отправка в б24 Критичные изменения цен и курса валют"
+        info = f"{carrency}{product}"
+        e = error_alert(error, location, info)
         data_dict = {}
         for carrency_item in carrency:
             data_curr = carrency_item["currency"]
@@ -801,8 +804,8 @@ def currency_check_bx():
             location = "отправка в б24 Критичные изменения цен и курса валют"
             info = f"{value["bitrix_id_order"],value["text"]}"
             e = error_alert(error, location, info)
+        return data_dict
 
-        # return True
     except Exception as e:
         tr = traceback.format_exc()
         error = "info_error"

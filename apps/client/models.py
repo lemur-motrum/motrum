@@ -214,6 +214,8 @@ class RequisitesOtherKpp(models.Model):
     kpp = models.CharField(
         "КПП",
         max_length=10,
+        blank=True,
+        null=True,
     )
     ogrn = models.CharField(
         "ОГРН",

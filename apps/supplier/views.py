@@ -42,12 +42,12 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    date = Product.objects.filter().last().data_update
-    print(date)
-    dt = datetime.datetime.fromisoformat(date.isoformat())
-
-    print(dt)
-   
+    # date = Product.objects.filter().last().data_update
+    # print(date)
+    # dt = datetime.datetime.fromisoformat(date.isoformat())
+    data_stop ="2024-01-22"
+    data_stop = datetime.datetime.strptime(data_stop, "%Y-%m-%d").date()
+    print(data_stop)
     result = 1
     if result:
         pass

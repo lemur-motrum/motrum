@@ -629,6 +629,7 @@ class Order(models.Model):
             self.bill_date_start = datetime.date.today()
             bill_date_start = datetime.date.today()
             data_stop = create_time_stop_specification()
+            data_stop = datetime.datetime.strptime(data_stop, "%Y-%m-%d").date()
             self.bill_date_stop = data_stop
 
             # if type_save == "new":

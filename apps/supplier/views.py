@@ -43,6 +43,10 @@ from apps.user.views import login_bitrix
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
+    error = "file_api_error"
+    location = "Получение\сохранение данных o товаратах 1с "
+    info = f"titleTEST"
+    e = error_alert(error, location, info)
     pdf = None
     pdf_signed = None
     try:
@@ -52,7 +56,7 @@ def add_iek(request):
             "order_products": [
                 {
                     "article_motrum": "0011",
-                    "date_delivery": "24-02-2025",
+                    "date_delivery": "25-02-2025",
                     "reserve": "1",
                     "client_shipment": "0",
                     "date_shipment": "",
@@ -110,19 +114,10 @@ def add_iek(request):
                 None,
                 None,
             )
-            
-            error = "file_api_error"
-            location = "Получение\сохранение данных o товаратах 1с "
-            info = f"{order_pdf}"
-            e = error_alert(error, location, info)
-            
-            
             if order_pdf:
                 pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
                 pdf_signed = request.build_absolute_uri(order.bill_file.url)
-                
 
-                
                 print(order_pdf)
         
     except Exception as e:
@@ -138,10 +133,6 @@ def add_iek(request):
         # если есть изденения даты для переделки счета:
 
         if pdf:
-            error = "file_api_error"
-            location = "Получение\сохранение данных o товаратах 1с "
-            info = f"if pdf"
-            e = error_alert(error, location, info)
             is_save_new_doc_bx = save_new_doc_bx(order)
             # if is_save_new_doc_bx == False:
             #     birtix_ok = False

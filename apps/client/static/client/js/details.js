@@ -326,7 +326,7 @@ window.addEventListener("DOMContentLoaded", () => {
       );
       const bankDetails = legalEntity.querySelectorAll(".bank_detail");
 
-      countContainer.textContent = bankDetails.length + 1;
+      // countContainer.textContent = bankDetails.length + 1;
 
       const btn = legalEntity.querySelector(".change_button");
       legalEntity.onmouseover = () => {

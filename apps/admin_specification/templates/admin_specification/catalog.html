@@ -109,11 +109,18 @@
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
                             <div class="item_value">
-                                <span class="price price_once">{{ item.price_cart }}</span>
+                                
+                                <span class="price price_once">
+                                    
+                                    
+                                    {{ item.price_cart }}
+                                </span>
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
                                     {% if item.actual_price %}
                                     <span style="color: red; display:block;">цена товара в окт: <span class="price">{{ item.actual_price }}</span> ₽</span>
+                                    {% else %}
+                                    <span style="color: red; display:block;">цена по запросу </span>
                                     {% endif %}
                                     
                                 {% endif %}

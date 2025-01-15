@@ -1719,8 +1719,12 @@ def after_save_order_products(products):
         if prod.product_new_article != None:
             new_prod_db = save_new_product_okt(prod)
 
+        if prod.product.vendor:
+            vendor = prod.product.vendor.name
+        else:
+            vendor = None
         data_prod_to_1c = {
-            "vendor": prod.product.vendor.name,
+            "vendor": vendor,
             "article": prod.product.article_supplier,
             "article_motrum": prod.product.article,
             "name": prod.product.name,

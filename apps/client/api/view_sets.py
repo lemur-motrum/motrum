@@ -902,7 +902,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 data_for_1c = create_info_request_order_1c(order, order_products)
                 print("data_for_1c",data_for_1c)
-                is_order_bx = True
+              
                 type_save = request.COOKIES.get("type_save")
                 
                 if IS_WEB :

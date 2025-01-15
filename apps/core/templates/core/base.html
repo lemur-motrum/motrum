@@ -27,7 +27,9 @@
             {% block content %}
             {% endblock content %}
           </div>
-          {% manager_client %}
+          {% if url_name != "contact" %}
+            {% manager_client %}
+          {% endif %}
           {% if privacy_policy %}
           {% else %}
             {% if url_name != "contact" %}

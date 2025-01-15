@@ -78,7 +78,7 @@ INSTALLED_APPS = [
     "sass_processor",
     "rest_framework",
     "tinymce",
-    'drf_spectacular', 
+    "drf_spectacular",
 ]
 
 STATICFILES_FINDERS = [
@@ -252,12 +252,10 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": "/api/",
     "SERVE_PUBLIC": False,
-    
     # "GET_MOCK_REQUEST": "doctorsystem.apps.core.schema.build_mock_request",
     # drf_spectacular.plumbing.build_mock_request
-    
 }
-REST_FRAMEWORK = {     
-    # ВАШИ НАСТРОЙКИ     
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+REST_FRAMEWORK = {
+    # ВАШИ НАСТРОЙКИ
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }

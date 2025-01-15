@@ -102,6 +102,8 @@ from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 from openpyxl import load_workbook
 
+from project.settings import IS_WEB
+
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
@@ -903,8 +905,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 is_order_bx = True
                 type_save = request.COOKIES.get("type_save")
                 
-                
-                add_info_order(request, order, type_save)
+                if IS_WEB :
+                    pass
+                else:
+                    add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
 
@@ -1627,7 +1631,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             # если есть изденения даты для переделки счета:
 
             if pdf:
-                is_save_new_doc_bx = save_new_doc_bx(order)
+                if IS_WEB :
+                    pass
+                else:
+                    is_save_new_doc_bx = save_new_doc_bx(order)
                 # if is_save_new_doc_bx == False:
                 #     birtix_ok = False
     
@@ -1669,7 +1676,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            save_payment_order_bx(data)
+            if IS_WEB :
+                    pass
+            else:
+                save_payment_order_bx(data)
 
     #ОКТ 1С получение документов откгрузки ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
@@ -1704,7 +1714,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            save_shipment_order_bx(data)
+            if IS_WEB :
+                    pass
+            else:
+                save_shipment_order_bx(data)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

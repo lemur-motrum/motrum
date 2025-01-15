@@ -38,14 +38,47 @@ def login_admin(request):
 @csrf_exempt
 def logout_admin(request):
     logout(request)
-    
-    return redirect(reverse("user:login_admin") + "?next=/admin_specification/")
+
+    response = redirect(reverse("user:login_admin") + "?next=/admin_specification/")
+    response.set_cookie("client_id", max_age=-1)
+    response.set_cookie("cart", max_age=-1)
+    response.set_cookie("specificationId", max_age=-1)
+    response.set_cookie("order", max_age=-1)
+    response.set_cookie("type_save", max_age=-1)
+    response.set_cookie(
+        "next_url",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+
+    response.set_cookie(
+        "bitrix_id_order",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "order",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "type_save",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    return response
+    # return redirect(reverse("user:login_admin") + "?next=/admin_specification/")
 
 
 # форма для логина
 @csrf_exempt
 def form_login(request, context, form):
     return render(request, "user/login_admin.html", {"form": form, "context": context})
+
 
 @csrf_exempt
 def login_clear(request, next_url, form):
@@ -72,27 +105,48 @@ def login_clear(request, next_url, form):
                     cookie_next = request.COOKIES.get("next_url")
                     if cookie_next:
                         next_url = cookie_next
-                        
+
                     response = redirect(next_url)
-                    response.set_cookie('client_id', max_age=-1)
-                    response.set_cookie('cart', max_age=-1)
-                    response.set_cookie('specificationId', max_age=-1)
-                    response.set_cookie(
-                            "next_url",
-                            max_age=-1,
-                            samesite="None",
-                            secure=True,
-                        )  
-                   
+                    # response.set_cookie('client_id', max_age=-1)
+                    # response.set_cookie('cart', max_age=-1)
+                    # response.set_cookie('specificationId', max_age=-1)
+                    # response.set_cookie('order', max_age=-1)
+                    # response.set_cookie('type_save', max_age=-1)
+                    # response.set_cookie(
+                    #         "next_url",
+                    #         max_age=-1,
+                    #         samesite="None",
+                    #         secure=True,
+                    #     )
+
+                    # response.set_cookie(
+                    #         "bitrix_id_order",
+                    #         max_age=-1,
+                    #         samesite="None",
+                    #         secure=True,
+                    #     )
+                    # response.set_cookie(
+                    #         "order",
+                    #         max_age=-1,
+                    #         samesite="None",
+                    #         secure=True,
+                    #     )
+                    # response.set_cookie(
+                    #         "type_save",
+                    #         max_age=-1,
+                    #         samesite="None",
+                    #         secure=True,
+                    #     )
+
                     return response
                     # if cookie:
                     #     response = redirect(next_url) # replace redirect with HttpResponse or render
                     #     response.set_cookie('client_id', cookie, max_age=-1)
-                        
+
                     #     return response
                     # else:
                     #     return response
-                        # return HttpResponseRedirect(next_url)
+                    # return HttpResponseRedirect(next_url)
 
                 # нет права на спецификации
                 else:
@@ -130,6 +184,7 @@ def login_clear(request, next_url, form):
                 request, "user/login_admin.html", {"form": form, "context": context}
             )
 
+
 @csrf_exempt
 def login_bitrix(request, next_url, id_bitrix):
 
@@ -145,4 +200,3 @@ def login_bitrix(request, next_url, id_bitrix):
             "error": "Ошибка доступа из Битрикс. Пожалуйста авторизуйтесь заново",
         }
         return form_login(request, context, form)
-

@@ -112,7 +112,10 @@
                                 <span class="price price_once">{{ item.price_cart }}</span>
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
+                                    {% if item.actual_price %}
                                     <span style="color: red; display:block;">цена товара в окт: <span class="price">{{ item.actual_price }}</span> ₽</span>
+                                    {% endif %}
+                                    
                                 {% endif %}
                             </div>
                             {% comment %} {% if bill_upd and item.id_product_spesif %}

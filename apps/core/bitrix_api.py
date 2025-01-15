@@ -28,14 +28,12 @@ from project.settings import MEDIA_ROOT
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
-        print("get_info_for_order_bitrix")
         webhook = settings.BITRIX_WEBHOOK
         webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
         bx = Bitrix(webhook)
 
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
         orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
-        print("orders_bx", orders_bx)
         company = orders_bx["COMPANY_ID"]
         name_order_bx = orders_bx["TITLE"]
         if company == "0":
@@ -49,7 +47,6 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 "order": {
                     "id_bitrix": bs_id_order,
                     "manager": orders_bx["ASSIGNED_BY_ID"],
-                    # "status": "PROCESSING",
                     "status": orders_bx["STAGE_ID"],
                 },
             }
@@ -85,17 +82,15 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 client_req, acc_req = client_info_bitrix(
                     data_company["data_commpany"], data_company["company_adress"]
                 )
-                print(client_req, acc_req)
-                # manager = AdminUser.objects.get(email=data["order"]["manager"])
-                # manager = AdminUser.objects.get(user=request.user)
                 status_okt = _status_to_order_replace(
                     data["order"]["status"], bs_id_order
                 )
-                error = "error"
-                location = "3"
-                info = f"3{status_okt}"
-                e = error_alert(error, location, info)
-                manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
+
+                try:
+                    manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
+                except AdminUser.DoesNotExist:
+                    manager = AdminUser.objects.filter(admin_type="ALL").first()
+                    
                 data_order = {
                     "id_bitrix": bs_id_order,
                     "name": int(bs_id_order),
@@ -124,7 +119,6 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         context["spes"] = int(order.specification.id)
                     else:
                         context["spes"] = None
-                    print(context)
                     return (next_url, context, False)
                 except Order.DoesNotExist:
                     data["order"]["manager"] = manager
@@ -450,28 +444,19 @@ def add_info_order(request, order, type_save):
     try:
         webhook = settings.BITRIX_WEBHOOK
         id_bitrix_order = order.id_bitrix
-        if id_bitrix_order == 10568:
+        if id_bitrix_order != 0:
             print("add_info_order")
 
             bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
             orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
             if len(orders_bx) > 0:
                 orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
-                # print(orders_bx)
-                # error = "file_api_error"
-                # location = "orders_bx- битрикс24"
-                # info = f"{orders_bx}"
-                # e = error_alert(error, location, info)
+
                 orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
-                # print(orders_bx)
-                # error = "file_api_error"
-                # location = "orders_bx- битрикс24"
-                # info = f"{orders_bx}"
-                # e = error_alert(error, location, info)
+
                 company = orders_bx["COMPANY_ID"]
                 company_bx = bx.get_by_ID("crm.company.get", [company])
-                print("company_bx")
-                print(company_bx)
+
 
                 order_debt = order.bill_sum - order.bill_sum_paid
                 data_order = {
@@ -564,8 +549,8 @@ def add_info_order(request, order, type_save):
                     order.save()
         else:
             error = "file_api_error"
-            location = "10568ОКТ- битрикс24"
-            info = f"10568битрикс24"
+            location = "0- битрикс24"
+            info = f"0error"
             e = error_alert(error, location, info)
     except Exception as e:
         print(e)
@@ -752,7 +737,6 @@ def currency_check_bx():
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
-
 
         data_dict = {}
         for carrency_item in carrency:
@@ -1001,6 +985,12 @@ def get_manager():
                 # "entityTypeId": 2,
             },
         )
+        
+        error = "error"
+        location = "Менеджеры битрикс"
+        info = f"Менеджеры битрикс все {manager_all_bx}"
+        e = error_alert(error, location, info)
+        
         for manager in manager_all_bx:
             print(manager)
             try:

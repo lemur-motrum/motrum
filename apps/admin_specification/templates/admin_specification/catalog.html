@@ -1,6 +1,7 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
+    {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
  
     <div order={{ order }} class="specification-container okt_cart_container">
@@ -118,7 +119,7 @@
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
                                     {% if item.actual_price %}
-                                    <span style="color: red; display:block;">цена товара в окт: <span class="price">{{ item.actual_price }}</span> ₽</span>
+                                    <span style="color: red; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
                                     {% else %}
                                     <span style="color: red; display:block;">цена по запросу </span>
                                     {% endif %}

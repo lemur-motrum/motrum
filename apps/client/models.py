@@ -74,6 +74,8 @@ class Client(CustomUser):
     # def send_email_notification(self,text_email):
 
 
+    
+    
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
@@ -175,45 +177,6 @@ class Requisites(models.Model):
         "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
     )
 
-    # kpp = models.CharField(
-    #     "КПП",
-    #     max_length=10,
-    # )
-    # ogrn = models.CharField(
-    #     "ОГРН",
-    #     max_length=15,
-    #     blank=True,
-    #     null=True,
-    # )
-    # legal_post_code = models.PositiveIntegerField(
-    #     "Юридический адрес :индекс",
-    # )
-    # legal_city = models.CharField(
-    #     "Юридический адрес : город",
-    #     max_length=50,
-    # )
-    # legal_address = models.CharField(
-    #     "Юридический адрес : адрес",
-    #     max_length=200,
-    # )
-    # postal_post_code = models.CharField(
-    #     "Почтовый адрес :индекс",
-    #     max_length=10,
-    # )
-    # postal_city = models.CharField(
-    #     "Почтовый адрес : город",
-    #     max_length=50,
-    # )
-    # postal_address = models.CharField(
-    #     "Почтовый адрес : адрес",
-    #     max_length=200,
-    # )
-    # tel = models.CharField(
-    #     "Телефон",
-    #     max_length=200,
-    #     blank=True,
-    #     null=True,
-    # )
 
     class Meta:
         verbose_name = "Юридическое лицо"

@@ -236,7 +236,7 @@ def get_req_info_bx(bs_id_order):
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
 
-                if adress["REGION"]:
+                if adress["REGION"] != "":
                     legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
                     legal_city = f"г.{adress['CITY']}"
@@ -249,7 +249,7 @@ def get_req_info_bx(bs_id_order):
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
                 bx_city_post = adress["CITY"]
-                if adress["REGION"]:
+                if adress["REGION"] != "":
                     postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
                     postal_city = f"г.{adress['CITY']}"

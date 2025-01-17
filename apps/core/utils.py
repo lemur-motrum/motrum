@@ -20,6 +20,7 @@ from apps.logs.utils import error_alert
 
 
 from apps.specification.utils import crete_pdf_specification
+
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
@@ -1847,6 +1848,7 @@ def image_error_check():
 
 def product_cart_in_file(file, cart):
     from apps.product.models import Product, ProductCart
+    from apps.supplier.models import Vendor
 
     def _serch_prod_in_file(article, vendor):
         product = Product.objects.filter(article_supplier=article)
@@ -1869,14 +1871,23 @@ def product_cart_in_file(file, cart):
 
     def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
        
-        if data["sale_client"]:
-            sale_client = data["sale_client"]
+        # if data["sale_client"]:
+        #     sale_client = float(data_sheet.cell(row=index, column=21).value)
+        # else:
+        #     sale_client = 1
+        
+        product_price_all = float(data["product_price"])
+        sale_client = 100 - (float(data_sheet.cell(row=index, column=21).value) * 100)
+        sale_motrum = 100 - (float(data_sheet.cell(row=index, column=22).value) * 100)
+        if product_okt_count == 1:
+            vendor = product_okt.vendor
+        elif product_okt_count > 1:
+            pass
         else:
-            sale_client = 1
-        
-        product_price = int(data["product_price"])
-       
-        
+            slugish = translit.translify(vendor)
+            vendor_name = slugify(slugish)
+            
+        print(sale_motrum)
         # if product_okt_count == 1:
         #     ProductCart.get_or_create(
         #         cart=cart,
@@ -1898,33 +1909,39 @@ def product_cart_in_file(file, cart):
     last_row_in_prod = False
     
     for index in range(1, data_sheet.max_row):
-        print("first_row_in_prod", first_row_in_prod)
+       
         column_b = data_sheet.cell(row=index, column=2).value
 
         if first_row_in_prod == None:
             if column_b == "Производитель":
                 first_row_in_prod = index
         else:
-            vendor_file = data_sheet.cell(row=index, column=2).value
-            if vendor_file == None:
-                last_row_in_prod = True
+            if last_row_in_prod == False:
+                vendor_file = data_sheet.cell(row=index, column=2).value
+                if vendor_file == None:
+                    last_row_in_prod = True
+                else:
+                    article_file = data_sheet.cell(row=index, column=3).value
+                    product_price_file = data_sheet.cell(row=index, column=9).value
+                    
+                    print(product_price_file)
+                    if product_price_file:
+                        product_okt_count, product_okt = _serch_prod_in_file(
+                            article_file, vendor_file
+                        )
+                        data = {
+                            "product_price": data_sheet.cell(row=index, column=9).value,
+                            "quantity": data_sheet.cell(row=index, column=6).value,
+                            "vendor": vendor_file,
+                            "sale_client":data_sheet.cell(row=index, column=21).value,
+                            "sale_motrum":data_sheet.cell(row=index, column=22).value,  
+                        }
+                        
+                        print(data)
+                        
+                        _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
             else:
-                article_file = data_sheet.cell(row=index, column=3).value
-
-                product_okt_count, product_okt = _serch_prod_in_file(
-                    article_file, vendor_file
-                )
-                data = {
-                    "product_price": data_sheet.cell(row=index, column=9).value,
-                    "quantity": data_sheet.cell(row=index, column=6).value,
-                    "vendor": vendor_file,
-                    "sale_client":data_sheet.cell(row=index, column=21).value,
-                    "sale_motrum":data_sheet.cell(row=index, column=22).value,  
-                }
-                
-                print(data)
-                
-                _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
+                pass
           
 
 

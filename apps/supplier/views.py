@@ -13,7 +13,7 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check
+from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -38,13 +38,17 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
+from project.settings import MEDIA_ROOT
 
 
 
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-
+    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+    path_kp = f"{new_dir}/КП.xlsx"
+    cart = 667
+    product_cart_in_file(path_kp,cart)
     result = 1
     if result:
         pass

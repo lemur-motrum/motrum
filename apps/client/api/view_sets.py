@@ -1522,7 +1522,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {}
         return Response(data, status=status.HTTP_200_OK)
 
-    
+    # заполнение корзины из кп
     @action(detail=True, methods=["post"], url_path=r"add-file-dowlad")
     def add_file_dowlad(self, request, pk=None, *args, **kwargs):
         pass

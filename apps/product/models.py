@@ -848,7 +848,12 @@ class Cart(models.Model):
         cart = cls.objects.create(session_key=None, is_active=False,client=None,cart_admin=admin)
         
         return  cart
-
+TAG_DOC = (
+    ("ONE", "Один вариант"),
+    ("MULTI", "Несколько вариантов"),
+    ("NONE", "Нет варинтов"),
+    ("-", "Не из документа"),
+)
 
 class ProductCart(models.Model):
     cart = models.ForeignKey(
@@ -932,6 +937,9 @@ class ProductCart(models.Model):
         max_length=1000,
         blank=True,
         null=True,
+    )
+    tag_auto_document = models.CharField(
+        max_length=100, choices=TAG_DOC, default="-"
     )
 
     class Meta:

@@ -157,6 +157,17 @@ def get_req_info_bx(bs_id_order):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    # компания сделки для получение менеджера НОВОЕ
+    company_bx = bx.get_by_ID("crm.company.get", [company])
+    error = "error"
+    location = "company_bx"
+    info = f" company_bx {company_bx}"
+    e = error_alert(error, location, info)
+    
+
+
+    
+    
     # реквизиты привязанные к сделке
     req_bx_order = bx.call(
         "crm.requisite.link.list",
@@ -236,14 +247,14 @@ def get_req_info_bx(bs_id_order):
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
 
-                if adress["REGION"] != "":
-                    legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                if adress["REGION"] != "" or adress["REGION"] != "None" or adress["REGION"] != None:
+                    legal_city = f"{adress['REGION']}, г.{adress['CITY'],}"
                 else:
-                    legal_city = f"г.{adress['CITY']}"
+                    legal_city = f"г.{adress['CITY']},"
                 legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                postal_city = f"{adress['REGION']}, г.{adress['CITY'],}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
             if adress["TYPE_ID"] == "4":

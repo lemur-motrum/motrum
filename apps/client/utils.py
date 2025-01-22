@@ -385,10 +385,21 @@ def crete_pdf_bill(
                 ),
             )
         )
-        if client_info_req_kpp.tel:
-            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}, тел.: {client_info_req_kpp.tel}"
-        else:
+        
+        if client_info.type_client == 1:
+            pass
+            # клиент юрлицо
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
+
+        else:
+            # клиент ип
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
+        
+        
+        
+        if client_info_req_kpp.tel:
+            info_client = f"{info_client}, тел.: {client_info_req_kpp.tel}"
+
 
         data_info.append(
             (

@@ -10,13 +10,54 @@
             <div class="contact_people">
                 {% comment %} {% for cotact in contacts %} {% endcomment %}
                 <div class="contact_person">
-                    <div class="contact_preson_elem">Константин Константинович Константинопольский</div>
-                    <div class="contact_preson_elem">специалист по закупкам</div>
-                    <div class="contact_preson_elem links">
-                        <a class="tel_link" href="tel:+79279057414">+7 (927) 905-74-14</a>
-                        <a class="mail_link" href="mailto:konstantinopolskiy@yurlico.ru">konstantinopolskiy@yurlico.ru</a>
+                    <div class="contact_person_details">
+                        <div class="contact_preson_elem">Константин Константинович Константинопольский</div>
+                        <div class="contact_preson_elem">специалист по закупкам</div>
+                        <div class="contact_preson_elem links">
+                            <a class="tel_link" href="tel:+79279057414">+7 (927) 905-74-14</a>
+                            <a class="mail_link" href="mailto:konstantinopolskiy@yurlico.ru">konstantinopolskiy@yurlico.ru</a>
+                        </div>
+                        <div class="contact_preson_elem change_btn">Изменить</div>
                     </div>
-                    <div class="contact_preson_elem change_btn">Изменить</div>
+                    <form class="contact_person_form">
+                        <label>
+                            <input {% comment %}
+                                   value="{% if client.contact_name %}{{ client.contact_name }}{% else %}{% endif %}"
+                                   {% endcomment %}
+                                   type="text"
+                                   class="name-input"
+                                   placeholder="Имя" />
+                            <div class="error name_error"></div>
+                        </label>
+                        <label>
+                            <input {% comment %}
+                                   value="{% if client.contact_name %}{{ client.contact_name }}{% else %}{% endif %}"
+                                   {% endcomment %}
+                                   type="text"
+                                   class="job_title-input"
+                                   placeholder="Должность" />
+                            <div class="error job_title_error"></div>
+                        </label>
+                        <label>
+                            <input {% comment %}
+                                   value="{% if client.phone %}{{ client.phone }}{% else %}{% endif %}"
+                                   {% endcomment %}
+                                   type="text"
+                                   class="phone-input"
+                                   placeholder="Телефон" />
+                            <div class="error phone_error"></div>
+                        </label>
+                        <label>
+                            <input {% comment %}
+                                   value="{% if client.email %}{{ client.email }}{% else %}{% endif %}"
+                                   {% endcomment %}
+                                   type="text"
+                                   class="mail-input"
+                                   placeholder="Email" />
+                            <div class="error mail_error"></div>
+                        </label>
+                        <button type="submit">сохранить</button>
+                    </form>
                 </div>
                 {% comment %} {% endfor %} {% endcomment %}
             </div>

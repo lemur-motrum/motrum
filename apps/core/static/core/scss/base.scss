@@ -1171,16 +1171,18 @@ a {
     max-height: 9.063rem;
     background-color: #ff5b00;
     position: -webkit-sticky;
-    position: sticky;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 1.625rem;
-    z-index: 90;
+    z-index: 590;
     padding: 1.813rem 2.75rem;
     box-sizing: border-box;
     display: none;
     transition: 0.6s;
     opacity: 0;
     border-radius: 2.5rem;
-    margin-bottom: 1.625rem;
+
     &.visible {
       display: flex;
       align-items: center;

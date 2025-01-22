@@ -1544,41 +1544,138 @@
         height: 6.813rem;
         border: 0.094rem solid #000;
         border-radius: 2.5rem;
-        display: flex;
-        padding: 2.063rem 1.75rem;
         box-sizing: border-box;
-        align-items: center;
-        .contact_preson_elem {
-          font-size: 1.125rem;
-          font-weight: 300;
-          &:nth-of-type(1) {
-            width: 14.813rem;
+        // display: flex;
+        // align-items: center;
+        // justify-content: center;
+        .contact_person_details {
+          margin: 2.063rem 1.75rem;
+          display: flex;
+          align-items: center;
+          &.no_visible {
+            display: none;
           }
-          &:nth-of-type(2) {
-            margin-left: 9.75rem;
-            width: 12.688rem;
-          }
-          &:nth-of-type(3) {
-            width: 20.25rem;
-            margin-left: 6.813rem;
-          }
-          &:nth-of-type(4) {
-            margin-left: 6.125rem;
+          .contact_preson_elem {
             font-size: 1.125rem;
-            color: #95bad4;
-            text-decoration: underline;
-            font-weight: bold;
-            text-transform: lowercase;
-          }
-          &.links {
-            display: flex;
-            flex-direction: column;
-            .tel_link {
-              color: #000;
+            font-weight: 300;
+            &:nth-of-type(1) {
+              width: 14.813rem;
             }
-            .mail_link {
+            &:nth-of-type(2) {
+              margin-left: 9.75rem;
+              width: 12.688rem;
+            }
+            &:nth-of-type(3) {
+              width: 20.25rem;
+              margin-left: 6.813rem;
+            }
+            &:nth-of-type(4) {
+              margin-left: 6.125rem;
+              font-size: 1.125rem;
               color: #95bad4;
+              text-decoration: underline;
               font-weight: bold;
+              text-transform: lowercase;
+              cursor: pointer;
+            }
+            &.links {
+              display: flex;
+              flex-direction: column;
+              .tel_link {
+                color: #000;
+              }
+              .mail_link {
+                color: #95bad4;
+                font-weight: bold;
+              }
+            }
+          }
+        }
+        .contact_person_form {
+          margin: 1.5rem 1.75rem;
+          display: none;
+          align-items: center;
+          gap: 0.938rem;
+          transition: 1s;
+          &.show {
+            display: flex;
+          }
+          label {
+            position: relative;
+            width: 15.048rem;
+            height: 3.563rem;
+            input {
+              width: 100%;
+              height: 100%;
+              border-radius: 2rem;
+              box-sizing: border-box;
+              padding: 1.125rem 2.25rem;
+              border: 0.094rem solid #000;
+              font-size: 1.125rem;
+              font-family: "Nunito", sans-serif;
+              &::-webkit-input-placeholder {
+                color: #000;
+              }
+              &::-moz-placeholder {
+                color: #000;
+              }
+              &:-ms-input-placeholder {
+                color: #000;
+              }
+              &::-ms-input-placeholder {
+                color: #000;
+              }
+              &::placeholder {
+                color: #000;
+              }
+              &:focus {
+                outline: none;
+                &::-webkit-input-placeholder {
+                  color: transparent;
+                }
+                &::-moz-placeholder {
+                  color: transparent;
+                }
+                &:-ms-input-placeholder {
+                  color: transparent;
+                }
+                &::-ms-input-placeholder {
+                  color: transparent;
+                }
+                &::placeholder {
+                  color: transparent;
+                }
+              }
+            }
+            .error {
+              color: red;
+              font-size: 0.625rem;
+              margin-left: 0.688rem;
+              position: absolute;
+              top: 100%;
+              opacity: 0;
+              transition: 0.6s;
+              &.show {
+                opacity: 1;
+              }
+            }
+          }
+          button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 15.048rem;
+            height: 3.563rem;
+            border: none;
+            border-radius: 1.875rem;
+            background-color: #95bad4;
+            font-size: 1.313rem;
+            text-transform: lowercase;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.6s;
+            &:hover {
+              background-color: #ff5b00;
             }
           }
         }
@@ -1589,15 +1686,18 @@
       &.show {
         div {
           .contact-form {
-            height: 100%;
+            height: 6.813rem;
             margin-top: 1.188rem;
+            opacity: 1;
+            padding: 2.063rem 1.75rem;
+            box-sizing: border-box;
           }
         }
       }
       div {
         width: 100%;
         .contact-form {
-          margin-top: 1.188rem;
+          margin-top: 0rem;
           border: 0.094rem solid #000;
           height: 6.813rem;
           border-radius: 2.5rem;
@@ -1605,9 +1705,8 @@
           align-items: center;
           gap: 0.938rem;
           transition: 1s;
-          padding: 2.063rem 1.75rem;
-          box-sizing: border-box;
-          // height: 0;
+          height: 0;
+          opacity: 0;
           overflow: hidden;
           label {
             position: relative;

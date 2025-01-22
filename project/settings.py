@@ -259,3 +259,5 @@ REST_FRAMEWORK = {
     # ВАШИ НАСТРОЙКИ
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+NDS="20"

@@ -1,5 +1,6 @@
 import datetime
 import email
+import json
 import math
 from operator import itemgetter
 import os
@@ -100,6 +101,8 @@ from apps.specification.models import ProductSpecification, Specification
 from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 from openpyxl import load_workbook
+
+from project.settings import IS_WEB
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -578,10 +581,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             print("def order_bitrix")
             data = request.data
-            print(data)
+            id_bitrix = request.COOKIES.get("bitrix_id_order")
+            s = data['serializer']
+            json_acceptable_string = s.replace("'", "\"")
+            d = json.loads(json_acceptable_string)
+            
             serializer_class = OrderSerializer
-            order = Order.objects.get(id_bitrix=int(data["bitrix_id_order"]))
-            serializer = serializer_class(order, data=data, many=False)
+            order = Order.objects.get(id_bitrix=int(id_bitrix))
+            serializer = serializer_class(order, data=d, many=False)
             if serializer.is_valid():
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -590,7 +597,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 tr = serializer.errors
                 error = "error"
                 location = "взятие заказа при открытие окна битрикс"
-                info = f" ошибка {tr}"
+                info = f" ошибка {tr}{data}"
                 e = error_alert(error, location, info)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -895,11 +902,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 data_for_1c = create_info_request_order_1c(order, order_products)
                 print("data_for_1c",data_for_1c)
-                is_order_bx = True
+              
                 type_save = request.COOKIES.get("type_save")
                 
-                
-                # add_info_order(request, order, type_save)
+                if IS_WEB :
+                    pass
+                else:
+                    add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
 
@@ -1513,7 +1522,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {}
         return Response(data, status=status.HTTP_200_OK)
 
-    
+    # заполнение корзины из кп
     @action(detail=True, methods=["post"], url_path=r"add-file-dowlad")
     def add_file_dowlad(self, request, pk=None, *args, **kwargs):
         pass
@@ -1530,46 +1539,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             if row_level == 1:
                     vendor_str = data_sheet.cell(row=index, column=1).value
             
-            
-            
-    # #ОКТ Б24 получение статусов заказов из битрикс
-    # @action(detail=False, methods=["post"], url_path=r"status-order-bitrix")
-    # def get_status_order_bitrix(self, request, *args, **kwargs):
-    #     # data = request.data
-    #     data = [
-    #         {"id_bitrix": "232", "status": "Отгрузка оборудования заказчику"},
-    #         {"id_bitrix": "5924", "status": "Отгрузка оборудования заказчику"},
-    #     ]
-
-    #     def get_status_bx(status):
-    #         for choice in STATUS_ORDER_BITRIX:
-    #             if choice[1] == status:
-    #                 return choice[0]
-
-    #     for data_order in data:
-    #         print(data_order["id_bitrix"])
-    #         order = Order.objects.filter(id_bitrix=data_order["id_bitrix"]).last()
-
-    #         if order:
-    #             status_bx = get_status_bx(data_order["status"])
-    #             if status == "SHIPMENT_":
-    #                 if order.type_delivery == "Самовывоз":
-    #                     status = "SHIPMENT_PICKUP"
-    #                 else:
-    #                     status = "SHIPMENT_AUTO"
-
-    #                 order.status = status
-    #                 order.save()
-
-    #     return Response(data, status=status.HTTP_200_OK)
-
-    # @action(detail=False, methods=["post"], url_path=r"test")
-    # def test(self, request, *args, **kwargs):
-    #     print("action test")
-    #     data = request.data
-
-    #     print(data)
-    #     return Response(None, status=status.HTTP_200_OK)
     
     #ОКТ 1С сроки поставки товаров ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
@@ -1580,14 +1549,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
 
             data = {
-                "bitrix_id": "1",
+                "bitrix_id": "10568",
                 "order_products": [
                     {
-                        "article_motrum": "001777",
-                        "date_delivery": "24-11-2024",
+                        "article_motrum": "0011",
+                        "date_delivery": "25-02-2025",
                         "reserve": "1",
                         "client_shipment": "0",
-                        "date_shipment": "22-11-2024",
+                        "date_shipment": "",
                     },
                 ],
             }
@@ -1612,11 +1581,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                         prod.date_delivery_bill = date_delivery
 
                 if order_products_item["date_shipment"]:
-                    date_shipment = datetime.datetime.strptime(
-                        order_products_item["date_shipment"], "%d-%m-%Y"
-                    ).date()
+                    if date_shipment != "":
+                        date_shipment = datetime.datetime.strptime(
+                            order_products_item["date_shipment"], "%d-%m-%Y"
+                        ).date()
 
-                    prod.date_shipment = date_shipment
+                        prod.date_shipment = date_shipment
 
                 if order_products_item["reserve"]:
                     prod.reserve = int(order_products_item["reserve"])
@@ -1646,7 +1616,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
 
                     print(order_pdf)
-            return Response(None, status=status.HTTP_200_OK)
+            return Response(None, status=status.HTTP_200_OK)  
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -1655,12 +1625,16 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            
         finally:
             # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
             # если есть изденения даты для переделки счета:
 
             if pdf:
-                is_save_new_doc_bx = save_new_doc_bx(order)
+                if IS_WEB :
+                    pass
+                else:
+                    is_save_new_doc_bx = save_new_doc_bx(order)
                 # if is_save_new_doc_bx == False:
                 #     birtix_ok = False
     
@@ -1671,9 +1645,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             print("add_payment_order_1c")
             data = [
                 {
-                    "bitrix_id": "1",
+                    "bitrix_id": "10568",
                     "amount_sum": "1000.22",
-                    "date_transaction": "22-11-2024",
+                    "date_transaction": "22-12-2024",
                 },
             ]
 
@@ -1702,7 +1676,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            save_payment_order_bx(data)
+            if IS_WEB :
+                    pass
+            else:
+                save_payment_order_bx(data)
 
     #ОКТ 1С получение документов откгрузки ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
@@ -1710,7 +1687,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             data = [
                 {
-                    "bitrix_id": "1",
+                    "bitrix_id": "10568",
                     "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
                     "date": "22-11-2024",
                 },
@@ -1737,7 +1714,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            save_shipment_order_bx(data)
+            if IS_WEB :
+                    pass
+            else:
+                save_shipment_order_bx(data)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

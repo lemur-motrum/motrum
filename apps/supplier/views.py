@@ -1,21 +1,23 @@
 import datetime
 from locale import LC_ALL, setlocale
 import threading
+import traceback
 from django.shortcuts import render
 from regex import D
-from apps.client.models import Order
+from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
 
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check
+from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file
 from apps.product.models import CurrencyRate, GroupProduct, Product
-from apps.specification.models import Specification
+from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
+from apps.specification.utils import save_shipment_doc
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api
 from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
@@ -36,19 +38,17 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
+from project.settings import MEDIA_ROOT
 
 
 
 # тестовая страница скриптов
 def add_iek(request):
     title = "TEST"
-    iek_api()
-    # order = Order.objects.get(id_bitrix=1)
-    # type_save = "new"
-    # p = add_info_order(request, order, type_save)
-    # print("add_iek",p)
-    
-   
+    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+    path_kp = f"{new_dir}/КП.xlsx"
+    cart = 667
+    product_cart_in_file(path_kp,cart)
     result = 1
     if result:
         pass

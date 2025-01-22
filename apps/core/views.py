@@ -34,19 +34,16 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_list_or_404, render
 from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
-
+from django.views.decorators.clickjacking import xframe_options_exempt,xframe_options_sameorigin
 
 # ГЛАВНАЯ
+# @xframe_options_sameorigin
 def index(request):
-    # categories = list(CategoryProduct.objects.all())
-    # random.shuffle(categories)
-    # cat = categories[0:7]
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
         "article_home_web"
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-
-    promoslider = SliderMain.objects.filter(active=True).order_by("article")
+    promo_slider = SliderMain.objects.filter(active=True).order_by("article")
     vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")
 
     motrum_in_numbers = IndexInfoWeb.objects.all().last()
@@ -54,7 +51,7 @@ def index(request):
     context = {
         "categories": categories,
         "projects": projects,
-        "slider": promoslider,
+        "slider": promo_slider,
         "vendors": vendors,
         "motrum_in_numbers":motrum_in_numbers,
     }

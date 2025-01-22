@@ -28,15 +28,14 @@ from project.settings import MEDIA_ROOT
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
-        print("get_info_for_order_bitrix")
         webhook = settings.BITRIX_WEBHOOK
         webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
         bx = Bitrix(webhook)
 
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
         orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
-        print("orders_bx", orders_bx)
         company = orders_bx["COMPANY_ID"]
+        name_order_bx = orders_bx["TITLE"]
         if company == "0":
             error_text = "К сделке не прикреплен клиент"
             next_url = "/admin_specification/error-b24/"
@@ -48,8 +47,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 "order": {
                     "id_bitrix": bs_id_order,
                     "manager": orders_bx["ASSIGNED_BY_ID"],
-                    "status": "PROCESSING",
-                    # "status": orders_bx["STAGE_ID"],
+                    "status": orders_bx["STAGE_ID"],
                 },
             }
             company_bx = bx.get_by_ID("crm.company.get", [company])
@@ -84,19 +82,25 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 client_req, acc_req = client_info_bitrix(
                     data_company["data_commpany"], data_company["company_adress"]
                 )
-                print(client_req, acc_req)
-                # manager = AdminUser.objects.get(email=data["order"]["manager"])
-                # manager = AdminUser.objects.get(user=request.user)
-                manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
+                status_okt = _status_to_order_replace(
+                    data["order"]["status"], bs_id_order
+                )
+
+                try:
+                    manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
+                except AdminUser.DoesNotExist:
+                    manager = AdminUser.objects.filter(admin_type="ALL").first()
+                    
                 data_order = {
                     "id_bitrix": bs_id_order,
-                    "name": 123131,
+                    "name": int(bs_id_order),
                     "requisites": client_req.id,
                     "account_requisites": acc_req.id,
-                    "status": data["order"]["status"],
+                    "status": status_okt,
                     "prepay_persent": client_req.prepay_persent,
                     "postpay_persent": client_req.postpay_persent,
-                    "manager": manager,
+                    "manager": manager.id,
+                    "text_name": name_order_bx,
                 }
                 serializer_class = OrderSerializer
                 try:
@@ -115,7 +119,6 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         context["spes"] = int(order.specification.id)
                     else:
                         context["spes"] = None
-                    print(context)
                     return (next_url, context, False)
                 except Order.DoesNotExist:
                     data["order"]["manager"] = manager
@@ -169,29 +172,47 @@ def get_req_info_bx(bs_id_order):
             "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
         },
     )
-    print("adress_bx", adress_bx)
-    print("req_bx_id", req_bx_id)
+
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
     elif req_acc_bx_id == "0":
         return (True, "Банковские реквизиты", None)
     elif len(adress_bx) == 0:
-        print("error adress_bx")
         return (True, "Адреса", None)
     else:
-        print("OK")
+
         # значение реквизитов
         req_bx = bx.call(
             "crm.requisite.get",
             {"id": int(req_bx_id)},
         )
-        print("req_bx", req_bx)
+
         for k, v in req_bx.items():
-            legal_entity = v["RQ_COMPANY_NAME"]
+
+            type_preset_req = v["PRESET_ID"]
+            if type_preset_req == "1":  # Организация
+                legal_entity = v["RQ_COMPANY_NAME"]
+                tel = v["RQ_PHONE"]
+                kpp = v["RQ_KPP"]
+                type_client = "1"
+            elif type_preset_req == "2":  # ИП
+                legal_entity = (
+                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                )
+                tel = None
+                type_client = "2"
+
+            elif type_preset_req == "3":  # Физ. лицо
+                legal_entity = (
+                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                )
+                tel = None
+                kpp = None
+                type_client = "2"
+
             inn = v["RQ_INN"]
-            kpp = v["RQ_KPP"]
             ogrn = v["RQ_OGRN"]
-            tel = v["RQ_PHONE"]
+
             # contract = ??
             # contract_date = ??
 
@@ -209,10 +230,16 @@ def get_req_info_bx(bs_id_order):
                 "address2": adress["ADDRESS_2"],
             }
             company_adress_all.append(company_adress)
-            print(adress["TYPE_ID"])
+
             if adress["TYPE_ID"] == "6":
                 legal_post_code = adress["POSTAL_CODE"]
-                legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                bx_city = adress["CITY"]
+                bx_city_post = adress["CITY"]
+
+                if adress["REGION"] != "":
+                    legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                else:
+                    legal_city = f"г.{adress['CITY']}"
                 legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
@@ -221,16 +248,19 @@ def get_req_info_bx(bs_id_order):
 
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                bx_city_post = adress["CITY"]
+                if adress["REGION"] != "":
+                    postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                else:
+                    postal_city = f"г.{adress['CITY']}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
-        print("company_adress_all", company_adress_all)
-        print("legal_post_code", legal_post_code)
+
         # банковские реквизиыт привязанные к сделки значение
         req_bank = bx.get_by_ID(
             "crm.requisite.bankdetail.get",
             [req_acc_bx_id],
         )
-        print("req_bank", req_bank)
+
         account_requisites = req_bank["RQ_ACC_NUM"]
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
@@ -239,7 +269,8 @@ def get_req_info_bx(bs_id_order):
         company = {
             # "id_bitrix": 69,
             # "manager": - битрикс ид менеджера
-            "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+            # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
+            "type_client": type_client,
             "contract": "",
             "contract_date": "",
             "legal_entity": legal_entity,
@@ -257,6 +288,10 @@ def get_req_info_bx(bs_id_order):
             "bank": bank,
             "ks": ks,
             "bic": bic,
+            "postal_post_code": postal_post_code,
+            "legal_post_code": legal_post_code,
+            "bx_city": bx_city,
+            "bx_city_post": bx_city_post,
         }
 
         context = {
@@ -317,6 +352,18 @@ def order_info_check(company_info, order_info):
     if company_info["bic"] == "":
         not_info.append("БИК")
 
+    if company_info["postal_post_code"] == "":
+        not_info.append("Индекс")
+
+    if company_info["legal_post_code"] == "":
+        not_info.append("Индекс")
+
+    if company_info["bx_city"] == "":
+        not_info.append("Город")
+
+    if company_info["bx_city_post"] == "":
+        not_info.append("Город")
+
     not_info_order = []
 
     if order_info["id_bitrix"] == "":
@@ -348,7 +395,7 @@ def get_status_order():
 
         webhook = settings.BITRIX_WEBHOOK
 
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
         orders = [d["id_bitrix"] for d in actual_order]
 
         # orders = [1]
@@ -364,9 +411,11 @@ def get_status_order():
             id_bx = order_bx["ID"]
 
             status_bx = order_bx["STAGE_ID"]
-            stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
-            # stage_bd  = StageDealBx.objects.get(entity_id="Квалификация", status_id = status_bx)
-            print("stage_bd", stage_bd)
+            # stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
+            # stage_bd = StageDealBx.objects.get(
+            #     entity_id="Квалификация", status_id=status_bx
+            # )
+            # print("stage_bd", stage_bd)
             print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
 
@@ -395,20 +444,19 @@ def add_info_order(request, order, type_save):
     try:
         webhook = settings.BITRIX_WEBHOOK
         id_bitrix_order = order.id_bitrix
-        if id_bitrix_order == 10568:
+        if id_bitrix_order != 0:
             print("add_info_order")
 
             bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
             orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
             if len(orders_bx) > 0:
                 orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
-                print(orders_bx)
+
                 orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
-                print(orders_bx)
+
                 company = orders_bx["COMPANY_ID"]
                 company_bx = bx.get_by_ID("crm.company.get", [company])
-                print("company_bx")
-                print(company_bx)
+
 
                 order_debt = order.bill_sum - order.bill_sum_paid
                 data_order = {
@@ -461,25 +509,36 @@ def add_info_order(request, order, type_save):
                 # print(orders_bx)
 
                 # СЧЕТ  СДЕЛКИ
+
+                begindate = datetime.datetime.fromisoformat(
+                    order.bill_date_start.isoformat()
+                )
+                closedate = datetime.datetime.fromisoformat(
+                    order.bill_date_stop.isoformat()
+                )
+
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
-                        "closedate": order.bill_date_stop,
+                        "begindate": begindate,
+                        "closedate": closedate,
                     }
+
                     invoice_bx = bx.call(
                         "crm.item.update",
                         {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
                     )
+
                 else:
                     invoice = {
                         "title": order.bill_name,
                         "accountNumber": order.bill_name,
                         "opportunity": order.bill_sum,
                         "parentId2": id_bitrix_order,
-                        "closedate": order.bill_date_stop,
+                        "closedate": closedate,
                     }
 
                     invoice_bx = bx.call(
@@ -488,7 +547,11 @@ def add_info_order(request, order, type_save):
                     invoice_bx_id = invoice_bx["id"]
                     order.bill_id_bx = invoice_bx_id
                     order.save()
-
+        else:
+            error = "file_api_error"
+            location = "0- битрикс24"
+            info = f"0error"
+            e = error_alert(error, location, info)
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -505,6 +568,8 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
     for file in file_dict:
         if type_file == "file_dict_signed":
             name = file.bill_file
+            if file.is_active == False:
+                name = f"{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
@@ -515,8 +580,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
 
         elif type_file == "file_dict_shipment":
             name = file.file
-            if file.is_active == False:
-                name = f"{name}_не-актуально"
+
             file = f"{MEDIA_ROOT}/{ file.file}"
         else:
             name = "1"
@@ -572,8 +636,11 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 def save_new_doc_bx(order):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
-
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        error = "file_api_error"
+        location = "Получение\сохранение данных o товаратах 1с "
+        info = f"{bx}bx"
+        e = error_alert(error, location, info)
         id_bitrix_order = order.id_bitrix
         file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
         file_dict_signed = file_dict.exclude(bill_file="")
@@ -584,7 +651,7 @@ def save_new_doc_bx(order):
             file_dict_signed,
             id_bitrix_order,
             "crm.deal.update",
-            "UF_CRM_1735027585527",
+            "UF_CRM_1734772516954",
         )
         save_multi_file_all_bx(
             bx,
@@ -592,7 +659,7 @@ def save_new_doc_bx(order):
             file_dict_no_signed,
             id_bitrix_order,
             "crm.deal.update",
-            "UF_CRM_1735027614423",
+            "UF_CRM_1734772537613",
         )
     except Exception as e:
         print(e)
@@ -608,7 +675,7 @@ def save_payment_order_bx(data):
     try:
 
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
 
         for data_item in data:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -618,8 +685,8 @@ def save_payment_order_bx(data):
             data_order = {
                 "id": id_bitrix_order,
                 "fields": {
-                    "UF_CRM_1735027683353": order.bill_sum_paid,
-                    "UF_CRM_1735027695061": order_debt,
+                    "UF_CRM_1734772155723": order.bill_sum_paid,
+                    "UF_CRM_1734772173389": order_debt,
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)
@@ -636,7 +703,7 @@ def save_payment_order_bx(data):
 def save_shipment_order_bx(data):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
         for data_item in data:
             order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
             id_bitrix_order = order.id_bitrix
@@ -649,7 +716,7 @@ def save_shipment_order_bx(data):
                 document_shipment,
                 id_bitrix_order,
                 "crm.deal.update",
-                "UF_CRM_1735027585527",
+                "UF_CRM_1734772575764",
             )
 
     except Exception as e:
@@ -663,69 +730,67 @@ def save_shipment_order_bx(data):
 
 # уведомления о повышения цен и валют битрикс
 def currency_check_bx():
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/")
+    try:
 
-    carrency = get_order_carrency_up()
-    product = get_product_price_up()
-    print(carrency)
-    print(product)
-    data_dict = {}
-    for carrency_item in carrency:
-        data_curr = carrency_item["currency"]
-        for item in carrency_item["order"]:
-            order = item["specification__order"]
-            order_item_data = {
-                "order": item["specification__order"],
-                "bitrix_id_order": item["specification__order__id_bitrix"],
-                "order_product": [],
-                "text": "",
-            }
-            if order not in data_dict:
-                order_item_data["currency"] = [data_curr]
-                # order_item_data["currency"].append(data_curr)
-                data_dict[order] = order_item_data
+        webhook = settings.BITRIX_WEBHOOK
+        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+
+        carrency = get_order_carrency_up()
+        product = get_product_price_up()
+
+        data_dict = {}
+        for carrency_item in carrency:
+            data_curr = carrency_item["currency"]
+            for item in carrency_item["order"]:
+                order = item["specification__order"]
+                order_item_data = {
+                    "order": item["specification__order"],
+                    "bitrix_id_order": item["specification__order__id_bitrix"],
+                    "order_product": [],
+                    "text": "",
+                }
+                if order not in data_dict:
+                    order_item_data["currency"] = [data_curr]
+                    # order_item_data["currency"].append(data_curr)
+                    data_dict[order] = order_item_data
+                else:
+                    data_dict[order]["currency"].append(data_curr)
+
+        for product_item in product:
+            order = product_item["order"]
+            if order in data_dict:
+                data_dict[order]["order_product"] = product_item["order_product"]
             else:
-                data_dict[order]["currency"].append(data_curr)
+                data_dict[order] = product_item
 
-    for product_item in product:
-        order = product_item["order"]
-        if order in data_dict:
-            data_dict[order]["order_product"] = product_item["order_product"]
-        else:
-            data_dict[order] = product_item
+        for key, value in data_dict.items():
+            if len(value["currency"]) > 0:
+                string = ",".join(value["currency"])
+                value["text"] = f"Произошло повышение курса {string}. "
 
-    for key, value in data_dict.items():
-        if len(value["currency"]) > 0:
-            string = ",".join(value["currency"])
-            value["text"] = f"Произошло повышение курса {string}. "
+            if len(value["order_product"]) > 0:
 
-        if len(value["order_product"]) > 0:
+                if value["text"] != "":
+                    text = f"Повышены цены на следующие товары:"
+                    for prod in value["order_product"]:
+                        text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
+                        text = f"{text}{text_prod}"
+                    value["text"] = f'{value["text"]}{text}'
+                else:
+                    text = f" Уведомление о повышении цен на определенные товары!"
+                    for prod in value["order_product"]:
+                        text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
+                        text = f"{text}{text_prod}"
+                    value["text"] = f'{value["text"]}{text}'
 
-            if value["text"] != "":
-                text = f"Повышены цены на следующие товары:"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} - {prod['price_new']}руб."
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-            else:
-                text = f" Уведомление о повышении цен на определенные товары!"
-                for prod in value["order_product"]:
-                    text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
-                    text = f"{text}{text_prod}"
-                value["text"] = f'{value["text"]}{text}'
-        print("value", value)
-        print("value", value["text"])
-        print("value", value["bitrix_id_order"])
+            save_currency_check_bx(value["text"], value["bitrix_id_order"])
 
-        save_currency_check_bx(value["text"], value["bitrix_id_order"])
-
-        error = "info_error"
+    except Exception as e:
+        tr = traceback.format_exc()
+        error = "file_api_error"
         location = "отправка в б24 Критичные изменения цен и курса валют"
-        info = f"отправка в б24 Критичные изменения цен и курса валют{value["bitrix_id_order"],value["text"]}"
+        info = f"отправка в б24 Критичные изменения цен и курса валют{tr}{e}"
         e = error_alert(error, location, info)
-
-    return True
 
 
 # дл currency_check_bx получает массив с валютами
@@ -780,7 +845,7 @@ def get_product_price_up():
             "PAYMENT",
         ]
     )
-    print(order)
+
     data_order_all = []
     for order_item in order:
         order_item_data = {
@@ -798,8 +863,7 @@ def get_product_price_up():
             if prod.product_price_catalog:
 
                 now_price = Price.objects.get(prod=prod.product).rub_price_supplier
-                print("now_price", now_price)
-                print("product_price_catalog", prod.product_price_catalog)
+
                 difference_count = now_price - prod.product_price_catalog
                 count_percent = prod.product_price_catalog / 100 * 3
                 if difference_count > count_percent:
@@ -824,7 +888,7 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = settings.BITRIX_WEBHOOK
-    webhook = "https://b24-760o6o.bitrix24.ru/rest/1/ernjnxtviludc4qp/"
+    webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
     print(webhook)
     bx = Bitrix(webhook)
     data_order = {
@@ -921,6 +985,12 @@ def get_manager():
                 # "entityTypeId": 2,
             },
         )
+        
+        error = "error"
+        location = "Менеджеры битрикс"
+        info = f"Менеджеры битрикс все {manager_all_bx}"
+        e = error_alert(error, location, info)
+        
         for manager in manager_all_bx:
             print(manager)
             try:
@@ -938,6 +1008,30 @@ def get_manager():
         location = "Менеджеры битрикс"
         info = f" Получение Менеджеры битрикс в бд {e}{tr}"
         e = error_alert(error, location, info)
+
+
+def _status_to_order_replace(name_status, id_bx):
+    status = None
+    for choice in STATUS_ORDER_BITRIX:
+        if choice[1] == name_status:
+            status = choice[0]
+
+            order = Order.objects.filter(id_bitrix=id_bx).last()
+            if status == "SHIPMENT_":
+                if order:
+                    if order.type_delivery == "Самовывоз":
+                        status = "SHIPMENT_PICKUP"
+                    else:
+                        status = "SHIPMENT_AUTO"
+                else:
+                    # TODO:Как будто не правильно вписывать автошипмент
+                    status = "SHIPMENT_AUTO"
+
+    if status:
+        return status
+    else:
+
+        return "PROCESSING"
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

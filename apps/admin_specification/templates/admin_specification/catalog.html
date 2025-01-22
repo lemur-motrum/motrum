@@ -1,12 +1,13 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
+    {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
-    {{ post_data_bx_id }}
+ 
     <div order={{ order }} class="specification-container okt_cart_container">
         <h1 class="title">{{ title }}</h1>
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
-        {{ type_save_cookee }}
+  
         {% if product or product_new %}
             <div class="spetification_table">
                 <div class="spetification_titles">
@@ -109,10 +110,20 @@
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
                             <div class="item_value">
-                                <span class="price price_once">{{ item.price_cart }}</span>
+                                
+                                <span class="price price_once">
+                                    
+                                    
+                                    {{ item.price_cart }}
+                                </span>
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
-                                    <span style="color: red; display:block;">цена товара в окт: <span class="price">{{ item.actual_price }}</span> ₽</span>
+                                    {% if item.actual_price %}
+                                    <span style="color: red; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
+                                    {% else %}
+                                    <span style="color: red; display:block;">цена по запросу </span>
+                                    {% endif %}
+                                    
                                 {% endif %}
                             </div>
                             {% comment %} {% if bill_upd and item.id_product_spesif %}
@@ -901,7 +912,10 @@
                                             <option class="client-option"
                                                     {% if client_req.id == recusits.id %}selected{% endif %}
                                                     value="{{ recusits.id }}">
-                                                КПП:{{ recusits.requisitesKpp.kpp }} Р/c:{{ recusits.account_requisites }}
+                                                    {% if recusits.requisitesKpp.kpp %}
+                                                    КПП:{{ recusits.requisitesKpp.kpp }}
+                                                    {% endif %}
+                                                    Р/c:{{ recusits.account_requisites }}
                                             </option>
                                         {% endfor %}
                                     {% endif %}
@@ -942,7 +956,8 @@
                             </select>
                         </div>
                         <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-                        <select {% if bill_upd %}disabled{% endif %}
+                        <select 
+                        {% comment %} {% if bill_upd %}disabled{% endif %} {% endcomment %}
                                 class="select_motrum_requisites"
                                 id="motrum-select"
                                 style="height: 25px;

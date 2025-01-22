@@ -874,6 +874,12 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    sale_client = models.FloatField(
+        "Скидка клиента из парсинга фаила",
+        blank=True,
+        null=True,
+        default=None,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",

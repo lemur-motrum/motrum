@@ -465,7 +465,7 @@ def specifications(request, cat, gr):
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
-    
+
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")
@@ -827,7 +827,18 @@ def create_specification(request):
         product_new_more = None
         specification = None
         order = None
-
+        
+    
+    if order:
+        
+        if order.text_name != None :
+            name_ord = order.text_name
+            
+        else:
+            name_ord =  f"№ {order.id}"
+    else:
+        name_ord = None
+        
     current_date = datetime.date.today().isoformat()
     hard_upd = False
     if type_save_cookee == "new":
@@ -845,7 +856,7 @@ def create_specification(request):
 
     elif type_save_cookee == "update":
         bill_upd = True
-        title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+        title = f"Заказ {name_ord} - изменение счета № {order.bill_name} "
         type_save = " изменения"
 
     elif type_save_cookee == "hard_update":
@@ -853,11 +864,17 @@ def create_specification(request):
         hard_upd = True
         # title = f"Заказ № {order.id} - новый счет"
         if order.requisites.contract:
-            title = f"Заказ № {order.id}: счет + спецификация"
+            title = f"Заказ {name_ord}: счет + спецификация"
             type_save = "счет + спецификация"
         else:
-            title = f"Заказ № {order.id}: счет-оферта"
+            title = f"Заказ {name_ord}: счет-оферта"
             type_save = " счет-оферта"
+
+        # def product_cart_prod_update(product_cart_prod):
+        #     for prod_cart in product_cart_prod:
+        #         prod_cart.product_price = prod_cart.product.price.rub_price_supplier
+        #         prod_cart.save()
+        # product_cart_prod_update(product_cart_prod)
     else:
         type_save_cookee = "new"
         bill_upd = False

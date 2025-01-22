@@ -1,4 +1,5 @@
 # расчет цены
+from ast import Try
 from csv import Error
 import datetime
 import random
@@ -13,17 +14,18 @@ import traceback
 from django.db import IntegrityError, transaction
 
 
-
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
 
 
 from apps.specification.utils import crete_pdf_specification
+
 from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
 from pytils import translit
+from openpyxl import load_workbook
 
 
 def create_slug(name, arr_other_name):
@@ -1591,13 +1593,14 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def client_info_bitrix(data,company_adress):
+def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
-    print("client_info_bitrix")
-    print("data",data)
 
-    print("company_adress",company_adress)
+    print("client_info_bitrix")
+    print("data", data)
+
+    print("company_adress", company_adress)
 
     if data["contract_date"]:
         data_contract = datetime.datetime.strptime(
@@ -1614,6 +1617,7 @@ def client_info_bitrix(data,company_adress):
             "legal_entity": data["legal_entity"],
             "contract": data["contract"],
             "contract_date": data_contract,
+            "type_client": data["type_client"],
         },
         create_defaults={
             "contract": data["contract"],
@@ -1621,12 +1625,13 @@ def client_info_bitrix(data,company_adress):
             "inn": data["inn"],
             "contract": data["contract"],
             "contract_date": data_contract,
+            "type_client": data["type_client"],
             # "id_bitrix": data["id_bitrix"],
         },
     )
-    print("client_req, client_req_created",client_req, client_req_created)
-    
-    if data["contract"]!="" and client_req.contract != data["contract"]:
+    print("client_req, client_req_created", client_req, client_req_created)
+
+    if data["contract"] != "" and client_req.contract != data["contract"]:
         client_req.contract = data["contract"]
         client_req.contract_date = data_contract
         client_req.number_spec = 0
@@ -1648,26 +1653,27 @@ def client_info_bitrix(data,company_adress):
             },
         )
     )
-    print("client_req_kpp, client_req_kpp_created",client_req_kpp, client_req_kpp_created)
+    print(
+        "client_req_kpp, client_req_kpp_created", client_req_kpp, client_req_kpp_created
+    )
     for company_bx_adress in company_adress:
         print(company_bx_adress)
         print(company_bx_adress["type_address_bx"])
         if company_bx_adress["region"]:
             pass
-        else :
+        else:
             company_bx_adress["region"] == None
-        
+
         if company_bx_adress["province"]:
             pass
-        else :
+        else:
             company_bx_adress["province"] == None
-            
+
         client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,
-                type_address_bx = company_bx_adress["type_address_bx"],
+                type_address_bx=company_bx_adress["type_address_bx"],
                 defaults={
-                    
                     "country": company_bx_adress["country"],
                     "post_code": int(company_bx_adress["post_code"]),
                     "region": company_bx_adress["region"],
@@ -1678,8 +1684,12 @@ def client_info_bitrix(data,company_adress):
                 },
             )
         )
-        print("client_req_kpp_address, client_req_kpp_created_address",client_req_kpp_address, client_req_kpp_created_address)
-        
+        print(
+            "client_req_kpp_address, client_req_kpp_created_address",
+            client_req_kpp_address,
+            client_req_kpp_created_address,
+        )
+
     acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
         requisitesKpp=client_req_kpp,
         account_requisites=data["account_requisites"],
@@ -1717,8 +1727,12 @@ def after_save_order_products(products):
         if prod.product_new_article != None:
             new_prod_db = save_new_product_okt(prod)
 
+        if prod.product.vendor:
+            vendor = prod.product.vendor.name
+        else:
+            vendor = None
         data_prod_to_1c = {
-            "vendor": prod.product.vendor.name,
+            "vendor": vendor,
             "article": prod.product.article_supplier,
             "article_motrum": prod.product.article,
             "name": prod.product.name,
@@ -1805,7 +1819,9 @@ def create_info_request_order_1c(order, order_products):
         "order_products": order_products,
     }
     if order.manager:
-        data_for_1c["invoice_options"]["manager_invoice"] = f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+        data_for_1c["invoice_options"]["manager_invoice"] = (
+            f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+        )
     else:
         data_for_1c["invoice_options"]["manager_invoice"] = ""
 
@@ -1828,6 +1844,105 @@ def image_error_check():
 
                 if os.stat(dir_img).st_size < 1000:
                     img.delete()
+
+
+def product_cart_in_file(file, cart):
+    from apps.product.models import Product, ProductCart
+    from apps.supplier.models import Vendor
+
+    def _serch_prod_in_file(article, vendor):
+        product = Product.objects.filter(article_supplier=article)
+
+        if product:
+            pass
+        else:
+            product = Product.objects.filter(name__icontains=article)
+
+        if product.count() == 1:
+            return (1, product[0])
+        elif product.count() == 0:
+            return (0, None)
+        else:
+            slugish = translit.translify(vendor)
+            vendor_name = slugify(slugish)
+            product = product.filter(vendor__slug=vendor_name)
+
+            return (product.count(), product)
+
+    def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
+       
+        # if data["sale_client"]:
+        #     sale_client = float(data_sheet.cell(row=index, column=21).value)
+        # else:
+        #     sale_client = 1
+        
+        product_price_all = float(data["product_price"])
+        sale_client = 100 - (float(data_sheet.cell(row=index, column=21).value) * 100)
+        sale_motrum = 100 - (float(data_sheet.cell(row=index, column=22).value) * 100)
+        if product_okt_count == 1:
+            vendor = product_okt.vendor
+        elif product_okt_count > 1:
+            pass
+        else:
+            slugish = translit.translify(vendor)
+            vendor_name = slugify(slugish)
+            
+        print(sale_motrum)
+        # if product_okt_count == 1:
+        #     ProductCart.get_or_create(
+        #         cart=cart,
+        #         product=product_okt,
+        #         defaults={
+        #             "product_price": product_price,
+        #             "product_sale_motrum": product_sale_motrum,
+        #             "quantity": quantity,
+        #             "vendor": vendor,
+        #             "sale_client":sale_client,
+        #         },
+        #     )
+        print(product_okt_count, product_okt)
+
+    workbook = load_workbook(file, data_only=True)
+    data_sheet = workbook.active
+
+    first_row_in_prod = None
+    last_row_in_prod = False
+    
+    for index in range(1, data_sheet.max_row):
+       
+        column_b = data_sheet.cell(row=index, column=2).value
+
+        if first_row_in_prod == None:
+            if column_b == "Производитель":
+                first_row_in_prod = index
+        else:
+            if last_row_in_prod == False:
+                vendor_file = data_sheet.cell(row=index, column=2).value
+                if vendor_file == None:
+                    last_row_in_prod = True
+                else:
+                    article_file = data_sheet.cell(row=index, column=3).value
+                    product_price_file = data_sheet.cell(row=index, column=9).value
+                    
+                    print(product_price_file)
+                    if product_price_file:
+                        product_okt_count, product_okt = _serch_prod_in_file(
+                            article_file, vendor_file
+                        )
+                        data = {
+                            "product_price": data_sheet.cell(row=index, column=9).value,
+                            "quantity": data_sheet.cell(row=index, column=6).value,
+                            "vendor": vendor_file,
+                            "sale_client":data_sheet.cell(row=index, column=21).value,
+                            "sale_motrum":data_sheet.cell(row=index, column=22).value,  
+                        }
+                        
+                        print(data)
+                        
+                        _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
+            else:
+                pass
+          
 
 
 #      def save_specification(

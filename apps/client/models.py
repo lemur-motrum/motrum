@@ -74,11 +74,34 @@ class Client(CustomUser):
     # def send_email_notification(self,text_email):
 
 
+    
+    
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
     ("100% postpay", "100% постоплата"),
 )
+TYPE_CLIENT = (
+    ("1", "Юридическое лицо"),
+    ("2", "ИП"),
+    ("3", "Физ. лицо"),
+)
+#   {
+#             "ID": "1",
+#             "NAME": "Организация"
+#         },
+#         {
+#             "ID": "2",
+#             "NAME": "ИП"
+#         },
+#         {
+#             "ID": "3",
+#             "NAME": "Физ. лицо"
+#         },
+#         {
+#             "ID": "4",
+#             "NAME": "Организация (доп.)"
+#         }
 
 
 # TODO: unique=True вернуть
@@ -150,46 +173,10 @@ class Requisites(models.Model):
         max_length=12,
         # unique=True
     )
+    type_client = models.CharField(
+        "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
+    )
 
-    # kpp = models.CharField(
-    #     "КПП",
-    #     max_length=10,
-    # )
-    # ogrn = models.CharField(
-    #     "ОГРН",
-    #     max_length=15,
-    #     blank=True,
-    #     null=True,
-    # )
-    # legal_post_code = models.PositiveIntegerField(
-    #     "Юридический адрес :индекс",
-    # )
-    # legal_city = models.CharField(
-    #     "Юридический адрес : город",
-    #     max_length=50,
-    # )
-    # legal_address = models.CharField(
-    #     "Юридический адрес : адрес",
-    #     max_length=200,
-    # )
-    # postal_post_code = models.CharField(
-    #     "Почтовый адрес :индекс",
-    #     max_length=10,
-    # )
-    # postal_city = models.CharField(
-    #     "Почтовый адрес : город",
-    #     max_length=50,
-    # )
-    # postal_address = models.CharField(
-    #     "Почтовый адрес : адрес",
-    #     max_length=200,
-    # )
-    # tel = models.CharField(
-    #     "Телефон",
-    #     max_length=200,
-    #     blank=True,
-    #     null=True,
-    # )
 
     class Meta:
         verbose_name = "Юридическое лицо"
@@ -214,6 +201,8 @@ class RequisitesOtherKpp(models.Model):
     kpp = models.CharField(
         "КПП",
         max_length=10,
+        blank=True,
+        null=True,
     )
     ogrn = models.CharField(
         "ОГРН",
@@ -273,36 +262,43 @@ class RequisitesAddress(models.Model):
     country = models.CharField(
         "Страна",
         max_length=100,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     post_code = models.PositiveIntegerField(
         "Индекс",
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     region = models.CharField(
         "Регион",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     province = models.CharField(
         "Область",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     city = models.CharField(
         "Город",
         max_length=150,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     address1 = models.CharField(
         "Адрес",
         max_length=200,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     address2 = models.CharField(
         "Дом",
         max_length=200,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
 
 
@@ -370,33 +366,27 @@ STATUS_ORDER = (
 )
 # статусы которые есть в битрикс
 STATUS_ORDER_BITRIX = (
-    ("PROCESSING", "Квалификация"),
-    ("PROCESSING", "Не обработано"),
-    
-    ("PROCESSING", "Подготовка предложения"),
-    ("PROCESSING", "КП отправлено"),
-    ("PAYMENT", "Счёт отправлен"),
-    ("IN_MOTRUM", "Поставка оборудования в Мотрум"),
-    ("SHIPMENT_", "Отгрузка оборудования заказчику"),
-    ("CANCELED", "Отложенные"),
-    ("CANCELED", "Провальные"),
-    ("COMPLETED", "Сделка успешна"),
-    ("COMPLETED", "PREPAYMENT_INVOICE"),
-    ("COMPLETED", "PREPARATION"),
+    ("PROCESSING", "NEW"),
+    ("PROCESSING", "PREPARATION"),
+    ("PROCESSING", "C8:NEW"),
+    ("PROCESSING", "C8:PREPARATION"),
+    ("PROCESSING", "C8:PREPAYMENT_INVOICE"),  # На удаление
+    ("PAYMENT", "C8:EXECUTING"),
+    ("IN_MOTRUM", "C8:FINAL_INVOICE"),
+    ("SHIPMENT_", "C8:1"),
+    ("CANCELED", "C8:LOSE"),
+    ("CANCELED", "C8:2"),
+    ("COMPLETED", "C8:WON"),
 )
-NOT____STATUS_ORDER_BITRIX = (
+CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
-    
-    
     ("C8:NEW", "Не обработано"),
     ("C8:PREPARATION", "Подготовка расчета (счета)"),
-    ("C8:PREPAYMENT_INVOICE", "КП отправлено"),#На удаление
+    ("C8:PREPAYMENT_INVOICE", "КП отправлено"),  # На удаление
     ("C8:EXECUTING", "Счёт отправлен"),
-
     ("C8:FINAL_INVOICE", "Поставка оборудования в Мотрум"),
     ("C8:1", "Отгрузка оборудования заказчику"),
-    
     ("C8:LOSE", "Отложенные"),
     ("C8:2", "Провальные"),
     ("C8:WON", "Сделка успешна"),
@@ -422,6 +412,11 @@ class Order(models.Model):
     )
     name = models.PositiveIntegerField(
         "номер заказа",
+    )
+    text_name = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
     )
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
@@ -598,6 +593,7 @@ class Order(models.Model):
             self.bill_date_start = datetime.date.today()
             bill_date_start = datetime.date.today()
             data_stop = create_time_stop_specification()
+            data_stop = datetime.datetime.strptime(data_stop, "%Y-%m-%d").date()
             self.bill_date_stop = data_stop
 
             # if type_save == "new":

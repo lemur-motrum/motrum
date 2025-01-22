@@ -1327,7 +1327,6 @@ a {
           top: 0;
           left: 102%;
           &.order_count {
-            background-color: #95bad4;
             color: #fff;
             width: 1.25rem;
             height: 1.25rem;
@@ -1338,6 +1337,9 @@ a {
             top: -20%;
             left: 85%;
             font-size: 0.75rem;
+            &.blue {
+              background-color: #95bad4;
+            }
             &:empty {
               background-color: #fff;
             }

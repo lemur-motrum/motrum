@@ -9,14 +9,22 @@ let csrfToken = getCookie("csrftoken");
 const globalCountCart = document.querySelector(".global_cart_count");
 if (globalCountCart) {
   if (globalCountCart.textContent) {
-    globalCountCart.classList.add("orange");
+    let str = globalCountCart.textContent;
+    str = str.trim();
+    if (str) {
+      globalCountCart.classList.add("orange");
+    }
   }
 }
 const orderCounts = document.querySelectorAll(".order_count");
 orderCounts.forEach((orderCount) => {
   if (orderCount) {
     if (orderCount.textContent) {
-      orderCount.classList.add("blue");
+      let str = orderCount.textContent;
+      str = str.trim();
+      if (str) {
+        orderCount.classList.add("blue");
+      }
     } else {
       orderCount.classList.remove("blue");
     }
@@ -109,7 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productId}/update-product/`, {
-               // изменила метод 
+              // изменила метод
               method: "POST",
               body: data,
               headers: {

@@ -204,7 +204,7 @@ def get_req_info_bx(bs_id_order):
             "crm.requisite.get",
             {"id": int(req_bx_id)},
         )
-        req_bx_2 = bx.get_by_ID("crm.deal.fields", [int(req_bx_id)])
+        req_bx_2 = bx.get_by_ID("crm.requisite.fields", [int(req_bx_id)])
 
         error = "error"
         location = "req_bx"

@@ -242,8 +242,8 @@ def get_req_info_bx(bs_id_order):
             inn = v["RQ_INN"]
             
 
-        contract = req_bx_user_feld["UF_CRM_1736854096"]
-        contract_date = req_bx_user_feld["UF_CRM_1737611994"]
+        contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
+        contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
         error = "error"
         location = "первичное открытие сделки битрикс"
         info = f" ошибка {contract}{contract_date}"

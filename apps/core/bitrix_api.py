@@ -592,7 +592,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
     files_arr = []
     for file in file_dict:
         if type_file == "file_dict_signed":
-            name = file.name_bill_to_fullname
+            name = file.text_name_bill
             if file.is_active == False:
                 name = f"{file.from_index}{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"

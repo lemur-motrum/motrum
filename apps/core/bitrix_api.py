@@ -515,10 +515,9 @@ def add_info_order(request, order, type_save):
                     "crm.deal.update",
                     "UF_CRM_1734772537613",
                 )
-                print(999999999999)
+           
                 if order.specification.file:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
-                    print("document_specification", document_specification)
                     orders_bx = save_file_bx(
                         bx,
                         document_specification,
@@ -592,15 +591,15 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
     files_arr = []
     for file in file_dict:
         if type_file == "file_dict_signed":
-            name = file.text_name_bill
+            name = f"{file.from_index}-{file.text_name_bill}"
             if file.is_active == False:
-                name = f"{file.from_index}{name}_не-актуально"
+                name = f"{name}_не-актуально.pdf"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
-            name = file.text_name_bill_no_sign
+            name = f"{file.from_index}-{file.text_name_bill_no_sign}"
             if file.is_active == False:
-                name = f"{file.from_index}-{name}_не-актуально"
+                name = f"{name}_не-актуально.pdf"
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
 
         elif type_file == "file_dict_shipment":

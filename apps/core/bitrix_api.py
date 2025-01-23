@@ -259,24 +259,24 @@ def get_req_info_bx(bs_id_order, manager,company):
                 bx_city_post = adress["CITY"]
 
                 if (
-                    adress["REGION"] != ""
-                    or adress["REGION"] != "None"
-                    or adress["REGION"] != None
+                    adress["PROVINCE"] != ""
+                    or adress["PROVINCE"] != "None"
+                    or adress["PROVINCE"] != None
                 ):
-                    legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                    legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                 else:
                     legal_city = f"г.{adress['CITY']},"
                 legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
                 bx_city_post = adress["CITY"]
-                if adress["REGION"] != "":
-                    postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
+                if adress["PROVINCE"] != "" or adress["PROVINCE"] != "None" or adress["PROVINCE"] != None:
+                    postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                 else:
                     postal_city = f"г.{adress['CITY']}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"

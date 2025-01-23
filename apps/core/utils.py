@@ -1680,8 +1680,8 @@ def client_info_bitrix(data, company_adress):
                 defaults={
                     "country": company_bx_adress["country"],
                     "post_code": int(company_bx_adress["post_code"]),
-                    "region": company_bx_adress["region"],
-                    "province": company_bx_adress["province"],
+                    "region": company_bx_adress["province"],
+                    "province": company_bx_adress["region"],
                     "city": company_bx_adress["city"],
                     "address1": company_bx_adress["address1"],
                     "address2": company_bx_adress["address2"],

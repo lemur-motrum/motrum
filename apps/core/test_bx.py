@@ -1488,3 +1488,165 @@ t = {
         },
     },
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    "ID": "17682",
+    "COMPANY_TYPE": "CUSTOMER",
+    "TITLE": "ТЕСТ КОМПАНИЯ (НЕ ИСПОЛЬЗОВАТЬ)",
+    "LOGO": None,
+    "LEAD_ID": None,
+    "HAS_PHONE": "Y",
+    "HAS_EMAIL": "N",
+    "HAS_IMOL": "N",
+    "ASSIGNED_BY_ID": "174",
+    "CREATED_BY_ID": "174",
+    "MODIFY_BY_ID": "174",
+    "BANKING_DETAILS": None,
+    "INDUSTRY": "OTHER",
+    "REVENUE": "0",
+    "CURRENCY_ID": "RUB",
+    "EMPLOYEES": "EMPLOYEES_1",
+    "COMMENTS": "",
+    "DATE_CREATE": "2025-01-13T09:09:56+03:00",
+    "DATE_MODIFY": "2025-01-14T14:47:27+03:00",
+    "OPENED": "Y",
+    "IS_MY_COMPANY": "N",
+    "ORIGINATOR_ID": None,
+    "ORIGIN_ID": None,
+    "ORIGIN_VERSION": None,
+    "LAST_ACTIVITY_TIME": "2025-01-13T09:09:56+03:00",
+    "ADDRESS": "улица Алексея Толстого, 75",
+    "ADDRESS_2": "21",
+    "ADDRESS_CITY": "Самара",
+    "ADDRESS_POSTAL_CODE": "443099",
+    "ADDRESS_REGION": "городской округ Самара",
+    "ADDRESS_PROVINCE": "Самарская область",
+    "ADDRESS_COUNTRY": "Россия",
+    "ADDRESS_COUNTRY_CODE": None,
+    "ADDRESS_LOC_ADDR_ID": "11744",
+    "ADDRESS_LEGAL": "МИЧУРИНА УЛ., Д.80",
+    "REG_ADDRESS": "МИЧУРИНА УЛ., Д.80",
+    "REG_ADDRESS_2": "ОФИС 1",
+    "REG_ADDRESS_CITY": "САМАРА",
+    "REG_ADDRESS_POSTAL_CODE": "443110",
+    "REG_ADDRESS_REGION": None,
+    "REG_ADDRESS_PROVINCE": "Самарская область",
+    "REG_ADDRESS_COUNTRY": "Россия",
+    "REG_ADDRESS_COUNTRY_CODE": None,
+    "REG_ADDRESS_LOC_ADDR_ID": "11746",
+    "UTM_SOURCE": None,
+    "UTM_MEDIUM": None,
+    "UTM_CAMPAIGN": None,
+    "UTM_CONTENT": None,
+    "UTM_TERM": None,
+    "PARENT_ID_1038": None,
+    "PARENT_ID_1042": None,
+    "LAST_ACTIVITY_BY": "174",
+    "UF_CRM_1558613176": "",
+    "UF_CRM_1558613212": "",
+    "UF_CRM_1558613254": "52",
+    "UF_CRM_1558613582": "",
+    "UF_CRM_1558613635": "",
+    "UF_CRM_1558613708": "",
+    "UF_CRM_1558613726": "",
+    "UF_CRM_1558616744": "",
+    "UF_CRM_1558616802": "",
+    "UF_CRM_1558616826": "",
+    "UF_CRM_1558616840": "",
+    "UF_CRM_1558616931": "",
+    "UF_CRM_1558617084": "44",
+    "UF_CRM_1558623245": "",
+    "UF_CRM_1563789139": "",
+    "UF_CRM_1566214141": "",
+    "UF_CRM_1566214266": "",
+    "UF_CRM_1588918931594": "",
+    "UF_CRM_1657688354898": "62",
+    "UF_CRM_1657704194333": "",
+    "UF_CRM_1657707392301": "",
+    "UF_CRM_1688447705748": "",
+    "UF_CRM_1688447766610": "",
+    "UF_CRM_1688447793802": "",
+    "UF_CRM_1688455216177": "",
+    "UF_CRM_1688455299704": "",
+    "UF_CRM_1688456588081": False,
+    "UF_CRM_1688462292610": "",
+    "UF_CRM_1701248964812": "",
+    "UF_CRM_1701323584900": "",
+    "UF_CRM_1713128519": "",
+    "UF_CRM_1713347166445": "",
+    "UF_CRM_1713347474446": "",
+    "UF_CRM_1715666350407": False,
+    "UF_CRM_1715666396114": "",
+    "UF_CRM_1715666451082": "",
+    "UF_CRM_1716738861264": "",
+    "UF_CRM_1716738888187": "",
+    "UF_CRM_1716739123682": "",
+    "UF_CRM_1716739142475": "",
+    "UF_CRM_1717680480": "",
+    "UF_CRM_1717680608645": "",
+    "UF_CRM_1717680638123": "",
+    "UF_CRM_1717680704388": "",
+    "UF_CRM_1717680747": "",
+    "UF_CRM_1724223404": "1918",
+    "UF_CRM_1729227546367": "",
+    "UF_CRM_1729507828698": "",
+    "UF_CRM_1732453421336": ["2025-01-01T03:00:00+03:00"],
+    "UF_CRM_1732453513946": False,
+    "UF_CRM_1732453586840": False,
+    "UF_CRM_1732521891305": "123",
+    "UF_CRM_1734773759421": "",
+    "UF_CRM_1734773779593": "",
+    "UF_CRM_1734773790171": "",
+    "UF_CRM_1734773813228": "",
+    "UF_CRM_1734773831303": "",
+    "UF_CRM_1734773855347": "",
+    "UF_CRM_1734773932047": "",
+    "UF_CRM_1734773953432": "",
+    "UF_CRM_1734773967506": "",
+    "UF_CRM_1734773992815": "",
+    "UF_CRM_1734774004222": "",
+    "UF_CRM_1734774017217": "",
+    "UF_CRM_1734774041551": "",
+    "UF_CRM_1734774115032": "",
+    "PHONE": [
+        {
+            "ID": "95998",
+            "VALUE_TYPE": "WORK",
+            "VALUE": "+79276892240",
+            "TYPE_ID": "PHONE",
+        }
+    ],
+}

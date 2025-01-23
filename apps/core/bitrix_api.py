@@ -51,9 +51,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 },
             }
             company_bx = bx.get_by_ID("crm.company.get", [company])
+            company_bx2 = bx.get_by_ID("crm.company.fields", [company])
             error = "error"
             location = "company_bx"
-            info = f" company_bx {company_bx}"
+            info = f" company_bx {company_bx2}"
             e = error_alert(error, location, info)
             req_error, place, data_company = get_req_info_bx(bs_id_order)
             if req_error:

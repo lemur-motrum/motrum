@@ -1619,7 +1619,7 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager":data["manager"]
+            "manager_id":int(data["manager"])
         },
         create_defaults={
             "contract": data["contract"],
@@ -1628,7 +1628,7 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager":data["manager"]
+            "manager_id":int(data["manager"])
             # "id_bitrix": data["id_bitrix"],
         },
     )
@@ -1660,8 +1660,7 @@ def client_info_bitrix(data, company_adress):
         "client_req_kpp, client_req_kpp_created", client_req_kpp, client_req_kpp_created
     )
     for company_bx_adress in company_adress:
-        print(company_bx_adress)
-        print(company_bx_adress["type_address_bx"])
+
         if company_bx_adress["region"]:
             pass
         else:

@@ -209,7 +209,7 @@ def get_req_info_bx(bs_id_order):
         "crm.requisite.list",
         params={
             "filter": {"ID": req_bx_id},
-            "select":{[ "UF_CRM_1736854096"]},
+            "select":[ "UF_CRM_1736854096","UF_CRM_1737611994"],
         },
     )
         

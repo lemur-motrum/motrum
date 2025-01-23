@@ -208,8 +208,8 @@ def get_req_info_bx(bs_id_order):
         req_bx_user_feld = bx.get_all(
         "crm.requisite.list",
         params={
-            "filter": {"ID": [int(req_bx_id)]},
-            "select":{[ "UF_CRM_1736854096","UF_CRM_1737611994"]},
+            "filter": {"ID": req_bx_id},
+            "select":{[ "UF_CRM_1736854096"]},
         },
     )
         

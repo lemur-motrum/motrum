@@ -1619,6 +1619,7 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
+            "manager":data["manager"]
         },
         create_defaults={
             "contract": data["contract"],
@@ -1627,6 +1628,7 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
+            "manager":data["manager"]
             # "id_bitrix": data["id_bitrix"],
         },
     )

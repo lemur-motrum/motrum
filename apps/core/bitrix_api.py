@@ -61,7 +61,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 context = {"error": error_text}
                 return (next_url, context, True)
 
-            req_error, place, data_company = get_req_info_bx(bs_id_order)
+            req_error, place, data_company = get_req_info_bx(bs_id_order,manager,company)
             if req_error:
                 if place != "Адреса":
                     error_text = f"к сделке не прикреплен {place}"
@@ -163,7 +163,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 
 
 # для get_info_for_order_bitrix получение реквизитов к сделке
-def get_req_info_bx(bs_id_order):
+def get_req_info_bx(bs_id_order, manager,company):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
@@ -293,8 +293,8 @@ def get_req_info_bx(bs_id_order):
         bic = req_bank["RQ_BIK"]
 
         company = {
-            # "id_bitrix": 69,
-            # "manager": - битрикс ид менеджера
+            "id_bitrix": int(company),
+            "manager": manager.id,
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
             "type_client": type_client,
             "contract": contract,
@@ -342,8 +342,8 @@ def order_info_check(company_info, order_info):
     if company_info["inn"] == "":
         not_info.append("ИНН")
 
-    if company_info["kpp"] == "":
-        not_info.append("kpp")
+    if company_info["kpp"] == "" and company_info["type_client"] == 1:
+        not_info.append("КПП")
 
     if company_info["legal_post_code"] == "":
         not_info.append("Юридический адрес : индекс")

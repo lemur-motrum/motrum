@@ -155,7 +155,9 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
-
+    manager = models.ForeignKey(
+        AdminUser, blank=True, null=True, on_delete=models.CASCADE
+    )
     # type_delivery = models.CharField(
     #     "Тип доставки",
     #     max_length=1000,

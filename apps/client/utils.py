@@ -137,7 +137,8 @@ def crete_pdf_bill(
         print(older_doc)
         print(version)
         print(text_version)
-
+        name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
+        name_bill_to_fullname_nosign = f"{name_bill_text} от {date_now} без печати{text_version}"
         name_bill = f"{name_bill_text} от {date_now}{text_version}.pdf"
         name_bill_no_signature = (
             f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
@@ -953,7 +954,7 @@ def crete_pdf_bill(
             name_bill_no_signature,
         )
         print(4)
-        return (file_path, bill_name, file_path_no_sign, version)
+        return (file_path, bill_name, file_path_no_sign, version,name_bill_to_fullname,name_bill_to_fullname_nosign)
 
     except Exception as e:
         tr = traceback.format_exc()

@@ -900,8 +900,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # сохранение товара в окт нового
                 order_products = after_save_order_products(products)
 
-                data_for_1c = create_info_request_order_1c(order, order_products)
-                print("data_for_1c",data_for_1c)
+                # data_for_1c = create_info_request_order_1c(order, order_products)
+                # print("data_for_1c",data_for_1c)
               
                 type_save = request.COOKIES.get("type_save")
                 

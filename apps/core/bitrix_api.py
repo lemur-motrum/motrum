@@ -592,15 +592,15 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
     files_arr = []
     for file in file_dict:
         if type_file == "file_dict_signed":
-            name = file.bill_file
+            name = file.name_bill_to_fullname
             if file.is_active == False:
-                name = f"{name}_не-актуально"
+                name = f"{file.from_index}{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
-            name = file.bill_file_no_signature
+            name = file.name_bill_to_fullname_nosign
             if file.is_active == False:
-                name = f"{name}_не-актуально"
+                name = f"{file.from_index}-{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
 
         elif type_file == "file_dict_shipment":
@@ -608,7 +608,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
 
             file = f"{MEDIA_ROOT}/{ file.file}"
         else:
-            name = "1"
+            name = "None"
             file = None
 
         if file:

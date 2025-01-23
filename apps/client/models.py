@@ -572,7 +572,7 @@ class Order(models.Model):
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
 
-        pdf_file, pdf_name, file_path_no_sign, version = crete_pdf_bill(
+        pdf_file, pdf_name, file_path_no_sign, version,name_bill_to_fullname,name_bill_to_fullname_nosign = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
@@ -628,7 +628,10 @@ class Order(models.Model):
                 bill_file_no_signature=None,
                 bill_sum=self.bill_sum,
                 version=version,
+                from_index = "Б",
+                text_name_bill = name_bill_to_fullname,
             )
+    
             OrderDocumentBill.objects.create(
                 order=self,
                 bill_name=pdf_name,
@@ -638,6 +641,8 @@ class Order(models.Model):
                 bill_date_stop=data_stop,
                 bill_sum=self.bill_sum,
                 version=version,
+                from_index = "Б",
+                text_name_bill_no_sign = name_bill_to_fullname_nosign,
             )
             return self.id
         else:
@@ -652,6 +657,10 @@ class Order(models.Model):
 
 
 # фаилы счетов все версии
+FROM_INDEX = (
+    ("-", "Неизвестно"),
+    ("Б", "битрикс"),)
+  
 class OrderDocumentBill(models.Model):
     order = models.ForeignKey(
         Order,
@@ -660,15 +669,33 @@ class OrderDocumentBill(models.Model):
         blank=True,
         null=True,
     )
+    from_index = models.CharField(
+        max_length=100, choices=FROM_INDEX, default="-"
+    )
+
     is_active = models.BooleanField("Активно", default=True)
     bill_name = models.PositiveIntegerField(
         "Номер счета",
         default=None,
         null=True,
     )
+    text_name_bill  = models.CharField(
+        "Текстовое название",
+        default=None,
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
     bill_file = models.FileField(
         "Фаил счета",
         default=None,
+        null=True,
+    )
+    text_name_bill_no_sign  = models.CharField(
+        "Текстовое название без подписи",
+        default=None,
+        max_length=1000,
+        blank=True,
         null=True,
     )
     bill_file_no_signature = models.FileField(

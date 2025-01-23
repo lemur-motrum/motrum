@@ -44,11 +44,17 @@ from project.settings import MEDIA_ROOT
 
 # тестовая страница скриптов
 def add_iek(request):
+    from dateutil.parser import parse
     title = "TEST"
-    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
-    path_kp = f"{new_dir}/КП.xlsx"
-    cart = 667
-    product_cart_in_file(path_kp,cart)
+    data_str = "2025-01-13T03:00:00+03:00"
+    data_contract_parse = parse(data_str).date()
+    print(data_contract_parse)
+
+    
+    # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+    # path_kp = f"{new_dir}/КП.xlsx"
+    # cart = 667
+    # product_cart_in_file(path_kp,cart)
     result = 1
     if result:
         pass

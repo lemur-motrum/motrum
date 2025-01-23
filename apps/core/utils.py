@@ -1597,6 +1597,7 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
 def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
+    from dateutil.parser import parse
 
     print("client_info_bitrix")
     print("data", data)
@@ -1604,9 +1605,10 @@ def client_info_bitrix(data, company_adress):
     print("company_adress", company_adress)
 
     if data["contract_date"]:
-        data_contract = datetime.datetime.strptime(
-            data["contract_date"], "%Y-%B-%dT%HH:%MM:%SS-%HH:%MM"
-        ).date()
+        data_contract = parse(data["contract_date"]).date()
+        # data_contract = datetime.datetime.strptime(
+        #     data["contract_date"], "%Y-%B-%dT%HH:%MM:%SS-%HH:%MM"
+        # ).date()
     else:
         data_contract = None
 

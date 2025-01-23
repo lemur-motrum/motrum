@@ -208,7 +208,7 @@ def get_req_info_bx(bs_id_order):
 
         error = "error"
         location = "req_bx"
-        info = f" req_bx {req_bx_2}"
+        info = f" req_bx {req_bx}{req_bx_2}"
         e = error_alert(error, location, info)
 
         for k, v in req_bx.items():
@@ -238,8 +238,8 @@ def get_req_info_bx(bs_id_order):
             inn = v["RQ_INN"]
             
 
-            # contract = ??
-            # contract_date = v["UF_CRM_1732453421336"]
+            contract = v["UF_CRM_1736854096"]
+            contract_date = v["UF_CRM_1736854123"]
 
         company_adress_all = []
         for adress in adress_bx:

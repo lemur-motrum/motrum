@@ -53,15 +53,24 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "status": orders_bx["STAGE_ID"],
                 },
             }
-            try:
-                manager = AdminUser.objects.get(bitrix_id=manager_company)
-            except AdminUser.DoesNotExist:
+            if manager_company == "":
+                error_text = f"У компании не закреплен менеджер"
                 next_url = "/admin_specification/error-b24/"
-                error_text = f"Менеджер компании не внесен в окт"
                 context = {"error": error_text}
                 return (next_url, context, True)
+            else:
+                
+                try:
+                    manager = AdminUser.objects.get(bitrix_id=manager_company)
+                except AdminUser.DoesNotExist:
+                    next_url = "/admin_specification/error-b24/"
+                    error_text = f"Менеджер компании не внесен в окт"
+                    context = {"error": error_text}
+                    return (next_url, context, True)
 
-            req_error, place, data_company = get_req_info_bx(bs_id_order,manager,company)
+            req_error, place, data_company = get_req_info_bx(
+                bs_id_order, manager, company
+            )
             if req_error:
                 if place != "Адреса":
                     error_text = f"к сделке не прикреплен {place}"
@@ -163,7 +172,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 
 
 # для get_info_for_order_bitrix получение реквизитов к сделке
-def get_req_info_bx(bs_id_order, manager,company):
+def get_req_info_bx(bs_id_order, manager, company):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
@@ -212,8 +221,7 @@ def get_req_info_bx(bs_id_order, manager,company):
             if type_preset_req == "1":  # Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
                 # tel = v["RQ_PHONE"]
-                
-             
+
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
                 legal_entity = (
@@ -229,12 +237,12 @@ def get_req_info_bx(bs_id_order, manager,company):
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
-                
+
             kpp = v["RQ_KPP"]
             inn = v["RQ_INN"]
             ogrn = v["RQ_OGRN"]
             tel = v["RQ_PHONE"]
-            
+
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
 
@@ -275,7 +283,11 @@ def get_req_info_bx(bs_id_order, manager,company):
             if adress["TYPE_ID"] == "4":
                 postal_post_code = adress["POSTAL_CODE"]
                 bx_city_post = adress["CITY"]
-                if adress["PROVINCE"] != "" or adress["PROVINCE"] != "None" or adress["PROVINCE"] != None:
+                if (
+                    adress["PROVINCE"] != ""
+                    or adress["PROVINCE"] != "None"
+                    or adress["PROVINCE"] != None
+                ):
                     postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                 else:
                     postal_city = f"г.{adress['CITY']}"
@@ -515,7 +527,7 @@ def add_info_order(request, order, type_save):
                     "crm.deal.update",
                     "UF_CRM_1734772537613",
                 )
-           
+
                 if order.specification.file:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
                     orders_bx = save_file_bx(
@@ -594,12 +606,17 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
             name = f"{file.from_index}-{file.text_name_bill}"
             if file.is_active == False:
                 name = f"{name}_не-актуально.pdf"
+            else:
+                name = f"{name}.pdf"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
             name = f"{file.from_index}-{file.text_name_bill_no_sign}"
             if file.is_active == False:
                 name = f"{name}_не-актуально.pdf"
+            else:
+                name = f"{name}.pdf"
+
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
 
         elif type_file == "file_dict_shipment":
@@ -1017,13 +1034,14 @@ def get_manager():
 
         for manager in manager_all_bx:
             print(manager)
-            try:
-                admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
-                # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
-                admin_okt.bitrix_id = manager["ID"]
-                admin_okt.save()
-            except AdminUser.DoesNotExist:
-                pass
+            if manager["EMAIL"] != "":
+                try:
+                    admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
+                    # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
+                    admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.save()
+                except AdminUser.DoesNotExist:
+                    pass
     except Exception as e:
 
         tr = traceback.format_exc()

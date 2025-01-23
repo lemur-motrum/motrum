@@ -4803,14 +4803,14 @@ req_bx_2 = {
             "DEFAULT_VALUE": "",
         },
     },
-    "UF_CRM_1736854123": {
+    "UF_CRM_1737611994": {
         "type": "string",
         "isRequired": False,
         "isReadOnly": False,
         "isImmutable": False,
         "isMultiple": False,
         "isDynamic": True,
-        "title": "UF_CRM_1736854123",
+        "title": "UF_CRM_1737611994",
         "listLabel": "Дата подписания договора",
         "formLabel": "Дата подписания договора",
         "filterLabel": "Дата подписания договора",

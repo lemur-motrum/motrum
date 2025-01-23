@@ -205,10 +205,18 @@ def get_req_info_bx(bs_id_order):
             {"id": int(req_bx_id)},
         )
         req_bx_2 = bx.get_by_ID("crm.requisite.fields", [int(req_bx_id)])
+        req_bx_user_feld = bx.get_all(
+        "crm.requisite.list",
+        params={
+            "filter": {"ID": [int(req_bx_id)]},
+            "select":{[ "UF_CRM_1736854096","UF_CRM_1737611994"]},
+        },
+    )
+        
 
         error = "error"
         location = "req_bx"
-        info = f" req_bx {req_bx}{req_bx_2}"
+        info = f" req_bx {req_bx_user_feld}"
         e = error_alert(error, location, info)
 
         for k, v in req_bx.items():
@@ -238,8 +246,8 @@ def get_req_info_bx(bs_id_order):
             inn = v["RQ_INN"]
             
 
-            contract = v["UF_CRM_1736854096"]
-            contract_date = v["UF_CRM_1736854123"]
+            # contract = v["UF_CRM_1736854096"]
+            # contract_date = v["UF_CRM_1737611994"]
 
         company_adress_all = []
         for adress in adress_bx:

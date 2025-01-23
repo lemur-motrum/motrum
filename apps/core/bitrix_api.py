@@ -42,10 +42,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
             context = {"error": error_text}
             return (next_url, context, True)
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
-            
+
             company_bx = bx.get_by_ID("crm.company.get", [company])
-            manager_company = company_bx['ASSIGNED_BY_ID']
-            
+            manager_company = company_bx["ASSIGNED_BY_ID"]
+
             data = {
                 "order": {
                     "id_bitrix": bs_id_order,
@@ -60,13 +60,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 error_text = f"Менеджер компании не внесен в окт"
                 context = {"error": error_text}
                 return (next_url, context, True)
-                    
-            
-            
-            
-            
-            
-            
+
             req_error, place, data_company = get_req_info_bx(bs_id_order)
             if req_error:
                 if place != "Адреса":
@@ -106,7 +100,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 #     manager = AdminUser.objects.get(bitrix_id=manager_company)
                 # except AdminUser.DoesNotExist:
                 #     manager = AdminUser.objects.filter(admin_type="ALL").first()
-                    
+
                 data_order = {
                     "id_bitrix": bs_id_order,
                     "name": int(bs_id_order),
@@ -172,8 +166,8 @@ def get_info_for_order_bitrix(bs_id_order, request):
 def get_req_info_bx(bs_id_order):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/") 
-    
+    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+
     # реквизиты привязанные к сделке
     req_bx_order = bx.call(
         "crm.requisite.link.list",
@@ -190,7 +184,6 @@ def get_req_info_bx(bs_id_order):
         },
     )
 
-
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
     elif req_acc_bx_id == "0":
@@ -204,51 +197,47 @@ def get_req_info_bx(bs_id_order):
             "crm.requisite.get",
             {"id": int(req_bx_id)},
         )
-    
-        req_bx_user_feld = bx.get_all(
-        "crm.requisite.list",
-        params={
-            "filter": {"ID": req_bx_id},
-            "select":[ "UF_CRM_1736854096","UF_CRM_1737611994"],
-        },
-    )
-        
 
+        req_bx_user_feld = bx.get_all(
+            "crm.requisite.list",
+            params={
+                "filter": {"ID": req_bx_id},
+                "select": ["UF_CRM_1736854096", "UF_CRM_1737611994"],
+            },
+        )
 
         for k, v in req_bx.items():
 
             type_preset_req = v["PRESET_ID"]
             if type_preset_req == "1":  # Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
-                tel = v["RQ_PHONE"]
-                kpp = v["RQ_KPP"]
-                ogrn = v["RQ_OGRN"]
+                # tel = v["RQ_PHONE"]
+                
+             
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
                 legal_entity = (
                     f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 )
-                tel = v["RQ_PHONE"]
+                # tel = v["RQ_PHONE"]
                 type_client = "2"
 
             elif type_preset_req == "3":  # Физ. лицо
                 legal_entity = (
                     f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 )
-                tel = v["RQ_PHONE"]
+                # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
-            
+                
+            kpp = v["RQ_KPP"]
             inn = v["RQ_INN"]
+            ogrn = v["RQ_OGRN"]
+            tel = v["RQ_PHONE"]
             
-
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
-        error = "error"
-        location = "первичное открытие сделки битрикс"
-        info = f" ошибка {contract}{contract_date}"
-        e = error_alert(error, location, info)
-        
+
         company_adress_all = []
         for adress in adress_bx:
             company_adress = {
@@ -269,7 +258,11 @@ def get_req_info_bx(bs_id_order):
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
 
-                if adress["REGION"] != "" or adress["REGION"] != "None" or adress["REGION"] != None:
+                if (
+                    adress["REGION"] != ""
+                    or adress["REGION"] != "None"
+                    or adress["REGION"] != None
+                ):
                     legal_city = f"{adress['REGION']}, г.{adress['CITY'],}"
                 else:
                     legal_city = f"г.{adress['CITY']},"
@@ -304,8 +297,8 @@ def get_req_info_bx(bs_id_order):
             # "manager": - битрикс ид менеджера
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
             "type_client": type_client,
-            "contract": "",
-            "contract_date": "",
+            "contract": contract,
+            "contract_date": contract_date,
             "legal_entity": legal_entity,
             "inn": inn,
             "kpp": kpp,
@@ -489,7 +482,6 @@ def add_info_order(request, order, type_save):
 
                 company = orders_bx["COMPANY_ID"]
                 company_bx = bx.get_by_ID("crm.company.get", [company])
-
 
                 order_debt = order.bill_sum - order.bill_sum_paid
                 data_order = {
@@ -1018,12 +1010,12 @@ def get_manager():
                 # "entityTypeId": 2,
             },
         )
-        
+
         error = "error"
         location = "Менеджеры битрикс"
         info = f"Менеджеры битрикс все {manager_all_bx}"
         e = error_alert(error, location, info)
-        
+
         for manager in manager_all_bx:
             print(manager)
             try:

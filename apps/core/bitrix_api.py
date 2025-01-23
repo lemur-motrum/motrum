@@ -263,13 +263,13 @@ def get_req_info_bx(bs_id_order, manager,company):
                     or adress["REGION"] != "None"
                     or adress["REGION"] != None
                 ):
-                    legal_city = f"{adress['REGION']}, г.{adress['CITY'],}"
+                    legal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 else:
                     legal_city = f"г.{adress['CITY']},"
                 legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['REGION']}, г.{adress['CITY'],}"
+                postal_city = f"{adress['REGION']}, г.{adress['CITY']}"
                 postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
             if adress["TYPE_ID"] == "4":

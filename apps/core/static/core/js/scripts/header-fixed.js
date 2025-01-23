@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
         let windowScrollY = window.scrollY;
         if (windowScrollY > headerHeigth * 10) {
           console.log("headerHeigth", headerHeigth);
-          headerWrapper.style.height = headerHeigth + "px";
+          headerWrapper.style.height = headerHeigth * 1.3 + "px";
           header.classList.add("fixed");
         } else {
           headerWrapper.style.height = "0px";

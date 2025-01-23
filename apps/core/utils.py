@@ -1605,7 +1605,7 @@ def client_info_bitrix(data, company_adress):
 
     if data["contract_date"]:
         data_contract = datetime.datetime.strptime(
-            data["contract_date"], "%Y-%B-%dT%H:%M:%S-%H:%M"
+            data["contract_date"], "%Y-%B-%dT%HH:%MM:%SS-%HH:%MM"
         ).date()
     else:
         data_contract = None

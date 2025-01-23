@@ -42,20 +42,31 @@ def get_info_for_order_bitrix(bs_id_order, request):
             context = {"error": error_text}
             return (next_url, context, True)
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
-
+            
+            company_bx = bx.get_by_ID("crm.company.get", [company])
+            manager_company = company_bx['ASSIGNED_BY_ID']
+            
             data = {
                 "order": {
                     "id_bitrix": bs_id_order,
-                    "manager": orders_bx["ASSIGNED_BY_ID"],
+                    "manager": manager_company,
                     "status": orders_bx["STAGE_ID"],
                 },
             }
-            company_bx = bx.get_by_ID("crm.company.get", [company])
-            company_bx2 = bx.get_by_ID("crm.company.fields", [company])
-            error = "error"
-            location = "company_bx"
-            info = f" company_bx {company_bx2}"
-            e = error_alert(error, location, info)
+            try:
+                manager = AdminUser.objects.get(bitrix_id=manager_company)
+            except AdminUser.DoesNotExist:
+                next_url = "/admin_specification/error-b24/"
+                error_text = f"Менеджер компании не внесен в окт"
+                context = {"error": error_text}
+                return (next_url, context, True)
+                    
+            
+            
+            
+            
+            
+            
             req_error, place, data_company = get_req_info_bx(bs_id_order)
             if req_error:
                 if place != "Адреса":
@@ -91,10 +102,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     data["order"]["status"], bs_id_order
                 )
 
-                try:
-                    manager = AdminUser.objects.get(bitrix_id=orders_bx["ASSIGNED_BY_ID"])
-                except AdminUser.DoesNotExist:
-                    manager = AdminUser.objects.filter(admin_type="ALL").first()
+                # try:
+                #     manager = AdminUser.objects.get(bitrix_id=manager_company)
+                # except AdminUser.DoesNotExist:
+                #     manager = AdminUser.objects.filter(admin_type="ALL").first()
                     
                 data_order = {
                     "id_bitrix": bs_id_order,
@@ -179,6 +190,7 @@ def get_req_info_bx(bs_id_order, orders_bx):
         },
     )
 
+
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
     elif req_acc_bx_id == "0":
@@ -192,6 +204,10 @@ def get_req_info_bx(bs_id_order, orders_bx):
             "crm.requisite.get",
             {"id": int(req_bx_id)},
         )
+        error = "error"
+        location = "req_bx"
+        info = f" req_bx {req_bx}"
+        e = error_alert(error, location, info)
 
         for k, v in req_bx.items():
 
@@ -200,27 +216,28 @@ def get_req_info_bx(bs_id_order, orders_bx):
                 legal_entity = v["RQ_COMPANY_NAME"]
                 tel = v["RQ_PHONE"]
                 kpp = v["RQ_KPP"]
+                ogrn = v["RQ_OGRN"]
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
                 legal_entity = (
                     f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 )
-                tel = None
+                tel = v["RQ_PHONE"]
                 type_client = "2"
 
             elif type_preset_req == "3":  # Физ. лицо
                 legal_entity = (
                     f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
                 )
-                tel = None
+                tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
-
+            
             inn = v["RQ_INN"]
-            ogrn = v["RQ_OGRN"]
+            
 
             # contract = ??
-            # contract_date = ??
+            # contract_date = v["UF_CRM_1732453421336"]
 
         company_adress_all = []
         for adress in adress_bx:

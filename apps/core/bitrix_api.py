@@ -169,7 +169,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 
 
 # для get_info_for_order_bitrix получение реквизитов к сделке
-def get_req_info_bx(bs_id_order, orders_bx):
+def get_req_info_bx(bs_id_order):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
     bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/") 

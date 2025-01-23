@@ -51,7 +51,11 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 },
             }
             company_bx = bx.get_by_ID("crm.company.get", [company])
-            req_error, place, data_company = get_req_info_bx(bs_id_order,company_bx)
+            error = "error"
+            location = "company_bx"
+            info = f" company_bx {company_bx}"
+            e = error_alert(error, location, info)
+            req_error, place, data_company = get_req_info_bx(bs_id_order)
             if req_error:
                 if place != "Адреса":
                     error_text = f"к сделке не прикреплен {place}"
@@ -156,17 +160,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 def get_req_info_bx(bs_id_order, orders_bx):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
-    # компания сделки для получение менеджера НОВОЕ
-    company_bx = bx.get_by_ID("crm.company.get", orders_bx["COMPANY_ID"])
-    error = "error"
-    location = "company_bx"
-    info = f" company_bx {company_bx}"
-    e = error_alert(error, location, info)
-    
-
-
-    
+    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/") 
     
     # реквизиты привязанные к сделке
     req_bx_order = bx.call(

@@ -598,7 +598,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
 
         elif type_file == "file_dict_no_signed":
-            name = file.name_bill_to_fullname_nosign
+            name = file.text_name_bill_no_sign
             if file.is_active == False:
                 name = f"{file.from_index}-{name}_не-актуально"
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"

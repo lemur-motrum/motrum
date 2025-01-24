@@ -7,6 +7,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
+from apps.client.models import Order
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
@@ -298,25 +299,52 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             # корзина админов
             if request.user.is_staff:
+                cart = None
+                http_frame = False
+                if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
+                    bitrix_id_order = request.COOKIES["bitrix_id_order"]
+                    http_frame = True
+                    if bitrix_id_order:
+                        try:
+                            order = Order.objects.get(id = int(bitrix_id_order))
+                            cart = order.cart
+                        except Order.DoesNotExist:
+                            pass
+                            cart = None
                 # try:
                 # cart = Cart.objects.filter(session_key=session, is_active=False).last()
-                cart = None
+                
                 if cart:
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
+                    # response.set_cookie(
+                    #     "cart", cart.id, max_age=2629800, samesite="None", secure=True
+                    # )
                     response.set_cookie(
-                        "cart", cart.id, max_age=2629800, samesite="None", secure=True
+                        "cart",
+                        cart,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                    response.set_cookie(
+                        "order",
+                        order.id,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
                     )
                     response.set_cookie(
                         "type_save",
-                        "new",
+                        "update",
                         max_age=2629800,
                         samesite="None",
                         secure=True,
                     )
 
                     return response
+                
                 else:
 
                     # except Cart.DoesNotExist:

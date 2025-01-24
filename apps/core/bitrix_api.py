@@ -605,7 +605,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
         if type_file == "file_dict_signed":
             name = f"{file.from_index}-{file.text_name_bill}"
             if file.is_active == False:
-                name = f"{name}_не-актуально.pdf"
+                name = f"{name}_неактуально.pdf"
             else:
                 name = f"{name}.pdf"
             file = f"{MEDIA_ROOT}/{ file.bill_file}"
@@ -613,7 +613,7 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
         elif type_file == "file_dict_no_signed":
             name = f"{file.from_index}-{file.text_name_bill_no_sign}"
             if file.is_active == False:
-                name = f"{name}_не-актуально.pdf"
+                name = f"{name}_неактуально.pdf"
             else:
                 name = f"{name}.pdf"
 

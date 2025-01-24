@@ -990,10 +990,10 @@
                             </div>
                             {% if specification %}
                             {% else %}
-                                <div class="save_order_button-wrapper">
+                                {% comment %} <div class="save_order_button-wrapper">
                                     <button class="save_order_button">Сохранить корзину без заказа</button>
                                     <div class="save_order_button-error"></div>
-                                </div>
+                                </div> {% endcomment %}
                             {% endif %}
                             <button class="exit_button">Выйти без изменений</button>
                         {% endif %}

@@ -240,9 +240,12 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     http_method_names = ["get", "post", "delete"]
 
     # создать корзину
-    @action(detail=False, methods=["get","post"], url_path=r"add-cart")
+    @action(detail=False, methods=["get", "post"], url_path=r"add-cart")
     def add_cart(self, request, *args, **kwargs):
+        print("add_cart")
+        data = request.data
         # response = super().create(request, args, kwargs)
+
         session = request.COOKIES.get("sessionid")
         # корзина юзера анонимного
         if request.user.is_anonymous:
@@ -298,25 +301,27 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         # корзина админов и логин юзера
         else:
             # корзина админов
+            iframe = False
+            if request.method == "POST":
+                data = request.data
+                if data["iframe"]:
+                    iframe = True
+
             if request.user.is_staff:
-                ref = request.META["HTTP_REFERER"] 
-                
-                print(ref)
                 cart = None
-                http_frame = False
-                if "bitrix24" in ref:
+                if iframe:
                     bitrix_id_order = request.COOKIES["bitrix_id_order"]
                     http_frame = True
                     if bitrix_id_order:
                         try:
-                            order = Order.objects.get(id = int(bitrix_id_order))
+                            order = Order.objects.get(id=int(bitrix_id_order))
                             cart = order.cart
                         except Order.DoesNotExist:
                             pass
                             cart = None
                 # try:
                 # cart = Cart.objects.filter(session_key=session, is_active=False).last()
-                
+
                 if cart:
                     response = Response()
                     response.data = cart.id
@@ -345,9 +350,16 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                         samesite="None",
                         secure=True,
                     )
+                    response.set_cookie(
+                        "specificationId",
+                        order.specification,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
 
                     return response
-                
+
                 else:
 
                     # except Cart.DoesNotExist:

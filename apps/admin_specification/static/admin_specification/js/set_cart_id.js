@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
           iframe: isInIframe,
         };
       }
-      
+      console.log(this)
       const data = JSON.stringify(objData);
       fetch("/api/v1/cart/add-cart/", {
         method: "POST",

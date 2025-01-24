@@ -162,6 +162,7 @@ def all_categories(request):
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
         "price_url": price_url,
+        "search_input": search_input,
     }
 
     renders = "admin_specification/categories.html"
@@ -299,6 +300,7 @@ def group_product(request, cat):
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
         "price_url": price_url,
+        "search_input": search_input,
     }
 
     return render(request, "admin_specification/group.html", context)
@@ -827,18 +829,17 @@ def create_specification(request):
         product_new_more = None
         specification = None
         order = None
-        
-    
+
     if order:
-        
-        if order.text_name != None :
+
+        if order.text_name != None:
             name_ord = order.text_name
-            
+
         else:
-            name_ord =  f"№ {order.id}"
+            name_ord = f"№ {order.id}"
     else:
         name_ord = None
-        
+
     current_date = datetime.date.today().isoformat()
     hard_upd = False
     if type_save_cookee == "new":

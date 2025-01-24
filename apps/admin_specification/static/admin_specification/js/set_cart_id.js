@@ -7,18 +7,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".okt_cart_container");
   if (wrapper) {
     if (!getCookie("cart")) {
-      let isInIframe;
+      // let isInIframe = False;
       const objData = null
-      try {
-        isInIframe = window.self !== window.top;
-      } catch (e) {
-        isInIframe = true;
-      }
-      if (isInIframe) {
-        const objData = {
-          iframe: isInIframe,
-        };
-      }
+
+      const isInIframe = window.self !== window.top
+      console.log("isInIframe", isInIframe)
+
+      // if (isInIframe) {
+
+      //   const objData = {
+      //     iframe: isInIframe,
+      //   };
+      // }
+
+
+
+
       console.log(this)
       const data = JSON.stringify(objData);
       fetch("/api/v1/cart/add-cart/", {

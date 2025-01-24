@@ -299,9 +299,12 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             # корзина админов
             if request.user.is_staff:
+                ref = request.META["HTTP_REFERER"] 
+                
+                print(ref)
                 cart = None
                 http_frame = False
-                if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
+                if "bitrix24" in ref:
                     bitrix_id_order = request.COOKIES["bitrix_id_order"]
                     http_frame = True
                     if bitrix_id_order:

@@ -8,7 +8,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (wrapper) {
     if (!getCookie("cart")) {
       // let isInIframe = False;
-      const objData = {
+      let objData = {
         iframe: false,
       };
 

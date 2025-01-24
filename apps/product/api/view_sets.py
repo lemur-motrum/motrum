@@ -240,7 +240,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     http_method_names = ["get", "post", "delete"]
 
     # создать корзину
-    @action(detail=False, methods=["get"], url_path=r"add-cart")
+    @action(detail=False, methods=["get","post"], url_path=r"add-cart")
     def add_cart(self, request, *args, **kwargs):
         # response = super().create(request, args, kwargs)
         session = request.COOKIES.get("sessionid")

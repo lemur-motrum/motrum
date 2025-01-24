@@ -199,7 +199,7 @@
                                 </div>
                             {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
                                 {% if search_input %}
-                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_url %}&search_input={{search_url}}{% endif %}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_url %}&search_input={{ search_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% else %}
                                     <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_input %}&search_input={{ search_input }}{% endif %}"><span>{{ p }}</span></a>
                                 {% endif %}

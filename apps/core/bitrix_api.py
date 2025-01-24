@@ -216,10 +216,11 @@ def get_req_info_bx(bs_id_order, manager, company):
         )
 
         for k, v in req_bx.items():
-
+            ogrn = None
             type_preset_req = v["PRESET_ID"]
             if type_preset_req == "1":  # Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
+                ogrn = v["RQ_OGRN"]
                 # tel = v["RQ_PHONE"]
 
                 type_client = "1"
@@ -240,7 +241,6 @@ def get_req_info_bx(bs_id_order, manager, company):
 
             kpp = v["RQ_KPP"]
             inn = v["RQ_INN"]
-            ogrn = v["RQ_OGRN"]
             tel = v["RQ_PHONE"]
 
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]

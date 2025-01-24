@@ -1238,47 +1238,12 @@ def save_specification(
 
     else:
         specification_name = None
-
-    # if specification_name:
-
-    #     pdf = crete_pdf_specification(
-    #         specification.id,
-    #         requisites,
-    #         account_requisites,
-    #         request,
-    #         motrum_requisites,
-    #         date_delivery_all,
-    #         type_delivery,
-    #         post_update,
-    #         specification_name,
-    #     )
-
-    #     if pdf:
-    #         specification.file = pdf
-    #         specification._change_reason = "Ручное"
-
-    #         if post_update == False:
-    #             specification.date_create_pdf = datetime.datetime.today()
-    #         specification.save()
+        specification.number = specification_name
+        specification.save()
 
     return specification
 
-    # except Exception as e:
-    #     # product_spes = ProductSpecification.objects.filter(
-    #     #     specification=specification,
-    #     # )
-    #     # if product_spes:
-    #     #     for prod in product_spes:
-    #     #         prod.delete()
-    #     # else:
-    #     #     specification.delete()
 
-    #     error = "error"
-    #     location = "Сохранение спецификации админам окт"
-    #     info = f"Сохранение спецификации админам окт ошибка {e}"
-    #     e = error_alert(error, location, info)
-
-    #     return None
 
 
 def get_presale_discount(product):

@@ -301,23 +301,28 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         # корзина админов и логин юзера
         else:
             # корзина админов
+            bitrix_id_order = False
             iframe = False
             if request.method == "POST":
                 data = request.data
                 if data["iframe"]:
                     iframe = True
+            print(iframe)
 
             if request.user.is_staff:
                 cart = None
                 if iframe:
                     bitrix_id_order = request.COOKIES["bitrix_id_order"]
-                    http_frame = True
+                    print(bitrix_id_order)
                     if bitrix_id_order:
+                        print("if bitrix_id_order")
                         try:
-                            order = Order.objects.get(id=int(bitrix_id_order))
+                            order = Order.objects.get(id_bitrix=int(bitrix_id_order))
+                            print(order)
                             cart = order.cart
+                            print(cart)
                         except Order.DoesNotExist:
-                            pass
+                            print(Order.DoesNotExist)
                             cart = None
                 # try:
                 # cart = Cart.objects.filter(session_key=session, is_active=False).last()

@@ -200,3 +200,43 @@ def login_bitrix(request, next_url, id_bitrix):
             "error": "Ошибка доступа из Битрикс. Пожалуйста авторизуйтесь заново",
         }
         return form_login(request, context, form)
+
+
+@csrf_exempt
+def logout_clear_info(request):
+    logout(request)
+    response = render(
+                    request,
+                    "user/user_clear.html",
+                )
+    response.set_cookie("client_id", max_age=-1)
+    response.set_cookie("cart", max_age=-1)
+    response.set_cookie("specificationId", max_age=-1)
+    response.set_cookie("order", max_age=-1)
+    response.set_cookie("type_save", max_age=-1)
+    response.set_cookie(
+        "next_url",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+
+    response.set_cookie(
+        "bitrix_id_order",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "order",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "type_save",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    return response

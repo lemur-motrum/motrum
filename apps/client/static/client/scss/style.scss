@@ -1098,6 +1098,7 @@
       display: flex;
       &.show {
         div {
+          margin-bottom: 0.875rem;
           .new_legal_entity {
             height: 100%;
             opacity: 1;
@@ -1507,7 +1508,7 @@
     .add_legal_entity {
       width: 21.688rem;
       height: 3.563rem;
-      margin-top: 0.875rem;
+      // margin-top: 0.875rem;
       text-transform: lowercase;
       border: 0.094rem solid #000;
       border-radius: 1.875rem;

@@ -18,7 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const addLegalEntity =
         detailsContainer.querySelector(".add_legal_entity");
       addLegalEntity.onclick = () => {
-        newLegalEntityContainerWrapper.classList.add("show");
+        newLegalEntityContainerWrapper.classList.toggle("show");
       };
       const newLegalEntityForm =
         newLegalEntityContainer.querySelector(".legal_entity_form");

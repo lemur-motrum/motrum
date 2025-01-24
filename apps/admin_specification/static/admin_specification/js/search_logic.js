@@ -172,7 +172,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     if (e.code == "Enter") {
                       if (searchInput.value) {
                         closeSearchWindow();
-                        urlParams.set("search_input", searchInput.value);
+                        urlParams.set("search_input", searchInput.value.trim());
                         history.pushState({}, "", currentUrl);
                         setTimeout(() => {
                           window.location.reload();

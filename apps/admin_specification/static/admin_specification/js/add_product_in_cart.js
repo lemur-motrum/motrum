@@ -27,9 +27,23 @@ export function buttonsLogic(wrapper) {
         addProductInCartBtn.classList.add("hide");
         hiddenProductButtonsForCart.classList.add("show");
         if (!getCookie("cart")) {
+          let objData = {
+            iframe: false,
+          };
+          const isInIframe = window.self !== window.top
+    
+          if (isInIframe) {
+            objData = {
+              iframe: isInIframe,
+            };
+          }
+          const data = JSON.stringify(objData);
+
           fetch("/api/v1/cart/add-cart/", {
-            method: "GET",
+            method: "POST",
+            body: data,
             headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
               "X-CSRFToken": csrfToken,
             },
           })

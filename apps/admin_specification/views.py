@@ -916,9 +916,6 @@ def create_specification(request):
     login_url="/user/login_admin/",
 )
 def get_all_specifications(request):
-    print(1111111111111111)
-    print(request.COOKIES)
-    print(request.META["HTTP_SEC_FETCH_DEST"])
     cd = []
     post_data_bx_id = "post_data_bx_id"
     if "POST" in request.method:
@@ -927,24 +924,26 @@ def get_all_specifications(request):
 
     q_object = Q()
     # фильтрация по админу
+    q_object_2 = Q()
     user_admin = AdminUser.objects.get(user=request.user)
     user_admin_type = user_admin.admin_type
     if user_admin_type == "ALL":
         superuser = True
+        q_object_2 &= Q(cart__cart_admin_id__isnull=False)
     elif user_admin_type == "BASE":
         all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
         q_object &= Q(admin_creator_id=request.user.id)
+        q_object_2 &= Q(cart__cart_admin_id=request.user.id)
         superuser = False
     # фильтрация если из битрикс
     http_frame = False
     bitrix_id_order = None
     if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
-        print(request.META["HTTP_SEC_FETCH_DEST"])
         bitrix_id_order = request.COOKIES["bitrix_id_order"]
         http_frame = True
-        print(bitrix_id_order)
         q_object &= Q(id_bitrix=int(bitrix_id_order))
-
+        q_object_2 &= Q(id_bitrix=int(bitrix_id_order))
+        
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
@@ -955,8 +954,15 @@ def get_all_specifications(request):
         .order_by("tag_stop", "date_update", "id")
         .reverse()
     )
-    print(q_object)
-    print(all_specifications)
+    q_object_2 &= Q(specification__isnull=True)
+    queryset = Order.objects.select_related(
+        "specification",
+        "cart",
+    ).filter(q_object_2)
+    
+    tag_need_btn_other_orders = False
+    if queryset.count() > 0:
+        tag_need_btn_other_orders = True
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
@@ -977,6 +983,7 @@ def get_all_specifications(request):
         "post_data_bx_id": post_data_bx_id,
         "bitrix_id_order": bitrix_id_order,
         "http_frame": http_frame,
+        "tag_need_btn_other_orders":tag_need_btn_other_orders
     }
 
     return render(request, "admin_specification/all_specifications.html", context)

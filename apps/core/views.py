@@ -12,6 +12,7 @@ from django.db.models import OuterRef, Subquery
 
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
+from apps.core.bitrix_api import get_manager
 from apps.core.models import IndexInfoWeb, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
@@ -34,7 +35,11 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_list_or_404, render
 from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
-from django.views.decorators.clickjacking import xframe_options_exempt,xframe_options_sameorigin
+from django.views.decorators.clickjacking import (
+    xframe_options_exempt,
+    xframe_options_sameorigin,
+)
+
 
 # ГЛАВНАЯ
 # @xframe_options_sameorigin
@@ -53,9 +58,10 @@ def index(request):
         "projects": projects,
         "slider": promo_slider,
         "vendors": vendors,
-        "motrum_in_numbers":motrum_in_numbers,
+        "motrum_in_numbers": motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
+
 
 # def brand_all(request):
 #     brands =  Vendor.objects.all()
@@ -74,8 +80,6 @@ def index(request):
 #         "brands":brands,
 #     }
 #     return render(request, "product/brand_all.html", context)
-
-
 
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
@@ -214,7 +218,20 @@ def server_error(request):
     print(500)
     return render(request, "core/error_pages/500.html", status=500)
 
-
+def add_admin_okt(request):
+    manager_ok = get_manager()
+    print(manager_ok)
+    if manager_ok:
+        context = {
+            "text":"Успешно добавлены менеджеры"
+        }
+        return render(request, "core/clean_page_notifications.html", context)
+    else:
+        context = {
+            "text":"Ошибка. Обратитесь в тех.поддержку"
+        }
+        return render(request, "core/clean_page_notifications.html", context)
+    
 # EMAIL SEND
 # def email_callback(request):
 #     if request.method == "POST":

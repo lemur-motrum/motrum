@@ -446,7 +446,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": None,
                     "type_delivery": "paid_delivery",
                 }
-                print("222222222", data_order)
+              
 
                 status_save_order, data = save_order_web(
                     request, data_order, all_info_requisites, all_info_product
@@ -705,7 +705,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 data_order = {
                     "comment": data["comment"],
-                    "name": 123131,
+                    "name": id_bitrix,
                     "specification": specification.id,
                     "requisites": requisites.id,
                     "account_requisites": account_requisites.id,

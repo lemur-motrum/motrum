@@ -1045,6 +1045,7 @@ def get_stage_info_bx():
 
 
 def get_manager():
+
     try:
         webhook = settings.BITRIX_WEBHOOK
         webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
@@ -1056,21 +1057,20 @@ def get_manager():
             },
         )
 
-        error = "error"
-        location = "Менеджеры битрикс"
-        info = f"Менеджеры битрикс все {manager_all_bx}"
-        e = error_alert(error, location, info)
-
         for manager in manager_all_bx:
             print(manager)
-            if manager["EMAIL"] != "":
+            if "EMAIL" in manager:
+            # if manager["EMAIL"] != "":
                 try:
                     admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
                     # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
                     admin_okt.bitrix_id = manager["ID"]
                     admin_okt.save()
+                    print(manager)
                 except AdminUser.DoesNotExist:
                     pass
+        
+        return True
     except Exception as e:
 
         tr = traceback.format_exc()
@@ -1079,6 +1079,7 @@ def get_manager():
         location = "Менеджеры битрикс"
         info = f" Получение Менеджеры битрикс в бд {e}{tr}"
         e = error_alert(error, location, info)
+        return False
 
 
 def _status_to_order_replace(name_status, id_bx):

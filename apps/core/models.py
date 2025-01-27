@@ -253,6 +253,10 @@ class BaseInfoAccountRequisites(models.Model):
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
+    
+    def __str__(self):
+        return self.requisites.short_name_legal_entity
+
 
 
 class BaseImage(models.Model):

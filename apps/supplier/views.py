@@ -46,16 +46,7 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    order = "10568"
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
-    orders_bx = remove_file_bx(
-        bx,
-        None,
-        order,
-        "crm.deal.update",
-        "UF_CRM_1715001959646",
-    )
-    
+
 
     
     # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
@@ -137,8 +128,8 @@ def add_permission(request):
 def add_stage_bx(request):
     get_stage_info_bx()
     
-def add_admin_okt(request):
-    get_manager()
+# def add_admin_okt(request):
+#     get_manager()
     
 # добавление праздников вручную
 def add_holidays(request):

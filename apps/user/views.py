@@ -206,9 +206,9 @@ def login_bitrix(request, next_url, id_bitrix):
 def logout_clear_info(request):
     logout(request)
     response = render(
-                    request,
-                    "user/user_clear.html",
-                )
+        request,
+        "user/user_clear.html",
+    )
     response.set_cookie("client_id", max_age=-1)
     response.set_cookie("cart", max_age=-1)
     response.set_cookie("specificationId", max_age=-1)

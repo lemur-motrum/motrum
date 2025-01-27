@@ -247,6 +247,7 @@ def get_req_info_bx(bs_id_order, manager, company):
             
             inn = v["RQ_INN"]
             tel = v["RQ_PHONE"]
+            id_req = int(v["ID"])
 
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
@@ -308,9 +309,9 @@ def get_req_info_bx(bs_id_order, manager, company):
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
         bic = req_bank["RQ_BIK"]
-
+        
         company = {
-            "id_bitrix": int(company),
+            "id_bitrix": id_req,
             "manager": manager.id,
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
             "type_client": type_client,

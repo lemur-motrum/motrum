@@ -1579,15 +1579,17 @@ def client_info_bitrix(data, company_adress):
         data_contract = None
 
     client_req, client_req_created = Requisites.objects.update_or_create(
-        # id_bitrix=data["id_bitrix"],
+        id_bitrix=data["id_bitrix"],
         inn=data["inn"],
         defaults={
+            
             "contract": data["contract"],
             "legal_entity": data["legal_entity"],
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager_id":int(data["manager"])
+            "manager_id":int(data["manager"]),
+            # "id_bitrix": data["id_bitrix"],
         },
         create_defaults={
             "contract": data["contract"],
@@ -1596,8 +1598,8 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager_id":int(data["manager"])
-            # "id_bitrix": data["id_bitrix"],
+            "manager_id":int(data["manager"]),
+            "id_bitrix": data["id_bitrix"],
         },
     )
     print("client_req, client_req_created", client_req, client_req_created)

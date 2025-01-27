@@ -546,8 +546,13 @@ def add_info_order(request, order, type_save):
                     # print(orders_bx)
 
                 else:
-                    document_specification = None
-                    orders_bx_remove = remove_file_bx(
+                    document_specification
+                    error = "file_api_error"
+                    location = "document_specification"
+                    info = f"document_specification"
+                    e = error_alert(error, location, info)
+                    
+                    orders_bx = remove_file_bx(
                         bx,
                         document_specification,
                         order.id_bitrix,

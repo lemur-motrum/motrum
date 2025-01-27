@@ -1612,8 +1612,9 @@ def client_info_bitrix(data, company_adress):
         RequisitesOtherKpp.objects.update_or_create(
             requisites=client_req,
             kpp=data["kpp"],
+            
             defaults={
-                # "kpp": data["kpp"],
+                "ogrn": data["ogrn"],
                 "legal_post_code": data["legal_post_code"],
                 "legal_city": data["legal_city"],
                 "legal_address": data["legal_address"],

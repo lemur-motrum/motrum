@@ -394,7 +394,7 @@ def crete_pdf_bill(
 
         else:
             # клиент ип
-            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, ОГРНИП {client_info_req_kpp.ogrn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
         
         
         

@@ -221,27 +221,30 @@ def get_req_info_bx(bs_id_order, manager, company):
             if type_preset_req == "1":  # Организация
                 legal_entity = v["RQ_COMPANY_NAME"]
                 ogrn = v["RQ_OGRN"]
+                kpp = v["RQ_KPP"]
                 # tel = v["RQ_PHONE"]
 
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
                 legal_entity = (
-                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                     f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 )
                 # tel = v["RQ_PHONE"]
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
+                kpp = None
 
             elif type_preset_req == "3":  # Физ. лицо
                 legal_entity = (
-                    f"{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"
+                    f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 )
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
+                kpp = None
 
-            kpp = v["RQ_KPP"]
+            
             inn = v["RQ_INN"]
             tel = v["RQ_PHONE"]
 

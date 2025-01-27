@@ -543,15 +543,10 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
-                    # print(orders_bx)
+
 
                 else:
-                    document_specification = None
-                    error = "file_api_error"
-                    location = "document_specification"
-                    info = f"document_specification"
-                    e = error_alert(error, location, info)
-                    
+
                     orders_bx = remove_file_bx(
                         bx,
                         document_specification,
@@ -559,8 +554,6 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
-
-                # print(orders_bx)
 
                 # СЧЕТ  СДЕЛКИ
 
@@ -686,8 +679,7 @@ def save_file_bx(bx, file, id_bx, method, field_name):
             },
         },
     )
-    print(orders_bx)
-    print(7777)
+
     return orders_bx
 
 def remove_file_bx(bx, file, id_bx, method, field_name):

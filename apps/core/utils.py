@@ -1238,6 +1238,7 @@ def save_specification(
 
     else:
         specification_name = None
+        specification.file = None
         specification.number = specification_name
         specification.save()
 

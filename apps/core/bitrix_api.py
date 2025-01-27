@@ -230,6 +230,7 @@ def get_req_info_bx(bs_id_order, manager, company):
                 )
                 # tel = v["RQ_PHONE"]
                 type_client = "2"
+                ogrn = v["RQ_OGRNIP"]
 
             elif type_preset_req == "3":  # Физ. лицо
                 legal_entity = (
@@ -238,6 +239,7 @@ def get_req_info_bx(bs_id_order, manager, company):
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
+                ogrn = v["RQ_OGRNIP"]
 
             kpp = v["RQ_KPP"]
             inn = v["RQ_INN"]

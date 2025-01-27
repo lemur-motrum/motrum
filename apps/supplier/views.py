@@ -6,7 +6,7 @@ from django.shortcuts import render
 from regex import D
 from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
 
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
+from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -39,14 +39,23 @@ from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
 from project.settings import MEDIA_ROOT
-
+from fast_bitrix24 import Bitrix
 
 
 # тестовая страница скриптов
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    get_iek_stock()
+    order = "10568"
+    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    orders_bx = remove_file_bx(
+        bx,
+        None,
+        order,
+        "crm.deal.update",
+        "UF_CRM_1715001959646",
+    )
+    
 
     
     # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")

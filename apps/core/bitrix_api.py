@@ -546,7 +546,7 @@ def add_info_order(request, order, type_save):
                     # print(orders_bx)
 
                 else:
-                    document_specification
+                    document_specification = None
                     error = "file_api_error"
                     location = "document_specification"
                     info = f"document_specification"
@@ -691,22 +691,23 @@ def save_file_bx(bx, file, id_bx, method, field_name):
     return orders_bx
 
 def remove_file_bx(bx, file, id_bx, method, field_name):
-
+    
+    orders_bx = bx.get_by_ID("crm.deal.get", [id_bx]) 
+    orders_bx_id_file = orders_bx[field_name]['id']
+    print(orders_bx_id_file)
+    
     orders_bx = bx.call(
         method,
         {
             "id": id_bx,
             "fields": {
-                field_name: {
-                    "remove": [
-                        "Y",
-                    ],
-                },
+                field_name:  {"id": orders_bx_id_file, "remove": 'Y'},
             },
         },
     )
-    print(orders_bx)
-    print(7777)
+
+    
+    
     return orders_bx
 
 # новые документы после появления точных сроков поставки

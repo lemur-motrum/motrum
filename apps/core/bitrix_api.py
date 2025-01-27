@@ -541,6 +541,13 @@ def add_info_order(request, order, type_save):
 
                 else:
                     document_specification = None
+                    orders_bx_remove = remove_file_bx(
+                        bx,
+                        document_specification,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1715001959646",
+                    )
 
                 # print(orders_bx)
 
@@ -672,6 +679,24 @@ def save_file_bx(bx, file, id_bx, method, field_name):
     print(7777)
     return orders_bx
 
+def remove_file_bx(bx, file, id_bx, method, field_name):
+
+    orders_bx = bx.call(
+        method,
+        {
+            "id": id_bx,
+            "fields": {
+                field_name: {
+                    "remove": [
+                        "Y",
+                    ],
+                },
+            },
+        },
+    )
+    print(orders_bx)
+    print(7777)
+    return orders_bx
 
 # новые документы после появления точных сроков поставки
 def save_new_doc_bx(order):

@@ -46,9 +46,7 @@ from project.settings import MEDIA_ROOT
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    data_str = "2025-01-13T03:00:00+03:00"
-    data_contract_parse = parse(data_str).date()
-    print(data_contract_parse)
+    get_iek_stock()
 
     
     # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")

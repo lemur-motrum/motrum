@@ -967,7 +967,7 @@
                                 value="1">
                             {% for requisit in mortum_req %}
                                 <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %} data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
-                                    Юр.лицо - {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
+                                    {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                 </option>
                             {% endfor %}
                         </select>

@@ -13,12 +13,12 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     # ТАСКИ битрикс
-    # статусы битрикс заказов ежедневно
+    # # статусы битрикс заказов ежедневно
     # 'get_status_order_bx': {
     #     'task': 'apps.core.tasks.get_status_order_bx',
     #     'schedule': crontab(minute=0, hour='6-21'),
     # },
-    # уведомления о повышения цен на товары и курсов
+    # # уведомления о повышения цен на товары и курсов ежедневно
     # 'add_currency_check_bx': {
     #     'task': 'apps.core.tasks.currency_check_bx',
     #     'schedule': crontab(minute=00, hour=5),
@@ -58,12 +58,14 @@ app.conf.beat_schedule = {
     #     'task': 'apps.specification.tasks.bill_date_stop',
     #     'schedule': crontab(minute=40, hour=0),
     # },
+    
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
     "year_holidays": {
         "task": "apps.core.tasks.get_year_holiday",
         "schedule": crontab(minute=3, hour=0, day_of_month=1),
     },
+    
     # ТАСКИ раз  в год
     # обнуление счетчиков счетов
     "counter_bill_new_year": {

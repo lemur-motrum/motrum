@@ -57,5 +57,4 @@ def add_prompower(self):
             info = f"Нет связи с сервером Prompower "
             e = error_alert(error, location, info)
 
-            get_iek_stock()
         self.retry(exc=exc, countdown=600)

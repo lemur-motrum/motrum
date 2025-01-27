@@ -387,8 +387,7 @@ def crete_pdf_bill(
             )
         )
         
-        if client_info.type_client == 1:
-            pass
+        if client_info.type_client == 1 or client_info.type_client == "1":
             # клиент юрлицо
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
 

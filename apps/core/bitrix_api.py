@@ -534,7 +534,7 @@ def add_info_order(request, order, type_save):
                     "UF_CRM_1734772537613",
                 )
 
-                if order.specification.file:
+                if order.specification.number:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
                     orders_bx = save_file_bx(
                         bx,

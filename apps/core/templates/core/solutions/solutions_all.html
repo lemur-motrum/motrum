@@ -1,7 +1,54 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
-    <!-- Страница для ссылок на все решения -->
-    <a href="{% url 'core:solutions_one' 'marking' %}">решения маркировка</a>
+    {% comment %} <!-- Страница для ссылок на все решения -->
+    <a href="{% url 'core:marking' %}">решения маркировка</a>
     <a href="{% url 'core:cobots' %}">решения коботы</a>
-    <a href="{% url 'core:solutions_one' 'shkaf-upravleniya' %}">сборка шкафов управления</a>
+<a href="{% url 'core:shkaf-upravleniya' %}">сборка шкафов управления</a> {% endcomment %}
+<div class="solutions_wrapper">
+    <div class="title_content">
+        <div class="bread_crumbs">
+            <a href="/">главная</a>
+        </div>
+        <h1 class="title">решения</h1>
+    </div>
+    <div class="solution_table">
+        <a class="solution_item first">
+            <img class="bg_img"
+                 src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                 alt="img" />
+            <div class="img_container">
+                <img class="content_img"
+                     src="{% static "core/images/solutions/all_solution1.png" %}"
+                     alt="img" />
+            </div>
+            <div class="description">РОБОТЫ</div>
+        </a>
+        <a class="solution_item second">
+            <img class="bg_img"
+                 src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                 alt="img" />
+            <div class="img_container">
+                <img class="content_img"
+                     src="{% static "core/images/solutions/all_solution2.png" %}"
+                     alt="img" />
+            </div>
+            <div class="description">МАРКИРОВКА</div>
+        </a>
+        <a class="solution_item third">
+            <img class="bg_img"
+                 src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                 alt="img" />
+            <div class="img_container">
+                <img class="content_img"
+                     src="{% static "core/images/solutions/all_solution3.png" %}"
+                     alt="img" />
+            </div>
+            <div class="description">
+                СБОРКА ШКАФОВ
+                УПРАВЛЕНИЯ
+            </div>
+        </a>
+    </div>
+</div>
 {% endblock content %}

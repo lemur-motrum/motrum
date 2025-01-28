@@ -248,7 +248,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,
                   {
-                    // изменила метод 
+                    // изменила метод
                     method: "POST",
                     body: data,
                     headers: {

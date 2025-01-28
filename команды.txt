@@ -29,3 +29,10 @@ docker exec -t pgdb pg_dumpall -c -U postgres > dump_`dateY`.sql
 
 
 cat dump_date_08.05.sql | docker exec -i pgdb psql -U postgres -d postgres
+
+ALTER ROLE motrum_test_2_user SET client_encoding TO 'utf8';
+ALTER ROLE motrum_test_2_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE motrum_test_2_user SET timezone TO 'UTC';
+
+GRANT ALL PRIVILEGES ON DATABASE motrum_test_2 TO motrum_test_2_user;
+ALTER DATABASE motrum_test_2 OWNER TO motrum_test_2_user;

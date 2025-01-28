@@ -373,3 +373,25 @@ class StageDealBx(models.Model):
         null=True,
         blank=True,
     )
+
+
+class SeoTextSolutions(models.Model):
+    name_page = models.CharField(
+        "название страницы  страницы",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    text = models.CharField(
+        "Текст",
+        max_length=1500,
+        null=True,
+        blank=True,
+    )
+    
+    class Meta:
+        verbose_name = "Сео для страниц решений"
+        verbose_name_plural = "Сео дял страниц решений"
+
+    # def __str__(self):
+    #     return f"Счетчики"

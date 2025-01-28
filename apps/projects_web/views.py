@@ -17,6 +17,7 @@ from apps.projects_web.models import (
 # Create your views here.
 # Create your views here.
 def projects(request):
+    print(99999)
     projects = Project.objects.all()
     category_projects = CategoryProject.objects.all().order_by("article")
     client_category_projects = ClientCategoryProject.objects.all().order_by("article")

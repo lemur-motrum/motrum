@@ -857,7 +857,10 @@ def create_specification(request):
 
     elif type_save_cookee == "update":
         bill_upd = True
-        title = f"Заказ {name_ord} - изменение счета № {order.bill_name} "
+        if order:
+            title = f"Заказ {name_ord} - изменение счета № {order.bill_name} "
+        else:
+            title = f"Заказ {name_ord} - изменение счета"
         type_save = " изменения"
 
     elif type_save_cookee == "hard_update":

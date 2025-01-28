@@ -13,7 +13,7 @@ from django.db.models import OuterRef, Subquery
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
 from apps.core.bitrix_api import get_manager
-from apps.core.models import IndexInfoWeb, SliderMain
+from apps.core.models import IndexInfoWeb, SeoTextSolutions, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -61,25 +61,6 @@ def index(request):
         "motrum_in_numbers": motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
-
-
-# def brand_all(request):
-#     brands =  Vendor.objects.all()
-#     # .order_by("article","name")
-#     print(brands)
-#     context = {
-#         "brands":brands,
-#     }
-#     return render(request, "product/brand_all.html", context)
-
-# def brand_one(request):
-#     brands =  Vendor.objects.all()
-#     # .order_by("article","name")
-#     print(brands)
-#     context = {
-#         "brands":brands,
-#     }
-#     return render(request, "product/brand_all.html", context)
 
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
@@ -180,6 +161,35 @@ def cart(request):
 # def promo_slider(request):
 
 #     return render(request, "core/includes/promo_slider.html", context)
+def solutions_all(request):
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    context = {
+        "projects": projects
+    }
+    return render(request, "core/solutions/solutions_all.html", context)
+
+def cobots_all(request):
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    
+    context = {
+        "projects": projects
+    }
+    return render(request, "core/solutions/cobots.html", context)
+
+def solutions_one(request,solutions_one):
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    try:
+        seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
+    except SeoTextSolutions.DoesNotExist:
+        seo_test = None
+    
+    context = {
+    "seo_test":seo_test,
+    "projects": projects 
+    }
+    return render(request, "core/solutions/solutions_one.html", context)
+
+
 
 
 def company(request):

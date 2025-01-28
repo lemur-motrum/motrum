@@ -1822,151 +1822,160 @@ def image_error_check():
 def product_cart_in_file(file, cart):
     from apps.product.models import Product, ProductCart
     from apps.supplier.models import Vendor
-
-    def _serch_prod_in_file(article, vendor):
-        product = Product.objects.filter(article_supplier=article, vendor__slug = vendor)
-        
-        if product:
-            pass
-        else:
-            # product = Product.objects.filter(article_supplier=article)
-            # product = Product.objects.filter(name__icontains=article)
-            product = Product.objects.filter(Q(article_supplier=article) | Q(name__icontains=article))
-        
-        
-        if product.count() == 1:
-            return (1, product[0])
-        elif product.count() == 0:
-            return (0, None)
-        else:
-            # slugish = translit.translify(vendor)
-            # vendor_name = slugify(slugish)
-            # product = product.filter(vendor__slug=vendor_name)
-
-            return (product.count(), product)
-
-    def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
-       
-        # if data["sale_client"]:
-        #     sale_client = float(data_sheet.cell(row=index, column=21).value)
-        # else:
-        #     sale_client = 1
-        
-        product_price_all = float(data["product_price"])
-        sale_client = 100 - (float(data_sheet.cell(row=index, column=21).value) * 100)
-        sale_motrum = 100 - (float(data_sheet.cell(row=index, column=22).value) * 100)
-        quantity = int(data["quantity"])
-        
-        if product_okt_count == 1:
-            # 100% ПОПАДАНИЕ
-            vendor = product_okt.vendor
-            print("product_okt_count, product_okt, cart, data", product_okt_count, product_okt, cart, data)
+    try:
+        def _serch_prod_in_file(article, vendor):
+            product = Product.objects.filter(article_supplier=article, vendor__slug = vendor)
             
-            ProductCart.objects.get_or_create(
-                cart_id=cart,
-                product=product_okt,
-                defaults={
-                    "product_price": product_price_all,
-                    "product_sale_motrum": sale_motrum,
-                    "quantity": quantity,
-                    "vendor": vendor,
-                    "sale_client":sale_client,
-                    "product_sale_motrum":sale_motrum,
-                    "tag_auto_document":"ONE",
-                },)
-        elif product_okt_count > 1:
-            #НЕСКОЛЬКО ВАРИАНТОВ
-            prod = None
-            for product_ok in product_okt:
-                prod = product_ok
-                
-                if product_ok.article == data['article_file']:
-                    prod = product_ok
-            vendor = product_okt.vendor    
-            ProductCart.objects.get_or_create(
-                cart_id=cart,
-                product=prod,
-                defaults={
-                    "product_price": product_price_all,
-                    "product_sale_motrum": sale_motrum,
-                    "quantity": quantity,
-                    "vendor": vendor,
-                    "sale_client":sale_client,
-                    "product_sale_motrum":sale_motrum,
-                    "tag_auto_document":"MULTI",
-                },)        
-            
-        else:
-            
-            #0 НАХОДОК
-            pass
-            # vendor = Vendor.objects.filter(slug=data["vendor"])
-            # if vendor.count() == 1:
-            #     vendor = vendor[1]
-            #     supplier = vendor.supplier
-            # else:
-            #     pass
-            
-
-        # if product_okt_count == 1:
-        #     ProductCart.get_or_create(
-        #         cart=cart,
-        #         product=product_okt,
-        #         defaults={
-        #             "product_price": product_price,
-        #             "product_sale_motrum": product_sale_motrum,
-        #             "quantity": quantity,
-        #             "vendor": vendor,
-        #             "sale_client":sale_client,
-        #         },
-        #     )
-  
-
-    workbook = load_workbook(file, data_only=True)
-    data_sheet = workbook.active
-
-    first_row_in_prod = None
-    last_row_in_prod = False
-    
-    for index in range(1, data_sheet.max_row):
-       
-        column_b = data_sheet.cell(row=index, column=2).value
-
-        if first_row_in_prod == None:
-            if column_b == "Производитель":
-                first_row_in_prod = index
-        else:
-            if last_row_in_prod == False:
-                vendor_file = data_sheet.cell(row=index, column=2).value
-                if vendor_file == None:
-                    last_row_in_prod = True
-                else:
-                    
-                    article_file = data_sheet.cell(row=index, column=3).value
-                    product_price_file = data_sheet.cell(row=index, column=9).value
-                    
-                 
-                    if product_price_file:
-                        product_okt_count, product_okt = _serch_prod_in_file(
-                            article_file, vendor_file
-                        )
-                        slugish = translit.translify(vendor_file)
-                        vendor_name = slugify(slugish)
-                        data = {
-                            "article_file":article_file,
-                            "product_price": data_sheet.cell(row=index, column=9).value,
-                            "quantity": data_sheet.cell(row=index, column=6).value,
-                            "vendor": vendor_name,
-                            "sale_client":data_sheet.cell(row=index, column=21).value,
-                            "sale_motrum":data_sheet.cell(row=index, column=22).value,  
-                        }
-                        
-                        
-                        
-                        _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
-            else:
+            if product:
                 pass
-          
+            else:
+                # product = Product.objects.filter(article_supplier=article)
+                # product = Product.objects.filter(name__icontains=article)
+                product = Product.objects.filter(Q(article_supplier=article) | Q(name__icontains=article))
+            
+            
+            if product.count() == 1:
+                return (1, product[0])
+            elif product.count() == 0:
+                return (0, None)
+            else:
+                # slugish = translit.translify(vendor)
+                # vendor_name = slugify(slugish)
+                # product = product.filter(vendor__slug=vendor_name)
+
+                return (product.count(), product)
+
+        def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
+        
+            # if data["sale_client"]:
+            #     sale_client = float(data_sheet.cell(row=index, column=21).value)
+            # else:
+            #     sale_client = 1
+            
+            product_price_all = float(data["product_price"])
+            sale_client = 100 - (float(data_sheet.cell(row=index, column=21).value) * 100)
+            sale_motrum = 100 - (float(data_sheet.cell(row=index, column=22).value) * 100)
+            quantity = int(data["quantity"])
+            print("product_okt_count",product_okt_count)
+            
+            if product_okt_count == 1:
+                # 100% ПОПАДАНИЕ
+                vendor = product_okt.vendor
+                print("product_okt_count, product_okt, cart, data", product_okt_count, product_okt, cart, data)
+                
+                ProductCart.objects.get_or_create(
+                    cart_id=cart,
+                    product=product_okt,
+                    defaults={
+                        "product_price": product_price_all,
+                        "product_sale_motrum": sale_motrum,
+                        "quantity": quantity,
+                        "vendor": vendor,
+                        "sale_client":sale_client,
+                        "product_sale_motrum":sale_motrum,
+                        "tag_auto_document":"ONE",
+                    },)
+            elif product_okt_count > 1:
+                #НЕСКОЛЬКО ВАРИАНТОВ
+                prod = None
+                for product_ok in product_okt:
+                    prod = product_ok
+                    
+                    if product_ok.article == data['article_file']:
+                        prod = product_ok
+                vendor = product_okt.vendor    
+                ProductCart.objects.get_or_create(
+                    cart_id=cart,
+                    product=prod,
+                    defaults={
+                        "product_price": product_price_all,
+                        "product_sale_motrum": sale_motrum,
+                        "quantity": quantity,
+                        "vendor": vendor,
+                        "sale_client":sale_client,
+                        "product_sale_motrum":sale_motrum,
+                        "tag_auto_document":"MULTI",
+                    },)        
+                
+            else:
+                
+                #0 НАХОДОК
+                pass
+                # vendor = Vendor.objects.filter(slug=data["vendor"])
+                # if vendor.count() == 1:
+                #     vendor = vendor[1]
+                #     supplier = vendor.supplier
+                # else:
+                #     pass
+                
+
+            # if product_okt_count == 1:
+            #     ProductCart.get_or_create(
+            #         cart=cart,
+            #         product=product_okt,
+            #         defaults={
+            #             "product_price": product_price,
+            #             "product_sale_motrum": product_sale_motrum,
+            #             "quantity": quantity,
+            #             "vendor": vendor,
+            #             "sale_client":sale_client,
+            #         },
+            #     )
+    
+
+        workbook = load_workbook(file, data_only=True)
+        data_sheet = workbook.active
+
+        first_row_in_prod = None
+        last_row_in_prod = False
+        
+        for index in range(1, data_sheet.max_row):
+        
+            column_b = data_sheet.cell(row=index, column=2).value
+
+            if first_row_in_prod == None:
+                if column_b == "Производитель":
+                    first_row_in_prod = index
+            else:
+                if last_row_in_prod == False:
+                    vendor_file = data_sheet.cell(row=index, column=2).value
+                    if vendor_file == None:
+                        last_row_in_prod = True
+                    else:
+                        
+                        article_file = data_sheet.cell(row=index, column=3).value
+                        product_price_file = data_sheet.cell(row=index, column=9).value
+                        
+                    
+                        if product_price_file:
+                            product_okt_count, product_okt = _serch_prod_in_file(
+                                article_file, vendor_file
+                            )
+                            slugish = translit.translify(vendor_file)
+                            vendor_name = slugify(slugish)
+                            data = {
+                                "article_file":article_file,
+                                "product_price": data_sheet.cell(row=index, column=9).value,
+                                "quantity": data_sheet.cell(row=index, column=6).value,
+                                "vendor": vendor_name,
+                                "sale_client":data_sheet.cell(row=index, column=21).value,
+                                "sale_motrum":data_sheet.cell(row=index, column=22).value,  
+                            }
+                            
+                            
+                            
+                            _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
+                else:
+                    pass
+    except Exception as e:
+
+        tr = traceback.format_exc()
+        print(e, tr)
+        error = "error"
+        location = "Добавление товаров из фаила"
+        info = f"Добавление товаров из фаила{e}{tr}"
+        e = error_alert(error, location, info)
+             
 
 
 #      def save_specification(

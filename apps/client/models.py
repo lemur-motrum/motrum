@@ -123,7 +123,7 @@ class Requisites(models.Model):
 
     contract = models.CharField(
         "Договор",
-        max_length=50,
+        max_length=150,
         blank=True,
         null=True,
     )
@@ -214,7 +214,7 @@ class RequisitesOtherKpp(models.Model):
     )
     legal_city = models.CharField(
         "Юридический адрес : город",
-        max_length=50,
+        max_length=200,
     )
     legal_address = models.CharField(
         "Юридический адрес : адрес",
@@ -222,11 +222,11 @@ class RequisitesOtherKpp(models.Model):
     )
     postal_post_code = models.CharField(
         "Почтовый адрес :индекс",
-        max_length=10,
+        max_length=150,
     )
     postal_city = models.CharField(
         "Почтовый адрес : город",
-        max_length=50,
+        max_length=200,
     )
     postal_address = models.CharField(
         "Почтовый адрес : адрес",

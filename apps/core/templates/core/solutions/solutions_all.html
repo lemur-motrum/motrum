@@ -1,10 +1,9 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-    {% comment %} <!-- Страница для ссылок на все решения -->
-    <a href="{% url 'core:marking' %}">решения маркировка</a>
-    <a href="{% url 'core:cobots' %}">решения коботы</a>
-<a href="{% url 'core:shkaf-upravleniya' %}">сборка шкафов управления</a> {% endcomment %}
+<!-- Страница для ссылок на все решения -->
+    <a href="{% url 'core:solutions_one' "hdhd" %}">решения маркировка</a>
+
 <div class="solutions_wrapper">
     <div class="title_content">
         <div class="bread_crumbs">

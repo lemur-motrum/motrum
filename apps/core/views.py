@@ -48,7 +48,19 @@ def test(request):
     context = {
         
     }
-    return render(request, "core/test.html", context)
+    return render(request, "core/solutions/cobots.html", context)
+
+
+def test2(request):
+
+    
+    context = {
+        
+    }
+    return render(request, "core/solutions/palett.html", context)
+
+
+
 # @xframe_options_sameorigin
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(

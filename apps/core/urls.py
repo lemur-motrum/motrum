@@ -41,11 +41,7 @@ urlpatterns = [
         views.cobots_all,
         name="cobots"
     ),
-    path(
-        "palett/",
-        views.palett,
-        name="palett"
-    ),
+ 
     
     
     path(
@@ -61,7 +57,8 @@ urlpatterns = [
     path("brand/", product.views.brand_all, name="brand"),
     path("brand/<slug:vendor>", product.views.brand_one, name="brand_one"),
     path("add_admin_okt/", views.add_admin_okt, name="add_admin_okt"),
-    
+    path("test/", views.test, name="test"),
+    path("test/test2/", views.test2, name="test2"),
     # path("cart", views.cart,name="cart"),
     # path("/cart", include("apps.client.urls", namespace="cart")),
     # проекты в app project_web namespace="project"

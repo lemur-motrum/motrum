@@ -42,7 +42,7 @@ urlpatterns = [
         name="cobots"
     ),
     path(
-        "cobots/palett",
+        "palett/",
         views.palett,
         name="palett"
     ),

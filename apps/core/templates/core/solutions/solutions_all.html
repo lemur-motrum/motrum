@@ -1,9 +1,6 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-<!-- Страница для ссылок на все решения -->
-    <a href="{% url 'core:solutions_one' "hdhd" %}">решения маркировка</a>
-
 <div class="solutions_wrapper">
     <div class="title_content">
         <div class="bread_crumbs">
@@ -23,7 +20,7 @@
             </div>
             <div class="description">РОБОТЫ</div>
         </a>
-        <a class="solution_item second">
+        <a href="{% url "core:marking" %}" class="solution_item second">
             <img class="bg_img"
                  src="{% static "core/images/solutions/solution_bg_img.png" %}"
                  alt="img" />
@@ -34,7 +31,7 @@
             </div>
             <div class="description">МАРКИРОВКА</div>
         </a>
-        <a class="solution_item third">
+        <a href="{% url "core:shkaf-upravleniya" %}" class="solution_item third">
             <img class="bg_img"
                  src="{% static "core/images/solutions/solution_bg_img.png" %}"
                  alt="img" />

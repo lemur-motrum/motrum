@@ -42,23 +42,6 @@ from django.views.decorators.clickjacking import (
 
 
 # ГЛАВНАЯ
-def test(request):
-
-    
-    context = {
-        
-    }
-    return render(request, "core/solutions/cobots.html", context)
-
-
-def test2(request):
-
-    
-    context = {
-        
-    }
-    return render(request, "core/solutions/palett.html", context)
-
 
 
 # @xframe_options_sameorigin
@@ -80,6 +63,7 @@ def index(request):
         "motrum_in_numbers": motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
+
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
 def cart(request):
@@ -175,43 +159,40 @@ def cart(request):
 
     return render(request, "core/cart.html", context)
 
+
 # def promo_slider(request):
+
 
 #     return render(request, "core/includes/promo_slider.html", context)
 def solutions_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-    context = {
-        "projects": projects
-    }
+    context = {"projects": projects}
     return render(request, "core/solutions/solutions_all.html", context)
+
 
 def cobots_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-    
-    context = {
-        "projects": projects
-    }
+
+    context = {"projects": projects}
     return render(request, "core/solutions/cobots.html", context)
 
-def solutions_one(request,solutions_one):
+
+def solutions_one(request):
     print(111)
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+
+    seo_test = None
     try:
         seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
     except SeoTextSolutions.DoesNotExist:
         seo_test = None
     print(234234)
-    context = {
-        "seo_test":seo_test,
-        "projects": projects 
-    }
+    context = {"seo_test": seo_test, "projects": projects}
     return render(request, "core/solutions/solutions_one.html", context)
 
 
-
-
 def company(request):
-    
+
     context = {}
     return render(request, "core/company.html", context)
 
@@ -219,6 +200,7 @@ def company(request):
 def company_about(request):
     context = {}
     return render(request, "core/about.html", context)
+
 
 def palett(request):
     print(111)
@@ -229,11 +211,9 @@ def palett(request):
     except SeoTextSolutions.DoesNotExist:
         seo_test = None
     print(234234)
-    context = {
-        "seo_test":seo_test,
-        "projects": projects 
-    }
+    context = {"seo_test": seo_test, "projects": projects}
     return render(request, "core/solutions/palett.html", context)
+
 
 # политика конфиденциальности
 def privacy_policy(request):
@@ -241,9 +221,7 @@ def privacy_policy(request):
     print(99999)
     print(99999)
     print(99999)
-    context = {
-        
-    }
+    context = {}
     return render(request, "core/privacy_policy.html", context)
 
 
@@ -265,20 +243,18 @@ def server_error(request):
     print(500)
     return render(request, "core/error_pages/500.html", status=500)
 
+
 def add_admin_okt(request):
     manager_ok = get_manager()
     print(manager_ok)
     if manager_ok:
-        context = {
-            "text":"Успешно добавлены менеджеры"
-        }
+        context = {"text": "Успешно добавлены менеджеры"}
         return render(request, "core/clean_page_notifications.html", context)
     else:
-        context = {
-            "text":"Ошибка. Обратитесь в тех.поддержку"
-        }
+        context = {"text": "Ошибка. Обратитесь в тех.поддержку"}
         return render(request, "core/clean_page_notifications.html", context)
-    
+
+
 # EMAIL SEND
 # def email_callback(request):
 #     if request.method == "POST":

@@ -11,7 +11,7 @@
             <h1 class="title">роботы</h1>
         </div>
         <div class="solution_table">
-            <a href="{% url "core:solutions_one" "palett" %}"
+            <a href="{% url "core:cobots-palett"  %}"
                class="solution_item cobots_one">
                 <img class="bg_img"
                      src="{% static "core/images/solutions/solution_bg_img.png" %}"
@@ -23,7 +23,8 @@
                 </div>
                 <div class="description">РЕШЕНИЯ ДЛЯ ПАЛЕТИЗАЦИИ</div>
             </a>
-            <a class="solution_item cobots_two">
+            <a href="{% url "core:cobots-box"  %}"
+                class="solution_item cobots_two">
                 <img class="bg_img"
                      src="{% static "core/images/solutions/solution_bg_img.png" %}"
                      alt="img" />
@@ -34,7 +35,8 @@
                 </div>
                 <div class="description">РЕШЕНИЕ ДЛЯ УКЛАДКИ В КОРОБ</div>
             </a>
-            <a class="solution_item cobots_three">
+            <a href="{% url "core:cobots-packing"  %}"
+                class="solution_item cobots_three">
                 <img class="bg_img"
                      src="{% static "core/images/solutions/solution_bg_img.png" %}"
                      alt="img" />

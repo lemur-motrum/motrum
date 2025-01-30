@@ -8,9 +8,9 @@ app_name = "admin_specification"
 
 urlpatterns = [
     path("", views.all_categories, name="categories"),
-    path("products/<int:cat>", views.group_product, name="groups"),
-    path("product/<int:cat>", views.instruments, name="instruments"),
-    path("products/<int:cat>/<int:gr>", views.specifications, name="specifications"),
+    path("products/<int:cat>/", views.group_product, name="groups"),
+    path("product/<int:cat>/", views.instruments, name="instruments"),
+    path("products/<int:cat>/<int:gr>/", views.specifications, name="specifications"),
     path(
         "current_specification/",
         views.create_specification,
@@ -31,13 +31,13 @@ urlpatterns = [
     #     "update_specification/", views.update_specification, name="update_specification"
     # ),
     path(
-        "one_specifications/<int:pk>",
+        "one_specifications/<int:pk>/",
         views.one_specifications,
         name="one_specifications",
     ),
-    path("history_admin/<int:pk>", views.history_admin, name="history_admin"),
+    path("history_admin/<int:pk>/", views.history_admin, name="history_admin"),
     path(
-        "history_admin_bill/<int:pk>",
+        "history_admin_bill/<int:pk>/",
         views.history_admin_bill,
         name="history_admin_bill",
     ),

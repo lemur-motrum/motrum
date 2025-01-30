@@ -3343,6 +3343,8 @@ a {
       right: -3.125rem;
       top: 10%;
       width: 22.375rem;
+      transition: 3s;
+      transform-origin: bottom right;
     }
     .palett_animate_scroll_down {
       position: absolute;

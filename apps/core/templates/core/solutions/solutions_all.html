@@ -13,7 +13,7 @@
         <h1 class="title">решения</h1>
     </div>
     <div class="solution_table">
-        <a class="solution_item first">
+        <a href="{% url "core:cobots" %}" class="solution_item first">
             <img class="bg_img"
                  src="{% static "core/images/solutions/solution_bg_img.png" %}"
                  alt="img" />
@@ -50,5 +50,7 @@
             </div>
         </a>
     </div>
+    {% include "core/includes/directions.html" %}
+    {% include "core/includes/projects.html" %}
 </div>
 {% endblock content %}

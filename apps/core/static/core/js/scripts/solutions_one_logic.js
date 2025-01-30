@@ -45,8 +45,62 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     if (palettScrollZoneContainer) {
-      window.onscroll = () => {
+      const tab = document.querySelector(".chars_table");
+      const palettAnimateElem = palettScrollZoneContainer.querySelector(
+        ".palett_animate_scroll_up"
+      );
+      let deltaY = 0;
+      let lastKnownScrollPosition = 0;
+      let rotationValue = 0;
+      document.onscroll = () => {
+        let ticking = false;
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            deltaY = window.scrollY - lastKnownScrollPosition;
+            lastKnownScrollPosition = window.scrollY;
+            ticking = false;
+          });
+          ticking = true;
+        }
+
+        let charsScrollTop = tab.getBoundingClientRect().top;
         let scrollPosY = palettScrollZoneContainer.getBoundingClientRect().top;
+
+        // let translateValue = -deltaY * -5;
+
+        if (deltaY > 0) {
+          rotationValue += -deltaY * 5;
+          if (rotationValue <= -45) {
+            rotationValue = -45;
+          } else {
+            if (rotationValue >= 0) {
+              rotationValue = 0;
+            }
+          }
+        } else {
+          rotationValue -= deltaY * 5;
+          if (rotationValue <= -45) {
+            rotationValue = -45;
+          } else {
+            if (rotationValue >= 0) {
+              rotationValue = 0;
+            }
+          }
+        }
+
+        // if (translateValue >= 20) {
+        //   console.log("aaaa");
+        //   translateValue = 20;
+        // } else {
+        //   if (translateValue <= 0) {
+        //     translateValue = 0;
+        //   }
+        // }
+        //translateY(${translateValue}%)
+
+        if (scrollPosY < 200) {
+          palettAnimateElem.style.transform = `rotate(${rotationValue}deg)`;
+        }
       };
     }
   }

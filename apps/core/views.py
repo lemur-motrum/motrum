@@ -199,6 +199,7 @@ def solutions_one(request,solutions_one):
 
 
 def company(request):
+    
     context = {}
     return render(request, "core/company.html", context)
 
@@ -207,6 +208,20 @@ def company_about(request):
     context = {}
     return render(request, "core/about.html", context)
 
+def palett(request):
+    print(111)
+    solutions_one = "palett"
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    try:
+        seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
+    except SeoTextSolutions.DoesNotExist:
+        seo_test = None
+    print(234234)
+    context = {
+        "seo_test":seo_test,
+        "projects": projects 
+    }
+    return render(request, "core/solutions/palett.html", context)
 
 # политика конфиденциальности
 def privacy_policy(request):

@@ -14,6 +14,8 @@ router = routers.DefaultRouter()
 
 
 urlpatterns = [
+    
+    
     path("", views.index, name="index"),  # главная
     path(
         "okt/",
@@ -30,7 +32,7 @@ urlpatterns = [
         name="solutions"
     ),
     path(
-        "<slug:solutions_one>/",
+        "<slug:solutions_one>",
         views.solutions_one,
         name="solutions_one"
     ),
@@ -39,6 +41,13 @@ urlpatterns = [
         views.cobots_all,
         name="cobots"
     ),
+    path(
+        "cobots/palett/",
+        views.palett,
+        name="palett"
+    ),
+    
+    
     path(
         "contact",
         TemplateView.as_view(template_name="core/contact.html"),

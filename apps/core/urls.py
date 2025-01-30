@@ -14,67 +14,51 @@ router = routers.DefaultRouter()
 
 
 urlpatterns = [
+    
     path("", views.index, name="index"),  # главная
+    
     path(
-        "okt/",
+        "okt",
         TemplateView.as_view(template_name="core/okt.html"),
         name="okt",
     ),  # окт
+    
     path("company/", views.company, name="about"),  # компания общая
     path("company/about", views.company_about, name="about_company"),  # компания
-    path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
-    # остальное по вакансии  в app vacancy_web
+    path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),# остальное по вакансии  в app vacancy_web
     
     path(
-        "solutions/",views.solutions_all,
+        "solutions/", views.solutions_all,
         name="solutions",
-    ),  
-    # решения все
+    ),
+    path("<slug:solutions_one>/", views.solutions_one, name="solutions_one"),
+    path("privacy-policy", views.privacy_policy, name="privacy-policy"), 
+    
     path(
-        "<slug:solutions_one>",views.solutions_one,
-        name="solutions_one",
-    ),  
-    # решения один
-    path(
-        "cobots/",views.cobots_all,
+        "cobots/", views.cobots_all,
         name="cobots",
-    ),  
-    # # решения коботы все
-        
-    # path(
-    #     "solutions/",
-    #     TemplateView.as_view(template_name="core/solutions/solutions_all.html"),
-    #     name="solutions",
-    # ),  # решения все
-    # path(
-    #     "cobots/",
-    #     TemplateView.as_view(template_name="core/solutions/cobots.html"),
-    #     name="cobots",
-    # ),  # решения коботы
-    # path(
-    #     "shkaf-upravleniya/",
-    #     TemplateView.as_view(template_name="core/solutions/shkaf-upravleniya.html"),
-    #     name="shkaf-upravleniya",
-    # ),  # сборка шкафов управления
-    # path(
-    #     "marking/",
-    #     TemplateView.as_view(template_name="core/solutions/marking.html"),
-    #     name="marking",
-    # ),  # решения маркировка
+    ),
     
     path(
         "contact",
         TemplateView.as_view(template_name="core/contact.html"),
         name="contact",
-    ),  # контакты
+    ),
+    
+    
+
     # path("contact", views.index, name="contact"),
     path("cart", views.cart, name="cart"),  # корзина
-    path(
-        "privacy-policy", views.privacy_policy, name="privacy-policy"
-    ),  # политика конфиденциальности
+    # path("privacy-policy", views.privacy_policy, name="privacy-policy"), 
     path("brand/", product.views.brand_all, name="brand"),
     path("brand/<slug:vendor>", product.views.brand_one, name="brand_one"),
     path("add_admin_okt/", views.add_admin_okt, name="add_admin_okt"),
+    path(
+        "test/",views.test,
+        name="test",
+    ),  
+    
+    
     # path("cart", views.cart,name="cart"),
     # path("/cart", include("apps.client.urls", namespace="cart")),
     # проекты в app project_web namespace="project"

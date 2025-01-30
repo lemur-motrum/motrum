@@ -42,6 +42,11 @@ from django.views.decorators.clickjacking import (
 
 
 # ГЛАВНАЯ
+def test(request):
+    context = {
+        
+    }
+    return render(request, "core/test.html", context)
 # @xframe_options_sameorigin
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
@@ -61,7 +66,6 @@ def index(request):
         "motrum_in_numbers": motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
-
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
 def cart(request):
@@ -157,7 +161,6 @@ def cart(request):
 
     return render(request, "core/cart.html", context)
 
-
 # def promo_slider(request):
 
 #     return render(request, "core/includes/promo_slider.html", context)
@@ -177,15 +180,16 @@ def cobots_all(request):
     return render(request, "core/solutions/cobots.html", context)
 
 def solutions_one(request,solutions_one):
+    print(111)
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
     try:
         seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
     except SeoTextSolutions.DoesNotExist:
         seo_test = None
-    
+    print(234234)
     context = {
-    "seo_test":seo_test,
-    "projects": projects 
+        "seo_test":seo_test,
+        "projects": projects 
     }
     return render(request, "core/solutions/solutions_one.html", context)
 
@@ -204,8 +208,12 @@ def company_about(request):
 
 # политика конфиденциальности
 def privacy_policy(request):
+    print(99999)
+    print(99999)
+    print(99999)
+    print(99999)
     context = {
-        "privacy_policy": True,
+        
     }
     return render(request, "core/privacy_policy.html", context)
 

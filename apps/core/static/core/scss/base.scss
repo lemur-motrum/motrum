@@ -3173,6 +3173,9 @@ a {
         .title-link-description {
           color: #000;
           font-size: 1.313rem;
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
         }
         .arrow-container {
           width: 3.954rem;
@@ -3318,6 +3321,9 @@ a {
         .title-link-description {
           color: #000;
           font-size: 1.313rem;
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
         }
         .arrow-container {
           width: 3.954rem;
@@ -3340,17 +3346,19 @@ a {
     }
     .palett_animate_scroll_up {
       position: absolute;
-      right: -3.125rem;
-      top: 10%;
-      width: 22.375rem;
+      right: -11.125rem;
+      top: 5%;
+      width: 27.375rem;
       transition: 3s;
       transform-origin: bottom right;
+      z-index: 2;
     }
     .palett_animate_scroll_down {
       position: absolute;
       right: -3.125rem;
-      top: 55%;
+      top: 59%;
       width: 22.375rem;
+      z-index: -1;
     }
   }
 }
@@ -3458,6 +3466,7 @@ a {
       box-sizing: border-box;
       padding: 2.304rem 2.074rem;
       position: relative;
+      background-color: #fff;
       .title {
         font-size: 1.5rem;
         text-transform: uppercase;

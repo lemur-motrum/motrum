@@ -1,5 +1,51 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
-    <!-- коботы -->
-    111
+    <div class="solutions_wrapper">
+        <div class="title_content">
+            <div class="bread_crumbs">
+                <a href="/">главная</a>
+                <a href="{% url "core:solutions" %}">решения</a>
+            </div>
+            <h1 class="title">роботы</h1>
+        </div>
+        <div class="solution_table">
+            <a href="{% url "core:solutions_one" "palett" %}"
+               class="solution_item cobots_one">
+                <img class="bg_img"
+                     src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                     alt="img" />
+                <div class="img_container">
+                    <img class="content_img"
+                         src="{% static "core/images/solutions/robots1.png" %}"
+                         alt="img" />
+                </div>
+                <div class="description">РЕШЕНИЯ ДЛЯ ПАЛЕТИЗАЦИИ</div>
+            </a>
+            <a class="solution_item cobots_two">
+                <img class="bg_img"
+                     src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                     alt="img" />
+                <div class="img_container">
+                    <img class="content_img"
+                         src="{% static "core/images/solutions/all_solution1.png" %}"
+                         alt="img" />
+                </div>
+                <div class="description">РЕШЕНИЕ ДЛЯ УКЛАДКИ В КОРОБ</div>
+            </a>
+            <a class="solution_item cobots_three">
+                <img class="bg_img"
+                     src="{% static "core/images/solutions/solution_bg_img.png" %}"
+                     alt="img" />
+                <div class="img_container">
+                    <img class="content_img"
+                         src="{% static "core/images/solutions/robots3.png" %}"
+                         alt="img" />
+                </div>
+                <div class="description">РЕШЕНИЕ ДЛЯ АВТОМАТИЧЕСКОЙ УПАКОВКИ</div>
+            </a>
+        </div>
+        {% include "core/includes/directions.html" %}
+        {% include "core/includes/projects.html" %}
+    </div>
 {% endblock content %}

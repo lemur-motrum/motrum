@@ -1,2 +1,11 @@
-wewerw
-{{projects}}
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="solution_one_container">
+        {% if request.path == "/palett" %}
+            {% include "core/solutions/palett.html" %}
+        {% endif %}
+        {% include "core/includes/directions.html" %}
+        {% include "core/includes/projects.html" %}
+    </div>
+{% endblock content %}

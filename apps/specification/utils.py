@@ -98,10 +98,9 @@ def crete_pdf_specification(
         type_delivery_name = type_delivery.text
         kpp_req = account_requisites.requisitesKpp
         motrum_info = motrum_requisites.requisites
-   
+
         motrum_info_req = motrum_requisites
-        
-        
+
         date_title = datetime.datetime.today().strftime("%d.%m.%Y")
         date_data = datetime.date.today().isoformat()
         date = transform_date(date_data)
@@ -217,7 +216,7 @@ def crete_pdf_specification(
                 date_contract = None
         else:
             to_contract = None
-            
+
         if requisites:
             to_address = requisites.legal_entity
         else:
@@ -230,7 +229,11 @@ def crete_pdf_specification(
             )
         )
         if to_contract:
-            story.append(Paragraph(f"К договору № {to_contract} от {date_contract}", normal_style))
+            story.append(
+                Paragraph(
+                    f"К договору № {to_contract} от {date_contract}", normal_style
+                )
+            )
 
         story.append(
             Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
@@ -297,23 +300,25 @@ def crete_pdf_specification(
                 product_name = (Paragraph(f"{product_name}", norm10_left_style),)
 
             product_price = product.price_one
-            product_price = "{0:,.2f}".format(product_price).replace(",", " ").replace('.', ',')
+            product_price = (
+                "{0:,.2f}".format(product_price).replace(",", " ").replace(".", ",")
+            )
             product_price_all = product.price_all
 
-            product_price_all = "{0:,.2f}".format(product_price_all, ".2f").replace(
-                ",", " "
-            ).replace('.', ',')
+            product_price_all = (
+                "{0:,.2f}".format(product_price_all, ".2f")
+                .replace(",", " ")
+                .replace(".", ",")
+            )
 
             product_quantity = product.quantity
             data.append(
                 (
-            
                     Paragraph(f"{str(i)}", norm10_style_center),
                     product_name,
                     # product_stock,
                     Paragraph(f"{str(product_stock)}.", norm10_left_style),
                     Paragraph(f"{str(product_quantity)}", norm10_right_style),
-
                     Paragraph(product_price, norm10_right_style),
                     # product_price,
                     Paragraph(product_price_all, norm10_right_style),
@@ -340,8 +345,14 @@ def crete_pdf_specification(
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
 
-        total_amount = "{0:,.2f}".format(specifications.total_amount).replace(",", " ").replace('.', ',')
-        total_amount_nds = "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace('.', ',')
+        total_amount = (
+            "{0:,.2f}".format(specifications.total_amount)
+            .replace(",", " ")
+            .replace(".", ",")
+        )
+        total_amount_nds = (
+            "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace(".", ",")
+        )
 
         final_price_no_nds_table = [
             (
@@ -415,11 +426,12 @@ def crete_pdf_specification(
 
         if type_delivery:
             story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}", normal_style
-                    )
+                Paragraph(
+                    f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}",
+                    normal_style,
                 )
-            
+            )
+
             # if type_delivery == "pickup":
             #     story.append(
             #         Paragraph(
@@ -445,10 +457,16 @@ def crete_pdf_specification(
         text_motrum_ur = f"{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>"
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
         text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
+        
+        
         if requisites:
             text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {kpp_req.legal_post_code}, г. {kpp_req.legal_city}, {kpp_req.legal_address}<br></br><br></br>"
             text_buyer_post = f"Почтовый адрес: {kpp_req.postal_post_code}, г. {kpp_req.postal_city}, {kpp_req.postal_address}<br></br><br></br>"
-            text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
+            
+            if kpp_req.kpp:
+                text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
+            else:
+                text_buyer_inn = f"ИНН {requisites.inn} ОГРНИП {requisites.ogrn} <br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
         else:
 
             text_buyer_ur = f"<br />Юридический адрес: , г. , <br></br><br></br>"
@@ -539,7 +557,7 @@ def crete_pdf_specification(
         print("file_path", file_path)
         return file_path
     except Exception as e:
-        tr =  traceback.format_exc()
+        tr = traceback.format_exc()
         error = "error"
         location = "Сохранение документа спецификации админам окт"
         info = f"Сохранение документа спецификации админам окт ошибка {e}{tr}"
@@ -571,6 +589,7 @@ def get_document_bill_path(instance, filename):
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
 
+
 def get_shipment_doc_path(instance, filename):
     from apps.core.utils import check_spesc_directory_exist, transform_date
 
@@ -580,16 +599,18 @@ def get_shipment_doc_path(instance, filename):
     name_specification = f"отгрузка_{instance.id}{instance.date}.pdf"
     file_last_list = filename.split(".")
     type_file = "." + file_last_list[-1]
-    
-def save_shipment_doc(link,document_shipment):
+
+
+def save_shipment_doc(link, document_shipment):
     from apps.core.utils import check_spesc_directory_exist, transform_date
-    print(link,document_shipment)
+
+    print(link, document_shipment)
     print(document_shipment.id)
     print(document_shipment.date)
     directory = check_spesc_directory_exist(
         "shipment",
     )
-    name = f"отгрузка_{document_shipment.id}{document_shipment.date}.pdf"
+    name = f"отгрузка_{document_shipment.id}_{document_shipment.date}.pdf"
     print(name)
     # file_last_list = filename.split(".")
     # type_file = "." + file_last_list[-1]
@@ -601,8 +622,9 @@ def save_shipment_doc(link,document_shipment):
     r = requests.get(link, stream=True)
     with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
         ofile.write(r.content)
-    
-    return "{0}/{1}".format(
+
+    return "{0}/{1}/{2}".format(
+        "documents",
         "shipment",
         name_doc,
     )

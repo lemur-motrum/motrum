@@ -12,7 +12,8 @@ from django.db.models import OuterRef, Subquery
 
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
-from apps.core.models import IndexInfoWeb, SliderMain
+from apps.core.bitrix_api import get_manager
+from apps.core.models import IndexInfoWeb, SeoTextSolutions, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -34,19 +35,22 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_list_or_404, render
 from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
+from django.views.decorators.clickjacking import (
+    xframe_options_exempt,
+    xframe_options_sameorigin,
+)
 
 
 # ГЛАВНАЯ
+
+
+# @xframe_options_sameorigin
 def index(request):
-    # categories = list(CategoryProduct.objects.all())
-    # random.shuffle(categories)
-    # cat = categories[0:7]
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
         "article_home_web"
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-
-    promoslider = SliderMain.objects.filter(active=True).order_by("article")
+    promo_slider = SliderMain.objects.filter(active=True).order_by("article")
     vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")
 
     motrum_in_numbers = IndexInfoWeb.objects.all().last()
@@ -54,31 +58,11 @@ def index(request):
     context = {
         "categories": categories,
         "projects": projects,
-        "slider": promoslider,
+        "slider": promo_slider,
         "vendors": vendors,
-        "motrum_in_numbers":motrum_in_numbers,
+        "motrum_in_numbers": motrum_in_numbers,
     }
     return render(request, "core/index.html", context)
-
-# def brand_all(request):
-#     brands =  Vendor.objects.all()
-#     # .order_by("article","name")
-#     print(brands)
-#     context = {
-#         "brands":brands,
-#     }
-#     return render(request, "product/brand_all.html", context)
-
-# def brand_one(request):
-#     brands =  Vendor.objects.all()
-#     # .order_by("article","name")
-#     print(brands)
-#     context = {
-#         "brands":brands,
-#     }
-#     return render(request, "product/brand_all.html", context)
-
-
 
 
 # КОРЗИНА ПОЛЬЗОВАТЕЛЯ
@@ -178,10 +162,37 @@ def cart(request):
 
 # def promo_slider(request):
 
+
 #     return render(request, "core/includes/promo_slider.html", context)
+def solutions_all(request):
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    context = {"projects": projects}
+    return render(request, "core/solutions/solutions_all.html", context)
+
+
+def cobots_all(request):
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+
+    context = {"projects": projects}
+    return render(request, "core/solutions/cobots.html", context)
+
+
+def solutions_one(request):
+    print(111)
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+
+    seo_test = None
+    try:
+        seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
+    except SeoTextSolutions.DoesNotExist:
+        seo_test = None
+    print(234234)
+    context = {"seo_test": seo_test, "projects": projects}
+    return render(request, "core/solutions/solutions_one.html", context)
 
 
 def company(request):
+
     context = {}
     return render(request, "core/company.html", context)
 
@@ -190,12 +201,13 @@ def company_about(request):
     context = {}
     return render(request, "core/about.html", context)
 
-
 # политика конфиденциальности
 def privacy_policy(request):
-    context = {
-        "privacy_policy": True,
-    }
+    print(99999)
+    print(99999)
+    print(99999)
+    print(99999)
+    context = {}
     return render(request, "core/privacy_policy.html", context)
 
 
@@ -216,6 +228,17 @@ def page_not_found(request, exception):
 def server_error(request):
     print(500)
     return render(request, "core/error_pages/500.html", status=500)
+
+
+def add_admin_okt(request):
+    manager_ok = get_manager()
+    print(manager_ok)
+    if manager_ok:
+        context = {"text": "Успешно добавлены менеджеры"}
+        return render(request, "core/clean_page_notifications.html", context)
+    else:
+        context = {"text": "Ошибка. Обратитесь в тех.поддержку"}
+        return render(request, "core/clean_page_notifications.html", context)
 
 
 # EMAIL SEND

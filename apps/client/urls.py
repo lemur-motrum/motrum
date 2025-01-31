@@ -22,8 +22,8 @@ router.register(r"v1/emails", view_sets.EmailsViewSet)
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("my_orders", views.my_orders, name="my_orders"),
-    path("my_documents", views.my_documents, name="my_documents"),
-    path("my_details", views.my_details, name="my_details"),
-    path("my_contacts", views.my_contacts, name="my_contacts"),
+    path("my_orders/", views.my_orders, name="my_orders"),
+    path("my_documents/", views.my_documents, name="my_documents"),
+    path("my_details/", views.my_details, name="my_details"),
+    path("my_contacts/", views.my_contacts, name="my_contacts"),
 ]

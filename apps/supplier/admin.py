@@ -52,9 +52,9 @@ class SupplierAdmin(admin.ModelAdmin):
         ),
     ]
 
-    inlines = [
-        VendorInline,
-    ]
+    # inlines = [
+    #     VendorInline,
+    # ]
 
     def get_fieldsets(self, request, obj):
         fields = super(SupplierAdmin, self).get_fieldsets(request, obj)
@@ -129,10 +129,11 @@ class SupplierAdmin(admin.ModelAdmin):
         return False   
 
 class SupplierVendor(admin.ModelAdmin):
-    list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
+    # list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
+    list_display = [ "name", "currency_catalog", "vat_catalog"]
     fields = (
         "name",
-        "supplier",
+        # "supplier",
         "currency_catalog",
         "vat_catalog",
     )

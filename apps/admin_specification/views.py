@@ -6,10 +6,11 @@ from django.views.decorators.cache import cache_control
 from django.core import serializers
 from django.db.models import Prefetch, OuterRef
 from django.db.models import Sum
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from apps import specification
+from apps import specification, supplier
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
+from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 from apps.core.utils import get_price_motrum, save_specification
 from apps.product.models import (
@@ -32,6 +33,7 @@ from apps.specification.admin import ProductSpecificationAdmin
 from apps.specification.api.serializers import SpecificationSerializer
 from apps.specification.models import ProductSpecification, Specification
 
+from apps.supplier.models import Supplier
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
@@ -40,9 +42,11 @@ from django.db.models.functions import Replace
 
 from django.db.models.functions import Coalesce
 from django.db.models.functions import Round
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Рендер главной страницы каталога с пагинацией
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def all_categories(request):
     cart = request.COOKIES.get("cart")
@@ -105,7 +109,7 @@ def all_categories(request):
 
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    | Q(article__icontains=search_input)
+                    # | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -159,6 +163,7 @@ def all_categories(request):
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
         "price_url": price_url,
+        "search_input": search_input,
     }
 
     renders = "admin_specification/categories.html"
@@ -226,7 +231,7 @@ def group_product(request, cat):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    | Q(article__icontains=search_input)
+                    # | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -296,6 +301,7 @@ def group_product(request, cat):
         "product_vendor": product_vendor,
         "vendor_url": vendor_url,
         "price_url": price_url,
+        "search_input": search_input,
     }
 
     return render(request, "admin_specification/group.html", context)
@@ -427,7 +433,7 @@ def specifications(request, cat, gr):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    | Q(article__icontains=search_input)
+                    # | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -459,10 +465,13 @@ def specifications(request, cat, gr):
 
 # рендер страницы корзины
 # @cache_control(max_age=3600)
+@csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def create_specification(request):
+
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
+    post_data_bx_id = request.COOKIES.get("bitrix_id_order")
 
     # если есть корзина
     if cart != None:
@@ -799,6 +808,9 @@ def create_specification(request):
                         ),
                     ),
                 ),
+                sale_client=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "sale_client",
+                ),
                 # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
@@ -822,6 +834,16 @@ def create_specification(request):
         specification = None
         order = None
 
+    if order:
+
+        if order.text_name != None:
+            name_ord = order.text_name
+
+        else:
+            name_ord = f"№ {order.id}"
+    else:
+        name_ord = None
+
     current_date = datetime.date.today().isoformat()
     hard_upd = False
     if type_save_cookee == "new":
@@ -839,7 +861,10 @@ def create_specification(request):
 
     elif type_save_cookee == "update":
         bill_upd = True
-        title = f"Заказ № {order.id} - изменение счета № {order.bill_name} "
+        if order:
+            title = f"Заказ {name_ord} - изменение счета № {order.bill_name} "
+        else:
+            title = f"Заказ {name_ord} - изменение счета"
         type_save = " изменения"
 
     elif type_save_cookee == "hard_update":
@@ -847,17 +872,24 @@ def create_specification(request):
         hard_upd = True
         # title = f"Заказ № {order.id} - новый счет"
         if order.requisites.contract:
-            title = f"Заказ № {order.id}: счет + спецификация"
+            title = f"Заказ {name_ord}: счет + спецификация"
             type_save = "счет + спецификация"
         else:
-            title = f"Заказ № {order.id}: счет-оферта"
+            title = f"Заказ {name_ord}: счет-оферта"
             type_save = " счет-оферта"
+
+        # def product_cart_prod_update(product_cart_prod):
+        #     for prod_cart in product_cart_prod:
+        #         prod_cart.product_price = prod_cart.product.price.rub_price_supplier
+        #         prod_cart.save()
+        # product_cart_prod_update(product_cart_prod)
     else:
         type_save_cookee = "new"
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
     type_delivery = TypeDelivery.objects.all()
+    supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -875,61 +907,71 @@ def create_specification(request):
         "client_req_all": client_req_all,
         "bill_upd": bill_upd,
         "vendor": vendor,
+        "supplier":supplier,
         "type_save": type_save,
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
         "hard_upd": hard_upd,
+        "post_data_bx_id": post_data_bx_id,
     }
 
     return render(request, "admin_specification/catalog.html", context)
 
 
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
-def update_order(request):
-    pass
-
-
-# Вьюха для сохранения спецификации
-@permission_required("specification.add_specification", login_url="/user/login_admin/")
-def save_specification_view_admin(request):
-    from apps.specification.models import ProductSpecification, Specification
-
-    received_data = json.loads(request.body)
-
-    # сохранение спецификации
-    save_specification(received_data, request)
-
-    out = {"status": "ok", "data": received_data}
-    return JsonResponse(out)
-
-
 # рендер страницы со всеми спецификациями
+@csrf_exempt
 @permission_required(
     "specification.add_specification",
     login_url="/user/login_admin/",
 )
 def get_all_specifications(request):
+    cd = []
+    post_data_bx_id = "post_data_bx_id"
+    if "POST" in request.method:
+        post_data = request.POST
+        post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
 
+    q_object = Q()
+    # фильтрация по админу
+    q_object_2 = Q()
+    user_admin = AdminUser.objects.get(user=request.user)
+    user_admin_type = user_admin.admin_type
+    if user_admin_type == "ALL":
+        superuser = True
+        q_object_2 &= Q(cart__cart_admin_id__isnull=False)
+    elif user_admin_type == "BASE":
+        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
+        q_object &= Q(admin_creator_id=request.user.id)
+        q_object_2 &= Q(cart__cart_admin_id=request.user.id)
+        superuser = False
+    # фильтрация если из битрикс
+    http_frame = False
+    bitrix_id_order = None
+    if request.META["HTTP_SEC_FETCH_DEST"] == "iframe":
+        bitrix_id_order = request.COOKIES["bitrix_id_order"]
+        http_frame = True
+        q_object &= Q(id_bitrix=int(bitrix_id_order))
+        q_object_2 &= Q(id_bitrix=int(bitrix_id_order))
+        
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
         .prefetch_related(
             Prefetch("order"),
         )
-        .all()
+        .filter(q_object)
         .order_by("tag_stop", "date_update", "id")
         .reverse()
     )
-
-    # фильтрация по админу
-    user_admin = AdminUser.objects.get(user=request.user)
-    user_admin_type = user_admin.admin_type
-    if user_admin_type == "ALL":
-        superuser = True
-
-    elif user_admin_type == "BASE":
-        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
-        superuser = False
+    q_object_2 &= Q(specification__isnull=True)
+    queryset = Order.objects.select_related(
+        "specification",
+        "cart",
+    ).filter(q_object_2)
+    
+    tag_need_btn_other_orders = False
+    if queryset.count() > 0:
+        tag_need_btn_other_orders = True
 
     media_root = os.path.join(MEDIA_ROOT, "")
 
@@ -940,17 +982,24 @@ def get_all_specifications(request):
         sort_specif = True
     else:
         sort_specif = False
+
     context = {
         "title": title,
         "specifications": all_specifications,
         "media_root": media_root,
         "sort_specif": sort_specif,
         "superuser": superuser,
+        "post_data_bx_id": post_data_bx_id,
+        "bitrix_id_order": bitrix_id_order,
+        "http_frame": http_frame,
+        "tag_need_btn_other_orders":tag_need_btn_other_orders
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
 
 
+# одна спецификация
+@csrf_exempt
 @permission_required(
     "specification.add_specification",
     login_url="/user/login_admin/",
@@ -1063,7 +1112,7 @@ def instruments(request, cat):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    | Q(article__icontains=search_input)
+                    # | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -1195,16 +1244,16 @@ def search_product(request):
     #     | Q(article_supplier__icontains=value)
     #     | Q(additional_article_supplier__icontains=value)
     # )
-    product_list = Product.objects.filter(
+    product_list = product_list.filter(
         Q(name__icontains=search_input[0])
-        | Q(article__icontains=search_input[0])
+        # | Q(article__icontains=search_input[0])
         | Q(article_supplier__icontains=search_input[0])
         | Q(additional_article_supplier__icontains=search_input[0])
     )
     for search_item in search_input[1:]:
         product_list = product_list.filter(
             Q(name__icontains=search_item)
-            | Q(article__icontains=search_item)
+            # | Q(article__icontains=search_item)
             | Q(article_supplier__icontains=search_item)
             | Q(additional_article_supplier__icontains=search_item)
         )
@@ -1572,9 +1621,272 @@ def history_admin_bill(request, pk):
     return render(request, "admin_specification/history_admin_bill.html", context)
 
 
+# ошибки при получение инфо битрикс24
 def error_b24(request, error):
     context = {"error": 1}
     return render(request, "admin_specification/error.html", context)
+
+
+# распределительная стартовая страница битрикса проверка инфо определения типа сохранения
+@csrf_exempt
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def bx_start_page(request):
+    print("bx_start_page")
+    print(request)
+    context = {}
+    # bx_id_order = request.GET.get("bitrix_id_order")
+    # order = Order.objects.get(id_bitrix=int(bx_id_order))
+    # context = {"cart": order.cart.id, "spes": order.specification.id}
+
+    return render(request, "admin_specification/bx_start.html", context)
+
+
+# стартовая страница битрикса проверка инфо определения типа сохранения
+@csrf_exempt
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+def bx_save_start_info(request):
+    if "POST" in request.method:
+        if request.user.is_authenticated:
+            post_data = request.POST
+            post_data_bx_place = post_data.get("PLACEMENT")
+            post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+            post_data_bx_id = json.loads(post_data_bx_id)
+            post_data_bx_id = post_data_bx_id["ID"]
+
+            if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
+                next_url, context, error = get_info_for_order_bitrix(
+                    post_data_bx_id, request
+                )
+                print(context)
+                print(next_url, context, error)
+            if error:
+                print("ERR")
+                response = render(
+                    request,
+                    "admin_specification/error.html",
+                    context,
+                )
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+
+                return response
+            else:
+                if context["type_save"] == "new" or context["spes"] == None:
+                    response = HttpResponseRedirect(
+                        "/admin_specification/current_specification/"
+                    )
+
+                    response.set_cookie(
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                else:
+
+                    response = render(
+                        request,
+                        next_url,
+                        context={
+                            "cart": context["cart"],
+                            "spes": context["spes"],
+                            "serializer": context["serializer"],
+                            "type_save": context["type_save"],
+                        },
+                    )
+                    response.set_cookie(
+                        "specificationId",
+                        0,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+              
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "cart",
+                    context["cart"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "order",
+                    context["order"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+
+                return response
+        else:
+            post_data = request.POST
+            post_data_bx_place = post_data.get("PLACEMENT")
+            post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+            post_data_bx_id = json.loads(post_data_bx_id)
+            post_data_bx_id = post_data_bx_id["ID"]
+            response = HttpResponseRedirect("/user/login_admin/")
+            response.set_cookie(
+                "bitrix_id_order",
+                post_data_bx_id,
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+            response.set_cookie(
+                "next_url",
+                "/admin_specification/bitrix_start_info/",
+                max_age=2629800,
+                samesite="None",
+                secure=True,
+            )
+
+            return response
+
+    else:
+
+        post_data = request.POST
+        post_data_bx_place = post_data.get("PLACEMENT")
+        if post_data_bx_place:
+            post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
+            post_data_bx_id = json.loads(post_data_bx_id)
+            post_data_bx_id = post_data_bx_id["ID"]
+        else:
+            post_data_bx_id = request.COOKIES.get("bitrix_id_order")
+
+        if post_data_bx_id:
+            next_url, context, error = get_info_for_order_bitrix(
+                post_data_bx_id, request
+            )
+            print(next_url, context, error)
+            if error:
+                print("ERR")
+                return render(request, "admin_specification/error.html", context)
+            else:
+                if context["type_save"] == "new" or context["spes"] == None:
+                    response = HttpResponseRedirect(
+                        "/admin_specification/current_specification/"
+                    )
+
+                    response.set_cookie(
+                        "type_save",
+                        "new",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                    response.set_cookie(
+                        "specificationId",
+                        0,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                else:
+                    response = render(
+                        request,
+                        next_url,
+                        context={
+                            "cart": context["cart"],
+                            "spes": context["spes"],
+                            "serializer": context["serializer"],
+                            "type_save": context["type_save"],
+                        },
+                    )
+                    response.set_cookie(
+                        "specificationId",
+                        context["spes"],
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                
+                response.set_cookie(
+                    "bitrix_id_order",
+                    post_data_bx_id,
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "cart",
+                    context["cart"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+                response.set_cookie(
+                    "order",
+                    context["order"],
+                    max_age=2629800,
+                    samesite="None",
+                    secure=True,
+                )
+
+                return response
+        else:
+            pass
+
+
+# страница товаров заказа только для трансляции битрикс
+@csrf_exempt
+def bitrix_product(request):
+    bx_id = request.COOKIES.get("bitrix_id_order")
+    if "POST" in request.method:
+        post_data = request.POST
+        bx_id = post_data.get("PLACEMENT_OPTIONS")
+        bx_id = json.loads(bx_id)
+        bx_id = bx_id["ID"]
+    else:
+        bx_id_cook = request.COOKIES.get("bitrix_id_order")
+        if bx_id_cook:
+            bx_id = bx_id_cook
+        else:
+            bx_id = None
+
+    order_product = (
+        ProductSpecification.objects.filter(specification__id_bitrix=bx_id)
+        .select_related("product")
+        .annotate(
+            ship_left=F("quantity") - (F("client_shipment")),
+            ship_amount=F("price_all") - (F("client_shipment") * F("price_one")),
+        )
+    )
+    context = {
+        "products": order_product,
+    }
+    return render(request, "admin_specification/bitrix_product.html", context)
+
+
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def update_order(request):
+#     pass
+
+
+# # Вьюха для сохранения спецификации
+# @permission_required("specification.add_specification", login_url="/user/login_admin/")
+# def save_specification_view_admin(request):
+#     from apps.specification.models import ProductSpecification, Specification
+
+#     received_data = json.loads(request.body)
+
+#     # сохранение спецификации
+#     save_specification(received_data, request)
+
+#     out = {"status": "ok", "data": received_data}
+#     return JsonResponse(out)
 
 
 # # Вьюха для редактирования актуальной спецификации и для актуализации недействительной

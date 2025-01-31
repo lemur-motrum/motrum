@@ -20,6 +20,7 @@ djangorestframework
 num2words
 django-tinymce
 fast-bitrix24
+drf_spectacular
 
 djlint
 libsass 

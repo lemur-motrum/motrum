@@ -21,6 +21,7 @@ from apps.specification.models import Specification
 from project.settings import BASE_DIR, MEDIA_ROOT
 from urllib.error import URLError, HTTPError
 
+
 def pars():
 
     path = os.path.join(BASE_DIR, "docker/emas.xml")
@@ -37,7 +38,7 @@ def pars():
         cvb = root.findall(
             f"./Классификатор/Группы/Группа[Наименование='{cat.text}']/Группы/Группа//"
         )
-        print(111111111111111111111111111111111111)
+     
         print("Категория", cat.text)
 
         if not cvb:

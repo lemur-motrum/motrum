@@ -5,9 +5,13 @@ import { setErrorModal } from "../js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
+  cartItemsQuantity();
   const catalogWrapper = document.querySelector(".all-products");
-  if (catalogWrapper) {
-    const products = catalogWrapper.querySelectorAll(".catalog-item");
+  buttonsLogic(catalogWrapper);
+});
+export function buttonsLogic(wrapper) {
+  if (wrapper) {
+    const products = wrapper.querySelectorAll(".catalog-item");
     products.forEach((product) => {
       const addProductInCartBtn = product.querySelector(
         ".first_display_button"
@@ -18,15 +22,28 @@ window.addEventListener("DOMContentLoaded", () => {
       const productMultiplicityQuantity = product.getAttribute(
         "data-order-multiplicity"
       );
-      const productDataCartId = product.getAttribute("data-cart-product");
 
       addProductInCartBtn.onclick = () => {
         addProductInCartBtn.classList.add("hide");
         hiddenProductButtonsForCart.classList.add("show");
         if (!getCookie("cart")) {
+          let objData = {
+            iframe: false,
+          };
+          const isInIframe = window.self !== window.top
+    
+          if (isInIframe) {
+            objData = {
+              iframe: isInIframe,
+            };
+          }
+          const data = JSON.stringify(objData);
+
           fetch("/api/v1/cart/add-cart/", {
-            method: "GET",
+            method: "POST",
+            body: data,
             headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
               "X-CSRFToken": csrfToken,
             },
           })
@@ -64,7 +81,11 @@ window.addEventListener("DOMContentLoaded", () => {
         const quantityInput =
           hiddenProductButtonsForCart.querySelector(".quantity_input");
         const plusButton =
-          hiddenProductButtonsForCart.querySelector(".minus-button");
+          hiddenProductButtonsForCart.querySelector(".plus-button");
+
+        if (productMultiplicityQuantity) {
+          quantityInput.value = +productMultiplicityQuantity;
+        }
 
         let countQuantity = +quantityInput.value;
 
@@ -82,7 +103,6 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity = +quantityInput.value;
           }
-
           if (countQuantity >= 99999) {
             quantityInput.value = productMultiplicityQuantity
               ? getClosestInteger(99999, +productMultiplicityQuantity)
@@ -92,62 +112,140 @@ window.addEventListener("DOMContentLoaded", () => {
           } else if (countQuantity <= 0) {
             quantityInput.value = 0;
             plusButton.disabled = false;
-            deleteProductInCart(productDataCartId);
+            addProductInCartBtn.classList.remove("hide");
+            hiddenProductButtonsForCart.classList.remove("show");
           } else {
             minusButton.disabled = false;
             plusButton.disabled = false;
           }
+          addProductInCartMoreQuantity();
         });
+
+        plusButton.onclick = () => {
+          if (productMultiplicityQuantity) {
+            countQuantity += +productMultiplicityQuantity;
+          } else {
+            countQuantity++;
+          }
+          quantityInput.value = +countQuantity;
+          minusButton.disabled = false;
+          if (countQuantity >= 99999) {
+            quantityInput.value = productMultiplicityQuantity
+              ? getClosestInteger(99999, +productMultiplicityQuantity)
+              : 99999;
+            plusButton.disabled = true;
+            minusButton.disabled = false;
+          } else {
+            plusButton.disabled = false;
+            minusButton.disabled = false;
+          }
+          addProductInCartMoreQuantity();
+        };
+        minusButton.onclick = () => {
+          if (productMultiplicityQuantity) {
+            countQuantity -= +productMultiplicityQuantity;
+          } else {
+            countQuantity--;
+          }
+          quantityInput.value = countQuantity;
+          minusButton.disabled = false;
+
+          if (countQuantity <= 0) {
+            quantityInput.value = 0;
+            minusButton.disabled = true;
+            plusButton.disabled = false;
+            addProductInCartBtn.classList.remove("hide");
+            hiddenProductButtonsForCart.classList.remove("show");
+          } else {
+            minusButton.disabled = false;
+            plusButton.disabled = false;
+          }
+          addProductInCartMoreQuantity();
+        };
+        function addProductInCartMoreQuantity() {
+          if (quantityInput.value > 0) {
+            const cart_id = getCookie("cart");
+            const dataObj = {
+              product: +productId,
+              cart: +cart_id,
+              quantity: +quantityInput.value,
+            };
+            const data = JSON.stringify(dataObj);
+            addProductInCart(cart_id, data, product);
+          } else {
+            deleteProductInCart(product);
+          }
+        }
       }
     });
   }
+}
 
-  function deleteProductInCart(product_cart_id) {
-    fetch(`/api/v1/cart/${+product_cart_id}/delete-product/`, {
-      method: "delete",
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          window.location.reload();
+function deleteProductInCart(product) {
+  const productDataCartId = product.getAttribute("data-cart-product");
+  fetch(`/api/v1/cart/${+productDataCartId}/delete-product/`, {
+    method: "delete",
+    headers: {
+      "X-CSRFToken": csrfToken,
+    },
+  })
+    .then((response) => {
+      if (response.status == 200) {
+        if (
+          document.querySelector(".admin_specification_cart_length")
+            .textContent != 0
+        ) {
+          document.querySelector(
+            ".admin_specification_cart_length"
+          ).textContent =
+            +document.querySelector(".admin_specification_cart_length")
+              .textContent - 1;
         }
-      })
-      .catch((error) => {
-        setErrorModal();
-        console.error(error);
-      });
-  }
+        cartItemsQuantity();
+      }
+    })
+    .catch((error) => {
+      setErrorModal();
+      console.error(error);
+    });
+}
 
-  function addProductInCart(cart_id, data, product) {
-    fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
-        } else {
-          setErrorModal();
-          throw new Error("Ошибка");
-        }
-      })
-      .then(
-        (response) => {
-          product.setAttribute("data-cart-product", response.cart_prod);
-        }
-        // (document.querySelector(
-        //   ".admin_specification_cart_length"
-        // ).textContent = response.cart_len)
-      )
-      .catch((error) => {
+function addProductInCart(cart_id, data, product) {
+  fetch(`/api/v1/cart/${cart_id}/save-product/`, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrfToken,
+    },
+  })
+    .then((response) => {
+      if (response.status == 200) {
+        return response.json();
+      } else {
         setErrorModal();
-        console.error(error);
-      });
+        throw new Error("Ошибка");
+      }
+    })
+    .then((response) => {
+      product.setAttribute("data-cart-product", response.cart_prod);
+      document.querySelector(".admin_specification_cart_length").textContent =
+        response.cart_len;
+      cartItemsQuantity();
+    })
+    .catch((error) => {
+      setErrorModal();
+      console.error(error);
+    });
+}
+
+function cartItemsQuantity() {
+  const cartItemsQuantity = document.querySelector(
+    ".admin_specification_cart_length"
+  );
+  if (cartItemsQuantity) {
+    if (cartItemsQuantity.textContent != 0) {
+      cartItemsQuantity.classList.add("orange");
+    }
   }
-});
+}

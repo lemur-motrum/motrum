@@ -118,6 +118,11 @@ class ProductSpecification(models.Model):
         blank=True,
         null=True,
     )
+    id_bitrix = models.IntegerField(
+        "товар в сделке битрикс",
+        blank=True,
+        null=True,
+    )
     specification = models.ForeignKey(
         Specification,
         on_delete=models.CASCADE,

@@ -137,7 +137,7 @@ window.addEventListener("DOMContentLoaded", () => {
         changeButton.disabled = true;
         function validate(input) {
           if (!input.value) {
-            input.style.border = "1px solid red";
+            input.style.border = "0.063rem solid red";
             changeButton.disabled = false;
             changeButton.innerHTML = "";
             changeButton.textContent = "Изменить";
@@ -148,7 +148,7 @@ window.addEventListener("DOMContentLoaded", () => {
         validate(priceOneInput);
         validate(quantityInput);
         if (!supplierSelect.getAttribute("value")) {
-          supplierSelect.style.border = "1px solid red";
+          supplierSelect.style.border = "0.063rem solid red";
         }
         if (
           nameInput.value &&

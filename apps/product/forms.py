@@ -32,11 +32,11 @@ class ProductForm(forms.ModelForm):
 
     vendor = forms.ModelChoiceField(
         queryset=Vendor.objects.all(),
-        required=False,
+        # required=False,
         label="Производитель",
-        widget=autocomplete.ModelSelect2(
-            url="product:vendor-autocomplete", forward=["supplier"]
-        ),
+        # widget=autocomplete.ModelSelect2(
+        #     url="product:vendor-autocomplete", forward=["supplier"]
+        # ),
     )
 
     category = forms.ModelChoiceField(
@@ -54,11 +54,11 @@ class ProductForm(forms.ModelForm):
         ),
     )
     category_supplier = forms.ModelChoiceField(
-        required=True,
+        required=False,
         queryset=SupplierCategoryProduct.objects.all(),
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
-            url="product:category_supplier-autocomplete", forward=["supplier"]
+            url="product:category_supplier-autocomplete", forward=["supplier","vendor"]
         ),
     )
 
@@ -188,17 +188,24 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         required=False,
     )
 
+    # vendor = forms.ModelChoiceField(
+    #     queryset=Vendor.objects.all(),
+    #     required=False,
+    #     label="Производитель",
+    #     # widget=autocomplete.ModelSelect2(
+    #     #     url="product:vendor-autocomplete",
+    #     #     forward=["supplier"],
+    #     #     attrs={"class": "form-control"},
+    #     # ),
+    # )
     vendor = forms.ModelChoiceField(
         queryset=Vendor.objects.all(),
-        required=False,
+        # required=False,
         label="Производитель",
-        widget=autocomplete.ModelSelect2(
-            url="product:vendor-autocomplete",
-            forward=["supplier"],
-            attrs={"class": "form-control"},
-        ),
+        # widget=autocomplete.ModelSelect2(
+        #     url="product:vendor-autocomplete", forward=["supplier"]
+        # ),
     )
-
     category = forms.ModelChoiceField(
         queryset=CategoryProduct.objects.all(),
         label="Категория Motrum",
@@ -221,10 +228,11 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier-autocomplete",
-            forward=["supplier"],
+            forward=["supplier","vendor",],
             attrs={"class": "form-control"},
         ),
     )
+
 
     group_supplier = forms.ModelChoiceField(
         queryset=SupplierGroupProduct.objects.all(),

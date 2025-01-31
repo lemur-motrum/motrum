@@ -871,12 +871,12 @@ class ProductAdmin(SimpleHistoryAdmin):
             for id_table in request.resolver_match.captured_kwargs.values():
                 parent_id = id_table
 
-            item = Product.objects.get(id=parent_id)
+            # item = Product.objects.get(id=parent_id)
 
-            if db_field.name == "category":
-                kwargs["queryset"] = CategoryProduct.objects.filter(
-                    supplier_id=item.supplier.id, vendor_id=item.vendor.id
-                )
+            # if db_field.name == "category":
+            #     kwargs["queryset"] = CategoryProduct.objects.filter(
+            #         supplier_id=item.supplier.id, vendor_id=item.vendor.id
+            #     )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

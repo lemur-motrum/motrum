@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -30,8 +31,7 @@ from apps.notifications.urls import router as notifications_router
 from apps.projects_web.urls import router as projects_web_router
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
-
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = routers.DefaultRouter()
 router.registry.extend(client_router.registry)
@@ -41,29 +41,34 @@ router.registry.extend(projects_web_router.registry)
 
 
 urlpatterns = [
-    path('__debug__/', include('debug_toolbar.urls')),
-
-    path('admin/', admin.site.urls),
+    path("__debug__/", include("debug_toolbar.urls")),
+    path("admin/", admin.site.urls),
     # path('admin/', include("apps.user.urls", namespace="user")),
-    path('website_admin/', website_admin.urls),
-   
+    path("website_admin/", website_admin.urls),
     path("", include("apps.core.urls", namespace="core")),
     path("lk/", include("apps.client.urls", namespace="lk")),
     path("logs/", include("apps.logs.urls", namespace="logs")),
     path("product/", include("apps.product.urls", namespace="product")),
-    path("specification/", include("apps.specification.urls", namespace="specification")),
+    path(
+        "specification/", include("apps.specification.urls", namespace="specification")
+    ),
     path("supplier/", include("apps.supplier.urls", namespace="supplier")),
     path("user/", include("apps.user.urls", namespace="user")),
-    path("admin_specification/", include("apps.admin_specification.urls", namespace="admin_specification")),
-    
+    path(
+        "admin_specification/",
+        include("apps.admin_specification.urls", namespace="admin_specification"),
+    ),
     # для сайта
     path("project/", include("apps.projects_web.urls", namespace="project")),
     # path("vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
-    
     # апи
     path("api/", include(router.urls)),
-    path('tinymce/', include('tinymce.urls')),
-    
+    path("tinymce/", include("tinymce.urls")),
+    # схемы апи
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'), 
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 

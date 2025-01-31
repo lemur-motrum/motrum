@@ -19,41 +19,30 @@ urlpatterns = [
         "okt/",
         TemplateView.as_view(template_name="core/okt.html"),
         name="okt",
-    ), # окт
-
+    ),  # окт
     path("company/", views.company, name="about"),  # компания общая
-    path("company/about", views.company_about, name="about_company"),  # компания
+    path("company/about/", views.company_about, name="about_company"),  # компания
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
     # остальное по вакансии  в app vacancy_web
+    path("solutions/", views.solutions_all, name="solutions"),
+    path("cobots/", views.cobots_all, name="cobots"),
+    path("cobots-palett/", views.solutions_one, name="cobots-palett"),
+    path("cobots-box/", views.solutions_one, name="cobots-box"),
+    path("cobots-packing/", views.solutions_one, name="cobots-packing"),
+    path("marking/", views.solutions_one, name="marking"),
+    path("shkaf-upravleniya/", views.solutions_one, name="shkaf-upravleniya"),
     path(
-        "solutions/",
-        TemplateView.as_view(template_name="core/solutions/solutions_all.html"),
-        name="solutions",
-    ),  # решения все
+        "contact/",
+        TemplateView.as_view(template_name="core/contact.html"),
+        name="contact",
+    ),  # контакты
+    path("cart/", views.cart, name="cart"),  # корзина
     path(
-        "marking/",
-        TemplateView.as_view(template_name="core/solutions/marking.html"),
-        name="marking",
-    ),  # решения маркировка
-    path(
-        "cobots/",
-        TemplateView.as_view(template_name="core/solutions/cobots.html"),
-        name="cobots",
-    ),  # решения коботы
-    path(
-        "shkaf-upravleniya/",
-        TemplateView.as_view(template_name="core/solutions/shkaf-upravleniya.html"),
-        name="shkaf-upravleniya",
-    ),  # сборка шкафов управления
-    path("contact", views.index, name="contact"),  # контакты
-    path("cart", views.cart, name="cart"),  # корзина
-    path(
-        "privacy-policy", views.privacy_policy, name="privacy-policy"
+        "privacy-policy/", views.privacy_policy, name="privacy-policy"
     ),  # политика конфиденциальности
-    
-    path("brand/",  product.views.brand_all, name="brand"),
-    path("brand/<slug:vendor>",  product.views.brand_one, name="brand_one"),
-    
+    path("brand/", product.views.brand_all, name="brand"),
+    path("brand/<slug:vendor>/", product.views.brand_one, name="brand_one"),
+    path("add_admin_okt/", views.add_admin_okt, name="add_admin_okt"),
     # path("cart", views.cart,name="cart"),
     # path("/cart", include("apps.client.urls", namespace="cart")),
     # проекты в app project_web namespace="project"

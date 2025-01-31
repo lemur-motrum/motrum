@@ -7,6 +7,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
+from apps.client.models import Order
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
@@ -198,7 +199,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
             Q(name__icontains=search_input[0])
-            | Q(article__icontains=search_input[0])
+            # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
         )
@@ -208,7 +209,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             for search_item in search_input[1:]:
                 queryset = queryset.filter(
                     Q(name__icontains=search_item)
-                    | Q(article__icontains=search_item)
+                    # | Q(article__icontains=search_item)
                     | Q(article_supplier__icontains=search_item)
                     | Q(additional_article_supplier__icontains=search_item)
                 )
@@ -233,15 +234,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(data_response, status=status.HTTP_200_OK)
 
 
-class CartViewSet(viewsets.ModelViewSet):
+class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
-    http_method_names = ["get", "post", "update", "delete"]
+    http_method_names = ["get", "post", "delete"]
 
     # создать корзину
-    @action(detail=False, methods=["get"], url_path=r"add-cart")
+    @action(detail=False, methods=["get", "post"], url_path=r"add-cart")
     def add_cart(self, request, *args, **kwargs):
+        print("add_cart")
+        data = request.data
         # response = super().create(request, args, kwargs)
+
         session = request.COOKIES.get("sessionid")
         # корзина юзера анонимного
         if request.user.is_anonymous:
@@ -297,18 +301,70 @@ class CartViewSet(viewsets.ModelViewSet):
         # корзина админов и логин юзера
         else:
             # корзина админов
+            bitrix_id_order = False
+            iframe = False
+            if request.method == "POST":
+                data = request.data
+                if data["iframe"]:
+                    iframe = True
+            print(iframe)
+
             if request.user.is_staff:
+                cart = None
+                if iframe:
+                    bitrix_id_order = request.COOKIES["bitrix_id_order"]
+                    print(bitrix_id_order)
+                    if bitrix_id_order:
+                        print("if bitrix_id_order")
+                        try:
+                            order = Order.objects.get(id_bitrix=int(bitrix_id_order))
+                            print(order)
+                            cart = order.cart
+                            print(cart)
+                        except Order.DoesNotExist:
+                            print(Order.DoesNotExist)
+                            cart = None
                 # try:
                 # cart = Cart.objects.filter(session_key=session, is_active=False).last()
-                cart = None
+
                 if cart:
                     response = Response()
                     response.data = cart.id
                     response.status = status.HTTP_200_OK
-                    response.set_cookie("cart", cart.id, max_age=2629800)
-                    response.set_cookie("type_save", "new", max_age=2629800)
+                    # response.set_cookie(
+                    #     "cart", cart.id, max_age=2629800, samesite="None", secure=True
+                    # )
+                    response.set_cookie(
+                        "cart",
+                        cart,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                    response.set_cookie(
+                        "order",
+                        order.id,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                    response.set_cookie(
+                        "type_save",
+                        "update",
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
+                    response.set_cookie(
+                        "specificationId",
+                        order.specification,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
 
                     return response
+
                 else:
 
                     # except Cart.DoesNotExist:
@@ -328,9 +384,19 @@ class CartViewSet(viewsets.ModelViewSet):
                         #     "sessionid", serializer.data["session_key"], max_age=2629800
                         # )
                         response.set_cookie(
-                            "cart", serializer.data["id"], max_age=2629800
+                            "cart",
+                            serializer.data["id"],
+                            max_age=2629800,
+                            samesite="None",
+                            secure=True,
                         )
-                        response.set_cookie("type_save", "new", max_age=2629800)
+                        response.set_cookie(
+                            "type_save",
+                            "new",
+                            max_age=2629800,
+                            samesite="None",
+                            secure=True,
+                        )
 
                         return response
                     else:
@@ -416,7 +482,9 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"],product=data["product"])
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
@@ -431,7 +499,9 @@ class CartViewSet(viewsets.ModelViewSet):
                 cart_product = serializer.save()
                 cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
                 data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(cart_id=kwargs["cart"],product=data["product"])
+                cart_prod = ProductCart.objects.get(
+                    cart_id=kwargs["cart"], product=data["product"]
+                )
                 data["cart_prod"] = cart_prod.id
                 return Response(data, status=status.HTTP_200_OK)
             else:
@@ -506,7 +576,7 @@ class CartViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # изменить количество товаров в корзине
-    @action(detail=True, methods=["update"], url_path=r"update-product")
+    @action(detail=True, methods=["get", "post"], url_path=r"update-product")
     def update_product_cart(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
         serializer_class = ProductCartSerializer

@@ -61,7 +61,7 @@ class LogsError(models.Model):
     )
     info = models.CharField(
         "Инфо о ошибке",
-        max_length=5000,
+        max_length=100000,
         blank=True,
         null=True,
     )

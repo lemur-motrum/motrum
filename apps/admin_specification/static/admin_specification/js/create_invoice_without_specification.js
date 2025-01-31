@@ -18,10 +18,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const adminCreatorId = adminCreator.getAttribute("data-user-id");
     const commentAll = document.querySelector(
       'textarea[name="comment-input-name-all"]'
-    ).value;
+    );
     const dateDeliveryAll = document.querySelector(
       'textarea[name="delivery-date-all-input-name-all"]'
-    ).value;
+    );
 
     const products = [];
 
@@ -119,16 +119,16 @@ window.addEventListener("DOMContentLoaded", () => {
         if (deliveryDate) {
           if (!deliveryDate.value) {
             validate = false;
-            deliveryDate.style.border = "1px solid red";
-            deliveryDate.style.borderRadius = "10px";
+            deliveryDate.style.border = "0.063rem solid red";
+            deliveryDate.style.borderRadius = "0.625rem";
           }
         }
 
         if (inputPrice) {
           if (!inputPrice.value) {
             validate = false;
-            inputPrice.style.border = "1px solid red";
-            inputPrice.style.borderRadius = "10px";
+            inputPrice.style.border = "0.063rem solid red";
+            inputPrice.style.borderRadius = "0.625rem";
           }
         }
         if (validate === true) {
@@ -138,8 +138,8 @@ window.addEventListener("DOMContentLoaded", () => {
       if (bitrixInput) {
         if (!bitrixInput.value) {
           validate = false;
-          bitrixInput.style.border = "1px solid red";
-          bitrixInput.style.borderRadius = "10px";
+          bitrixInput.style.border = "0.063rem solid red";
+          bitrixInput.style.borderRadius = "0.625rem";
         }
       }
       if (validate == false) {
@@ -157,8 +157,8 @@ window.addEventListener("DOMContentLoaded", () => {
           products: products,
           id_specification: specificationId ? specificationId : null,
           id_cart: +getCookie("cart"),
-          comment: commentAll ? commentAll : null,
-          date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+          comment: commentAll.value,
+          date_delivery: dateDeliveryAll.value,
           motrum_requisites: +motrumRequsits,
           client_requisites: +clientRequsits,
           type_delivery: deliveryRequsits,
@@ -248,7 +248,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,
                   {
-                    method: "UPDATE",
+                    // изменила метод
+                    method: "POST",
                     body: data,
                     headers: {
                       "X-CSRFToken": csrfToken,

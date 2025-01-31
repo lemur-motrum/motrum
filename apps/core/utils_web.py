@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from django.contrib.sessions.models import Session
 
 
-
 from project.settings import MEDIA_ROOT
 
 
@@ -39,7 +38,7 @@ def get_file_path_project_web(instance, filename):
         ProjectImage,
         CategoryProject,
         ClientCategoryProject,
-        ProjectVideo
+        ProjectVideo,
     )
 
     if isinstance(instance, Project):
@@ -47,7 +46,7 @@ def get_file_path_project_web(instance, filename):
         filenames = f"{instance.slug}_main"
         type_dir = f"{instance.slug}"
 
-    elif isinstance(instance, ProjectImage) :
+    elif isinstance(instance, ProjectImage):
         base_dir = "website/project"
         project = Project.objects.get(id=instance.project.id)
         # number_project = int(project.id)
@@ -56,7 +55,7 @@ def get_file_path_project_web(instance, filename):
 
         type_dir = f"{instance.project.slug}"
         filenames = f"{instance.project.slug}__{number_image}"
-    
+
     elif isinstance(instance, ProjectVideo):
         base_dir = "website/project"
         project = Project.objects.get(id=instance.project.id)
@@ -66,7 +65,7 @@ def get_file_path_project_web(instance, filename):
 
         type_dir = f"{instance.project.slug}"
         filenames = f"{instance.project.slug}__{number_image}"
-      
+
     elif isinstance(instance, CategoryProject) or isinstance(
         instance, ClientCategoryProject
     ):
@@ -77,7 +76,6 @@ def get_file_path_project_web(instance, filename):
     images_last_list = filename.split(".")
     type_file = "." + images_last_list[-1]
     filename = f"{filenames}{type_file}"
-    
 
     check_media_directory_exist_web(base_dir, type_dir)
     return "{0}/{1}/{2}".format(
@@ -89,7 +87,7 @@ def get_file_path_project_web(instance, filename):
 
 # загрузка катринок для слайдера
 def get_file_path_slider_web(instance, filename):
-   
+
     base_dir = "website/slider"
     filenames = f"{instance.slug}"
     type_dir = f"{instance.slug}"
@@ -192,7 +190,6 @@ def send_email_message_html(subject, message, to_email, html_message):
 def promote_product_slider(product):
     from apps.core.models import SliderMain
 
-    
     if product.promote:
         name = f"Товар {product.name}"
         try:
@@ -209,7 +206,7 @@ def promote_product_slider(product):
             slider.save()
 
     else:
-       
+
         try:
             slider = SliderMain.objects.get(
                 product_promote=product, type_slider="PROMOTE"
@@ -265,10 +262,10 @@ def get_product_item_data(specification, product, extra_discount, quantity):
     from apps.core.utils import get_presale_discount
 
     price = Price.objects.get(prod=product)
-    
+
     if price.in_auto_sale:
         price_pre_sale = get_presale_discount(product)
-        
+
     price_one = price.rub_price_supplier
     price_one_motrum = price.price_motrum
 
@@ -278,7 +275,7 @@ def get_product_item_data(specification, product, extra_discount, quantity):
 
     price_all = float(price_one) * int(quantity)
     price_all_motrum = float(price_one_motrum) * int(quantity)
-        
+
     product_item_data = {
         "specification": specification.id,
         "product": product.id,
@@ -290,6 +287,5 @@ def get_product_item_data(specification, product, extra_discount, quantity):
         "price_all_motrum": price_all_motrum,
         "price_exclusive": price.extra_price,
         "extra_discount": extra_discount,
-
     }
     return product_item_data

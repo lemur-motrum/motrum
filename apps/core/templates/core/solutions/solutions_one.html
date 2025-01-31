@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+    {% url 'core:cobots-palett' as cobots_palett_url %}
+    {% url 'core:cobots-box' as cobots_box_url %}
+    {% url 'core:cobots-packing' as cobots_packing_url %}
+    {% url 'core:marking' as marking_url %}
+    {% url 'core:shkaf-upravleniya' as shkaf_upravleniya_url %}
+    <div class="solution_one_container">
+        {% if request.path == cobots_palett_url %}
+            {% include "core/solutions/palett.html" %}
+        {% elif request.path == cobots_box_url %}
+            {% include "core/solutions/cobots-box.html" %}
+        {% elif request.path == cobots_packing_url %}
+            {% include "core/solutions/cobots-packing.html" %}
+        {% elif request.path == marking_url %}
+            {% include "core/solutions/marking.html" %}
+        {% elif request.path == shkaf_upravleniya_url %}
+            {% include "core/solutions/shkaf-upravleniya.html" %}
+        {% endif %}
+        {% include "core/includes/directions.html" %}
+        {% include "core/includes/projects.html" %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,27 @@
+{% load static %}
+<div class="projects">
+    <div class="title-container">
+        <div class="title">Реализованные проекты</div>
+        <div class="description">
+            реальные примеры с производств
+            <br>
+            различного масштаба
+        </div>
+        <a href="{% url 'projects_web:projects' %}" class="title-link">
+            <div class="title-link-description">весь каталог</div>
+            <div class="arrow-container">
+                <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+            </div>
+        </a>
+    </div>
+    {% for project in projects %}
+        <a class="project" href="{% url 'projects_web:project' project.slug %}">
+            <div class="img-container">
+                <img src="{{ project.image_main.url }}" alt="img">
+            </div>
+            <div class="project_name">
+                <p>{{ project.name }}</p>
+            </div>
+        </a>
+    {% endfor %}
+</div>

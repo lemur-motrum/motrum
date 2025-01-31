@@ -20,10 +20,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const adminCreatorId = adminCreator.getAttribute("data-user-id");
       const commentAll = document.querySelector(
         'textarea[name="comment-input-name-all"]'
-      ).value;
+      );
       const dateDeliveryAll = document.querySelector(
         'textarea[name="delivery-date-all-input-name-all"]'
-      ).value;
+      );
 
       const products = [];
 
@@ -138,8 +138,8 @@ window.addEventListener("DOMContentLoaded", () => {
             products: products,
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
-            comment: commentAll ? commentAll : null,
-            date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+            comment: commentAll.value,
+            date_delivery: dateDeliveryAll.value,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
@@ -160,9 +160,13 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               if (response.status == 200 || response.status == 201) {
                 localStorage.removeItem("specificationValues");
-                deleteCookie("key", "/", window.location.hostname);
-                deleteCookie("specificationId", "/", window.location.hostname);
-                deleteCookie("cart", "/", window.location.hostname);
+                document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // deleteCookie("key", "/", window.location.hostname);
+                // deleteCookie("specificationId", "/", window.location.hostname);
+                // deleteCookie("cart", "/", window.location.hostname);
                 return response.json();
               } else {
                 throw new Error("Ошибка");
@@ -199,7 +203,8 @@ window.addEventListener("DOMContentLoaded", () => {
                   fetch(
                     `/api/v1/order/${response1.specification}/create-bill-admin/`,
                     {
-                      method: "UPDATE",
+                      // изменила метод 
+                      method: "POST",
                       body: data,
                       headers: {
                         "X-CSRFToken": csrfToken,

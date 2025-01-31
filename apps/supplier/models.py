@@ -51,11 +51,11 @@ class Vendor(models.Model):
         null=True,
     )
     slug = models.SlugField(null=True, max_length=100)
-    supplier = models.ForeignKey(
-        Supplier,
-        verbose_name="Поставщик",
-        on_delete=models.PROTECT,
-    )
+    # supplier = models.ForeignKey(
+    #     Supplier,
+    #     verbose_name="Поставщик",
+    #     on_delete=models.PROTECT,
+    # )
     currency_catalog = models.ForeignKey(
         Currency,
         verbose_name="Валюта каталога",

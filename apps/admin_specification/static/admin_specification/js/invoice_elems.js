@@ -148,7 +148,8 @@ export function invoiceItem(container) {
                         fetch(
                           `/api/v1/order/${specificationId}/create-bill-admin/`,
                           {
-                            method: "UPDATE",
+                            // изменила метод 
+                            method: "GET",
                             headers: {
                               "Content-Type": "application/json",
                               "X-CSRFToken": csrfToken,

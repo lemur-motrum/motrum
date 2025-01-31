@@ -8,6 +8,7 @@ from apps.core.models import (
     Currency,
     CurrencyPercent,
     IndexInfoWeb,
+    SeoTextSolutions,
     SliderMain,
     TypeDelivery,
     Vat,
@@ -144,6 +145,11 @@ class IndexInfoWebAdminWeb(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+    
+class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
+    list_display = ("name_page", "text",)
+
+    
 
 
 # Register your models here.
@@ -157,3 +163,4 @@ admin.site.register(TypeDelivery, TypeDeliveryAdmin)
 
 website_admin.register(SliderMain, SliderMainAdminWeb)
 website_admin.register(IndexInfoWeb, IndexInfoWebAdminWeb)
+website_admin.register(SeoTextSolutions, SeoTextSolutionsAdminWeb)

@@ -13,13 +13,14 @@ from project.admin import website_admin
 class AdminUserAdmin(admin.ModelAdmin):
     list_display = ("username", "first_name", "last_name", "email", "admin_type")
     form = PasswordForm
+    readonly_fields = ("bitrix_id",)
     fieldsets = (
         (
             "Персональная информация",
             {
                 "fields": (
                     "username",
-                    # "bitrix_id",
+                    "bitrix_id",
                     "first_name",
                     "last_name",
                     "middle_name",

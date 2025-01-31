@@ -30,11 +30,10 @@
         <div class="article">Характеристики</div>
         <div class="article">Остатки</div>
         <div class="article">Упак.</div>
+        <div class="article">Закуп.</div>
         <div class="article">
-            Закуп.
-            <span style="display:none" param="" class="price_arrow">&uarr;</span>
+            Цена <span param="" class="price_arrow">&uarr;</span>
         </div>
-        <div class="article">Цена</div>
     </div>
     <div class="content-container">
         <div class="spetification-product-catalog">
@@ -46,7 +45,8 @@
                          data-motrum-id="{{ product.article }}"
                          data-saler-id="{{ product.article_supplier }}"
                          data-discoutnt="{% if product.price.sale %}{{ product.price.sale.percent }}{% endif %}"
-                         data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}" data-cart-product = "{{product.id_product_cart}}">
+                         data-order-multiplicity="{% if product.stock.is_one_sale %}1{% else %}{{ product.stock.order_multiplicity }}{% endif %}"
+                         data-cart-product="{{ product.id_product_cart }}">
                         <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">
@@ -145,7 +145,8 @@
                                            value="1"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
-                                           onkeypress='validate(event)' class="quantity_input" />
+                                           onkeypress='validate(event)'
+                                           class="quantity_input" />
                                     <button class="plus-button"></button>
                                 </div>
                             </div>
@@ -176,7 +177,7 @@
                 {% endfor %}
             </div>
             <div class="loader">loading</div>
-            {% if products %}
+            {% if products|length > 8 %}
                 {{ products.count }}
                 <div class="products-end-content">
                     <div class="load-more-btn">Загрузить еще</div>
@@ -188,7 +189,7 @@
                                    href="?page=1&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>1</span></a>
                             {% else %}
                                 <a class="first-elem"
-                                   href="?page=1{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>1</span></a>
+                                   href="?page=1{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_input %}&search_input={{ search_input }}{% endif %}"><span>1</span></a>
                             {% endif %}
                         {% endif %}
                         {% for p in products.paginator.page_range %}
@@ -198,9 +199,9 @@
                                 </div>
                             {% elif p >= products.number|add:-2 and p <= products.number|add:2 %}
                                 {% if search_input %}
-                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_url %}&search_input={{ search_url }}{% endif %}"><span>{{ p }}</span></a>
                                 {% else %}
-                                    <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ p }}</span></a>
+                                    <a href="?page={{ p }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_input %}&search_input={{ search_input }}{% endif %}"><span>{{ p }}</span></a>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -211,7 +212,7 @@
                                    href="?page={{ num_of_pages }}&search_input={{ search_input }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% else %}
                                 <a class="last-elem"
-                                   href="?page={{ num_of_pages }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}"><span>{{ num_of_pages }}</span></a>
+                                   href="?page={{ num_of_pages }}{% if vendor_url %}&vendor={{ vendor_url }}{% endif %}{% if price_url %}&price={{ price_url }}{% endif %}{% if search_input %}&search_input={{ search_input }}{% endif %}"><span>{{ num_of_pages }}</span></a>
                             {% endif %}
                         {% endif %}
                     </div>

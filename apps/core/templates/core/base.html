@@ -2,43 +2,51 @@
 {% load manager_client %}
 {% load js_templates %}
 {% load test_display %}
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--css инклудить в общий -->
-    {% include "core/includes/stylesheets.html" %}
-    <title>{{ title }}</title>
-  </head>
-  <body {% test_display %}>
-    <div class="wrapper">
-      {% include "core/header/header.html" %}
-      <div class="site-content">
-        <div class="site-description-content">
-          <input id="user_id"
-                 type="hidden"
-                 data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
-          <input id="client_id"
-                 type="hidden"
-                 data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
-          {% block content %}
-          {% endblock content %}
+{% with request.resolver_match.url_name as url_name %}
+  <!DOCTYPE html>
+  <html lang="ru">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <!--css инклудить в общий -->
+      {% include "core/includes/stylesheets.html" %}
+      <title>{{ title }}</title>
+      <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
+    </head>
+    <body {% test_display %}>
+      <div class="wrapper">
+        {% include "core/header/header.html" %}
+        <div class="site-content {% if url_name == "contact" %}no-margin{% endif %}">
+          <div class="header_wrapper124"></div>
+          <div class="site-description-content {% if url_name == "contact" %}no-margin{% endif %}">
+            <input id="user_id"
+                   type="hidden"
+                   data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
+            <input id="client_id"
+                   type="hidden"
+                   data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
+            {% block content %}
+            {% endblock content %}
+          </div>
+          {% if url_name != "contact" %}
+            {% manager_client %}
+          {% endif %}
+          {% if privacy_policy %}
+          {% else %}
+            {% if url_name != "contact" %}
+              {% include "core/includes/cookie.html" %}
+            {% endif %}
+          {% endif %}
         </div>
-        {% manager_client %}
-        {% if privacy_policy %}
-        {% else %}
-          {% include "core/includes/cookie.html" %}
-        {% endif %}
+        {% include "core/includes/footer.html" %}
+        {% include "core/includes/overlay-modal.html" %}
+        {% include "core/includes/overlay_new_product_in_specification.html" %}
+        {% include "core/includes/contacts_modal_overlay.html" %}
       </div>
-      {% include "core/includes/footer.html" %}
-      {% include "core/includes/overlay-modal.html" %}
-      {% include "core/includes/overlay_new_product_in_specification.html" %}
-    </div>
-    {% js_templates %}
-    <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
-    {% include "core/includes/scripts.html" %}
-    <script>
+      {% js_templates %}
+      <!--разбивать js на отдельные фаилы по задачам и инклудить в общий -->
+      {% include "core/includes/scripts.html" %}
+      <script>
       function validate(evt) {
         let theEvent = evt || window.event;
         let key = theEvent.keyCode || theEvent.which;
@@ -49,6 +57,7 @@
           if (theEvent.preventDefault) theEvent.preventDefault();
         }
       }
-    </script>
-  </body>
-</html>
+      </script>
+    </body>
+  </html>
+{% endwith %}

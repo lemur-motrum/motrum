@@ -131,6 +131,7 @@ class SliderMain(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Слайдер на главной"
         verbose_name_plural = "Слайдер на главной"
@@ -252,6 +253,10 @@ class BaseInfoAccountRequisites(models.Model):
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
+    
+    def __str__(self):
+        return self.requisites.short_name_legal_entity
+
 
 
 class BaseImage(models.Model):
@@ -267,7 +272,9 @@ class BaseImage(models.Model):
     class Meta:
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
-
+    
+    def __str__(self):
+        return "Базовые изображения для документов"
 
 class TypeDelivery(models.Model):
     text = models.CharField(
@@ -292,13 +299,17 @@ class TypeDelivery(models.Model):
 
     def __str__(self):
         return self.text
-    
-    
+
+
 class IndexInfoWeb(models.Model):
-    tech_project = models .SmallIntegerField("реализованных проектов технического зрения")
+    tech_project = models.SmallIntegerField(
+        "реализованных проектов технического зрения"
+    )
     modernization = models.SmallIntegerField("модернизировано установок")
 
-    shkaf_upravleniya = models.SmallIntegerField("изготовлено шкафов         управления")
+    shkaf_upravleniya = models.SmallIntegerField(
+        "изготовлено шкафов         управления"
+    )
     installation = models.SmallIntegerField("запущенных установок")
 
     class Meta:
@@ -309,4 +320,78 @@ class IndexInfoWeb(models.Model):
         return f"Счетчики"
 
 
+# {
+#     "ID": "187",
+#     "ENTITY_ID": "DEAL_STAGE_1",
+#     "STATUS_ID": "C1:LOSE",
+#     "NAME": "Сделка провалена",
+#     "NAME_INIT": "Сделка провалена",
+#     "SORT": "70",
+#     "SYSTEM": "Y",
+#     "COLOR": "#FF5752",
+#     "SEMANTICS": "F",
+#     "CATEGORY_ID": "1",
+#     "EXTRA": {"SEMANTICS": "failure", "COLOR": "#FF5752"},
+# }
 
+
+class StageDealBx(models.Model):
+    bitrix_id = models.SmallIntegerField("ID bitrix")
+    name = models.CharField(
+        "NAME -Имя",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    entity_id = models.CharField(
+        "ENTITY_ID - название воронки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    category_id = models.CharField(
+        "CATEGORY_ID - id воронки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    status_id = models.CharField(
+        "STATUS_ID - название статуса техническое- пишется в статусе сделки ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    name_web = models.CharField(
+        "Имя на сайте",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    name_web_eng = models.CharField(
+        "Имя техническое сат англ",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+
+
+class SeoTextSolutions(models.Model):
+    name_page = models.CharField(
+        "название страницы  страницы",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    text = models.CharField(
+        "Текст",
+        max_length=1500,
+        null=True,
+        blank=True,
+    )
+    
+    class Meta:
+        verbose_name = "Сео для страниц решений"
+        verbose_name_plural = "Сео дял страниц решений"
+
+    # def __str__(self):
+    #     return f"Счетчики"

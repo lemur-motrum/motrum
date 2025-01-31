@@ -73,7 +73,7 @@ def crete_pdf_bill(
         ).order_by("id")
         print(type_delivery)
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
-        print(11111111111)
+      
 
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
@@ -137,7 +137,8 @@ def crete_pdf_bill(
         print(older_doc)
         print(version)
         print(text_version)
-
+        name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
+        name_bill_to_fullname_nosign = f"{name_bill_text} от {date_now} без печати{text_version}"
         name_bill = f"{name_bill_text} от {date_now}{text_version}.pdf"
         name_bill_no_signature = (
             f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
@@ -385,10 +386,20 @@ def crete_pdf_bill(
                 ),
             )
         )
-        if client_info_req_kpp.tel:
-            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}, тел.: {client_info_req_kpp.tel}"
-        else:
+        
+        if client_info.type_client == 1 or client_info.type_client == "1":
+            # клиент юрлицо
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
+
+        else:
+            # клиент ип
+            info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, ОГРНИП {client_info_req_kpp.ogrn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
+        
+        
+        
+        if client_info_req_kpp.tel:
+            info_client = f"{info_client}, тел.: {client_info_req_kpp.tel}"
+
 
         data_info.append(
             (
@@ -792,7 +803,7 @@ def crete_pdf_bill(
                     normal_style,
                 ),)
             )
-        print(111111, data_text_info)
+      
         table_data_text_info = Table(
             data_text_info,
         )
@@ -942,7 +953,7 @@ def crete_pdf_bill(
             name_bill_no_signature,
         )
         print(4)
-        return (file_path, bill_name, file_path_no_sign, version)
+        return (file_path, bill_name, file_path_no_sign, version,name_bill_to_fullname,name_bill_to_fullname_nosign)
 
     except Exception as e:
         tr = traceback.format_exc()

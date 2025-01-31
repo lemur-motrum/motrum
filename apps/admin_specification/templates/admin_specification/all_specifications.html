@@ -3,9 +3,16 @@
     {% load cart %}
     {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
-    <div class="all_specifications_container">
+    <div class="all_specifications_container"
+         data-http-frame="{{ http_frame }}"
+         data-bitrix-id-order="{{ bitrix_id_order }}">
+      
         <h1 class="title">
-            <span class="all_orders active">{{ title }}</span><span class="orders_without_specifications">Корзины без заказа</span>
+            <span class="all_orders active">сформированные заказы</span>
+            {% if tag_need_btn_other_orders %}
+            <span   span class="orders_without_specifications">отложенные заказы</span>
+            {% endif %}
+          
         </h1>
         <div class="specification_container all_specifications_content">
             <div class="table-titles all_specifications_titles show">
@@ -13,18 +20,16 @@
                 <div class="table-title">Клиент</div>
                 <div class="table-title">Статус</div>
                 <div class="table-title">Сумма</div>
-                <div class="table-title">Счет</div>
+                <div class="table-title">Документы</div>
             </div>
             <div class="table-titles no_specification_titles">
                 <div class="table-title">Заказ</div>
-                <div class="table-title">Клиент</div>
-                <div class="table-title">Статус</div>
             </div>
             <div class="loader"></div>
             <div class="specification_wrapper" specification-elem="wrapper">
                 <div class="specification_container all_specifications_table"
                      specification-elem="container"
-                     superuser="{% if request.user.is_superuser  == True %}true{% endif %}">
+                     superuser="{% if request.user.is_superuser == True %}true{% endif %}">
                     {% for specification in specification_list %}
                         {% include "admin_specification/include/specification_item.html" with specification=specification %}
                     {% endfor %}
@@ -33,12 +38,13 @@
                 <div class="end_content">
                     <button class="add_more" project-elem="button">загрузить еще</button>
                     <div class="pagination">
-                        <div class="first">1 ...</div>
+                        <div class="first">1</div>
+                        <div class="dots first_dots">...</div>
                         <div class="elem"></div>
                         <div class="elem"></div>
                         <div class="elem"></div>
-                        <div class="last">... 578</div>
-                        <div class="next">далее</div>
+                        <div class="dots last_dots">...</div>
+                        <div class="last">578</div>
                     </div>
                 </div>
             </div>

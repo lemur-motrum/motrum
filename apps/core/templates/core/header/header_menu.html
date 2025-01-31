@@ -5,35 +5,50 @@
 {% url 'core:contact' as contact_url %}
 <li class="nav-elem">
   {% if namespace == 'product' %}
-    <span class="navbar_menu_item_text active">Товары</span>
+    <div class="disabled-link">
+      <span class="navbar_menu_item_text active">Товары</span>
+      <div class="circle"></div>
+    </div>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ catalog_url }}">Товары</a>
   {% endif %}
 </li>
 <li class="nav-elem">
   {% if view_name == 'core:solutions' %}
-    <span class="navbar_menu_item_text active">Решения</span>
+    <div class="disabled-link">
+      <span class="navbar_menu_item_text active">Решения</span>
+      <div class="circle"></div>
+    </div>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ solutions_url }}">Решения</a>
   {% endif %}
 </li>
 <li class="nav-elem">
   {% if view_name == 'project:projects' %}
-    <span class="navbar_menu_item_text active">Реализованные проекты</span>
+    <div class="disabled-link">
+      <span class="navbar_menu_item_text active">Реализованные проекты</span>
+      <div class="circle small_circle"></div>
+    </div>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ projects_url }}">Реализованные проекты</a>
   {% endif %}
 </li>
 <li class="nav-elem">
   {% if view_name == 'core:about' or view_name == 'core:about_company' or view_name == 'core:vacancy' %}
-    <span class="navbar_menu_item_text active">Компания</span>
+    <div class="disabled-link">
+      <span class="navbar_menu_item_text active">Компания</span>
+      <div class="circle"></div>
+    </div>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ company_url }}">Компания</a>
   {% endif %}
 </li>
 <li class="nav-elem">
   {% if view_name == 'core:contact' %}
-    <span class="navbar_menu_item_text active">Контакты</span>
+    <div class="disabled-link">
+      <span class="navbar_menu_item_text active">Контакты</span>
+      <div class="circle"></div>
+    </div>
   {% else %}
     <a class="navbar_menu_item_link" href="{{ contact_url }}">Контакты</a>
   {% endif %}

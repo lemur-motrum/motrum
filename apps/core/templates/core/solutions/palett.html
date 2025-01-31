@@ -1,0 +1,254 @@
+{% load static %}
+<div class="title_content">
+    <div class="bread_crumbs">
+        <a href="/">главная</a>
+        <a href="{% url "core:solutions" %}">решения</a>
+        <a href="{% url "core:cobots" %}">роботы</a>
+    </div>
+    <h1 class="title">РЕШЕНИЕ ДЛЯ ПАЛЕТИЗАЦИИ</h1>
+</div>
+<div class="solution_one_slider">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide information_slide">
+            <div class="information_title">Готовое решение по роботизации паллетирования</div>
+            <div class="information_description">
+                Поставляем готовое решение на базе коллаборативного робота для захвата гофрокоробов и укладки на паллет с возможностью интеграции в существующую линию.
+            </div>
+        </div>
+        <div class="swiper-slide img_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/Foto-Palletizer-slide-1.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+        <div class="swiper-slide img_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/Foto-Palletizer-slide-3.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+        <div class="swiper-slide img_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/Foto-Palletizer-slide-2.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+        <div class="swiper-slide img_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/Foto-Palletizer-slide-4.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="vector_container palett_vector_container">
+    <div class="solution_will_allow">
+        <div class="title">РЕШЕНИЕ ПОЗВОЛИТ</div>
+        <ul>
+            <li>исключить возможность получения травмы</li>
+            <li>заменить операторов во всех сменах</li>
+            <li>точнее спланировать результаты работы</li>
+            <li>снизить долю бракованной продукции</li>
+        </ul>
+        <div class="img_container">
+            <img src="{% static "core/images/solutions/solution_!.png" %}" alt="img" />
+        </div>
+        <div class="arrow_container">
+            <img src="{% static "core/images/direction/arrow.png" %}" alt="arrow" />
+        </div>
+    </div>
+    <div class="rigth_vector_table">
+        <div class="up">
+            <div class="date">24/7</div>
+            <div class="description">
+                <span>работает без перерывов,
+                выходных и отпусков</span>
+            </div>
+            <div class="arrow_container">
+                <img src="{% static "core/images/direction/arrow.png" %}" alt="arrow" />
+            </div>
+        </div>
+        <div class="down">
+            <div class="description">
+                <span>быстрая окупаемость за
+                2 года</span>
+            </div>
+            <div class="payback">2</div>
+        </div>
+    </div>
+</div>
+<div class="demo-form-container">
+    <div class="description_content">
+        <div class="title">ДЕМО ВЫЕЗД</div>
+        <div class="description">Бесплатная демонстрация работы робота на вашем предприятии в реальных условиях.</div>
+    </div>
+    <div class="demo_form">
+        <label>
+            <input type="text" class="name_input" placeholder="Ваше имя" />
+            <div class="error name_error"></div>
+        </label>
+        <label>
+            <input type="text" class="phone_input" placeholder="Ваше телефон" />
+            <div class="error phone_error"></div>
+        </label>
+        <button class="btn">заказать демо выезд</button>
+    </div>
+    <div class="img_container">
+        <img src="{% static "core/images/solutions/solution_form_img.png" %}"
+             alt="img">
+    </div>
+</div>
+<div class="chars">
+    <div class="chars_image_container">
+        <img class="palett_img"
+             src="{% static "core/images/solutions/Foto-Palletizer-slide-1.png" %}"
+             alt="img" />
+        <img class="arrow arrow_1"
+             src="{% static "core/images/solutions/palett_arrows/arrow_2.svg" %}"
+             alt="arrow">
+        <div class="size size_1">1 300 мм</div>
+        <img class="arrow arrow_2"
+             src="{% static "core/images/solutions/palett_arrows/arrow_1.svg" %}"
+             alt="arrow">
+        <img class="arrow arrow_3"
+             src="{% static "core/images/solutions/palett_arrows/arrow_3.svg" %}"
+             alt="arrow">
+        <div class="size size_2">2 500 мм</div>
+        <img class="arrow arrow_4"
+             src="{% static "core/images/solutions/palett_arrows/arrow_4.svg" %}"
+             alt="arrow">
+        <img class="arrow arrow_5"
+             src="{% static "core/images/solutions/palett_arrows/arrow_5.svg" %}"
+             alt="arrow">
+        <div class="size size_3">2 400 мм</div>
+        <img class="arrow arrow_6"
+             src="{% static "core/images/solutions/palett_arrows/arrow_6.svg" %}"
+             alt="arrow">
+    </div>
+    <div class="chars_description">
+        <div class="title">характеристики</div>
+        <div class="chars_table">
+            <div class="chars_elem">
+                <div>Длина</div>
+                <div>Ширина</div>
+                <div>Высота</div>
+                <div>Высота укладки паллеты</div>
+                <div>Скорость укладки</div>
+                <div>Максимальная масса объекта укладки</div>
+            </div>
+            <div class="chars_elem">
+                <div>2 500 мм</div>
+                <div>1 300 мм</div>
+                <div>2 400 мм</div>
+                <div>до 2100 мм</div>
+                <div>до 8 перемещений в минуту</div>
+                <div>до 14 кг</div>
+            </div>
+        </div>
+        <ul class="list">
+            <li>Удобный человеко-машинный интерфейс для оператора</li>
+            <li>Система быстрой смены захватов</li>
+            <li>Встроенная система управления вакуумом и сжатым воздухом</li>
+            <li>Мобильность установки и гибкость перенастройки на другой продукт</li>
+            <li>Безопасность для персонала: не требуется ограждений</li>
+        </ul>
+        <div class="title-link">
+            <div class="title-link-description">демо выезд</div>
+            <div class="arrow-container">
+                <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animate_chars_container">
+    <div class="title">СОСТАВ УСТАНОВКИ</div>
+    <div class="description">Установку с коботом можно условно разделить на 3 составные части:</div>
+    <div class="chars_table">
+        <div class="table_elem">
+            <div class="descr">
+                Коллаборативный робот Prompower – коллаборативный 6-осевой робот-
+                манипулятор с грузоподъемностью до 16 кг (с учетом захвата). Встроенные
+                функции безопасности позволяют использовать робота без дополнительных
+                ограждений. Интуитивно понятный графический интерфейс упрощает
+                создание программ для новых схем укладки.
+            </div>
+            <div class="title_content">
+                <div class="title_content_descr">
+                    КОЛЛАБОРАТИВНЫЙ
+                    РОБОТ PROMPOWER
+                </div>
+                <div class="img_container img_comtainer1">
+                    <img src="{% static "core/images/solutions/all_solution1.png" %}"
+                         alt="img">
+                </div>
+            </div>
+        </div>
+        <div class="table_elem">
+            <div class="descr">
+                Захват – специализированный вакуумный захват обеспечивает надежное
+                удержание и возможность укладки коробов вплотную друг к другу по любой
+                схеме раскладки. Захват проектируется индивидуально, с учетом веса короба,
+                материала картона и количества коробов в одном блоке укладки.
+                Специализированная система генерации вакуума позволяет сократить время
+                цикла на 1,5-2с.
+            </div>
+            <div class="title_content">
+                <div class="title_content_descr">Захват</div>
+                {% comment %} <div class="img_container img_comtainer1">
+                    <img src="{% static "core/images/solutions/all_solution1.png" %}" alt="img">
+                </div> {% endcomment %}
+            </div>
+        </div>
+        <div class="table_elem">
+            <div class="descr">
+                Платформа для робота – универсальная платформа для установки кобота.
+                Включает в себя шкаф управления коботом и захватом; может дооснащаться
+                подъемником для расширения возможностей кобота.
+            </div>
+            <div class="title_content">
+                <div class="title_content_descr">Платформа для робота / шкаф РТК</div>
+                <div class="img_container img_comtainer3">
+                    <img src="{% static "core/images/solutions/palett_platform.png" %}"
+                         alt="img">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="solution_one_description palett_description">
+    <div>
+        <div class="title">КОБОТЫ - ЭТО</div>
+        <div class="content">
+            <div>Инновационный продукт робототехники, разработанный специально для сотрудничества с людьми.</div>
+            <div>
+                Они обладают гибкостью и адаптивностью, что позволяет им работать рядом с человеком в общих рабочих пространствах безопасным и эффективным образом.
+            </div>
+            <div>
+                Коллаборативные роботы способны освободить людей от рутинных, опасных и монотонных задач, позволяя работникам сосредоточиться на более творческих и стратегических задачах.
+            </div>
+            <div class="border_content">
+                <b>Установка для паллетирования на базе коллаборативного робота</b> – это решение, созданное для обеспечения эффективной
+                <br>
+                и безопасной укладки на паллету различных грузов.
+            </div>
+            <div>
+                Универсальность данного решения в том, что оно позволяет
+                легко справляться с гофрокоробами и другими подобными
+                грузами весом до 14 кг.
+            </div>
+        </div>
+        <div class="title-link">
+            <div class="title-link-description">демо выезд</div>
+            <div class="arrow-container">
+                <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+            </div>
+        </div>
+    </div>
+    {% comment %} <img class="palett_animate_scroll_up" src="{% static "core/images/solutions/palett_animate_up.png" %}" alt="img" /> {% endcomment %}
+    <img class="palett_animate_scroll_up"
+         src="{% static "core/images/solutions/123.png" %}"
+         alt="img" />
+    <img class="palett_animate_scroll_down"
+         src="{% static "core/images/solutions/palett_animate_down.png" %}"
+         alt="img" />
+</div>

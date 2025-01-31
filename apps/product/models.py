@@ -120,7 +120,7 @@ class Product(models.Model):
 
     name = models.CharField("Название товара", max_length=600)
     slug = models.SlugField(null=True, max_length=600)
-
+    
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -848,7 +848,12 @@ class Cart(models.Model):
         cart = cls.objects.create(session_key=None, is_active=False,client=None,cart_admin=admin)
         
         return  cart
-
+TAG_DOC = (
+    ("ONE", "Один вариант"),
+    ("MULTI", "Несколько вариантов"),
+    ("NONE", "Нет варинтов"),
+    ("-", "Не из документа"),
+)
 
 class ProductCart(models.Model):
     cart = models.ForeignKey(
@@ -874,9 +879,22 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    sale_client = models.FloatField(
+        "Скидка клиента из парсинга фаила",
+        blank=True,
+        null=True,
+        default=None,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -926,6 +944,9 @@ class ProductCart(models.Model):
         max_length=1000,
         blank=True,
         null=True,
+    )
+    tag_auto_document = models.CharField(
+        max_length=100, choices=TAG_DOC, default="-"
     )
 
     class Meta:

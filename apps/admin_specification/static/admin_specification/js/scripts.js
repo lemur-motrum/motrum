@@ -13,6 +13,7 @@ import { setErrorModal } from "../js/error_modal.js";
 import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
+import { buttonsLogic } from "../js/add_product_in_cart.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -64,78 +65,78 @@ function catalogLogic(elems) {
 
     let countQuantity = +countQuantityZone.value;
 
-    countQuantityZone.addEventListener("keyup", function () {
-      if (productMultiplicityQuantity) {
-        let val = parseInt(this.value) || 0;
-        while (val % +productMultiplicityQuantity) {
-          val++;
-          if (val % +productMultiplicityQuantity == 0) {
-            break;
-          }
-        }
-        this.value = val;
-        countQuantity = +val;
-      } else {
-        countQuantity = +countQuantityZone.value;
-      }
+    // countQuantityZone.addEventListener("keyup", function () {
+    //   if (productMultiplicityQuantity) {
+    //     let val = parseInt(this.value) || 0;
+    //     while (val % +productMultiplicityQuantity) {
+    //       val++;
+    //       if (val % +productMultiplicityQuantity == 0) {
+    //         break;
+    //       }
+    //     }
+    //     this.value = val;
+    //     countQuantity = +val;
+    //   } else {
+    //     countQuantity = +countQuantityZone.value;
+    //   }
 
-      if (countQuantity >= 99999) {
-        countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(99999, +productMultiplicityQuantity)
-          : 99999;
-        minusButton.disabled = false;
-        plusButton.disabled = true;
-        addSpecificationButton.disabled = false;
-      } else if (countQuantity <= 0) {
-        countQuantityZone.value = 0;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = true;
-      } else {
-        minusButton.disabled = false;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = false;
-      }
-    });
+    //   if (countQuantity >= 99999) {
+    //     countQuantityZone.value = productMultiplicityQuantity
+    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
+    //       : 99999;
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = true;
+    //     addSpecificationButton.disabled = false;
+    //   } else if (countQuantity <= 0) {
+    //     countQuantityZone.value = 0;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = true;
+    //   } else {
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = false;
+    //   }
+    // });
 
-    plusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity += +productMultiplicityQuantity;
-      } else {
-        countQuantity++;
-      }
-      countQuantityZone.value = +countQuantity;
-      minusButton.disabled = false;
-      addSpecificationButton.disabled = false;
-      if (countQuantity >= 99999) {
-        countQuantityZone.value = productMultiplicityQuantity
-          ? getClosestInteger(99999, +productMultiplicityQuantity)
-          : 99999;
-        plusButton.disabled = true;
-        minusButton.disabled = false;
-      } else {
-        plusButton.disabled = false;
-        minusButton.disabled = false;
-      }
-    };
-    minusButton.onclick = () => {
-      if (productMultiplicityQuantity) {
-        countQuantity -= +productMultiplicityQuantity;
-      } else {
-        countQuantity--;
-      }
-      countQuantityZone.value = countQuantity;
-      minusButton.disabled = false;
-      if (countQuantity <= 0) {
-        countQuantityZone.value = 0;
-        minusButton.disabled = true;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = true;
-      } else {
-        minusButton.disabled = false;
-        plusButton.disabled = false;
-        addSpecificationButton.disabled = false;
-      }
-    };
+    // plusButton.onclick = () => {
+    //   if (productMultiplicityQuantity) {
+    //     countQuantity += +productMultiplicityQuantity;
+    //   } else {
+    //     countQuantity++;
+    //   }
+    //   countQuantityZone.value = +countQuantity;
+    //   minusButton.disabled = false;
+    //   addSpecificationButton.disabled = false;
+    //   if (countQuantity >= 99999) {
+    //     countQuantityZone.value = productMultiplicityQuantity
+    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
+    //       : 99999;
+    //     plusButton.disabled = true;
+    //     minusButton.disabled = false;
+    //   } else {
+    //     plusButton.disabled = false;
+    //     minusButton.disabled = false;
+    //   }
+    // };
+    // minusButton.onclick = () => {
+    //   if (productMultiplicityQuantity) {
+    //     countQuantity -= +productMultiplicityQuantity;
+    //   } else {
+    //     countQuantity--;
+    //   }
+    //   countQuantityZone.value = countQuantity;
+    //   minusButton.disabled = false;
+    //   if (countQuantity <= 0) {
+    //     countQuantityZone.value = 0;
+    //     minusButton.disabled = true;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = true;
+    //   } else {
+    //     minusButton.disabled = false;
+    //     plusButton.disabled = false;
+    //     addSpecificationButton.disabled = false;
+    //   }
+    // };
     // addSpecificationButton.onclick = () => {
     //   if (!getCookie("cart")) {
     //     fetch("/api/v1/cart/add-cart/", {
@@ -427,16 +428,15 @@ window.addEventListener("DOMContentLoaded", () => {
                                            value="1"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
-                                           onkeypress='validate(event)'>
+                                           onkeypress='validate(event)'
+                                           class="quantity_input" />
                                     <button class="plus-button"></button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
                 });
-                const catalogItems =
-                  allProducts.querySelectorAll(".catalog-item");
-                catalogLogic(catalogItems);
+                buttonsLogic(allProducts);
                 setCurrentPriceCataloItem(catalogItems);
               }
             });
@@ -581,6 +581,9 @@ window.addEventListener("DOMContentLoaded", () => {
             id_cart: productCartId,
           };
 
+          console.log("date-delivery", deliveryDate.value);
+          console.log("comment", commentItem);
+
           if (
             inputPrice
               ? !inputPrice.value || !deliveryDate.value
@@ -654,9 +657,13 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => response.json())
             .then((response) => {
               localStorage.removeItem("specificationValues");
-              deleteCookie("key", "/", window.location.hostname);
-              deleteCookie("specificationId", "/", window.location.hostname);
-              deleteCookie("cart", "/", window.location.hostname);
+              document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              // deleteCookie("key", "/", window.location.hostname);
+              // deleteCookie("specificationId", "/", window.location.hostname);
+              // deleteCookie("cart", "/", window.location.hostname);
 
               window.location.href = "/admin_specification/all_specifications/";
             })
@@ -669,7 +676,8 @@ window.addEventListener("DOMContentLoaded", () => {
       function exitSpecification(elems) {
         const endpoint = `/api/v1/order/exit-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -677,8 +685,12 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-            deleteCookie("specificationId", "/", window.location.hostname);
-            deleteCookie("cart", "/", window.location.hostname);
+            document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+            document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+            document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+            // document.cookie = `specificationId=; Path=/; Max-Age=-1; SameSite=None; Secure`
+            // deleteCookie("specificationId", "/", window.location.hostname);
+            // deleteCookie("cart", "/", window.location.hostname);
             window.location.href = "/admin_specification/all_specifications/";
           });
       }
@@ -730,7 +742,8 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              method: "UPDATE",
+              // изменила метод 
+              method: "POST",
               body: data,
               headers: {
                 "Content-Type": "application/json",
@@ -840,7 +853,11 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           quantity.value = +countQuantity;
           if (quantity.value <= 1) {
-            quantity.value = 1;
+            if (multiplicity) {
+              quantity.value = +multiplicity;
+            } else {
+              quantity.value = 1;
+            }
           }
           const currentPrice = !discountInput.value
             ? +getCurrentPrice(item.getAttribute("data-price")) *
@@ -1093,146 +1110,164 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const groupSwiper = new Swiper(".group-slider", {
     slidesPerView: "auto",
+    navigation: {
+      nextEl: ".slider-arrow",
+    },
   });
   //
 
   //выпадающий поиск
-  const searhForm = document.querySelector(".search-form-container");
-  if (searhForm) {
-    const searchInput = searhForm.querySelector(['[name="search_input"]']);
-    const searchEndpoint = "/admin_specification/search_product/";
-    let searchValue;
-    const category = searhForm.getAttribute("category");
-    const group = searhForm.getAttribute("group");
-    const searchDescriptionField = searhForm.querySelector(
-      ".search-elem-fields"
-    );
-    const closebtn = searhForm.querySelector(".close-sreach-field-button");
-    const loader = searhForm.querySelector(".loader");
+  // const searhForm = document.querySelector(".search-form-container");
+  // if (searhForm) {
+  //   const searchInput = searhForm.querySelector(['[name="search_input"]']);
 
-    function searchProduct(arr) {
-      arr.forEach((el) => {
-        el.onclick = () => {
-          searchInput.value = el.textContent;
-          closeSearchWindow();
-        };
-      });
-    }
-    function openSearchWindow() {
-      searchDescriptionField.style.display = "flex";
-      searchDescriptionField.style.gap = "";
-      searchDescriptionField.style.opacity = "1";
-    }
-    function closeSearchWindow() {
-      searchDescriptionField.style.opacity = 0;
-      setTimeout(() => {
-        searchDescriptionField.style.display = "none";
-      }, 600);
-      searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
-    }
+  //   let searchValue;
+  //   const category = searhForm.getAttribute("category");
+  //   const group = searhForm.getAttribute("group");
+  //   const searchDescriptionField = searhForm.querySelector(
+  //     ".search-elem-fields"
+  //   );
+  //   const closebtn = searhForm.querySelector(".close-sreach-field-button");
+  //   const loader = searhForm.querySelector(".loader");
 
-    let start = 0;
-    let counter = 10;
-    const objData = {
-      category: category,
-      group: group,
-      value: searchValue,
-      start: start,
-      counter: counter,
-    };
+  //   function searchProduct(arr) {
+  //     arr.forEach((el) => {
+  //       el.onclick = () => {
+  //         searchInput.value = el.textContent;
+  //         closeSearchWindow();
+  //       };
+  //     });
+  //   }
+  //   function openSearchWindow() {
+  //     searchDescriptionField.style.display = "flex";
+  //     searchDescriptionField.style.gap = "";
+  //     searchDescriptionField.style.opacity = "1";
+  //   }
+  //   function closeSearchWindow() {
+  //     searchDescriptionField.style.opacity = 0;
+  //     setTimeout(() => {
+  //       searchDescriptionField.style.display = "none";
+  //     }, 600);
+  //     searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
+  //   }
 
-    function getNewSearchValues() {
-      start += 10;
-      counter += 10;
-      objData.start = start;
-      objData.counter = counter;
-    }
-    searchInput.onkeyup = () => {
-      searchValue = searchInput.value;
-      objData.value = searchValue.trim();
-      objData.value = objData.value.replace(/ {1,}/g, " ");
-      objData.start = start;
-      objData.counter = counter;
-      if (searchInput.value.length > 2) {
-        openSearchWindow();
-        closebtn.classList.add("show");
-        const data = JSON.stringify(objData);
-        fetch(searchEndpoint, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        }).then((response) =>
-          response.json().then((response) => {
-            if (response.status == "ok") {
-              loader.classList.add("remove");
-              start = 0;
-              counter = 10;
-              objData.start = start;
-              objData.counter = counter;
-              const products = JSON.parse(response.products);
-              searchDescriptionField.innerHTML = "";
-              products.forEach((product) => {
-                searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-              });
-              const searchProducts =
-                searchDescriptionField.querySelectorAll(".product");
-              if (searchProducts) {
-                searchProduct(searchProducts);
-                searchDescriptionField.onscroll = () => {
-                  if (
-                    searchDescriptionField.scrollHeight -
-                      searchDescriptionField.scrollTop <=
-                    searchDescriptionField.offsetHeight
-                  ) {
-                    const data = JSON.stringify(objData);
-                    fetch(searchEndpoint, {
-                      method: "POST",
-                      body: data,
-                      headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
-                      },
-                    }).then((response) =>
-                      response.json().then((response) => {
-                        if (response.status == "ok") {
-                          getNewSearchValues();
-                          const products = JSON.parse(response.products);
-                          products.forEach((product) => {
-                            searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-                          });
-                          const searchProducts =
-                            searchDescriptionField.querySelectorAll(".product");
-                          if (searchProducts) {
-                            searchProduct(searchProducts);
-                          }
-                        }
-                      })
-                    );
-                  }
-                };
-                if (products.length == 0) {
-                  searchDescriptionField.innerHTML =
-                    "<div>Таких товаров нет</div>";
-                }
-              }
-            }
-          })
-        );
-      }
-      closebtn.onclick = () => {
-        closeSearchWindow();
-        closebtn.classList.remove("show");
-        searchInput.value = "";
-        start = 0;
-        counter = 10;
-        objData.start = start;
-        objData.counter = counter;
-      };
-    };
-  }
+  //   let start = 0;
+  //   let counter = 10;
+  //   const objData = {
+  //     category: category,
+  //     group: group,
+  //     value: searchValue,
+  //     start: start,
+  //     counter: counter,
+  //   };
+
+  //   function getNewSearchValues() {
+  //     start += 10;
+  //     counter += 10;
+  //     objData.start = start;
+  //     objData.counter = counter;
+  //   }
+  //   searchInput.oninput = () => {
+  //     searchValue = searchInput.value;
+  //     objData.value = searchValue.trim();
+  //     objData.value = objData.value.replace(/ {1,}/g, " ");
+  //     objData.start = start;
+  //     objData.counter = counter;
+  //     if (searchInput.value.length > 2) {
+  //       searchInput.style.borderBottomLeftRadius = 0;
+  //       searchInput.style.borderBottomRightRadius = 0;
+  //       openSearchWindow();
+  //       closebtn.classList.add("show");
+  //       const data = JSON.stringify(objData);
+  //       fetch(searchEndpoint, {
+  //         method: "POST",
+  //         body: data,
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           "X-CSRFToken": csrfToken,
+  //         },
+  //       }).then((response) =>
+  //         response.json().then((response) => {
+  //           if (response.status == "ok") {
+  //             loader.classList.add("remove");
+  //             start = 0;
+  //             counter = 10;
+  //             objData.start = start;
+  //             objData.counter = counter;
+  //             const products = JSON.parse(response.products);
+  //             searchDescriptionField.innerHTML = "";
+  //             products.forEach((product) => {
+  //               searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+  //             });
+  //             const searchProducts =
+  //               searchDescriptionField.querySelectorAll(".product");
+  //             if (searchProducts) {
+  //               searchProduct(searchProducts);
+  //               searchDescriptionField.onscroll = () => {
+  //                 if (
+  //                   searchDescriptionField.scrollHeight -
+  //                     searchDescriptionField.scrollTop <=
+  //                   searchDescriptionField.offsetHeight
+  //                 ) {
+  //                   const data = JSON.stringify(objData);
+  //                   fetch(searchEndpoint, {
+  //                     method: "POST",
+  //                     body: data,
+  //                     headers: {
+  //                       "Content-Type": "application/json",
+  //                       "X-CSRFToken": csrfToken,
+  //                     },
+  //                   }).then((response) =>
+  //                     response.json().then((response) => {
+  //                       if (response.status == "ok") {
+  //                         getNewSearchValues();
+  //                         const products = JSON.parse(response.products);
+  //                         products.forEach((product) => {
+  //                           searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
+  //                         });
+  //                         const searchProducts =
+  //                           searchDescriptionField.querySelectorAll(".product");
+  //                         if (searchProducts) {
+  //                           searchProduct(searchProducts);
+  //                         }
+  //                       }
+  //                     })
+  //                   );
+  //                 }
+  //               };
+  //               if (products.length == 0) {
+  //                 searchDescriptionField.innerHTML =
+  //                   "<div>Таких товаров нет</div>";
+  //               }
+  //             }
+  //           }
+  //         })
+  //       );
+  //     } else {
+  //       if (searchInput.value.length < 2) {
+  //         searchInput.style.borderBottomLeftRadius = "1.875rem";
+  //         searchInput.style.borderBottomRightRadius = "1.875rem";
+  //         closebtn.classList.remove("show");
+  //         start = 0;
+  //         counter = 10;
+  //         objData.start = start;
+  //         objData.counter = counter;
+  //         closeSearchWindow();
+  //       }
+  //     }
+  //     closebtn.onclick = () => {
+  //       closeSearchWindow();
+  //       searchInput.style.borderBottomLeftRadius = "1.875rem";
+  //       searchInput.style.borderBottomRightRadius = "1.875rem";
+  //       closebtn.classList.remove("show");
+  //       searchInput.value = "";
+  //       start = 0;
+  //       counter = 10;
+  //       objData.start = start;
+  //       objData.counter = counter;
+  //     };
+  //   };
+  // }
   //
   const allSpecifications = document.querySelector(".all_specifications_table");
   if (allSpecifications) {
@@ -1253,11 +1288,12 @@ window.addEventListener("DOMContentLoaded", () => {
       const cartId = +link.dataset.cartId;
 
       changeButton.onclick = () => {
-        document.cookie = `cart=${cartId};path=/`;
-        document.cookie = `specificationId=${specificationId};path=/`;
+        document.cookie = `cart=${cartId}; path=/; SameSite=None; Secure`;
+        document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1287,7 +1323,8 @@ window.addEventListener("DOMContentLoaded", () => {
       changeButton.onclick = () => {
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1311,11 +1348,12 @@ window.addEventListener("DOMContentLoaded", () => {
       updatingBtn.onclick = () => {
         cartId = cartId.getAttribute("data-cart-id");
 
-        document.cookie = `cart=${cartId};path=/`;
-        document.cookie = `specificationId=${specificationId};path=/`;
+        document.cookie = `cart=${cartId}; path=/; SameSite=None; Secure`;
+        document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          method: "UPDATE",
+          // изменила метод 
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -1526,6 +1564,77 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
   }
+
+  //кнопки из битрикс
+  const BxBtn = document.querySelector(".bx-btn");
+  if (BxBtn) {
+    const iframe = window.frameElement;
+    const BxUpd = document.querySelector(".bx-btn-upd");
+    const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
+    const serialazer = BxBtn.getAttribute("data-serializer-order");
+    const bxId = BxBtn.getAttribute("data-bx-id");
+    const specificationId = BxBtn.getAttribute("data-spesif-id");
+    let endpoint = "/api/v1/order/order-bitrix/";
+
+    const objData = {
+      bitrix_id_order: +bxId,
+      serializer: serialazer,
+    };
+    console.log(objData);
+    console.log(7);
+    BxUpd.onclick = () => {
+      document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
+      const data = JSON.stringify(objData);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+          document.location.href =
+            "/admin_specification/current_specification/";
+        });
+    };
+    BxHardUpd.onclick = () => {
+      document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
+      const data = JSON.stringify(objData);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+          document.location.href = "/admin_specification/current_specification/";
+        });
+    };
+  }
+
+  const BxError = document.querySelector(".error-bx");
+  if (BxError) {
+    setTimeout(() => {
+      document.location.href = "/admin_specification/bitrix_start_info/"
+    }, 10000)
+
+  }
+
+  const wrapper = document.querySelector(".bitrix_product_container");
+  if (wrapper) {
+    setTimeout(() => {
+      document.location.reload();
+    }, 60000);
+  }
+
 });
 
 function changeSelect(select) {

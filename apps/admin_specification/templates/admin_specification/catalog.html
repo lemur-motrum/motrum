@@ -356,6 +356,7 @@
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
+                         
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
@@ -537,6 +538,7 @@
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
+                      
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
@@ -787,10 +789,13 @@
                         </div>
                     {% endif %}
                 {% endfor %}
+           
                 <div class="new_item_container_wrapper">
+        
                     <div>
                         <div class="new_item_container">
                             <div class="new_item_container_value">
+                            
                                 <label class="name_label">
                                     <input placeholder="Имя товара"
                                            class="new_item_container_name_input"
@@ -803,7 +808,17 @@
                                            type="text" />
                                     <div class="error"></div>
                                 </label>
+                                <label class="supplier_label">
+                                   
+                                    <select class="supplier_select" value="">
+                                        <option value="" disabled selected>Выберете поставщика</option>
+                                        {% for supplier_item in supplier %}
+                                            <option value="{{ supplier_item.id }}">{{ supplier_item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
                                 <label class="vedor_label">
+                       
                                     <select class="vendor_select" value="">
                                         <option value="" disabled selected>Выберете производителя</option>
                                         {% for vendor_item in vendor %}<option value="{{ vendor_item.id }}">{{ vendor_item.name }}</option>{% endfor %}
@@ -1020,6 +1035,13 @@
                                            type="text" />
                                     <div class="error"></div>
                                 </label>
+                                <select class="supplier_select" value="">
+                                        <option value="" disabled selected>Выберете поставщика</option>
+                                        {% for supplier_item in supplier %}
+                                            <option value="{{ supplier_item.id }}">{{ supplier_item.name }}</option>
+                                        {% endfor %}
+                                </select>
+
                                 <label class="vedor_label">
                                     <select class="vendor_select" value="">
                                         <option value="" disabled selected>Выберете производителя</option>

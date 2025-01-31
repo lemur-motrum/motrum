@@ -73,7 +73,7 @@ def crete_pdf_bill(
         ).order_by("id")
         print(type_delivery)
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
-        print(11111111111)
+      
 
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
@@ -803,7 +803,7 @@ def crete_pdf_bill(
                     normal_style,
                 ),)
             )
-        print(111111, data_text_info)
+      
         table_data_text_info = Table(
             data_text_info,
         )

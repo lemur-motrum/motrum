@@ -107,7 +107,14 @@ def catalog_group(request, category):
                     "name": "Товары без категории",
                     "slug": category,
                 }
-
+            else:
+                pass
+                # !!!!!
+                # current_category = {
+                #     "name": "NONE",
+                #     "slug": category,
+                # }
+                
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
@@ -347,28 +354,6 @@ def add_document_admin(request):
         return render(request, "admin/add_doc.html", context)
 
 
-# # юрина вьюха каталога
-# def catalog(request):
-
-#     product_list = Product.objects.select_related(
-#         "supplier",
-#         "vendor",
-#         "category_supplier_all",
-#         "group_supplier",
-#         "category_supplier",
-#         "category",
-#         "group",
-#         "price",
-#         "stock",
-#     ).filter(check_to_order=True)[0:10]
-
-#     context = {
-#         "product_list": product_list,
-#     }
-
-#     return render(request, "product/catalog.html", context)
-
-
 # АВТОЗАПОЛНЕНИЯ для админки БЕК ОКТ
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
 
@@ -439,12 +424,17 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
-
+    print(99999)
     def get_queryset(self):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)
-        if supplier:
-            qs = qs.filter(supplier=supplier)
+        vendor = self.forwarded.get("vendor", None)
+        print(supplier,vendor)
+        if supplier and vendor:
+            qs = qs.filter(supplier=supplier,vendor=vendor)
+        # else:
+        #     qs = None
+        
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))
@@ -458,6 +448,7 @@ class SupplierGroupProductAutocomplete(autocomplete.Select2QuerySetView):
         category_supplier = self.forwarded.get("category_supplier", None)
         if category_supplier:
             qs = qs.filter(category_supplier=category_supplier)
+            
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))

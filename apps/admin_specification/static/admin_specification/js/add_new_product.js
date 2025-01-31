@@ -186,6 +186,7 @@ function addNewProductLogic(container) {
         ".add_new_item_in_cart_container_error"
       );
       const vendorSelect = newItemContainer.querySelector(".vendor_select");
+      const supplierSelect = newItemContainer.querySelector(".supplier_select");
 
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
@@ -202,6 +203,14 @@ function addNewProductLogic(container) {
         vendorSelect.addEventListener("change", function () {
           if (el.selected) {
             vendorSelect.setAttribute("value", el.getAttribute("value"));
+          }
+        });
+      });
+      const optionsSupplier = supplierSelect.querySelectorAll("option");
+      optionsSupplier.forEach((el) => {
+        supplierSelect.addEventListener("change", function () {
+          if (el.selected) {
+            supplierSelect.setAttribute("value", el.getAttribute("value"));
           }
         });
       });
@@ -319,6 +328,7 @@ function addNewProductLogic(container) {
               ? addPersentSaleInput.value
               : null,
             vendor: vendorSelect.getAttribute("value"),
+            supplier: supplierSelect.getAttribute("value"),
           };
           const data = JSON.stringify(dataObjNewProduct);
 

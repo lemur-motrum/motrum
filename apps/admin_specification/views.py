@@ -8,7 +8,7 @@ from django.db.models import Prefetch, OuterRef
 from django.db.models import Sum
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from apps import specification
+from apps import specification, supplier
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
 from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
@@ -33,6 +33,7 @@ from apps.specification.admin import ProductSpecificationAdmin
 from apps.specification.api.serializers import SpecificationSerializer
 from apps.specification.models import ProductSpecification, Specification
 
+from apps.supplier.models import Supplier
 from apps.user.models import AdminUser
 from project.settings import MEDIA_ROOT
 from .forms import SearchForm
@@ -888,6 +889,7 @@ def create_specification(request):
         title = f"Новый заказ"
         type_save = "счет"
     type_delivery = TypeDelivery.objects.all()
+    supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
     context = {
         "title": title,
@@ -905,6 +907,7 @@ def create_specification(request):
         "client_req_all": client_req_all,
         "bill_upd": bill_upd,
         "vendor": vendor,
+        "supplier":supplier,
         "type_save": type_save,
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
@@ -1704,7 +1707,7 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
-                print(11111)
+              
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,
@@ -1809,7 +1812,7 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
-                print(11111)
+                
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,

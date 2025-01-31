@@ -112,7 +112,7 @@ def get_avangard_file(new_file, obj):
                             vendor=vendor,
                         )
                         category_item.save()
-                    print(11111111111111)
+                   
                     print(category_item)
                 elif (
                     sheet[f"C{i}"].value is None

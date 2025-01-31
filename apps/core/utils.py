@@ -21,6 +21,7 @@ from apps.logs.utils import error_alert
 
 from apps.specification.utils import crete_pdf_specification
 
+from apps.supplier.models import Supplier
 from project.settings import MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
@@ -1328,10 +1329,19 @@ def save_new_product_okt(product_new):
 
     if product_new.vendor:
         vendor = product_new.vendor
-        supplier = vendor.supplier
+        
     else:
         vendor = Vendor.objects.get("drugoe")
+        
+    
+    if product_new.supplier:
+        
+        supplier = product_new.supplier
+    else:
+        
         supplier = Supplier.objects.get("drugoe")
+        
+        
 
     if product_new.product:
         product_new_prod = product_new.product.id
@@ -1867,6 +1877,7 @@ def product_cart_in_file(file, cart):
             if product_okt_count == 1:
                 # 100% ПОПАДАНИЕ
                 vendor = product_okt.vendor
+                vendor = product_okt.supplier
                 print("product_okt_count, product_okt, cart, data", product_okt_count, product_okt, cart, data)
                 
                 ProductCart.objects.get_or_create(
@@ -1876,6 +1887,7 @@ def product_cart_in_file(file, cart):
                         "product_price": product_price,
                         "product_sale_motrum": sale_motrum,
                         "quantity": quantity,
+                        "supplier": vendor,
                         "vendor": vendor,
                         "sale_client":sale_client,
                         "product_sale_motrum":sale_motrum,
@@ -1905,18 +1917,18 @@ def product_cart_in_file(file, cart):
                 
             else:
                 pass
+                #0 НАХОДОК
                 # product_okt = 
                 
-                #0 НАХОДОК
                 
-                # vendor = Vendor.objects.filter(slug=data["vendor"])
-                # if vendor.count() == 1:
-                #     vendor = vendor[1]
-                    
-                # else:
-                #     vendor = Vendor.objects.filter(slug="drugoj")
                 
-                # supplier = vendor.supplier
+                vendor = Vendor.objects.filter(slug=data["vendor"])
+                if vendor.count() == 1:
+                    vendor = vendor[1]
+                else:
+                    vendor = Vendor.objects.filter(slug="drugoj")
+                
+                supplier = Supplier.objects.filter(slug="drugoj")
 
             # if product_okt_count == 1:
             #     ProductCart.get_or_create(

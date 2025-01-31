@@ -425,7 +425,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 status_order = "PROCESSING"
                 # # сохранение ордера
-                print("11111111111", specification.id)
+            
                 serializer_class = OrderSerializer
                 data_order = {
                     "client": client,

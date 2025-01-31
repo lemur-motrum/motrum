@@ -46,13 +46,22 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
+    import subprocess
 
 
     cart = 298
     new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
     path_kp = f"{new_dir}/КП.xlsx"
     # cart = 667
-    product_cart_in_file(path_kp,cart)
+    def background_task():
+        # Долгосрочная фоновая задача
+        product_cart_in_file(path_kp,cart)
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    print(daemon_thread.is_alive())
+    
     
     result = 1
     if result:

@@ -386,7 +386,7 @@ def add_props_emas_product():
                             text_desc = text_li
                         else:
                             text_desc = f"{text_desc}{text_li}"
-                print(999999999)
+        
                 print(soup_desc)
                 if text_desc == "" and soup_desc != "":
                     text_desc = str(soup_desc)

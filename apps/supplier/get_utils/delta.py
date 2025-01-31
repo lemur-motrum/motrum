@@ -336,7 +336,7 @@ def delta_written_file(file_name, obj, new_dir):
                 # свойства из из общей колонки    
                 props_product = ProductProperty.objects.filter(product=article).exists()
                 if props_product == False:
-                    print(999999)
+                    
                     if tds != []:
                         print(tds)
                        

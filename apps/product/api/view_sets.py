@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
+from apps.core.utils import product_cart_in_file
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
@@ -26,7 +27,9 @@ from apps.product.models import (
 from django.db.models import Q, F, OrderBy, Value
 
 from apps.specification.models import ProductSpecification
+import threading
 
+from project.settings import MEDIA_ROOT
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
@@ -605,7 +608,23 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         queryset.delete()
         return Response(None, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post"], url_path="cart-file-download")
+    def product_cart_in_file_download(self, request, pk=None, *args, **kwargs):
+        print("product_cart_in_file_download", request.data)
+        cart = 298
+        new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+        path_kp = f"{new_dir}/КП.xlsx"
+        # cart = 667
+        def background_task():
+            # Долгосрочная фоновая задача
+            product_cart_in_file(path_kp,cart)
 
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
+        stop_daemon = daemon_thread.join()
+        # is_alive_daemon = daemon_thread.is_alive()
+        return Response(None, status=status.HTTP_200_OK)
 # class ProductViewSet(viewsets.ModelViewSet):
 #     permission_classes = (permissions.AllowAny,)
 #     queryset = Product.objects.none()

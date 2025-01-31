@@ -144,7 +144,7 @@ def crete_pdf_bill(
             f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
         )
         document_info = BaseImage.objects.filter().first()
-        print(8999999999999)
+
         fileName = os.path.join(directory, name_bill)
         fileName_no_sign = os.path.join(directory, name_bill_no_signature)
 

@@ -1315,11 +1315,11 @@ def iek_api():
         data = response.json()
 
         if len(data) > 0:
-            print(99999999999)
+           
             for data_item in data:
-                print(8888888)
+               
                 try:
-                    print(777777777777)
+                   
                     prod_article = data_item["Code"]
                     try:
                         prod = Product.objects.get(

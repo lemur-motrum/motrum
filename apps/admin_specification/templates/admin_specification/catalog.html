@@ -118,10 +118,13 @@
                                     {{ item.price_cart }}
                                 </span>
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
+
                                 {% if item.price_cart != item.actual_price %}
-                                    {% if item.actual_price %}
+                                
+                                    {% if item.actual_price  %}
                                     <span style="color: red; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
                                     {% else %}
+                                    
                                     <span style="color: red; display:block;">цена по запросу </span>
                                     {% endif %}
                                     
@@ -319,12 +322,13 @@
                                 </div>
                             </div>
                             <div class="item_value">
+                            
                                 <input class="discount-input"
                                        type="text"
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value="{% if bill_upd and item.id_product_spesif %}{% if item.extra_discount %}{{ item.extra_discount }}{% endif %}{% endif %}" />
+                                       value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{item.sale_client}}{% endif %}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>
@@ -504,13 +508,14 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            
                             <div class="item_value">
                                 <input class="discount-input"
                                        type="text"
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% if item.sale_client %}{{item.sale_client}}{% endif %}" />
                                 <label for="price-input-discount">
                                     %
                                     <br>
@@ -891,6 +896,7 @@
                         </div>
                     </div>
                     <button class="add_new_product">Добавить новый товар</button>
+                    <button class="add_product_file">Добавить товары из фаила</button>
                 </div>
                 <div class="coment_all_spesif">
                     <br>
@@ -1106,6 +1112,7 @@
                         </div>
                     </div>
                     <button class="add_new_product">Добавить новый товар</button>
+                    <button class="add_product_file">Добавить товары из фаила</button>
                 </div>
             </div>
         {% endif %}

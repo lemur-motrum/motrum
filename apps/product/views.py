@@ -424,7 +424,7 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
-    print(99999)
+
     def get_queryset(self):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)

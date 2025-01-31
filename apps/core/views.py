@@ -203,10 +203,7 @@ def company_about(request):
 
 # политика конфиденциальности
 def privacy_policy(request):
-    print(99999)
-    print(99999)
-    print(99999)
-    print(99999)
+
     context = {}
     return render(request, "core/privacy_policy.html", context)
 

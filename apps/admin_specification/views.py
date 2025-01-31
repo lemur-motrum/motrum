@@ -807,6 +807,9 @@ def create_specification(request):
                         ),
                     ),
                 ),
+                sale_client=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "sale_client",
+                ),
                 # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,

@@ -48,7 +48,7 @@ def add_iek(request):
     title = "TEST"
 
 
-    cart = 297
+    cart = 298
     new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
     path_kp = f"{new_dir}/КП.xlsx"
     # cart = 667

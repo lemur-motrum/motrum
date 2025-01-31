@@ -190,12 +190,13 @@
                             </div>
                         </div>
                         <div class="item_value">
+                       
                             <input class="discount-input"
                                    type="text"
                                    name="price-input-discount"
                                    placeholder="% скидки"
                                    maxlength="6"
-                                   value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% endif %}" />
+                                   value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{item.sale_client}}{% endif %}{% endif %}" />
                             <label for="price-input-discount">
                                 %
                                 <br>

@@ -1,6 +1,5 @@
 # расчет цены
-from ast import Try
-from csv import Error
+
 import datetime
 import random
 import re
@@ -22,7 +21,7 @@ from apps.logs.utils import error_alert
 
 from apps.specification.utils import crete_pdf_specification
 
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
 from pytils import translit
@@ -1846,20 +1845,22 @@ def product_cart_in_file(file, cart):
                 return (product.count(), product)
 
         def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
-        
-            # if data["sale_client"]:
-            #     sale_client = float(data_sheet.cell(row=index, column=21).value)
-            # else:
-            #     sale_client = 1
-            
-            product_price_client = float(data["product_price"])
+            print("product_okt_count",product_okt_count)
+            print("data",data)
+            print('product_okt',product_okt)
+            product_price_client = float(data["product_price_client_no_nds"])
             
             sale_client = 100 - (float(data["sale_client"])* 100)
             sale_motrum = 100 - (float(data["sale_motrum"]) * 100)
             print(product_price_client)
             print(sale_client)
             print(sale_motrum)
-            product_price = product_price_client / 100 
+            product_price = product_price_client * (100 / (100 - sale_client))
+            print("product_price_no_nds",product_price)
+            product_price_nds = product_price + (product_price / 100 * NDS)
+            product_price = round(product_price_nds)
+            print("product_price",product_price)
+            
             quantity = int(data["quantity"])
             print("product_okt_count",product_okt_count)
             
@@ -1872,7 +1873,7 @@ def product_cart_in_file(file, cart):
                     cart_id=cart,
                     product=product_okt,
                     defaults={
-                        "product_price": product_price_all,
+                        "product_price": product_price,
                         "product_sale_motrum": sale_motrum,
                         "quantity": quantity,
                         "vendor": vendor,
@@ -1903,16 +1904,19 @@ def product_cart_in_file(file, cart):
                     },)        
                 
             else:
+                pass
+                # product_okt = 
                 
                 #0 НАХОДОК
-                pass
+                
                 # vendor = Vendor.objects.filter(slug=data["vendor"])
                 # if vendor.count() == 1:
                 #     vendor = vendor[1]
-                #     supplier = vendor.supplier
+                    
                 # else:
-                #     pass
+                #     vendor = Vendor.objects.filter(slug="drugoj")
                 
+                # supplier = vendor.supplier
 
             # if product_okt_count == 1:
             #     ProductCart.get_or_create(
@@ -1949,7 +1953,7 @@ def product_cart_in_file(file, cart):
                     else:
                         
                         article_file = data_sheet.cell(row=index, column=3).value
-                        product_price_file = data_sheet.cell(row=index, column=9).value
+                        product_price_file = data_sheet.cell(row=index, column=5).value
                         
                     
                         if product_price_file:
@@ -1960,7 +1964,7 @@ def product_cart_in_file(file, cart):
                             vendor_name = slugify(slugish)
                             data = {
                                 "article_file":article_file,
-                                "product_price": data_sheet.cell(row=index, column=9).value,
+                                "product_price_client_no_nds": data_sheet.cell(row=index, column=5).value,
                                 "quantity": data_sheet.cell(row=index, column=6).value,
                                 "vendor": vendor_name,
                                 "sale_client":data_sheet.cell(row=index, column=21).value,

@@ -17,6 +17,9 @@
 
 .web_catalog_container {
   margin: 1.625rem 3.125rem 0 3.125rem;
+  @media screen and(max-width:576px) {
+    margin: 1.25rem;
+  }
   .title_content {
     display: flex;
     flex-direction: column;
@@ -24,17 +27,26 @@
     .bread_crumbs {
       display: flex;
       gap: 3.063rem;
+      @media screen and(max-width:576px) {
+        gap: 1.5rem;
+      }
       a {
         text-transform: lowercase;
         color: black;
         text-decoration: none;
         font-size: 0.938rem;
         font-weight: 300;
+        @media screen and(max-width:576px) {
+          font-size: 0.6rem;
+        }
       }
     }
     .title {
       font-size: 3rem;
       font-weight: bold;
+      @media screen and(max-width:576px) {
+        font-size: 2rem;
+      }
     }
   }
   .category_container {
@@ -42,12 +54,22 @@
     grid-template-columns: 20.188rem 20.188rem 20.188rem 20.188rem;
     margin-top: 3.938rem;
     gap: 1rem;
+    @media screen and(max-width:576px) {
+      margin-top: 2.188rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
     .category {
       width: 20.188rem;
       height: 16.5rem;
       border-radius: 2rem;
       overflow: hidden;
       position: relative;
+      @media screen and(max-width:576px) {
+        width: 100%;
+        height: 13.5rem;
+      }
       img {
         width: 100%;
         height: 100%;
@@ -96,6 +118,12 @@
         z-index: 3;
         color: #fff;
         width: 15.188rem;
+        @media screen and(max-width:576px) {
+          font-size: 1rem;
+          width: 11rem;
+          bottom: 1.068rem;
+          left: 1.5rem;
+        }
       }
       &:hover {
         .hover_container {
@@ -108,6 +136,9 @@
 
 .group_catalog_container {
   margin: 1.625rem 3.125rem 0 3.125rem;
+  @media screen and (max-width: 576px) {
+    margin: 0 1.25rem 1.25rem 1.25rem;
+  }
   .title_content {
     display: flex;
     flex-direction: column;
@@ -115,12 +146,18 @@
     .bread_crumbs {
       display: flex;
       gap: 3.125rem;
+      @media screen and(max-width:576px) {
+        gap: 1.5rem;
+      }
       a {
         text-transform: lowercase;
         color: black;
         text-decoration: none;
         font-size: 0.938rem;
         font-weight: 300;
+        @media screen and(max-width:576px) {
+          font-size: 0.6rem;
+        }
       }
     }
     .title {
@@ -133,6 +170,9 @@
       -webkit-hyphenate-character: "\2010";
       -webkit-hyphenate-limit-after: 1;
       -webkit-hyphenate-limit-before: 3;
+      @media screen and(max-width:576px) {
+        font-size: 2rem;
+      }
     }
     .site_categories_container {
       // overflow: hidden;
@@ -141,6 +181,9 @@
       width: 101%;
       border-radius: 10px;
       position: relative;
+      @media screen and(max-width:576px) {
+        display: none;
+      }
       .swiper-wrapper {
         .category {
           height: 3.563rem;
@@ -223,6 +266,12 @@
     grid-template-columns: 20.188rem 20.188rem 20.188rem 20.188rem;
     margin-top: 3.938rem;
     gap: 1rem;
+    @media screen and(max-width:576px) {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 2.188rem;
+    }
     .group {
       width: 20.188rem;
       height: 16.5rem;
@@ -234,6 +283,10 @@
       font-size: 1.5rem;
       position: relative;
       transition: 0.6s;
+      @media screen and(max-width:576px) {
+        width: 100%;
+        height: 13.5rem;
+      }
       &:hover {
         background-color: #ff5b00;
       }
@@ -248,6 +301,12 @@
         -webkit-hyphenate-character: "\2010";
         -webkit-hyphenate-limit-after: 1;
         -webkit-hyphenate-limit-before: 3;
+        @media screen and(max-width:576px) {
+          width: 14rem;
+          bottom: 1.25rem;
+          left: 1.25rem;
+          font-size: 1rem;
+        }
       }
     }
   }
@@ -1351,6 +1410,9 @@
     display: flex;
     justify-content: space-between;
     margin-top: 3.704rem;
+    @media screen and(max-width:576px) {
+      margin-top: 2.188rem;
+    }
     .vendors {
       display: flex;
       // grid-template-columns: repeat(5, auto);

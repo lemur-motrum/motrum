@@ -41,23 +41,26 @@ class AdminUser(CustomUser):
         verbose_name_plural = "Администраторы"
 
     def save(self, *args, **kwargs):
-        if self.id:
-            user = AdminUser.objects.get(id=self.id)
-            password_old = user.password
-            if password_old == self.password:
-                pass
+        all_user =  AdminUser.objects.all()
+        if all_user.count() > 0:
+            if self.id:
+                user = AdminUser.objects.get(id=self.id)
+                password_old = user.password
+                if password_old == self.password:
+                    pass
+                else:
+                    self.set_password(self.password)
             else:
                 self.set_password(self.password)
+
+            if self.admin_type == "ALL":
+                self.is_superuser = True
+
+            self.is_staff = True
+            # if self.password is not None:
+            #     self.set_password(self.password)
         else:
-            self.set_password(self.password)
-
-        if self.admin_type == "ALL":
-            self.is_superuser = True
-
-        self.is_staff = True
-        # if self.password is not None:
-        #     self.set_password(self.password)
-
+            pass
         super().save(*args, **kwargs)
 
     # def login_bitrix(self,data):

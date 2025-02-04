@@ -352,7 +352,7 @@ class EmailsCallBack(models.Model):
     )
 
 
-# статусы которые в окт и на сайте- конвертация из статусов битрикс
+# статусы которые в окт и на сайте
 STATUS_ORDER = (
     ("", "----"),
     ("PROCESSING", "В обработке"),
@@ -363,7 +363,7 @@ STATUS_ORDER = (
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
 )
-# статусы которые есть в битрикс
+# конвертация статусов битрикс в статусы окт
 STATUS_ORDER_BITRIX = (
     ("PROCESSING", "NEW"),
     ("PROCESSING", "PREPARATION"),
@@ -377,6 +377,7 @@ STATUS_ORDER_BITRIX = (
     ("CANCELED", "C8:2"),
     ("COMPLETED", "C8:WON"),
 )
+#чистые статусы битрикс
 CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
@@ -770,3 +771,4 @@ class DocumentShipment(models.Model):
         null=True,
     )
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+

@@ -2,6 +2,7 @@ import datetime
 from locale import LC_ALL, setlocale
 import threading
 import traceback
+from django.conf import settings
 from django.shortcuts import render
 from regex import D
 from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
@@ -47,20 +48,39 @@ def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
     import subprocess
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    # req_bx_order = bx.call(
+    #     "crm.requisite.link.list",
+    #     {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
+    # )
+    # req_bx_user_feld = bx.get_all(
+    #         "crm.requisite.list",
+    #         params={
+    #             "filter": {"RQ_INN": 6316195950},
+    #         },
+    #     )
+    company_bx = bx.get_by_ID("crm.company.get", [17682])
+    print(company_bx)
+    # print(req_bx_user_feld)#{'ID': '6650', 'ENTITY_TYPE_ID': '4', 'ENTITY_ID': '17682', 
+    
+    
+    
+    
+    
+    
+    # cart = 298
+    # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+    # path_kp = f"{new_dir}/КП.xlsx"
+    # # cart = 667
+    # def background_task():
+    #     # Долгосрочная фоновая задача
+    #     product_cart_in_file(path_kp,cart)
 
-
-    cart = 298
-    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
-    path_kp = f"{new_dir}/КП.xlsx"
-    # cart = 667
-    def background_task():
-        # Долгосрочная фоновая задача
-        product_cart_in_file(path_kp,cart)
-
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-    print(daemon_thread.is_alive())
+    # daemon_thread = threading.Thread(target=background_task)
+    # daemon_thread.setDaemon(True)
+    # daemon_thread.start()
+    # print(daemon_thread.is_alive())
     
     
     result = 1

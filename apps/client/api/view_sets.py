@@ -1634,9 +1634,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_WEB :
                     pass
                 else:
-                    is_save_new_doc_bx = save_new_doc_bx(order)
-                # if is_save_new_doc_bx == False:
-                #     birtix_ok = False
+                    pass
+                    # is_save_new_doc_bx = save_new_doc_bx(order)
+                
     
     #ОКТ 1С получение оплат ОКТ Б24 
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
@@ -1679,7 +1679,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             if IS_WEB :
                     pass
             else:
-                save_payment_order_bx(data)
+                pass
+                # save_payment_order_bx(data)
 
     #ОКТ 1С получение документов откгрузки ОКТ Б24 
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
@@ -1715,9 +1716,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
             if IS_WEB :
-                    pass
+                pass
             else:
-                save_shipment_order_bx(data)
+                pass
+                # save_shipment_order_bx(data)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

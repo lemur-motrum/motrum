@@ -815,7 +815,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                             "group_supplier",
                             "category_supplier_all",
                         ),
-                        # ("category", "group"),
+                        ("category", "group"),
                     ],
                 },
             ),

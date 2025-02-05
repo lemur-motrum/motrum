@@ -2029,7 +2029,23 @@ def product_cart_in_file(file, cart):
 
 def vendor_delta_optimus_after_load():
     from apps.product.models import Product
-    try:
+    # try:
+    #     product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
+    #     for product_one in product:
+    #         print(product)
+    #         if product_one.group_supplier is not None:
+    #             if product_one.group_supplier.vendor is not None:
+    #                 product_one.vendor = product_one.group_supplier.vendor
+    #         product_one._change_reason = "Автоматическое"
+    #         product_one.save()
+    # except Exception as e:
+    #     tr = traceback.format_exc()
+    #     error = "file_error"
+    #     location = "Загрузка 111 Delta"
+
+    #     info = f"Загрузка 111 Delta{e}{tr}"
+    #     e = error_alert(error, location, info)
+    def background_task():
         product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
         for product_one in product:
             print(product)
@@ -2038,22 +2054,6 @@ def vendor_delta_optimus_after_load():
                     product_one.vendor = product_one.group_supplier.vendor
             product_one._change_reason = "Автоматическое"
             product_one.save()
-    except Exception as e:
-        tr = traceback.format_exc()
-        error = "file_error"
-        location = "Загрузка 111 Delta"
-
-        info = f"Загрузка 111 Delta{e}{tr}"
-        e = error_alert(error, location, info)
-    # def background_task():
-    #     product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
-    #     for product_one in product:
-    #         print(product)
-    #         if product_one.group_supplier is not None:
-    #             if product_one.group_supplier.vendor is not None:
-    #                 product_one.vendor = product_one.group_supplier.vendor
-    #     product_one._change_reason = "Автоматическое"
-    #     product_one.save()
-    # daemon_thread = threading.Thread(target=background_task)
-    # daemon_thread.setDaemon(True)
-    # daemon_thread.start()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()

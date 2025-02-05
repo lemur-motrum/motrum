@@ -14,7 +14,7 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file
+from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, vendor_delta_optimus_after_load
 from apps.product.models import CurrencyRate, GroupProduct, Product
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -129,7 +129,7 @@ def add_one_c(request):
     return render(request, "supplier/supplier.html", context)
 
 def add_vendor_delta_optimus_after_load(request):
-    add_vendor_delta_optimus_after_load()
+    vendor_delta_optimus_after_load()
     
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):

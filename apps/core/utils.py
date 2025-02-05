@@ -2027,7 +2027,7 @@ def product_cart_in_file(file, cart):
         info = f"Добавление товаров из фаила{e}{tr}"
         e = error_alert(error, location, info)
 
-def add_vendor_delta_optimus_after_load():
+def vendor_delta_optimus_after_load():
     from apps.product.models import Product
     
     def background_task():

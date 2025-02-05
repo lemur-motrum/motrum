@@ -72,12 +72,12 @@ def add_file_emas(new_file, obj):
                             )
                         
                         except Product.DoesNotExist:
-                            vendor_qs = Vendor.objects.get(slug="drugoj")
+                            # vendor_qs = Vendor.objects.get(slug="drugoj")
                             new_article = create_article_motrum(supplier.id)
                             article = Product(
                                 article=new_article,
                                 supplier=supplier,
-                                vendor=vendor_qs,
+                                vendor=None,
                                 article_supplier=article_suppliers,
                                 name=name,
                                 description=None,
@@ -403,7 +403,7 @@ def add_props_emas_product():
                     product_item.category_supplier_all = groupe_items[0]
                     product_item.group_supplier = groupe_items[1]
                     product_item.category_supplier = groupe_items[2]
-                if product_item.vendor == None:
+                if product_item.vendor == None or product_item.vendor.slug == "drugoj":
                     product_item.vendor = vendor
 
                

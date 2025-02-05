@@ -15,6 +15,7 @@
                     {{ current_category.name }}
                 {% endif %}
             </h1>
+            {% if another_groups|length != 0 %}
             <div class="site_groups_container">
                 <div class="swiper-wrapper">
                     {% for group in another_groups %}
@@ -25,10 +26,15 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
         <div class="product_container">
+            <div class="mobile_filter_button_wrapper">
+                <button class="mobile_filter_button">Фильтры</button>
+               </div>
             <div class="filters_and_products_container">
                 <div class="filter_container">
+                    <div class="close_filter_elem_btn">+</div>
                     <div class="filter_elem">
                         <div class="filter_title">Производитель</div>
                         <div class="supplier_content">
@@ -132,3 +138,4 @@
         </div>
     </div>
 {% endblock content %}
+

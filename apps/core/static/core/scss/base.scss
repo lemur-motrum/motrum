@@ -193,7 +193,7 @@ a {
     margin-top: 3.704rem;
     @media screen and (max-width: 576px) {
       flex-direction: column;
-      margin-top: 2.188rem;
+      margin-top: 1.5rem;
       gap: 1rem;
     }
     .vendors {
@@ -1304,6 +1304,7 @@ a {
       align-items: flex-start;
       padding-top: 4.125rem;
       transition: 0.6s;
+      box-sizing: border-box;
       &.show {
         left: 0;
       }
@@ -1320,13 +1321,14 @@ a {
       margin-bottom: 0.3rem;
       @media screen and (max-width: 576px) {
         gap: 0.5rem;
+        width: 100%;
       }
       .nav-elem {
         text-transform: lowercase;
         color: #a4a4a4;
         font-size: 1.313rem;
         @media screen and (max-width: 576px) {
-          font-size: 1.5rem;
+          font-size: 1.4rem;
           width: 100%;
         }
         a {
@@ -2417,8 +2419,10 @@ a {
           height: 5.5rem;
           border: 0.094rem solid #000;
           border-radius: 100%;
-          width: 3.5rem;
-          height: 3.5rem;
+          @media screen and (max-width: 576px) {
+            width: 3.5rem;
+            height: 3.5rem;
+          }
           &.long_number {
             width: 8.25rem;
             border-radius: 4.375rem;
@@ -2894,7 +2898,7 @@ a {
       font-weight: bold;
       text-transform: uppercase;
       @media screen and(max-width:576px) {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
     }
   }
@@ -2927,7 +2931,7 @@ a {
         height: 18rem;
         top: 1.25rem;
         left: 1.25rem;
-        gap: 0.8rem;
+        gap: 0.5rem;
       }
       .contact-elem {
         display: flex;
@@ -2967,6 +2971,11 @@ a {
         padding-right: 3.188rem;
         box-sizing: border-box;
         transition: 0.6s;
+        @media screen and (max-width: 576px) {
+          width: 100%;
+          padding: 0.3rem;
+          justify-content: center;
+        }
         &:hover {
           background-color: #ff5b00;
         }
@@ -3032,7 +3041,7 @@ a {
       font-size: 3rem;
       font-weight: bold;
       @media screen and(max-width:576px) {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
     }
   }

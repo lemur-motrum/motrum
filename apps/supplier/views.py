@@ -142,7 +142,7 @@ def save_emas_props(request):
 
     def background_task():
         # Долгосрочная фоновая задача
-        # add_group_emas()
+        add_group_emas()
         add_props_emas_product()
 
     daemon_thread = threading.Thread(target=background_task)

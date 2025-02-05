@@ -295,6 +295,7 @@ def add_props_emas_product():
         
                 for product_soup_items in product_soup:
                     parent_product_soup = product_soup_items.parent.parent.parent
+                    
                     if parent_product_soup.Группы is not None:
                         parent_product_soup_group = parent_product_soup.Группы.Ид
                         if parent_product_soup_group is not None:
@@ -448,7 +449,7 @@ def add_props_emas_product():
     except Exception as e:
         tr = traceback.format_exc()
         error = "file_error"
-        location = "Загрузка фаилов Delta"
+        location = "Загрузка Параметров их хмд емас"
 
         info = f"ошибка при чтении строки артикул{e}{tr}"
         e = error_alert(error, location, info)

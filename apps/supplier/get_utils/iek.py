@@ -241,7 +241,7 @@ iek_save_categ = [
 def iek_api():
 
     supplier = Supplier.objects.get(slug="iek")
-    vendors = Vendor.objects.filter(supplier=supplier)
+    # vendors = Vendor.objects.filter(supplier=supplier)
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name="20")
     # for vendor_items in vendors:
@@ -299,7 +299,7 @@ def iek_api():
                             vendor_item = data_item["TM"]
 
                             vendor_add = Vendor.objects.get_or_create(
-                                supplier=supplier,
+                                # supplier=supplier,
                                 name=vendor_item,
                                 defaults={
                                     "vat_catalog": vat,
@@ -387,7 +387,7 @@ def iek_api():
                             break
                         else:
                             vendor_add = Vendor.objects.get_or_create(
-                                supplier=supplier,
+                                # supplier=supplier,
                                 name=data_item["TM"],
                                 defaults={
                                     "vat_catalog": None,

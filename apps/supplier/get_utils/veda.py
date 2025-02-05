@@ -12,7 +12,8 @@ from simple_history.utils import update_change_reason
 
 def veda_api():
     supplier = Supplier.objects.get(slug="veda-mc")
-    vendors = Vendor.objects.filter(supplier=supplier)
+    vendors = Vendor.objects.filter(slug="veda")
+    
     for vendors_item in vendors:
         if vendors_item.slug == "veda":
             vendor_id = vendors_item.id

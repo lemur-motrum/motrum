@@ -847,7 +847,8 @@ class ProductAdmin(SimpleHistoryAdmin):
             item = Product.objects.get(id=parent_id)
 
             if db_field.name == "vendor":
-                kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
+                # kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
+                kwargs["queryset"] = Vendor.objects.filter()
             if item.autosave_tag == False:
 
                 if db_field.name == "category_supplier":

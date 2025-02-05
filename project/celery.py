@@ -15,12 +15,9 @@ app.conf.beat_schedule = {
 
     "add_iek": {
         "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=00, hour=17),
+        "schedule": crontab(minute=00, hour=14),
     },
-    "add_prompower": {
-        "task": "apps.supplier.tasks.add_prompower",
-        "schedule": crontab(minute=30, hour=10),
-    },
+
     # # ТАСКИ битрикс
     # # # статусы битрикс заказов ежедневно
     # # 'get_status_order_bx': {
@@ -33,52 +30,52 @@ app.conf.beat_schedule = {
     # #     'schedule': crontab(minute=00, hour=5),
     # # },
     
-    # # ТАСКИ ночные для обновления окт ежедневные
-    # # курсы валют
-    # "current_rate": {
-    #     "task": "apps.core.tasks.get_currency",
-    #     "schedule": crontab(minute=10, hour=0),
-    # },
-    # # проверка целостности изображений каталога
-    # "image_check": {
-    #     "task": "apps.core.tasks.image_error_check_in",
-    #     "schedule": crontab(minute=20, hour=0),
-    # },
+    # ТАСКИ ночные для обновления окт ежедневные
+    # курсы валют
+    "current_rate": {
+        "task": "apps.core.tasks.get_currency",
+        "schedule": crontab(minute=10, hour=0),
+    },
+    # проверка целостности изображений каталога
+    "image_check": {
+        "task": "apps.core.tasks.image_error_check_in",
+        "schedule": crontab(minute=20, hour=0),
+    },
     # # получение апи товаров иек
     # "add_iek": {
     #     "task": "apps.supplier.tasks.add_iek",
     #     "schedule": crontab(minute=40, hour=0),
     # },
-    # # получение апи товаров веда
-    # "add_veda": {
-    #     "task": "apps.supplier.tasks.add_veda",
-    #     "schedule": crontab(minute=00, hour=3),
+    # получение апи товаров веда
+    "add_veda": {
+        "task": "apps.supplier.tasks.add_veda",
+        "schedule": crontab(minute=00, hour=3),
+    },
+    # получение апи товаров промповер
+    "add_prompower": {
+        "task": "apps.supplier.tasks.add_prompower",
+        "schedule": crontab(minute=00, hour=2),
+    },
+    # 'specification_stop': {
+    #     'task': 'apps.specification.tasks.specification_date_stop',
+    #     'schedule': crontab(minute=20, hour=0),
     # },
-    # # получение апи товаров промповер
-    # "add_prompower": {
-    #     "task": "apps.supplier.tasks.add_prompower",
-    #     "schedule": crontab(minute=00, hour=2),
-    # },
-    # # 'specification_stop': {
-    # #     'task': 'apps.specification.tasks.specification_date_stop',
-    # #     'schedule': crontab(minute=20, hour=0),
-    # # },
-    # # 'bill_stop': {
-    # #     'task': 'apps.specification.tasks.bill_date_stop',
-    # #     'schedule': crontab(minute=40, hour=0),
-    # # },
-    
-    # # ТАСКИ ежемесячные
-    # # расписание рабочих дней этого года + в 12 месяц берет на след год
-    # "year_holidays": {
-    #     "task": "apps.core.tasks.get_year_holiday",
-    #     "schedule": crontab(minute=3, hour=0, day_of_month=1),
+    # 'bill_stop': {
+    #     'task': 'apps.specification.tasks.bill_date_stop',
+    #     'schedule': crontab(minute=40, hour=0),
     # },
     
-    # # ТАСКИ раз  в год
-    # # обнуление счетчиков счетов
-    # "counter_bill_new_year": {
-    #     "task": "apps.core.tasks.counter_bill_new_year",
-    #     "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
-    # },
+    # ТАСКИ ежемесячные
+    # расписание рабочих дней этого года + в 12 месяц берет на след год
+    "year_holidays": {
+        "task": "apps.core.tasks.get_year_holiday",
+        "schedule": crontab(minute=3, hour=0, day_of_month=1),
+    },
+    
+    # ТАСКИ раз  в год
+    # обнуление счетчиков счетов
+    "counter_bill_new_year": {
+        "task": "apps.core.tasks.counter_bill_new_year",
+        "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
+    },
 }

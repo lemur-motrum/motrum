@@ -128,13 +128,15 @@ def add_one_c(request):
     }
     return render(request, "supplier/supplier.html", context)
 
-
+def add_vendor_delta_optimus_after_load(request):
+    add_vendor_delta_optimus_after_load()
+    
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
 
     def background_task():
         # Долгосрочная фоновая задача
-        # add_group_emas()
+        add_group_emas()
         add_props_emas_product()
 
     daemon_thread = threading.Thread(target=background_task)

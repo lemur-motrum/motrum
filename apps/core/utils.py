@@ -2036,8 +2036,8 @@ def vendor_delta_optimus_after_load():
             if product_one.group_supplier is not None:
                 if product_one.group_supplier.vendor is not None:
                     product_one.vendor = product_one.group_supplier.vendor
-        product_one._change_reason = "Автоматическое"
-        product_one.save()
+            product_one._change_reason = "Автоматическое"
+            product_one.save()
     except Exception as e:
         tr = traceback.format_exc()
         error = "file_error"

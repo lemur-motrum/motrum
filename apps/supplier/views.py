@@ -130,6 +130,12 @@ def add_one_c(request):
 
 def add_vendor_delta_optimus_after_load(request):
     vendor_delta_optimus_after_load()
+    responsets = ["233", "2131"]
+
+    context = {
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)
     
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):

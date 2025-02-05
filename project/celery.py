@@ -12,13 +12,14 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "add_veda": {
-        "task": "apps.supplier.tasks.add_veda",
-        "schedule": crontab(minute=20, hour=9),
-    },
+
     "add_iek": {
         "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=00, hour=20),
+        "schedule": crontab(minute=00, hour=17),
+    },
+    "add_prompower": {
+        "task": "apps.supplier.tasks.add_prompower",
+        "schedule": crontab(minute=30, hour=10),
     },
     # # ТАСКИ битрикс
     # # # статусы битрикс заказов ежедневно

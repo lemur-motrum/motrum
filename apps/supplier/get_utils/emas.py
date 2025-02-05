@@ -1,5 +1,6 @@
 import datetime
 import re
+import traceback
 import openpyxl as openxl
 from simple_history.utils import update_change_reason
 
@@ -71,7 +72,7 @@ def add_file_emas(new_file, obj):
                             )
                         
                         except Product.DoesNotExist:
-                            vendor_qs = Vendor.objects.get(slug="drugoe")
+                            vendor_qs = Vendor.objects.get(slug="drugoj")
                             new_article = create_article_motrum(supplier.id)
                             article = Product(
                                 article=new_article,
@@ -127,9 +128,10 @@ def add_file_emas(new_file, obj):
                             
                     except Exception as e:
                         print(e)
+                        tr = traceback.format_exc()
                         error = "file_api_error"
                         location = "Загрузка фаилов EMAS"
-                        info = f"ошибка при чтении товара артикул: {article_suppliers} Тип ошибки:{e}"
+                        info = f"ошибка при чтении товара артикул: {article_suppliers} Тип ошибки:{e}{tr}"
                         e = error_alert(error, location, info)
                     finally:
                         continue
@@ -148,10 +150,11 @@ def add_file_emas(new_file, obj):
 
     except Exception as e:
         print(e)
+        tr = traceback.format_exc()
         error = "file_error"
         location = "Загрузка фаилов emas"
 
-        info = f"ошибка при чтении фаила"
+        info = f"ошибка при чтении фаила {e}{tr}"
         e = error_alert(error, location, info)
 
 
@@ -252,19 +255,19 @@ def add_group_emas():
         
         add_props_emas_product()
     except Exception as e:
-
+        tr = traceback.format_exc()
         print(e)
         error = "file_error"
         location = "Загрузка фаилов emas"
-        info = f"ошибка при чтении фаила Загрузка Групп"
+        info = f"ошибка при чтении фаила Загрузка Групп{e}{tr}"
         e = error_alert(error, location, info)
 
 
 def add_props_emas_product():
     from bs4 import BeautifulSoup
-    print("9090")
+    
     try:
-        print("0909")
+        
         supplier = Supplier.objects.get(slug="emas")
         vendor = Vendor.objects.get(slug="emas")
         product = Product.objects.filter(supplier=supplier)
@@ -443,9 +446,9 @@ def add_props_emas_product():
 
 
     except Exception as e:
-        print(e)
+        tr = traceback.format_exc()
         error = "file_error"
         location = "Загрузка фаилов Delta"
 
-        info = f"ошибка при чтении строки артикул"
+        info = f"ошибка при чтении строки артикул{e}{tr}"
         e = error_alert(error, location, info)

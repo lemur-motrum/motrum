@@ -51,7 +51,7 @@
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
                             <div class="documentation_item">
-                                <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
+                                <a  class="documentation_link" href="{{ productdocument.document.url }}" target="_blank">{{ productdocument.name }}</a>
                                 <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span>
                             </div>
                         {% empty %}

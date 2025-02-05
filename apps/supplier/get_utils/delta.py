@@ -332,21 +332,14 @@ def delta_written_file(file_name, obj, new_dir):
                   
                 # свойства из отдельных колонок
                 save_delta_props(row2, article)  
-                print(8888888888888888)  
+                
                 # свойства из из общей колонки    
                 props_product = ProductProperty.objects.filter(product=article).exists()
                 if props_product == False:
                     
                     if tds != []:
-                        print(tds)
-                       
-                        
-                      
                         for td in tds:
-                            
                             if td != []:
-                                print(222222222)
-                                print(td)
                                 value_props_no_br = str(td[1]).replace("<br>", ". ")
                                 value_props_no_br = str(td[1]).replace("<br/>", ". ")
                                 
@@ -422,25 +415,3 @@ def save_delta_props(row2, article):
                         props_product.value = value_props
                         props_product.save()
                         update_change_reason(props_product, "Автоматическое")
-
-    # for remove_item in remove_list:
-    #     row_list.remove(remove_item)
-
-    # for row_row_list in row_list:
-    #     name_props = row_row_list
-    #     if row_row_list != None:
-    #         if "<br>" in name_props:
-    #             name_props = name_props.replace("<br>", " ,")
-
-    #         value_props = row2[row_row_list]
-    #         if value_props != "":
-    #             try:
-    #                 props_product = ProductProperty.objects.get(product=article)
-
-    #             except ProductProperty.DoesNotExist:
-    #                 props_product = ProductProperty(product=article)
-    #                 props_product.name = name_props
-
-    #                 props_product.value = value_props
-    #                 props_product.save()
-    #                 update_change_reason(props_product, "Автоматическое")

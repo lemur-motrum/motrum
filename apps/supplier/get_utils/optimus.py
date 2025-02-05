@@ -53,7 +53,6 @@ def add_file_optimus(new_file, obj):
 
     try:
         # распаковка архива
-
         path = os.path.join(MEDIA_ROOT, str(new_file))
         new_dir = "{0}/{1}/{2}/{3}".format(
             MEDIA_ROOT, "price", "optimus-drive", "files"
@@ -68,7 +67,6 @@ def add_file_optimus(new_file, obj):
                 return new_dir
 
         else:
-          
             error = "file_error"
             location = "Загрузка фаилов optimus"
             info = f"фаил такого формата нельзя считать"
@@ -89,7 +87,6 @@ def add_optimus_product():
     from apps.supplier.models import Supplier
 
     obj = Supplier.objects.get(slug="optimus-drive")
-
     new_dir = "{0}/{1}/{2}/{3}".format(MEDIA_ROOT, "price", "optimus-drive", "files")
     # первое сохранение категорий
     category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj).exists()

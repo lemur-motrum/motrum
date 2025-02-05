@@ -501,87 +501,87 @@ def iek_api():
                                 else:
                                     pass
 
-                            def saves_doc(
-                                item,
-                                article,
-                                name_str,
-                                type_doc
-                            ):
-                                # try:
-                                for sertif in item:
+                        def saves_doc(
+                            item,
+                            article,
+                            name_str,
+                            type_doc
+                        ):
+                            # try:
+                            for sertif in item:
 
-                                    doc = sertif["file_ref"]["uri"]
+                                doc = sertif["file_ref"]["uri"]
 
-                                    document = ProductDocument.objects.create(
-                                        product=article, type_doc=type_doc
-                                    )
-                                    update_change_reason(document, "Автоматическое")
+                                document = ProductDocument.objects.create(
+                                    product=article, type_doc=type_doc
+                                )
+                                update_change_reason(document, "Автоматическое")
 
-                                    document_path = get_file_path_add(document, doc)
-                                    p = save_file_product(doc, document_path)
-                                    document.document = document_path
-                                    document.link = doc
-                                    document.name = sertif[name_str]
-                                    document.save()
-                                    update_change_reason(document, "Автоматическое")
-                                # except item.DoesNotExist:
-                                #     pass
-                            def save_all_doc(data_item,article):
-                                # saves_doc(
-                                #     data_item["Certificates"],
-                                #     article,
-                                #     "name"
-                                # )
+                                document_path = get_file_path_add(document, doc)
+                                p = save_file_product(doc, document_path)
+                                document.document = document_path
+                                document.link = doc
+                                document.name = sertif[name_str]
+                                document.save()
+                                update_change_reason(document, "Автоматическое")
+                            # except item.DoesNotExist:
+                            #     pass
+                        def save_all_doc(data_item,article):
+                            # saves_doc(
+                            #     data_item["Certificates"],
+                            #     article,
+                            #     "name"
+                            # )
 
-                                if "Certificates" in data_item:
-                                    saves_doc(
-                                        data_item["Certificates"],
-                                        article,
-                                        "name",
-                                        "Certificates"
-                                    )
-                                if "InstallationProduct" in data_item:
-                                    saves_doc(
-                                        data_item["InstallationProduct"],
-                                        article,
-                                        "name",
-                                        "InstallationProduct"
-                                    )
-                                if "DimensionDrawing" in data_item:
-                                    saves_doc(
-                                        data_item["DimensionDrawing"],
-                                        article,
-                                        "name",
-                                        "DimensionDrawing"
-                                    )
-                                if "Passport" in data_item:
-                                    saves_doc(
-                                        data_item["Passport"],
-                                        article,
-                                        "pubName",
-                                        "Passport"
-                                    )
-                                if "WiringDiagram" in data_item:
-                                    saves_doc(
-                                        data_item["WiringDiagram"],
-                                        article,
-                                        "name",
-                                        "WiringDiagram"
-                                    )
-                                if "Models3d" in data_item:
-                                    saves_doc(
-                                        data_item["Models3d"],
-                                        article,
-                                        "pubName",
-                                        "Models3d"
-                                    )
-                                if "Brochure" in data_item:
-                                    saves_doc(
-                                        data_item["Brochure"],
-                                        article,
-                                        "pubName",
-                                        "Brochure"
-                                    )
+                            if "Certificates" in data_item:
+                                saves_doc(
+                                    data_item["Certificates"],
+                                    article,
+                                    "name",
+                                    "Certificates"
+                                )
+                            if "InstallationProduct" in data_item:
+                                saves_doc(
+                                    data_item["InstallationProduct"],
+                                    article,
+                                    "name",
+                                    "InstallationProduct"
+                                )
+                            if "DimensionDrawing" in data_item:
+                                saves_doc(
+                                    data_item["DimensionDrawing"],
+                                    article,
+                                    "name",
+                                    "DimensionDrawing"
+                                )
+                            if "Passport" in data_item:
+                                saves_doc(
+                                    data_item["Passport"],
+                                    article,
+                                    "pubName",
+                                    "Passport"
+                                )
+                            if "WiringDiagram" in data_item:
+                                saves_doc(
+                                    data_item["WiringDiagram"],
+                                    article,
+                                    "name",
+                                    "WiringDiagram"
+                                )
+                            if "Models3d" in data_item:
+                                saves_doc(
+                                    data_item["Models3d"],
+                                    article,
+                                    "pubName",
+                                    "Models3d"
+                                )
+                            if "Brochure" in data_item:
+                                saves_doc(
+                                    data_item["Brochure"],
+                                    article,
+                                    "pubName",
+                                    "Brochure"
+                                )
 
                             # # остатки
                             # param = "шт"

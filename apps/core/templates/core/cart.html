@@ -68,7 +68,12 @@
                                             <button class="minus-button">
                                                 <img src={% static "core/images/minus.png" %} alt="icon" />
                                             </button>
-                                            <input class="quantity" type="number" value={{ product_item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
+                                            <input class="quantity"
+                                                   type="number"
+                                                   value="{{ product_item.quantity }}"
+                                                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                   maxlength="3"
+                                                   onkeypress='validate(event)'>
                                             <button class="plus-button">
                                                 <img src={% static "core/images/plus.png" %} alt="icon" />
                                             </button>

@@ -59,7 +59,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 context = {"error": error_text}
                 return (next_url, context, True)
             else:
-                
+
                 try:
                     manager = AdminUser.objects.get(bitrix_id=manager_company)
                 except AdminUser.DoesNotExist:
@@ -226,25 +226,20 @@ def get_req_info_bx(bs_id_order, manager, company):
 
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
-                legal_entity = (
-                     f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
-                )
+                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
             elif type_preset_req == "3":  # Физ. лицо
-                legal_entity = (
-                    f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
-                )
+                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
-            
             inn = v["RQ_INN"]
             tel = v["RQ_PHONE"]
             id_req = int(v["ID"])
@@ -309,7 +304,7 @@ def get_req_info_bx(bs_id_order, manager, company):
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
         bic = req_bank["RQ_BIK"]
-        
+
         company = {
             "id_bitrix": id_req,
             "manager": manager.id,
@@ -544,7 +539,6 @@ def add_info_order(request, order, type_save):
                         "UF_CRM_1715001959646",
                     )
 
-
                 else:
 
                     orders_bx = remove_file_bx(
@@ -682,25 +676,25 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 
     return orders_bx
 
+
 def remove_file_bx(bx, file, id_bx, method, field_name):
-    
-    orders_bx = bx.get_by_ID("crm.deal.get", [id_bx]) 
-    orders_bx_id_file = orders_bx[field_name]['id']
+
+    orders_bx = bx.get_by_ID("crm.deal.get", [id_bx])
+    orders_bx_id_file = orders_bx[field_name]["id"]
     print(orders_bx_id_file)
-    
+
     orders_bx = bx.call(
         method,
         {
             "id": id_bx,
             "fields": {
-                field_name:  {"id": orders_bx_id_file, "remove": 'Y'},
+                field_name: {"id": orders_bx_id_file, "remove": "Y"},
             },
         },
     )
 
-    
-    
     return orders_bx
+
 
 # новые документы после появления точных сроков поставки
 def save_new_doc_bx(order):
@@ -1060,7 +1054,7 @@ def get_manager():
         for manager in manager_all_bx:
             print(manager)
             if "EMAIL" in manager:
-            # if manager["EMAIL"] != "":
+                # if manager["EMAIL"] != "":
                 try:
                     admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
                     # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
@@ -1069,7 +1063,7 @@ def get_manager():
                     print(manager)
                 except AdminUser.DoesNotExist:
                     pass
-        
+
         return True
     except Exception as e:
 

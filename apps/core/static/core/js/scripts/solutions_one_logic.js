@@ -44,6 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
       ".palett_description"
     );
 
+    // анимация при скролле
     // if (palettScrollZoneContainer) {
     //   const tab = document.querySelector(".chars_table");
     //   const palettAnimateElem = palettScrollZoneContainer.querySelector(

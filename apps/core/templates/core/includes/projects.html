@@ -24,4 +24,10 @@
             </div>
         </a>
     {% endfor %}
+    <a href="{% url 'projects_web:projects' %}" class="title-link mobile-title-link">
+        <div class="title-link-description">весь каталог</div>
+        <div class="arrow-container">
+            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+        </div>
+    </a>
 </div>

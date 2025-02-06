@@ -145,11 +145,13 @@ class IndexInfoWebAdminWeb(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
-class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
-    list_display = ("name_page", "text",)
 
-    
+
+class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
+    list_display = (
+        "name_page",
+        "text",
+    )
 
 
 # Register your models here.

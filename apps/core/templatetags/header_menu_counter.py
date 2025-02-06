@@ -8,11 +8,11 @@ from apps.notifications.models import Notification
 register = template.Library()
 
 
-@register.inclusion_tag('core/header/header_cart_lk_items.html', takes_context=True)
+@register.inclusion_tag("core/header/header_cart_lk_items.html", takes_context=True)
 def header_menu_counter(context):
     cookie_cart = context.request.COOKIES.get("cart")
     current_user = context.request.user.id
-    notifications = Notification.objects.filter(client_id = current_user,is_viewed=False )
+    notifications = Notification.objects.filter(client_id=current_user, is_viewed=False)
     notifications_order = notifications.filter(type_notification="STATUS_ORDERING")
     if cookie_cart:
         cart_id = json.loads(cookie_cart)
@@ -20,17 +20,16 @@ def header_menu_counter(context):
         count_cart = len(cart)
     else:
         count_cart = 0
-  
-    count_notifications_all = notifications.count() 
-    count_notifications_order = notifications_order.count()    
+
+    count_notifications_all = notifications.count()
+    count_notifications_order = notifications_order.count()
     return {
         "count_cart": count_cart,
         "count_notifications_all": count_notifications_all,
-        "notifications_order":count_notifications_order,
-        "request":context.request,
-        
+        "notifications_order": count_notifications_order,
+        "request": context.request,
     }
-    
+
     # if context.request.user.is_authenticated:
     #     user = context.request.user.participant
     #     return {
@@ -41,6 +40,6 @@ def header_menu_counter(context):
     #         'not_viewed_notifications_amount': Notification(participant=user).not_viewed_amount(),
     #     }
     # else:
-        # return {
-        #     'user': context.request.user,
-        # }
+    # return {
+    #     'user': context.request.user,
+    # }

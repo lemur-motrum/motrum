@@ -839,6 +839,7 @@ def save_update_product_attr(
 ):
 
     try:
+      
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
 
@@ -889,7 +890,7 @@ def save_update_product_attr(
         print(e)
         tr = traceback.format_exc()
         error = "file_api_error"
-        location = "Загрузка фаилов IEK"
+        location = "обновление товаров"
         info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")

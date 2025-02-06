@@ -1409,15 +1409,15 @@ def iek_api():
             pass
 
     # get_iek_product("products", f"groupId=01.01.01")
-    get_iek_product("products", f"art=COT01-0-100-150-HDZ80")
+    # get_iek_product("products", f"art=COT01-0-100-150-HDZ80")
     # get_iek_property("etim",  f"art=MPOB-030-2-00-S")
 
-    # # категории
-    # get_iek_category("ddp", None)
-    # # запись продуктов и пропсовдля каждого по категориям
-    # for item_iek_save_categ in iek_save_categ:
-    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
-    #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
+    # категории
+    get_iek_category("ddp", None)
+    # запись продуктов и пропсовдля каждого по категориям
+    for item_iek_save_categ in iek_save_categ:
+        get_iek_product("products", f"groupId={item_iek_save_categ}")
+        get_iek_property("etim", f"groupId={item_iek_save_categ}")
 
 
 # остатки на складах отдельная функция

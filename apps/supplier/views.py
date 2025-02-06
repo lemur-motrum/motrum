@@ -47,9 +47,8 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    import subprocess
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    iek_api()
+    
     # req_bx_order = bx.call(
     #     "crm.requisite.link.list",
     #     {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
@@ -60,8 +59,7 @@ def add_iek(request):
     #             "filter": {"RQ_INN": 6316195950},
     #         },
     #     )
-    company_bx = bx.get_by_ID("crm.company.get", [17682])
-    print(company_bx)
+ 
     # print(req_bx_user_feld)#{'ID': '6650', 'ENTITY_TYPE_ID': '4', 'ENTITY_ID': '17682', 
     
     

@@ -623,7 +623,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "article_supplier",
                         "additional_article_supplier",
                     ),
-                    ("check_to_order", "promote","add_in_nomenclature","in_view_website"),
+                    ("check_to_order","add_in_nomenclature","in_view_website"),
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -674,7 +674,6 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         # print(obj.productdocument_set.all())
         product = Product.objects.filter(id=obj.id).values()
-        
         product_blank_new = get_blank(product, Product, product_blank)
 
         try:
@@ -820,11 +819,35 @@ class ProductAdmin(SimpleHistoryAdmin):
                 },
             ),
         ]
+       
+        fields_to_first_admin = [
+        (
+            "Основные параметры",
+            {
+                "fields": [
+                    (
+                        "article_supplier",
+                        "additional_article_supplier",
+                    ),
+                    ("check_to_order", "promote","in_view_website"),
+                    "name",
+                    "description",
+                    ("supplier", "vendor"),
+                    ("category_supplier", "group_supplier", "category_supplier_all"),
+                    ("category", "group"),
+                ],
+            },
+        ),
+    ]
         if obj and obj.pk:
-            return fields
+            if request.user.is_superuser:
+                return fields_to_first_admin
+            else:
+                return fields
         else:
             return fields_add
 
+    
     def get_form(self, request, obj, **kwargs):
         if obj == None:
             kwargs["form"] = ProductForm

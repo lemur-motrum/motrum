@@ -37,6 +37,7 @@ ALLOWED_HOSTS = [
     "pmn.bitrix24.ru",
     "45.153.188.69",
     "test.motrum.ru",
+    "192.168.0.104",
 ]
 
 SESSION_COOKIE_SAMESITE = "None"

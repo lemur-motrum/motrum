@@ -194,8 +194,10 @@ def product_one(request, category, group, article):
         )
         .get(article=article)
     )
+    print("1231231",)
     product_document = ProductDocument.objects.filter(product=product)
-
+    print("product_document",product_document)
+    
     context = {
         "product": product,
         "current_category": product.category,
@@ -237,6 +239,7 @@ def product_one_without_group(request, category, article):
         )
         .get(article=article)
     )
+    product_document = ProductDocument.objects.filter(product=product)
     # product = Product.objects.get(article=article)
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)
@@ -245,6 +248,7 @@ def product_one_without_group(request, category, article):
         "product": product,
         "current_category": current_category,
         "title": product.name,
+        "product_document": product_document,
         # "product_properties": product_properties,
         # "product_lot": product_lot,
     }

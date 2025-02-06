@@ -42,6 +42,7 @@ from apps.supplier.models import (
 from project.settings import IS_PROD
 
 iek_save_categ = [
+ 
     "01.01.01",
     "20.01.70",
     "02.01.01",

@@ -15,7 +15,7 @@ app.conf.beat_schedule = {
 
     "add_iek": {
         "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=00, hour=14),
+        "schedule": crontab(minute=30, hour=9),
     },
 
     # # ТАСКИ битрикс

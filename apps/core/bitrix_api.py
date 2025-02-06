@@ -559,7 +559,6 @@ def add_info_order(request, order, type_save):
 
                     orders_bx = remove_file_bx(
                         bx,
-                        document_specification,
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
@@ -693,21 +692,24 @@ def save_file_bx(bx, file, id_bx, method, field_name):
     return orders_bx
 
 
-def remove_file_bx(bx, file, id_bx, method, field_name):
+def remove_file_bx(bx, id_bx, method, field_name):
 
     orders_bx = bx.get_by_ID("crm.deal.get", [id_bx])
-    orders_bx_id_file = orders_bx[field_name]["id"]
-    print(orders_bx_id_file)
+    
+    if field_name in orders_bx:
+        orders_bx_id_file = orders_bx[field_name]["id"]
 
-    orders_bx = bx.call(
-        method,
-        {
-            "id": id_bx,
-            "fields": {
-                field_name: {"id": orders_bx_id_file, "remove": "Y"},
+        orders_bx = bx.call(
+            method,
+            {
+                "id": id_bx,
+                "fields": {
+                    field_name: {"id": orders_bx_id_file, "remove": "Y"},
+                },
             },
-        },
-    )
+        )
+    else:
+        print("not feald")
 
     return orders_bx
 

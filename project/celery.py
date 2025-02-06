@@ -13,10 +13,10 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
 
-    "add_iek": {
-        "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=10, hour=11),
-    },
+    # "add_iek": {
+    #     "task": "apps.supplier.tasks.add_iek",
+    #     "schedule": crontab(minute=10, hour=11),
+    # },
 
     # # ТАСКИ битрикс
     # # # статусы битрикс заказов ежедневно
@@ -42,10 +42,10 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=20, hour=0),
     },
     # # получение апи товаров иек
-    # "add_iek": {
-    #     "task": "apps.supplier.tasks.add_iek",
-    #     "schedule": crontab(minute=40, hour=0),
-    # },
+    "add_iek": {
+        "task": "apps.supplier.tasks.add_iek",
+        "schedule": crontab(minute=40, hour=0),
+    },
     # получение апи товаров веда
     "add_veda": {
         "task": "apps.supplier.tasks.add_veda",

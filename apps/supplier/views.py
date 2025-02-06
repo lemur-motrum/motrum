@@ -53,7 +53,7 @@ def add_iek(request):
 
     req_bx_order = bx.call(
         "crm.requisite.link.list",
-        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": 10914}},
+        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": 10568}},
     )
   
     req_bx_id = req_bx_order["REQUISITE_ID"]

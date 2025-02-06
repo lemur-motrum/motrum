@@ -73,7 +73,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
             )
             if req_error:
                 error_text = ""
-                if place != "Адреса" or place != "Адрес юридический":
+                if place != "Адреса" and place != "Адрес юридический":
                     
                     error_text = f"к сделке не прикреплен {place}"
                 else:

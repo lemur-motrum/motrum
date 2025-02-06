@@ -18,12 +18,12 @@ app.conf.beat_schedule = {
     #     "schedule": crontab(minute=10, hour=11),
     # },
 
-    # # ТАСКИ битрикс
-    # # # статусы битрикс заказов ежедневно
-    # # 'get_status_order_bx': {
-    # #     'task': 'apps.core.tasks.get_status_order_bx',
-    # #     'schedule': crontab(minute=0, hour='6-21'),
-    # # },
+    # ТАСКИ битрикс
+    # # статусы битрикс заказов ежедневно
+    # 'get_status_order_bx': {
+    #     'task': 'apps.core.tasks.get_status_order_bx',
+    #     'schedule': crontab(minute=0, hour='6-21'),
+    # },
     # # # уведомления о повышения цен на товары и курсов ежедневно
     # # 'add_currency_check_bx': {
     # #     'task': 'apps.core.tasks.currency_check_bx',

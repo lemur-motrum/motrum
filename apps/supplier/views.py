@@ -47,18 +47,42 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    id_b = 10568
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
-
-    orders_bx = remove_file_bx(
-        bx,
-        id_b,
-        "crm.deal.update",
-        "UF_CRM_1715001959646",
-    )
     
 
+    iek_api()
+    
+    # req_bx_order = bx.call(
+    #     "crm.requisite.link.list",
+    #     {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
+    # )
+    # req_bx_user_feld = bx.get_all(
+    #         "crm.requisite.list",
+    #         params={
+    #             "filter": {"RQ_INN": 6316195950},
+    #         },
+    #     )
+ 
+    # print(req_bx_user_feld)#{'ID': '6650', 'ENTITY_TYPE_ID': '4', 'ENTITY_ID': '17682', 
+    
+    
+    
+    
+    
+    
+    # cart = 298
+    # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+    # path_kp = f"{new_dir}/КП.xlsx"
+    # # cart = 667
+    # def background_task():
+    #     # Долгосрочная фоновая задача
+    #     product_cart_in_file(path_kp,cart)
+
+    # daemon_thread = threading.Thread(target=background_task)
+    # daemon_thread.setDaemon(True)
+    # daemon_thread.start()
+    # print(daemon_thread.is_alive())
+    
+    
     result = 1
     if result:
         pass

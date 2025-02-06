@@ -42,7 +42,7 @@ from apps.supplier.models import (
 from project.settings import IS_PROD
 
 iek_save_categ = [
- 
+    
     "01.01.01",
     "20.01.70",
     "02.01.01",
@@ -659,12 +659,12 @@ def iek_api():
                             ).exists()
                             if image == False:
                                 save_image(article)
-                            # if IS_PROD :
-                            documents = ProductDocument.objects.filter(
-                                product=article
-                            ).exists()
-                            if documents == False:
-                                save_all_doc(data_item, article)
+                            if IS_PROD :
+                                documents = ProductDocument.objects.filter(
+                                    product=article
+                                ).exists()
+                                if documents == False:
+                                    save_all_doc(data_item, article)
 
                         except Product.DoesNotExist:
                             new_article = create_article_motrum(supplier.id)
@@ -682,8 +682,8 @@ def iek_api():
                             article.save()
                             update_change_reason(article, "Автоматическое")
                             save_image(article)
-                            # if IS_PROD :
-                            save_all_doc(data_item, article)
+                            if IS_PROD :
+                                save_all_doc(data_item, article)
 
                         # цены товара
                         print(article)
@@ -760,7 +760,11 @@ def iek_api():
                             article
                         )  # (stock,to_order,is_none_error)
                         print("stock_supplier", stock, to_order, is_none_error)
-
+                        print("lot",lot)
+                        print(11111)
+                        if is_none_error == False:
+                            stock = 0
+                        
                         # if is_none_error:
                         #     if stock != 0:
                         #         stock_prod_stock_supplier = stock / int(
@@ -771,41 +775,71 @@ def iek_api():
                         # else:
                         #     stock_prod_stock_supplier = False
                         # print(stock_prod_stock_supplier)
+                        if lot:
+                            print("if lot true")
+                            if stock != 0:
+                                stock_prod_stock_supplier = stock / int(
+                                    order_multiplicity
+                                )
+                            else:
+                                stock_prod_stock_supplier = 0
 
-                        if is_none_error:
-                            if lot:
-                                if stock != 0:
-                                    stock_prod_stock_supplier = stock / int(
-                                        order_multiplicity
-                                    )
-                                else:
-                                    stock_prod_stock_supplier = 0
+                            try:
+                                stock_prod = Stock.objects.get(prod=article)
 
-                                try:
-                                    stock_prod = Stock.objects.get(prod=article)
+                            except Stock.DoesNotExist:
+                                stock_prod = Stock(
+                                    prod=article,
+                                )
 
-                                except Stock.DoesNotExist:
-                                    stock_prod = Stock(
-                                        prod=article,
-                                    )
+                            finally:
+                                stock_prod.lot = lot
+                                stock_prod.stock_supplier = int(
+                                    stock_prod_stock_supplier
+                                )
+                                stock_prod.stock_supplier_unit = stock
+                                stock_prod.to_order = to_order
+                                stock_prod.lot_complect = lot_complect
+                                stock_prod.order_multiplicity = order_multiplicity
+                                stock_prod.is_one_sale = is_one_sale
+                                stock_prod._change_reason = "Автоматическое"
+                                stock_prod.data_update = datetime.datetime.now()
+                                stock_prod.save()
 
-                                finally:
-                                    stock_prod.lot = lot
-                                    stock_prod.stock_supplier = (
-                                        stock_prod_stock_supplier
-                                    )
-                                    stock_prod.stock_supplier_unit = stock
-                                    stock_prod.to_order = to_order
-                                    stock_prod.lot_complect = lot_complect
-                                    stock_prod.order_multiplicity = order_multiplicity
-                                    stock_prod.is_one_sale = is_one_sale
-                                    stock_prod._change_reason = "Автоматическое"
-                                    stock_prod.data_update = datetime.datetime.now()
-                                    stock_prod.save()
+                        # if is_none_error:
+                        #     if lot:
+                        #         if stock != 0:
+                        #             stock_prod_stock_supplier = stock / int(
+                        #                 order_multiplicity
+                        #             )
+                        #         else:
+                        #             stock_prod_stock_supplier = 0
 
-                                    # update_change_reason(stock_prod, "Автоматическое")
-                        else:
-                            pass
+                        #         try:
+                        #             stock_prod = Stock.objects.get(prod=article)
+
+                        #         except Stock.DoesNotExist:
+                        #             stock_prod = Stock(
+                        #                 prod=article,
+                        #             )
+
+                        #         finally:
+                        #             stock_prod.lot = lot
+                        #             stock_prod.stock_supplier = int(
+                        #                 stock_prod_stock_supplier
+                        #             )
+                        #             stock_prod.stock_supplier_unit = stock
+                        #             stock_prod.to_order = to_order
+                        #             stock_prod.lot_complect = lot_complect
+                        #             stock_prod.order_multiplicity = order_multiplicity
+                        #             stock_prod.is_one_sale = is_one_sale
+                        #             stock_prod._change_reason = "Автоматическое"
+                        #             stock_prod.data_update = datetime.datetime.now()
+                        #             stock_prod.save()
+
+                        #             # update_change_reason(stock_prod, "Автоматическое")
+                        # else:
+                        #     pass
 
                     except Exception as e:
                         print(e)
@@ -1375,15 +1409,15 @@ def iek_api():
             pass
 
     # get_iek_product("products", f"groupId=01.01.01")
-    # get_iek_product("products", f"art=CMZ10-SH-3")
+    get_iek_product("products", f"art=COT01-0-100-150-HDZ80")
     # get_iek_property("etim",  f"art=MPOB-030-2-00-S")
 
-    # категории
-    get_iek_category("ddp", None)
-    # запись продуктов и пропсовдля каждого по категориям
-    for item_iek_save_categ in iek_save_categ:
-        get_iek_product("products", f"groupId={item_iek_save_categ}")
-        get_iek_property("etim", f"groupId={item_iek_save_categ}")
+    # # категории
+    # get_iek_category("ddp", None)
+    # # запись продуктов и пропсовдля каждого по категориям
+    # for item_iek_save_categ in iek_save_categ:
+    #     get_iek_product("products", f"groupId={item_iek_save_categ}")
+    #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
 
 
 # остатки на складах отдельная функция

@@ -72,10 +72,18 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 bs_id_order, manager, company
             )
             if req_error:
-                if place != "Адреса":
+                error_text = ""
+                if place != "Адреса" or place != "Адрес юридический":
+                    
                     error_text = f"к сделке не прикреплен {place}"
                 else:
-                    error_text = f"В выбранных реквизитах не заполнены адреса"
+                    if place == "Адреса":
+                        error_text = f"В выбранных реквизитах не заполнены адреса"
+                    elif place == "Адрес юридический":
+                        error_text = f"В выбранных реквизитах нет Адрес юридический"
+                    else:
+                        error_text = f"не заполнен {place}"
+                        
                 next_url = "/admin_specification/error-b24/"
                 context = {"error": error_text}
                 return (next_url, context, True)
@@ -167,7 +175,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
         tr = traceback.format_exc()
         error = "error"
         location = "первичное открытие сделки битрикс"
-        info = f" ошибка {e}{tr}"
+        info = f" сделка {bs_id_order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
 
@@ -192,6 +200,12 @@ def get_req_info_bx(bs_id_order, manager, company):
             "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
         },
     )
+    adress_item_bx = False
+    for adress_item in adress_bx:
+        if adress_item["TYPE_ID"] == "6" or adress_item["TYPE_ID"] == 6:
+            adress_item_bx = True
+    
+    
 
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
@@ -199,6 +213,8 @@ def get_req_info_bx(bs_id_order, manager, company):
         return (True, "Банковские реквизиты", None)
     elif len(adress_bx) == 0:
         return (True, "Адреса", None)
+    elif adress_item_bx == False:
+        return (True, "Адрес юридический", None)
     else:
 
         # значение реквизитов

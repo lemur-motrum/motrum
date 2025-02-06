@@ -47,8 +47,28 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    iek_api()
     
+    webhook = settings.BITRIX_WEBHOOK
+    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+
+    req_bx_order = bx.call(
+        "crm.requisite.link.list",
+        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": 10914}},
+    )
+  
+    req_bx_id = req_bx_order["REQUISITE_ID"]
+    adress_bx = bx.get_all(
+        "crm.address.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
+        },
+    )
+    print("adress_bx",adress_bx)
+    adress_item_bx = False
+    for adress_item in adress_bx:
+        if adress_item["TYPE_ID"] == "6" or adress_item["TYPE_ID"] == 6:
+            adress_item_bx = True
+    print("adress_item_bx",adress_item_bx)
     # req_bx_order = bx.call(
     #     "crm.requisite.link.list",
     #     {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},

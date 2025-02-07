@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     "motrum.yuriyzhidkov.ru",
     "b24-j6zvwj.bitrix24.ru",
     "pmn.bitrix24.ru",
+    "192.168.0.110",
 ]
 
 SESSION_COOKIE_SAMESITE = "None"
@@ -261,4 +262,3 @@ REST_FRAMEWORK = {
 }
 
 NDS = 20
-

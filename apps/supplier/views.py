@@ -1,5 +1,6 @@
 import datetime
 from locale import LC_ALL, setlocale
+import random
 import threading
 import traceback
 from django.conf import settings
@@ -39,6 +40,7 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
+from apps.vacancy_web.models import Vacancy
 from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
 from fast_bitrix24 import Bitrix
 
@@ -47,41 +49,9 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    
-    veda_api()
-    
-    # req_bx_order = bx.call(
-    #     "crm.requisite.link.list",
-    #     {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
-    # )
-    # req_bx_user_feld = bx.get_all(
-    #         "crm.requisite.list",
-    #         params={
-    #             "filter": {"RQ_INN": 6316195950},
-    #         },
-    #     )
- 
-    # print(req_bx_user_feld)#{'ID': '6650', 'ENTITY_TYPE_ID': '4', 'ENTITY_ID': '17682', 
-    
-    
-    
-    
-    
-    
-    # cart = 298
-    # new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
-    # path_kp = f"{new_dir}/КП.xlsx"
-    # # cart = 667
-    # def background_task():
-    #     # Долгосрочная фоновая задача
-    #     product_cart_in_file(path_kp,cart)
-
-    # daemon_thread = threading.Thread(target=background_task)
-    # daemon_thread.setDaemon(True)
-    # daemon_thread.start()
-    # print(daemon_thread.is_alive())
-    
-    
+    rand = (random.randint(1, 9999))
+    rand_n = f"{rand}test"
+    е = Vacancy.objects.create(name=rand_n,is_actual = True,text=rand)
     result = 1
     if result:
         pass

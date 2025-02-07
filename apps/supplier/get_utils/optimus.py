@@ -330,7 +330,12 @@ def optimus_written_file(file_name, obj, new_dir):
                         category_supplier=category_supplier,
                     )
                     article.save()
-
+                    
+                    if article.group_supplier is not None:
+                        if article.group_supplier.vendor is not None:
+                            article.vendor = article.group_supplier.vendor
+                            article.save()
+                            
                     update_change_reason(article, "Автоматическое")
                     save_image(article)
                     try:

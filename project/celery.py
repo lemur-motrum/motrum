@@ -13,10 +13,10 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
 
-    "add_iek": {
-        "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=00, hour=15),
-    },
+    # "add_iek": {
+    #     "task": "apps.supplier.tasks.add_iek",
+    #     "schedule": crontab(minute=00, hour=15),
+    # },
 
     # ТАСКИ битрикс
     # # статусы битрикс заказов ежедневно

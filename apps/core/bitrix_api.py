@@ -29,7 +29,7 @@ from project.settings import MEDIA_ROOT
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        
         bx = Bitrix(webhook)
 
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
@@ -183,7 +183,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 def get_req_info_bx(bs_id_order, manager, company):
     print("get_req_info_bx")
     webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    bx = Bitrix(webhook)
 
     # реквизиты привязанные к сделке
     req_bx_order = bx.call(
@@ -450,7 +450,7 @@ def get_status_order():
 
         webhook = settings.BITRIX_WEBHOOK
 
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
         orders = [d["id_bitrix"] for d in actual_order]
 
         # orders = [1]
@@ -502,7 +502,7 @@ def add_info_order(request, order, type_save):
         if id_bitrix_order != 0:
             print("add_info_order")
 
-            bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+            bx = Bitrix(webhook)
             orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
             if len(orders_bx) > 0:
                 orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
@@ -718,7 +718,7 @@ def remove_file_bx(bx, id_bx, method, field_name):
 def save_new_doc_bx(order):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
         error = "file_api_error"
         location = "Получение\сохранение данных o товаратах 1с "
         info = f"{bx}bx"
@@ -757,7 +757,7 @@ def save_payment_order_bx(data):
     try:
 
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
 
         for data_item in data:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -785,7 +785,7 @@ def save_payment_order_bx(data):
 def save_shipment_order_bx(data):
     try:
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
         for data_item in data:
             order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
             id_bitrix_order = order.id_bitrix
@@ -815,7 +815,7 @@ def currency_check_bx():
     try:
 
         webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
@@ -970,7 +970,7 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = settings.BITRIX_WEBHOOK
-    webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+  
     print(webhook)
     bx = Bitrix(webhook)
     data_order = {
@@ -1023,7 +1023,7 @@ def get_stage_info_bx():
                 # print(stage_okt)
 
         webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        
         bx = Bitrix(webhook)
         stage_all_bx = bx.get_all(
             "crm.category.list",
@@ -1060,7 +1060,7 @@ def get_manager():
 
     try:
         webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",

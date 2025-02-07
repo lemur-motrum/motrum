@@ -61,6 +61,16 @@ def upgrade_permission():
                 "change_productdocument",
                 "add_productdocument",
                 "delete_productdocument",
+                
+                "view_productdiscount",
+                "view_supplier",
+                "view_suppliercategoryproduct",
+                "view_suppliercategoryproductall",
+                "view_suppliergroupproduct",
+                "view_vendor",
+                "view_categoryproduct",
+                "view_groupproduct"
+                "view_logsaddproduct"
             ]
             permissions = Permission.objects.filter(codename__in=codenames)
         

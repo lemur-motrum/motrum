@@ -48,11 +48,7 @@ def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
     
-    webhook = BITRIX_WEBHOOK  
-    bx = Bitrix(webhook)
-    orders_bx = bx.get_by_ID("crm.deal.get", [10568 ])
-    
-    print(orders_bx)
+    veda_api()
     
     # req_bx_order = bx.call(
     #     "crm.requisite.link.list",

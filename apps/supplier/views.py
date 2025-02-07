@@ -39,7 +39,7 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
 from fast_bitrix24 import Bitrix
 
 
@@ -48,8 +48,11 @@ def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
     
-
-    iek_api()
+    webhook = BITRIX_WEBHOOK  
+    bx = Bitrix(webhook)
+    orders_bx = bx.get_by_ID("crm.deal.get", [10568 ])
+    
+    print(orders_bx)
     
     # req_bx_order = bx.call(
     #     "crm.requisite.link.list",

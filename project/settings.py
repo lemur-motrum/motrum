@@ -247,7 +247,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 
-BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Doctorsystem API",
@@ -266,3 +266,4 @@ REST_FRAMEWORK = {
 
 NDS = 20
 
+BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")

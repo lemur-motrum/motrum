@@ -161,6 +161,8 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
+        "is_correct",
+        "is_need"
         # "category_catalog",
         # "group_catalog",
     )

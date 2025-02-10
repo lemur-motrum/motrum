@@ -16,17 +16,17 @@ from django.db.models import Q
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
 from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, vendor_delta_optimus_after_load
-from apps.product.models import CurrencyRate, GroupProduct, Product
+from apps.product.models import CurrencyRate, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_shipment_doc
-from apps.supplier.get_utils.iek import get_iek_stock, iek_api
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
 from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import SupplierCategoryProductAll, Vendor
+from apps.supplier.models import Supplier, SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -49,9 +49,30 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
     from dateutil.parser import parse
     title = "TEST"
-    rand = (random.randint(1, 9999))
-    rand_n = f"{rand}test"
-    е = Vacancy.objects.create(name=rand_n,is_actual = True,text=rand)
+    # supplier = Supplier.objects.get(slug="iek")
+    # product = Product.objects.filter(supplier=supplier)
+    # for prod in product:
+    #     print(prod)
+    #     price_product = Price.objects.filter(prod=prod).delete()
+    #     stock =  Stock.objects.filter(prod=prod).delete()
+    #     pp = ProductProperty.objects.filter(product=prod).delete()
+    #     pd = ProductDocument.objects.filter(product=prod).delete()
+    #     pi = ProductImage.objects.filter(product=prod).delete()
+    # product.delete()
+    def background_task():
+        supplier = Supplier.objects.get(slug="iek")
+        product = Product.objects.filter(supplier=supplier)
+        for prod in product:
+            price_product = Price.objects.filter(prod=prod).delete()
+            stock =  Stock.objects.filter(prod=prod).delete()
+            pp = ProductProperty.objects.filter(product=prod).delete()
+            pd = ProductDocument.objects.filter(product=prod).delete()
+            pi = ProductImage.objects.filter(product=prod).delete()
+        product.delete()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
     result = 1
     if result:
         pass

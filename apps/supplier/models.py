@@ -335,7 +335,9 @@ class SupplierCategoryProductAll(models.Model):
         null=True,
     )
     autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
-
+    is_correct = models.BooleanField("Группа есть в каталоге", default=True)
+    is_need = models.BooleanField("Неоюходима для загрузки в окт", default=True)
+    
     class Meta:
         verbose_name = "Подгруппы поставщиков"
         verbose_name_plural = "Подгруппы поставщиков"
@@ -355,31 +357,26 @@ class SupplierCategoryProductAll(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
-
+        # TODO: Дописать уведомление о новых группах иек         
+        if self.is_correct == True and self.is_need == True:
         # обоновление категорйи связанных продуктов
-        product = Product.objects.filter(category_supplier_all=self.id)
+            product = Product.objects.filter(category_supplier_all=self.id)
 
-        def background_task():
-            # Долгосрочная фоновая задача
-            for product_one in product:
-                product_one.category = self.category_catalog
-                if self.group_catalog:
-                    product_one.group = self.group_catalog
-                    # update_change_reason(product_one, "Автоматическое")
-                product_one._change_reason = "Автоматическое"
-                product_one.save()
-                # update_change_reason(product_one, "Автоматическое")
+            def background_task():
+                # Долгосрочная фоновая задача
+                for product_one in product:
+                    product_one.category = self.category_catalog
+                    if self.group_catalog:
+                        product_one.group = self.group_catalog
+                    product_one._change_reason = "Автоматическое"
+                    product_one.save()
+                  
 
-        daemon_thread = threading.Thread(target=background_task)
-        daemon_thread.setDaemon(True)
-        daemon_thread.start()
+            daemon_thread = threading.Thread(target=background_task)
+            daemon_thread.setDaemon(True)
+            daemon_thread.start()
 
-        # for product_one in product:
-        #     product_one.category = self.category_catalog
-        #     if self.group_catalog:
-        #         product_one.group = self.group_catalog
 
-        #     product_one.save()
 
 
 class Discount(models.Model):

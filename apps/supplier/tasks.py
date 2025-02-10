@@ -1,6 +1,6 @@
 from requests import JSONDecodeError
 from apps.logs.utils import error_alert
-from apps.supplier.get_utils.iek import get_iek_stock, iek_api
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
 from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.veda import veda_api
 from project.celery import app
@@ -23,7 +23,25 @@ def add_iek(self):
             e = error_alert(error, location, info)
             get_iek_stock()
         self.retry(exc=exc, countdown=600)
+        
+        
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def add_iek_individual(self):
+    try:
+        update_prod_iek_in_okt()
+        get_iek_stock()
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Связь с сервером ИЕК еженедельный"
 
+            info = f"Нет связи с сервером ИЕК еженедельный"
+            e = error_alert(error, location, info)
+            get_iek_stock()
+        self.retry(exc=exc, countdown=600)
 
 @app.task(
     bind=True,

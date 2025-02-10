@@ -12,12 +12,6 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-
-    # "add_iek": {
-    #     "task": "apps.supplier.tasks.add_iek",
-    #     "schedule": crontab(minute=00, hour=15),
-    # },
-
     # ТАСКИ битрикс
     # # статусы битрикс заказов ежедневно
     # 'get_status_order_bx': {
@@ -42,10 +36,10 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=20, hour=0),
     },
     # # получение апи товаров иек
-    "add_iek": {
-        "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=40, hour=0),
-    },
+    # "add_iek": {
+    #     "task": "apps.supplier.tasks.add_iek",
+    #     "schedule": crontab(minute=40, hour=0),
+    # },
     # получение апи товаров веда
     "add_veda": {
         "task": "apps.supplier.tasks.add_veda",
@@ -64,12 +58,17 @@ app.conf.beat_schedule = {
     #     'task': 'apps.specification.tasks.bill_date_stop',
     #     'schedule': crontab(minute=40, hour=0),
     # },
+    # ТАСКИ раз в неделю
+    "iek_individual": {
+        "task": "apps.core.tasks.add_iek_individual",
+        "schedule": crontab(minute=3, hour=0, day_of_month=1),
+    },
     
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
     "year_holidays": {
         "task": "apps.core.tasks.get_year_holiday",
-        "schedule": crontab(minute=3, hour=0, day_of_month=1),
+        "schedule": crontab(minute=3, hour=0, day_of_week=1),
     },
     
     # ТАСКИ раз  в год

@@ -1,7 +1,7 @@
 import os
 import re
 import traceback
-import unicodedata
+
 from django.urls import reverse
 from django.utils import timezone
 from django.db import models
@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from apps.logs.utils import error_alert
 from simple_history.models import HistoricalRecords
 
-# from middlewares.middlewares import RequestMiddleware
+
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -447,7 +447,7 @@ class Price(models.Model):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
-
+        print("SAVE PRICE")
         # если 0 цена или экстра прайс проставить нули и теги
         if (
             self.price_supplier == 0
@@ -455,9 +455,6 @@ class Price(models.Model):
             or self.price_supplier == None
         ):
             self.extra_price = True
-            # self.price_supplier = 0
-            # self.rub_price_supplier = 0
-            # self.price_motrum = 0
             self.price_supplier = None
             self.rub_price_supplier = None
             self.price_motrum = None
@@ -465,8 +462,8 @@ class Price(models.Model):
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
+            
             # получить рублевую цену
-
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,

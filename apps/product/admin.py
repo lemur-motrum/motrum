@@ -623,7 +623,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                         "article_supplier",
                         "additional_article_supplier",
                     ),
-                    ("check_to_order","add_in_nomenclature","in_view_website"),
+                    ("check_to_order", "add_in_nomenclature", "in_view_website"),
                     "name",
                     "description",
                     ("supplier", "vendor"),
@@ -723,7 +723,6 @@ class ProductAdmin(SimpleHistoryAdmin):
                 "category_supplier_all",
                 "group_supplier",
                 "category_supplier",
-                
             )
             .prefetch_related(
                 Prefetch("stock"),
@@ -731,7 +730,6 @@ class ProductAdmin(SimpleHistoryAdmin):
                 Prefetch("productproperty_set"),
                 Prefetch("productimage_set"),
                 Prefetch("productdocument_set"),
-                
                 # Prefetch("supplier__suppliergroupproduct"),
                 # Prefetch("supplier__vendor"),
                 # Prefetch("supplier__supplier"),
@@ -756,37 +754,41 @@ class ProductAdmin(SimpleHistoryAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             if obj.autosave_tag == True:
-                if (
-                    obj.category_supplier != None
-                    and obj.group_supplier == None
-                    and obj.category_supplier_all == None
-                ):
-                    return ["article_supplier", "supplier", "category_supplier"]
+                # if (
+                #     obj.category_supplier != None
+                #     and obj.group_supplier == None
+                #     and obj.category_supplier_all == None
+                # ):
+                #     return ["article_supplier", "supplier", "category_supplier"]
 
-                elif (
-                    obj.category_supplier != None
-                    and obj.group_supplier != None
-                    and obj.category_supplier_all == None
-                ):
-                    return [
-                        "article_supplier",
-                        "supplier",
-                        "category_supplier",
-                        "group_supplier",
-                    ]
+                # elif (
+                #     obj.category_supplier != None
+                #     and obj.group_supplier != None
+                #     and obj.category_supplier_all == None
+                # ):
+                #     return [
+                #         "article_supplier",
+                #         "supplier",
+                #         "category_supplier",
+                #         "group_supplier",
+                #     ]
 
-                elif (
-                    obj.category_supplier != None
-                    and obj.group_supplier != None
-                    and obj.category_supplier_all != None
-                ):
-                    return [
-                        "article_supplier",
-                        "supplier",
-                        "category_supplier",
-                        "group_supplier",
-                        "category_supplier_all",
-                    ]
+                # elif (
+                #     obj.category_supplier != None
+                #     and obj.group_supplier != None
+                #     and obj.category_supplier_all != None
+                # ):
+                #     return [
+                #         "article_supplier",
+                #         "supplier",
+                #         "category_supplier",
+                #         "group_supplier",
+                #         "category_supplier_all",
+                #     ]
+
+                return [
+                    "",
+                ]
             else:
                 return ["article_supplier", "supplier"]
         return [
@@ -819,26 +821,30 @@ class ProductAdmin(SimpleHistoryAdmin):
                 },
             ),
         ]
-       
+
         fields_to_first_admin = [
-        (
-            "Основные параметры",
-            {
-                "fields": [
-                    (
-                        "article_supplier",
-                        "additional_article_supplier",
-                    ),
-                    ("check_to_order", "promote","in_view_website"),
-                    "name",
-                    "description",
-                    ("supplier", "vendor"),
-                    ("category_supplier", "group_supplier", "category_supplier_all"),
-                    ("category", "group"),
-                ],
-            },
-        ),
-    ]
+            (
+                "Основные параметры",
+                {
+                    "fields": [
+                        (
+                            "article_supplier",
+                            "additional_article_supplier",
+                        ),
+                        ("check_to_order", "in_view_website"),
+                        "name",
+                        "description",
+                        ("supplier", "vendor"),
+                        (
+                            "category_supplier",
+                            "group_supplier",
+                            "category_supplier_all",
+                        ),
+                        ("category", "group"),
+                    ],
+                },
+            ),
+        ]
         if obj and obj.pk:
             if request.user.is_superuser:
                 return fields_to_first_admin
@@ -847,7 +853,6 @@ class ProductAdmin(SimpleHistoryAdmin):
         else:
             return fields_add
 
-    
     def get_form(self, request, obj, **kwargs):
         if obj == None:
             kwargs["form"] = ProductForm
@@ -873,7 +878,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 # kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
                 kwargs["queryset"] = Vendor.objects.filter()
             if item.autosave_tag == False:
-
+                print("AUTOSAVE TAG FALSE")
                 if db_field.name == "category_supplier":
                     kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
                         supplier_id=item.supplier.id
@@ -886,10 +891,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                     kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
                         supplier_id=item.supplier.id
                     )
-            # if db_field.name == "category_supplier_all":
-            #     kwargs["queryset"] = SupplierCategoryProductAll.objects.filter(
-            #         supplier_id=item.supplier.id, vendor_id=item.vendor.id
-            #     )
+
         elif "/add/" in request.path:
 
             for id_table in request.resolver_match.captured_kwargs.values():

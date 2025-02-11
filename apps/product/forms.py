@@ -104,35 +104,82 @@ class DocumentForm(forms.ModelForm):
    
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
-    group = forms.ModelChoiceField(
-        required=False,
-        queryset=GroupProduct.objects.all(),
-        label="Группа Мотрум",
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
     category = forms.ModelChoiceField(
-        required=False,
         queryset=CategoryProduct.objects.all(),
-        label="Категория Мотрум",
-        widget=forms.Select(attrs={"class": "form-control"}),
+        label="Категория Motrum",
+        required=False,
     )
+
+    group = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        required=False,
+        label="Группа Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="product:group-autocomplete", forward=["category"]
+        ),
+    )
+    # group = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=GroupProduct.objects.all(),
+    #     label="Группа Мотрум",
+    #     widget=forms.Select(attrs={"class": "form-control"}),
+    # )
+    # category = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=CategoryProduct.objects.all(),
+    #     label="Категория Мотрум",
+    #     widget=forms.Select(attrs={"class": "form-control"}),
+    # )
+    # category_supplier = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=SupplierGroupProduct.objects.all(),
+    #     label="Категории товара от поставщиков",
+    #     widget=forms.Select(attrs={"class": "form-control"}),
+    # )
+    # group_supplier = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=SupplierGroupProduct.objects.all(),
+    #     label="Группа товара от поставщиков",
+    #     widget=forms.Select(attrs={"class": "form-control"}),
+    # )
+    # category_supplier_all = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=SupplierCategoryProductAll.objects.all(),
+    #     label="Подгруппа категории товара от поставщиков",
+    #     widget=forms.Select(attrs={"class": "form-control"}),
+    # )
     category_supplier = forms.ModelChoiceField(
         required=False,
-        queryset=SupplierGroupProduct.objects.all(),
-        label="Категории товара от поставщиков",
-        widget=forms.Select(attrs={"class": "form-control"}),
+        queryset=SupplierCategoryProduct.objects.all(),
+        label="Категория поставщика",
+        widget=autocomplete.ModelSelect2(
+            url="product:category_supplier-autocomplete",
+            forward=["supplier","vendor",],
+            attrs={"class": "form-control"},
+        ),
     )
+
+
     group_supplier = forms.ModelChoiceField(
-        required=False,
         queryset=SupplierGroupProduct.objects.all(),
-        label="Группа товара от поставщиков",
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
-    category_supplier_all = forms.ModelChoiceField(
         required=False,
+        label="Группа поставщика",
+        widget=autocomplete.ModelSelect2(
+            url="product:group_supplier-autocomplete",
+            forward=["category_supplier"],
+            attrs={"class": "form-control"},
+        ),
+    )
+
+    category_supplier_all = forms.ModelChoiceField(
         queryset=SupplierCategoryProductAll.objects.all(),
-        label="Подгруппа категории товара от поставщиков",
-        widget=forms.Select(attrs={"class": "form-control"}),
+        required=False,
+        label="Подгруппа поставщика",
+        widget=autocomplete.ModelSelect2(
+            url="product:category_supplier_all-autocomplete",
+            forward=["supplier", "vendor", "category_supplier", "group_supplier"],
+            attrs={"class": "form-control"},
+        ),
     )
     vendor = forms.ModelChoiceField(
         required=False,
@@ -187,7 +234,20 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         label="Поставщик",
         required=False,
     )
+    category = forms.ModelChoiceField(
+        queryset=CategoryProduct.objects.all(),
+        label="Категория Motrum",
+        required=False,
+    )
 
+    group = forms.ModelChoiceField(
+        queryset=GroupProduct.objects.all(),
+        required=False,
+        label="Группа Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="product:group-autocomplete", forward=["category"]
+        ),
+    )
     # vendor = forms.ModelChoiceField(
     #     queryset=Vendor.objects.all(),
     #     required=False,

@@ -34,8 +34,8 @@ class Client(CustomUser):
     )
 
     class Meta:
-        verbose_name = "Клиент"
-        verbose_name_plural = "Клиенты"
+        verbose_name = "Клиент сайта"
+        verbose_name_plural = "Клиенты на сайте"
 
     def save(self, *args, **kwargs):
         # self.password = "1234"

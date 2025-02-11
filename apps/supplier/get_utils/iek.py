@@ -279,7 +279,7 @@ def iek_api():
             else:
                 for data_item in data:
                     try:
-                        
+
                         category_supplier = data_item["kind"]
                         group_supplier = data_item["section"]
                         category_lower = data_item["group"]
@@ -329,10 +329,10 @@ def iek_api():
                             for all_cat_item in all_categ:
 
                                 if all_cat_item.name == category_lower:
-                                   
+
                                     pass
                                 else:
-                                   
+
                                     all_cat_item.is_correct = False
                                     all_cat_item.is_need = False
                                     all_cat_item.save()
@@ -763,12 +763,13 @@ def iek_api():
                                 name,
                             )
 
-                            image = ProductImage.objects.filter(
-                                product=article
-                            ).exists()
-                            if image == False:
-                                save_image(article)
                             if IS_PROD:
+                                image = ProductImage.objects.filter(
+                                    product=article
+                                ).exists()
+                                if image == False:
+                                    save_image(article)
+
                                 documents = ProductDocument.objects.filter(
                                     product=article
                                 ).exists()
@@ -790,10 +791,11 @@ def iek_api():
                             )
                             article.save()
                             update_change_reason(article, "Автоматическое")
-                            save_image(article)
+                            
                             if IS_PROD:
+                                save_image(article)
                                 save_all_doc(data_item, article)
-                      
+
                         # цены товара
                         print(article)
                         try:
@@ -864,7 +866,6 @@ def iek_api():
                                 lot_complect = int(logistic_parametr_quantity)
                                 stock_supplier = 0
 
-                        
                         stock, to_order, is_none_error = get_iek_stock_one(
                             article
                         )  # (stock,to_order,is_none_error)
@@ -872,7 +873,6 @@ def iek_api():
                         if is_none_error == False:
                             stock = 0
 
-  
                         if lot:
                             print("if lot true")
                             if stock != 0:
@@ -903,8 +903,6 @@ def iek_api():
                                 stock_prod._change_reason = "Автоматическое"
                                 stock_prod.data_update = datetime.datetime.now()
                                 stock_prod.save()
-
-
 
                     except Exception as e:
                         print(e)
@@ -1472,7 +1470,7 @@ def iek_api():
         else:
             # нет свойств
             pass
-    
+
     # all_categ_iek("ddp", None)
     # get_iek_product("products", f"groupId=01.02.03")
     # # get_iek_product("products", f"art=COT01-0-100-150-HDZ80")
@@ -1483,25 +1481,20 @@ def iek_api():
 
     # get_iek_category("ddp", None)
 
-
-  
     # all_categ_iek("ddp", None)
     # # запись продуктов и пропсовдля каждого по категориям
     # for item_iek_save_categ in iek_save_categ:
     #     get_iek_product("products", f"groupId={item_iek_save_categ}")
     #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
-    
-    
-    
+
     # all_categ_iek("ddp", None)
     # true_categ = SupplierCategoryProductAll.objects.filter(
     #                         supplier=supplier,is_correct = True,is_need = True
     #                     )
-    #for true_cat in true_categ:
+    # for true_cat in true_categ:
     #     get_iek_product("products", f"groupId={true_cat.article_name}")
     #     get_iek_property("etim", f"groupId={true_cat.article_name}")
 
-    
 
 # остатки на складах отдельная функция
 def get_iek_stock():
@@ -1581,6 +1574,7 @@ def get_iek_stock():
         info = f"2ошибка при чтении остатков Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
 
+
 def update_prod_iek_in_okt():
     encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
     decoded = encoded.decode()
@@ -1590,7 +1584,7 @@ def update_prod_iek_in_okt():
     payload = {}
     base_url = "https://lk.iek.ru/api/"
     supplier = Supplier.objects.get(slug="iek")
-  
+
     try:
         products = Product.objects.filter(supplier=supplier)
         for product in products:
@@ -1599,7 +1593,7 @@ def update_prod_iek_in_okt():
             url_service = "products"
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
-            print("url",url)
+            print("url", url)
             response = requests.request(
                 "GET",
                 url,
@@ -1612,7 +1606,7 @@ def update_prod_iek_in_okt():
             )
             data = response.json()
             for data_item in data:
-                                    # цены
+                # цены
                 if "price" in data_item:
                     price = data_item["price"]
                     extra = data_item["extra"]
@@ -1625,13 +1619,13 @@ def update_prod_iek_in_okt():
                 else:
                     extra = True
                     price_supplier = 0
-                    
+
                 price_product = Price.objects.get(prod=product)
                 price_product.price_supplier = price_supplier
                 price_product.extra_price = extra
                 price_product._change_reason = "Автоматическое"
                 price_product.save()
-                
+
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

@@ -36,8 +36,14 @@ window.addEventListener("DOMContentLoaded", () => {
       const pinError = autificationForm.querySelector(".pin-error");
 
       const pinLabel = autificationForm.querySelector(".password-label");
+      const mobHeader = document.querySelector(".user-navigation");
+      const burgerMenuNav = document.querySelector(".burger_menu_nav ");
 
       enterBtn.onclick = () => {
+        if (mobHeader.classList.contains("show")) {
+          mobHeader.classList.remove("show");
+          burgerMenuNav.classList.remove("checked");
+        }
         overlay.classList.add("show");
         if (overlay.classList.contains("show")) {
           document.body.style.overflow = "hidden";

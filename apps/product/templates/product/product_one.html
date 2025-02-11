@@ -16,8 +16,8 @@
         <div class="product_container">
             <div class="left_container">
                 <div class="img_container">
-                    <div class="big_img">
-                        {% if product.productimage_set.all %}
+                    {% if product.productimage_set.all %}
+                        <div class="big_img">
                             <div class="swiper-wrapper">
                                 {% for image in product.productimage_set.all %}
                                     {% if image.photo and image.hide is False %}
@@ -28,9 +28,10 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                        {% else %}
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% else %}
+                        <img src="{% static "core/images/nophoto1.png" %}" alt="img" />
+                    {% endif %}
                     <div class="small_img_container">
                         {% if product.productimage_set.all %}
                             <div class="swiper-wrapper">
@@ -51,8 +52,8 @@
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
                             <div class="documentation_item">
-                                <a  class="documentation_link" href="{{ productdocument.document.url }}" target="_blank">{{ productdocument.name }}</a>
-                                <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span>
+                                <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
+                                {% comment %} <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span> {% endcomment %}
                             </div>
                         {% empty %}
                         {% endfor %}
@@ -114,6 +115,18 @@
                             В корзину <span></span>
                         </button>
                     </div>
+                </div>
+            </div>
+            <div class="documentation_container_mob">
+                <div class="documentation_title">Документация</div>
+                <div class="documentation_items">
+                    {% for productdocument in product_document %}
+                        <div class="documentation_item">
+                            <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
+                            {% comment %} <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span> {% endcomment %}
+                        </div>
+                    {% empty %}
+                    {% endfor %}
                 </div>
             </div>
         </div>

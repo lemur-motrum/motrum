@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "45.153.188.69",
     "test.motrum.ru",
     "192.168.0.104",
+    "192.168.0.110",
 ]
 
 SESSION_COOKIE_SAMESITE = "None"

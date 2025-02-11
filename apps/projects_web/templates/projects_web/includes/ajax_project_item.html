@@ -5,7 +5,12 @@
                 {{ category_name }}.
                 {% if projectclientcategoryprojectmarking_set|length > 0 %}
                         {% for marking_categ in projectclientcategoryprojectmarking_set %}
-                                {{ marking_categ.category_name }}{% if loop.last %}:{% else %},{% endif %}
+                                {{ marking_categ.category_name }}
+                                {% if loop.last %}
+                                        :
+                                {% else %}
+                                        ,
+                                {% endif %}
                         {% endfor %}
                 {% endif %}
                 {{ name }}

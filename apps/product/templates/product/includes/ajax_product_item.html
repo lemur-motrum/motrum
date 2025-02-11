@@ -18,19 +18,18 @@
         {% endif %}
     </div>
     <div class="right_product_content">
-
         <div class="product-item_description">
             <a class="name" href="{{ url }}">{{ name }}</a>
             <div class="article">Артикул: {{ article }}</div>
             {% if productproperty_set|length != 0 %}
-            <div class="charactiristics">
+                <div class="charactiristics">
                     {% for productproperty in productproperty_set %}
                         <div class="char">
                             {% if loop.index < 4 %}<span>{{ productproperty.name }}</span> <span>{{ productproperty.value }}</span>{% endif %}
                         </div>
                     {% endfor %}
                 </div>
-                       {% endif %}
+            {% endif %}
         </div>
         <div class="price_conainer">
             <div class="lot">{{ stock.lot_complect }} {{ stock.lot }}</div>

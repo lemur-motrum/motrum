@@ -358,7 +358,6 @@ a {
     opacity: 0;
     transition: 1s;
     z-index: 100;
-
     &.visible {
       opacity: 1;
     }
@@ -391,7 +390,7 @@ a {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 10px;
+      border-radius: 0.625rem;
       border: none;
       background-color: #a4a4a4;
       color: #000;
@@ -406,8 +405,7 @@ a {
       .small_loader {
         display: block;
         overflow: hidden;
-        font-size: 10px;
-        // margin: 50px auto;
+        font-size: 0.625rem;
         text-indent: -9999em;
         width: 1rem;
         height: 1rem;
@@ -459,7 +457,6 @@ a {
     opacity: 0;
     transition: 1s;
     z-index: 100;
-
     &.visible {
       opacity: 1;
     }
@@ -514,7 +511,7 @@ a {
           height: 3.125rem;
           font-size: 1.125rem;
           border: 0.063rem solid #a4a4a4;
-          border-radius: 5px;
+          border-radius: 0.313rem;
           text-align: center;
           &:focus {
             outline: none;
@@ -552,7 +549,7 @@ a {
         text-transform: uppercase;
         font-size: 1.125rem;
         border: none;
-        border-radius: 5px;
+        border-radius: 0.313rem;
         background-color: #a4a4a4;
         cursor: pointer;
       }
@@ -675,7 +672,7 @@ a {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 10px;
+        border-radius: 0.625rem;
         border: none;
         background-color: #a4a4a4;
         color: #000;
@@ -692,7 +689,7 @@ a {
         .small_loader {
           display: block;
           overflow: hidden;
-          font-size: 10px;
+          font-size: 0.625rem;
           text-indent: -9999em;
           width: 1rem;
           height: 1rem;
@@ -802,7 +799,7 @@ a {
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 10px;
+          border-radius: 0.625rem;
           border: none;
           background-color: #a4a4a4;
           color: #000;
@@ -819,7 +816,7 @@ a {
           .small_loader {
             display: block;
             overflow: hidden;
-            font-size: 10px;
+            font-size: 0.625rem;
             text-indent: -9999em;
             width: 1rem;
             height: 1rem;
@@ -1012,7 +1009,7 @@ a {
         .small_loader {
           display: block;
           overflow: hidden;
-          font-size: 10px;
+          font-size: 0.625rem;
           text-indent: -9999em;
           width: 1rem;
           height: 1rem;
@@ -2518,7 +2515,7 @@ a {
           height: 5.5rem;
           padding: 1.438rem 1.875rem;
           border: 0.094rem solid #000;
-          border-radius: 40px;
+          border-radius: 2.5rem;
           box-sizing: border-box;
           font-size: 1.125rem;
           font-weight: 300;
@@ -2542,6 +2539,9 @@ a {
 }
 .privacy_policy_container {
   margin: 1.625rem 3.125rem;
+  @media screen and(max-width:576px) {
+    margin: 1.25rem;
+  }
   .head-content {
     .bread-crumbs {
       a {
@@ -2549,6 +2549,9 @@ a {
         text-transform: lowercase;
         font-weight: 300;
         color: #000;
+        @media screen and(max-width:576px) {
+          font-size: 0.6rem;
+        }
       }
     }
     .title {
@@ -2558,6 +2561,16 @@ a {
       font-weight: bold;
       text-transform: uppercase;
       width: 100%;
+      // gfgffd f
+      @media screen and(max-width:576px) {
+        font-size: 1.75rem;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+        -webkit-hyphenate-character: "\2010";
+        -webkit-hyphenate-limit-after: 1;
+        -webkit-hyphenate-limit-before: 3;
+      }
     }
   }
   .privacy_policy_text {
@@ -2565,8 +2578,16 @@ a {
     width: 59.875rem;
     font-size: 1.313rem;
     font-weight: 300;
+    @media screen and(max-width:576px) {
+      width: 100%;
+      font-size: 0.75rem;
+      margin-top: 0.8rem;
+    }
     .br {
       height: 1.313rem;
+      @media screen and(max-width:576px) {
+        height: 0.8rem;
+      }
     }
     a {
       color: #95bad4;
@@ -2963,7 +2984,7 @@ a {
           .btn_loader {
             display: block;
             overflow: hidden;
-            font-size: 10px;
+            font-size: 0.625rem;
             text-indent: -9999em;
             width: 1rem;
             height: 1rem;
@@ -3044,8 +3065,27 @@ a {
             font-size: 1.125rem;
             font-weight: 300;
             font-family: "Nunito", sans-serif;
+
+            @media screen and(max-width:576px) {
+              text-align: center;
+            }
             &:focus {
               outline: none;
+              &::-webkit-input-placeholder {
+                color: transparent;
+              }
+              &::-moz-placeholder {
+                color: transparent;
+              }
+              &:-ms-input-placeholder {
+                color: transparent;
+              }
+              &::-ms-input-placeholder {
+                color: transparent;
+              }
+              &::placeholder {
+                color: transparent;
+              }
             }
           }
         }

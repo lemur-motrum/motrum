@@ -273,7 +273,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const burger_nav_menu = document.querySelector(".burger_menu_nav");
         filterContent.classList.remove("show");
         supplierContent.classList.remove("is_open");
-        supplierBtn.style.display = "flex";
+        if (supplierBtn) {
+          supplierBtn.style.display = "flex";
+        }
         document.body.style.overflow = "auto";
         burger_nav_menu.style.zIndex = 1001;
       }

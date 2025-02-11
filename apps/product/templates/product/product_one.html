@@ -16,8 +16,8 @@
         <div class="product_container">
             <div class="left_container">
                 <div class="img_container">
-                    <div class="big_img">
-                        {% if product.productimage_set.all %}
+                    {% if product.productimage_set.all %}
+                        <div class="big_img">
                             <div class="swiper-wrapper">
                                 {% for image in product.productimage_set.all %}
                                     {% if image.photo and image.hide is False %}
@@ -28,9 +28,10 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                        {% else %}
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% else %}
+                        <img src="{% static "core/images/nophoto1.png" %}" alt="img" />
+                    {% endif %}
                     <div class="small_img_container">
                         {% if product.productimage_set.all %}
                             <div class="swiper-wrapper">

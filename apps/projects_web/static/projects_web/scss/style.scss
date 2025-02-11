@@ -284,7 +284,7 @@
         width: 100%;
         .loader {
           overflow: hidden;
-          font-size: 10px;
+          font-size: 0.625rem;
           margin: 3.125rem auto;
           text-indent: -9999em;
           width: 11rem;
@@ -419,8 +419,8 @@
         .small_loader {
           display: none;
           overflow: hidden;
-          font-size: 10px;
-          margin: 50px auto;
+          font-size: 0.625rem;
+          margin: 3.125rem auto;
           text-indent: -9999em;
           width: 7rem;
           height: 7rem;

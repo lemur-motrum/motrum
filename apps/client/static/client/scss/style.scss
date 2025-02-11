@@ -77,14 +77,14 @@
           .arrow-elem-1 {
             width: 0.102rem;
             height: 0.453rem;
-            border-radius: 2px;
+            border-radius: 0.125rem;
             transform: rotate(-45deg);
             background-color: #000;
           }
           .arrow-elem-2 {
             width: 0.102rem;
             height: 0.453rem;
-            border-radius: 2px;
+            border-radius: 0.125rem;
             transform: rotate(45deg);
             background-color: #000;
           }
@@ -192,8 +192,8 @@
     .small_loader {
       display: none;
       overflow: hidden;
-      font-size: 10px;
-      margin: 50px auto;
+      font-size: 0.625rem;
+      margin: 3.125rem auto;
       text-indent: -9999em;
       width: 7rem;
       height: 7rem;
@@ -483,8 +483,8 @@
       .small_loader {
         display: none;
         overflow: hidden;
-        font-size: 10px;
-        margin: 50px auto;
+        font-size: 0.625rem;
+        margin: 3.125rem auto;
         text-indent: -9999em;
         width: 7rem;
         height: 7rem;

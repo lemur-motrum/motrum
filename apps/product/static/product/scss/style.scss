@@ -179,7 +179,7 @@
       margin-top: 1.5rem;
       display: flex;
       width: 101%;
-      border-radius: 10px;
+      border-radius: 0.625rem;
       position: relative;
       @media screen and(max-width:576px) {
         margin-top: 0.8rem;
@@ -372,7 +372,7 @@
       margin-top: 1.5rem;
       display: flex;
       width: 101%;
-      border-radius: 10px;
+      border-radius: 0.625rem;
       position: relative;
       @media screen and(max-width:576px) {
         margin-top: 0.8rem;
@@ -859,7 +859,7 @@
         }
         .loader {
           overflow: hidden;
-          font-size: 10px;
+          font-size: 0.625rem;
           margin: 4.125rem auto;
           text-indent: -9999em;
           width: 11rem;
@@ -1212,7 +1212,7 @@
         .small_loader {
           display: none;
           overflow: hidden;
-          font-size: 10px;
+          font-size: 0.625rem;
           margin: 3.125rem auto;
           text-indent: -9999em;
           width: 7rem;

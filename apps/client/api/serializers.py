@@ -121,7 +121,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
     )
-
+    url = serializers.CharField(source="get_absolute_url_web", read_only=True)
     # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
     notification_count = serializers.CharField()
 
@@ -149,6 +149,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "act_file",
             # "notification_set",
             "notification_count",
+            "url"
         )
         read_only_fields = ("status_full",)
 

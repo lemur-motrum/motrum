@@ -106,7 +106,7 @@ from apps.user.models import AdminUser
 from openpyxl import load_workbook
 
 from project.settings import IS_WEB
-
+from dadata import Dadata
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -524,6 +524,13 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             serializer_data_new[0]["account_requisites"] = account_requisites
             return Response(serializer_data_new, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["post", "get"], url_path=r"serch-req")
+    def serch_requisites(self, request, pk=None, *args, **kwargs):
+        token = "0fbcc68414d743436985dccd4d7ab8c54bf4c4b8"
+        secret = "5635a8e2449cf23f2a263a32ed41da24f5c6532d"
+        with Dadata(token, secret) as dadata:
+            dadata.find_by_id(name="party", query="6316195950")
+        return Response(None, status=status.HTTP_200_OK)
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()

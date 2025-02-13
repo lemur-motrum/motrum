@@ -652,6 +652,15 @@ class Order(models.Model):
             if choice[0] == self.status:
                 return choice[1]
         return ""
+    
+    def get_absolute_url_web(self):
+
+            return reverse(
+                "client:order_client_one",
+                kwargs={
+                    "pk": self.pk,
+                },
+            )  
 
 
 # фаилы счетов все версии

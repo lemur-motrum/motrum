@@ -57,7 +57,15 @@ def add_iek(request):
     #     stock.stock_supplier_unit = None
     #     stock.save()
     result = 1
-    iek_api()
+    # iek_api()
+    
+    
+    from dadata import Dadata
+    token = "0fbcc68414d743436985dccd4d7ab8c54bf4c4b8"
+    secret = "5635a8e2449cf23f2a263a32ed41da24f5c6532d"
+    with Dadata(token, secret) as dadata:
+        q = dadata.suggest(name="party", query="63161959")
+        print(q)
     if result:
         pass
     else:

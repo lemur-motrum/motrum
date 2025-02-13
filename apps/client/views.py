@@ -4,8 +4,10 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
 
+from apps.admin_specification.views import specifications
 from apps.client.models import AccountRequisites, Client, Order, PhoneClient, Requisites
 from apps.notifications.models import Notification
+from apps.specification.models import ProductSpecification
 
 
 # Create your views here.
@@ -56,7 +58,6 @@ def my_details(request):
     client = Client.objects.get(pk=current_user)
     requisites = Requisites.objects.filter(client=client).prefetch_related(
         Prefetch("accountrequisites_set"),
-        
     )
     # print(requisites)
     # for i in requisites:
@@ -94,7 +95,7 @@ def my_details(request):
         "title": "Личный кабинет | мои реквизиты",
         # "details": bank_obj,
         "details": requisites,
-        "requisites":requisites
+        "requisites": requisites,
     }
     return render(request, "client/my_details.html", context)
 
@@ -108,6 +109,23 @@ def my_contacts(request):
     context = {
         "title": "Личный кабинет | мои контакты",
         "client": client,
-        "other_phone_client":other_phone_client,
+        "other_phone_client": other_phone_client,
     }
     return render(request, "client/my_contacts.html", context)
+
+
+def order_client_one(request, pk):
+    order = Order.objects.get(pk=pk)
+
+    product = ProductSpecification.objects.filter(
+        specification=order.specification
+    ).select_related(
+        "product",
+    )
+    print(product)
+    context = {
+        "order": order,
+        "product": product,
+    }
+
+    return render(request, "client/client_order_one.html", context)

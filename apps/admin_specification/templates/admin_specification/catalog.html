@@ -3,26 +3,31 @@
 {% block content %}
     {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
- 
     <div order={{ order }} class="specification-container okt_cart_container">
-        <h1 class="title">{{ title }}</h1>
+        {% comment %} <h1 class="title">{{ title }}</h1> {% endcomment %}
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
-  
         {% if product or product_new %}
             <div class="spetification_table">
                 <div class="spetification_titles">
-                    <div class="title_item">Название:</div>
+                    <div class="title_item">товар</div>
                     <div class="title_item">Остатки</div>
-                    <div class="title_item">Цена за шт. в ₽:</div>
-                    <div class="title_item">Количество:</div>
-                    <div class="title_item">Стоимость для клиента:</div>
-                    <div class="title_item">Стоимость Motrum:</div>
-                    <div class="title_item">Скидка клиента %:</div>
+                    <div class="title_item">
+                        Цена <span>за шт. в ₽</span>
+                    </div>
+                    <div class="title_item">Кол-во</div>
+                    <div class="title_item">
+                        Стоимость <span>для клиента</span>
+                    </div>
+                    <div class="title_item">
+                        Стоимость <span>для Motrum</span>
+                    </div>
+                    <div class="title_item">
+                        Скидка <span>клиента</span>
+                    </div>
                     <div class="title_item">Маржа</div>
-                    <div class="title_item">Срок поставки:</div>
+                    <div class="title_item">Срок поставки</div>
                 </div>
                 {% for item in product %}
-                
                     <div class="item_container data-base-product-container"
                          data-vendor=""
                          data-product-name-new=""
@@ -50,7 +55,7 @@
                                              border-radius: 5px"
                                       class="comment-input"
                                       name="comment-input-name"
-                                      placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
+                                      placeholder="Комментарий">  {% if item.comment %}{{ item.comment }}{% endif %}</textarea>
                         </div>
                         <div class="item_value">
                             {% if item.stock %}
@@ -103,28 +108,33 @@
                             </div>
                             <div class="item_value input_quantity quantity">
                                 <div class="input-container">
-                                    <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                                    <button class="minus-button">
+                                        <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                             alt="img" />
+                                    </button>
+                                    <input class="input-quantity"
+                                           type="text"
+                                           value="{{ item.quantity }}"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="5"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">
+                                        <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                             alt="img" />
+                                    </button>
                                 </div>
                             </div>
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
                             <div class="item_value">
-                                
-                                <span class="price price_once">
-                                    
-                                    
-                                    {{ item.price_cart }}
-                                </span>
+                                <span class="price price_once">{{ item.price_cart }}</span>
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
                                     {% if item.actual_price %}
-                                    <span style="color: red; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
+                                        <span class="okt-price">Цена в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
                                     {% else %}
-                                    <span style="color: red; display:block;">цена по запросу </span>
+                                        <span class="okt-price">Цена по запросу</span>
                                     {% endif %}
-                                    
                                 {% endif %}
                             </div>
                             {% comment %} {% if bill_upd and item.id_product_spesif %}
@@ -134,11 +144,22 @@
                                 <div class="item_value price price_once">{{ item.price.rub_price_supplier }}</div>
                                 <input class="change_input_price" value="{{ item.price.rub_price_supplier }}" />
                             {% endif %} {% endcomment %}
-                            <div class="item_value quantity">
+                            <div class="item_value input_quantity quantity">
                                 <div class="input-container">
-                                    <button class="minus-button">-</button>
-                                    <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                    <button class="plus-button">+</button>
+                                    <button class="minus-button">
+                                        <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                             alt="img" />
+                                    </button>
+                                    <input class="input-quantity"
+                                           type="text"
+                                           value="{{ item.quantity }}"
+                                           oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                           maxlength="5"
+                                           onkeypress='validate(event)'>
+                                    <button class="plus-button">
+                                        <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                             alt="img" />
+                                    </button>
                                 </div>
                             </div>
                             <div class="item_value total_cost price"></div>
@@ -190,25 +211,27 @@
                             </div>
                         </div>
                         <div class="item_value">
-                       
                             <input class="discount-input"
                                    type="text"
                                    name="price-input-discount"
                                    placeholder="% скидки"
                                    maxlength="6"
-                                   value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{item.sale_client}}{% endif %}{% endif %}" />
-                            <label for="price-input-discount">
+                                   value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{ item.sale_client }}{% endif %}{% endif %}" />
+                            {% comment %} <label for="price-input-discount">
                                 %
                                 <br>
                                 {% if item.old_extra_discount %}
                                     {{ item.old_extra_discount }}%
                                 {% endif %}
-                            </label>
+                            </label> {% endcomment %}
                         </div>
                         <div class="item_value">
-                            <span class="marginality">0</span> ₽ /
-                            <br>
-                            <span class="marginality-persent">0</span> %
+                            <div>
+                                <span class="marginality">0</span> ₽
+                            </div>
+                            <div>
+                                / <span class="marginality-persent">0</span> %
+                            </div>
                         </div>
                         <div class="item_value">
                             <label>
@@ -219,13 +242,19 @@
                                            type="text"
                                            value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
                                 {% else %}
-                                    <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                    <input class="delivery_date"
+                                           type="date"
+                                           name="calendar"
+                                           min="{{ current_date }}">
                                     {% if item.date_delivery %}
                                         <br>
                                         <span class="">{{ item.date_delivery }}</span>
                                     {% endif %}
                                 {% endif %}
-                                {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
+                                {% comment %} <input class="delivery_date"
+        type="date"
+        name="calendar"
+        min="{{ current_date }}"> {% endcomment %}
                             </label>
                         </div>
                     </div>
@@ -275,9 +304,20 @@
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value">
@@ -293,11 +333,22 @@
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
-                                <div class="item_value quantity">
+                                <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value total_cost price"></div>
@@ -325,18 +376,21 @@
                                        placeholder="% скидки"
                                        maxlength="6"
                                        value="{% if bill_upd and item.id_product_spesif %}{% if item.extra_discount %}{{ item.extra_discount }}{% endif %}{% endif %}" />
-                                <label for="price-input-discount">
+                                {% comment %} <label for="price-input-discount">
                                     %
                                     <br>
                                     {% if item.extra_discount %}
                                         {{ item.extra_discount }}%
                                     {% endif %}
-                                </label>
+                                </label> {% endcomment %}
                             </div>
                             <div class="item_value">
-                                <span class="marginality">0</span> ₽ /
-                                <br>
-                                <span class="marginality-persent">0</span> %
+                                <div>
+                                    <span class="marginality">0</span> ₽
+                                </div>
+                                <div>
+                                    / <span class="marginality-persent">0</span> %
+                                </div>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -346,13 +400,19 @@
                                                type="text"
                                                value=" {% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                     {% else %}
-                                        <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                        <input class="delivery_date"
+                                               type="date"
+                                               name="calendar"
+                                               min="{{ current_date }}">
                                         {% if item.date_delivery %}
                                             <br>
                                             <span class="">{{ item.date_delivery }}</span>
                                         {% endif %}
                                     {% endif %}
-                                    {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
+                                    {% comment %} <input class="delivery_date"
+        type="date"
+        name="calendar"
+        min="{{ current_date }}"> {% endcomment %}
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
@@ -381,7 +441,17 @@
                                                     {% else %}
                                                         {{ item.vendor.id }}
                                                     {% endif %}
-                                                    <option {% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }} value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor %}selected{% endif %} {% else %} value="{{ vendor_item.id }}" {% if vendor_item.id == item.vendor.id %}selected{% endif %}{% endif %}  {% comment %} value="{{ vendor_item.id }}" {% endcomment %} {% comment %} {% if vendor_item.id == item.vendor.id %}selected{% endif %} {% endcomment %}>
+                                                    <option {% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }} value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor %}selected{% endif %}
+                                                            {% else %}
+                                                            value="{{ vendor_item.id }}"
+                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}
+                                                            {% endif %}
+                                                            {% comment %}
+                                                            value="{{ vendor_item.id }}"
+                                                            {% endcomment %}
+                                                            {% comment %}
+                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}
+                                                            {% endcomment %}>
                                                         {{ vendor_item.name }}
                                                     </option>
                                                 {% endfor %}
@@ -460,9 +530,20 @@
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value">
@@ -478,11 +559,22 @@
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
-                                <div class="item_value quantity">
+                                <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value total_cost price"></div>
@@ -510,18 +602,21 @@
                                        placeholder="% скидки"
                                        maxlength="6"
                                        value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
-                                <label for="price-input-discount">
+                                {% comment %} <label for="price-input-discount">
                                     %
                                     <br>
                                     {% if item.old_extra_discount %}
                                         {{ item.old_extra_discount }}%
                                     {% endif %}
-                                </label>
+                                </label> {% endcomment %}
                             </div>
                             <div class="item_value">
-                                <span class="marginality">0</span> ₽ /
-                                <br>
-                                <span class="marginality-persent">0</span> %
+                                <div>
+                                    <span class="marginality">0</span> ₽
+                                </div>
+                                <div>
+                                    / <span class="marginality-persent">0</span> %
+                                </div>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -531,9 +626,15 @@
                                                type="text"
                                                value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                     {% else %}
-                                        <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                        <input class="delivery_date"
+                                               type="date"
+                                               name="calendar"
+                                               min="{{ current_date }}">
                                     {% endif %}
-                                    {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
+                                    {% comment %} <input class="delivery_date"
+        type="date"
+        name="calendar"
+        min="{{ current_date }}"> {% endcomment %}
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
@@ -640,9 +741,20 @@
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="3" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value">
@@ -658,11 +770,22 @@
                                 <div class="item_value input_totla-cost total_cost price">0</div>
                             {% else %}
                                 <div class="item_value price price_once">{{ item.product_new_price }}</div>
-                                <div class="item_value quantity">
+                                <div class="item_value input_quantity quantity">
                                     <div class="input-container">
-                                        <button class="minus-button">-</button>
-                                        <input class="input-quantity" type="text" value={{ item.quantity }} oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
-                                        <button class="plus-button">+</button>
+                                        <button class="minus-button">
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
+                                        <input class="input-quantity"
+                                               type="text"
+                                               value="{{ item.quantity }}"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               maxlength="5"
+                                               onkeypress='validate(event)'>
+                                        <button class="plus-button">
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                                                 alt="img" />
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="item_value total_cost price"></div>
@@ -690,18 +813,21 @@
                                        placeholder="% скидки"
                                        maxlength="6"
                                        value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
-                                <label for="price-input-discount">
+                                {% comment %} <label for="price-input-discount">
                                     %
                                     <br>
                                     {% if item.old_extra_discount %}
                                         {{ item.old_extra_discount }}%
                                     {% endif %}
-                                </label>
+                                </label> {% endcomment %}
                             </div>
                             <div class="item_value">
-                                <span class="marginality">0</span> ₽ /
-                                <br>
-                                <span class="marginality-persent">0</span> %
+                                <div>
+                                    <span class="marginality">0</span> ₽
+                                </div>
+                                <div>
+                                    / <span class="marginality-persent">0</span> %
+                                </div>
                             </div>
                             <div class="item_value">
                                 <label>
@@ -711,9 +837,15 @@
                                                type="text"
                                                value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
                                     {% else %}
-                                        <input class="delivery_date" type="date" name="calendar" min={{ current_date }}>
+                                        <input class="delivery_date"
+                                               type="date"
+                                               name="calendar"
+                                               min="{{ current_date }}">
                                     {% endif %}
-                                    {% comment %} <input class="delivery_date" type="date" name="calendar" min={{ current_date }}> {% endcomment %}
+                                    {% comment %} <input class="delivery_date"
+        type="date"
+        name="calendar"
+        min="{{ current_date }}"> {% endcomment %}
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
@@ -839,7 +971,9 @@
                             </div>
                             <div class="new_item_container_value">
                                 <label class="new_item_container_value_calendar_label">
-                                    <input class="new_item_container_calendar" type="date" min={{ current_date }} />
+                                    <input class="new_item_container_calendar"
+                                           type="date"
+                                           min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>
                             </div>
@@ -852,13 +986,22 @@
                 </div>
                 <div class="price_description">
                     <div>
-                        Итого: <span class="price">0</span> <span class="total-price-description">₽</span>
+                        <div>Маржа:</div>
+                        <div>
+                            <span class="marginality_value">0</span> <span class="total-price-description">₽</span>
+                        </div>
                     </div>
                     <div>
-                        Маржа: <span class="marginality_value">0</span> <span class="total-price-description">₽</span>
+                        <div>Процент маржи:</div>
+                        <div>
+                            <span class="marginality_prcent_value">0</span> <span class="total-price-description">%</span>
+                        </div>
                     </div>
                     <div>
-                        Процент маржи: <span class="marginality_prcent_value">0</span> <span class="total-price-description">%</span>
+                        <div>Итого:</div>
+                        <div>
+                            <span class="price">0</span> <span class="total-price-description">₽</span>
+                        </div>
                     </div>
                 </div>
                 <div class="add_new_product_container">
@@ -866,7 +1009,7 @@
                         <label class="search_label">
                             <div class="delete_search_details_btn">+</div>
                             <input class="search_input"
-                                   placeholder="Введите имя или артикул товара"
+                                   placeholder="ручное добавление товара: начните ввод названия или артикула"
                                    type="text" />
                             <div class="search_container"></div>
                         </label>
@@ -877,7 +1020,7 @@
                     </div>
                     <button class="add_new_product">Добавить новый товар</button>
                 </div>
-                <div class="coment_all_spesif">
+                <div style="display:none" class="coment_all_spesif">
                     <br>
                     <textarea style="width: 400px;
                                      height: 50px;
@@ -896,28 +1039,26 @@
                     <div class="client">
                         <label class="serch-client">
                             <div class="client-prev">
-                                <span>Клиент</span>
                                 <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                        type="text"
                                        name="serch-client_input"
+                                       placeholder="Клиент"
                                        value="{% if client_req %}{{ client_req.requisitesKpp.requisites.legal_entity }}{% endif %}">
                             </div>
                             <div class="clients"></div>
                             <label class="select-client-requsits_label">
-                                <span>Расчетный счет</span>
                                 <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                         class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
                                         name="client-requisit">
+                                    <option disabled selected>Расчетный счет юр.Лица</option>
                                     {% if client_req %}
                                         {% for recusits in client_req_all %}
                                             <option class="client-option"
-                                                    {% if client_req.id == recusits.id %}selected{% endif %}
+                                                    {% if client_req.id == recusits.id %}{% endif %}
                                                     value="{{ recusits.id }}">
-                                                    {% if recusits.requisitesKpp.kpp %}
-                                                    КПП:{{ recusits.requisitesKpp.kpp }}
-                                                    {% endif %}
-                                                    Р/c:{{ recusits.account_requisites }}
+                                                {% if recusits.requisitesKpp.kpp %}КПП:{{ recusits.requisitesKpp.kpp }}{% endif %}
+                                                Р/c:{{ recusits.account_requisites }}
                                             </option>
                                         {% endfor %}
                                     {% endif %}
@@ -939,36 +1080,41 @@
                             </div>
                         </label>
                         <label class="bitrix-id-label">
-                            <span>Номер сделки Bitrix</span>
                             <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                    class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
-                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}" />
+                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}"
+                                   placeholder="Номер сделки Б24" />
                         </label>
                     </div>
                     <div class="motrum-info">
                         <div>
-                            Доставка:
                             <select class="select_delevery" name='delevery-requisit' value="1">
+                                <option disabled selected>Способ доставки</option>
                                 {% for delivery in type_delivery %}
-                                    <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
-                                            value="{{ delivery.id }}">{{ delivery.text }} {% if delivery.company_delivery %} {{delivery.company_delivery}} {% endif %}</option>
+                                    <option {% if order.type_delivery.id == delivery.id %}{% endif %}
+                                            value="{{ delivery.id }}">
+                                        {{ delivery.text }}
+                                        {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <label for="motrum-select">Юрлицо мотрум для сделки:</label>
-                        <select 
-                        {% comment %} {% if bill_upd %}disabled{% endif %} {% endcomment %}
+                        <select {% comment %}
+                                {% if bill_upd %}disabled{% endif %}
+                                {% endcomment %}
                                 class="select_motrum_requisites"
                                 id="motrum-select"
-                                style="height: 25px;
-                                       border-radius: 10px"
                                 name="mortum_req"
                                 value="1"
                                 value="1">
+                            <option disabled selected>Юрлицо Motrum</option>
                             {% for requisit in mortum_req %}
-                                <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %} data-requisites-id="{{ requisit.requisites.id }}" data-account-requisites-id="{{ requisit.id }}" value={{ requisit.id }}>
+                                <option {% if order and requisit.id == order.motrum_requisites.id %}{% endif %}
+                                        data-requisites-id="{{ requisit.requisites.id }}"
+                                        data-account-requisites-id="{{ requisit.id }}"
+                                        value="{{ requisit.id }}">
                                     {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                 </option>
                             {% endfor %}
@@ -987,7 +1133,7 @@
                                 <div class="error"></div>
                             </div>
                             <div class="save_invoice_button-wrapper">
-                                <button class="save_button">Сохранить</button>
+                                <button class="save_button">Сохранить заказ</button>
                                 <div class="error"></div>
                             </div>
                             {% if specification %}
@@ -1023,9 +1169,7 @@
                                 <label class="vedor_label">
                                     <select class="vendor_select" value="">
                                         <option value="" disabled selected>Выберете производителя</option>
-                                        {% for vendor_item in vendor %}
-                                            <option value="{{ vendor_item.id }}">{{ vendor_item.name }}</option>
-                                        {% endfor %}
+                                        {% for vendor_item in vendor %}<option value="{{ vendor_item.id }}">{{ vendor_item.name }}</option>{% endfor %}
                                     </select>
                                 </label>
                             </div>
@@ -1058,7 +1202,9 @@
                             </div>
                             <div class="new_item_container_value">
                                 <label class="new_item_container_value_calendar_label">
-                                    <input class="new_item_container_calendar" type="date" min={{ current_date }} />
+                                    <input class="new_item_container_calendar"
+                                           type="date"
+                                           min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>
                             </div>
@@ -1074,7 +1220,7 @@
                         <label class="search_label">
                             <div class="delete_search_details_btn">+</div>
                             <input class="search_input"
-                                   placeholder="Введите имя или артикул товара"
+                                   placeholder="ручное добавление товара: начните ввод названия или артикула"
                                    type="text" />
                             <div class="search_container"></div>
                         </label>

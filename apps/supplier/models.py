@@ -357,7 +357,7 @@ class SupplierCategoryProductAll(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
-        # TODO: Дописать уведомление о новых группах иек         
+              
         if self.is_correct == True and self.is_need == True:
         # обоновление категорйи связанных продуктов
             product = Product.objects.filter(category_supplier_all=self.id)

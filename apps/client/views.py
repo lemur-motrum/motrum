@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
 
-from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.client.models import AccountRequisites, Client, Order, PhoneClient, Requisites
 from apps.notifications.models import Notification
 
 
@@ -104,9 +104,10 @@ def my_contacts(request):
     client_id = int(cookie)
 
     client = Client.objects.get(pk=client_id)
-
+    other_phone_client = PhoneClient.objects.filter(client=client)
     context = {
         "title": "Личный кабинет | мои контакты",
         "client": client,
+        "other_phone_client":other_phone_client,
     }
     return render(request, "client/my_contacts.html", context)

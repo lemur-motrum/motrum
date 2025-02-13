@@ -2,8 +2,8 @@ function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-        "=([^;]*)"
+      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+      "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -99,46 +99,9 @@ function addRequisites() {
           },
 
           account_requisites: [
-            {
-              account_requisites: "2222",
-              bank: "sfdfs",
-              kpp: "22222",
-              bic: "2222",
-              requisites: null,
-            },
-            {
-              account_requisites: "3333333",
-              bank: "sfdfs",
-              kpp: "33333",
-              bic: "3333",
-              requisites: null,
-            },
+
           ],
-        },
-        {
-          requisites: {
-            contract: null,
-            legal_entity: "4Юридическое лицо",
-            inn: "4444",
-            kpp: "44444",
-            ogrn: "4444",
-            legal_post_code: "4444",
-            legal_city: "dsgsdfsf",
-            legal_address: "aweaeawe",
-            postal_post_code: "4444",
-            postal_city: "wewqweqe",
-            postal_address: "qweqwee",
-            client: idClient,
-          },
-          account_requisites: [
-            {
-              account_requisites: "5555",
-              bank: "sfdfs",
-              kpp: "5555",
-              bic: "5555",
-              requisites: null,
-            },
-          ],
+
         },
       ];
 

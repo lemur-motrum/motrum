@@ -117,10 +117,8 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=4000, blank=True, null=True
     )
-
     name = models.CharField("Название товара", max_length=600)
     slug = models.SlugField(null=True, max_length=600)
-    
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")

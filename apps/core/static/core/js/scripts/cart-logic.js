@@ -312,24 +312,28 @@ function saveCartNoAuthentication() {
     const dataObj = {
       cart: +cart_id,
     };
+    const dataArr = {
+      phone: phone,
+      pin: "",
+    };
 
-    const data = JSON.stringify(dataObj);
-    let endpoint = "/api/v1/order/add_order/";
-    fetch(endpoint, {
-      method: "POST",
-      body: data,
-      headers: {
-        "X-CSRFToken": csrfToken,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        deleteCookie("cart", "/", window.location.hostname);
+    // const data = JSON.stringify(dataObj);
+    // let endpoint = "/api/v1/order/add_order/";
+    // fetch(endpoint, {
+    //   method: "POST",
+    //   body: data,
+    //   headers: {
+    //     "X-CSRFToken": csrfToken,
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((response) => response.json())
+    //   .then((response) => {
+    //     deleteCookie("cart", "/", window.location.hostname);
 
-        // window.location.href =
-        //   "/lk/my_orders";
-      })
-      .catch((error) => console.error(error));
+    //     // window.location.href =
+    //     //   "/lk/my_orders";
+    //   })
+    //   .catch((error) => console.error(error));
   }
 }

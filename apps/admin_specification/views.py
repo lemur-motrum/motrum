@@ -1631,12 +1631,8 @@ def error_b24(request, error):
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
-    print("bx_start_page")
-    print(request)
+
     context = {}
-    # bx_id_order = request.GET.get("bitrix_id_order")
-    # order = Order.objects.get(id_bitrix=int(bx_id_order))
-    # context = {"cart": order.cart.id, "spes": order.specification.id}
 
     return render(request, "admin_specification/bx_start.html", context)
 

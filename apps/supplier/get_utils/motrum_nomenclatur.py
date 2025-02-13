@@ -4,6 +4,7 @@ import re
 import traceback
 import zipfile
 import csv
+from openpyxl import load_workbook
 from simple_history.utils import update_change_reason
 from pytils import translit
 from django.utils.text import slugify
@@ -20,8 +21,8 @@ from project.settings import MEDIA_ROOT
 def get_motrum_nomenclature():
     try:
         new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-        path_nomenclature = f"{new_dir}/Справочник номенклатуры Мотрум.csv"
-        path_nomenclature_write_file = f"{new_dir}/Справочник номенклатуры Мотрум — копия.csv"
+        path_nomenclature = f"{new_dir}/Номенктатура-25.csv"
+        path_nomenclature_write_file = f"{new_dir}/Номенктатура-25copi.csv"
         arr_nomenclature = []
         # fieldnames_nomenclature = [
         #     "Номенклатура",
@@ -37,31 +38,61 @@ def get_motrum_nomenclature():
         #     "Производитель",
         #     "В группе",
         # ]
+        # fieldnames_nomenclature = [
+        #     "Номенклатура",
+        #     None,
+        #     None,
+        #     None,
+        #     "Артикул",
+        #     "Единица измерения",
+        #     "Категория",
+        #     "Тип",
+        #     "В группе",
+        # ]
         fieldnames_nomenclature = [
             "Номенклатура",
-            None,
-            None,
-            None,
             "Артикул",
             "Единица измерения",
             "Категория",
+            "Склад",
             "Тип",
             "В группе",
+            "Код",
         ]
         
+        # fieldnames_nomenclature_written = [
+        #     "Номенклатура",
+        #     None,
+        #     None,
+        #     None,
+        #     "Артикул",
+        #     "Единица измерения",
+        #     "Категория",
+        #     "Тип",
+        #     "В группе",
+        #     "Артикул мотрум",
+        # ]
         fieldnames_nomenclature_written = [
             "Номенклатура",
-            None,
-            None,
-            None,
             "Артикул",
             "Единица измерения",
             "Категория",
+            "Склад",
             "Тип",
             "В группе",
+            "Код",
             "Артикул мотрум",
         ]
-     
+        path_nomenclature_xlsx = f"{new_dir}/Номенктатура 25.xlsx"
+        workbook = load_workbook(path_nomenclature_xlsx)
+        
+        
+        ws=workbook['data']
+        row2=ws[2]
+        for cell in row2:
+            print (cell.value, end="")
+            
+            
         # with open(path_nomenclature, "r", newline="", encoding="MACCYRILLIC") as csvfile:
         with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
             path_nomenclature_write_file, "w", encoding="UTF-8"

@@ -83,8 +83,8 @@ def cart(request):
                 Requisites.objects.filter(client=client)
                 .prefetch_related("accountrequisites_set")
                 .annotate(
-                    accountrequisit=F("accountrequisites__account_requisites"),
-                    accountrequisit_id=F("accountrequisites__id"),
+                    # accountrequisit=F("accountrequisites__account_requisites"),
+                    # accountrequisit_id=F("accountrequisites__id"),
                 )
             )
 

@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Case, Value, When
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
-
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
@@ -23,6 +23,7 @@ class Client(CustomUser):
     contact_name = models.CharField(
         "Контактное лицо", max_length=40, blank=True, null=True
     )
+    middle_name = models.CharField("Отчество", max_length=50, null=True, blank=True)
     phone = models.CharField("Номер телефона", max_length=40, unique=True)
     manager = models.ForeignKey(
         AdminUser, blank=True, null=True, on_delete=models.CASCADE
@@ -32,6 +33,7 @@ class Client(CustomUser):
         blank=True,
         null=True,
     )
+    position = models.CharField("Номер телефона", max_length=200,null=True, blank=True)
 
     class Meta:
         verbose_name = "Клиент сайта"
@@ -73,7 +75,14 @@ class Client(CustomUser):
 
     # def send_email_notification(self,text_email):
 
-
+class PhoneClient(models.Model):
+    phone = models.CharField("Номер телефона", max_length=40)
+    client = models.ForeignKey(
+        Client,
+        verbose_name="Клиент",
+        on_delete=models.CASCADE,
+    )
+    
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
@@ -83,24 +92,8 @@ TYPE_CLIENT = (
     ("1", "Юридическое лицо"),
     ("2", "ИП"),
     ("3", "Физ. лицо"),
+    ("4", "Организация (доп.)"),
 )
-#   {
-#             "ID": "1",
-#             "NAME": "Организация"
-#         },
-#         {
-#             "ID": "2",
-#             "NAME": "ИП"
-#         },
-#         {
-#             "ID": "3",
-#             "NAME": "Физ. лицо"
-#         },
-#         {
-#             "ID": "4",
-#             "NAME": "Организация (доп.)"
-#         }
-
 
 # TODO: unique=True вернуть
 # юрлицо  клиента главна сущность ИНН

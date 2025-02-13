@@ -33,6 +33,7 @@ from .models import (
 from django.utils.html import mark_safe
 from project.admin import website_admin
 
+
 class VendorInline(admin.TabularInline):
     model = Vendor
     fields = (
@@ -125,12 +126,13 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
 
-    def has_delete_permission(self, request,obj=None):
-        return False   
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 class SupplierVendor(admin.ModelAdmin):
     # list_display = ["supplier", "name", "currency_catalog", "vat_catalog"]
-    list_display = [ "name", "currency_catalog", "vat_catalog"]
+    list_display = ["name", "currency_catalog", "vat_catalog"]
     fields = (
         "name",
         # "supplier",
@@ -140,9 +142,9 @@ class SupplierVendor(admin.ModelAdmin):
     list_display_links = [
         "name",
     ]
-    
-    def has_delete_permission(self, request,obj=None):
-        return False   
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class CategoryProductInline(admin.TabularInline):
@@ -162,7 +164,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "vendor",
         "article_name",
         "is_correct",
-        "is_need"
+        "is_need",
         # "category_catalog",
         # "group_catalog",
     )
@@ -185,6 +187,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
+        "is_correct",
     )
     # search_fields = ('name', 'supplier',)
     list_filter = [
@@ -209,6 +212,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
                         "category_supplier",
                         "article_name",
                         "name",
+                        "is_correct",
                     ]
 
                 elif obj.category_supplier != None and obj.group_supplier != None:
@@ -219,13 +223,16 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
                         "group_supplier",
                         "article_name",
                         "name",
+                        "is_correct",
                     ]
             else:
-                pass
+                [
+            "is_correct",
+        ]
 
-            return ["article_supplier", "supplier", "article_name"]
+            return ["article_supplier", "supplier", "article_name","is_correct",]
         return [
-            "",
+            "is_correct",
         ]
 
     def save_model(self, request, obj, form, change):
@@ -234,8 +241,39 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-    def has_delete_permission(self, request,obj=None):
+
+    def get_fieldsets(self, request, obj):
+        fields = super(SupplierCategoryProductAllAdmin, self).get_fieldsets(
+            request, obj
+        )
+        fieldsets = [
+            (
+                None,
+                {
+                    "fields": [
+                        "is_correct",
+                        "is_need",
+                        "name",
+                        "supplier",
+                        "vendor",
+                        "article_name",
+                        "category_supplier",
+                        "group_supplier",
+                        "category_catalog",
+                        "group_catalog",
+                    ]
+                },
+            )
+        ]
+
+        if obj and obj.supplier.slug == "iek":
+            return fieldsets
+        else:
+            return fields
+
+    def has_delete_permission(self, request, obj=None):
         return False
+
 
 class SupplierCategoryProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
@@ -278,8 +316,10 @@ class SupplierCategoryProductAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
+
 
 class SupplierGroupProductAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
@@ -336,9 +376,10 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         else:
             obj.autosave_tag = False
         super().save_model(request, obj, form, change)
-   
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
+
 
 class DiscountAdmin(admin.ModelAdmin):
     form = DiscountForm
@@ -360,31 +401,33 @@ class DiscountAdmin(admin.ModelAdmin):
         "percent",
         "is_tag_pre_sale",
     )
+
     def save_model(self, request, obj, form, change):
         if change:
             sale_old = Discount.objects.get(id=obj.id)
-        super().save_model(request, obj, form, change) 
+        super().save_model(request, obj, form, change)
         if change:
-            
+
             if sale_old.is_tag_pre_sale != obj.is_tag_pre_sale:
                 price = Price.objects.filter(sale=obj.id)
+
                 def background_task():
-                # Долгосрочная фоновая задача
+                    # Долгосрочная фоновая задача
                     for price_one in price:
                         price_one._change_reason = "Автоматическое"
                         price_one.save()
-                           
 
                 daemon_thread = threading.Thread(target=background_task)
                 daemon_thread.setDaemon(True)
                 daemon_thread.start()
-            
+
         # super().save_model(request, obj, form, change)
-        
+
     def delete_model(self, request, obj):
         id_sec = obj.id
         obj.delete()
         price = Price.objects.filter(sale__isnull=True)
+
         # price = Price.objects.filter(sale=id_sec)
         def background_task():
             # Долгосрочная фоновая задача
@@ -395,7 +438,7 @@ class DiscountAdmin(admin.ModelAdmin):
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
         daemon_thread.start()
-    
+
     def delete_queryset(self, request, queryset):
         queryset.delete()
         price = Price.objects.filter(sale__isnull=True).order_by("-id")
@@ -426,8 +469,9 @@ class VendorWebAdmin(admin.ModelAdmin):
         "is_view_index_web",
         "article",
     )
-    def has_delete_permission(self, request,obj=None):
-        return False   
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.register(Supplier, SupplierAdmin)

@@ -47,33 +47,17 @@ from fast_bitrix24 import Bitrix
 
 # тестовая страница скриптов
 def add_iek(request):
-    from dateutil.parser import parse
+   
     title = "TEST"
-    # supplier = Supplier.objects.get(slug="iek")
+    # supplier = Supplier.objects.get(slug="emas")
     # product = Product.objects.filter(supplier=supplier)
     # for prod in product:
-    #     print(prod)
-    #     price_product = Price.objects.filter(prod=prod).delete()
-    #     stock =  Stock.objects.filter(prod=prod).delete()
-    #     pp = ProductProperty.objects.filter(product=prod).delete()
-    #     pd = ProductDocument.objects.filter(product=prod).delete()
-    #     pi = ProductImage.objects.filter(product=prod).delete()
-    # product.delete()
-    def background_task():
-        supplier = Supplier.objects.get(slug="iek")
-        product = Product.objects.filter(supplier=supplier)
-        for prod in product:
-            price_product = Price.objects.filter(prod=prod).delete()
-            stock =  Stock.objects.filter(prod=prod).delete()
-            pp = ProductProperty.objects.filter(product=prod).delete()
-            pd = ProductDocument.objects.filter(product=prod).delete()
-            pi = ProductImage.objects.filter(product=prod).delete()
-        product.delete()
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-    
+    #     stock =  Stock.objects.get(prod=prod)
+    #     stock.stock_supplier = None
+    #     stock.stock_supplier_unit = None
+    #     stock.save()
     result = 1
+    iek_api()
     if result:
         pass
     else:

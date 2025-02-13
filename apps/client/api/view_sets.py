@@ -53,21 +53,24 @@ from apps.client.api.serializers import (
     OrderOktSerializer,
     OrderSaveCartSerializer,
     OrderSerializer,
+    PhoneClientSerializer,
     RequisitesSerializer,
     RequisitesToOktOrderSerializer,
+    RequisitesV2Serializer,
 )
 from django.contrib.sessions.models import Session
 from apps.client.models import (
     STATUS_ORDER,
     STATUS_ORDER_BITRIX,
-
     AccountRequisites,
     Client,
     DocumentShipment,
     EmailsCallBack,
     Order,
     PaymentTransaction,
+    PhoneClient,
     Requisites,
+    RequisitesOtherKpp,
 )
 from apps.core.utils import (
     after_save_order_products,
@@ -104,6 +107,7 @@ from openpyxl import load_workbook
 
 from project.settings import IS_WEB
 
+
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
@@ -120,7 +124,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         data["is_active"] = True
         data["username"] = phone
         cart_id = request.COOKIES.get("cart")
-
+        print(data)
         # pin = _get_pin(4)
         pin = 1111
         cache.set(phone, pin, 120)
@@ -133,16 +137,21 @@ class ClientViewSet(viewsets.ModelViewSet):
         # сравнение пин и логин
         else:
             verify_pin = _verify_pin(phone, int(pin_user))
+            print("verify_pin", verify_pin)
             # коды совпадают
             if verify_pin:
+                print("@@@", verify_pin)
                 serializer = self.serializer_class(data=data, many=False)
+                print(serializer)
                 # создание новый юзер
                 if serializer.is_valid():
+                    print("serializersave")
                     client = serializer.save()
                     client.add_manager()
 
                 # старый юзер логин
                 else:
+                    print(serializer.errors)
                     client = Client.objects.get(username=phone)
                     serializer = ClientSerializer(client, many=False)
 
@@ -252,16 +261,65 @@ class ClientViewSet(viewsets.ModelViewSet):
         else:
             return Response(data_admin, status=data_admin["status_admin"])
 
+    @action(detail=True, methods=["post"], url_path=r"upd-user-lk")
+    def update_user_web(self, request, pk=None, *args, **kwargs):
+        client = Client.objects.get(pk=pk)
+        data = request.data
+        print(data)
+        data = {
+            "client": {
+                "last_name": "last_name",
+                "first_name": "first_name",
+                "middle_name": "middle_name",
+                "position": "position",
+                "email": "steisysi@gamil.com",
+            },
+            "phones": [
+                     8927666666,
+                     
+                ]
+            
+        }
+
+        serializer = ClientSerializer(
+            client,
+            data["client"],
+            partial=True,
+        )
+        if serializer.is_valid():
+            print("serializer")
+            client_db = serializer.save()
+            client_phones = PhoneClient.objects.filter(client=client)
+            if client_phones:
+                for phone in client_phones:
+                    if phone.phone not in data["phones"]:
+                        phone.delete()
+                        
+            if len(data["phones"])> 0:
+                for phone_new in data["phones"]:
+                    PhoneClient.objects.get_or_create(
+                        client = client,
+                        phone = phone_new
+                    )
+    
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ClientRequisitesAccountViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientRequisitesSerializer
-    http_method_names = ["get", "post",]
+    http_method_names = [
+        "get",
+        "post",
+    ]
 
 
 class RequisitesViewSet(viewsets.ModelViewSet):
     queryset = Requisites.objects.all()
-    serializer_class = RequisitesSerializer
+    serializer_class = RequisitesV2Serializer
     http_method_names = ["get", "post"]
 
     def get_serializer(self, *args, **kwargs):
@@ -273,46 +331,154 @@ class RequisitesViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path=r"add")
     def add_all_requisites(self, request, *args, **kwargs):
-        data = request.data
-        i = -1
+        # data = request.data
+        data = {
+            "requisites": {
+                "client": 23,
+                "legal_entity": "333 лицо231",
+                "inn": "1111",
+            },
+            "requisitesKpp": {
+                "kpp": "11111",
+                "ogrn": "1111",
+            },
+            "adress": {
+                "legal_adress": {
+                    "post_code": "22222",
+                    "city": "22222",
+                    "legal_address": "22222",
+                },
+                "postal_adress": {
+                    "post_code": "22",
+                    "city": "222",
+                    "legal_address": "22222",
+                },
+            },
+            "account_requisites": [
+                {
+                    "account_requisites": "2222",
+                    "bank": "sfdfs",
+                    "kpp": "22222",
+                    "bic": "2222",
+                },
+                {
+                    "account_requisites": "3333333",
+                    "bank": "sfdfs",
+                    "kpp": "33333",
+                    "bic": "3333",
+                },
+            ],
+        }
+
+        requisites = data["requisites"]
+        requisitesKpp = data["requisitesKpp"]
+        adress = data["adress"]
+        account_requisites = data["account_requisites"]
+
+        # i = -1
         valid_all = True
+
         serializer_data_new = []
-        for data_item in data:
-            i += 1
-            requisites = data_item.get("requisites")
+        if requisitesKpp["kpp"]:
+            type_client = 1
+        else:
+            type_client = 2
 
-            account_requisites_data = data_item.get("account_requisites")
+        req = Requisites.objects.update_or_create(
+            inn=requisites["inn"],
+            defaults={
+                "legal_entity": requisites["legal_entity"],
+                "type_client": type_client,
+            },
+        )
+        if type_client == 1:
+            reqKpp = RequisitesOtherKpp.objects.update_or_create(
+                requisites=req[0],
+                kpp=requisitesKpp["kpp"],
+                defaults={
+                    "ogrn": requisitesKpp["ogrn"],
+                    "legal_post_code": adress["legal_adress"]["post_code"],
+                    "legal_city": adress["legal_adress"]["city"],
+                    "legal_address": adress["legal_adress"]["legal_address"],
+                    "postal_post_code": adress["postal_adress"]["post_code"],
+                    "postal_city": adress["postal_adress"]["city"],
+                    "postal_address": adress["postal_adress"]["legal_address"],
+                },
+            )
+        elif type_client == 2:
+            reqKpp = RequisitesOtherKpp.objects.update_or_create(
+                requisites=req[0],
+                ogrn=requisitesKpp["ogrn"],
+                defaults={
+                    "legal_post_code": adress["legal_adress"]["post_code"],
+                    "legal_city": adress["legal_adress"]["city"],
+                    "legal_address": adress["legal_adress"]["legal_address"],
+                    "postal_post_code": adress["postal_adress"]["post_code"],
+                    "postal_city": adress["postal_adress"]["city"],
+                    "postal_address": adress["postal_adress"]["legal_address"],
+                },
+            )
 
-            serializer = self.serializer_class(data=requisites, many=False)
+        for account_req in account_requisites:
+            reqAcc = AccountRequisites.objects.update_or_create(
+                requisitesKpp=reqKpp[0],
+                account_requisites=account_req["account_requisites"],
+                defaults={
+                    "bank": account_req["bank"],
+                    "kpp": account_req["kpp"],
+                    "bic": account_req["bic"],
+                },
+            )
 
-            if serializer.is_valid():
+        # serializer = self.serializer_class(data=requisites, many=False)
+        # if serializer.is_valid():
+        #     print("serializer")
+        #     requisites_db = serializer.save()
+        #     serializer_data_new.append(serializer.data)
+        #     print(serializer_data_new)
+        # else:
+        #     valid_all = False
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                requisites_item = serializer.save()
-                serializer_data_new.append(serializer.data)
+        # for data_item in data:
+        #     i += 1
+        #     requisites = data_item.get("requisites")
 
-                for account_requisites_item in account_requisites_data:
-                    account_requisites_item["requisites"] = requisites_item.id
+        #     account_requisites_data = data_item.get("account_requisites")
 
-                serializer_class_new = AccountRequisitesSerializer
-                serializer = serializer_class_new(
-                    data=account_requisites_data, many=True
-                )
-                if serializer.is_valid():
-                    account_requisites_item = serializer.save()
-                    serializer_data_new[i]["account_requisites"] = serializer.data
+        #     serializer = self.serializer_class(data=requisites, many=False)
 
-                else:
-                    valid_all = False
-                    return Response(
-                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                    )
-            else:
-                valid_all = False
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #     if serializer.is_valid():
+
+        #         requisites_item = serializer.save()
+        #         serializer_data_new.append(serializer.data)
+
+        #         for account_requisites_item in account_requisites_data:
+        #             account_requisites_item["requisites"] = requisites_item.id
+
+        #         serializer_class_new = AccountRequisitesSerializer
+        #         serializer = serializer_class_new(
+        #             data=account_requisites_data, many=True
+        #         )
+        #         if serializer.is_valid():
+        #             account_requisites_item = serializer.save()
+        #             serializer_data_new[i]["account_requisites"] = serializer.data
+
+        #         else:
+        #             valid_all = False
+        #             return Response(
+        #                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        #             )
+        #     else:
+        #         valid_all = False
+        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         if valid_all:
-            return Response(serializer_data_new, status=status.HTTP_200_OK)
+            return Response(1111, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post","get"], url_path=r"update")
+            # return Response(serializer_data_new, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post", "get"], url_path=r"update")
     def update_requisites(self, request, pk=None, *args, **kwargs):
 
         queryset = Requisites.objects.get(pk=pk)
@@ -363,16 +529,24 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
     serializer_class = AccountRequisitesSerializer
 
-    http_method_names = ["get", "post", "put",]
+    http_method_names = [
+        "get",
+        "post",
+        "put",
+    ]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    http_method_names = ["get", "post", "put",]
+    http_method_names = [
+        "get",
+        "post",
+        "put",
+    ]
 
-    # сохранение заказа с сайта 
+    # сохранение заказа с сайта
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
@@ -425,7 +599,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 status_order = "PROCESSING"
                 # # сохранение ордера
-            
+
                 serializer_class = OrderSerializer
                 data_order = {
                     "client": client,
@@ -446,7 +620,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "id_bitrix": None,
                     "type_delivery": "paid_delivery",
                 }
-              
 
                 status_save_order, data = save_order_web(
                     request, data_order, all_info_requisites, all_info_product
@@ -582,10 +755,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             print("def order_bitrix")
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
-            s = data['serializer']
-            json_acceptable_string = s.replace("'", "\"")
+            s = data["serializer"]
+            json_acceptable_string = s.replace("'", '"')
             d = json.loads(json_acceptable_string)
-            
+
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))
             serializer = serializer_class(order, data=d, many=False)
@@ -858,7 +1031,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # создание счета к заказу
-    @action(detail=True, methods=["get", "post",], url_path=r"create-bill-admin")
+    @action(
+        detail=True,
+        methods=[
+            "get",
+            "post",
+        ],
+        url_path=r"create-bill-admin",
+    )
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
         try:
             data_get = request.data
@@ -866,7 +1046,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-            
+
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
@@ -902,10 +1082,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 # data_for_1c = create_info_request_order_1c(order, order_products)
                 # print("data_for_1c",data_for_1c)
-              
+
                 type_save = request.COOKIES.get("type_save")
-                
-                if IS_WEB :
+
+                if IS_WEB:
                     pass
                 else:
                     add_info_order(request, order, type_save)
@@ -925,22 +1105,36 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
 
-    #ОКТ изменение спецификации дмин специф
-    @action(detail=True, methods=["get", "post",], url_path=r"update-order-admin")
+    # ОКТ изменение спецификации дмин специф
+    @action(
+        detail=True,
+        methods=[
+            "get",
+            "post",
+        ],
+        url_path=r"update-order-admin",
+    )
     def update_order_admin(self, request, pk=None, *args, **kwargs):
         data = request.data
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=False)
         return Response(cart, status=status.HTTP_200_OK)
 
-    #ОКТ выйти из изменения без сохранения спецификации дмин специф
-    @action(detail=False, methods=["get", "post",], url_path=r"exit-order-admin")
+    # ОКТ выйти из изменения без сохранения спецификации дмин специф
+    @action(
+        detail=False,
+        methods=[
+            "get",
+            "post",
+        ],
+        url_path=r"exit-order-admin",
+    )
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
         return Response(cart, status=status.HTTP_200_OK)
 
-    #ОКТ получить список товаров для создания счета с датами псотавки НА УДАЛЕНИЕ
+    # ОКТ получить список товаров для создания счета с датами псотавки НА УДАЛЕНИЕ
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
 
@@ -953,7 +1147,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    #САЙТ страница мои заказов  аякс загрузка
+    # САЙТ страница мои заказов  аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
         from django.db.models.functions import Length
@@ -1173,7 +1367,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    #САЙТ страница мои документы аякс загрузка
+    # САЙТ страница мои документы аякс загрузка
     @action(detail=False, url_path="load-ajax-document-list")
     def load_ajax_document_list(self, request):
         current_count = int(request.query_params.get("count"))
@@ -1353,7 +1547,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    #ОКТ страница все спецификации окт аякс загрузка
+    # ОКТ страница все спецификации окт аякс загрузка
     @action(
         detail=False, methods=["post", "get"], url_path=r"load-ajax-specification-list"
     )
@@ -1434,7 +1628,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    #ОКТ добавление оплаты открыть получить отстаок суммы
+    # ОКТ добавление оплаты открыть получить отстаок суммы
     @action(detail=True, methods=["get"], url_path=r"get-payment")
     def get_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1448,7 +1642,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    #ОКТ сохранение суммы оплаты счета
+    # ОКТ сохранение суммы оплаты счета
     @action(detail=True, methods=["post"], url_path=r"save-payment")
     def save_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1476,7 +1670,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    #ОКТ получение суммы уже оплаченной при открытии модалки внесения оплаты
+    # ОКТ получение суммы уже оплаченной при открытии модалки внесения оплаты
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
@@ -1527,20 +1721,19 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_file_dowlad(self, request, pk=None, *args, **kwargs):
         pass
         data = request.data
-        up_file = data['file']
+        up_file = data["file"]
 
         workbook = load_workbook(up_file)
         data_sheet = workbook.active
-        
+
         for index in range(3, data_sheet.max_row):
             row_level = data_sheet.row_dimensions[index].outline_level + 1
             item_value = data_sheet.cell(row=index, column=2).value
-            
+
             if row_level == 1:
-                    vendor_str = data_sheet.cell(row=index, column=1).value
-            
-    
-    #ОКТ 1С сроки поставки товаров ОКТ Б24 
+                vendor_str = data_sheet.cell(row=index, column=1).value
+
+    # ОКТ 1С сроки поставки товаров ОКТ Б24
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
     def add_info_order_1c(self, request, *args, **kwargs):
         # data = request.data
@@ -1616,7 +1809,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
 
                     print(order_pdf)
-            return Response(None, status=status.HTTP_200_OK)  
+            return Response(None, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -1625,20 +1818,19 @@ class OrderViewSet(viewsets.ModelViewSet):
             info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
-            
+
         finally:
             # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
             # если есть изденения даты для переделки счета:
 
             if pdf:
-                if IS_WEB :
+                if IS_WEB:
                     pass
                 else:
                     pass
                     # is_save_new_doc_bx = save_new_doc_bx(order)
-                
-    
-    #ОКТ 1С получение оплат ОКТ Б24 
+
+    # ОКТ 1С получение оплат ОКТ Б24
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         try:
@@ -1676,13 +1868,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            if IS_WEB :
-                    pass
+            if IS_WEB:
+                pass
             else:
                 pass
                 # save_payment_order_bx(data)
 
-    #ОКТ 1С получение документов откгрузки ОКТ Б24 
+    # ОКТ 1С получение документов откгрузки ОКТ Б24
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         try:
@@ -1704,7 +1896,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 print(image_path)
                 document_shipment.file = image_path
                 document_shipment.save()
-                
+
             return Response(None, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -1715,7 +1907,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            if IS_WEB :
+            if IS_WEB:
                 pass
             else:
                 pass
@@ -1725,7 +1917,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer
-    http_method_names = ["get", "post", "put",]
+    http_method_names = [
+        "get",
+        "post",
+        "put",
+    ]
 
     @action(detail=False, methods=["post"], url_path=r"call-back-email")
     def send_email_callback(self, request, *args, **kwargs):

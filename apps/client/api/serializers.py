@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, RequisitesOtherKpp
+from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -21,11 +21,22 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         exclude = ("password", "date_joined")
+        
+class PhoneClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneClient
+        fields = "__all__"
 
 
 class RequisitesSerializer(serializers.ModelSerializer):
     type_payment_full = serializers.CharField(source="get_type_payment")
 
+    class Meta:
+        model = Requisites
+        fields = "__all__"
+        
+class RequisitesV2Serializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Requisites
         fields = "__all__"

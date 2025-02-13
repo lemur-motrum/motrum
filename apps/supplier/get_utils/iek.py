@@ -319,7 +319,6 @@ def iek_api():
                                 "article_name": f"{article_name_re[0]}.{article_name_re[1]}",
                             },
                         )
-                        # t = f"{article_name_re[0]}.{article_name_re[1]}"
 
                         all_categ = SupplierCategoryProductAll.objects.filter(
                             supplier=supplier, article_name=article_name
@@ -327,15 +326,19 @@ def iek_api():
 
                         if all_categ.count() > 0:
                             for all_cat_item in all_categ:
-
+                                # категории с названиями совпадают- все ок
                                 if all_cat_item.name == category_lower:
-
                                     pass
+                                # категории с названиями не совпадают 
                                 else:
 
                                     all_cat_item.is_correct = False
                                     all_cat_item.is_need = False
                                     all_cat_item.save()
+                                    error = "info_error"
+                                    location = "У категори iek изменились параметры"
+                                    info = f"У категори iek изменились параметры{all_cat_item.article_name}{all_cat_item.name}"
+                                    e = error_alert(error, location, info)
                                     sp = SupplierCategoryProductAll.objects.filter(
                                         supplier=supplier,
                                         article_name=article_name,
@@ -353,6 +356,10 @@ def iek_api():
                                             group_supplier=groupe_supplier_item[0],
                                             is_need=False,
                                         )
+                                        error = "info_error"
+                                        location = "Новая категория iek"
+                                        info = f"Новая категория iek{article_name}{category_lower}"
+                                        e = error_alert(error, location, info)
 
                         else:
                             SupplierCategoryProductAll.objects.create(
@@ -364,6 +371,10 @@ def iek_api():
                                 group_supplier=groupe_supplier_item[0],
                                 is_need=False,
                             )
+                            error = "info_error"
+                            location = "Новая категория iek"
+                            info = f"Новая категория iek{article_name}{category_lower}"
+                            e = error_alert(error, location, info)
 
                     except Exception as e:
                         print(e)
@@ -791,7 +802,7 @@ def iek_api():
                             )
                             article.save()
                             update_change_reason(article, "Автоматическое")
-                            
+
                             if IS_PROD:
                                 save_image(article)
                                 save_all_doc(data_item, article)
@@ -1477,7 +1488,7 @@ def iek_api():
     # # get_iek_property("etim",  f"art=MPOB-030-2-00-S")
 
     # # категории
-    all_categ_iek("ddp", None)
+    # all_categ_iek("ddp", None)
 
     # get_iek_category("ddp", None)
 
@@ -1487,7 +1498,7 @@ def iek_api():
     #     get_iek_product("products", f"groupId={item_iek_save_categ}")
     #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
 
-    # all_categ_iek("ddp", None)
+    all_categ_iek("ddp", None)
     # true_categ = SupplierCategoryProductAll.objects.filter(
     #                         supplier=supplier,is_correct = True,is_need = True
     #                     )
@@ -1527,7 +1538,7 @@ def get_iek_stock():
                 allow_redirects=False,
             )
             data = response.json()
-            if data:
+            if data and data != []:
                 if len(data["shopItems"]) > 0:
                     for data_item in data["shopItems"]:
                         if data_item["zakaz"] == 1:
@@ -1588,6 +1599,7 @@ def update_prod_iek_in_okt():
     try:
         products = Product.objects.filter(supplier=supplier)
         for product in products:
+
             url_params = f"art={product.article_supplier}"
 
             url_service = "products"
@@ -1606,25 +1618,26 @@ def update_prod_iek_in_okt():
             )
             data = response.json()
             for data_item in data:
-                # цены
-                if "price" in data_item:
-                    price = data_item["price"]
-                    extra = data_item["extra"]
-                    if extra == "Цена по запросу":
+                if data != []:
+                    # цены
+                    if "price" in data_item:
+                        price = data_item["price"]
+                        extra = data_item["extra"]
+                        if extra == "Цена по запросу":
+                            extra = True
+                            price_supplier = 0
+                        else:
+                            extra = False
+                            price_supplier = price
+                    else:
                         extra = True
                         price_supplier = 0
-                    else:
-                        extra = False
-                        price_supplier = price
-                else:
-                    extra = True
-                    price_supplier = 0
 
-                price_product = Price.objects.get(prod=product)
-                price_product.price_supplier = price_supplier
-                price_product.extra_price = extra
-                price_product._change_reason = "Автоматическое"
-                price_product.save()
+                    price_product = Price.objects.get(prod=product)
+                    price_product.price_supplier = price_supplier
+                    price_product.extra_price = extra
+                    price_product._change_reason = "Автоматическое"
+                    price_product.save()
 
     except Exception as e:
         print(e)

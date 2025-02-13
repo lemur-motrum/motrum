@@ -28,15 +28,27 @@ function addNewProductLogic(container) {
       ".delete_search_details_btn"
     );
 
+    function closeSearchWindow() {
+      searchElemsContainer.innerHTML = "";
+      searchElemsContainer.classList.remove("show");
+      deleteSearchButton.classList.remove("show");
+      addProductContainer.classList.remove("show");
+      searchInput.classList.remove("bordering");
+    }
+    function openSearchWindow() {
+      searchElemsContainer.classList.add("show");
+      deleteSearchButton.classList.add("show");
+      searchElemsContainer.innerHTML = "<div class='small_loader'></div>";
+      searchInput.classList.add("bordering");
+    }
+
     searchInput.oninput = () => {
       if (searchInput.value.length >= 3) {
-        searchElemsContainer.classList.add("show");
-        deleteSearchButton.classList.add("show");
-        searchElemsContainer.innerHTML = "<div class='small_loader'></div>";
+        openSearchWindow();
         const objData = {
           search_text: searchInput.value,
           count: 0,
-          count_last: 9,
+          count_last: 5,
         };
         const data = JSON.stringify(objData);
         fetch("/api/v1/product/search-product/", {
@@ -59,78 +71,71 @@ function addNewProductLogic(container) {
             searchElemsContainer.innerHTML = "";
             if (response.data.length >= 9) {
               response.data.forEach((el) => {
-                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item">${el.name}</div>`;
+                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
               });
               searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
             } else if (response.data.length > 0 && response.data.length < 9) {
               response.data.forEach((el) => {
-                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item">${el.name}</div>`;
+                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
               });
             } else {
               searchElemsContainer.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
             }
-            searchElemsContainer.onscroll = () => {
-              if (
-                searchElemsContainer.scrollHeight -
-                  searchElemsContainer.scrollTop <=
-                searchElemsContainer.offsetHeight
-              ) {
-                objData["count"] += 10;
-                objData["count_last"] += 10;
-                const data = JSON.stringify(objData);
-                fetch("/api/v1/product/search-product/", {
-                  method: "POST",
-                  body: data,
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken,
-                  },
-                })
-                  .then((response) => {
-                    if (response.status === 200) {
-                      return response.json();
-                    } else {
-                      setErrorModal();
-                      throw new Error("Ошибка");
-                    }
-                  })
-                  .then((response) => {
-                    if (searchElemsContainer.querySelector(".small_loader")) {
-                      searchElemsContainer
-                        .querySelector(".small_loader")
-                        .remove();
-                    }
-                    if (response.data.length >= 9) {
-                      response.data.forEach((el) => {
-                        searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item">${el.name}</div>`;
-                      });
-                      searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
-                    } else {
-                      response.data.forEach((el) => {
-                        searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item">${el.name}</div>`;
-                      });
-                    }
-                    searchProductLogic(searchElemsContainer);
-                  });
-              }
-            };
+            // searchElemsContainer.onscroll = () => {
+            //   if (
+            //     searchElemsContainer.scrollHeight -
+            //       searchElemsContainer.scrollTop <=
+            //     searchElemsContainer.offsetHeight
+            //   ) {
+            //     objData["count"] += 10;
+            //     objData["count_last"] += 10;
+            //     const data = JSON.stringify(objData);
+            //     fetch("/api/v1/product/search-product/", {
+            //       method: "POST",
+            //       body: data,
+            //       headers: {
+            //         "Content-Type": "application/json",
+            //         "X-CSRFToken": csrfToken,
+            //       },
+            //     })
+            //       .then((response) => {
+            //         if (response.status === 200) {
+            //           return response.json();
+            //         } else {
+            //           setErrorModal();
+            //           throw new Error("Ошибка");
+            //         }
+            //       })
+            //       .then((response) => {
+            //         if (searchElemsContainer.querySelector(".small_loader")) {
+            //           searchElemsContainer
+            //             .querySelector(".small_loader")
+            //             .remove();
+            //         }
+            //         if (response.data.length >= 9) {
+            //           response.data.forEach((el) => {
+            //             searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Найти</span></div>`;
+            //           });
+            //           searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
+            //         } else {
+            //           response.data.forEach((el) => {
+            //             searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Найти</span></div>`;
+            //           });
+            //         }
+            //         searchProductLogic(searchElemsContainer);
+            //       });
+            //   }
+            // };
+
             searchProductLogic(searchElemsContainer);
           });
       } else {
-        searchElemsContainer.innerHTML = "";
-        searchElemsContainer.classList.remove("show");
-        deleteSearchButton.classList.remove("show");
-        addProductContainer.classList.remove("show");
+        closeSearchWindow();
       }
     };
     deleteSearchButton.onclick = () => {
       searchInput.value = "";
-      searchElemsContainer.classList.remove("show");
-      if (addProductButton.getAttribute("product-id")) {
-        addProductButton.setAttribute("product-id", "");
-      }
-      addProductContainer.classList.remove("show");
-      deleteSearchButton.classList.remove("show");
+      closeSearchWindow();
     };
     addNewProductButton.onclick = () => {
       document
@@ -375,15 +380,123 @@ function addNewProductLogic(container) {
 
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
-      searchProductItems.forEach((searchProductItem) => {
-        searchProductItem.onclick = () => {
-          searchInput.value = searchProductItem.textContent;
+
+      let counterElems = 0;
+      searchProductItems.forEach((searchProductItem, i) => {
+        searchProductItem.onmouseover = () => {
+          searchProductItems.forEach((el) => el.classList.remove("active"));
+          searchProductItem.classList.add("active");
+          counterElems = i + 1;
+        };
+        searchProductItem.onmouseout = () => {
+          searchProductItem.classList.remove("active");
+          counterElems = 0;
+        };
+        const searchButton = searchProductItem.querySelector(".search_button");
+        const productId = searchProductItem.getAttribute("product-id");
+
+        document.addEventListener("keyup", function (e) {
+          console.log(counterElems);
+          if (e.code == "ArrowUp") {
+            searchProductItems.forEach((el) => {
+              el.classList.remove("active");
+            });
+            if (counterElems > searchProductItems.length - 1) {
+              counterElems = 0;
+            } else {
+              counterElems += 1;
+            }
+            if (searchProductItems[counterElems - 1]) {
+              searchProductItems[counterElems - 1].classList.add("active");
+              const name =
+                searchProductItems[counterElems - 1].querySelector(".name");
+              searchInput.value = name.textContent;
+            }
+          }
+          if (e.code == "ArrowDown") {
+            searchProductItems.forEach((el) => {
+              el.classList.remove("active");
+            });
+            if (counterElems < 1) {
+              counterElems = searchProductItems.length;
+            } else {
+              counterElems -= 1;
+            }
+            if (searchProductItems[counterElems - 1]) {
+              searchProductItems[counterElems - 1].classList.add("active");
+              const name =
+                searchProductItems[counterElems - 1].querySelector(".name");
+              searchInput.value = name.textContent;
+            }
+          }
+          if (e.code == "Enter") {
+            if (searchInput.value) {
+              const productId = document
+                .querySelector(".search_container")
+                .querySelector(".active")
+                .getAttribute("product-id");
+              closeSearchWindow();
+              cont.classList.remove("show");
+              searchInput.classList.remove("bordering");
+              const cartId = getCookie("cart");
+              const objData = {
+                cart: cartId,
+                product: productId,
+                quantity: 1,
+              };
+              const data = JSON.stringify(objData);
+              fetch(`/api/v1/cart/${cartId}/save-product/`, {
+                method: "POST",
+                body: data,
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": csrfToken,
+                },
+              }).then((response) => {
+                if (response.status == 200) {
+                  window.location.reload();
+                } else if (response.status == 409) {
+                  addProductButton.innerHTML = "";
+                  addProductButton.textContent = "Добавить этот товар";
+                  showErrorValidation("Этот товар уже в корзине", error);
+                } else {
+                  setErrorModal();
+                  throw new Error("Ошибка");
+                }
+              });
+            }
+          }
+        });
+
+        searchButton.onclick = () => {
           cont.classList.remove("show");
-          addProductButton.setAttribute(
-            "product-id",
-            searchProductItem.getAttribute("product-id")
-          );
-          addProductContainer.classList.add("show");
+          searchInput.classList.remove("bordering");
+          const cartId = getCookie("cart");
+          const objData = {
+            cart: cartId,
+            product: productId,
+            quantity: 1,
+          };
+          const data = JSON.stringify(objData);
+          fetch(`/api/v1/cart/${cartId}/save-product/`, {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          }).then((response) => {
+            if (response.status == 200) {
+              window.location.reload();
+            } else if (response.status == 409) {
+              addProductButton.innerHTML = "";
+              addProductButton.textContent = "Добавить этот товар";
+              showErrorValidation("Этот товар уже в корзине", error);
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          });
         };
       });
     }

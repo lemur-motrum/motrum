@@ -15,6 +15,7 @@ import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
 import { buttonsLogic } from "../js/add_product_in_cart.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -534,9 +535,8 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           const vendor = item.getAttribute("data-vendor");
           const deliveryDate = item.querySelector(".delivery_date");
-          const commentItem = item.querySelector(
-            'textarea[name="comment-input-name"]'
-          ).value;
+          setCommentProductItem(item);
+          const commentItem = item.getAttribute("data-comment-item");
           const inputPrice = item.querySelector(".price-input");
           const saleMotrum = item.querySelector(".motrum_sale_persent");
           const productCartId = item.getAttribute("data-product-id-cart");
@@ -586,7 +586,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           console.log("date-delivery", deliveryDate.value);
-          console.log("comment", commentItem);
+          // console.log("comment", commentItem);
 
           if (
             inputPrice

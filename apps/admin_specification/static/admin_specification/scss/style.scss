@@ -1423,6 +1423,18 @@ h1 {
             font-size: 0.75rem;
             font-weight: 300;
           }
+          .comment {
+            cursor: pointer;
+            font-size: 0.625rem;
+            font-weight: bold;
+            margin-top: 0.313rem;
+            &.false {
+              color: #95bad4;
+            }
+            &.true {
+              color: #ff5b00;
+            }
+          }
         }
         &:nth-of-type(5) {
           width: 6.813rem;
@@ -4384,6 +4396,107 @@ h1 {
       border-color: #95bad4;
       .second {
         color: #fff;
+      }
+    }
+  }
+}
+
+.okt_product_comment_overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($color: #000000, $alpha: 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: 1s;
+  z-index: 100;
+  &.visible {
+    opacity: 1;
+  }
+  &.show {
+    display: flex;
+  }
+  .modal_window {
+    width: 23.75rem;
+    // height: 18rem;
+    background-color: #fff;
+    border-radius: 2.5rem;
+    box-sizing: border-box;
+    padding: 2.313rem 2.063rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.875rem;
+    position: relative;
+    .close_btn {
+      position: absolute;
+      font-size: 2rem;
+      transform: rotate(45deg);
+      top: 35%;
+      right: -75%;
+      color: #bdbdbd;
+      transition: 0.6s;
+      cursor: pointer;
+      &:hover {
+        color: #a4a4a4;
+      }
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    div {
+      position: relative;
+      width: 100%;
+      .comment_text_area {
+        width: 100%;
+        height: 8rem;
+        border-radius: 2rem;
+        border: 0.094rem solid #000;
+        padding: 1rem;
+        box-sizing: border-box;
+        font-size: 1rem;
+        resize: none;
+        font-family: "Nunito", sans-serif;
+        &::-webkit-resizer {
+          display: none;
+        }
+        &::-webkit-scrollbar {
+          width: 0;
+        }
+      }
+      .error {
+        color: red;
+        font-size: 0.7rem;
+        position: absolute;
+        top: 95%;
+        left: 1rem;
+        transition: 0.6s;
+        opacity: 0;
+        &.show {
+          opacity: 1;
+        }
+      }
+    }
+    .btn {
+      font-size: 1.313rem;
+      text-transform: lowercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2rem;
+      background-color: #95bad4;
+      color: #fff;
+      cursor: pointer;
+      width: 100%;
+      height: 3.563rem;
+      transition: 0.6s;
+      &:hover {
+        background-color: #ff5b00;
       }
     }
   }

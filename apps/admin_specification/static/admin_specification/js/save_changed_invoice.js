@@ -6,6 +6,7 @@ import {
   getDeliveryDate,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "../js/error_modal.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -66,9 +67,9 @@ window.addEventListener("DOMContentLoaded", () => {
           const deliveryDate = specificationItem.querySelector(
             ".invoice-data-input"
           );
-          const commentItem = specificationItem.querySelector(
-            'textarea[name="comment-input-name"]'
-          ).value;
+          setCommentProductItem(specificationItem);
+          const commentItem =
+            specificationItem.getAttribute("data-comment-item");
           const inputPrice = specificationItem.querySelector(".price-input");
           const saleMotrum = specificationItem.querySelector(
             ".motrum_sale_persent"

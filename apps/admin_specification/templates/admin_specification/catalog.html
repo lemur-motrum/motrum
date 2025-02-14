@@ -37,7 +37,8 @@
                          data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %}{% comment %} {% if bill_upd and item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} {% if item.price.rub_price_supplier %} {{ item.price.rub_price_supplier }} {% else %} 0 {% endif %} {% endif %} {% endcomment %}"
                          data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
                          data-product-specification-id="{{ item.id_product_spesif }}"
-                         data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
+                         data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}"
+                         data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                         <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                         <div title="Редактировать элемент" class="change_icon_container">
                             <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
@@ -49,13 +50,12 @@
                             {{ item.name }}
                             <br>
                             <div class="article">Арт. {{ item.article_supplier }}</div>
-                            <br>
-                            <textarea style="width: 200px;
-                                             height: 15px;
-                                             border-radius: 5px"
-                                      class="comment-input"
-                                      name="comment-input-name"
-                                      placeholder="Комментарий">  {% if item.comment %}{{ item.comment }}{% endif %}</textarea>
+                            {% if item.comment %}
+                                <div class="comment true">Посмотреть комментарий</div>
+                            {% else %}
+                                <div class="comment false">Добавить комментарий</div>
+                            {% endif %}
+                            {% comment %} <textarea style="width: 200px; height: 15px; border-radius: 5px" class="comment-input" name="comment-input-name" placeholder="Комментарий">  {% if item.comment %}{{ item.comment }}{% endif %}</textarea> {% endcomment %}
                         </div>
                         <div class="item_value">
                             {% if item.stock %}
@@ -272,7 +272,8 @@
                              data-id="{{ item.id_product_cart }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
-                             data-product-specification-id="{{ item.id }}">
+                             data-product-specification-id="{{ item.id }}"
+                             data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                             <div class="change_icon_container">
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
@@ -292,13 +293,12 @@
                                         {{ item.product_new_article_cart }}
                                     {% endif %}
                                 </div>
-                                <br>
-                                <textarea style="width: 200px;
-                                                 height: 15px;
-                                                 border-radius: 5px"
-                                          class="comment-input"
-                                          name="comment-input-name"
-                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
+                                {% if item.comment %}
+                                    <div class="comment true">Посмотреть комментарий</div>
+                                {% else %}
+                                    <div class="comment false">Добавить комментарий</div>
+                                {% endif %}
+                                {% comment %} <textarea style="width: 200px; height: 15px; border-radius: 5px" class="comment-input" name="comment-input-name" placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea> {% endcomment %}
                             </div>
                             <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
@@ -509,7 +509,8 @@
                              data-id="{{ item.id }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
-                             data-product-specification-id="">
+                             data-product-specification-id=""
+                             data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                             <div class="change_icon_container">
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
@@ -518,13 +519,12 @@
                                 {{ item.product_new }}
                                 <br>
                                 <div class="article">Арт. {{ item.product_new_article }}</div>
-                                <br>
-                                <textarea style="width: 200px;
-                                                 height: 15px;
-                                                 border-radius: 5px"
-                                          class="comment-input"
-                                          name="comment-input-name"
-                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
+                                {% if item.comment %}
+                                    <div class="comment true">Посмотреть комментарий</div>
+                                {% else %}
+                                    <div class="comment false">Добавить комментарий</div>
+                                {% endif %}
+                                {% comment %} <textarea style="width: 200px; height: 15px; border-radius: 5px" class="comment-input" name="comment-input-name" placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea> {% endcomment %}
                             </div>
                             <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
@@ -720,7 +720,8 @@
                              data-id="{{ item.id }}"
                              data-price="{{ item.product_new_price }}"
                              data-price-exclusive="1"
-                             data-product-specification-id="">
+                             data-product-specification-id=""
+                             data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                             <div class="change_icon_container">
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
@@ -729,13 +730,12 @@
                                 {{ item.product_new }}
                                 <br>
                                 <div class="article">Арт. {{ item.product_new_article }}</div>
-                                <br>
-                                <textarea style="width: 200px;
-                                                 height: 15px;
-                                                 border-radius: 5px"
-                                          class="comment-input"
-                                          name="comment-input-name"
-                                          placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea>
+                                {% if item.comment %}
+                                    <div class="comment true">Посмотреть комментарий</div>
+                                {% else %}
+                                    <div class="comment false">Добавить комментарий</div>
+                                {% endif %}
+                                {% comment %} <textarea style="width: 200px; height: 15px; border-radius: 5px" class="comment-input" name="comment-input-name" placeholder="Комментарий">{% if item.comment %}{{ item.comment }}{% endif %}</textarea> {% endcomment %}
                             </div>
                             <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}

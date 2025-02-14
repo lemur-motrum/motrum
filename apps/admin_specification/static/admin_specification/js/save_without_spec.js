@@ -6,6 +6,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "../js/error_modal.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");
@@ -32,9 +33,8 @@ window.addEventListener("DOMContentLoaded", () => {
       const deliveryDate = item.querySelector(".delivery_date")
         ? item.querySelector(".delivery_date").value
         : item.querySelector(".invoice-data-input").value;
-      const commentItem = item.querySelector(
-        'textarea[name="comment-input-name"]'
-      ).value;
+      setCommentProductItem(item);
+      const commentItem = item.getAttribute("data-comment-item");
       const productCartId = item.getAttribute("data-product-id-cart");
 
       const product = {

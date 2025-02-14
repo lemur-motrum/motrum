@@ -3,6 +3,7 @@ import {
   showErrorValidation,
   getCurrentPrice,
   deleteCookie,
+  getDeliveryDate,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "../js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
@@ -26,6 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const products = [];
 
     const bitrixInput = document.querySelector(".bitrix-input");
+    const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
 
     const specificationWrapepr = document.querySelector(".spetification_table");
     const specificationItems =
@@ -139,8 +141,17 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!bitrixInput.value) {
           validate = false;
           bitrixInput.style.border = "0.063rem solid red";
-          bitrixInput.style.borderRadius = "0.625rem";
         }
+      }
+      if (!deliveryRequsits || deliveryRequsits == "null") {
+        validate = false;
+        document.querySelector(".select_delevery").style.border =
+          "1px solid red";
+      }
+      if (!motrumRequsits || motrumRequsits == "null") {
+        validate = false;
+        document.querySelector(".select_motrum_requisites").style.border =
+          "1px solid red";
       }
       if (validate == false) {
         const error = buttonContainer.querySelector(".error");
@@ -158,7 +169,7 @@ window.addEventListener("DOMContentLoaded", () => {
           id_specification: specificationId ? specificationId : null,
           id_cart: +getCookie("cart"),
           comment: commentAll.value,
-          date_delivery: dateDeliveryAll.value,
+          date_delivery: getDeliveryDate(dateDeliveryInputs),
           motrum_requisites: +motrumRequsits,
           client_requisites: +clientRequsits,
           type_delivery: deliveryRequsits,

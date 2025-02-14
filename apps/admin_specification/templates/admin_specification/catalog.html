@@ -1051,11 +1051,11 @@
                                         class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
                                         name="client-requisit">
-                                    <option disabled selected>Расчетный счет юр.Лица</option>
+                                    <option disabled>Расчетный счет юр.Лица</option>
                                     {% if client_req %}
                                         {% for recusits in client_req_all %}
                                             <option class="client-option"
-                                                    {% if client_req.id == recusits.id %}{% endif %}
+                                                    {% if client_req.id == recusits.id %}selected{% endif %}
                                                     value="{{ recusits.id }}">
                                                 {% if recusits.requisitesKpp.kpp %}КПП:{{ recusits.requisitesKpp.kpp }}{% endif %}
                                                 Р/c:{{ recusits.account_requisites }}

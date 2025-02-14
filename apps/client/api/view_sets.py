@@ -64,12 +64,14 @@ from apps.client.models import (
     STATUS_ORDER_BITRIX,
     AccountRequisites,
     Client,
+    ClientRequisites,
     DocumentShipment,
     EmailsCallBack,
     Order,
     PaymentTransaction,
     PhoneClient,
     Requisites,
+    RequisitesAddress,
     RequisitesOtherKpp,
 )
 from apps.core.utils import (
@@ -105,7 +107,7 @@ from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 from openpyxl import load_workbook
 
-from project.settings import IS_WEB
+from project.settings import IS_WEB,DADATA_TOKEN,DADATA_SECRET
 from dadata import Dadata
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -333,10 +335,11 @@ class RequisitesViewSet(viewsets.ModelViewSet):
     def add_all_requisites(self, request, *args, **kwargs):
         # data = request.data
         data = {
+            
             "requisites": {
                 "client": 23,
                 "legal_entity": "333 лицо231",
-                "inn": "1111",
+                "inn": 631625733376,
             },
             "requisitesKpp": {
                 "kpp": "11111",
@@ -344,14 +347,22 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             },
             "adress": {
                 "legal_adress": {
+                    "country":None,
+                    "region":None,
+                    "province":None,
                     "post_code": "22222",
                     "city": "22222",
-                    "legal_address": "22222",
+                    "legal_address1": "22222",
+                    "legal_address2": "22222",
                 },
                 "postal_adress": {
+                    "country":None,
+                    "region":None,
+                    "province":None,
                     "post_code": "22",
                     "city": "222",
-                    "legal_address": "22222",
+                    "legal_address1": "22222",
+                    "legal_address2": "22222",
                 },
             },
             "account_requisites": [
@@ -399,10 +410,10 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "ogrn": requisitesKpp["ogrn"],
                     "legal_post_code": adress["legal_adress"]["post_code"],
                     "legal_city": adress["legal_adress"]["city"],
-                    "legal_address": adress["legal_adress"]["legal_address"],
+                    "legal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
                     "postal_post_code": adress["postal_adress"]["post_code"],
                     "postal_city": adress["postal_adress"]["city"],
-                    "postal_address": adress["postal_adress"]["legal_address"],
+                    "postal_address": f"{adress["postal_adress"]["legal_address1"]}{adress["postal_adress"]["legal_address2"]}",
                 },
             )
         elif type_client == 2:
@@ -412,13 +423,43 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                 defaults={
                     "legal_post_code": adress["legal_adress"]["post_code"],
                     "legal_city": adress["legal_adress"]["city"],
-                    "legal_address": adress["legal_adress"]["legal_address"],
+                    "legal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
                     "postal_post_code": adress["postal_adress"]["post_code"],
                     "postal_city": adress["postal_adress"]["city"],
-                    "postal_address": adress["postal_adress"]["legal_address"],
+                    "postal_address": f"{adress["postal_adress"]["legal_address1"]}{adress["postal_adress"]["legal_address2"]}",
                 },
             )
 
+        clientReq = ClientRequisites.objects.get_or_create(
+                client_id=requisites["client"],
+                requisitesotherkpp=reqKpp[0],
+            )
+        
+        
+        
+        adress_req =  RequisitesAddress.objects.get_or_create(
+                requisitesKpp=reqKpp[0],
+                type_address_bx = 6,
+                country = adress["legal_adress"]["country"],
+                region = adress["legal_adress"]["region"],
+                province=adress["legal_adress"]["province"],
+                post_code=adress["legal_adress"]["post_code"],
+                city=adress["legal_adress"]["city"],
+                address1=adress["legal_adress"]["legal_address1"],
+                address2=adress["legal_adress"]["legal_address2"],
+            )
+        adress_req =  RequisitesAddress.objects.get_or_create(
+                requisitesKpp=reqKpp[0],
+                type_address_bx = 111,
+                country = adress["postal_adress"]["country"],
+                region = adress["postal_adress"]["region"],
+                province=adress["postal_adress"]["province"],
+                post_code=adress["postal_adress"]["post_code"],
+                city=adress["postal_adress"]["city"],
+                address1=adress["postal_adress"]["legal_address1"],
+                address2=adress["postal_adress"]["legal_address2"],
+            )
+        
         for account_req in account_requisites:
             reqAcc = AccountRequisites.objects.update_or_create(
                 requisitesKpp=reqKpp[0],
@@ -429,55 +470,10 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "bic": account_req["bic"],
                 },
             )
-
-        # serializer = self.serializer_class(data=requisites, many=False)
-        # if serializer.is_valid():
-        #     print("serializer")
-        #     requisites_db = serializer.save()
-        #     serializer_data_new.append(serializer.data)
-        #     print(serializer_data_new)
-        # else:
-        #     valid_all = False
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # for data_item in data:
-        #     i += 1
-        #     requisites = data_item.get("requisites")
-
-        #     account_requisites_data = data_item.get("account_requisites")
-
-        #     serializer = self.serializer_class(data=requisites, many=False)
-
-        #     if serializer.is_valid():
-
-        #         requisites_item = serializer.save()
-        #         serializer_data_new.append(serializer.data)
-
-        #         for account_requisites_item in account_requisites_data:
-        #             account_requisites_item["requisites"] = requisites_item.id
-
-        #         serializer_class_new = AccountRequisitesSerializer
-        #         serializer = serializer_class_new(
-        #             data=account_requisites_data, many=True
-        #         )
-        #         if serializer.is_valid():
-        #             account_requisites_item = serializer.save()
-        #             serializer_data_new[i]["account_requisites"] = serializer.data
-
-        #         else:
-        #             valid_all = False
-        #             return Response(
-        #                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        #             )
-        #     else:
-        #         valid_all = False
-        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if valid_all:
-            return Response(1111, status=status.HTTP_200_OK)
-
-            # return Response(serializer_data_new, status=status.HTTP_200_OK)
-
+            
+            
+        return Response(['ok'], status=status.HTTP_200_OK)
+      
     @action(detail=True, methods=["post", "get"], url_path=r"update")
     def update_requisites(self, request, pk=None, *args, **kwargs):
 
@@ -524,13 +520,19 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             serializer_data_new[0]["account_requisites"] = account_requisites
             return Response(serializer_data_new, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post", "get"], url_path=r"serch-req")
-    def serch_requisites(self, request, pk=None, *args, **kwargs):
-        token = ""
-        secret = ""
-        with Dadata(token, secret) as dadata:
-            dadata.find_by_id(name="party", query="6316195950")
-        return Response(None, status=status.HTTP_200_OK)
+    @action(detail=False, methods=['post'], url_path="serch-req")
+    def serch_requisites(self, request, *args, **kwargs):
+        data= request.data
+        data= {
+            "inn": 6316257333886
+        }
+        with Dadata(DADATA_TOKEN, DADATA_SECRET) as dadata:
+            info = dadata.suggest(name="party", query=data['inn'] )
+            return Response(info, status=status.HTTP_200_OK)
+    
+
+
+    
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
@@ -542,7 +544,7 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
         "put",
     ]
 
-
+    
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

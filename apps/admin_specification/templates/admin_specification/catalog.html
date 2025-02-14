@@ -236,11 +236,12 @@
                         <div class="item_value">
                             <label>
                                 {% if bill_upd %}
+                                
                                     <input placeholder="Укажите срок поставки"
                                            {% if item.date_delivery_bill %}disabled{% endif %}
                                            class="invoice-data-input"
                                            type="text"
-                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
+                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}"> 
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
@@ -1098,7 +1099,7 @@
                                    class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'
-                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}"
+                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %} 0"
                                    placeholder="Номер сделки Б24" />
                         </label>
                     </div>
@@ -1107,7 +1108,7 @@
                             <select class="select_delevery" name='delevery-requisit' value="1">
                                 <option disabled selected>Способ доставки</option>
                                 {% for delivery in type_delivery %}
-                                    <option {% if order.type_delivery.id == delivery.id %}{% endif %}
+                                    <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
                                             value="{{ delivery.id }}">
                                         {{ delivery.text }}
                                         {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
@@ -1115,9 +1116,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <select {% comment %}
-                                {% if bill_upd %}disabled{% endif %}
-                                {% endcomment %}
+                        <select 
                                 class="select_motrum_requisites"
                                 id="motrum-select"
                                 name="mortum_req"
@@ -1125,7 +1124,7 @@
                                 value="1">
                             <option disabled selected>Юрлицо Motrum</option>
                             {% for requisit in mortum_req %}
-                                <option {% if order and requisit.id == order.motrum_requisites.id %}{% endif %}
+                                <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %}
                                         data-requisites-id="{{ requisit.requisites.id }}"
                                         data-account-requisites-id="{{ requisit.id }}"
                                         value="{{ requisit.id }}">

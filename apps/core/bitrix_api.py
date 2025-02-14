@@ -15,6 +15,7 @@ from apps.client.models import (
     DocumentShipment,
     Order,
     OrderDocumentBill,
+    Requisites,
 )
 from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
@@ -1117,6 +1118,29 @@ def _status_to_order_replace(name_status, id_bx):
 
         return "PROCESSING"
 
+
+def add_new_order_web():
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    req_qs = Requisites.objects.get(inn = 631625733376)
+    req_inn = 631625733376
+    
+    req_bx = bx.get_all(
+            "crm.requisite.list",
+            params={
+                "filter": {"ENTITY_TYPE_ID": 4,"RQ_INN":req_inn},
+            },
+        )
+    if len(req_bx) == 1:
+        req_qs
+    elif len(req_bx) > 1:
+        pass
+    else:
+        add_req_bx()
+    print(req_bx)
+
+def add_req_bx():
+    pass
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:

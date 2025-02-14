@@ -242,15 +242,25 @@ TYPE_ADDRESS = (
     (4, "Адрес регистрации"),
     (6, "Юридический адрес"),
     (9, "Адрес бенефициара"),
+    (111, "Адрес почтовый"),
 )
-
+class ClientRequisites(models.Model):
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+    )
+    requisitesotherkpp = models.ForeignKey(
+        RequisitesOtherKpp,
+        verbose_name="",
+        on_delete=models.CASCADE,
+    )
 
 # адреса реквизитов кпп
 class RequisitesAddress(models.Model):
     requisitesKpp = models.ForeignKey(
         RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
     )
-    type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=4)
+    type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=6)
     country = models.CharField(
         "Страна",
         max_length=100,

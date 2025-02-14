@@ -307,7 +307,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             response.json();
             if (response.status == 200) {
-              window.location.reload();
+              // window.location.reload();
             }
             if (response.status == 400) {
               console.log("Ошибка");

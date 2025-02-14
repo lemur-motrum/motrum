@@ -5,7 +5,15 @@ from django.shortcuts import render
 from django.db.models import Prefetch
 
 from apps.admin_specification.views import specifications
-from apps.client.models import AccountRequisites, Client, Order, PhoneClient, Requisites
+from apps.client.models import (
+    AccountRequisites,
+    Client,
+    ClientRequisites,
+    Order,
+    PhoneClient,
+    Requisites,
+    RequisitesOtherKpp,
+)
 from apps.notifications.models import Notification
 from apps.specification.models import ProductSpecification
 
@@ -56,9 +64,19 @@ def my_details(request):
     # client_id = int(cookie)
     current_user = request.user.id
     client = Client.objects.get(pk=current_user)
-    requisites = Requisites.objects.filter(client=client).prefetch_related(
-        Prefetch("accountrequisites_set"),
+    req = (
+        ClientRequisites.objects.filter(client=client)
+        .values_list("requisitesotherkpp__id", flat=True)
+        .order_by("id")
     )
+    print(req)
+    requisites = RequisitesOtherKpp.objects.filter(id__in=req).prefetch_related(
+        Prefetch("accountrequisites_set"),
+        Prefetch("requisitesaddress_set"),
+    )
+    # requisites = Requisites.objects.filter(client=client).prefetch_related(
+    #     Prefetch("accountrequisites_set"),
+    # )
     # print(requisites)
     # for i in requisites:
     #     print(i.accountrequisites_set.all())
@@ -90,7 +108,7 @@ def my_details(request):
     #         my_details["bank_details"].append(bank_object)
 
     #     bank_obj.append(my_details)
-
+    print(requisites)
     context = {
         "title": "Личный кабинет | мои реквизиты",
         # "details": bank_obj,

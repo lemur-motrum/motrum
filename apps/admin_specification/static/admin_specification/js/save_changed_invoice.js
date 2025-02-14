@@ -3,6 +3,7 @@ import {
   showErrorValidation,
   getCurrentPrice,
   deleteCookie,
+  getDeliveryDate,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "../js/error_modal.js";
 
@@ -28,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const products = [];
 
       const bitrixInput = document.querySelector(".bitrix-input");
+      const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
       const specificationWrapepr = document.querySelector(
         ".spetification_table"
       );
@@ -119,8 +121,17 @@ window.addEventListener("DOMContentLoaded", () => {
           if (!bitrixInput.value) {
             validate = false;
             bitrixInput.style.border = "1px solid red";
-            bitrixInput.style.borderRadius = "10px";
           }
+        }
+        if (!deliveryRequsits || deliveryRequsits == "null") {
+          validate = false;
+          document.querySelector(".select_delevery").style.border =
+            "1px solid red";
+        }
+        if (!motrumRequsits || motrumRequsits == "null") {
+          validate = false;
+          document.querySelector(".select_motrum_requisites").style.border =
+            "1px solid red";
         }
         if (validate == false) {
           const error = buttonContainer.querySelector(".save_upd_bill-error");
@@ -139,7 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll.value,
-            date_delivery: dateDeliveryAll.value,
+            date_delivery: getDeliveryDate(dateDeliveryInputs),
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
@@ -203,7 +214,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   fetch(
                     `/api/v1/order/${response1.specification}/create-bill-admin/`,
                     {
-                      // изменила метод 
+                      // изменила метод
                       method: "POST",
                       body: data,
                       headers: {

@@ -487,6 +487,7 @@ class Price(models.Model):
             self.sale = sale
         else:
             self.price_motrum = self.rub_price_supplier
+        print("stop save price")
         super().save(*args, **kwargs)
 
     # def price_sale_personal(self):
@@ -684,6 +685,9 @@ class Stock(models.Model):
         if self.lot_complect == 0:
             self.lot_complect = 1
             
+        if self.lot_complect == None:
+            self.lot_complect = 1    
+            
         print(self.stock_supplier_unit)        # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
    
@@ -697,7 +701,7 @@ class Stock(models.Model):
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
         
-
+        
         super().save(*args, **kwargs)
 
 

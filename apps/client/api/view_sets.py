@@ -526,8 +526,8 @@ class RequisitesViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post", "get"], url_path=r"serch-req")
     def serch_requisites(self, request, pk=None, *args, **kwargs):
-        token = "0fbcc68414d743436985dccd4d7ab8c54bf4c4b8"
-        secret = "5635a8e2449cf23f2a263a32ed41da24f5c6532d"
+        token = ""
+        secret = ""
         with Dadata(token, secret) as dadata:
             dadata.find_by_id(name="party", query="6316195950")
         return Response(None, status=status.HTTP_200_OK)

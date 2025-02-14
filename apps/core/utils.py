@@ -1332,14 +1332,14 @@ def save_new_product_okt(product_new):
         vendor = product_new.vendor
 
     else:
-        vendor = Vendor.objects.get("drugoe")
+        vendor = Vendor.objects.get("drugoj")
 
     if product_new.supplier:
 
         supplier = product_new.supplier
     else:
 
-        supplier = Supplier.objects.get("drugoe")
+        supplier = Supplier.objects.get("drugoj")
 
     if product_new.product:
         product_new_prod = product_new.product.id

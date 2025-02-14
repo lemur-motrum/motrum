@@ -52,7 +52,7 @@ class SupplierAdmin(admin.ModelAdmin):
             },
         ),
     ]
-
+    
     # inlines = [
     #     VendorInline,
     # ]
@@ -125,6 +125,11 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
+    def has_change_permission(self, request, obj=None):
+        if obj:
+            return False
+        else:
+            return True
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -142,9 +147,18 @@ class SupplierVendor(admin.ModelAdmin):
     list_display_links = [
         "name",
     ]
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            
+            return ["name",]
+        else:
+            return [
+                "",
+            ]
 
     def has_delete_permission(self, request, obj=None):
         return False
+    
 
 
 class CategoryProductInline(admin.TabularInline):

@@ -75,6 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
             ".motrum_sale_persent"
           );
           const vendor = specificationItem.getAttribute("data-vendor");
+          const supplier = specificationItem.getAttribute("data-supplier");
           const productCartId = specificationItem.getAttribute(
             "data-product-id-cart"
           );
@@ -95,6 +96,7 @@ window.addEventListener("DOMContentLoaded", () => {
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
+            supplier: supplier ? supplier : null,
             id_cart: productCartId,
           };
 

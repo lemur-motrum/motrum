@@ -146,6 +146,7 @@ export const getDigitsNumber = (container, value) => {
   container.textContent = currentValue;
 };
 
+//Валидатор даты(возвращает даду спецификации по самой поздней дате поставки конкретного товара)
 export function getDeliveryDate(dates) {
   const arrayDateValues = [];
   dates.forEach((el) => {
@@ -167,7 +168,7 @@ export function getDeliveryDate(dates) {
   } else {
     const mounthQuantity = Math.ceil(resultDays / 30);
 
-    function naming(value, words) {
+    function setMounth(value, words) {
       value = Math.abs(value) % 100;
       var num = value % 10;
       if (value > 10 && value < 20) return words[2];
@@ -175,7 +176,7 @@ export function getDeliveryDate(dates) {
       if (num == 1) return words[0];
       return words[2];
     }
-    result = `${mounthQuantity} ${naming(mounthQuantity, [
+    result = `${mounthQuantity} ${setMounth(mounthQuantity, [
       "месяц",
       "месяца",
       "месяцев",

@@ -49,19 +49,17 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
    
     title = "TEST"
-    # supplier = Supplier.objects.get(slug="emas")
-    # product = Product.objects.filter(supplier=supplier)
-    # for prod in product:
-    #     stock =  Stock.objects.get(prod=prod)
-    #     stock.stock_supplier = None
-    #     stock.stock_supplier_unit = None
-    #     stock.save()
+    supplier = Supplier.objects.get(slug="emas")
+    product = Product.objects.filter(supplier=supplier)
+    for prod in product:
+        stock =  Stock.objects.get(prod=prod)
+        stock.stock_supplier = None
+        stock.stock_supplier_unit = None
+        stock.save()
     
-    # iek_api()
+    iek_api()
     
-    order = Order.objects.get(id=139)
-    requisites = Requisites.objects.get(id=order.requisites.id)
-    print(order.requisites.get_type_client())
+   
     
     
     result = 1

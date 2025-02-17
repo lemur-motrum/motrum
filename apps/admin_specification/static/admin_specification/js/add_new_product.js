@@ -140,7 +140,17 @@ function addNewProductLogic(container) {
     addNewProductButton.onclick = () => {
       document
         .querySelector(".new_item_container_wrapper")
-        .classList.add("is_open");
+        .classList.toggle("is_open");
+
+      if (
+        document
+          .querySelector(".new_item_container_wrapper")
+          .classList.contains("is_open")
+      ) {
+        addNewProductButton.textContent = "Скрыть";
+      } else {
+        addNewProductButton.textContent = "Добавить новый товар";
+      }
     };
 
     addProductButton.onclick = () => {

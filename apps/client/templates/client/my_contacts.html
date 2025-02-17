@@ -12,115 +12,87 @@
                 <div class="contact_person">
                     <div class="contact_person_details">
                         <div class="contact_preson_elem">
-                        {% if client.last_name %}
-                            {{client.last_name}}
-                        {% endif %}
-
-                        {% if client.first_name %}
-                            {{client.first_name}}
-                        {% endif %}
-
-                        {% if client.middle_name %}
-                            {{client.middle_name}}
-                        {% endif %}
-                            </div>
+                            {% if client.last_name %}{{ client.last_name }}{% endif %}
+                            {% if client.first_name %}{{ client.first_name }}{% endif %}
+                            {% if client.middle_name %}{{ client.middle_name }}{% endif %}
+                        </div>
                         <div class="contact_preson_elem">
-                        {% if client.position %}
-                            {{client.position}}
-                        {% endif %}
+                            {% if client.position %}{{ client.position }}{% endif %}
                         </div>
                         <div class="contact_preson_elem links">
-                            <a class="tel_link" href="tel:+{{client.phone}}">{{client.phone}}</a>
-                            <a class="mail_link" href="mailto:{{client.email}}">{{client.email}}</a>
+                            <a class="tel_link" href="tel:+{{ client.phone }}">+{{ client.phone }}</a>
+                            <a class="mail_link" href="mailto:{{ client.email }}">{{ client.email }}</a>
                         </div>
                         <div class="contact_preson_elem change_btn">Изменить</div>
                     </div>
                     <form class="contact_person_form">
-                        <label>
-                            <input 
-                                   value="{% if client.last_name %}{{client.last_name}}{% endif %}{% if client.first_name %}{{client.first_name}}{% endif %}{% if client.middle_name %}{{client.middle_name}}{% endif %}"
-                                   type="text"
-                                   class="name-input"
-                                   placeholder="Имя" />
-                            <div class="error name_error"></div>
-                        </label>
-                        <label>
-                            <input 
-                                   value="{% if client.position %}
-                                                {{client.position}}
-                                            {% endif %}"
-                                
-                                   type="text"
-                                   class="job_title-input"
-                                   placeholder="Должность" />
-                            <div class="error job_title_error"></div>
-                        </label>
-                        <label>
-                            <input {% comment %}
-                                   value="{% if client.phone %}{{ client.phone }}{% else %}{% endif %}"
-                                   {% endcomment %}
-                                   type="text"
-                                   class="phone-input"
-                                   placeholder="Телефон" />
-                            <div class="error phone_error"></div>
-                        </label>
-                        <label>
-                            <input 
-                                   value="{{client.email}}"
-                                   type="text"
-                                   class="mail-input"
-                                   placeholder="Email" />
-                            <div class="error mail_error"></div>
-                        </label>
-                        <button type="submit">сохранить</button>
+                        <div>
+                            <label>
+                                <input value="{% if client.first_name %}{{ client.first_name }}{% endif %}"
+                                       type="text"
+                                       class="surname"
+                                       placeholder="Фамилия" />
+                                <div class="error surname_error"></div>
+                            </label>
+                            <label>
+                                <input value="{% if client.middle_name %}{{ client.middle_name }}{% endif %}"
+                                       type="text"
+                                       class="name-input"
+                                       placeholder="Имя" />
+                                <div class="error name_error"></div>
+                            </label>
+                            <label>
+                                <input value="{% if client.last_name %}{{ client.last_name }}{% endif %}"
+                                       type="text"
+                                       class="last-name"
+                                       placeholder="Отчество">
+                                <div class="error last_name_error"></div>
+                            </label>
+                        </div>
+                        <div class="contact_user_extra_fields">
+                            <label>
+                                <input value="{% if client.position %} {{ client.position }} {% endif %}"
+                                       type="text"
+                                       class="job_title-input"
+                                       placeholder="Должность" />
+                                <div class="error job_title_error"></div>
+                            </label>
+                            <label>
+                                <input value="{{ client.email }}"
+                                       type="text"
+                                       class="mail-input"
+                                       placeholder="Email" />
+                                <div class="error mail_error"></div>
+                            </label>
+                            <label>
+                                <input value="{{ client.user }}"
+                                       type="text"
+                                       class="phone-input"
+                                       placeholder="Телефон"
+                                       disabled />
+                                <div class="error phone_error"></div>
+                            </label>
+                            {% if other_phone_client|length > 0 %}
+                                {% for phone in other_phone_client %}
+                                    <label>
+                                        <input value="{{ phone.phone }}"
+                                               type="text"
+                                               class="extra_phone_field"
+                                               placeholder="Доп телефон" />
+                                        <div class="error extra_phone_field_error"></div>
+                                    </label>
+                                {% endfor %}
+                            {% endif %}
+                            <label>
+                                <input type="text" class="new_extra_phone_field" placeholder="Доп телефон" />
+                                <div class="error new_extra_phone_field_error"></div>
+                            </label>
+                        </div>
+                        <button class="sumbit_btn" type="submit">сохранить</button>
                     </form>
                 </div>
                 {% comment %} {% endfor %} {% endcomment %}
             </div>
-            <div class="new_contact_person">
-                <div>
-                    <form class="contact-form">
-                        <label>
-                            <input {% comment %}
-                                   value="{% if client.contact_name %}{{ client.contact_name }}{% else %}{% endif %}"
-                                   {% endcomment %}
-                                   type="text"
-                                   class="name-input"
-                                   placeholder="Имя" />
-                            <div class="error name_error"></div>
-                        </label>
-                        <label>
-                            <input {% comment %}
-                                   value="{% if client.contact_name %}{{ client.contact_name }}{% else %}{% endif %}"
-                                   {% endcomment %}
-                                   type="text"
-                                   class="job_title-input"
-                                   placeholder="Должность" />
-                            <div class="error job_title_error"></div>
-                        </label>
-                        <label>
-                            <input {% comment %}
-                                   value="{% if client.phone %}{{ client.phone }}{% else %}{% endif %}"
-                                   {% endcomment %}
-                                   type="text"
-                                   class="phone-input"
-                                   placeholder="Телефон" />
-                            <div class="error phone_error"></div>
-                        </label>
-                        <label>
-                            <input {% comment %}
-                                   value="{% if client.email %}{{ client.email }}{% else %}{% endif %}"
-                                   {% endcomment %}
-                                   type="text"
-                                   class="mail-input"
-                                   placeholder="Email" />
-                            <div class="error mail_error"></div>
-                        </label>
-                        <button type="submit">сохранить</button>
-                    </form>
-                </div>
-            </div>
-            <div class="add_new_contact_btn">Добавить контактное лицо</div>
         </div>
     </div>
 {% endblock personal_account_content %}

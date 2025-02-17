@@ -15,93 +15,146 @@ window.addEventListener("DOMContentLoaded", () => {
   if (personalAccountContent) {
     const contacts = personalAccountContent.querySelector(".contacts");
     if (contacts) {
-      const newContactForm = contacts.querySelector(".new_contact_person");
-      const newContactFormBtn = contacts.querySelector(".add_new_contact_btn");
-
-      newContactFormBtn.onclick = () => {
-        newContactForm.classList.toggle("show");
-      };
-
       const contactsPerson = contacts.querySelectorAll(".contact_person");
       contactsPerson.forEach((contactPerson) => {
         const changeBtn = contactPerson.querySelector(".change_btn");
         const contactPersonDetails = contactPerson.querySelector(
           ".contact_person_details"
         );
+        const maskOptions = {
+          mask: "+{7} (000) 000-00-00",
+          prepare: function (appended, masked) {
+            if (appended === "8" && masked.value === "") {
+              return "7";
+            }
+            return appended;
+          },
+        };
+
         const changeForm = contactPerson.querySelector(".contact_person_form");
+        const changeFormFormSubmitBtn = changeForm.querySelector(".sumbit_btn");
+        const inputFirstName = changeForm.querySelector(".surname");
+        const inputFirstNameError = changeForm.querySelector(".surname_error");
+        const inputName = changeForm.querySelector(".name-input");
+        const inputNameError = changeForm.querySelector(".name_error");
+        const inputLastName = changeForm.querySelector(".last-name");
+        const inputLastNameError = changeForm.querySelector(".last_name_error");
+        const inputJobTitle = changeForm.querySelector(".job_title-input");
+        const inputJobTitleError = changeForm.querySelector(".job_title_error");
+        const inputEmail = changeForm.querySelector(".mail-input");
+        const inputEmailError = changeForm.querySelector(".mail_error");
+        const extraPhoneInputs =
+          changeForm.querySelectorAll(".extra_phone_field");
+        const extraPhoneInputErrors = changeForm.querySelectorAll(
+          ".extra_phone_field_error"
+        );
+        const newExtraPointInput = changeForm.querySelector(
+          ".new_extra_phone_field"
+        );
+        const newExtraPointInputError = changeForm.querySelector(
+          ".new_extra_phone_field_error"
+        );
+        const phoneArray = [];
+
+        const mask = IMask(newExtraPointInput, maskOptions);
+        extraPhoneInputs.forEach((el) => {
+          const mask = IMask(el, maskOptions);
+        });
+
         changeBtn.onclick = () => {
           contactPersonDetails.classList.add("no_visible");
           changeForm.classList.add("show");
         };
+
+        changeFormFormSubmitBtn.onclick = (e) => {
+          let validate = true;
+          e.preventDefault();
+          if (!inputFirstName.value) {
+            showErrorValidation("Обязательное поле", inputFirstNameError);
+            validate = false;
+          }
+          if (!inputName.value) {
+            showErrorValidation("Обязательное поле", inputNameError);
+            validate = false;
+          }
+          if (!inputLastName.value) {
+            showErrorValidation("Обязательное поле", inputLastNameError);
+            validate = false;
+          }
+          if (!isEmailValid(inputEmail.value)) {
+            showErrorValidation("Поле заполненно некорректно", inputEmailError);
+            validate = false;
+          }
+          if (!inputEmail.value) {
+            showErrorValidation("Обязательное поле", inputEmailError);
+            validate = false;
+          }
+          if (extraPhoneInputs.length > 0) {
+            extraPhoneInputs.forEach((el, i) => {
+              if (
+                extraPhoneInputs[i].value &&
+                extraPhoneInputs[i].value.length < 18
+              ) {
+                showErrorValidation(
+                  "Поле заполненно некорректно",
+                  extraPhoneInputErrors[i]
+                );
+                validate = false;
+              }
+            });
+          }
+          if (
+            newExtraPointInput.value &&
+            newExtraPointInput.value.length < 18
+          ) {
+            showErrorValidation(
+              "Поле заполненно некорректно",
+              newExtraPointInputError
+            );
+            validate = false;
+          }
+          async function sendContactForm() {
+            if (extraPhoneInputs.length > 0) {
+              extraPhoneInputs.forEach((el) => {
+                phoneArray.push(el.value);
+              });
+            }
+            phoneArray.push(newExtraPointInput.value);
+
+            const dataObj = {
+              client: {
+                last_name: inputLastName.value,
+                first_name: inputFirstName.value,
+                middle_name: inputName.value,
+                position: inputJobTitle.value ? inputJobTitle.value : "",
+                email: inputEmail.value,
+              },
+              phone: phoneArray,
+            };
+            const data = JSON.stringify(dataObj);
+            const response = await fetch(
+              `/api/v1/client/${clientId}/upd-user-lk/`,
+              {
+                method: "POST",
+                body: data,
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": csrfToken,
+                },
+              }
+            );
+            if (response.status == 200) {
+              window.location.reload();
+            } else {
+              throw new Error("Ошибка");
+            }
+          }
+
+          if (validate) {
+            sendContactForm();
+          }
+        };
       });
-
-      // const form = contacts.querySelector(".contact-form");
-      // const nameInput = form.querySelector(".name-input");
-      // const nameError = form.querySelector(".name_error");
-      // const phoneInput = form.querySelector(".phone-input");
-      // const phoneError = form.querySelector(".phone_error");
-      // const mailInput = form.querySelector(".mail-input");
-      // const mailError = form.querySelector(".mail_error");
-
-      // const maskOptions = {
-      //   mask: "+{7} (000) 000-00-00",
-      // };
-
-      // const mask = IMask(phoneInput, maskOptions);
-
-      // form.onsubmit = (e) => {
-      //   e.preventDefault();
-      //   if (!nameInput.value) {
-      //     showErrorValidation("Обязательное поле", nameError);
-      //   }
-      //   if (!phoneInput.value) {
-      //     showErrorValidation("Обязательное поле", phoneError);
-      //   }
-      //   if (phoneInput.value && phoneInput.value.length < 18) {
-      //     showErrorValidation("Некорректный номер телефона", phoneError);
-      //   }
-      //   if (!mailInput.value) {
-      //     showErrorValidation("Обязательное поле", mailError);
-      //   }
-      //   if (mailInput.value && !isEmailValid(mailInput.value)) {
-      //     showErrorValidation("Некорректный Email", mailError);
-      //   }
-      //   if (
-      //     nameInput.value &&
-      //     phoneInput.value.length == 18 &&
-      //     isEmailValid(mailInput.value)
-      //   ) {
-      //     const phone = mask.unmaskedValue;
-
-      //     const dataObj = {
-      //       contact_name: nameInput.value,
-      //       phone: phone,
-      //       email: mailInput.value,
-      //       username: phone,
-      //       password: "",
-      //     };
-      //     const data = JSON.stringify(dataObj);
-
-      //     fetch(`/api/v1/client/${clientId}/`, {
-      //       // изменила метод
-      //       method: "POST",
-      //       body: data,
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //         "X-CSRFToken": csrfToken,
-      //       },
-      //     }).then((response) => {
-      //       response.json();
-      //       if (response.status == 200) {
-      //         console.log("Данные изменены");
-      //         window.location.reload();
-      //       }
-      //       if (response.status == 400) {
-      //         console.log("Ошибка");
-      //       }
-      //     });
-      //   }
-      // };
     }
   }
 });

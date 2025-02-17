@@ -99,7 +99,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 button.style.display = "none";
                 pinLabel.classList.add("show");
                 pinInput.onkeyup = () => {
-                  if (pinInput.value.length == 4) {
+                  const arrayPinInputValue = pinInput.value.split("");
+                  const validateValue = +arrayPinInputValue[3]
+                  if (!isNaN(validateValue)) {
                     const dataArr = {
                       phone: phone,
                       pin: pinInput.value,

@@ -176,11 +176,13 @@ export function getDeliveryDate(dates) {
       if (num == 1) return words[0];
       return words[2];
     }
-    result = `${mounthQuantity} ${setMounth(mounthQuantity, [
-      "месяц",
-      "месяца",
-      "месяцев",
-    ])}`;
+    result = isNaN(mounthQuantity)
+      ? "1 месяц"
+      : `${mounthQuantity} ${setMounth(mounthQuantity, [
+          "месяц",
+          "месяца",
+          "месяцев",
+        ])}`;
   }
   return result;
 }

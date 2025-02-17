@@ -1080,6 +1080,7 @@
                                 <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                         class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
+                                     
                                         name="client-requisit">
                                     <option disabled>Расчетный счет юр.Лица</option>
                                     {% if client_req %}

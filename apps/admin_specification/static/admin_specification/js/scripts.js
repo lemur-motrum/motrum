@@ -1666,6 +1666,9 @@ function changeSelect(select) {
     const clientOptions = select.querySelectorAll("option");
     select.setAttribute("value", clientOptions[0].getAttribute("value"));
     clientOptions.forEach((el) => {
+      if (el.selected) {
+        select.setAttribute("value", el.getAttribute("value"));
+      }
       select.addEventListener("change", function () {
         if (el.selected) {
           select.setAttribute("value", el.getAttribute("value"));

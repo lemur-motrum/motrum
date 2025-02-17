@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
         "data-product-specification-id"
       );
       const vendor = item.getAttribute("data-vendor");
-      const supplier = itemQuantity.getAttribute("data-supplier");
+      const supplier = item.getAttribute("data-supplier");
       const deliveryDate = item.querySelector(".delivery_date")
         ? item.querySelector(".delivery_date").value
         : item.querySelector(".invoice-data-input").value;

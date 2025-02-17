@@ -236,7 +236,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         }
         return Response(data_response, status=status.HTTP_200_OK)
 
-
+    @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
+    def get_nomenclature(self, request, *args, **kwargs):
+        data = request.data
+        
+        
+        
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer

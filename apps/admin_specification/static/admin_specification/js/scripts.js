@@ -1452,6 +1452,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
+    changeSelect(clientRequsitsSelect);
+
     const selectDelevery = document.querySelector(".select_delevery");
     changeSelect(selectDelevery);
 
@@ -1484,23 +1486,23 @@ window.addEventListener("DOMContentLoaded", () => {
         if (saveInvoiceButtonContainer) {
           saveInvoiceButtonContainer.classList.add("show");
         }
-        if (clientRequsitsSelect) {
-          const clientOptions = clientRequsitsSelect.querySelectorAll("option");
-          clientRequsitsSelect.setAttribute(
-            "value",
-            clientOptions[0].getAttribute("value")
-          );
-          clientOptions.forEach((el) => {
-            clientRequsitsSelect.addEventListener("change", function () {
-              if (el.selected) {
-                clientRequsitsSelect.setAttribute(
-                  "value",
-                  el.getAttribute("value")
-                );
-              }
-            });
-          });
-        }
+        // if (clientRequsitsSelect) {
+        //   const clientOptions = clientRequsitsSelect.querySelectorAll("option");
+        //   clientRequsitsSelect.setAttribute(
+        //     "value",
+        //     clientOptions[0].getAttribute("value")
+        //   );
+        //   clientOptions.forEach((el) => {
+        //     clientRequsitsSelect.addEventListener("change", function () {
+        //       if (el.selected) {
+        //         clientRequsitsSelect.setAttribute(
+        //           "value",
+        //           el.getAttribute("value")
+        //         );
+        //       }
+        //     });
+        //   });
+        // }
       }
     };
     searchClientInput.onkeyup = () => {
@@ -1509,6 +1511,7 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       if (searchClientInput.value.length > 2) {
         clientsContainer.classList.add("show");
+
         const data = JSON.stringify(objData);
         fetch(searchEndpoint, {
           method: "POST",
@@ -1666,7 +1669,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function changeSelect(select) {
   if (select) {
     const clientOptions = select.querySelectorAll("option");
-    select.setAttribute("value", clientOptions[0].getAttribute("value"));
+    // select.setAttribute("value", clientOptions[0].getAttribute("value"));
     clientOptions.forEach((el) => {
       if (el.selected) {
         select.setAttribute("value", el.getAttribute("value"));

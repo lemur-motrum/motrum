@@ -4,11 +4,12 @@ from django.urls import reverse
 
 
 
+from apps import supplier
 from apps.core.models import Currency
 from apps.product.models import Price, Product
 from apps.specification.utils import get_document_path
 from simple_history.models import HistoricalRecords
-from apps.supplier.models import Vendor
+from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
 import uuid
 # Create your models here.
@@ -145,6 +146,13 @@ class ProductSpecification(models.Model):
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
         on_delete=models.PROTECT,
         blank=True,
         null=True,

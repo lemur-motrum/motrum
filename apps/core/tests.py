@@ -1321,3 +1321,34 @@ from django.test import TestCase
         "settings": {"DEFAULT_VALUE": ""},
     },
 }
+{
+  "id_bitrix": 22,
+  "admin_creator_id": "25",
+  "products": [
+    {
+      "product_id": 72018,
+      "quantity": 1,
+      "price_exclusive": 0,
+      "price_one": 4074,
+      "product_specif_id": "None",
+      "extra_discount": "",
+      "date_delivery": "2025-03-03",
+      "text_delivery": "2 недели",
+      "product_name_new": "",
+      "product_new_article": "",
+      "comment": null,
+      "sale_motrum": "50,0",
+      "vendor": null,
+      "id_cart": "827"
+    }
+  ],
+  "id_specification": null,
+  "id_cart": 325,
+  "comment": "",
+  "date_delivery": "2 недели",
+  "motrum_requisites": 1,
+  "client_requisites": 15,
+  "type_delivery": "1",
+  "type_save": "bill",
+  "post_update": false
+}

@@ -77,43 +77,52 @@
         </div>
         <!-- корзины без заказа-->
 {% else %}
-        <div class="specification_item table_item {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
+        <div class="specification_item table_item spetification_item_no_complite_order {% if bill_status == false %}bill_notpayment{% endif %}{% if bill_status == None and specification_list.tag_stop == false %}disabled{% endif %}"
              specification-id="{{ specification_list.id }}"
              order-id="{{ id }}"
              status="{{ status }}"
              data-cart-id="{{ cart_list.id }}"
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
-                <div class="table_item_value" style="width: 30.875rem";>
+                <div class="table_item_value">
                         <a data-cart-id="{{ cart }}" href=""></a>
-                        <p>Корзина № {{ id }}</p>
-                        {% if superuser != false %}
-                                <br>
-                                <span class="table_item_value_span">Создал:{{ cart_list.admin_creator_name }}</span>
-                                <br>
-                        {% endif %}
-                        <div class="">
-                                Товары:
-                                {% for productcart in cart_list.productcart_set %}
-                                        {% if productcart.product_id_name %}
-                                                <div class="">- {{ productcart.product_id_name }}</div>
-                                        {% else %}
-                                                <div class="">- {{ productcart.product_new_article }} {{ productcart.product_new }}</div>
-                                        {% endif %}
-                                {% endfor %}
-                        </div>
+                        <p>Заказ № {{ id }}</p>
                 </div>
                 <div class="table_item_value">
-                        {% if name_req_full %}<div class="">Клиент: {{ name_req_full }}</div>{% endif %}
+                        {% if name_req_full %}
+                                <div>{{ name_req_full }}</div>
+                        {% else %}
+                                <div class="">Отсутсвует</div>
+                        {% endif %}
                 </div>
                 <div class="table_item_value">
                         Статус: {{ status_full }}
                         <br>
                 </div>
-                <div class="table_item_value "></div>
-                <div class="table_item_value invoice-table_item_value"></div>
+                <div class="table_item_value ">
+                        <span class="price">
+                                <b bill-sum-paid="{% if bill_sum_paid %}{{ bill_sum_paid }}{% else %}0{% endif %}"
+                                   class="price_bill_sum_paid {% if bill_file and bill_sum_paid < bill_sum and status != "CANCELED" %}add_payment_button{% endif %}">
+                                        {% if bill_sum_paid %}
+                                                {{ bill_sum_paid }}
+                                        {% else %}
+                                                0
+                                        {% endif %}
+                                </b>
+                                <b>₽</b> / {{ specification_list.total_amount }} ₽
+                        </span>
+                        {% if prepay_persent %}
+                                <div class="paument_tupe">
+                                        {% if postpay_persent != 0 %}
+                                                предоплата: {{ prepay_persent }}%
+                                        {% else %}
+                                                предоплата: {{ prepay_persent }}%
+                                        {% endif %}
+                                </div>
+                        {% endif %}
+                </div>
                 <div class="table_item_value table_item_value_change_buttons_container">
-                        <div data-type-save="new" class="change-specification-button">возобновить</div>
+                        <div data-type-save="new" class="change-specification-button">Продолжить оформление</div>
                 </div>
         </div>
 {% endif %}

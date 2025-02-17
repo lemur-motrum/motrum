@@ -534,6 +534,7 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-product-specification-id"
           );
           const vendor = item.getAttribute("data-vendor");
+          const supplier = itemQuantity.getAttribute("data-supplier");
           const deliveryDate = item.querySelector(".delivery_date");
           setCommentProductItem(item);
           const commentItem = item.getAttribute("data-comment-item");
@@ -583,6 +584,7 @@ window.addEventListener("DOMContentLoaded", () => {
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
             id_cart: productCartId,
+            supplier: supplier ? supplier : null,
           };
 
           console.log("date-delivery", deliveryDate.value);

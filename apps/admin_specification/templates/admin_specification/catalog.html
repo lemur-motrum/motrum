@@ -30,6 +30,7 @@
                 {% for item in product %}
                     <div class="item_container data-base-product-container"
                          data-vendor=""
+                         data-supplier=""
                          data-product-name-new=""
                          data-product-id-cart="{{ item.id_product_cart }}"
                          data-product-pk="{{ item.pk }}"
@@ -265,6 +266,7 @@
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
                              data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
+                            data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"
                              data-product-pk="{% if item.product %}{{ item.product.id }} {% endif %}"
                              data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                              data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
@@ -507,6 +509,7 @@
                         <!--когда новая спецификация-->
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
+                             data-supplier="{{ item.supplier.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-id-cart="{{ item.id }}"
@@ -723,6 +726,7 @@
                     {% if update_spesif %}
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
+                                data-supplier="{{ item.supplier.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"

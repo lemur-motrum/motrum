@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesOtherKpp
+from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesAddress, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -40,7 +40,13 @@ class RequisitesV2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Requisites
         fields = "__all__"
+        
+class RequisitesAddressSerializer(serializers.ModelSerializer):
+    
 
+    class Meta:
+        model = RequisitesAddress
+        fields = "__all__"
 
 class AccountRequisitesSerializer(serializers.ModelSerializer):
     class Meta:

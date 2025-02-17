@@ -169,6 +169,7 @@ class Requisites(models.Model):
     type_client = models.CharField(
         "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
     )
+    
 
     class Meta:
         verbose_name = "Юридическое лицо"
@@ -181,6 +182,13 @@ class Requisites(models.Model):
     def get_type_payment(self):
         for choice in TYPE_PAYMENT:
             if choice[0] == self.type_payment:
+                return choice[1]
+        return ""
+    # получить название типа rkbtynf
+    def get_type_client(self):
+        print("TYPE_CLIENT")
+        for choice in TYPE_CLIENT:
+            if choice[0] == self.type_client:
                 return choice[1]
         return ""
 
@@ -242,7 +250,7 @@ TYPE_ADDRESS = (
     (4, "Адрес регистрации"),
     (6, "Юридический адрес"),
     (9, "Адрес бенефициара"),
-    (111, "Адрес почтовый"),
+    ("web-lk-adress", "Юридический адрес сайт"),
 )
 class ClientRequisites(models.Model):
     client = models.ForeignKey(
@@ -434,6 +442,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    
     date_completed = models.DateField(
         verbose_name="Дата завершения",
         blank=True,

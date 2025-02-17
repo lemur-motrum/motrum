@@ -41,7 +41,14 @@
                                                 <div class="error current_legal_adress_index_error"></div>
                                             </label>
                                             <label>
-                                           {{detail.requisitesaddress_set.all}}
+                                            <!-- ПОЛУЧЕНИЕ АДРЕСА ЮРИДИЧЕСКОГО  -->
+                                            {% for adress in detail.requisitesaddress_set.all %}
+                                                {% if adress.type_address_bx == "web-lk-adress" %}
+                                                    {{adress}}
+                                                {% endif %}
+                                                    
+                                            {% endfor %}
+                                           
                                                 <input value="{{ detail.legal_city }}"
                                                        class="current_legal_adress_city"
                                                        type="text"

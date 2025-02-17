@@ -16,6 +16,8 @@ router.register(
     basename="client-requisites",
 )
 router.register(r"v1/requisites", view_sets.RequisitesViewSet)
+router.register(r"v1/accountreq", view_sets.AccountRequisitesViewSet)
+router.register(r"v1/adress_requisites", view_sets.RequisitesAddressViewSet)
 router.register(r"v1/order", view_sets.OrderViewSet)
 router.register(r"v1/emails", view_sets.EmailsViewSet)
 

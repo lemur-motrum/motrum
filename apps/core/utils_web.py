@@ -254,7 +254,7 @@ def promote_product_slider(product):
 #             request.session['cart'] = request.session.session_key
 
 
-def get_product_item_data(specification, product, extra_discount, quantity):
+def get_product_item_data(specification, product, extra_discount, quantity,product_item_cart):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -277,15 +277,18 @@ def get_product_item_data(specification, product, extra_discount, quantity):
     price_all_motrum = float(price_one_motrum) * int(quantity)
 
     product_item_data = {
+        "id_cart": product_item_cart,
         "specification": specification.id,
         "product": product.id,
         "product_currency": price.currency.id,
         "quantity": quantity,
         "price_one": price_one,
+        "product_price_catalog":price_one,
         "price_all": price_all,
         "price_one_motrum": price_one_motrum,
         "price_all_motrum": price_all_motrum,
         "price_exclusive": price.extra_price,
         "extra_discount": extra_discount,
+        "product_currency": price.currency
     }
     return product_item_data

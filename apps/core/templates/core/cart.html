@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
+
     <div class="cart_container">
         <input class="personal_discount"
                type="hidden"
@@ -114,7 +115,9 @@
                             </div>
                         </div>
                     {% endif %}
+                    
                     {% if client %}
+                    
                         <div class="client-order-details">
                             {% if requisites %}
                                 <select class="select_account_requisites">
@@ -132,6 +135,14 @@
                                 <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
                             {% endif %}
                         </div>
+
+
+                        <!--УДАЛИТЬ ДОБАВИЛА ДЛЯ ТЕСТА -->
+                        <div class="button_cart-wrapper">
+                                    <button class="save_cart_button">оформить заказ</button>
+                        </div>
+
+
                     {% else %}
                         <div class="logout_container">
                             <form class="autification-form-cart">

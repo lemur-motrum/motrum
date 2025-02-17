@@ -269,17 +269,17 @@ function saveCart() {
   const cart_id = getCookie("cart");
 
   if (validate == true) {
-    const select = document.querySelector(".select_account_requisites");
-    const selected = select.options[select.selectedIndex];
-    const requisites = selected.getAttribute("data-requisites-id");
-    const account_requisites_name = selected.getAttribute(
-      "data-account-requisites-id"
-    );
+    // const select = document.querySelector(".select_account_requisites");
+    // const selected = select.options[select.selectedIndex];
+    // const requisites = selected.getAttribute("data-requisites-id");
+    // const account_requisites_name = selected.getAttribute(
+    //   "data-account-requisites-id"
+    // );
 
     const dataObj = {
       cart: +cart_id,
-      requisites: +requisites,
-      account_requisites: +account_requisites_name,
+      // requisites: +requisites,
+      // account_requisites: +account_requisites_name,
     };
 
     const data = JSON.stringify(dataObj);

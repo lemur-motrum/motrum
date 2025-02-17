@@ -6,7 +6,7 @@ import traceback
 from django.conf import settings
 from django.shortcuts import render
 from regex import D
-from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
+from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction, Requisites
 
 from apps.core.bitrix_api import add_info_order, add_new_order_web, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
 from apps.logs.utils import error_alert
@@ -59,8 +59,9 @@ def add_iek(request):
     
     # iek_api()
     
-    
-    add_new_order_web()
+    order = Order.objects.get(id=139)
+    requisites = Requisites.objects.get(id=order.requisites.id)
+    print(order.requisites.get_type_client())
     
     
     result = 1

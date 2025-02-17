@@ -940,7 +940,7 @@ def get_all_specifications(request):
         superuser = True
         q_object_2 &= Q(cart__cart_admin_id__isnull=False)
     elif user_admin_type == "BASE":
-        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
+        # all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
         q_object &= Q(admin_creator_id=request.user.id)
         q_object_2 &= Q(cart__cart_admin_id=request.user.id)
         superuser = False

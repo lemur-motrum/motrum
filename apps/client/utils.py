@@ -61,12 +61,18 @@ def crete_pdf_bill(
             "bill",
         )
         specifications = Specification.objects.get(id=specification)
-        if specifications.admin_creator:
-            name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
-            if specifications.admin_creator.middle_name:
-                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+        if order.manager:
+            name_admin = f"{order.manager.last_name} {order.manager.first_name}"
+            if order.manager.middle_name:
+                name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
         else:
-            name_admin = " "
+            
+            if specifications.admin_creator:
+                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
+                if specifications.admin_creator.middle_name:
+                    name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+            else:
+                name_admin = " "
 
         product_specification = ProductSpecification.objects.filter(
             specification=specification

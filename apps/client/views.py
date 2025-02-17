@@ -12,6 +12,7 @@ from apps.client.models import (
     Order,
     PhoneClient,
     Requisites,
+    RequisitesAddress,
     RequisitesOtherKpp,
 )
 from apps.notifications.models import Notification
@@ -74,6 +75,7 @@ def my_details(request):
         Prefetch("accountrequisites_set"),
         Prefetch("requisitesaddress_set"),
     )
+    
     # requisites = Requisites.objects.filter(client=client).prefetch_related(
     #     Prefetch("accountrequisites_set"),
     # )

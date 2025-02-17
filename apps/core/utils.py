@@ -5,6 +5,7 @@ import random
 import re
 import shutil
 import threading
+
 import requests
 import hashlib
 import os
@@ -18,6 +19,7 @@ from apps import supplier
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
+
 
 
 
@@ -1444,7 +1446,7 @@ def number_specification(type_save):
     return specification_name
 
 
-def save_spesif_web(cart, products_cart, extra_discount):
+def save_spesif_web(cart, products_cart, extra_discount,requisites):
     from apps.specification.api.serializers import (
         SpecificationSerializer,
         ProductSpecificationSaveSerializer,
@@ -1452,13 +1454,18 @@ def save_spesif_web(cart, products_cart, extra_discount):
     from apps.specification.models import Specification
     from apps.product.models import Product
     from apps.core.utils_web import get_product_item_data
-
+    print("save_spesif_web")
     try:
         with transaction.atomic():
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
-            specification_name = number_specification("specification")
-
+            # specification_name = number_specification("specification")
+            
+            #TODO:сохранять номер если все ок
+            specification_name = requisites.number_spec + 1
+            requisites.number_spec = specification_name
+            
+            
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1466,6 +1473,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 "date_stop": data_stop,
                 "number": specification_name,
             }
+            print(data_specification)
 
             serializer = serializer_class_specification(
                 data=data_specification, partial=True
@@ -1474,6 +1482,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
+                print(serializer.data)
 
                 if specification:
 
@@ -1482,7 +1491,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                         quantity = product_item.quantity
                         product = Product.objects.get(id=product_item.product.id)
                         item_data = get_product_item_data(
-                            specification, product, extra_discount, quantity
+                            specification, product, extra_discount, quantity,product_item,
                         )
 
                         serializer_class_specification_product = (
@@ -1514,6 +1523,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                     return ("error", None, None)
 
             else:
+                print(serializer.error_messages)
                 return ("error", None, None)
     except Exception as e:
         print(e)
@@ -1758,16 +1768,34 @@ def create_info_request_order_bitrix(
 
 
 def create_info_request_order_1c(order, order_products):
+    from apps.specification.models import Specification
+    
+    specifications = Specification.objects.get(id=order.specification.id)
 
+    print(specifications)
+    if order.manager:
+        name_admin = f"{order.manager.last_name} {order.manager.first_name}"
+        if order.manager.middle_name:
+            name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
+    else:
+        
+        if specifications.admin_creator:
+            name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
+            if specifications.admin_creator.middle_name:
+                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+        else:
+            name_admin = " "
+            
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
         },
         "client": {
+            "type":order.requisites.get_type_client(),
             # "id_bitrix": order.id_bitrix,
             # "legal_entity_motrum": None,
-            # "contract": order.requisites.contract,
-            # "contract_date": order.requisites.contract_date,
+            "contract": order.requisites.contract,
+            "contract_date": order.requisites.contract_date,
             "legal_entity": order.requisites.legal_entity,
             "inn": order.requisites.inn,
             "kpp": order.account_requisites.requisitesKpp.kpp,
@@ -1775,16 +1803,15 @@ def create_info_request_order_1c(order, order_products):
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
-            "postal_post_code": order.account_requisites.requisitesKpp.postal_post_code,
-            "postal_city": order.account_requisites.requisitesKpp.postal_city,
-            "postal_address": order.account_requisites.requisitesKpp.postal_address,
+            # "postal_post_code": order.account_requisites.requisitesKpp.postal_post_code,
+            # "postal_city": order.account_requisites.requisitesKpp.postal_city,
+            # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
             "account_requisites": order.account_requisites.account_requisites,
             "bank": order.account_requisites.bank,
             "ks": order.account_requisites.kpp,
             "bic": order.account_requisites.bic,
-            "prepay_persent": order.requisites.prepay_persent,
-            "postpay_persent": order.requisites.postpay_persent,
+            
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,
@@ -1792,16 +1819,18 @@ def create_info_request_order_1c(order, order_products):
             "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "number_invoice": order.bill_name,
             "data_invoice": order.bill_date_start,
-            # "manager_invoice": f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+            "prepay_persent": order.requisites.prepay_persent,
+            "postpay_persent": order.requisites.postpay_persent,
+            "manager_invoice":name_admin,
         },
         "order_products": order_products,
     }
-    if order.manager:
-        data_for_1c["invoice_options"]["manager_invoice"] = (
-            f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
-        )
-    else:
-        data_for_1c["invoice_options"]["manager_invoice"] = ""
+    # if order.manager:
+    #     data_for_1c["invoice_options"]["manager_invoice"] = (
+    #         f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+    #     )
+    # else:
+    #     data_for_1c["invoice_options"]["manager_invoice"] = ""
 
     return data_for_1c
 

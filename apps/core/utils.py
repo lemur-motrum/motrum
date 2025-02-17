@@ -1177,6 +1177,7 @@ def save_specification(
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
             product_spes.vendor_id = int(product_item["vendor"])
+            product_spes.supplier_id = int(product_item["supplier"])
             product_spes.id_cart_id = int(product_item["id_cart"])
 
             date_delivery = product_item["date_delivery"]

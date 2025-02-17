@@ -523,6 +523,11 @@ def create_specification(request):
                     ).values(
                         "vendor",
                     ),
+                    product_new_cart_supplier=product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "supplier",
+                    ),
                     product_new_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "product_new",
                     ),

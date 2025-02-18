@@ -79,13 +79,17 @@
                                         <input value="{{ phone.phone }}"
                                                type="text"
                                                class="extra_phone_field"
-                                               placeholder="Доп телефон" />
+                                               placeholder="Доп телефон"
+                                               autocomplete="off" />
                                         <div class="error extra_phone_field_error"></div>
                                     </label>
                                 {% endfor %}
                             {% endif %}
                             <label>
-                                <input type="text" class="new_extra_phone_field" placeholder="Доп телефон" />
+                                <input type="text"
+                                       class="new_extra_phone_field"
+                                       autocomplete="off"
+                                       placeholder="Доп телефон" />
                                 <div class="error new_extra_phone_field_error"></div>
                             </label>
                         </div>

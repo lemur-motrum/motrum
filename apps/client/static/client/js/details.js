@@ -131,6 +131,22 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       const bicMask = IMask(bik, bicMaskOptions);
 
+      innInput.oninput = () => {
+        if (innInput.value.length >= 5) {
+          const data = JSON.stringify({ inn: innInput.value });
+          fetch("/api/v1/requisites/serch-requisites/", {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => response.json(Text))
+            .then((response) => console.log(response));
+        }
+      };
+
       newLegalEntityForm.onsubmit = (e) => {
         e.preventDefault();
         let validate = true;

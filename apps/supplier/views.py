@@ -49,17 +49,21 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
    
     title = "TEST"
-    supplier = Supplier.objects.get(slug="emas")
-    product = Product.objects.filter(supplier=supplier)
-    for prod in product:
-        stock =  Stock.objects.get(prod=prod)
-        stock.stock_supplier = None
-        stock.stock_supplier_unit = None
-        stock.save()
-    
-    iek_api()
-    
-   
+    def background_task():
+        supplier = Supplier.objects.get(slug="emas")
+        product = Product.objects.filter(supplier=supplier)
+        for prod in product:
+            stock =  Stock.objects.get(prod=prod)
+            stock.stock_supplier = None
+            stock.stock_supplier_unit = None
+            stock.save()
+        
+        iek_api()
+        
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
     
     
     result = 1

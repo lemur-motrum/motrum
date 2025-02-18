@@ -64,9 +64,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const productSpecificationId = specificationItem.getAttribute(
             "data-product-specification-id"
           );
-          const deliveryDate = specificationItem.querySelector(
-            ".invoice-data-input"
-          );
+
           setCommentProductItem(specificationItem);
           const commentItem =
             specificationItem.getAttribute("data-comment-item");
@@ -76,12 +74,38 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           const vendor = specificationItem.getAttribute("data-vendor");
           const supplier = specificationItem.getAttribute("data-supplier");
-          const deliveryDateValue = item.querySelector(".delivery_date")
-            ? item.querySelector(".delivery_date").value
-            : item.querySelector(".invoice-data-input").value;
+          const deliveryDate =
+            specificationItem.querySelector(".delivery_date");
+
           const productCartId = specificationItem.getAttribute(
             "data-product-id-cart"
           );
+
+          const createTextDateDelivery = () => {
+            const orderData = new Date(deliveryDate.value);
+            const today = new Date();
+            const delta = orderData.getTime() - today.getTime();
+            const dayDifference = +Math.floor(delta / 1000 / 60 / 60 / 24);
+            const resultDays = +Math.ceil(dayDifference / 7);
+
+            function num_word(value, words) {
+              value = Math.abs(value) % 100;
+              var num = value % 10;
+              if (value > 10 && value < 20) return words[2];
+              if (num > 1 && num < 5) return words[1];
+              if (num == 1) return words[0];
+              return words[2];
+            }
+            if (dayDifference > 7) {
+              return `${resultDays} ${num_word(resultDays, [
+                "неделя",
+                "недели",
+                "недель",
+              ])}`;
+            } else {
+              return "1 неделя";
+            }
+          };
 
           const product = {
             product_id: +itemID,
@@ -92,8 +116,10 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery: deliveryDateValue ? deliveryDateValue : null,
-            text_delivery: deliveryDate.value,
+            date_delivery: new Date(deliveryDate.value)
+              .toISOString()
+              .split("T")[0],
+            text_delivery: createTextDateDelivery(),
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,
             comment: commentItem ? commentItem : null,
@@ -106,8 +132,7 @@ window.addEventListener("DOMContentLoaded", () => {
           if (deliveryDate) {
             if (!deliveryDate.value) {
               validate = false;
-              deliveryDate.style.border = "1px solid red";
-              deliveryDate.style.borderRadius = "10px";
+              deliveryDate.style.borderColor = "red";
             }
           }
 

@@ -116,9 +116,9 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery: new Date(deliveryDate.value)
-              .toISOString()
-              .split("T")[0],
+            date_delivery: deliveryDate.value
+              ? new Date(deliveryDate.value).toISOString().split("T")[0]
+              : null,
             text_delivery: createTextDateDelivery(),
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,

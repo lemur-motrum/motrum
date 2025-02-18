@@ -695,7 +695,7 @@ class Stock(models.Model):
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
 
-        if self.stock_supplier != None or self.stock_supplier != 0:
+        if self.stock_supplier != None and self.stock_supplier != 0:
 
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]

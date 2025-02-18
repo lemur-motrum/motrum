@@ -32,8 +32,9 @@ window.addEventListener("DOMContentLoaded", () => {
         ".new_legal_entity_inn_error"
       );
       const innMaskOptions = {
-        mask: "0000000000",
+        mask: "000000000000",
       };
+
       const innMask = IMask(innInput, innMaskOptions);
       const kppInput = newLegalEntityForm.querySelector(".kpp");
       const newLegalEntityKppError = newLegalEntityForm.querySelector(
@@ -50,13 +51,23 @@ window.addEventListener("DOMContentLoaded", () => {
       );
 
       const ogrnMaskOptions = {
-        mask: "0000000000000",
+        mask: "000000000000000",
       };
       const ogrnMask = IMask(orgnInput, ogrnMaskOptions);
-      const contractInput = newLegalEntityForm.querySelector(".contract");
-      const newLegalEntityContractError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_contract_error"
-      );
+
+      const phoneInput = newLegalEntityForm.querySelector(".phone");
+      const phoneError = newLegalEntityForm.querySelector(".phone_error");
+
+      const phoneMaskOptions = {
+        mask: "+{7} (000) 000-00-00",
+        prepare: function (appended, masked) {
+          if (appended === "8" && masked.value === "") {
+            return "7";
+          }
+          return appended;
+        },
+      };
+      const phoneMask = IMask(phoneInput, phoneMaskOptions);
       const legalIndexInput = newLegalEntityForm.querySelector(
         ".legal-adress-index"
       );
@@ -78,23 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const newLegalEntityLegalAdressError = newLegalEntityForm.querySelector(
         ".new_legal_entity_legal_adress_adress_error"
       );
-      const postIndexInput =
-        newLegalEntityForm.querySelector(".post-adress-index");
-      const newLegalEntityPostalIndexError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_post_adress_index_error"
-      );
-      const postIndexMask = IMask(postIndexInput, indexMaskOptions);
-      const postCityInput =
-        newLegalEntityForm.querySelector(".post-adress-city");
-      const newLegalEntityPostalCityError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_post_adress_city_error"
-      );
-      const postAdressInput = newLegalEntityForm.querySelector(
-        ".post-adress-adress"
-      );
-      const newLegalEntityPostalAddresError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_post_adress_adress_error"
-      );
+
       const currentAccount = newLegalEntityForm.querySelector(
         ".bank-details-input-current-account"
       );
@@ -132,145 +127,145 @@ window.addEventListener("DOMContentLoaded", () => {
 
       newLegalEntityForm.onsubmit = (e) => {
         e.preventDefault();
-        // if (!nameInput.value) {
-        //   showErrorValidation("Обязаятельное поле", newLegalEntityNameError);
-        // }
-        // if (!innInput.value) {
-        //   showErrorValidation("Обязаятельное поле", newLegalEntityInnError);
-        // }
-        // if (innInput.value && innInput.value.length < 10) {
-        //   showErrorValidation(
-        //     "ИНН должен состоять из 10 цифр",
-        //     newLegalEntityInnError
-        //   );
-        // }
-        // if (!kppInput.value) {
-        //   showErrorValidation("Обязаятельное поле", newLegalEntityKppError);
-        // }
-        // if (kppInput.value && kppInput.value.length < 9) {
-        //   showErrorValidation(
-        //     "КПП должен состоять из 9 цифр",
-        //     newLegalEntityKppError
-        //   );
-        // }
-        // if (!orgnInput.value) {
-        //   showErrorValidation("Обязательное поле", newLegalEntityOgrnError);
-        // }
-        // if (orgnInput.value && orgnInput.value.length < 13) {
-        //   showErrorValidation(
-        //     "ОГРН должен состоять из 13 цифр",
-        //     newLegalEntityOgrnError
-        //   );
-        // }
-        // if (!contractInput.value) {
-        //   showErrorValidation("Обязательное поле", newLegalEntityContractError);
-        // }
-        // if (!legalIndexInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityLegalIndexError
-        //   );
-        // }
-        // if (legalIndexInput.value && legalIndexInput.value.length < 6) {
-        //   showErrorValidation("Неверный индекс", newLegalEntityLegalIndexError);
-        // }
-        // if (!legalCityInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityLegalCityError
-        //   );
-        // }
-        // if (!legalAdressInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityLegalAdressError
-        //   );
-        // }
-        // if (!postIndexInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityPostalIndexError
-        //   );
-        // }
-        // if (postIndexInput.value && postIndexInput.value.length < 6) {
-        //   showErrorValidation(
-        //     "Неверный индекс",
-        //     newLegalEntityPostalIndexError
-        //   );
-        // }
-        // if (!legalCityInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityPostalCityError
-        //   );
-        // }
-        // if (!postAdressInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityPostalAddresError
-        //   );
-        // }
-        // if (!currentAccount.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityCurrentAccountError
-        //   );
-        // }
-        // if (currentAccount.value && currentAccount.value.length < 20) {
-        //   showErrorValidation(
-        //     "Cчет должен состоять из 20 цифр",
-        //     newLegalEntityCurrentAccountError
-        //   );
-        // }
-        // if (!bank.value) {
-        //   showErrorValidation("Обязательное поле", newLegalEntityBankError);
-        // }
-        // if (!correspondentAccount.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityCorrespondentAvvountError
-        //   );
-        // }
-        // if (
-        //   correspondentAccount.value &&
-        //   correspondentAccount.value.length < 20
-        // ) {
-        //   showErrorValidation(
-        //     "Cчет должен состоять из 20 цифр",
-        //     newLegalEntityCorrespondentAvvountError
-        //   );
-        // }
-        // if (!bik.value) {
-        //   showErrorValidation("Обязательное поле", newLegalEntityBicError);
-        // }
-        // if (bik.value.length < 9) {
-        //   showErrorValidation(
-        //     "Бик должен состоять из 9 цифр",
-        //     newLegalEntityBicError
-        //   );
-        // }
+        let validate = true;
+        if (!nameInput.value) {
+          showErrorValidation("Обязаятельное поле", newLegalEntityNameError);
+          validate = false;
+        }
+        if (!innInput.value) {
+          showErrorValidation("Обязаятельное поле", newLegalEntityInnError);
+          validate = false;
+        }
+
         if (
-          nameInput.value 
-          // &&
-          // innInput.value.length == 10 &&
-          // kppInput.value.length == 9 &&
-          // orgnInput.value.length == 13 &&
-          // contractInput.value &&
-          // legalIndexInput.value.length == 6 &&
-          // legalCityInput.value &&
-          // legalAdressInput.value &&
-          // postIndexInput.value.length == 6 &&
-          // postCityInput.value &&
-          // postAdressInput.value &&
-          // currentAccount.value.length == 20 &&
-          // bank.value &&
-          // correspondentAccount.value.length == 20 &&
-          // bik.value.length == 9
+          innInput.value.length !== 10 &&
+          innInput.value &&
+          innInput.value.length !== 12 &&
+          innInput.value &&
+          innInput.value.length !== 13 &&
+          innInput.value
         ) {
+          showErrorValidation(
+            "ИНН должен состоять из 10 или 12 цифр",
+            newLegalEntityInnError
+          );
+          validate = false;
+        }
+
+        if (!kppInput.value) {
+          showErrorValidation("Обязаятельное поле", newLegalEntityKppError);
+          validate = false;
+        }
+        if (kppInput.value && kppInput.value.length < 9) {
+          showErrorValidation(
+            "КПП должен состоять из 9 цифр",
+            newLegalEntityKppError
+          );
+          validate = false;
+        }
+        if (!orgnInput.value) {
+          showErrorValidation("Обязательное поле", newLegalEntityOgrnError);
+          validate = false;
+        }
+        if (
+          orgnInput.value &&
+          orgnInput.value.length != 13 &&
+          orgnInput.value &&
+          orgnInput.value.length != 15 &&
+          orgnInput.value &&
+          orgnInput.value.length != 16
+        ) {
+          showErrorValidation(
+            "ОГРН должен состоять из 13 или 15 цифр",
+            newLegalEntityOgrnError
+          );
+          validate = false;
+        }
+        if (!phoneInput.value) {
+          showErrorValidation("Обязательное поле", phoneError);
+          validate = false;
+        }
+
+        if (phoneInput.value && phoneInput.value.length < 18) {
+          showErrorValidation("Некорректный номер телефона", phoneError);
+          validate = false;
+        }
+
+        if (!legalIndexInput.value) {
+          showErrorValidation(
+            "Обязательное поле",
+            newLegalEntityLegalIndexError
+          );
+          validate = false;
+        }
+        if (legalIndexInput.value && legalIndexInput.value.length < 6) {
+          showErrorValidation("Неверный индекс", newLegalEntityLegalIndexError);
+          validate = false;
+        }
+        if (!legalCityInput.value) {
+          showErrorValidation(
+            "Обязательное поле",
+            newLegalEntityLegalCityError
+          );
+          validate = false;
+        }
+        if (!legalAdressInput.value) {
+          showErrorValidation(
+            "Обязательное поле",
+            newLegalEntityLegalAdressError
+          );
+          validate = false;
+        }
+        if (!currentAccount.value) {
+          showErrorValidation(
+            "Обязательное поле",
+            newLegalEntityCurrentAccountError
+          );
+          validate = false;
+        }
+        if (currentAccount.value && currentAccount.value.length < 20) {
+          showErrorValidation(
+            "Cчет должен состоять из 20 цифр",
+            newLegalEntityCurrentAccountError
+          );
+          validate = false;
+        }
+        if (!bank.value) {
+          showErrorValidation("Обязательное поле", newLegalEntityBankError);
+          validate = false;
+        }
+        if (!correspondentAccount.value) {
+          showErrorValidation(
+            "Обязательное поле",
+            newLegalEntityCorrespondentAvvountError
+          );
+          validate = false;
+        }
+        if (
+          correspondentAccount.value &&
+          correspondentAccount.value.length < 20
+        ) {
+          showErrorValidation(
+            "Cчет должен состоять из 20 цифр",
+            newLegalEntityCorrespondentAvvountError
+          );
+          validate = false;
+        }
+        if (!bik.value) {
+          showErrorValidation("Обязательное поле", newLegalEntityBicError);
+          validate = false;
+        }
+        if (bik.value.length < 9) {
+          showErrorValidation(
+            "Бик должен состоять из 9 цифр",
+            newLegalEntityBicError
+          );
+          validate = false;
+        }
+        if (validate) {
           const dataObj = [
             {
               requisites: {
-                contract: contractInput.value,
                 legal_entity: nameInput.value,
                 inn: innInput.value,
                 kpp: kppInput.value,
@@ -278,9 +273,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 legal_post_code: legalIndexInput.value,
                 legal_city: legalCityInput.value,
                 legal_address: legalAdressInput.value,
-                postal_post_code: postIndexInput.value,
-                postal_city: postCityInput.value,
-                postal_address: postAdressInput.value,
                 client: clientId,
               },
               account_requisites: [

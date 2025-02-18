@@ -129,7 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 position: inputJobTitle.value ? inputJobTitle.value : "",
                 email: inputEmail.value,
               },
-              phone: phoneArray,
+              phone: phoneArray[0] == "" ? [] : phoneArray,
             };
             const data = JSON.stringify(dataObj);
             const response = await fetch(

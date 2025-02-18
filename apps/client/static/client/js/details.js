@@ -89,6 +89,12 @@ window.addEventListener("DOMContentLoaded", () => {
       const newLegalEntityLegalAdressError = newLegalEntityForm.querySelector(
         ".new_legal_entity_legal_adress_adress_error"
       );
+      const legalAddressHouseInput = newLegalEntityForm.querySelector(
+        ".legal-adress-adress-appartments"
+      );
+      const legalAddressHouseError = newLegalEntityForm.querySelector(
+        ".new_legal_entity_legal_adress_appartments_error"
+      );
 
       const currentAccount = newLegalEntityForm.querySelector(
         ".bank-details-input-current-account"
@@ -216,6 +222,10 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           validate = false;
         }
+        if (!legalAddressHouseInput.value) {
+          showErrorValidation("Обязательное поле", legalAddressHouseError);
+          validate = false;
+        }
         if (!currentAccount.value) {
           showErrorValidation(
             "Обязательное поле",
@@ -255,7 +265,7 @@ window.addEventListener("DOMContentLoaded", () => {
           showErrorValidation("Обязательное поле", newLegalEntityBicError);
           validate = false;
         }
-        if (bik.value.length < 9) {
+        if (bik.value && bik.value.length < 9) {
           showErrorValidation(
             "Бик должен состоять из 9 цифр",
             newLegalEntityBicError

@@ -1007,7 +1007,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     print("json_data",json_data)
                     if  user.username == "testadmin":
                         print("if IS_WEB or user.username == testadmin")
-                        url = "http://localhost:8000/api/v1/order/test1s/"
+                        url = "https://motrum.yuriyzhidkov.ru/api/v1/order/test1s/"
                         headers = {'Content-type': 'application/json'}
                         response = send_requests(url, headers, json_data)
                         print(response)

@@ -119,7 +119,9 @@ window.addEventListener("DOMContentLoaded", () => {
                 phoneArray.push(el.value);
               });
             }
-            phoneArray.push(newExtraPointInput.value);
+            if (newExtraPointInput.value) {
+              phoneArray.push(newExtraPointInput.value);
+            }
 
             const dataObj = {
               client: {

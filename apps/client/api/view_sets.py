@@ -999,11 +999,15 @@ class OrderViewSet(viewsets.ModelViewSet):
                 type_save = request.COOKIES.get("type_save")
 
                 if IS_WEB or user.username == "testadmin":
+
+                    import json
+                    json_data = json.dumps(data_for_1c)
+
                     if  user.username == "testadmin":
-                         print("if IS_WEB or user.username == testadmin")
-                        # url = ""
-                        # headers = {'Content-type': 'application/json'}
-                        # send_requests(url, headers, data_for_1c)
+                        print("if IS_WEB or user.username == testadmin")
+                        url = ""
+                        headers = {'Content-type': 'application/json'}
+                        send_requests(url, headers, json_data)
                         
                     pass
                 else:

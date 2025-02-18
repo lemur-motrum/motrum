@@ -86,6 +86,7 @@ from apps.core.utils import (
     save_order_web,
     save_specification,
     save_spesif_web,
+    send_requests,
 )
 from apps.core.utils_web import (
     _get_pin,
@@ -999,8 +1000,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 if IS_WEB or user.username == "testadmin":
                     if  user.username == "testadmin":
-                        print("if IS_WEB or user.username == testadmin")
-                    pass
+                        # print("if IS_WEB or user.username == testadmin")
+                        # url = ""
+                        # headers = {'Content-type': 'application/json'}
+                        # send_requests(url, headers, data_for_1c)
+                        
+                    # pass
                 else:
                     add_info_order(request, order, type_save)
 
@@ -1018,6 +1023,18 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
 
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
+    @action(
+        detail=False,
+        methods=[
+            "get",
+            "post",
+        ],
+        url_path=r"test1s",
+    )
+    def test1s(self, request,  *args, **kwargs):
+        data = request.data
+        print("test1s",data)
+        return Response(data, status=status.HTTP_200_OK)
 
     # ОКТ изменение спецификации дмин специф
     @action(

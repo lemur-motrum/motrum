@@ -298,3 +298,5 @@ class EmailsAllWebSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailsAllWeb
         fields = "__all__"
+
+

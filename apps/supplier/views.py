@@ -15,7 +15,7 @@ from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, vendor_delta_optimus_after_load
+from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, send_requests, vendor_delta_optimus_after_load
 from apps.product.models import CurrencyRate, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -49,21 +49,9 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
    
     title = "TEST"
-    def background_task():
-        supplier = Supplier.objects.get(slug="emas")
-        product = Product.objects.filter(supplier=supplier)
-        for prod in product:
-            stock =  Stock.objects.get(prod=prod)
-            stock.stock_supplier = None
-            stock.stock_supplier_unit = None
-            stock.save()
-        
-        iek_api()
-        
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-
+    url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
+    headers = {"Content-type": "application/json"}
+    response = send_requests(url, headers, None)
     
     
     result = 1

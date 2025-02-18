@@ -218,3 +218,30 @@ class ListsSpecificationSerializer(serializers.ModelSerializer):
         representation["date"] = instance.date.strftime("%d.%m.%Y")
         representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
         return representation
+
+
+class ProductSpecification1cSerializer(serializers.ModelSerializer):
+    # product_okt_name = serializers.SerializerMethodField()
+    # product_okt_article = serializers.SerializerMethodField()
+    # stock = serializers.SerializerMethodField()
+    # article = serializers.CharField(source="product.article")
+    article_motrum = serializers.SerializerMethodField()
+    class Meta:
+        model = ProductSpecification
+        fields = (
+            
+            "article_motrum",
+            "date_delivery",
+            "reserve",
+            "client_shipment",
+            "date_shipment",)
+
+    def get_article_motrum(self, obj):
+        print("obj",obj)
+        # if obj.product:
+        #     article_supplier = Product.objects.get(id=obj.product_id).article_supplier
+        #     # product_okt_name
+
+        #     return article_supplier
+        # else:
+        #     return None

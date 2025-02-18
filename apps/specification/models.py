@@ -19,7 +19,7 @@ class Specification(models.Model):
 
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
-        null=True,
+        null=True,unique=True
     )
     number = models.PositiveIntegerField(
         "Номер спецификации",default=None,

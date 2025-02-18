@@ -31,8 +31,11 @@ from django.db.models import Q, F, OrderBy, Value
 from apps.specification.models import ProductSpecification
 import threading
 
+from apps.specification.utils import save_nomenk_doc
 from project.settings import MEDIA_ROOT
 import datetime
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = Product.objects.none()
@@ -240,28 +243,23 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
     def get_nomenclature(self, request, *args, **kwargs):
-        from django.core.files.storage import FileSystemStorage
         print("get_nomenclature")
         data = request.data
-        # file_obj = request.data['file']
-        current_date = datetime.date.today().isoformat()
-        dir_file = check_file_price_directory_exist("ones", "nomenclature")
-        doc_name = f"nomenclature-{current_date}"
-        
-      
-        
-        
-        
-        print(decoded_string)
+        data = (
+            {
+                "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
                 
-        new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-        path_nomenclature = f"{new_dir}/Номенктатура-25.csv"
-        with open(os.path.join(MEDIA_ROOT, path_nomenclature), "wb") as ofile:
+            },
+        )
 
-            f = FileSystemStorage(location=dir_file).save(
-                    doc_name, ofile
-                )
-            
+        image_path = save_nomenk_doc(data["pdf"])
+        if image_path == "ERROR":
+            #сюда разбор фаила 
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(None, status=status.HTTP_200_OK)
+
+
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
@@ -640,12 +638,13 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     def product_cart_in_file_download(self, request, pk=None, *args, **kwargs):
         print("product_cart_in_file_download", request.data)
         cart = 298
-        new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+        new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT, "documents", "kp_file")
         path_kp = f"{new_dir}/КП.xlsx"
+
         # cart = 667
         def background_task():
             # Долгосрочная фоновая задача
-            product_cart_in_file(path_kp,cart)
+            product_cart_in_file(path_kp, cart)
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -653,6 +652,8 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         stop_daemon = daemon_thread.join()
         # is_alive_daemon = daemon_thread.is_alive()
         return Response(None, status=status.HTTP_200_OK)
+
+
 # class ProductViewSet(viewsets.ModelViewSet):
 #     permission_classes = (permissions.AllowAny,)
 #     queryset = Product.objects.none()

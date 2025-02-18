@@ -628,3 +628,45 @@ def save_shipment_doc(link, document_shipment):
         "shipment",
         name_doc,
     )
+
+def save_nomenk_doc(link):
+    from apps.core.utils import check_spesc_directory_exist, transform_date
+    try:
+        directory = "{0}/{1}/{2}".format(
+            MEDIA_ROOT,
+            "ones",
+            "nomenk",
+        )
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        current_date = datetime.date.today().isoformat()
+        
+        name = f"склады_{current_date}.xlsx"
+        print(name)
+        # file_last_list = filename.split(".")
+        # type_file = "." + file_last_list[-1]
+        name_doc = f"{name}"
+        path_doc = "{0}/{1}".format(
+            directory,
+            name_doc,
+        )
+        r = requests.get(link, stream=True)
+        with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
+            ofile.write(r.content)
+
+        return "{0}/{1}/{2}".format(
+            "documents",
+            "shipment",
+            name_doc,
+        )
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Получение\сохранение данных o складов 1с "
+        info = f"Получение\сохранение данных o складов 1с . Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+        return "ERROR"
+        

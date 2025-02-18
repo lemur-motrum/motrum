@@ -19,23 +19,25 @@ from project.settings import MEDIA_ROOT
 def get_motrum_storage():
     try:
         new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-        path_storage_motrum = f"{new_dir}/test_ooo.xlsx"
-        path_storage_pnm = f"{new_dir}/test_pmn.xlsx"
+        path_storage = f"{new_dir}/nomenk/1.xlsx"
+        
+        # path_storage_motrum = f"{new_dir}/test_ooo.xlsx"
+        # path_storage_pnm = f"{new_dir}/test_pmn.xlsx"
 
-        def get_group_rows(sheet):
-            # a =  [row[0].row for row in sheet.iter_rows(2) if row[0].alignment.indent == 0.0]
-            row_index_groupe = [
-                row_index
-                for row_index, row_dimension in sheet.row_dimensions.items()
-                if row_index > 2 and row_dimension.outline_level == 0
-            ]
+        # def get_group_rows(sheet):
+        #     # a =  [row[0].row for row in sheet.iter_rows(2) if row[0].alignment.indent == 0.0]
+        #     row_index_groupe = [
+        #         row_index
+        #         for row_index, row_dimension in sheet.row_dimensions.items()
+        #         if row_index > 2 and row_dimension.outline_level == 0
+        #     ]
 
-            return row_index_groupe
+        #     return row_index_groupe
 
         def reed_workbook(input_file):
             workbook = load_workbook(input_file)
             data_sheet = workbook.active
-            group_rows = get_group_rows(data_sheet)
+            # group_rows = get_group_rows(data_sheet)
 
             # vendor_name = None
             vendor_qs = None
@@ -137,8 +139,55 @@ def get_motrum_storage():
                             # else:
                             #     add_new_product_and_stock(supplier_qs,article_supplier,vendor_qs,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
 
-        reed_workbook(path_storage_pnm)
-        reed_workbook(path_storage_motrum)
+        def reed_workbook_after1c(input_file):
+            
+            lot_auto = Lot.objects.get(name_shorts="шт")
+            workbook = load_workbook(input_file)
+            data_sheet = workbook.active
+            print(data_sheet.max_row)
+            for index in range(2, data_sheet.max_row):
+                print("index",index)
+                article = data_sheet.cell(row=index, column=1).value
+                article = article.strip()
+                all_fredom_remaining = data_sheet.cell(row=index, column=4).value
+                print(all_fredom_remaining)
+                all_reserve_remaining = data_sheet.cell(row=index, column=5).value
+                print(all_reserve_remaining)
+                if all_fredom_remaining:
+                    int_stock_motrum = int(all_fredom_remaining)
+                else:
+                    int_stock_motrum = 0
+                    
+                if all_reserve_remaining :    
+                    int_stock_reserve_motrum = int(all_reserve_remaining)
+                else:
+                    int_stock_reserve_motrum = 0  
+                print("int_stock_reserve_motrum",int_stock_motrum,int_stock_reserve_motrum)
+                
+                try:
+                    product = Product.objects.get(article=article)
+                    print(333)
+                    print("product",product)
+                    add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
+                
+                # товары НЕ находяться в окт с артикулом и производителем
+                except Product.DoesNotExist:
+                    print("NOT PROD")
+                    error = "info_error"
+                    location = "Загрузка фаилов остатков"
+
+                    info = f"Загрузка фаилов остатков- такого товара нет в ОКТ.Артикул мотрум {article}"
+                    e = error_alert(error, location, info)    
+                
+               
+                    
+                    
+                    
+                    
+                    
+        # reed_workbook(path_storage_pnm)
+        # reed_workbook(path_storage_motrum)
+        reed_workbook_after1c(path_storage)
     except Exception as e:
         print(e)
         tr =  traceback.format_exc()

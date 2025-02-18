@@ -145,3 +145,44 @@ export const getDigitsNumber = (container, value) => {
   }
   container.textContent = currentValue;
 };
+
+//Валидатор даты(возвращает даду спецификации по самой поздней дате поставки конкретного товара)
+export function getDeliveryDate(dates) {
+  const arrayDateValues = [];
+  dates.forEach((el) => {
+    const elValue = Date.parse(el.value);
+    arrayDateValues.push(elValue);
+  });
+  const sortingArr = arrayDateValues.sort((a, b) => a - b);
+  const maxDateValue = sortingArr.at(-1);
+  const now = Date.now();
+  const resultSecs = maxDateValue - now;
+  const resultDays = Math.floor(resultSecs / 86400000);
+  let result;
+  if (resultDays <= 7) {
+    result = "1 неделя";
+  } else if (resultDays > 7 && resultDays <= 14) {
+    result = "2 недели";
+  } else if (resultDays > 14 && resultDays <= 21) {
+    result = "3 недели";
+  } else {
+    const mounthQuantity = Math.ceil(resultDays / 30);
+
+    function setMounth(value, words) {
+      value = Math.abs(value) % 100;
+      var num = value % 10;
+      if (value > 10 && value < 20) return words[2];
+      if (num > 1 && num < 5) return words[1];
+      if (num == 1) return words[0];
+      return words[2];
+    }
+    result = isNaN(mounthQuantity)
+      ? "1 месяц"
+      : `${mounthQuantity} ${setMounth(mounthQuantity, [
+          "месяц",
+          "месяца",
+          "месяцев",
+        ])}`;
+  }
+  return result;
+}

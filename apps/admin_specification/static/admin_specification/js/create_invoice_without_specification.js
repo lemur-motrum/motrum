@@ -3,8 +3,10 @@ import {
   showErrorValidation,
   getCurrentPrice,
   deleteCookie,
+  getDeliveryDate,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "../js/error_modal.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +28,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const products = [];
 
     const bitrixInput = document.querySelector(".bitrix-input");
+    const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
 
     const specificationWrapepr = document.querySelector(".spetification_table");
     const specificationItems =
@@ -60,14 +63,16 @@ window.addEventListener("DOMContentLoaded", () => {
           "data-product-specification-id"
         );
         const deliveryDate = specificationItem.querySelector(".delivery_date");
-        const commentItem = specificationItem.querySelector(
-          'textarea[name="comment-input-name"]'
-        ).value;
+
+        setCommentProductItem(specificationItem);
+        const commentItem = specificationItem.getAttribute("data-comment-item");
+
         const inputPrice = specificationItem.querySelector(".price-input");
         const saleMotrum = specificationItem.querySelector(
           ".motrum_sale_persent"
         );
         const vendor = specificationItem.getAttribute("data-vendor");
+        const supplier = specificationItem.getAttribute("data-supplier");
         const productCartId = specificationItem.getAttribute(
           "data-product-id-cart"
         );
@@ -114,6 +119,7 @@ window.addEventListener("DOMContentLoaded", () => {
           comment: commentItem ? commentItem : null,
           sale_motrum: saleMotrum ? saleMotrum.textContent : null,
           vendor: vendor ? vendor : null,
+          supplier: supplier ? supplier : null,
           id_cart: productCartId,
         };
         if (deliveryDate) {
@@ -139,8 +145,17 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!bitrixInput.value) {
           validate = false;
           bitrixInput.style.border = "0.063rem solid red";
-          bitrixInput.style.borderRadius = "0.625rem";
         }
+      }
+      if (!deliveryRequsits || deliveryRequsits == "null") {
+        validate = false;
+        document.querySelector(".select_delevery").style.border =
+          "1px solid red";
+      }
+      if (!motrumRequsits || motrumRequsits == "null") {
+        validate = false;
+        document.querySelector(".select_motrum_requisites").style.border =
+          "1px solid red";
       }
       if (validate == false) {
         const error = buttonContainer.querySelector(".error");
@@ -158,7 +173,7 @@ window.addEventListener("DOMContentLoaded", () => {
           id_specification: specificationId ? specificationId : null,
           id_cart: +getCookie("cart"),
           comment: commentAll.value,
-          date_delivery: dateDeliveryAll.value,
+          date_delivery: getDeliveryDate(dateDeliveryInputs),
           motrum_requisites: +motrumRequsits,
           client_requisites: +clientRequsits,
           type_delivery: deliveryRequsits,

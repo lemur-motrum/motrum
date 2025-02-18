@@ -16,6 +16,8 @@ router.register(
     basename="client-requisites",
 )
 router.register(r"v1/requisites", view_sets.RequisitesViewSet)
+router.register(r"v1/accountreq", view_sets.AccountRequisitesViewSet)
+router.register(r"v1/adress_requisites", view_sets.RequisitesAddressViewSet)
 router.register(r"v1/order", view_sets.OrderViewSet)
 router.register(r"v1/emails", view_sets.EmailsViewSet)
 
@@ -26,4 +28,5 @@ urlpatterns = [
     path("my_documents/", views.my_documents, name="my_documents"),
     path("my_details/", views.my_details, name="my_details"),
     path("my_contacts/", views.my_contacts, name="my_contacts"),
+    path("order/<int:pk>/", views.order_client_one, name="order_client_one"),
 ]

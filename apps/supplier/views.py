@@ -1,30 +1,32 @@
 import datetime
 from locale import LC_ALL, setlocale
+import random
 import threading
 import traceback
+from django.conf import settings
 from django.shortcuts import render
 from regex import D
-from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction
+from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction, Requisites
 
-from apps.core.bitrix_api import add_info_order, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
+from apps.core.bitrix_api import add_info_order, add_new_order_web, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
 from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file
-from apps.product.models import CurrencyRate, GroupProduct, Product
+from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, vendor_delta_optimus_after_load
+from apps.product.models import CurrencyRate, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_shipment_doc
-from apps.supplier.get_utils.iek import get_iek_stock, iek_api
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
 from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import SupplierCategoryProductAll, Vendor
+from apps.supplier.models import Supplier, SupplierCategoryProductAll, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -38,21 +40,31 @@ from django.utils.text import slugify
 from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
-from project.settings import MEDIA_ROOT
+from apps.vacancy_web.models import Vacancy
+from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
 from fast_bitrix24 import Bitrix
 
 
 # тестовая страница скриптов
 def add_iek(request):
-    from dateutil.parser import parse
+   
     title = "TEST"
+    def background_task():
+        supplier = Supplier.objects.get(slug="emas")
+        product = Product.objects.filter(supplier=supplier)
+        for prod in product:
+            stock =  Stock.objects.get(prod=prod)
+            stock.stock_supplier = None
+            stock.stock_supplier_unit = None
+            stock.save()
+        
+        iek_api()
+        
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
 
-
-    cart = 298
-    new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
-    path_kp = f"{new_dir}/КП.xlsx"
-    # cart = 667
-    product_cart_in_file(path_kp,cart)
+    
     
     result = 1
     if result:
@@ -99,13 +111,21 @@ def add_one_c(request):
     }
     return render(request, "supplier/supplier.html", context)
 
+def add_vendor_delta_optimus_after_load(request):
+    vendor_delta_optimus_after_load()
+    responsets = ["233", "2131"]
 
+    context = {
+        "responsets": responsets,
+    }
+    return render(request, "supplier/supplier.html", context)
+    
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
 
     def background_task():
         # Долгосрочная фоновая задача
-        # add_group_emas()
+        add_group_emas()
         add_props_emas_product()
 
     daemon_thread = threading.Thread(target=background_task)

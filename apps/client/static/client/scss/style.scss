@@ -77,14 +77,14 @@
           .arrow-elem-1 {
             width: 0.102rem;
             height: 0.453rem;
-            border-radius: 2px;
+            border-radius: 0.125rem;
             transform: rotate(-45deg);
             background-color: #000;
           }
           .arrow-elem-2 {
             width: 0.102rem;
             height: 0.453rem;
-            border-radius: 2px;
+            border-radius: 0.125rem;
             transform: rotate(45deg);
             background-color: #000;
           }
@@ -192,8 +192,8 @@
     .small_loader {
       display: none;
       overflow: hidden;
-      font-size: 10px;
-      margin: 50px auto;
+      font-size: 0.625rem;
+      margin: 3.125rem auto;
       text-indent: -9999em;
       width: 7rem;
       height: 7rem;
@@ -483,8 +483,8 @@
       .small_loader {
         display: none;
         overflow: hidden;
-        font-size: 10px;
-        margin: 50px auto;
+        font-size: 0.625rem;
+        margin: 3.125rem auto;
         text-indent: -9999em;
         width: 7rem;
         height: 7rem;
@@ -1543,13 +1543,14 @@
       margin-top: 1.188rem;
       .contact_person {
         width: 100%;
-        height: 6.813rem;
+        // height: 6.813rem;
         border: 0.094rem solid #000;
         border-radius: 2.5rem;
         box-sizing: border-box;
         // display: flex;
         // align-items: center;
         // justify-content: center;
+        transition: 0.6s;
         .contact_person_details {
           margin: 2.063rem 1.75rem;
           display: flex;
@@ -1596,69 +1597,83 @@
         .contact_person_form {
           margin: 1.5rem 1.75rem;
           display: none;
-          align-items: center;
+          flex-direction: column;
+          align-items: flex-end;
           gap: 0.938rem;
           transition: 1s;
           &.show {
             display: flex;
           }
-          label {
-            position: relative;
-            width: 15.048rem;
-            height: 3.563rem;
-            input {
+          div {
+            display: flex;
+            align-items: center;
+            gap: 0.938rem;
+            &.contact_user_extra_fields {
               width: 100%;
-              height: 100%;
-              border-radius: 2rem;
-              box-sizing: border-box;
-              padding: 1.125rem 2.25rem;
-              border: 0.094rem solid #000;
-              font-size: 1.125rem;
-              font-family: "Nunito", sans-serif;
-              &::-webkit-input-placeholder {
-                color: #000;
-              }
-              &::-moz-placeholder {
-                color: #000;
-              }
-              &:-ms-input-placeholder {
-                color: #000;
-              }
-              &::-ms-input-placeholder {
-                color: #000;
-              }
-              &::placeholder {
-                color: #000;
-              }
-              &:focus {
-                outline: none;
-                &::-webkit-input-placeholder {
-                  color: transparent;
-                }
-                &::-moz-placeholder {
-                  color: transparent;
-                }
-                &:-ms-input-placeholder {
-                  color: transparent;
-                }
-                &::-ms-input-placeholder {
-                  color: transparent;
-                }
-                &::placeholder {
-                  color: transparent;
-                }
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr 1fr;
+              label {
+                width: 100%;
               }
             }
-            .error {
-              color: red;
-              font-size: 0.625rem;
-              margin-left: 0.688rem;
-              position: absolute;
-              top: 100%;
-              opacity: 0;
-              transition: 0.6s;
-              &.show {
-                opacity: 1;
+            label {
+              position: relative;
+              width: 25.8rem;
+              height: 3.563rem;
+              input {
+                width: 100%;
+                height: 100%;
+                border-radius: 2rem;
+                box-sizing: border-box;
+                padding: 1.125rem 2.25rem;
+                border: 0.094rem solid #000;
+                font-size: 1.125rem;
+                font-family: "Nunito", sans-serif;
+                &::-webkit-input-placeholder {
+                  color: #000;
+                }
+                &::-moz-placeholder {
+                  color: #000;
+                }
+                &:-ms-input-placeholder {
+                  color: #000;
+                }
+                &::-ms-input-placeholder {
+                  color: #000;
+                }
+                &::placeholder {
+                  color: #000;
+                }
+                &:focus {
+                  outline: none;
+                  &::-webkit-input-placeholder {
+                    color: transparent;
+                  }
+                  &::-moz-placeholder {
+                    color: transparent;
+                  }
+                  &:-ms-input-placeholder {
+                    color: transparent;
+                  }
+                  &::-ms-input-placeholder {
+                    color: transparent;
+                  }
+                  &::placeholder {
+                    color: transparent;
+                  }
+                }
+              }
+              .error {
+                color: red;
+                font-size: 0.625rem;
+                margin-left: 0.688rem;
+                position: absolute;
+                top: 100%;
+                opacity: 0;
+                transition: 0.6s;
+                &.show {
+                  opacity: 1;
+                }
               }
             }
           }
@@ -1666,7 +1681,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 15.048rem;
+            width: 26.048rem;
             height: 3.563rem;
             border: none;
             border-radius: 1.875rem;

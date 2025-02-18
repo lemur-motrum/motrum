@@ -7,6 +7,7 @@ import {
   getDigitsNumber,
   showErrorValidation,
   getCurrentPrice,
+  getDeliveryDate,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "../js/error_modal.js";
@@ -14,6 +15,7 @@ import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
 import { buttonsLogic } from "../js/add_product_in_cart.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -48,6 +50,8 @@ function setCurrentPriceCataloItem(elems) {
     }
   });
 }
+
+// console.log("arrayDateValues", arrayDateValues);
 //логика страницы каталога
 function catalogLogic(elems) {
   elems.forEach((catalogItem) => {
@@ -517,6 +521,7 @@ window.addEventListener("DOMContentLoaded", () => {
           .getAttribute("value");
 
         const bitrixInput = document.querySelector(".bitrix-input");
+        const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
         elems.forEach((item, i) => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
@@ -529,10 +534,10 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-product-specification-id"
           );
           const vendor = item.getAttribute("data-vendor");
+          const supplier = itemQuantity.getAttribute("data-supplier");
           const deliveryDate = item.querySelector(".delivery_date");
-          const commentItem = item.querySelector(
-            'textarea[name="comment-input-name"]'
-          ).value;
+          setCommentProductItem(item);
+          const commentItem = item.getAttribute("data-comment-item");
           const inputPrice = item.querySelector(".price-input");
           const saleMotrum = item.querySelector(".motrum_sale_persent");
           const productCartId = item.getAttribute("data-product-id-cart");
@@ -579,10 +584,11 @@ window.addEventListener("DOMContentLoaded", () => {
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
             id_cart: productCartId,
+            supplier: supplier ? supplier : null,
           };
 
           console.log("date-delivery", deliveryDate.value);
-          console.log("comment", commentItem);
+          // console.log("comment", commentItem);
 
           if (
             inputPrice
@@ -613,8 +619,27 @@ window.addEventListener("DOMContentLoaded", () => {
           if (!bitrixInput.value) {
             validate = false;
             bitrixInput.style.border = "1px solid red";
-            bitrixInput.style.borderRadius = "10px";
+
+            const dateDeliveryPosition =
+              document.querySelectorAll(".delivery_date");
+            const arrayDateValues = [];
+            dateDeliveryPosition.forEach((el) => {
+              arrayDateValues.push(el.value);
+            });
+
+            console.log("arrayDateValues", arrayDateValues);
           }
+        }
+
+        if (!deliveryRequsits || deliveryRequsits == "null") {
+          validate = false;
+          document.querySelector(".select_delevery").style.border =
+            "1px solid red";
+        }
+        if (!motrumRequsits || motrumRequsits == "null") {
+          validate = false;
+          document.querySelector(".select_motrum_requisites").style.border =
+            "1px solid red";
         }
         if (validate == false) {
           const saveButtonContainer = document.querySelector(
@@ -636,7 +661,9 @@ window.addEventListener("DOMContentLoaded", () => {
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll ? commentAll : null,
-            date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+            date_delivery: getDeliveryDate(dateDeliveryInputs)
+              ? getDeliveryDate(dateDeliveryInputs)
+              : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
@@ -676,7 +703,7 @@ window.addEventListener("DOMContentLoaded", () => {
       function exitSpecification(elems) {
         const endpoint = `/api/v1/order/exit-order-admin/`;
         fetch(endpoint, {
-          // изменила метод 
+          // изменила метод
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -742,7 +769,7 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              // изменила метод 
+              // изменила метод
               method: "POST",
               body: data,
               headers: {
@@ -1292,7 +1319,7 @@ window.addEventListener("DOMContentLoaded", () => {
         document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          // изменила метод 
+          // изменила метод
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -1323,7 +1350,7 @@ window.addEventListener("DOMContentLoaded", () => {
       changeButton.onclick = () => {
         const endpoint = `/api/v1/order/${specificationId}/create-bill-admin/`;
         fetch(endpoint, {
-          // изменила метод 
+          // изменила метод
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -1352,7 +1379,7 @@ window.addEventListener("DOMContentLoaded", () => {
         document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
         const endpoint = `/api/v1/order/${cartId}/update-order-admin/`;
         fetch(endpoint, {
-          // изменила метод 
+          // изменила метод
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -1425,6 +1452,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
       ".select-client-requsits"
     );
+    changeSelect(clientRequsitsSelect);
+
     const selectDelevery = document.querySelector(".select_delevery");
     changeSelect(selectDelevery);
 
@@ -1457,23 +1486,23 @@ window.addEventListener("DOMContentLoaded", () => {
         if (saveInvoiceButtonContainer) {
           saveInvoiceButtonContainer.classList.add("show");
         }
-        if (clientRequsitsSelect) {
-          const clientOptions = clientRequsitsSelect.querySelectorAll("option");
-          clientRequsitsSelect.setAttribute(
-            "value",
-            clientOptions[0].getAttribute("value")
-          );
-          clientOptions.forEach((el) => {
-            clientRequsitsSelect.addEventListener("change", function () {
-              if (el.selected) {
-                clientRequsitsSelect.setAttribute(
-                  "value",
-                  el.getAttribute("value")
-                );
-              }
-            });
-          });
-        }
+        // if (clientRequsitsSelect) {
+        //   const clientOptions = clientRequsitsSelect.querySelectorAll("option");
+        //   clientRequsitsSelect.setAttribute(
+        //     "value",
+        //     clientOptions[0].getAttribute("value")
+        //   );
+        //   clientOptions.forEach((el) => {
+        //     clientRequsitsSelect.addEventListener("change", function () {
+        //       if (el.selected) {
+        //         clientRequsitsSelect.setAttribute(
+        //           "value",
+        //           el.getAttribute("value")
+        //         );
+        //       }
+        //     });
+        //   });
+        // }
       }
     };
     searchClientInput.onkeyup = () => {
@@ -1482,6 +1511,7 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       if (searchClientInput.value.length > 2) {
         clientsContainer.classList.add("show");
+
         const data = JSON.stringify(objData);
         fetch(searchEndpoint, {
           method: "POST",
@@ -1589,7 +1619,7 @@ window.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: data,
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
+          "Content-Type": "application/json; charset=UTF-8",
           "X-CSRFToken": csrfToken,
         },
       })
@@ -1613,9 +1643,10 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
+          console.log(data);
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          document.location.href = "/admin_specification/current_specification/";
+          document.location.href =
+            "/admin_specification/current_specification/";
         });
     };
   }
@@ -1623,9 +1654,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const BxError = document.querySelector(".error-bx");
   if (BxError) {
     setTimeout(() => {
-      document.location.href = "/admin_specification/bitrix_start_info/"
-    }, 10000)
-
+      document.location.href = "/admin_specification/bitrix_start_info/";
+    }, 10000);
   }
 
   const wrapper = document.querySelector(".bitrix_product_container");
@@ -1634,14 +1664,16 @@ window.addEventListener("DOMContentLoaded", () => {
       document.location.reload();
     }, 60000);
   }
-
 });
 
 function changeSelect(select) {
   if (select) {
     const clientOptions = select.querySelectorAll("option");
-    select.setAttribute("value", clientOptions[0].getAttribute("value"));
+    // select.setAttribute("value", clientOptions[0].getAttribute("value"));
     clientOptions.forEach((el) => {
+      if (el.selected) {
+        select.setAttribute("value", el.getAttribute("value"));
+      }
       select.addEventListener("change", function () {
         if (el.selected) {
           select.setAttribute("value", el.getAttribute("value"));

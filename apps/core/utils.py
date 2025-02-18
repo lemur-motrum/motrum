@@ -4,6 +4,8 @@ import datetime
 import random
 import re
 import shutil
+import threading
+
 import requests
 import hashlib
 import os
@@ -19,9 +21,11 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 from apps.logs.utils import error_alert
 
 
+
+
 from apps.specification.utils import crete_pdf_specification
 
-from apps.supplier.models import Supplier
+
 from project.settings import MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
@@ -837,6 +841,7 @@ def save_update_product_attr(
 ):
 
     try:
+      
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
 
@@ -887,7 +892,7 @@ def save_update_product_attr(
         print(e)
         tr = traceback.format_exc()
         error = "file_api_error"
-        location = "Загрузка фаилов IEK"
+        location = "обновление товаров"
         info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")
@@ -970,11 +975,11 @@ def save_specification(
         )
         # if specification_name:
         #     specification.number = specification_name
-        specification.skip_history_when_saving = True
+        # specification.skip_history_when_saving = True
         data_stop = create_time_stop_specification()
         specification.date_stop = data_stop
         specification.tag_stop = True
-        # specification._change_reason = "Ручное"
+        specification._change_reason = "Ручное"
         specification.save()
 
     # сохранение продуктов для спецификации
@@ -1172,6 +1177,7 @@ def save_specification(
             product_spes._change_reason = "Ручное"
             product_spes.comment = product_item["comment"]
             product_spes.vendor_id = int(product_item["vendor"])
+            product_spes.supplier_id = int(product_item["supplier"])
             product_spes.id_cart_id = int(product_item["id_cart"])
 
             date_delivery = product_item["date_delivery"]
@@ -1243,8 +1249,6 @@ def save_specification(
         specification.save()
 
     return specification
-
-
 
 
 def get_presale_discount(product):
@@ -1329,19 +1333,16 @@ def save_new_product_okt(product_new):
 
     if product_new.vendor:
         vendor = product_new.vendor
-        
+
     else:
-        vendor = Vendor.objects.get("drugoe")
-        
-    
+        vendor = Vendor.objects.get("drugoj")
+
     if product_new.supplier:
-        
+
         supplier = product_new.supplier
     else:
-        
-        supplier = Supplier.objects.get("drugoe")
-        
-        
+
+        supplier = Supplier.objects.get("drugoj")
 
     if product_new.product:
         product_new_prod = product_new.product.id
@@ -1446,7 +1447,7 @@ def number_specification(type_save):
     return specification_name
 
 
-def save_spesif_web(cart, products_cart, extra_discount):
+def save_spesif_web(cart, products_cart, extra_discount,requisites):
     from apps.specification.api.serializers import (
         SpecificationSerializer,
         ProductSpecificationSaveSerializer,
@@ -1454,13 +1455,18 @@ def save_spesif_web(cart, products_cart, extra_discount):
     from apps.specification.models import Specification
     from apps.product.models import Product
     from apps.core.utils_web import get_product_item_data
-
+    print("save_spesif_web")
     try:
         with transaction.atomic():
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
-            specification_name = number_specification("specification")
-
+            # specification_name = number_specification("specification")
+            
+            #TODO:сохранять номер если все ок
+            specification_name = requisites.number_spec + 1
+            requisites.number_spec = specification_name
+            
+            
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1468,6 +1474,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 "date_stop": data_stop,
                 "number": specification_name,
             }
+            print(data_specification)
 
             serializer = serializer_class_specification(
                 data=data_specification, partial=True
@@ -1476,6 +1483,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                 # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
+                print(serializer.data)
 
                 if specification:
 
@@ -1484,7 +1492,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                         quantity = product_item.quantity
                         product = Product.objects.get(id=product_item.product.id)
                         item_data = get_product_item_data(
-                            specification, product, extra_discount, quantity
+                            specification, product, extra_discount, quantity,product_item,
                         )
 
                         serializer_class_specification_product = (
@@ -1516,6 +1524,7 @@ def save_spesif_web(cart, products_cart, extra_discount):
                     return ("error", None, None)
 
             else:
+                print(serializer.error_messages)
                 return ("error", None, None)
     except Exception as e:
         print(e)
@@ -1591,13 +1600,12 @@ def client_info_bitrix(data, company_adress):
         id_bitrix=data["id_bitrix"],
         inn=data["inn"],
         defaults={
-            
             "contract": data["contract"],
             "legal_entity": data["legal_entity"],
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager_id":int(data["manager"]),
+            "manager_id": int(data["manager"]),
             # "id_bitrix": data["id_bitrix"],
         },
         create_defaults={
@@ -1607,7 +1615,7 @@ def client_info_bitrix(data, company_adress):
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
-            "manager_id":int(data["manager"]),
+            "manager_id": int(data["manager"]),
             "id_bitrix": data["id_bitrix"],
         },
     )
@@ -1623,7 +1631,6 @@ def client_info_bitrix(data, company_adress):
         RequisitesOtherKpp.objects.update_or_create(
             requisites=client_req,
             kpp=data["kpp"],
-            
             defaults={
                 "ogrn": data["ogrn"],
                 "legal_post_code": data["legal_post_code"],
@@ -1762,16 +1769,34 @@ def create_info_request_order_bitrix(
 
 
 def create_info_request_order_1c(order, order_products):
+    from apps.specification.models import Specification
+    
+    specifications = Specification.objects.get(id=order.specification.id)
 
+    print(specifications)
+    if order.manager:
+        name_admin = f"{order.manager.last_name} {order.manager.first_name}"
+        if order.manager.middle_name:
+            name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
+    else:
+        
+        if specifications.admin_creator:
+            name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
+            if specifications.admin_creator.middle_name:
+                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+        else:
+            name_admin = " "
+            
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
         },
         "client": {
+            "type":order.requisites.get_type_client(),
             # "id_bitrix": order.id_bitrix,
             # "legal_entity_motrum": None,
-            # "contract": order.requisites.contract,
-            # "contract_date": order.requisites.contract_date,
+            "contract": order.requisites.contract,
+            "contract_date": order.requisites.contract_date,
             "legal_entity": order.requisites.legal_entity,
             "inn": order.requisites.inn,
             "kpp": order.account_requisites.requisitesKpp.kpp,
@@ -1779,16 +1804,15 @@ def create_info_request_order_1c(order, order_products):
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
-            "postal_post_code": order.account_requisites.requisitesKpp.postal_post_code,
-            "postal_city": order.account_requisites.requisitesKpp.postal_city,
-            "postal_address": order.account_requisites.requisitesKpp.postal_address,
+            # "postal_post_code": order.account_requisites.requisitesKpp.postal_post_code,
+            # "postal_city": order.account_requisites.requisitesKpp.postal_city,
+            # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
             "account_requisites": order.account_requisites.account_requisites,
             "bank": order.account_requisites.bank,
             "ks": order.account_requisites.kpp,
             "bic": order.account_requisites.bic,
-            "prepay_persent": order.requisites.prepay_persent,
-            "postpay_persent": order.requisites.postpay_persent,
+            
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,
@@ -1796,16 +1820,18 @@ def create_info_request_order_1c(order, order_products):
             "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "number_invoice": order.bill_name,
             "data_invoice": order.bill_date_start,
-            # "manager_invoice": f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+            "prepay_persent": order.requisites.prepay_persent,
+            "postpay_persent": order.requisites.postpay_persent,
+            "manager_invoice":name_admin,
         },
         "order_products": order_products,
     }
-    if order.manager:
-        data_for_1c["invoice_options"]["manager_invoice"] = (
-            f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
-        )
-    else:
-        data_for_1c["invoice_options"]["manager_invoice"] = ""
+    # if order.manager:
+    #     data_for_1c["invoice_options"]["manager_invoice"] = (
+    #         f"{order.manager.last_name}{order.manager.first_name}{order.manager.middle_name}",
+    #     )
+    # else:
+    #     data_for_1c["invoice_options"]["manager_invoice"] = ""
 
     return data_for_1c
 
@@ -1830,19 +1856,24 @@ def image_error_check():
 
 def product_cart_in_file(file, cart):
     from apps.product.models import Product, ProductCart
-    from apps.supplier.models import Vendor
+    from apps.supplier.models import Vendor, Supplier
+
     try:
+
         def _serch_prod_in_file(article, vendor):
-            product = Product.objects.filter(article_supplier=article, vendor__slug = vendor)
-            
+            product = Product.objects.filter(
+                article_supplier=article, vendor__slug=vendor
+            )
+
             if product:
                 pass
             else:
                 # product = Product.objects.filter(article_supplier=article)
                 # product = Product.objects.filter(name__icontains=article)
-                product = Product.objects.filter(Q(article_supplier=article) | Q(name__icontains=article))
-            
-            
+                product = Product.objects.filter(
+                    Q(article_supplier=article) | Q(name__icontains=article)
+                )
+
             if product.count() == 1:
                 return (1, product[0])
             elif product.count() == 0:
@@ -1855,103 +1886,127 @@ def product_cart_in_file(file, cart):
                 return (product.count(), product)
 
         def _save_prod_to_cart(product_okt_count, product_okt, cart, data):
-            print("product_okt_count",product_okt_count)
-            print("data",data)
-            print('product_okt',product_okt)
             product_price_client = float(data["product_price_client_no_nds"])
-            
-            sale_client = 100 - (float(data["sale_client"])* 100)
+            sale_client = 100 - (float(data["sale_client"]) * 100)
             sale_motrum = 100 - (float(data["sale_motrum"]) * 100)
-            print(product_price_client)
-            print(sale_client)
-            print(sale_motrum)
             product_price = product_price_client * (100 / (100 - sale_client))
-            print("product_price_no_nds",product_price)
             product_price_nds = product_price + (product_price / 100 * NDS)
             product_price = round(product_price_nds)
-            print("product_price",product_price)
-            
+
             quantity = int(data["quantity"])
-            print("product_okt_count",product_okt_count)
-            
+            print("product_okt_count", product_okt_count)
+
             if product_okt_count == 1:
                 # 100% ПОПАДАНИЕ
                 vendor = product_okt.vendor
-                vendor = product_okt.supplier
-                print("product_okt_count, product_okt, cart, data", product_okt_count, product_okt, cart, data)
-                
-                ProductCart.objects.get_or_create(
+                supplier = product_okt.supplier
+                print(
+                    "product_okt_count, product_okt, cart, data",
+                    product_okt_count,
+                    product_okt,
+                    cart,
+                    data,
+                )
+
+                ProductCart.objects.update_or_create(
                     cart_id=cart,
                     product=product_okt,
                     defaults={
                         "product_price": product_price,
                         "product_sale_motrum": sale_motrum,
                         "quantity": quantity,
-                        "supplier": vendor,
+                        "supplier": supplier,
                         "vendor": vendor,
-                        "sale_client":sale_client,
-                        "product_sale_motrum":sale_motrum,
-                        "tag_auto_document":"ONE",
-                    },)
+                        "sale_client": sale_client,
+                        "product_sale_motrum": sale_motrum,
+                        "tag_auto_document": "ONE",
+                    },
+                )
             elif product_okt_count > 1:
-                #НЕСКОЛЬКО ВАРИАНТОВ
+                # НЕСКОЛЬКО ВАРИАНТОВ
                 prod = None
                 for product_ok in product_okt:
                     prod = product_ok
-                    
-                    if product_ok.article == data['article_file']:
+
+                    if product_ok.article == data["article_file"]:
                         prod = product_ok
-                vendor = product_okt.vendor    
-                ProductCart.objects.get_or_create(
+
+                vendor = prod.vendor
+                supplier = prod.supplier
+                ProductCart.objects.update_or_create(
                     cart_id=cart,
                     product=prod,
                     defaults={
-                        "product_price": product_price_all,
+                        "product_price": product_price,
                         "product_sale_motrum": sale_motrum,
                         "quantity": quantity,
+                        "supplier": supplier,
                         "vendor": vendor,
-                        "sale_client":sale_client,
-                        "product_sale_motrum":sale_motrum,
-                        "tag_auto_document":"MULTI",
-                    },)        
-                
-            else:
-                pass
-                #0 НАХОДОК
-                # product_okt = 
-                
-                
-                
-                vendor = Vendor.objects.filter(slug=data["vendor"])
-                if vendor.count() == 1:
-                    vendor = vendor[1]
-                else:
-                    vendor = Vendor.objects.filter(slug="drugoj")
-                
-                supplier = Supplier.objects.filter(slug="drugoj")
+                        "sale_client": sale_client,
+                        "product_sale_motrum": sale_motrum,
+                        "tag_auto_document": "MULTI",
+                    },
+                )
 
-            # if product_okt_count == 1:
-            #     ProductCart.get_or_create(
-            #         cart=cart,
-            #         product=product_okt,
-            #         defaults={
-            #             "product_price": product_price,
-            #             "product_sale_motrum": product_sale_motrum,
-            #             "quantity": quantity,
-            #             "vendor": vendor,
-            #             "sale_client":sale_client,
-            #         },
-            #     )
-    
+            else:
+                # 0 НАХОДОК
+                vendor = Vendor.objects.filter(slug=data["vendor_slug"])
+                if vendor.count() == 1:
+                    vendor = vendor[0]
+                else:
+                    currency_catalog = Currency.objects.get(words_code="RUB")
+                    vat_catalog = Vat.objects.get(name=NDS)
+
+                    vendor = Vendor.objects.create(
+                        name=data["vendor_name"],
+                        currency_catalog=currency_catalog,
+                        vat_catalog=vat_catalog,
+                    )
+
+                supplier = Supplier.objects.get(slug="drugoj")
+                # ищем в товарах сохданных в корзине товар если нет создаеи новый
+                product_in_cart = ProductCart.objects.filter(
+                    cart_id=cart,
+                    product=None,
+                    product_new_article=data["article_file"],
+                    vendor=vendor,
+                )
+                if product_in_cart.count() == 1:
+                    product_in_cart.update(
+                        cart_id=cart,
+                        product_new=data["article_file"],
+                        product_new_price=product_price,
+                        product_new_sale=sale_client,
+                        product_new_sale_motrum=sale_motrum,
+                        quantity=quantity,
+                        sale_client=sale_client,
+                        tag_auto_document="NONE",
+                    )
+                else:
+
+                    ProductCart.objects.create(
+                        product_new_article=data["article_file"],
+                        product_new=data["article_file"],
+                        cart_id=cart,
+                        product=None,
+                        product_new_price=product_price,
+                        product_new_sale=sale_client,
+                        product_new_sale_motrum=sale_motrum,
+                        supplier=supplier,
+                        quantity=quantity,
+                        vendor=vendor,
+                        sale_client=sale_client,
+                        tag_auto_document="NONE",
+                    )
 
         workbook = load_workbook(file, data_only=True)
         data_sheet = workbook.active
 
         first_row_in_prod = None
         last_row_in_prod = False
-        
+
         for index in range(1, data_sheet.max_row):
-        
+
             column_b = data_sheet.cell(row=index, column=2).value
 
             if first_row_in_prod == None:
@@ -1963,11 +2018,10 @@ def product_cart_in_file(file, cart):
                     if vendor_file == None:
                         last_row_in_prod = True
                     else:
-                        
+
                         article_file = data_sheet.cell(row=index, column=3).value
                         product_price_file = data_sheet.cell(row=index, column=5).value
-                        
-                    
+
                         if product_price_file:
                             product_okt_count, product_okt = _serch_prod_in_file(
                                 article_file, vendor_file
@@ -1975,17 +2029,24 @@ def product_cart_in_file(file, cart):
                             slugish = translit.translify(vendor_file)
                             vendor_name = slugify(slugish)
                             data = {
-                                "article_file":article_file,
-                                "product_price_client_no_nds": data_sheet.cell(row=index, column=5).value,
+                                "article_file": article_file,
+                                "product_price_client_no_nds": data_sheet.cell(
+                                    row=index, column=5
+                                ).value,
                                 "quantity": data_sheet.cell(row=index, column=6).value,
-                                "vendor": vendor_name,
-                                "sale_client":data_sheet.cell(row=index, column=21).value,
-                                "sale_motrum":data_sheet.cell(row=index, column=22).value,  
+                                "vendor_name": vendor_file,
+                                "vendor_slug": vendor_name,
+                                "sale_client": data_sheet.cell(
+                                    row=index, column=21
+                                ).value,
+                                "sale_motrum": data_sheet.cell(
+                                    row=index, column=22
+                                ).value,
                             }
-                            
-                            
-                            
-                            _save_prod_to_cart(product_okt_count, product_okt,  cart, data)
+
+                            _save_prod_to_cart(
+                                product_okt_count, product_okt, cart, data
+                            )
                 else:
                     pass
     except Exception as e:
@@ -1996,4 +2057,34 @@ def product_cart_in_file(file, cart):
         location = "Добавление товаров из фаила"
         info = f"Добавление товаров из фаила{e}{tr}"
         e = error_alert(error, location, info)
-             
+
+def vendor_delta_optimus_after_load():
+    from apps.product.models import Product
+    # try:
+    #     product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
+    #     for product_one in product:
+    #         print(product)
+    #         if product_one.group_supplier is not None:
+    #             if product_one.group_supplier.vendor is not None:
+    #                 product_one.vendor = product_one.group_supplier.vendor
+    #         product_one._change_reason = "Автоматическое"
+    #         product_one.save()
+    # except Exception as e:
+    #     tr = traceback.format_exc()
+    #     error = "file_error"
+    #     location = "Загрузка 111 Delta"
+
+    #     info = f"Загрузка 111 Delta{e}{tr}"
+    #     e = error_alert(error, location, info)
+    def background_task():
+        product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
+        for product_one in product:
+            print(product)
+            if product_one.group_supplier is not None:
+                if product_one.group_supplier.vendor is not None:
+                    product_one.vendor = product_one.group_supplier.vendor
+            product_one._change_reason = "Автоматическое"
+            product_one.save()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()

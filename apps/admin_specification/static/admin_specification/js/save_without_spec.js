@@ -2,9 +2,11 @@ import {
   getCookie,
   deleteCookie,
   getCurrentPrice,
+  getDeliveryDate,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "../js/error_modal.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");
@@ -28,12 +30,12 @@ window.addEventListener("DOMContentLoaded", () => {
         "data-product-specification-id"
       );
       const vendor = item.getAttribute("data-vendor");
+      const supplier = item.getAttribute("data-supplier");
       const deliveryDate = item.querySelector(".delivery_date")
         ? item.querySelector(".delivery_date").value
         : item.querySelector(".invoice-data-input").value;
-      const commentItem = item.querySelector(
-        'textarea[name="comment-input-name"]'
-      ).value;
+      setCommentProductItem(item);
+      const commentItem = item.getAttribute("data-comment-item");
       const productCartId = item.getAttribute("data-product-id-cart");
 
       const product = {
@@ -50,6 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
         product_new_article: nameProductNew,
         comment: commentItem ? commentItem : null,
         vendor: vendor ? vendor : null,
+        supplier: supplier ? supplier : null,
         id_cart: productCartId,
       };
 
@@ -59,6 +62,8 @@ window.addEventListener("DOMContentLoaded", () => {
     if (saveWithoutSpecificationButton) {
       saveWithoutSpecificationButton.onclick = () => {
         const bitrixInput = cartWrapper.querySelector(".bitrix-input");
+        const dateDeliveryInputs =
+          cartWrapper.querySelectorAll(".delivery_date");
         const motrumRequsits = cartWrapper
           .querySelector("[name='mortum_req']")
           .getAttribute("value");
@@ -85,7 +90,9 @@ window.addEventListener("DOMContentLoaded", () => {
           id_specification: specificationId ? specificationId : null,
           id_cart: +getCookie("cart"),
           comment: commentAll ? commentAll : null,
-          date_delivery: dateDeliveryAll ? dateDeliveryAll : null,
+          date_delivery: getDeliveryDate(dateDeliveryInputs)
+            ? getDeliveryDate(dateDeliveryInputs)
+            : null,
           motrum_requisites: motrumRequsits ? +motrumRequsits : null,
           client_requisites: clientRequsits ? +clientRequsits : null,
           type_delivery: deliveryRequsits
@@ -109,7 +116,7 @@ window.addEventListener("DOMContentLoaded", () => {
             document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-            
+
             // deleteCookie("key", "/", window.location.hostname);
             // deleteCookie("specificationId", "/", window.location.hostname);
             // deleteCookie("cart", "/", window.location.hostname);

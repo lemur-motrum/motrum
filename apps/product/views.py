@@ -194,8 +194,10 @@ def product_one(request, category, group, article):
         )
         .get(article=article)
     )
-    product_document = ProductDocument.objects.filter(product=product)
-
+    print("1231231",)
+    product_document = ProductDocument.objects.filter(product=product,hide=False)
+    print("product_document",product_document)
+    
     context = {
         "product": product,
         "current_category": product.category,
@@ -237,6 +239,7 @@ def product_one_without_group(request, category, article):
         )
         .get(article=article)
     )
+    product_document = ProductDocument.objects.filter(product=product,hide=False)
     # product = Product.objects.get(article=article)
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)
@@ -245,6 +248,7 @@ def product_one_without_group(request, category, article):
         "product": product,
         "current_category": current_category,
         "title": product.name,
+        "product_document": product_document,
         # "product_properties": product_properties,
         # "product_lot": product_lot,
     }
@@ -400,9 +404,9 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = SupplierCategoryProductAll.objects.all()
 
-        supplier = self.forwarded.get("supplier", None)
-        if supplier:
-            qs = qs.filter(supplier=supplier)
+        # supplier = self.forwarded.get("supplier", None)
+        # if supplier:
+        #     qs = qs.filter(supplier=supplier)
 
         vendor = self.forwarded.get("vendor", None)
         if vendor:
@@ -424,7 +428,7 @@ class SupplierCategoryProductAllAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
-    print(99999)
+
     def get_queryset(self):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)
@@ -432,6 +436,10 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         print(supplier,vendor)
         if supplier and vendor:
             qs = qs.filter(supplier=supplier,vendor=vendor)
+            print(qs.count())
+            if qs.count() == 0:
+                qs = SupplierCategoryProduct.objects.filter(supplier=supplier)   
+            
         # else:
         #     qs = None
         

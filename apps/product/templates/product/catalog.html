@@ -15,20 +15,26 @@
                     {{ current_category.name }}
                 {% endif %}
             </h1>
-            <div class="site_groups_container">
-                <div class="swiper-wrapper">
-                    {% for group in another_groups %}
-                        <a href="{% url "product:products_items" current_category.slug group.slug %}"
-                           class="swiper-slide group">
-                            <span>{{ group.name }}</span>
-                        </a>
-                    {% endfor %}
+            {% if another_groups|length != 0 %}
+                <div class="site_groups_container">
+                    <div class="swiper-wrapper">
+                        {% for group in another_groups %}
+                            <a href="{% url "product:products_items" current_category.slug group.slug %}"
+                               class="swiper-slide group">
+                                <span>{{ group.name }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
         <div class="product_container">
+            <div class="mobile_filter_button_wrapper">
+                <button class="mobile_filter_button">Фильтры</button>
+            </div>
             <div class="filters_and_products_container">
                 <div class="filter_container">
+                    <div class="close_filter_elem_btn">+</div>
                     <div class="filter_elem">
                         <div class="filter_title">Производитель</div>
                         <div class="supplier_content">

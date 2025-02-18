@@ -1,7 +1,7 @@
 import os
 import re
 import traceback
-import unicodedata
+
 from django.urls import reverse
 from django.utils import timezone
 from django.db import models
@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from apps.logs.utils import error_alert
 from simple_history.models import HistoricalRecords
 
-# from middlewares.middlewares import RequestMiddleware
+
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
     create_article_motrum,
@@ -117,10 +117,8 @@ class Product(models.Model):
     description = models.CharField(
         "Описание товара", max_length=4000, blank=True, null=True
     )
-
     name = models.CharField("Название товара", max_length=600)
     slug = models.SlugField(null=True, max_length=600)
-    
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
     # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
@@ -447,7 +445,7 @@ class Price(models.Model):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
     def save(self, *args, **kwargs):
-
+        print("SAVE PRICE")
         # если 0 цена или экстра прайс проставить нули и теги
         if (
             self.price_supplier == 0
@@ -455,9 +453,6 @@ class Price(models.Model):
             or self.price_supplier == None
         ):
             self.extra_price = True
-            # self.price_supplier = 0
-            # self.rub_price_supplier = 0
-            # self.price_motrum = 0
             self.price_supplier = None
             self.rub_price_supplier = None
             self.price_motrum = None
@@ -465,8 +460,8 @@ class Price(models.Model):
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
+            
             # получить рублевую цену
-
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
                 self.vat.name,
@@ -492,6 +487,7 @@ class Price(models.Model):
             self.sale = sale
         else:
             self.price_motrum = self.rub_price_supplier
+        print("stop save price")
         super().save(*args, **kwargs)
 
     # def price_sale_personal(self):
@@ -689,20 +685,23 @@ class Stock(models.Model):
         if self.lot_complect == 0:
             self.lot_complect = 1
             
+        if self.lot_complect == None:
+            self.lot_complect = 1    
+            
         print(self.stock_supplier_unit)        # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
-            print(999993333)
+   
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
 
-        if self.stock_supplier != None or self.stock_supplier != 0:
-            print(999993333)
+        if self.stock_supplier != None and self.stock_supplier != 0:
+
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
         
-
+        
         super().save(*args, **kwargs)
 
 

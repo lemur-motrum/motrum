@@ -19,11 +19,15 @@ class DatabaseAdminSite(admin.AdminSite):
             "Единицы измерений поставщиков": 4,
             
             "Администраторы": 5,
-            "Клиенты": 6,
+            "Клиенты на сайте": 6,
             "Реквизиты": 6,
+            "Расчётные счёта":6,
+            "Типы доставок":7,
+        
             "Логи": 7,
             "Логи ошибок": 8,
             "Логи добавления товара": 8,
+            "Информационные сообщения":8,
             "Валюты": 9,
             "Процент умножения валютных цен": 10,
             "НДС": 11,
@@ -35,22 +39,22 @@ class DatabaseAdminSite(admin.AdminSite):
              "Категории товаров у поставщика": 14,
             "Группы товаров у поставщика": 15,
             "Подгруппы поставщиков": 16,
-            "Скидки": 17,
-           
-            
+        
+
             
             "Скидки": 18,
-            "Спецификации": 19,
+  
             "Администраторы": 20,
         }
         app_dict = self._build_app_dict(request)
+      
         app_list = app_dict.values()
 
         
-        # app_list = sorted(app_dict.values(), key=lambda x: x["name"].lower())
+        app_list = sorted(app_dict.values(), key=lambda x: x["name"].lower())
 
-        # for app in app_list:
-        #     app["models"].sort(key=lambda x: ordering[x["name"]])
+        for app in app_list:
+            app["models"].sort(key=lambda x: ordering[x["name"]])
 
         return app_list
     

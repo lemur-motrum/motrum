@@ -4,6 +4,7 @@ import re
 import traceback
 import zipfile
 import csv
+from openpyxl import load_workbook
 from simple_history.utils import update_change_reason
 from pytils import translit
 from django.utils.text import slugify
@@ -20,8 +21,8 @@ from project.settings import MEDIA_ROOT
 def get_motrum_nomenclature():
     try:
         new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-        path_nomenclature = f"{new_dir}/Справочник номенклатуры Мотрум.csv"
-        path_nomenclature_write_file = f"{new_dir}/Справочник номенклатуры Мотрум — копия.csv"
+        path_nomenclature = f"{new_dir}/Номенктатура-25.csv"
+        path_nomenclature_write_file = f"{new_dir}/Номенктатура-25copi.csv"
         arr_nomenclature = []
         # fieldnames_nomenclature = [
         #     "Номенклатура",
@@ -37,31 +38,63 @@ def get_motrum_nomenclature():
         #     "Производитель",
         #     "В группе",
         # ]
+        # fieldnames_nomenclature = [
+        #     "Номенклатура",
+        #     None,
+        #     None,
+        #     None,
+        #     "Артикул",
+        #     "Единица измерения",
+        #     "Категория",
+        #     "Тип",
+        #     "В группе",
+        # ]
         fieldnames_nomenclature = [
             "Номенклатура",
-            None,
-            None,
-            None,
             "Артикул",
             "Единица измерения",
             "Категория",
+            "Склад",
             "Тип",
             "В группе",
+            "Код",
         ]
         
+        # fieldnames_nomenclature_written = [
+        #     "Номенклатура",
+        #     None,
+        #     None,
+        #     None,
+        #     "Артикул",
+        #     "Единица измерения",
+        #     "Категория",
+        #     "Тип",
+        #     "В группе",
+        #     "Артикул мотрум",
+        # ]
         fieldnames_nomenclature_written = [
             "Номенклатура",
-            None,
-            None,
-            None,
             "Артикул",
             "Единица измерения",
             "Категория",
+            "Склад",
             "Тип",
             "В группе",
+            "Код",
             "Артикул мотрум",
         ]
-     
+        path_nomenclature_xlsx = f"{new_dir}/Номенктатура 25.xlsx"
+        workbook = load_workbook(path_nomenclature_xlsx)
+        sheet = workbook.active
+        
+        
+
+        # ws=workbook['data']
+        # row2=ws[2]
+        # for cell in row2:
+        #     print (cell.value, end="")
+            
+            
         # with open(path_nomenclature, "r", newline="", encoding="MACCYRILLIC") as csvfile:
         with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
             path_nomenclature_write_file, "w", encoding="UTF-8"
@@ -84,100 +117,97 @@ def get_motrum_nomenclature():
                         
 
                     if (
-                        i > 7 and i < 1000
+                        i > 2 and i < 5000
                         and row_nomenk["Артикул"] != ""
                         and row_nomenk["Артикул"] != None
                     ):
-                        
-                        vendor_row = str(row_nomenk["В группе"]).strip()
-
-                        supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
-
-                        article_supplier = str(row_nomenk["Артикул"]).strip()
-                        article_supplier = " ".join(article_supplier.split())
-                
-                        lot_str = (
-                            str(row_nomenk["Единица измерения"]).replace(".", "").strip()
-                        )
-                        lot = Lot.objects.get_or_create(
-                            name_shorts=lot_str, defaults={"name": lot_str}
-                        )[0]
-
-                        name = str(row_nomenk["Номенклатура"]).strip()
-
-                        description = None
-                        # if row_nomenk["Описание"] != "":
-                        #     description = str(row_nomenk["Описание"]).strip()
-
-                        # поиск товара в окт:
-
-                        if vendor_qs.slug == "emas" or vendor_qs.slug == "tbloc":
-
-                            product = Product.objects.filter(
-                                supplier=supplier_qs, article_supplier=article_supplier
+                        print(i,"NEW STR")
+                        cell_value = sheet.cell(row=i, column=1).fill.fgColor.value
+                        if cell_value == "00000000":
+                            vendor_row = str(row_nomenk["В группе"]).strip()
+                            supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
+                            article_supplier = str(row_nomenk["Артикул"]).strip()
+                            article_supplier = " ".join(article_supplier.split())
+                            print(article_supplier)
+                            lot_str = (
+                                str(row_nomenk["Единица измерения"]).replace(".", "").strip()
                             )
+                            print("lot",lot_str)
+                            lot = Lot.objects.get_or_create(
+                                name_shorts=lot_str, defaults={"name": lot_str}
+                            )[0]
+                            print(lot)
+                            name = str(row_nomenk["Номенклатура"]).strip()
+                            description = None
+                            # поиск товара в окт:
+                            if vendor_qs.slug == "emas" or vendor_qs.slug == "tbloc":
 
-                            if product:
-                                product = product[0]
-                                product.vendor = vendor_qs
-                                if (
-                                    product.name == article_supplier
-                                    and article_supplier != name
-                                ):
-                                    product.name = name
-                                if product.description != None and description:
-                                    product.description = description
-                            else:
-
-                                product = add_new_product(
-                                    supplier_qs,
-                                    article_supplier,
-                                    vendor_qs,
+                                product = Product.objects.filter(
+                                    supplier=supplier_qs, article_supplier=article_supplier
                                 )
-                                product.name = name
-                                product.description = description
-                        else:
-                            product = Product.objects.filter(
-                                vendor=vendor_qs, article_supplier=article_supplier
-                            )
 
-                            if product:
-                                product = product[0]
-                                if (
-                                    product.name == article_supplier
-                                    and article_supplier != name
-                                ):
+                                if product:
+                                    product = product[0]
+                                    product.vendor = vendor_qs
+                                    if (
+                                        product.name == article_supplier
+                                        and article_supplier != name
+                                    ):
+                                        product.name = name
+                                    if product.description != None and description:
+                                        product.description = description
+                                else:
+
+                                    product = add_new_product(
+                                        supplier_qs,
+                                        article_supplier,
+                                        vendor_qs,
+                                    )
                                     product.name = name
-                                if product.description != None and description:
                                     product.description = description
-                            else:
-                                product = add_new_product(
-                                    supplier_qs,
-                                    article_supplier,
-                                    vendor_qs,
-                                )
-                                product.name = name
-                                product.description = description
-                        product.autosave_tag = False
-                        product._change_reason = "Автоматическое"
-                        product.save()
-                
-                        # update_change_reason(product, "Автоматическое")
 
-                        add_stok_motrum_article(
-                            product,
-                            lot,
-                        )
+                            else:
+                                product = Product.objects.filter(
+                                    vendor=vendor_qs, article_supplier=article_supplier
+                                )
+
+                                if product:
+                                    product = product[0]
+                                    if (
+                                        product.name == article_supplier
+                                        and article_supplier != name
+                                    ):
+                                        product.name = name
+                                    if product.description != None and description:
+                                        product.description = description
+                                else:
+                                    product = add_new_product(
+                                        supplier_qs,
+                                        article_supplier,
+                                        vendor_qs,
+                                    )
+                                    product.name = name
+                                    # product.description = description
+                            product.autosave_tag = False
+                            product._change_reason = "Автоматическое"
+                            product.save()
                     
-                        row_nomenk["Артикул мотрум"] = product.article
-                        writer_nomenk.writerow(row_nomenk)
+                            # update_change_reason(product, "Автоматическое")
+
+                            add_stok_motrum_article(
+                                product,
+                                lot,
+                            )
                         
-                    elif i == 7:
+                            row_nomenk["Артикул мотрум"] = product.article
+                            writer_nomenk.writerow(row_nomenk)
+                            
+                    elif i == 2:
         
                         row_nomenk["Артикул мотрум"] = "Артикул мотрум"
                     
                         writer_nomenk.writerow(row_nomenk)
-                    elif i < 7:
+                    elif i < 2:
                     
                         writer_nomenk.writerow(row_nomenk)
                     else:
@@ -221,10 +251,12 @@ def add_new_product(
     update_change_reason(prod_new, "Автоматическое")
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name=20)
+    print("save price start")
     price = Price(
         prod=prod_new, currency=currency, vat=vat, extra_price=True, in_auto_sale=False
     )
     price.save()
+    print("save price OK", price)
     update_change_reason(price, "Автоматическое")
     return prod_new
 
@@ -233,27 +265,58 @@ def get_or_add_vendor(vendor):
     vendor_name = vendor.strip()
     if vendor_name == "AuCom Electronics":
         vendor_name = "AuCom"
+        supplier_qs = Supplier.objects.get(slug="delta")
+        
     elif vendor_name == "OptimusDrive":
         vendor_name = "Optimus Drive"
-    elif vendor_name == "Delta":
+        supplier_qs = Supplier.objects.get(slug="optimus-drive")
+    elif vendor_name == "DELTA":
         vendor_name = "Delta Electronics"
-
+        supplier_qs = Supplier.objects.get(slug="delta")
+    elif vendor_name == "HIKROBOT":
+        supplier_qs = Supplier.objects.get(slug="optimus-drive")
+    elif vendor_name == "IEK":
+        supplier_qs = Supplier.objects.get(slug="iek")
+    elif vendor_name == "ITK":
+        supplier_qs = Supplier.objects.get(slug="iek")
+    elif vendor_name == "ODOT":
+        supplier_qs = Supplier.objects.get(slug="avangard")
+    elif vendor_name == "ONI":
+        supplier_qs = Supplier.objects.get(slug="iek")
+    elif vendor_name == "RAAD" :
+        supplier_qs = Supplier.objects.get(slug="emas")
+    elif vendor_name == "Roundss":
+        supplier_qs = Supplier.objects.get(slug="optimus-drive")
+    elif vendor_name == "SINE":
+        supplier_qs = Supplier.objects.get(slug="optimus-drive")
+    elif vendor_name == "TBLOC" :
+        supplier_qs = Supplier.objects.get(slug="emas")
+    elif vendor_name == "VEDA" :
+        supplier_qs = Supplier.objects.get(slug="veda")
+    elif vendor_name == "Veichi" :
+        supplier_qs = Supplier.objects.get(slug="optimus-drive")
+    elif vendor_name == "Emas" :
+        supplier_qs = Supplier.objects.get(slug="emas")
+    else:
+        supplier_qs = Supplier.objects.get(slug="drugoj")
+        
+        
+        
     slugish = translit.translify(vendor_name)
     slugish = slugify(slugish)
 
     try:
         vendor_qs = Vendor.objects.get(slug=slugish)
-        supplier_qs = vendor_qs.supplier
+        # supplier_qs = vendor_qs.supplier
 
     except Vendor.DoesNotExist:
 
-        supplier_qs = Supplier.objects.get(slug="drugoe")
+        supplier_qs = Supplier.objects.get(slug="drugoj")
         vat_catalog = Vat.objects.get(name=20)
         currency_catalog = Currency.objects.get(words_code="RUB")
 
         vendor_qs = Vendor.objects.create(
             name=vendor_name,
-            supplier=supplier_qs,
             vat_catalog=vat_catalog,
             currency_catalog=currency_catalog,
         )
@@ -269,6 +332,7 @@ def add_stok_motrum_article(
         prod=product,
         defaults={
             "lot": lot,
+            "stock_supplier": 1,
         },
     )
 

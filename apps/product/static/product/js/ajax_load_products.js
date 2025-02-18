@@ -261,6 +261,26 @@ window.addEventListener("DOMContentLoaded", () => {
     const supplierNameContainer = document.querySelector(
       ".suppliers_max_height_container"
     );
+
+    function closeFilterElems() {
+      const filterContent = document.querySelector(".filter_container");
+      if (filterContent.classList.contains("show")) {
+        const supplierContent =
+          filterContent.querySelector(".supplier_content");
+        const supplierBtn = filterContent.querySelector(
+          ".suppliers_add_more_btn"
+        );
+        const burger_nav_menu = document.querySelector(".burger_menu_nav");
+        filterContent.classList.remove("show");
+        supplierContent.classList.remove("is_open");
+        if (supplierBtn) {
+          supplierBtn.style.display = "flex";
+        }
+        document.body.style.overflow = "auto";
+        burger_nav_menu.style.zIndex = 1001;
+      }
+    }
+
     filters.forEach((filterElem) => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
 
@@ -270,6 +290,7 @@ window.addEventListener("DOMContentLoaded", () => {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
               filterValue.classList.add("show");
+
               supplierNameContainer.prepend(filterValue);
             }
           });
@@ -277,6 +298,7 @@ window.addEventListener("DOMContentLoaded", () => {
         filterValue.onclick = () => {
           paramsArray.push(vendorParam);
           filterValue.classList.toggle("show");
+          closeFilterElems();
           if (filterValue.classList.contains("show")) {
             scrollToTop(offsetTop);
             supplierNameContainer.prepend(filterValue);
@@ -338,6 +360,7 @@ window.addEventListener("DOMContentLoaded", () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
       pageCount = 0;
+      closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();
     };
@@ -361,6 +384,7 @@ window.addEventListener("DOMContentLoaded", () => {
       urlParams.delete("price");
       urlParams.delete("vendor");
       checkboxZone.classList.remove("checked");
+      closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();
     };

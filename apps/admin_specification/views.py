@@ -523,6 +523,11 @@ def create_specification(request):
                     ).values(
                         "vendor",
                     ),
+                    product_new_cart_supplier=product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "supplier",
+                    ),
                     product_new_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "product_new",
                     ),
@@ -940,7 +945,7 @@ def get_all_specifications(request):
         superuser = True
         q_object_2 &= Q(cart__cart_admin_id__isnull=False)
     elif user_admin_type == "BASE":
-        all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
+        # all_specifications = all_specifications.filter(admin_creator_id=request.user.id)
         q_object &= Q(admin_creator_id=request.user.id)
         q_object_2 &= Q(cart__cart_admin_id=request.user.id)
         superuser = False
@@ -1631,12 +1636,8 @@ def error_b24(request, error):
 @csrf_exempt
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_start_page(request):
-    print("bx_start_page")
-    print(request)
+
     context = {}
-    # bx_id_order = request.GET.get("bitrix_id_order")
-    # order = Order.objects.get(id_bitrix=int(bx_id_order))
-    # context = {"cart": order.cart.id, "spes": order.specification.id}
 
     return render(request, "admin_specification/bx_start.html", context)
 

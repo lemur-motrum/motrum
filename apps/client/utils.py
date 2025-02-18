@@ -61,12 +61,18 @@ def crete_pdf_bill(
             "bill",
         )
         specifications = Specification.objects.get(id=specification)
-        if specifications.admin_creator:
-            name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
-            if specifications.admin_creator.middle_name:
-                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+        if order.manager:
+            name_admin = f"{order.manager.last_name} {order.manager.first_name}"
+            if order.manager.middle_name:
+                name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
         else:
-            name_admin = " "
+            
+            if specifications.admin_creator:
+                name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
+                if specifications.admin_creator.middle_name:
+                    name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
+            else:
+                name_admin = " "
 
         product_specification = ProductSpecification.objects.filter(
             specification=specification
@@ -144,7 +150,7 @@ def crete_pdf_bill(
             f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
         )
         document_info = BaseImage.objects.filter().first()
-        print(8999999999999)
+
         fileName = os.path.join(directory, name_bill)
         fileName_no_sign = os.path.join(directory, name_bill_no_signature)
 

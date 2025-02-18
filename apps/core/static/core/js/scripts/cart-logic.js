@@ -269,17 +269,17 @@ function saveCart() {
   const cart_id = getCookie("cart");
 
   if (validate == true) {
-    const select = document.querySelector(".select_account_requisites");
-    const selected = select.options[select.selectedIndex];
-    const requisites = selected.getAttribute("data-requisites-id");
-    const account_requisites_name = selected.getAttribute(
-      "data-account-requisites-id"
-    );
+    // const select = document.querySelector(".select_account_requisites");
+    // const selected = select.options[select.selectedIndex];
+    // const requisites = selected.getAttribute("data-requisites-id");
+    // const account_requisites_name = selected.getAttribute(
+    //   "data-account-requisites-id"
+    // );
 
     const dataObj = {
       cart: +cart_id,
-      requisites: +requisites,
-      account_requisites: +account_requisites_name,
+      // requisites: +requisites,
+      // account_requisites: +account_requisites_name,
     };
 
     const data = JSON.stringify(dataObj);
@@ -312,24 +312,28 @@ function saveCartNoAuthentication() {
     const dataObj = {
       cart: +cart_id,
     };
+    const dataArr = {
+      phone: phone,
+      pin: "",
+    };
 
-    const data = JSON.stringify(dataObj);
-    let endpoint = "/api/v1/order/add_order/";
-    fetch(endpoint, {
-      method: "POST",
-      body: data,
-      headers: {
-        "X-CSRFToken": csrfToken,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        deleteCookie("cart", "/", window.location.hostname);
+    // const data = JSON.stringify(dataObj);
+    // let endpoint = "/api/v1/order/add_order/";
+    // fetch(endpoint, {
+    //   method: "POST",
+    //   body: data,
+    //   headers: {
+    //     "X-CSRFToken": csrfToken,
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((response) => response.json())
+    //   .then((response) => {
+    //     deleteCookie("cart", "/", window.location.hostname);
 
-        // window.location.href =
-        //   "/lk/my_orders";
-      })
-      .catch((error) => console.error(error));
+    //     // window.location.href =
+    //     //   "/lk/my_orders";
+    //   })
+    //   .catch((error) => console.error(error));
   }
 }

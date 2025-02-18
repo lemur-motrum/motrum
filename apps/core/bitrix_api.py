@@ -15,6 +15,7 @@ from apps.client.models import (
     DocumentShipment,
     Order,
     OrderDocumentBill,
+    Requisites,
 )
 from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
@@ -22,14 +23,14 @@ from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT,BITRIX_WEBHOOK
 
 
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
-        webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        webhook = BITRIX_WEBHOOK
+        
         bx = Bitrix(webhook)
 
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
@@ -59,7 +60,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 context = {"error": error_text}
                 return (next_url, context, True)
             else:
-                
+
                 try:
                     manager = AdminUser.objects.get(bitrix_id=manager_company)
                 except AdminUser.DoesNotExist:
@@ -72,10 +73,18 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 bs_id_order, manager, company
             )
             if req_error:
-                if place != "Адреса":
+                error_text = ""
+                if place != "Адреса" and place != "Адрес юридический":
+                    
                     error_text = f"к сделке не прикреплен {place}"
                 else:
-                    error_text = f"В выбранных реквизитах не заполнены адреса"
+                    if place == "Адреса":
+                        error_text = f"В выбранных реквизитах не заполнены адреса"
+                    elif place == "Адрес юридический":
+                        error_text = f"В выбранных реквизитах нет Адрес юридический"
+                    else:
+                        error_text = f"не заполнен {place}"
+                        
                 next_url = "/admin_specification/error-b24/"
                 context = {"error": error_text}
                 return (next_url, context, True)
@@ -167,15 +176,15 @@ def get_info_for_order_bitrix(bs_id_order, request):
         tr = traceback.format_exc()
         error = "error"
         location = "первичное открытие сделки битрикс"
-        info = f" ошибка {e}{tr}"
+        info = f" сделка {bs_id_order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
 
 # для get_info_for_order_bitrix получение реквизитов к сделке
 def get_req_info_bx(bs_id_order, manager, company):
     print("get_req_info_bx")
-    webhook = settings.BITRIX_WEBHOOK
-    bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
 
     # реквизиты привязанные к сделке
     req_bx_order = bx.call(
@@ -192,6 +201,12 @@ def get_req_info_bx(bs_id_order, manager, company):
             "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": req_bx_id},
         },
     )
+    adress_item_bx = False
+    for adress_item in adress_bx:
+        if adress_item["TYPE_ID"] == "6" or adress_item["TYPE_ID"] == 6:
+            adress_item_bx = True
+    
+    
 
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
@@ -199,6 +214,8 @@ def get_req_info_bx(bs_id_order, manager, company):
         return (True, "Банковские реквизиты", None)
     elif len(adress_bx) == 0:
         return (True, "Адреса", None)
+    elif adress_item_bx == False:
+        return (True, "Адрес юридический", None)
     else:
 
         # значение реквизитов
@@ -226,25 +243,20 @@ def get_req_info_bx(bs_id_order, manager, company):
 
                 type_client = "1"
             elif type_preset_req == "2":  # ИП
-                legal_entity = (
-                     f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
-                )
+                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
             elif type_preset_req == "3":  # Физ. лицо
-                legal_entity = (
-                    f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
-                )
+                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "2"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
-            
             inn = v["RQ_INN"]
             tel = v["RQ_PHONE"]
             id_req = int(v["ID"])
@@ -309,7 +321,7 @@ def get_req_info_bx(bs_id_order, manager, company):
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
         bic = req_bank["RQ_BIK"]
-        
+
         company = {
             "id_bitrix": id_req,
             "manager": manager.id,
@@ -437,9 +449,9 @@ def get_status_order():
             status__in=not_view_status, id_bitrix__isnull=True
         ).values("id_bitrix")
 
-        webhook = settings.BITRIX_WEBHOOK
+        webhook = BITRIX_WEBHOOK
 
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        bx = Bitrix(webhook)
         orders = [d["id_bitrix"] for d in actual_order]
 
         # orders = [1]
@@ -486,12 +498,12 @@ def get_status_order():
 # сохранение всех данных по заказу:
 def add_info_order(request, order, type_save):
     try:
-        webhook = settings.BITRIX_WEBHOOK
+        webhook = BITRIX_WEBHOOK
         id_bitrix_order = order.id_bitrix
         if id_bitrix_order != 0:
             print("add_info_order")
 
-            bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+            bx = Bitrix(webhook)
             orders_bx = bx.get_by_ID("crm.deal.get", [id_bitrix_order])
             if len(orders_bx) > 0:
                 orders_bx = bx.get_by_ID("crm.deal.fields", [id_bitrix_order])
@@ -544,12 +556,10 @@ def add_info_order(request, order, type_save):
                         "UF_CRM_1715001959646",
                     )
 
-
                 else:
 
                     orders_bx = remove_file_bx(
                         bx,
-                        document_specification,
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
@@ -682,31 +692,34 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 
     return orders_bx
 
-def remove_file_bx(bx, file, id_bx, method, field_name):
-    
-    orders_bx = bx.get_by_ID("crm.deal.get", [id_bx]) 
-    orders_bx_id_file = orders_bx[field_name]['id']
-    print(orders_bx_id_file)
-    
-    orders_bx = bx.call(
-        method,
-        {
-            "id": id_bx,
-            "fields": {
-                field_name:  {"id": orders_bx_id_file, "remove": 'Y'},
-            },
-        },
-    )
 
+def remove_file_bx(bx, id_bx, method, field_name):
+
+    orders_bx = bx.get_by_ID("crm.deal.get", [id_bx])
     
-    
+    if field_name in orders_bx:
+        orders_bx_id_file = orders_bx[field_name]["id"]
+
+        orders_bx = bx.call(
+            method,
+            {
+                "id": id_bx,
+                "fields": {
+                    field_name: {"id": orders_bx_id_file, "remove": "Y"},
+                },
+            },
+        )
+    else:
+        print("not feald")
+
     return orders_bx
+
 
 # новые документы после появления точных сроков поставки
 def save_new_doc_bx(order):
     try:
-        webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        webhook = BITRIX_WEBHOOK
+        bx = Bitrix(webhook)
         error = "file_api_error"
         location = "Получение\сохранение данных o товаратах 1с "
         info = f"{bx}bx"
@@ -744,8 +757,8 @@ def save_new_doc_bx(order):
 def save_payment_order_bx(data):
     try:
 
-        webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        webhook = BITRIX_WEBHOOK
+        bx = Bitrix(webhook)
 
         for data_item in data:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -772,8 +785,8 @@ def save_payment_order_bx(data):
 # выгрузка в битрикс данных по отгурзке товаров
 def save_shipment_order_bx(data):
     try:
-        webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        webhook = BITRIX_WEBHOOK
+        bx = Bitrix(webhook)
         for data_item in data:
             order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
             id_bitrix_order = order.id_bitrix
@@ -802,8 +815,8 @@ def save_shipment_order_bx(data):
 def currency_check_bx():
     try:
 
-        webhook = settings.BITRIX_WEBHOOK
-        bx = Bitrix("https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/")
+        webhook = BITRIX_WEBHOOK
+        bx = Bitrix(webhook)
 
         carrency = get_order_carrency_up()
         product = get_product_price_up()
@@ -957,8 +970,8 @@ def get_product_price_up():
 
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
-    webhook = settings.BITRIX_WEBHOOK
-    webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+    webhook = BITRIX_WEBHOOK
+  
     print(webhook)
     bx = Bitrix(webhook)
     data_order = {
@@ -1010,8 +1023,8 @@ def get_stage_info_bx():
                 )
                 # print(stage_okt)
 
-        webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        webhook = BITRIX_WEBHOOK
+        
         bx = Bitrix(webhook)
         stage_all_bx = bx.get_all(
             "crm.category.list",
@@ -1047,8 +1060,8 @@ def get_stage_info_bx():
 def get_manager():
 
     try:
-        webhook = settings.BITRIX_WEBHOOK
-        webhook = "https://pmn.bitrix24.ru/rest/174/v891iwhxd3i2p2c1/"
+        webhook = BITRIX_WEBHOOK
+        
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",
@@ -1060,7 +1073,7 @@ def get_manager():
         for manager in manager_all_bx:
             print(manager)
             if "EMAIL" in manager:
-            # if manager["EMAIL"] != "":
+                # if manager["EMAIL"] != "":
                 try:
                     admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
                     # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
@@ -1069,7 +1082,7 @@ def get_manager():
                     print(manager)
                 except AdminUser.DoesNotExist:
                     pass
-        
+
         return True
     except Exception as e:
 
@@ -1105,6 +1118,29 @@ def _status_to_order_replace(name_status, id_bx):
 
         return "PROCESSING"
 
+
+def add_new_order_web():
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    req_qs = Requisites.objects.get(inn = 631625733376)
+    req_inn = 631625733376
+    
+    req_bx = bx.get_all(
+            "crm.requisite.list",
+            params={
+                "filter": {"ENTITY_TYPE_ID": 4,"RQ_INN":req_inn},
+            },
+        )
+    if len(req_bx) == 1:
+        req_qs
+    elif len(req_bx) > 1:
+        pass
+    else:
+        add_req_bx()
+    print(req_bx)
+
+def add_req_bx():
+    pass
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:

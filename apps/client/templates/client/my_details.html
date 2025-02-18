@@ -11,16 +11,20 @@
                     <div class="small_title">ОГРН</div>
                 </div>
                 <div class="container">
-                    {% comment %} {% for detail in details %} {% endcomment %}
+                    {% for detail in requisites %}
                     <div class="legal_entity_wrapper">
                         <div>
                             <div legal-entity-adress="{{ detail.id }}" class="legal_entity">
                                 <div class="head_legal_entity_details">
                                     <div class="detail name_detail">
-                                        <div class="detail">{{ detail.legal_entity }}</div>
-                                        <div class="detail">Договор №{{ detail.contract }}</div>
+                                        <div class="detail">{{ detail.requisites.legal_entity }}</div>
+                                        <div class="detail">
+                                        {% if detail.requisites.contract %}
+                                             Договор №{{ detail.requisites.contract }}
+                                        {% endif %}
+                                           </div>
                                     </div>
-                                    <div class="detail">ИНН {{ detail.inn }}</div>
+                                    <div class="detail">ИНН {{ detail.requisites.inn }}</div>
                                     <div class="detail">КПП {{ detail.kpp }}</div>
                                     <div class="detail">ОГРН {{ detail.ogrn }}</div>
                                     <button class="change_button">Изменить</button>
@@ -37,6 +41,14 @@
                                                 <div class="error current_legal_adress_index_error"></div>
                                             </label>
                                             <label>
+                                            <!-- ПОЛУЧЕНИЕ АДРЕСА ЮРИДИЧЕСКОГО  -->
+                                            {% for adress in detail.requisitesaddress_set.all %}
+                                                {% if adress.type_address_bx == "web-lk-adress" %}
+                                                    {{adress}}
+                                                {% endif %}
+                                                    
+                                            {% endfor %}
+                                           
                                                 <input value="{{ detail.legal_city }}"
                                                        class="current_legal_adress_city"
                                                        type="text"
@@ -84,6 +96,7 @@
                                 <div class="bank-details-container">
                                     <div class="title">Расчётный счёт</div>
                                     <div class="bank-details">
+                                    
                                         {% for bank_detail in detail.accountrequisites_set.all %}
                                             <div class="bank_detail">
                                                 <label>
@@ -149,6 +162,8 @@
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
+
                     {% comment %} {% endfor %} {% endcomment %}
                     {% comment %} {% for detail in details %}
                             <div class="legal_entity_wrapper">
@@ -264,7 +279,7 @@
                             </div>
                     {% endfor %} {% endcomment %}
                 </div>
-                {% comment %} {% endif %} {% endcomment %}
+                
             </div>
             <div class="new_legal_entity_wrapper">
                 <div>

@@ -70,7 +70,7 @@ def get_motrum_storage():
                         supplier_qs = vendor_qs.supplier
 
                     except Vendor.DoesNotExist:
-                        supplier_qs = Supplier.objects.get(slug="drugoe")
+                        supplier_qs = Supplier.objects.get(slug="drugoj")
                         vat_catalog = Vat.objects.get(name=20)
                         currency_catalog = Currency.objects.get(words_code="RUB")
 

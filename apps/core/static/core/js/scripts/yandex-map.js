@@ -2,12 +2,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".contacts-wrapper");
   if (wrapper) {
     const mapWrapper = wrapper.querySelector(".map-wrapper");
-
     ymaps.ready(function () {
+      // const {YMapZoomControl, YMapGeolocationControl} = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
       const myMap = new ymaps.Map(
           "map",
           {
-            center: [53.234504811961656, 50.19189402114864],
+            center:
+              window.innerWidth > 576
+                ? [53.234504811961656, 50.19189402114864]
+                : [53.236397293742286, 50.19255920898432],
             zoom: 16,
           },
           {
@@ -24,6 +27,15 @@ window.addEventListener("DOMContentLoaded", () => {
             iconImageOffset: [-21, -79],
           }
         );
+      // zoomControl = new ymaps.control.ZoomControl({
+      //   options: {
+      //     size: "small",
+      //     position: {
+      //       right: 10,
+      //       top: 500,
+      //     },
+      //   },
+      // });
 
       myMap.behaviors.disable("scrollZoom");
       myMap.controls.remove("geolocationControl");
@@ -34,7 +46,12 @@ window.addEventListener("DOMContentLoaded", () => {
       myMap.controls.remove("fullscreenControl");
       myMap.controls.remove("taxiControl");
       myMap.controls.remove("rulerControl");
+
       myMap.geoObjects.add(myPlacemark);
+      if (window.innerWidth <= 576) {
+        myMap.controls.remove("zoomControl");
+        // myMap.controls.add(zoomControl);
+      }
     });
   }
 });

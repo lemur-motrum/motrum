@@ -18,11 +18,11 @@ app.conf.beat_schedule = {
     #     'task': 'apps.core.tasks.get_status_order_bx',
     #     'schedule': crontab(minute=0, hour='6-21'),
     # },
-    # # уведомления о повышения цен на товары и курсов ежедневно
-    # 'add_currency_check_bx': {
-    #     'task': 'apps.core.tasks.currency_check_bx',
-    #     'schedule': crontab(minute=00, hour=5),
-    # },
+    # # # уведомления о повышения цен на товары и курсов ежедневно
+    # # 'add_currency_check_bx': {
+    # #     'task': 'apps.core.tasks.currency_check_bx',
+    # #     'schedule': crontab(minute=00, hour=5),
+    # # },
     
     # ТАСКИ ночные для обновления окт ежедневные
     # курсы валют
@@ -35,11 +35,11 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.image_error_check_in",
         "schedule": crontab(minute=20, hour=0),
     },
-    # получение апи товаров иек
-    "add_iek": {
-        "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=40, hour=0),
-    },
+    # # получение апи товаров иек
+    # "add_iek": {
+    #     "task": "apps.supplier.tasks.add_iek",
+    #     "schedule": crontab(minute=40, hour=0),
+    # },
     # получение апи товаров веда
     "add_veda": {
         "task": "apps.supplier.tasks.add_veda",
@@ -58,12 +58,17 @@ app.conf.beat_schedule = {
     #     'task': 'apps.specification.tasks.bill_date_stop',
     #     'schedule': crontab(minute=40, hour=0),
     # },
+    # ТАСКИ раз в неделю
+    "iek_individual": {
+        "task": "apps.core.tasks.add_iek_individual",
+        "schedule": crontab(minute=3, hour=0, day_of_month=1),
+    },
     
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
     "year_holidays": {
         "task": "apps.core.tasks.get_year_holiday",
-        "schedule": crontab(minute=3, hour=0, day_of_month=1),
+        "schedule": crontab(minute=3, hour=0, day_of_week=1),
     },
     
     # ТАСКИ раз  в год

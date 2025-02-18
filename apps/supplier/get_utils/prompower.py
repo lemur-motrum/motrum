@@ -36,7 +36,7 @@ from apps.supplier.models import (
 
 def prompower_api():
     prompower = Supplier.objects.get(slug="prompower")
-    vendors = Vendor.objects.filter(supplier=prompower)
+    vendors = Vendor.objects.filter(slug="prompower")
     for vendors_item in vendors:
         if vendors_item.slug == "prompower":
             vendoris = vendors_item
@@ -360,6 +360,7 @@ def prompower_api():
 
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
+                        price_supplier = price_supplier + (price_supplier / 100 * 20)
                         try:
                             # если товар есть в бд
                             article = Product.objects.get(

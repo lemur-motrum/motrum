@@ -4,8 +4,19 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
 
-from apps.client.models import AccountRequisites, Client, Order, Requisites
+from apps.admin_specification.views import specifications
+from apps.client.models import (
+    AccountRequisites,
+    Client,
+    ClientRequisites,
+    Order,
+    PhoneClient,
+    Requisites,
+    RequisitesAddress,
+    RequisitesOtherKpp,
+)
 from apps.notifications.models import Notification
+from apps.specification.models import ProductSpecification
 
 
 # Create your views here.
@@ -54,10 +65,20 @@ def my_details(request):
     # client_id = int(cookie)
     current_user = request.user.id
     client = Client.objects.get(pk=current_user)
-    requisites = Requisites.objects.filter(client=client).prefetch_related(
-        Prefetch("accountrequisites_set"),
-        
+    req = (
+        ClientRequisites.objects.filter(client=client)
+        .values_list("requisitesotherkpp__id", flat=True)
+        .order_by("id")
     )
+    print(req)
+    requisites = RequisitesOtherKpp.objects.filter(id__in=req).prefetch_related(
+        Prefetch("accountrequisites_set"),
+        Prefetch("requisitesaddress_set"),
+    )
+    
+    # requisites = Requisites.objects.filter(client=client).prefetch_related(
+    #     Prefetch("accountrequisites_set"),
+    # )
     # print(requisites)
     # for i in requisites:
     #     print(i.accountrequisites_set.all())
@@ -89,12 +110,12 @@ def my_details(request):
     #         my_details["bank_details"].append(bank_object)
 
     #     bank_obj.append(my_details)
-
+    print(requisites)
     context = {
         "title": "Личный кабинет | мои реквизиты",
         # "details": bank_obj,
         "details": requisites,
-        "requisites":requisites
+        "requisites": requisites,
     }
     return render(request, "client/my_details.html", context)
 
@@ -104,9 +125,27 @@ def my_contacts(request):
     client_id = int(cookie)
 
     client = Client.objects.get(pk=client_id)
-
+    other_phone_client = PhoneClient.objects.filter(client=client)
     context = {
         "title": "Личный кабинет | мои контакты",
         "client": client,
+        "other_phone_client": other_phone_client,
     }
     return render(request, "client/my_contacts.html", context)
+
+
+def order_client_one(request, pk):
+    order = Order.objects.get(pk=pk)
+
+    product = ProductSpecification.objects.filter(
+        specification=order.specification
+    ).select_related(
+        "product",
+    )
+    print(product)
+    context = {
+        "order": order,
+        "product": product,
+    }
+
+    return render(request, "client/client_order_one.html", context)

@@ -1,4 +1,6 @@
+import base64
 import math
+import os
 from django.db.models import Max
 from django.db.models import Prefetch
 from unicodedata import category
@@ -8,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
+from apps.core.utils import check_file_price_directory_exist, product_cart_in_file
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
@@ -26,8 +29,10 @@ from apps.product.models import (
 from django.db.models import Q, F, OrderBy, Value
 
 from apps.specification.models import ProductSpecification
+import threading
 
-
+from project.settings import MEDIA_ROOT
+import datetime
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = Product.objects.none()
@@ -233,7 +238,30 @@ class ProductViewSet(viewsets.ModelViewSet):
         }
         return Response(data_response, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
+    def get_nomenclature(self, request, *args, **kwargs):
+        from django.core.files.storage import FileSystemStorage
+        print("get_nomenclature")
+        data = request.data
+        # file_obj = request.data['file']
+        current_date = datetime.date.today().isoformat()
+        dir_file = check_file_price_directory_exist("ones", "nomenclature")
+        doc_name = f"nomenclature-{current_date}"
+        
+      
+        
+        
+        
+        print(decoded_string)
+                
+        new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
+        path_nomenclature = f"{new_dir}/Номенктатура-25.csv"
+        with open(os.path.join(MEDIA_ROOT, path_nomenclature), "wb") as ofile:
 
+            f = FileSystemStorage(location=dir_file).save(
+                    doc_name, ofile
+                )
+            
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
@@ -608,7 +636,23 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         queryset.delete()
         return Response(None, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post"], url_path="cart-file-download")
+    def product_cart_in_file_download(self, request, pk=None, *args, **kwargs):
+        print("product_cart_in_file_download", request.data)
+        cart = 298
+        new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT,"documents", "kp_file")
+        path_kp = f"{new_dir}/КП.xlsx"
+        # cart = 667
+        def background_task():
+            # Долгосрочная фоновая задача
+            product_cart_in_file(path_kp,cart)
 
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
+        stop_daemon = daemon_thread.join()
+        # is_alive_daemon = daemon_thread.is_alive()
+        return Response(None, status=status.HTTP_200_OK)
 # class ProductViewSet(viewsets.ModelViewSet):
 #     permission_classes = (permissions.AllowAny,)
 #     queryset = Product.objects.none()

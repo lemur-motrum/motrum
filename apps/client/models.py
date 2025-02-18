@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Case, Value, When
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
-
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
@@ -23,6 +23,7 @@ class Client(CustomUser):
     contact_name = models.CharField(
         "Контактное лицо", max_length=40, blank=True, null=True
     )
+    middle_name = models.CharField("Отчество", max_length=50, null=True, blank=True)
     phone = models.CharField("Номер телефона", max_length=40, unique=True)
     manager = models.ForeignKey(
         AdminUser, blank=True, null=True, on_delete=models.CASCADE
@@ -32,10 +33,11 @@ class Client(CustomUser):
         blank=True,
         null=True,
     )
+    position = models.CharField("Номер телефона", max_length=200,null=True, blank=True)
 
     class Meta:
-        verbose_name = "Клиент"
-        verbose_name_plural = "Клиенты"
+        verbose_name = "Клиент сайта"
+        verbose_name_plural = "Клиенты на сайте"
 
     def save(self, *args, **kwargs):
         # self.password = "1234"
@@ -73,7 +75,14 @@ class Client(CustomUser):
 
     # def send_email_notification(self,text_email):
 
-
+class PhoneClient(models.Model):
+    phone = models.CharField("Номер телефона", max_length=40)
+    client = models.ForeignKey(
+        Client,
+        verbose_name="Клиент",
+        on_delete=models.CASCADE,
+    )
+    
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
@@ -83,24 +92,8 @@ TYPE_CLIENT = (
     ("1", "Юридическое лицо"),
     ("2", "ИП"),
     ("3", "Физ. лицо"),
+    ("4", "Организация (доп.)"),
 )
-#   {
-#             "ID": "1",
-#             "NAME": "Организация"
-#         },
-#         {
-#             "ID": "2",
-#             "NAME": "ИП"
-#         },
-#         {
-#             "ID": "3",
-#             "NAME": "Физ. лицо"
-#         },
-#         {
-#             "ID": "4",
-#             "NAME": "Организация (доп.)"
-#         }
-
 
 # TODO: unique=True вернуть
 # юрлицо  клиента главна сущность ИНН
@@ -176,6 +169,7 @@ class Requisites(models.Model):
     type_client = models.CharField(
         "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
     )
+    
 
     class Meta:
         verbose_name = "Юридическое лицо"
@@ -188,6 +182,13 @@ class Requisites(models.Model):
     def get_type_payment(self):
         for choice in TYPE_PAYMENT:
             if choice[0] == self.type_payment:
+                return choice[1]
+        return ""
+    # получить название типа rkbtynf
+    def get_type_client(self):
+        print("TYPE_CLIENT")
+        for choice in TYPE_CLIENT:
+            if choice[0] == self.type_client:
                 return choice[1]
         return ""
 
@@ -249,15 +250,25 @@ TYPE_ADDRESS = (
     (4, "Адрес регистрации"),
     (6, "Юридический адрес"),
     (9, "Адрес бенефициара"),
+    ("web-lk-adress", "Юридический адрес сайт"),
 )
-
+class ClientRequisites(models.Model):
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+    )
+    requisitesotherkpp = models.ForeignKey(
+        RequisitesOtherKpp,
+        verbose_name="",
+        on_delete=models.CASCADE,
+    )
 
 # адреса реквизитов кпп
 class RequisitesAddress(models.Model):
     requisitesKpp = models.ForeignKey(
         RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
     )
-    type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=4)
+    type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=6)
     country = models.CharField(
         "Страна",
         max_length=100,
@@ -352,7 +363,7 @@ class EmailsCallBack(models.Model):
     )
 
 
-# статусы которые в окт и на сайте- конвертация из статусов битрикс
+# статусы которые в окт и на сайте
 STATUS_ORDER = (
     ("", "----"),
     ("PROCESSING", "В обработке"),
@@ -363,7 +374,7 @@ STATUS_ORDER = (
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
 )
-# статусы которые есть в битрикс
+# конвертация статусов битрикс в статусы окт
 STATUS_ORDER_BITRIX = (
     ("PROCESSING", "NEW"),
     ("PROCESSING", "PREPARATION"),
@@ -377,6 +388,7 @@ STATUS_ORDER_BITRIX = (
     ("CANCELED", "C8:2"),
     ("COMPLETED", "C8:WON"),
 )
+#чистые статусы битрикс
 CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
@@ -430,6 +442,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    
     date_completed = models.DateField(
         verbose_name="Дата завершения",
         blank=True,
@@ -658,6 +671,15 @@ class Order(models.Model):
             if choice[0] == self.status:
                 return choice[1]
         return ""
+    
+    def get_absolute_url_web(self):
+
+            return reverse(
+                "client:order_client_one",
+                kwargs={
+                    "pk": self.pk,
+                },
+            )  
 
 
 # фаилы счетов все версии
@@ -770,3 +792,4 @@ class DocumentShipment(models.Model):
         null=True,
     )
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+

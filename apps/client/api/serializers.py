@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, RequisitesOtherKpp
+from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesAddress, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -21,6 +21,11 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         exclude = ("password", "date_joined")
+        
+class PhoneClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneClient
+        fields = "__all__"
 
 
 class RequisitesSerializer(serializers.ModelSerializer):
@@ -29,7 +34,19 @@ class RequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisites
         fields = "__all__"
+        
+class RequisitesV2Serializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Requisites
+        fields = "__all__"
+        
+class RequisitesAddressSerializer(serializers.ModelSerializer):
+    
 
+    class Meta:
+        model = RequisitesAddress
+        fields = "__all__"
 
 class AccountRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -110,7 +127,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
     specification_list = ListsProductSpecificationSerializer(
         source="specification", read_only=True
     )
-
+    url = serializers.CharField(source="get_absolute_url_web", read_only=True)
     # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
     notification_count = serializers.CharField()
 
@@ -138,6 +155,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "act_file",
             # "notification_set",
             "notification_count",
+            "url"
         )
         read_only_fields = ("status_full",)
 

@@ -83,8 +83,8 @@ def cart(request):
                 Requisites.objects.filter(client=client)
                 .prefetch_related("accountrequisites_set")
                 .annotate(
-                    accountrequisit=F("accountrequisites__account_requisites"),
-                    accountrequisit_id=F("accountrequisites__id"),
+                    # accountrequisit=F("accountrequisites__account_requisites"),
+                    # accountrequisit_id=F("accountrequisites__id"),
                 )
             )
 
@@ -203,10 +203,7 @@ def company_about(request):
 
 # политика конфиденциальности
 def privacy_policy(request):
-    print(99999)
-    print(99999)
-    print(99999)
-    print(99999)
+
     context = {}
     return render(request, "core/privacy_policy.html", context)
 

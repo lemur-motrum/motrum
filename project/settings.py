@@ -35,6 +35,10 @@ ALLOWED_HOSTS = [
     "motrum.yuriyzhidkov.ru",
     "b24-j6zvwj.bitrix24.ru",
     "pmn.bitrix24.ru",
+    "45.153.188.69",
+    "test.motrum.ru",
+    "192.168.0.104",
+    "192.168.0.110",
 ]
 
 SESSION_COOKIE_SAMESITE = "None"
@@ -48,6 +52,7 @@ DEBUG = True
 
 IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
+IS_PROD = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
 
 # Application definition
 
@@ -243,7 +248,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 
-BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Doctorsystem API",
@@ -262,3 +267,6 @@ REST_FRAMEWORK = {
 
 NDS = 20
 
+BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+DADATA_TOKEN = os.environ.get("DADATA_TOKEN")
+DADATA_SECRET = os.environ.get("DADATA_SECRET")

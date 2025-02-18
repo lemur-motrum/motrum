@@ -70,7 +70,7 @@ def get_price_avangard(vendor, supplier, article, price_supplier, category_item)
 def get_avangard_file(new_file, obj):
     try:
         supplier = Supplier.objects.get(slug="avangard")
-        vendor = Vendor.objects.get(supplier=supplier, slug="odot")
+        vendor = Vendor.objects.get( slug="odot")
         vat = Vat.objects.get(name="20")
         currency = Currency.objects.get(words_code="CNY")
 

@@ -12,14 +12,16 @@ from simple_history.utils import update_change_reason
 
 def veda_api():
     supplier = Supplier.objects.get(slug="veda-mc")
-    vendors = Vendor.objects.filter(supplier=supplier)
+    vendors = Vendor.objects.filter(slug="veda")
+    
     for vendors_item in vendors:
         if vendors_item.slug == "veda":
             vendor_id = vendors_item.id
             vendor_names = vendors_item.slug
             vendor = vendors_item
 
-    currency = Currency.objects.get(words_code="USD")
+    # currency = Currency.objects.get(words_code="USD")
+    currency = Currency.objects.get(words_code="CNY")
     # добавление товаров
 
     url = "https://driveshub.ru/vedaorder/api/stock_list/6312174204"
@@ -47,6 +49,9 @@ def veda_api():
             price_supplier = float(data_item["salesPrice"])
             if price_supplier == 0:
                 price_supplier = None
+            else:
+                price_supplier = price_supplier + (price_supplier / 100 * 20)
+            
             sale_persent = float(data_item["discountPercent"])
             # остатки
             lot = Lot.objects.get(name="штука")
@@ -89,7 +94,7 @@ def veda_api():
                     vendor=vendor,
                     article_supplier=article_suppliers,
                 )
-
+                
                 save_update_product_attr(
                     article, supplier, vendor, None, None, None, None, None, name
                 )

@@ -1001,11 +1001,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_WEB or user.username == "testadmin":
 
                     import json
-                    json_data = json.dumps(data_for_1c)
-
+                    # json_data = json.dumps(data_for_1c)
+                    # print("json_data",json_data)
                     if  user.username == "testadmin":
                         print("if IS_WEB or user.username == testadmin")
-                        url = ""
+                        url = "http://localhost:8000/api/v1/order/test1s/"
                         headers = {'Content-type': 'application/json'}
                         send_requests(url, headers, json_data)
                         

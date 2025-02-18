@@ -1000,12 +1000,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 if IS_WEB or user.username == "testadmin":
                     if  user.username == "testadmin":
-                        # print("if IS_WEB or user.username == testadmin")
+                         print("if IS_WEB or user.username == testadmin")
                         # url = ""
                         # headers = {'Content-type': 'application/json'}
                         # send_requests(url, headers, data_for_1c)
                         
-                    # pass
+                    pass
                 else:
                     add_info_order(request, order, type_save)
 

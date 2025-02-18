@@ -294,8 +294,8 @@ function saveCart() {
     })
       .then((response) => response.json())
       .then((response) => {
-        deleteCookie("cart", "/", window.location.hostname);
-        window.location.href = "/lk/my_orders";
+        // deleteCookie("cart", "/", window.location.hostname);
+        // window.location.href = "/lk/my_orders";
       })
       .catch((error) => console.error(error));
   }

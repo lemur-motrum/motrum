@@ -296,11 +296,11 @@ class ClientViewSet(viewsets.ModelViewSet):
             client_phones = PhoneClient.objects.filter(client=client)
             if client_phones:
                 for phone in client_phones:
-                    if phone.phone not in data["phones"]:
+                    if phone.phone not in data["phone"]:
                         phone.delete()
 
-            if len(data["phones"]) > 0:
-                for phone_new in data["phones"]:
+            if len(data["phone"]) > 0:
+                for phone_new in data["phone"]:
                     PhoneClient.objects.get_or_create(client=client, phone=phone_new)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -582,10 +582,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 all_info_product = False
 
         # сохранение спецификации для заказа с реквизитами
+        
+        
         if all_info_requisites and all_info_product:
             status_save_spes, specification, specification_name = save_spesif_web(
                 cart, products_cart, extra_discount, requisites
             )
+            print(" status_save_spes, specification, specification_name", status_save_spes, specification, specification_name)
             if status_save_spes == "ok" and specification_name:
                 # pdf = crete_pdf_specification(
                 #     specification.id,

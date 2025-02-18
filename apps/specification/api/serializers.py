@@ -28,9 +28,10 @@ class SpecificationSerializer(serializers.ModelSerializer):
         )
 
         representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
-        representation["total_amount"] = (
-            "{0:,}".format(instance.total_amount).replace(",", " ").replace(".", ",")
-        )
+        if instance.total_amount:
+            representation["total_amount"] = (
+                "{0:,}".format(instance.total_amount).replace(",", " ").replace(".", ",")
+            )
         if instance.date:
             representation["date"] = instance.date.strftime("%d.%m.%Y")
         if instance.date_update:

@@ -262,33 +262,53 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
     from apps.core.utils import get_presale_discount
 
     price = Price.objects.get(prod=product)
+    if price.extra_price:
+        product_item_data = {
+            "id_cart": product_item_cart.id,
+            "id_bitrix":None,
+            "specification": specification.id,
+            "product": product.id,
+            "product_currency": price.currency.id,
+            "quantity": quantity,
+            "price_one": price_one,
+            "product_price_catalog":price_one,
+            "price_all": price_all,
+            "price_one_motrum": price_one_motrum,
+            "price_all_motrum": price_all_motrum,
+            "price_exclusive": price.extra_price,
+            "extra_discount": extra_discount,
+            "sale_motrum":sale_motrum
+        }
+    else:
+        if price.in_auto_sale:
+            price_pre_sale = get_presale_discount(product)
 
-    if price.in_auto_sale:
-        price_pre_sale = get_presale_discount(product)
+        price_one = price.rub_price_supplier
+        price_one_motrum = price.price_motrum
+        sale_motrum = price.get_sale_price_motrum()
+        # if extra_discount:
+        #     price_one = price_one - (price_one / 100 * float(extra_discount))
+        #     price_one = round(price_one, 2)
 
-    price_one = price.rub_price_supplier
-    price_one_motrum = price.price_motrum
-
-    if extra_discount:
-        price_one = price_one - (price_one / 100 * float(extra_discount))
-        price_one = round(price_one, 2)
-
-    price_all = float(price_one) * int(quantity)
-    price_all_motrum = float(price_one_motrum) * int(quantity)
-
-    product_item_data = {
-        "id_cart": product_item_cart,
-        "specification": specification.id,
-        "product": product.id,
-        "product_currency": price.currency.id,
-        "quantity": quantity,
-        "price_one": price_one,
-        "product_price_catalog":price_one,
-        "price_all": price_all,
-        "price_one_motrum": price_one_motrum,
-        "price_all_motrum": price_all_motrum,
-        "price_exclusive": price.extra_price,
-        "extra_discount": extra_discount,
-        "product_currency": price.currency
-    }
+        price_all = float(price_one) * int(quantity)
+        price_all = round(price_all, 2)
+        price_all_motrum = float(price_one_motrum) * int(quantity)
+        price_all_motrum = round(price_all_motrum, 2)
+        # ДАТУ ДОСТАВКИ
+        product_item_data = {
+            "id_cart": product_item_cart.id,
+            "id_bitrix":None,
+            "specification": specification.id,
+            "product": product.id,
+            "product_currency": price.currency.id,
+            "quantity": quantity,
+            "price_one": price_one,
+            "product_price_catalog":price_one,
+            "price_all": price_all,
+            "price_one_motrum": price_one_motrum,
+            "price_all_motrum": price_all_motrum,
+            "price_exclusive": price.extra_price,
+            "extra_discount": extra_discount,
+            "sale_motrum":sale_motrum
+        }
     return product_item_data

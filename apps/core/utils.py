@@ -1069,7 +1069,7 @@ def save_specification(
                 )
 
             product_spes.price_exclusive = product_item["price_exclusive"]
-            product_spes.product_currency = price_okt.currency
+            product_spes.product_currency = price_okt.currency.id
             product_spes.quantity = product_item["quantity"]
             product_spes.price_all = price_all
             product_spes.price_one = price_one
@@ -1463,8 +1463,8 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
             # specification_name = number_specification("specification")
             
             #TODO:сохранять номер если все ок
-            specification_name = requisites.number_spec + 1
-            requisites.number_spec = specification_name
+            # specification_name = requisites.number_spec + 1
+            # requisites.number_spec = specification_name
             
             
             data_specification = {
@@ -1472,14 +1472,16 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
                 "admin_creator": None,
                 "id_bitrix": None,
                 "date_stop": data_stop,
-                "number": specification_name,
+                # "number": specification_name,
+                "tag_stop": True
             }
             print(data_specification)
-
+            date_delivery_all = None
             serializer = serializer_class_specification(
                 data=data_specification, partial=True
             )
             if serializer.is_valid():
+                print("serializer.is_valid()")
                 # serializer._change_reason = "Клиент с сайта"
                 serializer.skip_history_when_saving = True
                 specification = serializer.save()
@@ -1512,19 +1514,38 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
                         total_amount += float(item_data["price_all"])
 
                     # обновить спецификацию пдф
-
+                    total_amount = round(total_amount, 2)
                     specification.total_amount = total_amount
+                    specification.date_delivery = date_delivery_all
                     specification._change_reason = "Клиент с сайта"
                     # specification.skip_history_when_saving = True
                     specification.save()
-                    # specification_obj = Specification.objects.get(specification.id)
+                    if requisites.contract:
+                       
+                        specification_name = requisites.number_spec + 1
+                        requisites.number_spec = specification_name
 
-                    return ("ok", specification, specification_name)
+                        
+                        # креаотить пдф
+                        pdf = None
+
+                        if pdf:
+                            specification.number = specification_name
+                            specification.save()
+                            requisites.save()
+
+                    else:
+                        specification_name = None
+                        specification.file = None
+                        specification.number = specification_name
+                        specification.save()
+                    return ("ok", specification, 11111)
                 else:
                     return ("error", None, None)
 
             else:
-                print(serializer.error_messages)
+                print("ERROE SER")
+                print(serializer.errors)
                 return ("error", None, None)
     except Exception as e:
         print(e)

@@ -25,10 +25,12 @@ export function changeDateInOrder(container) {
           ) {
             calendar.value = setCalendarValue(14);
           } else {
-            calendar.value = "";
+            if (!calendar.value) {
+              calendar.value = "";
+            }
           }
         };
-        // getDateInCalendar();
+        getDateInCalendar();
         quantityInput.onchange = () => {
           quantityInput.value = quantityInput.value;
         };

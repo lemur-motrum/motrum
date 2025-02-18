@@ -237,11 +237,13 @@
                         <div class="item_value">
                             <label>
                                 {% if bill_upd %}
-                                    <input placeholder="Укажите срок поставки"
-                                           {% if item.date_delivery_bill %}disabled{% endif %}
-                                           class="invoice-data-input"
-                                           type="text"
-                                           value="{% if item.id_product_spesif %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"d.m.Y" }}{% else %}{{ item.text_delivery }}{% endif %}{% endif %}">
+                                    <input class="delivery_date"
+                                           type="date"
+                                           name="calendar"
+                                           value="{{ item.date_delivery_bill|date:"Y-m-d" }}"
+                                           {% comment %}
+                                           min="{{ current_date }}"
+                                           {% endcomment %}>
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
@@ -266,7 +268,7 @@
                         <!--когда аптейдейт-->
                         <div class="item_container added_item_container"
                              data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
-                            data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"
+                             data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"
                              data-product-pk="{% if item.product %}{{ item.product.id }} {% endif %}"
                              data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                              data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
@@ -726,7 +728,7 @@
                     {% if update_spesif %}
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
-                                data-supplier="{{ item.supplier.id }}"
+                             data-supplier="{{ item.supplier.id }}"
                              data-product-pk=""
                              data-product-name-new="{{ item.product_new }}"
                              data-product-article-new="{{ item.product_new_article }}"
@@ -1080,7 +1082,6 @@
                                 <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
                                         class="select-client-requsits"
                                         {% if client_req %}value="{{ client_req.id }}"{% endif %}
-                                     
                                         name="client-requisit">
                                     <option disabled>Расчетный счет юр.Лица</option>
                                     {% if client_req %}

@@ -28,7 +28,7 @@ export function changeDateInOrder(container) {
             calendar.value = "";
           }
         };
-        getDateInCalendar();
+        // getDateInCalendar();
         quantityInput.onchange = () => {
           quantityInput.value = quantityInput.value;
         };

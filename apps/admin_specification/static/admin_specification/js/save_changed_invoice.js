@@ -76,6 +76,9 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           const vendor = specificationItem.getAttribute("data-vendor");
           const supplier = specificationItem.getAttribute("data-supplier");
+          const deliveryDateValue = item.querySelector(".delivery_date")
+            ? item.querySelector(".delivery_date").value
+            : item.querySelector(".invoice-data-input").value;
           const productCartId = specificationItem.getAttribute(
             "data-product-id-cart"
           );
@@ -89,7 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
-            date_delivery: null,
+            date_delivery: deliveryDateValue ? deliveryDateValue : null,
             text_delivery: deliveryDate.value,
             product_name_new: nameProductNew,
             product_new_article: nameProductNew,

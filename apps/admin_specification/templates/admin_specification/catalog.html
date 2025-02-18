@@ -241,9 +241,7 @@
                                            type="date"
                                            name="calendar"
                                            value="{{ item.date_delivery_bill|date:"Y-m-d" }}"
-                                           {% comment %}
-                                           min="{{ current_date }}"
-                                           {% endcomment %}>
+                                         >
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
@@ -402,10 +400,11 @@
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
-                                        <input placeholder="Укажите срок поставки"
-                                               class="invoice-data-input"
-                                               type="text"
-                                               value=" {% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
+                                    <input class="delivery_date"
+                                    type="date"
+                                    name="calendar"
+                                    value="{{ item.date_delivery_bill|date:"Y-m-d" }}"
+                                  >
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
@@ -634,10 +633,11 @@
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
-                                        <input placeholder="Укажите срок поставки"
-                                               class="invoice-data-input"
-                                               type="text"
-                                               value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
+                                    <input class="delivery_date"
+                                    type="date"
+                                    name="calendar"
+                                    value="{{ item.date_delivery_bill|date:"Y-m-d" }}"
+                                  >
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
@@ -851,10 +851,11 @@
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
-                                        <input placeholder="Укажите срок поставки"
-                                               class="invoice-data-input"
-                                               type="text"
-                                               value="{% if item.id_product_spesif %}{{ item.text_delivery }}{% endif %}">
+                                    <input class="delivery_date"
+                                    type="date"
+                                    name="calendar"
+                                    value="{{ item.date_delivery_bill|date:"Y-m-d" }}"
+                                  >
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"

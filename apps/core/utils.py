@@ -975,11 +975,11 @@ def save_specification(
         )
         # if specification_name:
         #     specification.number = specification_name
-        specification.skip_history_when_saving = True
+        # specification.skip_history_when_saving = True
         data_stop = create_time_stop_specification()
         specification.date_stop = data_stop
         specification.tag_stop = True
-        # specification._change_reason = "Ручное"
+        specification._change_reason = "Ручное"
         specification.save()
 
     # сохранение продуктов для спецификации

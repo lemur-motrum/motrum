@@ -1693,9 +1693,14 @@ def client_info_bitrix(data, company_adress):
 
 def send_requests(url, headers, data):
     import requests
-
+    print(url, headers,)
     response = requests.post(url, headers=headers, data=data, json=data)
-
+    if response.status_code != 200:
+        error = "error"
+        location = "отправка requests"
+        info = f"отправка requests {response}"
+        e = error_alert(error, location, info)
+        
     return response.status_code
     # print(response.status_code)
     # print(response.text)
@@ -1703,7 +1708,13 @@ def send_requests(url, headers, data):
 
     # else:
     #     print('Request failed with status code:', response.status_code)
+def json_serial(obj):
+    from datetime import date, datetime
+    """JSON serializer for objects not serializable by default json code"""
 
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 def after_save_order_products(products):
     from apps.specification.models import ProductSpecification
@@ -1796,11 +1807,11 @@ def create_info_request_order_1c(order, order_products):
             # "id_bitrix": order.id_bitrix,
             # "legal_entity_motrum": None,
             "contract": order.requisites.contract,
-            "contract_date": order.requisites.contract_date,
+            "contract_date": order.requisites.contract_date.isoformat(),
             "legal_entity": order.requisites.legal_entity,
-            "inn": order.requisites.inn,
-            "kpp": order.account_requisites.requisitesKpp.kpp,
-            "ogrn": order.account_requisites.requisitesKpp.ogrn,
+            "inn": int(order.requisites.inn),
+            "kpp": int(order.account_requisites.requisitesKpp.kpp),
+            "ogrn": int(order.account_requisites.requisitesKpp.ogrn),
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
@@ -1808,10 +1819,10 @@ def create_info_request_order_1c(order, order_products):
             # "postal_city": order.account_requisites.requisitesKpp.postal_city,
             # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
-            "account_requisites": order.account_requisites.account_requisites,
+            "account_requisites": int(order.account_requisites.account_requisites),
             "bank": order.account_requisites.bank,
-            "ks": order.account_requisites.kpp,
-            "bic": order.account_requisites.bic,
+            "ks": int(order.account_requisites.kpp),
+            "bic": int(order.account_requisites.bic),
             
         },
         "invoice_options": {
@@ -1819,7 +1830,7 @@ def create_info_request_order_1c(order, order_products):
             "delivery": order.type_delivery.text_long,
             "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "number_invoice": order.bill_name,
-            "data_invoice": order.bill_date_start,
+            "data_invoice": order.bill_date_start.isoformat(),
             "prepay_persent": order.requisites.prepay_persent,
             "postpay_persent": order.requisites.postpay_persent,
             "manager_invoice":name_admin,

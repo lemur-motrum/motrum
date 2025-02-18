@@ -81,6 +81,7 @@ from apps.core.utils import (
     create_info_request_order_bitrix,
     create_time_stop_specification,
     get_presale_discount,
+    json_serial,
     loc_mem_cache,
     save_new_product_okt,
     save_order_web,
@@ -1001,14 +1002,15 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_WEB or user.username == "testadmin":
 
                     import json
-                    # json_data = json.dumps(data_for_1c)
-                    # print("json_data",json_data)
+                    json_data = json.dumps(data_for_1c)
+                    # json_data = json_serial(data_for_1c)
+                    print("json_data",json_data)
                     if  user.username == "testadmin":
                         print("if IS_WEB or user.username == testadmin")
                         url = "http://localhost:8000/api/v1/order/test1s/"
                         headers = {'Content-type': 'application/json'}
-                        send_requests(url, headers, json_data)
-                        
+                        response = send_requests(url, headers, json_data)
+                        print(response)
                     pass
                 else:
                     add_info_order(request, order, type_save)

@@ -333,44 +333,44 @@ class RequisitesViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path=r"add")
     def add_all_requisites(self, request, *args, **kwargs):
-        # data = request.data
-        data = {
+        data = request.data
+        # data = {
             
-            "requisites": {
-                "client": 23,
-                "legal_entity": "333 лицо231",
-                "inn": 631625733376,
-            },
-            "requisitesKpp": {
-                "kpp": "11111",
-                "ogrn": "1111",
-            },
-            "adress": {
-                "legal_adress": {
-                    "country":None,
-                    "region":None,
-                    "province":None,
-                    "post_code": "22222",
-                    "city": "22222",
-                    "legal_address1": "22222",
-                    "legal_address2": "22222",
-                }
-            },
-            "account_requisites": [
-                {
-                    "account_requisites": "2222",
-                    "bank": "sfdfs",
-                    "kpp": "22222",
-                    "bic": "2222",
-                },
-                {
-                    "account_requisites": "3333333",
-                    "bank": "sfdfs",
-                    "kpp": "33333",
-                    "bic": "3333",
-                },
-            ],
-        }
+        #     "requisites": {
+        #         "client": 23,
+        #         "legal_entity": "333 лицо231",
+        #         "inn": 631625733376,
+        #     },
+        #     "requisitesKpp": {
+        #         "kpp": "11111",
+        #         "ogrn": "1111",
+        #     },
+        #     "adress": {
+        #         "legal_adress": {
+        #             "country":None,
+        #             "region":None,
+        #             "province":None,
+        #             "post_code": "22222",
+        #             "city": "22222",
+        #             "legal_address1": "22222",
+        #             "legal_address2": "22222",
+        #         }
+        #     },
+        #     "account_requisites": [
+        #         {
+        #             "account_requisites": "2222",
+        #             "bank": "sfdfs",
+        #             "kpp": "22222",
+        #             "bic": "2222",
+        #         },
+        #         {
+        #             "account_requisites": "3333333",
+        #             "bank": "sfdfs",
+        #             "kpp": "33333",
+        #             "bic": "3333",
+        #         },
+        #     ],
+        # }
 
         requisites = data["requisites"]
         requisitesKpp = data["requisitesKpp"]
@@ -511,12 +511,10 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             serializer_data_new[0]["account_requisites"] = account_requisites
             return Response(serializer_data_new, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['post'], url_path="serch-req")
+    @action(detail=False, methods=['post'], url_path="serch-requisites")
     def serch_requisites(self, request, *args, **kwargs):
         data= request.data
-        data= {
-            "inn": 6316257333886
-        }
+     
         with Dadata(DADATA_TOKEN, DADATA_SECRET) as dadata:
             info = dadata.suggest(name="party", query=data['inn'] )
             return Response(info, status=status.HTTP_200_OK)

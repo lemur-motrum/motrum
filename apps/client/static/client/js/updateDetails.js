@@ -83,6 +83,119 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         };
       });
+
+      const bankDetails = legalEntityElem.querySelectorAll(".bank_detail");
+      bankDetails.forEach((bankDetail) => {
+        const bankDetailId = bankDetail.getAttribute("data-bank-datail-id");
+        const currentAccountInput = bankDetail.querySelector(
+          ".bank_detail-current_account"
+        );
+        const currentAccountError = bankDetail.querySelector(
+          ".bank_detail-current_account_error"
+        );
+        const accountMaskOptions = {
+          mask: "00000000000000000000",
+        };
+        const currentAccountMask = IMask(
+          currentAccountInput,
+          accountMaskOptions
+        );
+
+        const bankValueInput = bankDetail.querySelector(".bank_detail-bank");
+        const bankValueError = bankDetail.querySelector(
+          ".bank_detail-bank_error"
+        );
+        const correspondentAccountInput = bankDetail.querySelector(
+          ".bank_detail-correspondent_account"
+        );
+        const correspondentAccountError = bankDetail.querySelector(
+          ".bank_detail-correspondent_account_error"
+        );
+        const correspondentAccountMask = IMask(
+          correspondentAccountInput,
+          accountMaskOptions
+        );
+        const bic = bankDetail.querySelector(".bank_detail-bic");
+        const bicError = bankDetail.querySelector(".bank_detail-bic");
+        const bicMaskOptions = {
+          mask: "000000000",
+        };
+        const bicMask = IMask(bic, bicMaskOptions);
+        const submitButton = bankDetail.querySelector(".bank-detail-button");
+
+        submitButton.onclick = (e) => {
+          e.preventDefault();
+          let validate = true;
+
+          if (!currentAccountInput.value) {
+            showErrorValidation("Обязательное поле", currentAccountError);
+            validate = false;
+          }
+          if (
+            currentAccountInput.value &&
+            currentAccountInput.value.length < 20
+          ) {
+            showErrorValidation(
+              "Cчет должен состоять из 20 цифр",
+              currentAccountError
+            );
+            validate = false;
+          }
+          if (!bankValueInput.value) {
+            showErrorValidation("Обязательное поле", bankValueError);
+            validate = false;
+          }
+
+          if (!correspondentAccountInput.value) {
+            showErrorValidation("Обязательное поле", currentAccountError);
+            validate = false;
+          }
+          if (
+            correspondentAccountInput.value &&
+            correspondentAccountInput.value.length < 20
+          ) {
+            showErrorValidation(
+              "Cчет должен состоять из 20 цифр",
+              correspondentAccountError
+            );
+            validate = false;
+          }
+          if (!bic.value) {
+            showErrorValidation("Обязательное поле", bicError);
+            validate = false;
+          }
+          if (bic.value && bic.value.length < 9) {
+            showErrorValidation("Бик должен состоять из 9 цифр", bicError);
+            validate = false;
+          }
+
+          if (validate) {
+            const dataObj = {
+              account_requisites: currentAccountInput.value,
+              bank: bankValueInput.value,
+              kpp: correspondentAccountInput.value,
+              bic: bic.value,
+            };
+
+            const data = JSON.stringify(dataObj);
+
+            fetch(`/api/v1/accountreq/${bankDetailId}/`, {
+              method: "PATCH",
+              body: data,
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+            }).then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              } else {
+                throw new Error("Ошибка");
+              }
+            });
+          }
+        };
+      });
     });
   }
 });

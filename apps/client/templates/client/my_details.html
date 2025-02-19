@@ -80,9 +80,8 @@
                                         <div class="title">Расчётный счёт</div>
                                         <div class="bank-details">
                                             {% for bank_detail in detail.accountrequisites_set.all %}
-                                                <div class="bank_detail">
+                                                <div class="bank_detail" data-bank-datail-id="{{ bank_detail.id }}">
                                                     <label>
-                                                        {% comment %} <span>Расчётный счёт {{ forloop.counter }}:</span> {% endcomment %}
                                                         <input value="{{ bank_detail.account_requisites }}"
                                                                class="bank_detail-current_account"
                                                                type="text"
@@ -90,7 +89,6 @@
                                                         <div class="error bank_detail-current_account_error"></div>
                                                     </label>
                                                     <label>
-                                                        {% comment %} <span>Банк:</span> {% endcomment %}
                                                         <input value="{{ bank_detail.bank }}"
                                                                class="bank_detail-bank"
                                                                type="text"
@@ -98,7 +96,6 @@
                                                         <div class="error bank_detail-bank_error"></div>
                                                     </label>
                                                     <label>
-                                                        {% comment %} <span>Корреспондентский счёт:</span> {% endcomment %}
                                                         <input value="{{ bank_detail.kpp }}"
                                                                class="bank_detail-correspondent_account"
                                                                type="text"
@@ -106,7 +103,6 @@
                                                         <div class="error bank_detail-correspondent_account_error"></div>
                                                     </label>
                                                     <label>
-                                                        {% comment %} <span>БИК:</span> {% endcomment %}
                                                         <input value="{{ bank_detail.bic }}"
                                                                class="bank_detail-bic"
                                                                type="text"

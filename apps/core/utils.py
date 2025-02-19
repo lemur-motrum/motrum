@@ -1752,7 +1752,7 @@ def send_requests(url, headers, data, auth):
         e = error_alert(error, location, info)
 
         response = requests.request(
-            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=certifi.where()
+            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=False
         )
 
         print(response.text)

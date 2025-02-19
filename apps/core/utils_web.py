@@ -270,11 +270,11 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
             "product": product.id,
             "product_currency": price.currency.id,
             "quantity": quantity,
-            "price_one": price_one,
-            "product_price_catalog":price_one,
-            "price_all": price_all,
-            "price_one_motrum": price_one_motrum,
-            "price_all_motrum": price_all_motrum,
+            "price_one": None,
+            "product_price_catalog":None,
+            "price_all": None,
+            "price_one_motrum": None,
+            "price_all_motrum": None,
             "price_exclusive": price.extra_price,
             "extra_discount": extra_discount,
             "sale_motrum":sale_motrum
@@ -310,5 +310,6 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
             "price_exclusive": price.extra_price,
             "extra_discount": extra_discount,
             "sale_motrum":sale_motrum
+
         }
     return product_item_data

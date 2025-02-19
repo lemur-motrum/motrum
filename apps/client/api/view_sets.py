@@ -54,6 +54,7 @@ from apps.client.api.serializers import (
     OrderSaveCartSerializer,
     OrderSerializer,
     PhoneClientSerializer,
+    RequisitesAddressSerializer,
     RequisitesSerializer,
     RequisitesToOktOrderSerializer,
     RequisitesV2Serializer,
@@ -523,8 +524,8 @@ class RequisitesViewSet(viewsets.ModelViewSet):
 
 class RequisitesAddressViewSet(viewsets.ModelViewSet):
     queryset = RequisitesAddress.objects.all()
-    serializer_class = RequisitesV2Serializer
-    http_method_names = ["get", "post", "patch"]
+    serializer_class = RequisitesAddressSerializer
+    http_method_names = ["get", "post", "patch","put"]
 
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):

@@ -262,6 +262,8 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
     from apps.core.utils import get_presale_discount
 
     price = Price.objects.get(prod=product)
+    sale_motrum = price.get_sale_price_motrum()
+    
     if price.extra_price:
         product_item_data = {
             "id_cart": product_item_cart.id,
@@ -270,11 +272,11 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
             "product": product.id,
             "product_currency": price.currency.id,
             "quantity": quantity,
-            "price_one": None,
-            "product_price_catalog":None,
-            "price_all": None,
-            "price_one_motrum": None,
-            "price_all_motrum": None,
+            "price_one": 0,
+            "product_price_catalog":0,
+            "price_all": 0,
+            "price_one_motrum": 0,
+            "price_all_motrum": 0,
             "price_exclusive": price.extra_price,
             "extra_discount": extra_discount,
             "sale_motrum":sale_motrum
@@ -285,7 +287,7 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
 
         price_one = price.rub_price_supplier
         price_one_motrum = price.price_motrum
-        sale_motrum = price.get_sale_price_motrum()
+        
         # if extra_discount:
         #     price_one = price_one - (price_one / 100 * float(extra_discount))
         #     price_one = round(price_one, 2)

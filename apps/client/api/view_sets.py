@@ -552,113 +552,169 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
-        data = {
-            "client": 23,
-            "cart": 305,
-            "requisitesKpp": 15,
-            "account_requisites": 21,
-        }
-        cart = int(data["cart"])
-        cart = Cart.objects.get(id=data["cart"])
-        client = cart.client
-        # extra_discount = client.percent
-        extra_discount = None
+        try:
 
-        products_cart = ProductCart.objects.filter(cart_id=cart)
-        all_info_requisites = False
-        all_info_product = True
-        requisites_id = None
-        account_requisites_id = None
-        # motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
-        motrum_requisites = None
+            with transaction.atomic():
+                data = {
+                    "client": 23,
+                    "cart": 305,
+                    "requisitesKpp": 15,
+                    "account_requisites": 21,
+                    "type_delivery": 1
+                }
+                cart = int(data["cart"])
+                cart = Cart.objects.get(id=data["cart"])
+                client = cart.client
+                # extra_discount = client.percent
+                extra_discount = None
 
-        if "requisitesKpp" in data:
-            all_info_requisites = True
-            requisitesKpp = RequisitesOtherKpp.objects.get(id=data["requisitesKpp"])
-            requisitesKpp_id = requisitesKpp.id
-            requisites_id = requisitesKpp.requisites.id
-            requisites = Requisites.objects.get(id=requisites_id)
-            account_requisites = AccountRequisites.objects.get(
-                id=data["account_requisites"]
-            )
-            account_requisites_id = account_requisites.id
+                products_cart = ProductCart.objects.filter(cart_id=cart)
+                all_info_requisites = False
+                all_info_product = True
+                requisites_id = None
+                account_requisites_id = None
+                # motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
+                motrum_requisites = None
+                type_delivery = data['type_delivery']
+                if "requisitesKpp" in data:
+                    all_info_requisites = True
+                    requisitesKpp = RequisitesOtherKpp.objects.get(id=data["requisitesKpp"])
+                    requisitesKpp_id = requisitesKpp.id
+                    requisites_id = requisitesKpp.requisites.id
+                    requisites = Requisites.objects.get(id=requisites_id)
+                    account_requisites = AccountRequisites.objects.get(
+                        id=data["account_requisites"]
+                    )
+                    account_requisites_id = account_requisites.id
 
-        for product_cart in products_cart:
-            if product_cart.product.price.rub_price_supplier == 0:
-                all_info_product = False
+                for product_cart in products_cart:
+                    if product_cart.product.price.rub_price_supplier == 0:
+                        all_info_product = False
 
-        # сохранение спецификации для заказа с реквизитами
-        
-        
-        if all_info_requisites and all_info_product:
-            status_save_spes, specification, specification_name = save_spesif_web(
-                cart, products_cart, extra_discount, requisites
-            )
-            print(" status_save_spes, specification, specification_name", status_save_spes, specification, specification_name)
-            if status_save_spes == "ok" and specification_name:
-                # pdf = crete_pdf_specification(
-                #     specification.id,
-                #     requisites,
-                #     account_requisites,
-                #     request,
-                #     motrum_requisites,
-                #     None,
-                #     "paid_delivery",
-                #     False,
-                #     specification_name,
-                # )
+                # сохранение спецификации для заказа с реквизитами
+                
+                
+                if all_info_requisites and all_info_product:
+                    status_save_spes, specification, specification_name = save_spesif_web(
+                        cart, products_cart, extra_discount, requisites
+                    )
+                    print(" status_save_spes, specification, specification_name", status_save_spes, specification, specification_name)
+                    if status_save_spes == "ok" and specification_name:
+                        status_order = "PROCESSING"
+                        
+                    try:
+                        
+                        order = Order.objects.get(cart_id=cart)
+                        pass
+                    except Order.DoesNotExist:
+                        data_order = {
+                            "client": client,
+                            "name": None,
+                            "specification": specification.id,
+                            "requisites": requisites.id,
+                            "account_requisites": account_requisites.id,
+                            "status": "PROCESSING",
+                            "cart": cart.id,
+                            "bill_name": None,
+                            "bill_file": None,
+                            "bill_date_start": None,
+                            "bill_date_stop": None,
+                            "bill_sum": None,
+                            # "comment": data["comment"],
+                            "prepay_persent": requisites.prepay_persent,
+                            "postpay_persent": requisites.postpay_persent,
+                            # "motrum_requisites": motrum_requisites.id,
+                            "id_bitrix": None,
+                            "type_delivery": type_delivery,
+                            # "manager": admin_creator_id,
+                        }
 
-                # if pdf:
-                #     specification.file = pdf
-                #     specification._change_reason = "Ручное"
-                #     specification.save()
+                        serializer = self.serializer_class(data=data_order, many=False)
 
-                # status_order = "PROCESSING"
-                # # сохранение ордера
+                        if serializer.is_valid():
+                            print("serializer.is_valid(ORDER):")
+                            cart.is_active = True
+                            cart.save()
+                            serializer.save()
 
-                # serializer_class = OrderSerializer
-                # data_order = {
-                #     "client": client,
-                #     "name": 123131,
-                #     "specification": specification.id,
-                #     "cart": cart.id,
-                #     # "status": status_order,
-                #     "requisites": requisites_id,
-                #     "account_requisites": account_requisites_id,
-                #     "bill_name": None,
-                #     "bill_file": None,
-                #     "bill_date_start": None,
-                #     "bill_date_stop": None,
-                #     "bill_sum": None,
-                #     # "prepay_persent": 100,
-                #     # "postpay_persent": 0,
-                #     # "motrum_requisites": motrum_requisites.id,
-                #     "id_bitrix": None,
-                #     # "type_delivery": "paid_delivery",
-                # }
+                            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                        else:
+                            print(serializer.errors)
+                            return Response(
+                                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                            )
+                        
+                        # pdf = crete_pdf_specification(
+                        #     specification.id,
+                        #     requisites,
+                        #     account_requisites,
+                        #     request,
+                        #     motrum_requisites,
+                        #     None,
+                        #     "paid_delivery",
+                        #     False,
+                        #     specification_name,
+                        # )
 
-                # status_save_order, data = save_order_web(
-                #     request, data_order, all_info_requisites, all_info_product
-                # )
-                status_save_order = "ok"
-                if status_save_order == "ok":
+                        # if pdf:
+                        #     specification.file = pdf
+                        #     specification._change_reason = "Ручное"
+                        #     specification.save()
 
-                    # cart.is_active = True
-                    # cart.save()
-                    return Response(data, status=status.HTTP_200_OK)
-                else:
-                    return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            else:
+                        
+                        # # сохранение ордера
+
+                        # serializer_class = OrderSerializer
+                        # data_order = {
+                        #     "client": client,
+                        #     "name": 123131,
+                        #     "specification": specification.id,
+                        #     "cart": cart.id,
+                        #     # "status": status_order,
+                        #     "requisites": requisites_id,
+                        #     "account_requisites": account_requisites_id,
+                        #     "bill_name": None,
+                        #     "bill_file": None,
+                        #     "bill_date_start": None,
+                        #     "bill_date_stop": None,
+                        #     "bill_sum": None,
+                        #     # "prepay_persent": 100,
+                        #     # "postpay_persent": 0,
+                        #     # "motrum_requisites": motrum_requisites.id,
+                        #     "id_bitrix": None,
+                        #     # "type_delivery": "paid_delivery",
+                        # }
+
+                #         status_save_order, data = save_order_web(
+                #             request, data_order, all_info_requisites, all_info_product
+                #         )
+                #         status_save_order = "ok"
+                #         if status_save_order == "ok":
+
+                #             # cart.is_active = True
+                #             # cart.save()
+                #             return Response(data, status=status.HTTP_200_OK)
+                #         else:
+                #             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+                #     else:
+                #         return Response(
+                #             "товары без цены или заказ без реквизитов",
+                #             status=status.HTTP_400_BAD_REQUEST,
+                #         )
+                # else:
                 return Response(
-                    "товары без цены или заказ без реквизитов",
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        else:
-            return Response(
-                "товары без цены или заказ без реквизитов",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+                        "",
+                        status=status.HTTP_200_OK,
+                    )
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "error"
+            location = "Сохранение спецификации админам окт"
+            info = f" ошибка {e}{tr}"
+            e = error_alert(error, location, info)
+            
+            
     # сохранение рыбы Заказа БИТРИКС
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):

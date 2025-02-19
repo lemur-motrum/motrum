@@ -1513,7 +1513,7 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
 
                         else:
 
-                            return ("error", serializer_prod.errors, specification_name)
+                            return ("error", serializer_prod.errors, None)
                         total_amount += float(item_data["price_all"])
 
                     # обновить спецификацию пдф

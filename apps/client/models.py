@@ -421,8 +421,11 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+   
     name = models.PositiveIntegerField(
         "номер заказа",
+        blank=True,
+        null=True,
     )
     text_name = models.CharField(
         max_length=500,

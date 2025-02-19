@@ -1749,9 +1749,12 @@ def send_requests(url, headers, data, auth):
         )
 
         print(response.text)
+        import ssl
+        paths = ssl.get_default_verify_paths()
+        certifi1 = certifi.where()
         error = "error"
         location = "отправка requests"
-        info = f"отправка requests {response.text}"
+        info = f"отправка requests {paths} / {certifi1}"
         e = error_alert(error, location, info)
 
         # response = requests.request(

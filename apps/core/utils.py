@@ -1743,6 +1743,7 @@ def send_requests(url, headers, data, auth):
         auth = HTTPBasicAuth(
                 os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
             )
+        import ssl
         paths = ssl.get_default_verify_paths()
         certifi1 = certifi.where()
         error = "error"
@@ -1755,7 +1756,7 @@ def send_requests(url, headers, data, auth):
         )
 
         print(response.text)
-        import ssl
+        
         
 
         # response = requests.request(

@@ -458,7 +458,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 region: regionInput.value ? regionInput.value : null,
                 province: null,
                 post_code: legalIndexInput.value,
-                city: cityInput.value ? cityInput.value : legalCityInput.value,
+                city: cityInput.value ? cityInput.value : null,
                 legal_address1: legalAdressInput.value,
                 legal_address2: legalAddressHouseInput.value
                   ? legalAddressHouseInput.value

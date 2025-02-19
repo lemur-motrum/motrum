@@ -1727,7 +1727,7 @@ def send_requests(url, headers, data, auth):
         headers = {"Authorization": "Basic Qk1HT1RLOjEyMzQ="}
 
         response = requests.request(
-            "POST", url, headers=headers, data=payload, allow_redirects=False,verify=False
+            "POST", url, headers=headers, data=payload, allow_redirects=False
         )
 
         print(response.text)
@@ -1751,7 +1751,7 @@ def send_requests(url, headers, data, auth):
         print(response.text)
         error = "error"
         location = "отправка requests"
-        info = f"отправка requests {response.text}"
+        info = f"отправка requests {response}{response.text}"
         e = error_alert(error, location, info)
 
         # response = requests.request(

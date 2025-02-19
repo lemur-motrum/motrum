@@ -536,6 +536,7 @@ class AccountRequisitesViewSet(viewsets.ModelViewSet):
         "get",
         "post",
         "put",
+        "patch"
     ]
 
 

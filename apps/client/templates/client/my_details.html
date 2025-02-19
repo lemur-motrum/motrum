@@ -276,25 +276,32 @@
                 <div>
                     <div class="new_legal_entity">
                         <form class="legal_entity_form">
+                            <input type="hidden" class="country_input" />
+                            <input type="hidden" class="region_input" />
+                            <input type="hidden" class="city_input" />
                             <div class="head_details">
                                 <label>
-                                    <input class="name" type="text" placeholder="Наименование юрлица" />
+                                    <input class="name" type="text" placeholder="Наименование юрлица" disabled />
                                     <div class="error new_legal_entity_name_error"></div>
                                 </label>
                                 <label>
                                     <input class="inn" type="text" placeholder="ИНН" />
                                     <div class="error new_legal_entity_inn_error"></div>
+                                    <div class="legal_entitis_container">
+                                        <div class="legal_entitis_search_elems"></div>
+                                        <div class="add_new_legal_entity">ввести вручную</div>
+                                    </div>
                                 </label>
                                 <label>
-                                    <input class="kpp" type="text" placeholder="КПП" />
+                                    <input class="kpp" type="text" placeholder="КПП" disabled />
                                     <div class="error new_legal_entity_kpp_error"></div>
                                 </label>
                                 <label>
-                                    <input class="ogrn" type="text" placeholder="ОГРН\ОГНИП" />
+                                    <input class="ogrn" type="text" placeholder="ОГРН\ОГНИП" disabled />
                                     <div class="error new_legal_entity_ogrn_error"></div>
                                 </label>
                                 <label>
-                                    <input class="phone" type="text" placeholder="Телефон юрлица" />
+                                    <input class="phone" type="text" placeholder="Телефон юрлица" disabled />
                                     <div class="error phone_error"></div>
                                 </label>
                             </div>
@@ -302,23 +309,25 @@
                                 <div class="title">Юридический адрес</div>
                                 <div class="labels">
                                     <label>
-                                        <input class="legal-adress-index" type="text" placeholder="Индекс" />
+                                        <input class="legal-adress-index" type="text" placeholder="Индекс" disabled />
                                         <div class="error new_legal_entity_legal_adress_index_error"></div>
                                     </label>
                                     <label>
-                                        <input class="legal-adress-city" type="text" placeholder="Город" />
+                                        <input class="legal-adress-city" type="text" placeholder="Город" disabled />
                                         <div class="error new_legal_entity_legal_adress_city_error"></div>
                                     </label>
                                     <label>
                                         <input class="legal-adress-adress"
                                                type="text"
-                                               placeholder="Улица, номер дома" />
+                                               placeholder="Улица, номер дома"
+                                               disabled />
                                         <div class="error new_legal_entity_legal_adress_adress_error"></div>
                                     </label>
                                     <label>
                                         <input class="legal-adress-adress-appartments"
                                                type="text"
-                                               placeholder="Квартира, офис" />
+                                               placeholder="Квартира, офис"
+                                               disabled />
                                         <div class="error new_legal_entity_legal_adress_appartments_error"></div>
                                     </label>
                                 </div>
@@ -329,21 +338,26 @@
                                     <label>
                                         <input class="bank-details-input-current-account"
                                                type="text"
-                                               placeholder="Расчетный счет" />
+                                               placeholder="Расчетный счет"
+                                               disabled />
                                         <div class="error new_legal_entity_bank_current_account_error"></div>
                                     </label>
                                     <label>
-                                        <input class="bank-details-input-bank" type="text" placeholder="Банк" />
+                                        <input class="bank-details-input-bank"
+                                               type="text"
+                                               placeholder="Банк"
+                                               disabled />
                                         <div class="error new_legal_entity_bank_error"></div>
                                     </label>
                                     <label>
                                         <input class="bank-details-input-correspondent-account"
                                                type="text"
-                                               placeholder="Корреспондентский счёт">
+                                               placeholder="Корреспондентский счёт"
+                                               disabled>
                                         <div class="error new_legal_entity_bank_correspondent_account_error"></div>
                                     </label>
                                     <label>
-                                        <input class="bank-details-input-bik" type="text" placeholder="БИК" />
+                                        <input class="bank-details-input-bik" type="text" placeholder="БИК" disabled />
                                         <div class="error new_legal_entity_bank_bik_error"></div>
                                     </label>
                                 </div>

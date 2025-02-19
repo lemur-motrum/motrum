@@ -1183,6 +1183,9 @@
                       color: transparent;
                     }
                   }
+                  &:disabled {
+                    filter: opacity(50%);
+                  }
                 }
                 .error {
                   position: absolute;
@@ -1194,6 +1197,52 @@
                   transition: 0.6s;
                   &.show {
                     opacity: 1;
+                  }
+                }
+                .legal_entitis_container {
+                  position: absolute;
+                  top: 100%;
+                  left: 0;
+                  width: 100%;
+                  max-height: 5rem;
+                  border: 0.094rem solid #000;
+                  overflow: auto;
+                  z-index: 100;
+                  display: none;
+                  &.show {
+                    display: block;
+                  }
+                  .legal_entitis_search_elems {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 0;
+                    .legal_entitis_search_elem {
+                      padding: 0.75rem;
+                      font-size: 1.125rem;
+                      font-weight: 300;
+                      cursor: pointer;
+                      box-sizing: border-box;
+                      margin: 0;
+                      div {
+                        margin: 0;
+                      }
+                      &:hover {
+                        background-color: #95bad4;
+                        color: #fff;
+                      }
+                    }
+                  }
+                  .add_new_legal_entity {
+                    padding: 0.75rem;
+                    font-size: 1.125rem;
+                    font-weight: 300;
+                    cursor: pointer;
+                    box-sizing: border-box;
+                    margin: 0;
+                    &:hover {
+                      background-color: #95bad4;
+                      color: #fff;
+                    }
                   }
                 }
               }
@@ -1237,6 +1286,9 @@
                     padding: 1.125rem 1.938rem;
                     font-family: "Nunito", sans-serif;
                     font-size: 1.125rem;
+                    &:disabled {
+                      filter: opacity(50%);
+                    }
                     &::-webkit-input-placeholder {
                       color: #000;
                     }
@@ -1438,6 +1490,9 @@
                     padding: 1.125rem 1.938rem;
                     font-family: "Nunito", sans-serif;
                     font-size: 1.125rem;
+                    &:disabled {
+                      filter: opacity(50%);
+                    }
                     &::-webkit-input-placeholder {
                       color: #000;
                     }

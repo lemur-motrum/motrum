@@ -122,17 +122,43 @@ window.addEventListener("DOMContentLoaded", () => {
         correspondentAccount,
         accountMaskOptions
       );
-      const bik = newLegalEntityForm.querySelector(".bank-details-input-bik");
+      const bic = newLegalEntityForm.querySelector(".bank-details-input-bik");
       const newLegalEntityBicError = newLegalEntityForm.querySelector(
         ".new_legal_entity_bank_bik_error"
       );
       const bicMaskOptions = {
         mask: "000000000",
       };
-      const bicMask = IMask(bik, bicMaskOptions);
+      const bicMask = IMask(bic, bicMaskOptions);
+      const countryInput = newLegalEntityForm.querySelector(".country_input");
+      const regionInput = newLegalEntityForm.querySelector(".region_input");
+      const cityInput = newLegalEntityForm.querySelector(".city_input");
+
+      const legalEntitiesContainer = newLegalEntityForm.querySelector(
+        ".legal_entitis_container"
+      );
+      const legalEntitiesSearchContainer = legalEntitiesContainer.querySelector(
+        ".legal_entitis_search_elems"
+      );
+      const addNewLegalEntityBtn = legalEntitiesContainer.querySelector(
+        ".add_new_legal_entity"
+      );
+
+      function enabledInputs() {
+        const inputs = newLegalEntityForm.querySelectorAll("input");
+        inputs.forEach((el) => {
+          el.disabled = false;
+        });
+      }
+      function clearInputs() {
+        const inputs = newLegalEntityForm.querySelectorAll("input");
+        inputs.forEach((el) => {
+          el.value = "";
+        });
+      }
 
       innInput.oninput = () => {
-        if (innInput.value.length >= 5) {
+        if (innInput.value.length >= 9) {
           const data = JSON.stringify({ inn: innInput.value });
           fetch("/api/v1/requisites/serch-requisites/", {
             method: "POST",
@@ -143,7 +169,130 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           })
             .then((response) => response.json(Text))
-            .then((response) => console.log(response));
+            .then((response) => {
+              legalEntitiesSearchContainer.innerHTML = "";
+              response.forEach((el) => {
+                legalEntitiesSearchContainer.innerHTML += `<div class="legal_entitis_search_elem"><div class="name">${
+                  el["data"]["name"]["short_with_opf"]
+                }</div><div style="display:none" class="inn">${
+                  el["data"]["inn"]
+                }</div><div style="display:none" class="kpp">${
+                  el["data"]["kpp"] ? el["data"]["kpp"] : ""
+                }</div><div style="display:none" class="orgn">${
+                  el["data"]["ogrn"]
+                }</div><div style="display:none" class="address_postal_code">${
+                  el["data"]["address"]["data"]["postal_code"]
+                }</div><div style="display:none" class="address_city">
+                ${
+                  el["data"]["address"]["data"]["region_with_type"]
+                    ? el["data"]["address"]["data"]["region_with_type"] + ", "
+                    : ""
+                }
+                ${
+                  el["data"]["address"]["data"]["city"]
+                    ? el["data"]["address"]["data"]["city"]
+                    : ""
+                }</div><div style="display:none" class="address_street">${
+                  el["data"]["address"]["data"]["settlement_with_type"]
+                    ? el["data"]["address"]["data"]["settlement_with_type"]
+                    : ""
+                }
+                ${
+                  el["data"]["address"]["data"]["street_with_type"]
+                    ? el["data"]["address"]["data"]["street_with_type"] + ", "
+                    : ""
+                }${
+                  el["data"]["address"]["data"]["house_type"]
+                    ? el["data"]["address"]["data"]["house_type"] + "."
+                    : ""
+                }${
+                  el["data"]["address"]["data"]["house"]
+                    ? el["data"]["address"]["data"]["house"]
+                    : ""
+                }</div><div style="display:none" class="address_apartments">${
+                  el["data"]["address"]["data"]["flat_type"]
+                    ? el["data"]["address"]["data"]["flat_type"]
+                    : ""
+                } ${
+                  el["data"]["address"]["data"]["flat"]
+                    ? el["data"]["address"]["data"]["flat"]
+                    : ""
+                }
+                ${
+                  el["data"]["address"]["data"]["room_type"]
+                    ? el["data"]["address"]["data"]["room_type"]
+                    : ""
+                }
+                ${
+                  el["data"]["address"]["data"]["room"]
+                    ? el["data"]["address"]["data"]["room"]
+                    : ""
+                }
+                </div>
+                <div style="display:none" class="country">${
+                  el["data"]["address"]["data"]["country"]
+                }</div>
+                <div style="display:none" class="region">${
+                  el["data"]["address"]["data"]["region_with_type"]
+                }</div><div style="display:none" class="city">
+                     ${el["data"]["address"]["data"]["city"]}
+                </div>
+                </div>`;
+              });
+              legalEntitiesContainer.classList.add("show");
+              const searchElems = legalEntitiesContainer.querySelectorAll(
+                ".legal_entitis_search_elem"
+              );
+              searchElems.forEach((el) => {
+                el.onclick = () => {
+                  const name = el.querySelector(".name");
+                  const inn = el.querySelector(".inn");
+                  const kpp = el.querySelector(".kpp");
+                  const orgn = el.querySelector(".orgn");
+                  const postalIndex = el.querySelector(".address_postal_code");
+                  const leagalCity = el.querySelector(".address_city");
+                  const leagalAddressOne = el.querySelector(".address_street");
+                  const legalAddressTwo = el.querySelector(
+                    ".address_apartments"
+                  );
+                  const country = el.querySelector(".country");
+                  const region = el.querySelector(".region");
+                  const city = el.querySelector(".city");
+
+                  nameInput.value = name.textContent;
+                  innInput.value = inn.textContent;
+                  kppInput.value = kpp.textContent;
+                  orgnInput.value = orgn.textContent;
+                  legalIndexInput.value = postalIndex.textContent;
+                  legalCityInput.value = leagalCity.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  legalAdressInput.value = leagalAddressOne.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  legalAddressHouseInput.value = legalAddressTwo.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  countryInput.value = country.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  regionInput.value = region.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  cityInput.value = city.textContent.replace(/ +/g, " ").trim();
+
+                  enabledInputs();
+                  legalEntitiesContainer.classList.remove("show");
+                };
+              });
+              addNewLegalEntityBtn.onclick = () => {
+                enabledInputs();
+                let value = innInput.value;
+                clearInputs();
+                innInput.value = value;
+                legalEntitiesContainer.classList.remove("show");
+              };
+            });
         }
       };
 
@@ -174,11 +323,15 @@ window.addEventListener("DOMContentLoaded", () => {
           validate = false;
         }
 
-        if (!kppInput.value) {
+        if (innInput.value.length < 12 && !kppInput.value) {
           showErrorValidation("Обязаятельное поле", newLegalEntityKppError);
           validate = false;
         }
-        if (kppInput.value && kppInput.value.length < 9) {
+        if (
+          innInput.value.length < 12 &&
+          kppInput.value &&
+          kppInput.value.length < 9
+        ) {
           showErrorValidation(
             "КПП должен состоять из 9 цифр",
             newLegalEntityKppError
@@ -231,17 +384,17 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           validate = false;
         }
-        if (!legalAdressInput.value) {
-          showErrorValidation(
-            "Обязательное поле",
-            newLegalEntityLegalAdressError
-          );
-          validate = false;
-        }
-        if (!legalAddressHouseInput.value) {
-          showErrorValidation("Обязательное поле", legalAddressHouseError);
-          validate = false;
-        }
+        // if (!legalAdressInput.value) {
+        //   showErrorValidation(
+        //     "Обязательное поле",
+        //     newLegalEntityLegalAdressError
+        //   );
+        //   validate = false;
+        // }
+        // if (!legalAddressHouseInput.value) {
+        //   showErrorValidation("Обязательное поле", legalAddressHouseError);
+        //   validate = false;
+        // }
         if (!currentAccount.value) {
           showErrorValidation(
             "Обязательное поле",
@@ -277,11 +430,11 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           validate = false;
         }
-        if (!bik.value) {
+        if (!bic.value) {
           showErrorValidation("Обязательное поле", newLegalEntityBicError);
           validate = false;
         }
-        if (bik.value && bik.value.length < 9) {
+        if (bic.value && bic.value.length < 9) {
           showErrorValidation(
             "Бик должен состоять из 9 цифр",
             newLegalEntityBicError
@@ -289,29 +442,38 @@ window.addEventListener("DOMContentLoaded", () => {
           validate = false;
         }
         if (validate) {
-          const dataObj = [
-            {
-              requisites: {
-                legal_entity: nameInput.value,
-                inn: innInput.value,
-                kpp: kppInput.value,
-                ogrn: orgnInput.value,
-                legal_post_code: legalIndexInput.value,
-                legal_city: legalCityInput.value,
-                legal_address: legalAdressInput.value,
-                client: clientId,
-              },
-              account_requisites: [
-                {
-                  account_requisites: currentAccount.value,
-                  bank: bank.value,
-                  kpp: correspondentAccount.value,
-                  bic: bik.value,
-                  requisites: null,
-                },
-              ],
+          const dataObj = {
+            requisites: {
+              client: clientId,
+              legal_entity: nameInput.value,
+              inn: innInput.value,
             },
-          ];
+            requisitesKpp: {
+              kpp: kppInput.value,
+              ogrn: orgnInput.value,
+            },
+            adress: {
+              legal_adress: {
+                country: countryInput.value ? countryInput.value : null,
+                region: regionInput.value ? regionInput.value : null,
+                province: null,
+                post_code: legalIndexInput.value,
+                city: cityInput.value ? cityInput.value : legalCityInput.value,
+                legal_address1: legalAdressInput.value,
+                legal_address2: legalAddressHouseInput.value
+                  ? legalAddressHouseInput.value
+                  : null,
+              },
+            },
+            account_requisites: [
+              {
+                account_requisites: currentAccount.value,
+                bank: bank.value,
+                kpp: correspondentAccount.value,
+                bic: bic.value,
+              },
+            ],
+          };
 
           const data = JSON.stringify(dataObj);
 
@@ -325,7 +487,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             response.json();
             if (response.status == 200) {
-              // window.location.reload();
+              console.log("ok");
             }
             if (response.status == 400) {
               console.log("Ошибка");

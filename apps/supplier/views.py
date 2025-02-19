@@ -49,10 +49,9 @@ from fast_bitrix24 import Bitrix
 def add_iek(request):
    
     title = "TEST"
-    url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
-    headers = {"Content-type": "application/json"}
-    response = send_requests(url, headers, None)
-    
+    import ssl
+    paths = ssl.get_default_verify_paths()
+    print(paths)
     
     result = 1
     if result:

@@ -19,8 +19,7 @@ from apps import supplier
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
-
-
+from requests.auth import HTTPBasicAuth
 
 
 from apps.specification.utils import crete_pdf_specification
@@ -841,7 +840,7 @@ def save_update_product_attr(
 ):
 
     try:
-      
+
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
 
@@ -1069,7 +1068,7 @@ def save_specification(
                 )
 
             product_spes.price_exclusive = product_item["price_exclusive"]
-            product_spes.product_currency = price_okt.currency.id
+            product_spes.product_currency = price_okt.currency
             product_spes.quantity = product_item["quantity"]
             product_spes.price_all = price_all
             product_spes.price_one = price_one
@@ -1447,7 +1446,7 @@ def number_specification(type_save):
     return specification_name
 
 
-def save_spesif_web(cart, products_cart, extra_discount,requisites):
+def save_spesif_web(cart, products_cart, extra_discount, requisites):
     from apps.specification.api.serializers import (
         SpecificationSerializer,
         ProductSpecificationSaveSerializer,
@@ -1455,25 +1454,25 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
     from apps.specification.models import Specification
     from apps.product.models import Product
     from apps.core.utils_web import get_product_item_data
+
     print("save_spesif_web")
     try:
         with transaction.atomic():
             serializer_class_specification = SpecificationSerializer
             data_stop = create_time_stop_specification()
             # specification_name = number_specification("specification")
-            
-            #TODO:сохранять номер если все ок
+
+            # TODO:сохранять номер если все ок
             # specification_name = requisites.number_spec + 1
             # requisites.number_spec = specification_name
-            
-            
+
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
                 "id_bitrix": None,
                 "date_stop": data_stop,
                 # "number": specification_name,
-                "tag_stop": True
+                "tag_stop": True,
             }
             print(data_specification)
             date_delivery_all = None
@@ -1494,7 +1493,11 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
                         quantity = product_item.quantity
                         product = Product.objects.get(id=product_item.product.id)
                         item_data = get_product_item_data(
-                            specification, product, extra_discount, quantity,product_item,
+                            specification,
+                            product,
+                            extra_discount,
+                            quantity,
+                            product_item,
                         )
 
                         serializer_class_specification_product = (
@@ -1521,11 +1524,10 @@ def save_spesif_web(cart, products_cart, extra_discount,requisites):
                     # specification.skip_history_when_saving = True
                     specification.save()
                     if requisites.contract:
-                       
+
                         specification_name = requisites.number_spec + 1
                         requisites.number_spec = specification_name
 
-                        
                         # креаотить пдф
                         pdf = None
 
@@ -1712,16 +1714,62 @@ def client_info_bitrix(data, company_adress):
     return (client_req, acc_req)
 
 
-def send_requests(url, headers, data):
+def send_requests(url, headers, data, auth):
     import requests
-    print(url, headers,)
-    response = requests.post(url, headers=headers, data=data, json=data)
+
+    if auth == "1c":
+        print("auth1c")
+        
+        # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+
+        # payload = {}
+        # headers = {
+        # 'Authorization': 'Basic Qk1HT1RLOjEyMzQ='
+        # }
+
+        # response = requests.request("POST", url, headers=headers, data=payload, allow_redirects=False)
+
+        # print(response.text)
+        
+        payload = data
+        print(payload)
+        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+
+        payload = {}
+        headers = {
+            # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
+            }
+        auth = HTTPBasicAuth(
+                os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
+            )
+        
+        response = requests.request(
+            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False
+        )
+
+        # print(response.text)
+        
+        # response = requests.request(
+        #     "POST",
+        #     url,
+        #     auth=HTTPBasicAuth(
+        #         os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
+        #     ),
+        #     headers=headers,
+        #     data=payload,
+        #     verify=False,
+        #     # allow_redirects=False,
+        # )
+    else:
+        response = requests.post(url, headers=headers, data=data, json=data)
+
+    print(response)
     if response.status_code != 200:
         error = "error"
         location = "отправка requests"
         info = f"отправка requests {response}"
         e = error_alert(error, location, info)
-        
+
     return response.status_code
     # print(response.status_code)
     # print(response.text)
@@ -1729,13 +1777,17 @@ def send_requests(url, headers, data):
 
     # else:
     #     print('Request failed with status code:', response.status_code)
+
+
 def json_serial(obj):
     from datetime import date, datetime
+
     """JSON serializer for objects not serializable by default json code"""
 
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
-    raise TypeError ("Type %s not serializable" % type(obj))
+    raise TypeError("Type %s not serializable" % type(obj))
+
 
 def after_save_order_products(products):
     from apps.specification.models import ProductSpecification
@@ -1802,7 +1854,7 @@ def create_info_request_order_bitrix(
 
 def create_info_request_order_1c(order, order_products):
     from apps.specification.models import Specification
-    
+
     specifications = Specification.objects.get(id=order.specification.id)
 
     print(specifications)
@@ -1811,20 +1863,20 @@ def create_info_request_order_1c(order, order_products):
         if order.manager.middle_name:
             name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
     else:
-        
+
         if specifications.admin_creator:
             name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
             if specifications.admin_creator.middle_name:
                 name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
         else:
             name_admin = " "
-            
+
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
         },
         "client": {
-            "type":order.requisites.get_type_client(),
+            "type": order.requisites.get_type_client(),
             # "id_bitrix": order.id_bitrix,
             # "legal_entity_motrum": None,
             "contract": order.requisites.contract,
@@ -1844,7 +1896,6 @@ def create_info_request_order_1c(order, order_products):
             "bank": order.account_requisites.bank,
             "ks": int(order.account_requisites.kpp),
             "bic": int(order.account_requisites.bic),
-            
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,
@@ -1854,7 +1905,7 @@ def create_info_request_order_1c(order, order_products):
             "data_invoice": order.bill_date_start.isoformat(),
             "prepay_persent": order.requisites.prepay_persent,
             "postpay_persent": order.requisites.postpay_persent,
-            "manager_invoice":name_admin,
+            "manager_invoice": name_admin,
         },
         "order_products": order_products,
     }
@@ -2090,8 +2141,10 @@ def product_cart_in_file(file, cart):
         info = f"Добавление товаров из фаила{e}{tr}"
         e = error_alert(error, location, info)
 
+
 def vendor_delta_optimus_after_load():
     from apps.product.models import Product
+
     # try:
     #     product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
     #     for product_one in product:
@@ -2109,7 +2162,9 @@ def vendor_delta_optimus_after_load():
     #     info = f"Загрузка 111 Delta{e}{tr}"
     #     e = error_alert(error, location, info)
     def background_task():
-        product = Product.objects.filter(supplier__slug__in=['delta', 'optimus-drive'],vendor__isnull=True)
+        product = Product.objects.filter(
+            supplier__slug__in=["delta", "optimus-drive"], vendor__isnull=True
+        )
         for product_one in product:
             print(product)
             if product_one.group_supplier is not None:
@@ -2117,6 +2172,7 @@ def vendor_delta_optimus_after_load():
                     product_one.vendor = product_one.group_supplier.vendor
             product_one._change_reason = "Автоматическое"
             product_one.save()
+
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()

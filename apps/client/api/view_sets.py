@@ -506,12 +506,13 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             serializer_data_new[0]["account_requisites"] = account_requisites
             return Response(serializer_data_new, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["post"], url_path="serch-req")
+    @action(detail=False, methods=["post"], url_path="serch-requisites")
     def serch_requisites(self, request, *args, **kwargs):
+        
         data = request.data
-        data = {"inn": 6316257333886}
         with Dadata(DADATA_TOKEN, DADATA_SECRET) as dadata:
             info = dadata.suggest(name="party", query=data["inn"])
+           
             return Response(info, status=status.HTTP_200_OK)
 
 
@@ -999,9 +1000,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     print("json_data", json_data)
                     if user.username == "testadmin":
                         print("if IS_WEB or user.username == testadmin")
-                        url = "http://localhost:8000/api/v1/order/test1s/"
+                        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
                         headers = {"Content-type": "application/json"}
-                        response = send_requests(url, headers, json_data)
+                        response = send_requests(url, headers, json_data,"1c")
                         print(response)
                     pass
                 else:

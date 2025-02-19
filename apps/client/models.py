@@ -431,7 +431,8 @@ class Order(models.Model):
     )
     id_bitrix = models.PositiveIntegerField(
         "Номер сделки битрикс",
-        null=True,unique=True
+        null=True,
+        # unique=True
     )
     manager = models.ForeignKey(
         AdminUser, blank=True, null=True, on_delete=models.CASCADE

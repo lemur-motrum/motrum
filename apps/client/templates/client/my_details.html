@@ -112,7 +112,7 @@
                                                     <button class="bank-detail-button">Изменить</button>
                                                 </div>
                                             {% endfor %}
-                                            <div class="new_bank_detail">
+                                            <div class="new_bank_detail" data-id="{{ detail.id }}">
                                                 <label>
                                                     <input class="bank_detail-current_account"
                                                            type="text"
@@ -127,11 +127,11 @@
                                                     <input class="bank_detail-correspondent_account"
                                                            type="text"
                                                            placeholder="Корреспондентский счёт" />
-                                                    <div class="error bank_detail-correspondent_account"></div>
+                                                    <div class="error bank_detail-correspondent_account_error"></div>
                                                 </label>
                                                 <label>
                                                     <input class="bank_detail-bic" type="text" placeholder="БИК" />
-                                                    <div class="error bank_detail-bic"></div>
+                                                    <div class="error bank_detail-bic_error"></div>
                                                 </label>
                                                 <button class="bank-detail-button">Добавить</button>
                                             </div>

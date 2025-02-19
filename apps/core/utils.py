@@ -1719,36 +1719,36 @@ def send_requests(url, headers, data, auth):
 
     if auth == "1c":
         print("auth1c")
-        
+
+        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+
+        payload = {}
+        headers = {"Authorization": "Basic Qk1HT1RLOjEyMzQ="}
+
+        response = requests.request(
+            "POST", url, headers=headers, data=payload, allow_redirects=False,verify=False
+        )
+
+        print(response.text)
+
+        # payload = data
+        # print(payload)
         # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
 
         # payload = {}
         # headers = {
-        # 'Authorization': 'Basic Qk1HT1RLOjEyMzQ='
-        # }
+        #     # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
+        #     }
+        # auth = HTTPBasicAuth(
+        #         os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
+        #     )
 
-        # response = requests.request("POST", url, headers=headers, data=payload, allow_redirects=False)
-
-        # print(response.text)
-        
-        payload = data
-        print(payload)
-        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-
-        payload = {}
-        headers = {
-            # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
-            }
-        auth = HTTPBasicAuth(
-                os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
-            )
-        
-        response = requests.request(
-            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False
-        )
+        # response = requests.request(
+        #     "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False,verify=False
+        # )
 
         # print(response.text)
-        
+
         # response = requests.request(
         #     "POST",
         #     url,

@@ -1716,6 +1716,7 @@ def client_info_bitrix(data, company_adress):
 
 def send_requests(url, headers, data, auth):
     import requests
+    import certifi
 
     if auth == "1c":
         print("auth1c")
@@ -1744,7 +1745,7 @@ def send_requests(url, headers, data, auth):
             )
 
         response = requests.request(
-            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False,
+            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False,verify=certifi.where()
         )
 
         print(response.text)

@@ -12,6 +12,10 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+      "add_iek": {
+        "task": "apps.supplier.tasks.add_iek",
+        "schedule": crontab(minute=00, hour=13),
+    },
     # ТАСКИ битрикс
     # # статусы битрикс заказов ежедневно
     # 'get_status_order_bx': {

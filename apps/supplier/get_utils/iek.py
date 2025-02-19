@@ -1499,12 +1499,14 @@ def iek_api():
     #     get_iek_property("etim", f"groupId={item_iek_save_categ}")
 
     all_categ_iek("ddp", None)
-    # true_categ = SupplierCategoryProductAll.objects.filter(
-    #                         supplier=supplier,is_correct = True,is_need = True
-    #                     )
-    # for true_cat in true_categ:
-    #     get_iek_product("products", f"groupId={true_cat.article_name}")
-    #     get_iek_property("etim", f"groupId={true_cat.article_name}")
+    true_categ = SupplierCategoryProductAll.objects.filter(
+                            supplier=supplier,is_correct = True,is_need = True
+                        )
+    if true_categ.count() > 0:
+        for true_cat in true_categ:
+            print("TRUECATEG",true_cat)
+            get_iek_product("products", f"groupId={true_cat.article_name}")
+            get_iek_property("etim", f"groupId={true_cat.article_name}")
 
 
 # остатки на складах отдельная функция

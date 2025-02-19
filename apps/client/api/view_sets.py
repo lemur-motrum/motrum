@@ -112,6 +112,11 @@ from openpyxl import load_workbook
 
 from project.settings import IS_WEB, DADATA_TOKEN, DADATA_SECRET
 from dadata import Dadata
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes, authentication_classes
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -944,6 +949,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         url_path=r"create-bill-admin",
     )
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
+        
         try:
             user = request.user
 
@@ -1667,9 +1673,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 vendor_str = data_sheet.cell(row=index, column=1).value
 
     # ОКТ 1С сроки поставки товаров ОКТ Б24
+ 
+    @authentication_classes([BasicAuthentication])
+    @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
     def add_info_order_1c(self, request, *args, **kwargs):
-        
+        print("add_info_order_1c")
         data = request.data
         pdf = None
         pdf_signed = None
@@ -1781,6 +1790,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     # is_save_new_doc_bx = save_new_doc_bx(order)
 
     # ОКТ 1С получение оплат ОКТ Б24
+    @authentication_classes([BasicAuthentication])
+    @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
@@ -1826,6 +1837,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # save_payment_order_bx(data)
 
     # ОКТ 1С получение документов откгрузки ОКТ Б24
+    @authentication_classes([BasicAuthentication])
+    @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         data = request.data

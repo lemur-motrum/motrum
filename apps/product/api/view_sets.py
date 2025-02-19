@@ -34,10 +34,14 @@ import threading
 from apps.specification.utils import save_nomenk_doc
 from project.settings import MEDIA_ROOT
 import datetime
-
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes, authentication_classes
 
 class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
     queryset = Product.objects.none()
     serializer_class = ProductSerializer
     http_method_names = [
@@ -240,7 +244,9 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count_all": count_all,
         }
         return Response(data_response, status=status.HTTP_200_OK)
-
+    
+    @authentication_classes([BasicAuthentication])
+    @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
     def get_nomenclature(self, request, *args, **kwargs):
         print("get_nomenclature")

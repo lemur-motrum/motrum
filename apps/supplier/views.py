@@ -1,11 +1,13 @@
 import datetime
 from locale import LC_ALL, setlocale
+import os
 import random
 import threading
 import traceback
 from django.conf import settings
 from django.shortcuts import render
 from regex import D
+import requests
 from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction, Requisites
 
 from apps.core.bitrix_api import add_info_order, add_new_order_web, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
@@ -47,11 +49,21 @@ from fast_bitrix24 import Bitrix
 
 # тестовая страница скриптов
 def add_iek(request):
-   
+    from requests.auth import HTTPBasicAuth
     title = "TEST"
-    import ssl
-    paths = ssl.get_default_verify_paths()
-    print(paths)
+    iek_api()
+    # url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
+    # headers = {"Content-type": "application/json"}
+    # payload = {}
+    # auth = HTTPBasicAuth("testadmin", "9vNclji"
+    #     )
+
+
+    # response = requests.request(
+    #     "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=False
+    # )
+    # print(response)
+    
     
     result = 1
     if result:

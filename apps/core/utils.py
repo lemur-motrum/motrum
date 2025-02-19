@@ -1745,7 +1745,7 @@ def send_requests(url, headers, data, auth):
             )
 
         response = requests.request(
-            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=certifi.where()
+            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify="/etc/letsencrypt/live/motrum.yuriyzhidkov.ru/fullchain.pem"
         )
 
         print(response.text)

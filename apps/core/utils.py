@@ -1720,34 +1720,38 @@ def send_requests(url, headers, data, auth):
     if auth == "1c":
         print("auth1c")
 
-        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-
-        payload = {}
-        headers = {"Authorization": "Basic Qk1HT1RLOjEyMzQ="}
-
-        response = requests.request(
-            "POST", url, headers=headers, data=payload, allow_redirects=False,verify=False
-        )
-
-        print(response.text)
-
-        # payload = data
-        # print(payload)
         # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
 
         # payload = {}
-        # headers = {
-        #     # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
-        #     }
-        # auth = HTTPBasicAuth(
-        #         os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
-        #     )
+        # headers = {"Authorization": "Basic Qk1HT1RLOjEyMzQ="}
 
         # response = requests.request(
-        #     "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False,verify=False
+        #     "POST", url, headers=headers, data=payload, allow_redirects=False,verify=False
         # )
 
         # print(response.text)
+
+        payload = data
+        print(payload)
+        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+
+        # payload = {}
+        headers = {
+            # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
+            }
+        auth = HTTPBasicAuth(
+                os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
+            )
+
+        response = requests.request(
+            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False,
+        )
+
+        print(response.text)
+        error = "error"
+        location = "отправка requests"
+        info = f"отправка requests {response.text}"
+        e = error_alert(error, location, info)
 
         # response = requests.request(
         #     "POST",
@@ -1767,7 +1771,7 @@ def send_requests(url, headers, data, auth):
     if response.status_code != 200:
         error = "error"
         location = "отправка requests"
-        info = f"отправка requests {response}"
+        info = f"отправка requests {response}{response.text}"
         e = error_alert(error, location, info)
 
     return response.status_code

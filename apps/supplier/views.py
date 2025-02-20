@@ -95,6 +95,13 @@ def add_iek(request):
     from requests.auth import HTTPBasicAuth
 
     title = "TEST"
+    def background_task():
+        # Долгосрочная фоновая задача
+        get_motrum_nomenclature()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
     # get_motrum_nomenclature()
    
 
@@ -142,13 +149,7 @@ def test(request):
 
 def add_one_c(request):
     title = "Услуги"
-    def background_task():
-        # Долгосрочная фоновая задача
-        get_motrum_nomenclature()
-
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
+    
 
     responsets = ["233", "2131"]
 

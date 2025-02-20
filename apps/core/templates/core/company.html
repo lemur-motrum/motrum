@@ -1,7 +1,195 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
-    Общая стрница?
-    
-    <a href="{% url "core:about_company" %}">о компании</a>
-    <a href="{% url "core:vacancy:vacancy" %}">вакансии</a>
+    <div class="about_container">
+        {% include "core/includes/promo_slider.html" %}
+        <div class="about_company_key_values_container">
+            <div class="up_elems_container">
+                <div class="elem">
+                    <div class="title">УВАЖЕНИЕ</div>
+                    <div class="content">Учитываем и уважаем интересы партнеров, клиентов и команды</div>
+                </div>
+                <div class="middle_content">КЛЮЧЕВЫЕ ЦЕННОСТИ МОТРУМ</div>
+                <div class="elem">
+                    <div class="title">ПОДДЕРЖКА</div>
+                    <div class="content">Поддержание долгосрочного сотрудничества для достижения общих целей</div>
+                </div>
+            </div>
+            <div class="down_elems_container">
+                <div class="elem">
+                    <div class="title">АДАПТИВНОСТЬ</div>
+                    <div class="content">Адаптивность к быстро изменяющимся условиям рынка</div>
+                </div>
+                <div class="elem middle_content">
+                    <div class="title">РАЗВИТИЕ</div>
+                    <div class="content">
+                        Стремление к внедрению новых технологий роботизации и автоматизации для улучшения производственных процессов
+                    </div>
+                </div>
+                <div class="elem">
+                    <div class="title">ПРОЗРАЧНОСТЬ</div>
+                    <div class="content">Прозрачность в ведении бизнеса и соблюдения этических норм</div>
+                </div>
+            </div>
+        </div>
+        <div class="motrum_in_numbers-container">
+            <div class="description-container">
+                <div class="title">
+                    МОТРУМ
+                    <br>
+                    В ЦИФРАХ
+                </div>
+                <div class="content">за каждой цифрой стоит высокий профессиональный уровень и слаженный труд</div>
+            </div>
+            <div class="dynamics_content-container">
+                <div class="dynamics_content-elem">
+                    <div class="number_container">
+                        <span data-quantity="13" class="quantity">0</span>
+                    </div>
+                    <div class="content">
+                        13 лет на рынке
+                        <br>
+                        год основания – 2012
+                    </div>
+                </div>
+                <div class="dynamics_content-elem">
+                    <div class="number_container">
+                        <span data-quantity="34" class="quantity">0</span>
+                    </div>
+                    <div class="content">
+                        34 высококвалифицированных
+                        <br>
+                        сотрудника
+                    </div>
+                </div>
+                <div class="dynamics_content-elem">
+                    <div class="content short_content">
+                        200 000 000 ₽
+                        <br>
+                        оборот группы компаний
+                    </div>
+                    <div class="number_container long_number">
+                        <span data-quantity="200" class="quantity">0</span>
+                    </div>
+                </div>
+                <div class="dynamics_content-elem">
+                    <div class="content short_content">
+                        44% сотрудников
+                        <br>
+                        – инженерский состав
+                    </div>
+                    <div class="number_container long_number">
+                        <span data-quantity="44" class="quantity">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="squares">
+            <div class="description">
+                <div class="title">Площади</div>
+                <div class="content">
+                    Офис компании состоит из 6 подразделений: Производственно-технический департамент, департамент продаж, операционно-учетное подразделение, бухгалтерия, финансовый отдел, административный отдел
+                </div>
+            </div>
+            <div class="squares_table">
+                <div class="square_table_elem">
+                    <img src="{% static "core/images/company_square_2.png" %}" alt="">
+                    <div class="linear_background"></div>
+                    <div class="hidden_background"></div>
+                    <div class="title">Лаборатории</div>
+                    <div class="description">
+                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
+                        100+ единиц тестового оборудования.
+                    </div>
+                </div>
+                <div class="square_table_elem">
+                    <img src="{% static "core/images/company_square_2.png" %}" alt="">
+                    <div class="linear_background"></div>
+                    <div class="hidden_background"></div>
+                    <div class="title">ПРОИЗВОДСТВО</div>
+                    <div class="description">
+                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
+                        100+ единиц тестового оборудования.
+                    </div>
+                </div>
+                <div class="square_table_elem">
+                    <img src="{% static "core/images/company_square_4.png" %}" alt="">
+                    <div class="linear_background"></div>
+                    <div class="hidden_background"></div>
+                    <div class="title">офис</div>
+                    <div class="description">
+                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
+                        100+ единиц тестового оборудования.
+                    </div>
+                </div>
+                <div class="square_table_elem">
+                    <img src="{% static "core/images/company_square_3.png" %}" alt="">
+                    <div class="linear_background"></div>
+                    <div class="hidden_background"></div>
+                    <div class="title">склад</div>
+                    <div class="description">
+                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
+                        100+ единиц тестового оборудования.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="advantages_motrum">
+            <div class="up_advantages_container">
+                <div class="description_container">
+                    <div class="title">
+                        ПРЕИМУЩЕСТВА
+                        МОТРУМ
+                    </div>
+                    <div class="description">Наша специализация – производственные предприятия различных отраслей</div>
+                </div>
+                <div class="elem">
+                    <div class="title">ПОДДЕРЖКА</div>
+                    <div class="description">Квалифицированная технологическая поддержка</div>
+                    <div class="img_container">
+                        <img src="{% static "core/images/advantages_motrum/advantages_motrum_img1.svg" %}"
+                             alt="img">
+                    </div>
+                </div>
+                <div class="elem">
+                    <div class="title">ОБУЧЕНИЕ</div>
+                    <div class="description">Проводим обучения и консультации для наших клиентов по поставляемому оборудованию</div>
+                    <div class="img_container">
+                        <img src="{% static "core/images/advantages_motrum/advantages_motrum_img2.svg" %}"
+                             alt="img">
+                    </div>
+                </div>
+            </div>
+            <div class="down_advantages_container">
+                <div class="elem">
+                    <div class="title">ДЕМО ВЫЕЗДЫ</div>
+                    <div class="description">Поставка тестового оборудования</div>
+                    <div class="img_container">
+                        <img src="{% static "core/images/advantages_motrum/advantages_motrum_img3.svg" %}"
+                             alt="img">
+                    </div>
+                </div>
+                <div class="elem">
+                    <div class="title">СКЛАДЫ</div>
+                    <div class="description">
+                        Собственные
+                        складские
+                        площади
+                    </div>
+                    <div class="img_container">
+                        <img src="{% static "core/images/advantages_motrum/advantages_motrum_img4.svg" %}"
+                             alt="img">
+                    </div>
+                </div>
+                <div class="elem">
+                    <div class="title">СЕРТИФИЦИРОВАННАЯ ПРОДУКЦИЯ</div>
+                    <div class="description">Продукция сертифицирована по всем стандартам (ISO)</div>
+                    <div class="img_container">
+                        <img src="{% static "core/images/advantages_motrum/advantages_motrum_img5.svg" %}"
+                             alt="img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

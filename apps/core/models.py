@@ -1,8 +1,9 @@
+from re import L
 import threading
 from django.db import models
 
 
-from apps.core.utils_web import get_file_path_slider_web
+from apps.core.utils_web import get_file_path_reviews_web, get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
 
@@ -395,3 +396,57 @@ class SeoTextSolutions(models.Model):
 
     # def __str__(self):
     #     return f"Счетчики"
+    
+class CompanyInfoWeb(models.Model):
+    year = models.SmallIntegerField(
+        " лет на рынке год основания – 2012"
+    )
+    emploee_high = models.SmallIntegerField("высококвалифицированных сотрудника")
+
+    profit = models.SmallIntegerField(
+        "оборот группы компаний"
+    )
+    emploee_engineer = models.SmallIntegerField(" инженерский состав")
+
+    class Meta:
+        verbose_name = "Инфа МОТРУМ В ЦИФРАХ страница о компании"
+        verbose_name_plural = "Инфа МОТРУМ В ЦИФРАХ страница о компании"
+
+    def __str__(self):
+        return f"Счетчики"
+    
+class CompanyPrijectAutoInfoWeb(models.Model):
+    tech_project = models.SmallIntegerField(
+        "установок с техническим зрением"
+    )
+    shkaf_upravleniya = models.SmallIntegerField("собрано шкафов управления")
+
+    honest_sign = models.SmallIntegerField(
+        "линий маркировки «Честный знак»"
+    )
+    project_all = models.SmallIntegerField("более ___ реализованных проектов по всей России и СН")
+
+    class Meta:
+        verbose_name = "Инфа ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ страница о компании"
+        verbose_name_plural = "Инфа ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ страница о компании"
+
+    def __str__(self):
+        return f"Счетчики"
+
+class ReviewsAutoInfoWeb(models.Model):
+    name = models.CharField("Имя сотрудника", max_length=200, blank=True, null=True)
+    Legal_entity = models.CharField("Компания", max_length=200, blank=True, null=True)
+    text = models.TextField("Текст",  blank=True, null=True)    
+    image_right = models.ImageField(
+        "Картинка",
+        upload_to=get_file_path_reviews_web,
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+        
+    def __str__(self):
+        return f"{self.Legal_entity}"

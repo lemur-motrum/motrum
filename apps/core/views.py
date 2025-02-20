@@ -13,7 +13,7 @@ from django.db.models import OuterRef, Subquery
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
 from apps.core.bitrix_api import get_manager
-from apps.core.models import IndexInfoWeb, SeoTextSolutions, SliderMain
+from apps.core.models import CompanyInfoWeb, CompanyPrijectAutoInfoWeb, IndexInfoWeb, ReviewsAutoInfoWeb, SeoTextSolutions, SliderMain
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -192,7 +192,17 @@ def solutions_one(request):
 
 
 def company(request):
-
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:2]
+    
+    motrum_in_numbers = CompanyInfoWeb.objects.all().last()
+    project_in_numbers = CompanyPrijectAutoInfoWeb.objects.all().last()
+    reviews = ReviewsAutoInfoWeb.objects.filter().order_by("?")[0:3]
+    context = {
+        "reviews":reviews,
+        "projects": projects,
+        "motrum_in_numbers": motrum_in_numbers,
+        "project_in_numbers":project_in_numbers,
+    }
     context = {}
     return render(request, "core/company.html", context)
 

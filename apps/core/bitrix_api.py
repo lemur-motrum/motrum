@@ -12,6 +12,7 @@ from requests import Response
 from apps.client.api.serializers import OrderSerializer
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
+    AccountRequisites,
     DocumentShipment,
     Order,
     OrderDocumentBill,
@@ -23,14 +24,14 @@ from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
-from project.settings import MEDIA_ROOT,BITRIX_WEBHOOK
+from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
 
 
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
     try:
         webhook = BITRIX_WEBHOOK
-        
+
         bx = Bitrix(webhook)
 
         # ПОЛУЧЕНИЕ ДАННЫХ СДЕЛКИ
@@ -75,7 +76,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
             if req_error:
                 error_text = ""
                 if place != "Адреса" and place != "Адрес юридический":
-                    
+
                     error_text = f"к сделке не прикреплен {place}"
                 else:
                     if place == "Адреса":
@@ -84,7 +85,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         error_text = f"В выбранных реквизитах нет Адрес юридический"
                     else:
                         error_text = f"не заполнен {place}"
-                        
+
                 next_url = "/admin_specification/error-b24/"
                 context = {"error": error_text}
                 return (next_url, context, True)
@@ -205,8 +206,6 @@ def get_req_info_bx(bs_id_order, manager, company):
     for adress_item in adress_bx:
         if adress_item["TYPE_ID"] == "6" or adress_item["TYPE_ID"] == 6:
             adress_item_bx = True
-    
-    
 
     if req_bx_id == "0":
         return (True, "Реквизиты", None)
@@ -696,7 +695,7 @@ def save_file_bx(bx, file, id_bx, method, field_name):
 def remove_file_bx(bx, id_bx, method, field_name):
 
     orders_bx = bx.get_by_ID("crm.deal.get", [id_bx])
-    
+
     if field_name in orders_bx:
         orders_bx_id_file = orders_bx[field_name]["id"]
 
@@ -971,7 +970,7 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = BITRIX_WEBHOOK
-  
+
     print(webhook)
     bx = Bitrix(webhook)
     data_order = {
@@ -1024,7 +1023,7 @@ def get_stage_info_bx():
                 # print(stage_okt)
 
         webhook = BITRIX_WEBHOOK
-        
+
         bx = Bitrix(webhook)
         stage_all_bx = bx.get_all(
             "crm.category.list",
@@ -1061,7 +1060,7 @@ def get_manager():
 
     try:
         webhook = BITRIX_WEBHOOK
-        
+
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",
@@ -1119,28 +1118,121 @@ def _status_to_order_replace(name_status, id_bx):
         return "PROCESSING"
 
 
-def add_new_order_web():
+def add_new_order_web(order):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    req_qs = Requisites.objects.get(inn = 631625733376)
+    order = Order.objects.get(id=171)
+    req_inn = order.requisites.inn
     req_inn = 631625733376
-    
-    req_bx = bx.get_all(
-            "crm.requisite.list",
+    acc_req = order.account_requisites
+    print(type(acc_req))
+    # acc_req = AccountRequisites.objects.get(order.account_requisites)
+    req_kpp = order.account_requisites.requisitesKpp
+    serch_or_add_reqKpp_bx(bx, req_inn, acc_req)
+
+
+def serch_or_add_reqKpp_bx(bx, req_inn, acc_req):
+    def _get_company_bx_in_req(company):
+        company_bx = bx.get_by_ID("crm.company.get", [company])
+        return company_bx
+
+    def _get_accountreq_bx_in_req(req_id, acc_req):
+        print(acc_req)
+        acc_req_bx = bx.get_all(
+            "crm.requisite.bankdetail.list",
             params={
-                "filter": {"ENTITY_TYPE_ID": 4,"RQ_INN":req_inn},
+                "filter": {
+                    "ENTITY_TYPE_ID": 8,
+                    "ENTITY_ID": req_id,
+                    "RQ_ACC_NUM": acc_req.account_requisites,
+                    "RQ_COR_ACC_NUM": acc_req.kpp,
+                    "RQ_BIK": acc_req.bic,
+                },
             },
         )
+        if len(acc_req_bx) == 1:
+            return acc_req_bx[0]['ID']
+        elif len(acc_req_bx) == 0:
+            new_acc_req_bx = add_acc_req_bx(
+                bx,
+                6652,
+                acc_req.account_requisites,
+                acc_req.bank,
+                acc_req.kpp,
+                acc_req.bic,
+            )
+            return new_acc_req_bx
+        else:
+            pass
+        return acc_req
+
+    def _get_adress_bx_in_req(req_bx_id):
+        adress_bx = bx.get_all(
+        "crm.address.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": 8, "ENTITY_ID": req_bx_id},
+        },)
+        print("adress_bx",adress_bx)
+        
+    req_bx = bx.get_all(
+        "crm.requisite.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": req_inn},
+        },
+    )
+    # print(len(req_bx))
+    # print(req_bx)
     if len(req_bx) == 1:
-        req_qs
+        company_id = req_bx[0]["ENTITY_ID"]
+        company_bx = _get_company_bx_in_req(company_id)
+        # Requisites
+        id_bitrix_req = req_bx[0]["ID"]
+        contract = req_bx[0]["UF_CRM_1736854096"]
+        contract_date = req_bx[0]["UF_CRM_1737611994"]
+        manager_company = company_bx["ASSIGNED_BY_ID"]
+
+        # RequisitesOtherKpp
+        kpp = req_bx[0]["RQ_KPP"]
+        tel_bx = req_bx[0]["RQ_KPP"]
+        type_req = req_bx[0]["RQ_PHONE"]
+        if type_req == 1 or type_req == 4:
+            ogrn = req_bx[0]["RQ_OGRN"]
+        else:
+            ogrn = req_bx[0]["RQ_OGRNIP"]
+        req_bx_id = req_bx[0]["ID"]
+
+        # AccountRequisites
+        acc_req_bx = _get_accountreq_bx_in_req(id_bitrix_req, acc_req)
+        # print("accreq_bx", acc_req_bx)
+        # RequisitesAddress
+        adress_bx = _get_adress_bx_in_req(req_bx_id)
+        # print(req_bx)
+
     elif len(req_bx) > 1:
         pass
     else:
-        add_req_bx()
-    print(req_bx)
+        pass
+        # создать компанию - добавить рекыиззит и банк рек и адресс
 
-def add_req_bx():
-    pass
+
+def add_acc_req_bx(bx, req_id_bx, account_requisites, bank, ks, bic):
+    tasks = {
+        "fields": {
+            "ENTITY_ID": req_id_bx,
+            "NAME":f"Сайт реквизиты - {bank}",
+            "RQ_ACC_NUM": account_requisites,
+            "RQ_BANK_NAME": bank,
+            "RQ_COR_ACC_NUM": ks,
+            "RQ_BIK": bic,
+        }
+    }
+
+    print("tasks", tasks)
+
+    acc_req_new = bx.call("crm.requisite.bankdetail.add", tasks)
+    print("acc_req_new", acc_req_new)
+
+
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:

@@ -5,9 +5,12 @@ from apps.core.models import (
     BaseImage,
     BaseInfo,
     BaseInfoAccountRequisites,
+    CompanyInfoWeb,
+    CompanyPrijectAutoInfoWeb,
     Currency,
     CurrencyPercent,
     IndexInfoWeb,
+    ReviewsAutoInfoWeb,
     SeoTextSolutions,
     SliderMain,
     TypeDelivery,
@@ -146,6 +149,44 @@ class IndexInfoWebAdminWeb(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class CompanyInfoWebAdminWeb(admin.ModelAdmin):
+    # model = CurrencyPercent
+    # list_display = ("percent",)
+
+    def has_add_permission(
+        self,
+        request,
+    ):
+        info_web = CompanyInfoWeb.objects.filter().exists()
+        if info_web == True:
+            return False
+        else:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+class CompanyPrijectAutoInfoWebAdminWeb(admin.ModelAdmin):
+    # model = CurrencyPercent
+    # list_display = ("percent",)
+
+    def has_add_permission(
+        self,
+        request,
+    ):
+        info_web = CompanyPrijectAutoInfoWeb.objects.filter().exists()
+        if info_web == True:
+            return False
+        else:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+class ReviewsAutoInfoWebAdminWeb(admin.ModelAdmin):
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
     list_display = (
@@ -165,4 +206,7 @@ admin.site.register(TypeDelivery, TypeDeliveryAdmin)
 
 website_admin.register(SliderMain, SliderMainAdminWeb)
 website_admin.register(IndexInfoWeb, IndexInfoWebAdminWeb)
-website_admin.register(SeoTextSolutions, SeoTextSolutionsAdminWeb)
+# website_admin.register(SeoTextSolutions, SeoTextSolutionsAdminWeb)
+website_admin.register(CompanyInfoWeb, CompanyInfoWebAdminWeb)
+website_admin.register(CompanyPrijectAutoInfoWeb, CompanyPrijectAutoInfoWebAdminWeb)
+website_admin.register(ReviewsAutoInfoWeb, ReviewsAutoInfoWebAdminWeb)

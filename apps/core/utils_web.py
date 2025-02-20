@@ -103,7 +103,22 @@ def get_file_path_slider_web(instance, filename):
         filename,
     )
 
+def get_file_path_reviews_web(instance, filename):
 
+    base_dir = "website/reviews"
+    filenames = f"{instance}"
+    type_dir = f"{instance}"
+
+    images_last_list = filename.split(".")
+    type_file = "." + images_last_list[-1]
+    filename = f"{filenames}{type_file}"
+
+    check_media_directory_exist_web(base_dir, type_dir)
+    return "{0}/{1}/{2}".format(
+        base_dir,
+        type_dir,
+        filename,
+    )
 # проверка есть ли путь и папка
 def check_media_directory_exist_web(base_dir, type_dir):
     new_dir = "{0}/{1}/{2}".format(

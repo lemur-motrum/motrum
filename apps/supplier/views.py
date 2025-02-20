@@ -1,3 +1,4 @@
+import csv
 import datetime
 from locale import LC_ALL, setlocale
 import os
@@ -8,17 +9,59 @@ from django.conf import settings
 from django.shortcuts import render
 from regex import D
 import requests
-from apps.client.models import STATUS_ORDER_BITRIX, DocumentShipment, Order, PaymentTransaction, Requisites
+from apps.client.models import (
+    STATUS_ORDER_BITRIX,
+    DocumentShipment,
+    Order,
+    PaymentTransaction,
+    Requisites,
+)
 
-from apps.core.bitrix_api import add_info_order, add_new_order_web, currency_check_bx, get_info_for_order_bitrix, get_manager, get_order_carrency_up, get_product_price_up, get_stage_info_bx, get_status_order, remove_file_bx, save_new_doc_bx, save_payment_order_bx, save_shipment_order_bx
+from apps.core.bitrix_api import (
+    add_info_order,
+    add_new_order_web,
+    currency_check_bx,
+    get_info_for_order_bitrix,
+    get_manager,
+    get_order_carrency_up,
+    get_product_price_up,
+    get_stage_info_bx,
+    get_status_order,
+    remove_file_bx,
+    save_new_doc_bx,
+    save_payment_order_bx,
+    save_shipment_order_bx,
+)
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
 
 from apps.core.models import CalendarHoliday, Currency
-from apps.core.tasks import counter_bill_new_year, currency_chek, del_currency, del_void_cart, get_currency, update_currency_price
-from apps.core.utils import create_time_stop_specification, image_error_check, product_cart_in_file, send_requests, vendor_delta_optimus_after_load
-from apps.product.models import CurrencyRate, GroupProduct, Price, Product, ProductDocument, ProductImage, ProductProperty, Stock
+from apps.core.tasks import (
+    counter_bill_new_year,
+    currency_chek,
+    del_currency,
+    del_void_cart,
+    get_currency,
+    update_currency_price,
+)
+from apps.core.utils import (
+    create_time_stop_specification,
+    image_error_check,
+    product_cart_in_file,
+    send_requests,
+    vendor_delta_optimus_after_load,
+)
+from apps.product.models import (
+    CurrencyRate,
+    GroupProduct,
+    Price,
+    Product,
+    ProductDocument,
+    ProductImage,
+    ProductProperty,
+    Stock,
+)
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_shipment_doc
@@ -50,30 +93,29 @@ from fast_bitrix24 import Bitrix
 # тестовая страница скриптов
 def add_iek(request):
     from requests.auth import HTTPBasicAuth
+
     title = "TEST"
-    add_new_order_web(None)
+    # get_motrum_nomenclature()
+   
+
+    # add_new_order_web(None)
     # url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
     # headers = {"Content-type": "application/json"}
     # payload = {}
     # auth = HTTPBasicAuth("testadmin", "9vNclji"
     #     )
 
-
     # response = requests.request(
     #     "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=False
     # )
     # print(response)
-    
-    
+
     result = 1
     if result:
         pass
     else:
         result = 1
-    context = {
-        "title": title,
-        "result":result
-    }
+    context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
 
 
@@ -100,7 +142,13 @@ def test(request):
 
 def add_one_c(request):
     title = "Услуги"
-   
+    def background_task():
+        # Долгосрочная фоновая задача
+        get_motrum_nomenclature()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
 
     responsets = ["233", "2131"]
 
@@ -110,6 +158,7 @@ def add_one_c(request):
     }
     return render(request, "supplier/supplier.html", context)
 
+
 def add_vendor_delta_optimus_after_load(request):
     vendor_delta_optimus_after_load()
     responsets = ["233", "2131"]
@@ -118,7 +167,8 @@ def add_vendor_delta_optimus_after_load(request):
         "responsets": responsets,
     }
     return render(request, "supplier/supplier.html", context)
-    
+
+
 # сохранение емас данных первичное из копии сайта фаилы должны лежать на сервере
 def save_emas_props(request):
 
@@ -145,12 +195,15 @@ def add_permission(request):
     context = {}
     return render(request, "supplier/supplier.html", context)
 
+
 def add_stage_bx(request):
     get_stage_info_bx()
-    
+
+
 # def add_admin_okt(request):
 #     get_manager()
-    
+
+
 # добавление праздников вручную
 def add_holidays(request):
     import json
@@ -178,8 +231,6 @@ def add_holidays(request):
 
     context = {}
     return render(request, "supplier/supplier.html", context)
-
-
 
 
 class VendorAutocomplete(autocomplete.Select2QuerySetView):
@@ -304,5 +355,3 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
-
-

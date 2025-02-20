@@ -21,34 +21,10 @@ from project.settings import MEDIA_ROOT
 def get_motrum_nomenclature():
     try:
         new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
-        path_nomenclature = f"{new_dir}/Номенктатура-25.csv"
-        path_nomenclature_write_file = f"{new_dir}/Номенктатура-25copi.csv"
+        path_nomenclature = f"{new_dir}/Номенктатура_first.csv"
+        path_nomenclature_write_file = f"{new_dir}/Номенктатура_last.csv"
         arr_nomenclature = []
-        # fieldnames_nomenclature = [
-        #     "Номенклатура",
-        #     None,
-        #     None,
-        #     "Артикул",
-        #     None,
-        #     "Единица измерения",
-        #     "Изготовитель",
-        #     "Категория",
-        #     "Описание",
-        #     "Страна происхождения",
-        #     "Производитель",
-        #     "В группе",
-        # ]
-        # fieldnames_nomenclature = [
-        #     "Номенклатура",
-        #     None,
-        #     None,
-        #     None,
-        #     "Артикул",
-        #     "Единица измерения",
-        #     "Категория",
-        #     "Тип",
-        #     "В группе",
-        # ]
+
         fieldnames_nomenclature = [
             "Номенклатура",
             "Артикул",
@@ -60,18 +36,6 @@ def get_motrum_nomenclature():
             "Код",
         ]
         
-        # fieldnames_nomenclature_written = [
-        #     "Номенклатура",
-        #     None,
-        #     None,
-        #     None,
-        #     "Артикул",
-        #     "Единица измерения",
-        #     "Категория",
-        #     "Тип",
-        #     "В группе",
-        #     "Артикул мотрум",
-        # ]
         fieldnames_nomenclature_written = [
             "Номенклатура",
             "Артикул",
@@ -83,19 +47,10 @@ def get_motrum_nomenclature():
             "Код",
             "Артикул мотрум",
         ]
-        path_nomenclature_xlsx = f"{new_dir}/Номенктатура 25.xlsx"
+        path_nomenclature_xlsx = f"{new_dir}/Номенктатура-25.xlsx"
         workbook = load_workbook(path_nomenclature_xlsx)
         sheet = workbook.active
         
-        
-
-        # ws=workbook['data']
-        # row2=ws[2]
-        # for cell in row2:
-        #     print (cell.value, end="")
-            
-            
-        # with open(path_nomenclature, "r", newline="", encoding="MACCYRILLIC") as csvfile:
         with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
             path_nomenclature_write_file, "w", encoding="UTF-8"
         ) as writerFile:
@@ -117,13 +72,21 @@ def get_motrum_nomenclature():
                         
 
                     if (
-                        i > 2 and i < 5000
+                        i > 2 
                         and row_nomenk["Артикул"] != ""
                         and row_nomenk["Артикул"] != None
                     ):
                         print(i,"NEW STR")
-                        cell_value = sheet.cell(row=i, column=1).fill.fgColor.value
-                        if cell_value == "00000000":
+                        cell_value_pass = sheet.cell(row=i, column=8).fill.fgColor.value
+                        cell_value_vendor = sheet.cell(row=i, column=7).fill.fgColor.value
+                        print("cell_value_pass",cell_value_pass,type(cell_value_pass))
+                        print("cell_value_vendor",cell_value_vendor)
+                        if cell_value_pass == "00000000":
+                            if cell_value_vendor == 8:
+                                tag_view = True
+                            else:
+                                tag_view = False
+                            print("tag_view",tag_view)    
                             vendor_row = str(row_nomenk["В группе"]).strip()
                             supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
                             article_supplier = str(row_nomenk["Артикул"]).strip()
@@ -189,6 +152,7 @@ def get_motrum_nomenclature():
                                     product.name = name
                                     # product.description = description
                             product.autosave_tag = False
+                            product.in_view_website = tag_view
                             product._change_reason = "Автоматическое"
                             product.save()
                     
@@ -339,3 +303,4 @@ def add_stok_motrum_article(
     stock = product_stock[0]
 
     stock.save()
+

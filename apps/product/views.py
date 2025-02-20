@@ -434,14 +434,21 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         supplier = self.forwarded.get("supplier", None)
         vendor = self.forwarded.get("vendor", None)
         print(supplier,vendor)
-        if supplier and vendor:
-            qs = qs.filter(supplier=supplier,vendor=vendor)
-            print(qs.count())
-            if qs.count() == 0:
-                qs = SupplierCategoryProduct.objects.filter(supplier=supplier)   
+        
+        supplier = self.forwarded.get("supplier", None)
+        if supplier:
+            qs = qs.filter(supplier=supplier)
+
+        # vendor = self.forwarded.get("vendor", None)
+        # if vendor:
+        #     qs = qs.filter(vendor=vendor)
+
+        # if supplier and vendor:
+        #     qs = qs.filter(supplier=supplier,vendor=vendor)
+        #     if qs.count() == 0:
+        #         qs = SupplierCategoryProduct.objects.filter(supplier=supplier)   
             
-        # else:
-        #     qs = None
+
         
         if self.q:
             # name__icontains=self.q

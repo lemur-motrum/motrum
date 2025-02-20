@@ -786,9 +786,13 @@ class ProductAdmin(SimpleHistoryAdmin):
                 #         "category_supplier_all",
                 #     ]
 
-                return ["article_supplier", "supplier"]
+                return ["article_supplier", 
+                        # "supplier"
+                        ]
             else:
-                return ["article_supplier", "supplier"]
+                return ["article_supplier",
+                        # "supplier"
+                        ]
         return [
             "",
         ]

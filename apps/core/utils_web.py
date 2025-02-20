@@ -106,17 +106,36 @@ def get_file_path_slider_web(instance, filename):
 def get_file_path_reviews_web(instance, filename):
 
     base_dir = "website/reviews"
-    filenames = f"{instance}"
-    type_dir = f"{instance}"
+    
 
     images_last_list = filename.split(".")
+    filenames = images_last_list[0]
+    type_dir = images_last_list[0]
+    
     type_file = "." + images_last_list[-1]
+    filename = f"{filenames}{type_file}"
+    
+    check_media_directory_exist_web(base_dir, type_dir)
+    return "{0}/{1}".format(
+        base_dir,
+        filename,
+    )
+def get_file_path_company_web(instance, filename):
+
+    base_dir = "website/company"
+    # filenames = f"{instance}"
+    # type_dir = f"{instance}"
+
+    images_last_list = filename.split(".")
+    filenames = images_last_list[0]
+    type_dir = images_last_list[0]
+    type_file = "." + images_last_list[-1]
+    
     filename = f"{filenames}{type_file}"
 
     check_media_directory_exist_web(base_dir, type_dir)
-    return "{0}/{1}/{2}".format(
+    return "{0}/{1}".format(
         base_dir,
-        type_dir,
         filename,
     )
 # проверка есть ли путь и папка

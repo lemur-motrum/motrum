@@ -10,6 +10,8 @@ from apps.core.models import (
     Currency,
     CurrencyPercent,
     IndexInfoWeb,
+    PhotoClientInfoWeb,
+    PhotoEmoloeeInfoWeb,
     ReviewsAutoInfoWeb,
     SeoTextSolutions,
     SliderMain,
@@ -210,3 +212,5 @@ website_admin.register(IndexInfoWeb, IndexInfoWebAdminWeb)
 website_admin.register(CompanyInfoWeb, CompanyInfoWebAdminWeb)
 website_admin.register(CompanyPrijectAutoInfoWeb, CompanyPrijectAutoInfoWebAdminWeb)
 website_admin.register(ReviewsAutoInfoWeb, ReviewsAutoInfoWebAdminWeb)
+website_admin.register(PhotoClientInfoWeb)
+website_admin.register(PhotoEmoloeeInfoWeb)

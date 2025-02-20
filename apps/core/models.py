@@ -3,7 +3,7 @@ import threading
 from django.db import models
 
 
-from apps.core.utils_web import get_file_path_reviews_web, get_file_path_slider_web
+from apps.core.utils_web import get_file_path_company_web, get_file_path_reviews_web, get_file_path_slider_web
 from pytils import translit
 from django.utils.text import slugify
 
@@ -437,7 +437,7 @@ class ReviewsAutoInfoWeb(models.Model):
     name = models.CharField("Имя сотрудника", max_length=200, blank=True, null=True)
     Legal_entity = models.CharField("Компания", max_length=200, blank=True, null=True)
     text = models.TextField("Текст",  blank=True, null=True)    
-    image_right = models.ImageField(
+    image = models.ImageField(
         "Картинка",
         upload_to=get_file_path_reviews_web,
         max_length=255,
@@ -450,3 +450,33 @@ class ReviewsAutoInfoWeb(models.Model):
         
     def __str__(self):
         return f"{self.Legal_entity}"
+    
+class PhotoClientInfoWeb(models.Model):
+    image = models.ImageField(
+        "Картинка",
+        upload_to=get_file_path_company_web,
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Фото блок клиенты"
+        verbose_name_plural = "Фото блок клиенты"
+        
+    def __str__(self):
+        return f"{self.image}"
+
+class PhotoEmoloeeInfoWeb(models.Model):
+    image = models.ImageField(
+        "Картинка",
+        upload_to=get_file_path_company_web,
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Фото блок сотрудники"
+        verbose_name_plural = "Фото блок сотрудники"
+        
+    def __str__(self):
+        return f"{self.image}"

@@ -178,10 +178,8 @@ class Product(models.Model):
 
         except Exception as e:
             print(e)
-           
             error = "file_error"
             location = "Обновление слагов"
-
             info = f"Обновление слагов"
             e = error_alert(error, location, info)
 
@@ -460,7 +458,7 @@ class Price(models.Model):
         #  если цена есть
         elif self.price_supplier != 0:
             self.extra_price == False
-            
+
             # получить рублевую цену
             rub_price_supplier = get_price_supplier_rub(
                 self.currency.words_code,
@@ -684,13 +682,13 @@ class Stock(models.Model):
     def save(self, *args, **kwargs):
         if self.lot_complect == 0:
             self.lot_complect = 1
-            
+
         if self.lot_complect == None:
-            self.lot_complect = 1    
-            
-        print(self.stock_supplier_unit)        # посчитать комплекты лотов
+            self.lot_complect = 1
+
+        print(self.stock_supplier_unit)  # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
-   
+
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
@@ -700,8 +698,7 @@ class Stock(models.Model):
             lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
-        
-        
+
         super().save(*args, **kwargs)
 
 
@@ -844,15 +841,20 @@ class Cart(models.Model):
 
     @classmethod
     def create_cart_admin(cls, session, admin):
-        cart = cls.objects.create(session_key=None, is_active=False,client=None,cart_admin=admin)
-        
-        return  cart
+        cart = cls.objects.create(
+            session_key=None, is_active=False, client=None, cart_admin=admin
+        )
+
+        return cart
+
+
 TAG_DOC = (
     ("ONE", "Один вариант"),
     ("MULTI", "Несколько вариантов"),
     ("NONE", "Нет варинтов"),
     ("-", "Не из документа"),
 )
+
 
 class ProductCart(models.Model):
     cart = models.ForeignKey(
@@ -944,9 +946,7 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
-    tag_auto_document = models.CharField(
-        max_length=100, choices=TAG_DOC, default="-"
-    )
+    tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
 
     class Meta:
         verbose_name = "Корзина продукт"

@@ -6,31 +6,6 @@ import {
 
 let csrfToken = getCookie("csrftoken");
 
-const globalCountCart = document.querySelector(".global_cart_count");
-if (globalCountCart) {
-  if (globalCountCart.textContent) {
-    let str = globalCountCart.textContent;
-    str = str.trim();
-    if (str) {
-      globalCountCart.classList.add("orange");
-    }
-  }
-}
-const orderCounts = document.querySelectorAll(".order_count");
-orderCounts.forEach((orderCount) => {
-  if (orderCount) {
-    if (orderCount.textContent) {
-      let str = orderCount.textContent;
-      str = str.trim();
-      if (str) {
-        orderCount.classList.add("blue");
-      }
-    } else {
-      orderCount.classList.remove("blue");
-    }
-  }
-});
-
 window.addEventListener("DOMContentLoaded", () => {
   const cartContainer = document.querySelector(".cart_container");
 
@@ -70,7 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         function getAllProductSumm() {
           if (priceOnce) {
-            // const priceAll = productItem.querySelector(".all_cart_price");
+            const priceAll = productItem.querySelector(".all_cart_price");
             priceAll.textContent = (
               +priceOnce.textContent.replace(",", ".") * +inputCount.value
             ).toFixed(2);
@@ -99,9 +74,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         function getTotalSum() {
           if (priceAll) {
-            totalSumSaleCart += +priceAll.textContent;
+            totalSumSaleCart += Number.parseFloat(priceAll.textContent);
             if (personalDiscount.dataset.personalDiscount != "0") {
-              totalSumCart += Number.parseFloat(priceAllNoSale.textContent);
+              totalSumCart += Number.parseFloat(+priceAllNoSale.textContent);
               totalSalePriceCart = totalSumCart - totalSumSaleCart;
             }
           } else {
@@ -240,7 +215,7 @@ window.addEventListener("DOMContentLoaded", () => {
           totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
         }
       }
-      // addTotalSum();
+      addTotalSum();
     }
   }
 

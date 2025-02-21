@@ -410,11 +410,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     products.forEach((product) => {
       const priceOne = product.querySelector(".cart_price");
-      const productMultiplicity = +product.getAttribute("order-multiplicity");
-      const cartMinusButton = product.querySelector(".minus-button");
-      const cartPlusButton = product.querySelector(".plus-button");
       const cartCountInput = product.querySelector(".quantity");
-      let cartCountQuantity = +cartCountInput.value;
       const priceQuantity = product.querySelector(".all_cart_price");
       const priceWithoutDiscontContainer = product.querySelector(
         ".all_cart_no_sale_price"
@@ -484,7 +480,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 }
                 return summ;
               };
-
               getDigitsNumber(cartTotalPriceAll, getSumm(totalPriceArray));
             }
 
@@ -500,81 +495,6 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
-      cartCountInput.addEventListener("input", function () {
-        allPrice = 0;
-        allPriceWithoutDiscount = 0;
-        if (productMultiplicity) {
-          let val = parseInt(this.value) || 0;
-          while (val % +productMultiplicity) {
-            val++;
-            if (val % +productMultiplicity == 0) {
-              break;
-            }
-          }
-          this.value = val;
-          cartCountQuantity = +val;
-        } else {
-          cartCountQuantity = +cartCountInput.value;
-        }
-
-        cartCountQuantity = +cartCountInput.value;
-        if (cartCountQuantity >= 999) {
-          cartCountInput.value = productMultiplicity
-            ? getClosestInteger(999, +productMultiplicity)
-            : 999;
-          cartMinusButton.disabled = false;
-          cartPlusButton.disabled = true;
-        } else if (cartCountQuantity <= 0) {
-          cartCountInput.value = 0;
-          cartPlusButton.disabled = false;
-        } else {
-          cartMinusButton.disabled = false;
-          cartPlusButton.disabled = false;
-        }
-      });
-
-      cartPlusButton.onclick = () => {
-        allPrice = 0;
-        allPriceWithoutDiscount = 0;
-        if (productMultiplicity) {
-          cartCountQuantity += +productMultiplicity;
-        } else {
-          cartCountQuantity++;
-        }
-        cartCountInput.value = +cartCountQuantity;
-        cartMinusButton.disabled = false;
-
-        if (cartCountQuantity >= 999) {
-          cartCountInput.value = productMultiplicity
-            ? getClosestInteger(999, +productMultiplicity)
-            : 999;
-          cartMinusButton.disabled = false;
-          cartPlusButton.disabled = true;
-        } else {
-          cartPlusButton.disabled = false;
-          cartMinusButton.disabled = false;
-        }
-      };
-      cartMinusButton.onclick = () => {
-        console.log("cartCountQuantity", cartCountQuantity);
-        allPrice = 0;
-        allPriceWithoutDiscount = 0;
-        if (productMultiplicity) {
-          cartCountQuantity -= +productMultiplicity;
-        } else {
-          cartCountQuantity--;
-        }
-        cartCountInput.value = +cartCountQuantity;
-        cartMinusButton.disabled = false;
-        if (cartCountQuantity <= 0) {
-          cartCountInput.value = 0;
-          cartMinusButton.disabled = true;
-          cartPlusButton.disabled = false;
-        } else {
-          cartMinusButton.disabled = false;
-          cartPlusButton.disabled = false;
-        }
-      };
     });
   }
 });

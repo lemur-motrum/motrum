@@ -1,7 +1,6 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-
     <div class="cart_container">
         <input class="personal_discount"
                type="hidden"
@@ -19,16 +18,20 @@
                         <div class="product_item"
                              product-id="{{ product_item.id_product_cart }}"
                              order-multiplicity="{{ product_item.stock.order_multiplicity }}">
-                            <div class="img-contaner">
-                                {% for productimage in product_item.productimage_set.all %}
-                                    {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="">{% endif %}
-                                {% empty %}
-                                    <img src={% static "core/images/nophoto.png" %} alt="">
-                                {% endfor %}
-                            </div>
+                            <a href="{{ product_item.get_absolute_url }}">
+                                <div class="img-contaner">
+                                    {% for productimage in product_item.productimage_set.all %}
+                                        {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="">{% endif %}
+                                    {% empty %}
+                                        <img src={% static "core/images/nophoto.png" %} alt="">
+                                    {% endfor %}
+                                </div>
+                            </a>
                             <div class="product_item_description_container">
                                 <div class="product_item-description">
-                                    <div class="name">{{ product_item.name }}</div>
+                                    <div class="name">
+                                        <a href="{{ product_item.get_absolute_url }}">{{ product_item.name }}</a>
+                                    </div>
                                     <div class="article">Артикул: {{ product_item.article }}</div>
                                     <div class="chars">
                                         {% if product_item.productproperty_set != 'product.ProductProperty.None' %}
@@ -115,9 +118,7 @@
                             </div>
                         </div>
                     {% endif %}
-                    
                     {% if client %}
-                    
                         <div class="client-order-details">
                             {% if requisites %}
                                 <select class="select_account_requisites">
@@ -135,14 +136,10 @@
                                 <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
                             {% endif %}
                         </div>
-
-
                         <!--УДАЛИТЬ ДОБАВИЛА ДЛЯ ТЕСТА -->
                         <div class="button_cart-wrapper">
-                                    <button class="save_cart_button">оформить заказ</button>
+                            <button class="save_cart_button">оформить заказ</button>
                         </div>
-
-
                     {% else %}
                         <div class="logout_container">
                             <form class="autification-form-cart">

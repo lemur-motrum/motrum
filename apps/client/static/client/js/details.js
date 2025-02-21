@@ -521,7 +521,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (legalEntity.classList.contains("show")) {
           btn.textContent = "Скрыть";
         } else {
-          btn.textContent = "Редактировать";
+          btn.textContent = "Изменить";
         }
       };
     });

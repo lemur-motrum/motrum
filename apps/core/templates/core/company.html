@@ -191,5 +191,63 @@
                 </div>
             </div>
         </div>
+        <div class="maps_motrum_container">
+            <div class="up_content">
+                <div class="content_container">
+                    <div class="title">ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ</div>
+                    <div class="content_table">
+                        <div class="elem">
+                            <div class="number_container">200+</div>
+                            <div class="description_container">установок с техническим зрением</div>
+                        </div>
+                        <div class="elem">
+                            <div class="number_container">1 000+</div>
+                            <div class="description_container">собрано шкафов управления</div>
+                        </div>
+                        <div class="elem">
+                            <div class="number_container">100+</div>
+                            <div class="description_container">линий маркировки «Честный знак»</div>
+                        </div>
+                    </div>
+                    <div class="marking_description_container">
+                        <div class="description">Мотрум является технологическим партнером ООО «Оператор - ЦРПТ»</div>
+                        <div class="img_container">
+                            <img src="{% static "core/images/marking_company.png" %}" alt="img">
+                        </div>
+                    </div>
+                </div>
+                <div class="map_img_container">
+                    <img src="{% static "core/images/map_one.png" %}" alt="map" />
+                </div>
+                <div class="absolute_elem">
+                    <div class="number_container">500+</div>
+                    <div class="description_container">более 500 реализованных проектов по всей России и СНГ</div>
+                </div>
+            </div>
+            <div class="down_content">
+                <div class="map_img_container">
+                    <img src="{% static "core/images/map_two.png" %}" alt="map" />
+                </div>
+                <div class="map_description">находимся в партнерских отношениях с Китаем, имеем проекты в Индии</div>
+                <div class="projects_container">
+                    {% for project in projects %}
+                        <a class="project" href="{% url 'projects_web:project' project.slug %}">
+                            <div class="img-container">
+                                <img src="{{ project.image_main.url }}" alt="img">
+                            </div>
+                            <div class="project_name">
+                                <p>{{ project.name }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                    <a href="{% url 'projects_web:projects' %}" class="title-link">
+                        <div class="title-link-description">весь каталог</div>
+                        <div class="arrow-container">
+                            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}

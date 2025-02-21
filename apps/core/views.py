@@ -192,8 +192,10 @@ def solutions_one(request):
 
 
 def company(request):
-
-    context = {}
+    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:2]
+    context = {
+        "projects": projects,
+    }
     return render(request, "core/company.html", context)
 
 

@@ -95,17 +95,10 @@ def add_iek(request):
     from requests.auth import HTTPBasicAuth
 
     title = "TEST"
-    def background_task():
-        # Долгосрочная фоновая задача
-        get_motrum_nomenclature()
-
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-    # get_motrum_nomenclature()
+   
    
 
-    # add_new_order_web(None)
+    add_new_order_web(None)
     # url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
     # headers = {"Content-type": "application/json"}
     # payload = {}

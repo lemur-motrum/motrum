@@ -17,6 +17,7 @@ from apps.client.models import (
     Order,
     OrderDocumentBill,
     Requisites,
+    RequisitesAddress,
 )
 from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix
@@ -1125,13 +1126,15 @@ def add_new_order_web(order):
     req_inn = order.requisites.inn
     req_inn = 631625733376
     acc_req = order.account_requisites
+    req_kpp = order.account_requisites.requisitesKpp
+    adress_web = RequisitesAddress.objects.filter(requisitesKpp=req_kpp,type_address_bx="web-lk-adress")
     print(type(acc_req))
     # acc_req = AccountRequisites.objects.get(order.account_requisites)
-    req_kpp = order.account_requisites.requisitesKpp
+   
     serch_or_add_reqKpp_bx(bx, req_inn, acc_req)
 
 
-def serch_or_add_reqKpp_bx(bx, req_inn, acc_req):
+def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
     def _get_company_bx_in_req(company):
         company_bx = bx.get_by_ID("crm.company.get", [company])
         return company_bx
@@ -1151,7 +1154,7 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req):
             },
         )
         if len(acc_req_bx) == 1:
-            return acc_req_bx[0]['ID']
+            return acc_req_bx[0]["ID"]
         elif len(acc_req_bx) == 0:
             new_acc_req_bx = add_acc_req_bx(
                 bx,
@@ -1166,14 +1169,28 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req):
             pass
         return acc_req
 
-    def _get_adress_bx_in_req(req_bx_id):
-        adress_bx = bx.get_all(
-        "crm.address.list",
-        params={
-            "filter": {"ENTITY_TYPE_ID": 8, "ENTITY_ID": req_bx_id},
-        },)
-        print("adress_bx",adress_bx)
+    def _get_adress_bx_in_req(req_bx_id,adress_web):
         
+        adress_bx = bx.get_all(
+            "crm.address.list",
+            params={
+                "filter": {"ENTITY_TYPE_ID": 8, "ENTITY_ID": req_bx_id},
+            },
+        )
+        # [{'TYPE_ID': '6', 'ENTITY_TYPE_ID': '8', 'ENTITY_ID': '6652', 'ADDRESS_1': 'проспект Генерала Тюленева', 'ADDRESS_2': '55', 'CITY': 'Ульяновск', 'POSTAL_CODE': '432072', 'REGION': 'городской округ Ульяновск', 'PROVINCE': 'Ульяновская область', 'COUNTRY': 'Россия', 'COUNTRY_CODE': None, 'LOC_ADDR_ID': '11816', 'ANCHOR_TYPE_ID': '4', 'ANCHOR_ID': '17682'}]
+        print(adress_bx)
+
+        if len(req_bx) == 1 :
+            address1_bx = adress_bx['ADDRESS_1']
+            address2_bx = adress_bx['ADDRESS_2']
+            city = adress_bx['CITY']
+            post_code = adress_bx['POSTAL_CODE']
+            region = adress_bx['PROVINCE']
+            country = adress_bx['COUNTRY']
+            if address1_bx == 
+        else:
+            pass
+
     req_bx = bx.get_all(
         "crm.requisite.list",
         params={
@@ -1203,10 +1220,11 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req):
 
         # AccountRequisites
         acc_req_bx = _get_accountreq_bx_in_req(id_bitrix_req, acc_req)
+
         # print("accreq_bx", acc_req_bx)
         # RequisitesAddress
-        adress_bx = _get_adress_bx_in_req(req_bx_id)
-        # print(req_bx)
+        adress_bx = _get_adress_bx_in_req(req_bx_id,adress_web)
+        print(req_bx)
 
     elif len(req_bx) > 1:
         pass
@@ -1219,7 +1237,7 @@ def add_acc_req_bx(bx, req_id_bx, account_requisites, bank, ks, bic):
     tasks = {
         "fields": {
             "ENTITY_ID": req_id_bx,
-            "NAME":f"Сайт реквизиты - {bank}",
+            "NAME": f"Сайт реквизиты - {bank}",
             "RQ_ACC_NUM": account_requisites,
             "RQ_BANK_NAME": bank,
             "RQ_COR_ACC_NUM": ks,
@@ -1232,8 +1250,28 @@ def add_acc_req_bx(bx, req_id_bx, account_requisites, bank, ks, bic):
     acc_req_new = bx.call("crm.requisite.bankdetail.add", tasks)
     print("acc_req_new", acc_req_new)
 
+def add_adress_req_bx(bx, adress,type_id):
 
+    tasks = {
+        "fields": {
+            "ENTITY_TYPE_ID":8,
+            "ENTITY_ID": req_id_bx,
+            "TYPE_ID":type_id,
+            "ADDRESS_1": adress.address1,
+            "ADDRESS_2": adress.address2,
+           
+            "CITY": adress.city,
+            "POSTAL_CODE": adress.post_code,
+            "PROVINCE": adress.province,
+            "COUNTRY":adress.country
+        }
+    }
 
+    print("tasks", tasks)
+
+    acc_req_new = bx.call("crm.address.add", tasks)
+    print("acc_req_new", acc_req_new)
+    
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:
 #         file_base64 = base64.b64encode(f.read()).decode("utf-8")

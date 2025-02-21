@@ -388,7 +388,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
         if requisitesKpp["kpp"]:
             type_client = 1
         else:
-            type_client = 2
+            type_client = 3
 
         req = Requisites.objects.update_or_create(
             inn=requisites["inn"],

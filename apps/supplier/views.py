@@ -20,6 +20,7 @@ from apps.client.models import (
 from apps.core.bitrix_api import (
     add_info_order,
     add_new_order_web,
+    add_or_get_contact_bx,
     currency_check_bx,
     get_info_for_order_bitrix,
     get_manager,
@@ -93,9 +94,24 @@ from fast_bitrix24 import Bitrix
 # тестовая страница скриптов
 def add_iek(request):
     from requests.auth import HTTPBasicAuth
-
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
     title = "TEST"
-    get_motrum_nomenclature()
+    
+    req_bx = bx.get_all(
+    "crm.requisite.list",
+    params={
+        "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": 631625733376},
+    },
+    )
+    req_bx = bx.get_all(
+    "crm.enum.addresstype",
+    )
+    print("req_bx",req_bx)
+    # client = None
+    # add_or_get_contact_bx(bx,client,None)
+    
+    # get_motrum_nomenclature()
    
 
     # add_new_order_web(None)

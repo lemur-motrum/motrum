@@ -88,11 +88,16 @@ TYPE_PAYMENT = (
     ("payment in installments", "Оплата частями"),
     ("100% postpay", "100% постоплата"),
 )
+# TYPE_CLIENT = (
+#     ("1", "Юридическое лицо"),
+#     ("2", "ИП"),
+#     ("3", "Физ. лицо"),
+#     ("4", "Организация (доп.)"),
+# )
 TYPE_CLIENT = (
     ("1", "Юридическое лицо"),
-    ("2", "ИП"),
-    ("3", "Физ. лицо"),
-    ("4", "Организация (доп.)"),
+    ("3", "ИП"),
+    ("5", "Физ. лицо"),
 )
 
 # TODO: unique=True вернуть
@@ -168,6 +173,24 @@ class Requisites(models.Model):
     )
     type_client = models.CharField(
         "Тип клиента", max_length=100, choices=TYPE_CLIENT, default="1"
+    )
+    first_name = models.CharField(
+        "Имя ИП",
+        max_length=150,
+        blank=True,
+        null=True,
+    )
+    last_name = models.CharField(
+        "Фамилия ИП",
+        max_length=150,
+        blank=True,
+        null=True,
+    )
+    middle_name = models.CharField(
+        "Отчество ИП",
+        max_length=150,
+        blank=True,
+        null=True,
     )
     
 
@@ -249,7 +272,10 @@ TYPE_ADDRESS = (
     (1, "Фактический адрес"),
     (4, "Адрес регистрации"),
     (6, "Юридический адрес"),
+    (8, "Адрес для корреспонденции"),
     (9, "Адрес бенефициара"),
+    (11, "Адрес доставки"),
+    
     ("web-lk-adress", "Юридический адрес сайт"),
 )
 class ClientRequisites(models.Model):

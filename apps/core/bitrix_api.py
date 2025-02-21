@@ -1,6 +1,7 @@
 import base64
 import datetime
 import os
+from pickle import TRUE
 import random
 import traceback
 from django.conf import settings
@@ -25,7 +26,7 @@ from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
-from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
+from project.settings import BASE_MANAGER_FOR_BX, MEDIA_ROOT, BITRIX_WEBHOOK
 
 
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
@@ -242,18 +243,18 @@ def get_req_info_bx(bs_id_order, manager, company):
                 # tel = v["RQ_PHONE"]
 
                 type_client = "1"
-            elif type_preset_req == "2":  # ИП
+            elif type_preset_req == "3":  # ИП
                 legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
-                type_client = "2"
+                type_client = "3"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
-            elif type_preset_req == "3":  # Физ. лицо
+            elif type_preset_req == "5":  # Физ. лицо
                 legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
                 # tel = v["RQ_PHONE"]
                 kpp = None
-                type_client = "2"
+                type_client = "5"
                 ogrn = v["RQ_OGRNIP"]
                 kpp = None
 
@@ -1119,22 +1120,30 @@ def _status_to_order_replace(name_status, id_bx):
         return "PROCESSING"
 
 
+# ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА 
+
 def add_new_order_web(order):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
+    base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
     order = Order.objects.get(id=171)
+    client = order.client
+    req = order.requisites
     req_inn = order.requisites.inn
     req_inn = 631625733376
     acc_req = order.account_requisites
     req_kpp = order.account_requisites.requisitesKpp
-    adress_web = RequisitesAddress.objects.filter(requisitesKpp=req_kpp,type_address_bx="web-lk-adress")
+    adress_web = RequisitesAddress.objects.filter(
+        requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
+    )
     print(type(acc_req))
     # acc_req = AccountRequisites.objects.get(order.account_requisites)
-   
+    client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+    print(client_bx_id)
     serch_or_add_reqKpp_bx(bx, req_inn, acc_req)
 
 
-def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
+def serch_or_add_reqKpp_bx(bx, req_inn, acc_req, adress_web, req):
     def _get_company_bx_in_req(company):
         company_bx = bx.get_by_ID("crm.company.get", [company])
         return company_bx
@@ -1169,8 +1178,8 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
             pass
         return acc_req
 
-    def _get_adress_bx_in_req(req_bx_id,adress_web):
-        
+    def _get_adress_bx_in_req(req_bx_id, adress_web):
+
         adress_bx = bx.get_all(
             "crm.address.list",
             params={
@@ -1180,14 +1189,14 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
         # [{'TYPE_ID': '6', 'ENTITY_TYPE_ID': '8', 'ENTITY_ID': '6652', 'ADDRESS_1': 'проспект Генерала Тюленева', 'ADDRESS_2': '55', 'CITY': 'Ульяновск', 'POSTAL_CODE': '432072', 'REGION': 'городской округ Ульяновск', 'PROVINCE': 'Ульяновская область', 'COUNTRY': 'Россия', 'COUNTRY_CODE': None, 'LOC_ADDR_ID': '11816', 'ANCHOR_TYPE_ID': '4', 'ANCHOR_ID': '17682'}]
         print(adress_bx)
 
-        if len(req_bx) == 1 :
-            address1_bx = adress_bx['ADDRESS_1']
-            address2_bx = adress_bx['ADDRESS_2']
-            city = adress_bx['CITY']
-            post_code = adress_bx['POSTAL_CODE']
-            region = adress_bx['PROVINCE']
-            country = adress_bx['COUNTRY']
-            # if address1_bx == 
+        if len(req_bx) == 1:
+            address1_bx = adress_bx["ADDRESS_1"]
+            address2_bx = adress_bx["ADDRESS_2"]
+            city = adress_bx["CITY"]
+            post_code = adress_bx["POSTAL_CODE"]
+            region = adress_bx["PROVINCE"]
+            country = adress_bx["COUNTRY"]
+            # if address1_bx ==
         else:
             pass
 
@@ -1223,7 +1232,7 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
 
         # print("accreq_bx", acc_req_bx)
         # RequisitesAddress
-        adress_bx = _get_adress_bx_in_req(req_bx_id,adress_web)
+        adress_bx = _get_adress_bx_in_req(req_bx_id, adress_web)
         print(req_bx)
 
     elif len(req_bx) > 1:
@@ -1231,6 +1240,11 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
     else:
         pass
         # создать компанию - добавить рекыиззит и банк рек и адресс
+        company_bx_id = add_company_bx(bx, req, req_kpp,adress)
+        req_bx_id = add_req_bx(bx,company_bx_id,req,reqKpp)
+        req_bx_id = add_req_bx(bx,company_bx_id,req,reqKpp)
+        adress_bx_id  = add_adress_req_bx(bx, adress, type_id, req_id_bx)
+        
 
 
 def add_acc_req_bx(bx, req_id_bx, account_requisites, bank, ks, bic):
@@ -1250,20 +1264,20 @@ def add_acc_req_bx(bx, req_id_bx, account_requisites, bank, ks, bic):
     acc_req_new = bx.call("crm.requisite.bankdetail.add", tasks)
     print("acc_req_new", acc_req_new)
 
-def add_adress_req_bx(bx, adress,type_id):
+
+def add_adress_req_bx(bx, adress, type_id, req_id_bx):
 
     tasks = {
         "fields": {
-            "ENTITY_TYPE_ID":8,
+            "ENTITY_TYPE_ID": 8,
             "ENTITY_ID": req_id_bx,
-            "TYPE_ID":type_id,
+            "TYPE_ID": type_id,
             "ADDRESS_1": adress.address1,
             "ADDRESS_2": adress.address2,
-           
             "CITY": adress.city,
             "POSTAL_CODE": adress.post_code,
             "PROVINCE": adress.province,
-            "COUNTRY":adress.country
+            "COUNTRY": adress.country,
         }
     }
 
@@ -1271,7 +1285,210 @@ def add_adress_req_bx(bx, adress,type_id):
 
     acc_req_new = bx.call("crm.address.add", tasks)
     print("acc_req_new", acc_req_new)
+
+# получение обновление и создание контакта в битрикс - ответ айти битрикс контакта
+def add_or_get_contact_bx(bx, client, base_manager):
+    # name = client.first_name
+    # last_name = client.last_name
+    # middle_name = client.middle_name
+    # phone = client.phone
+    # email = client.email
+    # position = client.position
+
+    name = "тест"
+    last_name = None
+    middle_name = "test"
+    phone = "9649838612"
+    email = "test@test.test"
+
+    phone = f"+{phone}"
+    product_bx = bx.get_all(
+        "crm.contact.fields",
+    )
+    print(product_bx)
+    contact_bx = bx.get_all(
+        "crm.contact.list",
+        params={
+            "filter": {"NAME": name, "LAST_NAME": last_name, "PHONE": f"{phone}"},
+            "select": [
+                "ID",
+                "NAME",
+                "LAST_NAME",
+                "EMAIL",
+                "PHONE",
+                "ASSIGNED_BY_ID",
+                "SECOND_NAME",
+            ],
+        },
+    )
+    print(contact_bx)
+
+    if len(contact_bx) == 1:
+        is_phone = False
+        is_email = False
+        fields = {}
+        if contact_bx[0]["LAST_NAME"] != middle_name:
+            fields["SECOND_NAME"] = middle_name
+        
+        if "PHONE" in contact_bx[0]:
+            for phones_bx in contact_bx[0]["PHONE"]:
+                if phones_bx["VALUE"] == phone:
+                    is_phone = True
+            
+        if is_phone == False:
+            fields["PHONE"] = [{"VALUE": phone, "VALUE_TYPE": "WORK"}]
+        if 'EMAIL' in contact_bx[0]:
+            for email_bx in contact_bx[0]["EMAIL"]:
+                if email_bx["VALUE"] == email:
+                    is_email = True
+                    
+        if is_email == False:
+            fields["EMAIL"] = [{"VALUE": email, "VALUE_TYPE": "WORK"}]
+
+        print(fields)
+        contact_upd = {
+            "id": contact_bx[0]["ID"] ,
+            "fields": fields
+        }
+        contact_upd_bx = bx.call("crm.contact.update", contact_upd)
+        
+       
+    else:
+        tasks = {
+            "fields": {
+            "NAME": name,
+            "SECOND_NAME": middle_name,
+            "LAST_NAME": last_name,
+            "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
+            "POST": position,
+            "ASSIGNED_BY_ID": base_manager.bitrix_id,
+            "PHONE": [{"VALUE": phone, "VALUE_TYPE": "WORK"}],
+            "EMAIL": [{"VALUE": email, "VALUE_TYPE": "WORK"}],
+            }
+        }
+
+        # contact_bx = bx.call("crm.contact.add", tasks)
+        return contact_bx
+
     
+# СОХДАТЬ КОМПАНИЮ БИТРИКС ВЫХОД ИД БИТРИКС КОМПАНИИ
+def add_company_bx(bx, req, req_kpp,adress):
+    tasks = {
+        "fields": {
+            "TITLE": f"ТЕСТ САЙТ{req.legal_entity}",
+            "COMPANY_TYPE": "CUSTOMER",
+            "PHONE": [{"VALUE": req_kpp.tel, "VALUE_TYPE": "WORK"}],
+            "ADDRESS_CITY":adress.city,
+            "ADDRESS_PROVINCE":adress.province,
+            "HAS_PHONE":True,
+        }
+    }
+    company_bx_new = bx.call("crm.company.add", tasks)
+    return company_bx_new
+
+# СОХДАТЬ РЕКВИЗИТ КОМПАНИИ БИТРИКС ВЫХОД ИД БИТРИКС КОМПАНИИ
+def add_req_bx(bx,company_bx_id,req,reqKpp):
+    tasks = {
+        "fields": {
+            "ENTITY_TYPE_ID": 4,
+            "ENTITY_ID":company_bx_id,
+            "PRESET_ID":req.type_client,
+            "RQ_INN":req.inn,
+            "RQ_PHONE":reqKpp.tel,
+        }
+    }
+    if req.type_client == 1:
+        tasks["fields"]["NAME"] = "Организация"
+        tasks["fields"]["RQ_COMPANY_NAME"] = req.legal_entity
+        tasks["fields"]["RQ_KPP"] = reqKpp.kpp
+        tasks["fields"]["RQ_OGRN"] = reqKpp.ogrn
+    elif req.type_client == 3:
+        tasks["fields"]["NAME"] = "ИП"
+        tasks["fields"]["RQ_NAME"] = req.legal_entity
+        tasks["fields"]["RQ_FIRST_NAME"] = req.first_name
+        tasks["fields"]["RQ_LAST_NAME"] = req.last_name
+        tasks["fields"]["RQ_SECOND_NAME"] = req.middle_name
+        tasks["fields"]["RQ_OGRNIP"] = reqKpp.ogrn
+    else:
+        pass
+        
+    req_bx_new = bx.call("crm.requisite.add", tasks)
+    return req_bx_new
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:
 #         file_base64 = base64.b64encode(f.read()).decode("utf-8")

@@ -270,3 +270,5 @@ NDS = 20
 BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
 DADATA_TOKEN = os.environ.get("DADATA_TOKEN")
 DADATA_SECRET = os.environ.get("DADATA_SECRET")
+
+BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"

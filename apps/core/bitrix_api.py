@@ -1187,7 +1187,7 @@ def serch_or_add_reqKpp_bx(bx, req_inn, acc_req,adress_web):
             post_code = adress_bx['POSTAL_CODE']
             region = adress_bx['PROVINCE']
             country = adress_bx['COUNTRY']
-            if address1_bx == 
+            # if address1_bx == 
         else:
             pass
 

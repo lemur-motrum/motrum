@@ -133,7 +133,6 @@ def get_motrum_nomenclature():
                                 product = Product.objects.filter(
                                     vendor=vendor_qs, article_supplier=article_supplier
                                 )
-
                                 if product:
                                     product = product[0]
                                     if (
@@ -163,7 +162,12 @@ def get_motrum_nomenclature():
                                 lot,
                             )
                         
+                            
                             row_nomenk["Артикул мотрум"] = product.article
+                           
+                            name = name.replace(";", "").replace(",", "")
+                            print("name",name)
+                            row_nomenk["Номенклатура"] = product.name
                             writer_nomenk.writerow(row_nomenk)
                             
                     elif i == 2:
@@ -211,7 +215,9 @@ def add_new_product(
         category_supplier=None,
         add_in_nomenclature=True,
     )
+    prod_new._change_reason = "Автоматическое"
     prod_new.save()
+     
     update_change_reason(prod_new, "Автоматическое")
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name=20)
@@ -219,6 +225,7 @@ def add_new_product(
     price = Price(
         prod=prod_new, currency=currency, vat=vat, extra_price=True, in_auto_sale=False
     )
+    price._change_reason = "Автоматическое"
     price.save()
     print("save price OK", price)
     update_change_reason(price, "Автоматическое")
@@ -256,7 +263,7 @@ def get_or_add_vendor(vendor):
     elif vendor_name == "TBLOC" :
         supplier_qs = Supplier.objects.get(slug="emas")
     elif vendor_name == "VEDA" :
-        supplier_qs = Supplier.objects.get(slug="veda")
+        supplier_qs = Supplier.objects.get(slug="veda-mc")
     elif vendor_name == "Veichi" :
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
     elif vendor_name == "Emas" :

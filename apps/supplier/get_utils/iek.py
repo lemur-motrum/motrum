@@ -761,6 +761,7 @@ def iek_api():
                             article = Product.objects.get(
                                 supplier=supplier,
                                 article_supplier=article_suppliers,
+                                vendor=vendor_add[0],
                             )
                             save_update_product_attr(
                                 article,
@@ -1425,15 +1426,13 @@ def iek_api():
         data = response.json()
 
         if len(data) > 0:
-
             for data_item in data:
-
                 try:
-
                     prod_article = data_item["Code"]
+                    prod_tm = data_item["TM"]
                     try:
                         prod = Product.objects.get(
-                            supplier=supplier, article_supplier=prod_article
+                            supplier=supplier,vendor=prod_tm, article_supplier=prod_article
                         )
                         old_prop = ProductProperty.objects.filter(product=prod).exists()
                         if old_prop == False:

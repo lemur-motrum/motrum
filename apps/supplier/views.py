@@ -98,16 +98,16 @@ def add_iek(request):
     bx = Bitrix(webhook)
     title = "TEST"
     
-    req_bx = bx.get_all(
-    "crm.requisite.list",
-    params={
-        "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": 631625733376},
-    },
-    )
-    req_bx = bx.get_all(
-    "crm.enum.addresstype",
-    )
-    print("req_bx",req_bx)
+    # req_bx = bx.get_all(
+    # "crm.requisite.list",
+    # params={
+    #     "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": 631625733376},
+    # },
+    # )
+    # req_bx = bx.get_all(
+    # "crm.enum.addresstype",
+    # )
+    # print("req_bx",req_bx)
     # client = None
     # add_or_get_contact_bx(bx,client,None)
     

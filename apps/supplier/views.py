@@ -101,28 +101,10 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
-    client = Client.objects.get(phone="79276892241")
-    d = chech_client_other_rec_company(bx,client)
-
-
-    # [{'id': 0, 'name': 'Квалификация', 'sort': 100, 'entityTypeId': 2, 'isDefault': 'Y'}, {'id': 8, 'name': 'Дистрибьюция', 'sort': 200, 'entityTypeId': 2, 'isDefault': 'N', 'originId': '', 'originatorId': ''}, {'id': 12, 'name': 'Проекты', 'sort': 300, 'entityTypeId': 2, 'isDefault': 'N', 'originId': '', 'originatorId': ''}]
-
     client = None
-    # add_or_get_contact_bx(bx,client,None)
-
-    # get_motrum_nomenclature()
-
-    # add_new_order_web(None)
-    # url = "http://localhost:8000/api/v1/order/add-info-order-1c/"
-    # headers = {"Content-type": "application/json"}
-    # payload = {}
-    # auth = HTTPBasicAuth("testadmin", "9vNclji"
-    #     )
-
-    # response = requests.request(
-    #     "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=False
-    # )
-    # print(response)
+    base_manager = None
+    client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+    print(client_bx_id)
 
     result = 1
     if result:

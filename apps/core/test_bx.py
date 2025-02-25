@@ -5815,3 +5815,149 @@ dd = {
         },
     },
 }
+
+dd = [
+    {
+        "ID": "48918",
+        "NAME": "Тест",
+        "LAST_NAME": "Тест",
+        "ASSIGNED_BY_ID": "1",
+        "SECOND_NAME": "",
+        "PHONE": [
+            {
+                "ID": "41472",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "88888888888",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "62790",
+        "NAME": "Тест",
+        "LAST_NAME": "",
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "91060",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "+79277022247",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "62810",
+        "NAME": "Тест",
+        "LAST_NAME": None,
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "91124",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "+7 (999) 999-99-99",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "62812",
+        "NAME": "Тест",
+        "LAST_NAME": None,
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "91128",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "+7 (888) 888-88-88",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "62822",
+        "NAME": "тест",
+        "LAST_NAME": None,
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "91144",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "+7 (964) 983-86-12",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "63970",
+        "NAME": "Тест",
+        "LAST_NAME": "Тест",
+        "ASSIGNED_BY_ID": "22",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "94680",
+                "VALUE_TYPE": "OTHER",
+                "VALUE": "+71111111111",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "63972",
+        "NAME": "Тест",
+        "LAST_NAME": "Тест",
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "94690",
+                "VALUE_TYPE": "OTHER",
+                "VALUE": "+71111111112",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "63976",
+        "NAME": "Тест",
+        "LAST_NAME": "Тест",
+        "ASSIGNED_BY_ID": "174",
+        "SECOND_NAME": None,
+        "PHONE": [
+            {
+                "ID": "94696",
+                "VALUE_TYPE": "OTHER",
+                "VALUE": "+71111111113",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+    },
+    {
+        "ID": "64100",
+        "NAME": "тест",
+        "LAST_NAME": None,
+        "ASSIGNED_BY_ID": "34",
+        "SECOND_NAME": "test",
+        "PHONE": [
+            {
+                "ID": "95068",
+                "VALUE_TYPE": "OTHER",
+                "VALUE": "+9649838612",
+                "TYPE_ID": "PHONE",
+            }
+        ],
+        "EMAIL": [
+            {
+                "ID": "97850",
+                "VALUE_TYPE": "WORK",
+                "VALUE": "test@test.test",
+                "TYPE_ID": "EMAIL",
+            }
+        ],
+    },
+]

@@ -31,15 +31,15 @@ class VacancyCategoryWebAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
     
-class VacancyPriceInlineWeb(admin.TabularInline):
-    model = VacancyPrice
+# class VacancyPriceInlineWeb(admin.TabularInline):
+#     model = VacancyPrice
     
 
 
 class VacancyWebAdmin(admin.ModelAdmin):
     exclude = ["slug"]
     inlines = [
-       VacancyPriceInlineWeb,
+    #    VacancyPriceInlineWeb,
     ]
     list_display = [
         "name",

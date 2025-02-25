@@ -1221,7 +1221,7 @@ def serch_or_add_info_client(
 
     # создать компанию - добавить рекыиззит и банк рек и адресс связать с контактом
     def _add_new_all_company(need_sech_company, company_bx_id):
-
+        print("need need_sech_company",need_sech_company)
         if need_sech_company:
             print("need companu")
         #     id_bx_company = chech_client_other_rec_company(bx, client)
@@ -1230,6 +1230,8 @@ def serch_or_add_info_client(
         #     else:
         #         company_bx_id = add_company_bx(bx, req, req_kpp, adress_web)
         print(company_bx_id)
+        print(bx, client_bx_id, company_bx_id)
+        print(123123)
         # chek_add_contact_company(bx, client_bx_id, company_bx_id)
         # req_bx_id = add_req_bx(bx, company_bx_id, req, req_kpp)
         # req_kpp.id_bitrix = req_bx_id
@@ -1287,8 +1289,15 @@ def serch_or_add_info_client(
             pass
         else:
             # добавить рек
+            if len(company_bx_arr) == 1:
+                need_sech_company =False
+                company_bx_id = company_bx_arr[0]
+            else:
+                need_sech_company = True
+                company_bx_id = None
+                
             req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-                    _add_new_all_company(True, None)
+                    _add_new_all_company(need_sech_company, company_bx_id)
                 )
         
         
@@ -1364,7 +1373,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
     # phone = client.phone
     # email = client.email
     # position = client.position
-    phone = "9649838612"
+    phone = "71111111112"
     phone = f"+{phone}"
     phone_st = [f"{phone}"]
     phone_arr = [{"VALUE": phone, "VALUE_TYPE": "WORK"}]
@@ -1435,8 +1444,8 @@ def add_or_get_contact_bx(bx, client, base_manager):
         print("fields",fields)
         if fields:
             contact_upd = {"id": contact_bx[0]["ID"], "fields": fields}
-            contact_upd_bx = bx.call("crm.contact.update", contact_upd)
-
+            # contact_upd_bx = bx.call("crm.contact.update", contact_upd)
+        print("contact_bx",contact_bx)
         return contact_bx[0]["ID"]
     else:
         tasks = {

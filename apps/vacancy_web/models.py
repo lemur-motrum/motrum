@@ -63,6 +63,17 @@ class Vacancy(models.Model):
         null=True,
     )
     experience =  models.CharField("Опыт", max_length=200,null=True,)
+    first = models.FloatField(
+        "от", blank=True, null=True,
+    )
+    
+    last = models.FloatField(
+        "до", blank=True, null=True,
+    )
+    fixed = models.FloatField(
+        "фиксированная сумма", blank=True, null=True,
+    )
+    type_payments = models.CharField("Условия выплат", max_length=500)
     # text = models.TextField("Описание текстовое")
     text= tinymce_models.HTMLField(
             "Общее описание",

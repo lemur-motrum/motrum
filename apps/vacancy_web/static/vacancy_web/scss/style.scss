@@ -50,22 +50,24 @@
           width: 23.375rem;
           background-color: #95bad4;
           border-radius: 2.5rem;
-          padding: 1.938rem 2.5rem;
+          padding: 1.5rem 2.25rem;
           box-sizing: border-box;
           color: #fff;
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
           .title {
             font-size: 1.5rem;
-            width: 100%;
+            width: 13.813rem;
             text-transform: uppercase;
           }
           .description {
+            margin-top: 0.75rem;
             font-size: 1.125rem;
             font-weight: 300;
+            width: 13.813rem;
           }
           a {
+            margin-top: 1rem;
             cursor: pointer;
             width: 15rem;
             .arhor_btn {
@@ -128,9 +130,72 @@
           height: max-content;
         }
       }
+      .centered_elem {
+        width: 40.375rem;
+        border: 0.094rem solid #000;
+        border-radius: 2.5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        span {
+          text-align: center;
+          text-transform: uppercase;
+          font-weight: 700;
+          font-size: 3rem;
+          display: block;
+          width: 28.813rem;
+        }
+      }
       &.up_content {
         width: 100%;
       }
+      &.middle_content {
+        width: 64rem;
+        margin: 0 auto;
+        .elem {
+          width: 30.438rem;
+        }
+      }
+      &.down_content {
+        width: 40.25rem;
+        margin: 0 auto;
+      }
+    }
+  }
+  .learing_container {
+    margin-top: 6.375rem;
+    .title {
+      text-transform: uppercase;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    .learnig_slider {
+      margin-top: 1.875rem;
+      .swiper-wrapper {
+        .photo_education_elem_img_container {
+          height: 16.5rem;
+          width: auto;
+          margin-left: 0.961rem;
+          overflow: hidden;
+          border-radius: 2.5rem;
+          &:nth-of-type(1) {
+            margin-left: 0;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+            object-fit: cover;
+          }
+        }
+      }
+    }
+    .learnig_description {
+      font-size: 1.5rem;
+      font-weight: 300;
+      width: 56.188rem;
+      margin-top: 1.813rem;
     }
   }
 }

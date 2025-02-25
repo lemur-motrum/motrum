@@ -1405,6 +1405,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
                     )
                     # need_new_phone.append()
 
+
                 # if phones_bx["VALUE"] == phone:
                 #     is_phone = True
         print("phone_arr", phone_arr)

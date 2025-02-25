@@ -12,12 +12,12 @@ def vacancy(request):
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
     photo_education = PhotoEducationInfoWeb.objects.all()
     context = {
-        "title": title, 
+        "title": title,
         "vacancy": vacancy,
-        "category_vacancy":category_vacancy,
-        "photo_motrum":photo_motrum,
-        "photo_education":photo_education,
-        }
+        "category_vacancy": category_vacancy,
+        "photo_motrum": photo_motrum,
+        "photo_education": photo_education,
+    }
     return render(request, "vacancy_web/vacancy_all.html", context)
 
 

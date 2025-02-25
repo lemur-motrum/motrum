@@ -42,9 +42,6 @@ from django.views.decorators.clickjacking import (
 
 
 # ГЛАВНАЯ
-
-
-# @xframe_options_sameorigin
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
         "article_home_web"
@@ -159,24 +156,20 @@ def cart(request):
 
     return render(request, "core/cart.html", context)
 
-
-# def promo_slider(request):
-
-
-#     return render(request, "core/includes/promo_slider.html", context)
+# РЕШЕНИЯ ОБЩАЯ
 def solutions_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
     context = {"projects": projects}
     return render(request, "core/solutions/solutions_all.html", context)
 
-
+# КОБОТЫ ОБЩАЯ
 def cobots_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
     context = {"projects": projects}
     return render(request, "core/solutions/cobots.html", context)
 
-
+# РЕШЕНИЕ ОДНО ОТЛЕЬЕНАЯ СТРАНИЦА
 def solutions_one(request):
     print(111)
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
@@ -190,7 +183,7 @@ def solutions_one(request):
     context = {"seo_test": seo_test, "projects": projects}
     return render(request, "core/solutions/solutions_one.html", context)
 
-
+# ККОМПАНИЯ
 def company(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:2]
     
@@ -211,7 +204,7 @@ def company(request):
     context = {}
     return render(request, "core/company.html", context)
 
-
+# УДАЛИТЬ
 def company_about(request):
     context = {}
     return render(request, "core/about.html", context)

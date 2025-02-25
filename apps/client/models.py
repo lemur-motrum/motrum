@@ -218,6 +218,11 @@ class Requisites(models.Model):
 
 # реквизиты компании прикрепленные к кпп
 class RequisitesOtherKpp(models.Model):
+    id_bitrix = models.PositiveIntegerField(
+        "Номер клиента битрикс",
+        null=True,
+        blank=True,
+    )
     requisites = models.ForeignKey(
         Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
     )

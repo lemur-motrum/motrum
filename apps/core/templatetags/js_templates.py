@@ -37,6 +37,11 @@ def js_templates():
             "name": "invoice-item",
             "template": "admin_specification/include/ajax_invoice_item.html",
         },
+        {
+            "module": "vacancy",
+            "name": "vacancy-item",
+            "template": "vacancy_web/includes/ajax_vacancy_item.html",
+        },
     ]
 
     for template_item in template_list:

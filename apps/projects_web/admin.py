@@ -44,7 +44,6 @@ class ProjectTextBlockWeb(admin.TabularInline):
         )
     ]
     
-
     
 class ProjectClientCategoryProjectInlineWeb(admin.TabularInline):
     model = ProjectClientCategoryProject

@@ -19,7 +19,7 @@ from apps.notifications.models import Notification
 from apps.specification.models import ProductSpecification
 
 
-# Create your views here.
+
 def index(request):
     title = "Клиенты"
     context = {
@@ -29,7 +29,9 @@ def index(request):
     }
     return render(request, "client/index_client.html", context)
 
+# СТРАНИЦЫ ЛК
 
+# МОИ ЗАКАЗЫ
 def my_orders(request):
     print(request)
     # current_user = request.user.id
@@ -45,7 +47,7 @@ def my_orders(request):
 
     return render(request, "client/my_orders.html", context)
 
-
+# МОИ ДОКУМЕНТЫ
 def my_documents(request):
     current_user = request.user.id
     client = Client.objects.get(pk=current_user)
@@ -59,7 +61,7 @@ def my_documents(request):
     }
     return render(request, "client/my_documents.html", context)
 
-
+# МОИ РЕКВИЗИТЫ
 def my_details(request):
     # cookie = request.COOKIES.get("client_id")
     # client_id = int(cookie)
@@ -70,56 +72,20 @@ def my_details(request):
         .values_list("requisitesotherkpp__id", flat=True)
         .order_by("id")
     )
-    print(req)
+    
     requisites = RequisitesOtherKpp.objects.filter(id__in=req).prefetch_related(
         Prefetch("accountrequisites_set"),
         Prefetch("requisitesaddress_set"),
     )
     
-    # requisites = Requisites.objects.filter(client=client).prefetch_related(
-    #     Prefetch("accountrequisites_set"),
-    # )
-    # print(requisites)
-    # for i in requisites:
-    #     print(i.accountrequisites_set.all())
-    # details = Requisites.objects.filter(client=client)
-    # bank_obj = []
-    # for detail in details:
-    #     my_details = {
-    #         "name": detail.legal_entity,
-    #         "inn": detail.inn,
-    #         "kpp": detail.kpp,
-    #         "ogrn": detail.ogrn,
-    #         "contract": detail.contract,
-    #         "legal_post_code": detail.legal_post_code,
-    #         "legal_city": detail.legal_city,
-    #         "legal_address": detail.legal_address,
-    #         "postal_post_code": detail.postal_post_code,
-    #         "postal_city": detail.postal_city,
-    #         "postal_address": detail.postal_address,
-    #         "bank_details": [],
-    #     }
-    #     bank_details = AccountRequisites.objects.filter(requisites=detail.pk)
-    #     for bank_detail in bank_details:
-    #         bank_object = {
-    #             "account_requisites": bank_detail.account_requisites,
-    #             "bank": bank_detail.bank,
-    #             "kpp": bank_detail.kpp,
-    #             "bic": bank_detail.bic,
-    #         }
-    #         my_details["bank_details"].append(bank_object)
-
-    #     bank_obj.append(my_details)
-    print(requisites)
     context = {
         "title": "Личный кабинет | мои реквизиты",
-        # "details": bank_obj,
         "details": requisites,
         "requisites": requisites,
     }
     return render(request, "client/my_details.html", context)
 
-
+# ПЕРСОНАЛЬНЫЕ ДАННЫЕ
 def my_contacts(request):
     cookie = request.COOKIES.get("client_id")
     client_id = int(cookie)
@@ -133,7 +99,7 @@ def my_contacts(request):
     }
     return render(request, "client/my_contacts.html", context)
 
-
+# ЗАКАЗ ОТДЕЛЬНАЯ СТРАНИЦА
 def order_client_one(request, pk):
     order = Order.objects.get(pk=pk)
 

@@ -1,14 +1,23 @@
 from django.shortcuts import render
 
-from apps.vacancy_web.models import Vacancy
+from apps.core.models import PhotoEmoloeeInfoWeb
+from apps.vacancy_web.models import PhotoEducationInfoWeb, Vacancy, VacancyCategory
 
 
 # Create your views here.
 def vacancy(request):
     title = "Вакансии"
     vacancy = Vacancy.objects.filter(is_actual=True)
- 
-    context = {"title": title, "vacancy": vacancy}
+    category_vacancy = VacancyCategory.objects.filter(is_view=True).order_by("article")
+    photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
+    photo_education = PhotoEducationInfoWeb.objects.all()
+    context = {
+        "title": title, 
+        "vacancy": vacancy,
+        "category_vacancy":category_vacancy,
+        "photo_motrum":photo_motrum,
+        "photo_education":photo_education,
+        }
     return render(request, "vacancy_web/vacancy_all.html", context)
 
 

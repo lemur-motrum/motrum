@@ -198,4 +198,72 @@
       margin-top: 1.813rem;
     }
   }
+  .vacancies_container {
+    margin-top: 6.375rem;
+    .title {
+      font-size: 3rem;
+      font-weight: 700;
+      width: 17.5rem;
+      line-height: 1.2em;
+    }
+    .description {
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin-top: 1.688rem;
+    }
+    .vacancies_filter_container {
+      margin-top: 3.563rem;
+      display: flex;
+      justify-content: space-between;
+      .filter_container {
+        display: flex;
+        flex-direction: column;
+        .filter_title {
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+        .filter_elems_container {
+          margin-top: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          .filter_elem {
+            width: 18.313rem;
+            height: 3.563rem;
+            border-radius: 2rem;
+            border: 0.094rem solid #000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            box-sizing: border-box;
+            font-size: 1.313rem;
+            cursor: pointer;
+            transition: 0.6s;
+            &:hover {
+              border-color: #95bad4;
+              background-color: #95bad4;
+              color: #fff;
+              font-weight: 700;
+            }
+            &.active {
+              border-color: #95bad4;
+              background-color: #95bad4;
+              color: #fff;
+              font-weight: 700;
+            }
+          }
+        }
+        .canceled_btn {
+          width: 18.313rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 1.125rem;
+          cursor: pointer;
+          text-transform: lowercase;
+          font-size: 1.313rem;
+        }
+      }
+    }
+  }
 }

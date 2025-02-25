@@ -106,6 +106,13 @@
                         <div class="canceled_btn">Сбросить</div>
                     {% endif %}
                 </div>
+                <div class="vacancies_wrapper" project-elem="wrapper">
+                    <div class="vacancies_elems_container" project-elem="container">
+                        {% for vacancy in vacancy_list %}
+                            {% include "vacancy_web/includes/ajax_vacancy_item.html" with vacancy=vacancy %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

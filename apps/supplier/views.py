@@ -118,9 +118,9 @@ def add_iek(request):
         )
     
     
-    # req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-    #         serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
-    #     )
+    req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
+            serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
+        )
     result = 1
     if result:
         pass

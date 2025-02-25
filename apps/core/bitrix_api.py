@@ -1213,6 +1213,28 @@ def serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req,client_bx_id,
         else:
             pass
 
+    # создать компанию - добавить рекыиззит и банк рек и адресс связать с контактом
+    def _add_new_all_company():
+        id_bx_company = chech_client_other_rec_company(bx,client)
+        if id_bx_company  != None:
+            company_bx_id = id_bx_company[0]
+        else:
+            company_bx_id = add_company_bx(bx, req, req_kpp,adress_web)
+        chek_add_contact_company(bx,client_bx_id,company_bx_id)
+        req_bx_id = add_req_bx(bx,company_bx_id,req,req_kpp)
+        req_kpp.id_bitrix = req_bx_id
+        req_kpp.save()
+        acc_req_bx_id = add_acc_req_bx(bx, req_bx_id, acc_req,)
+        adress_bx_id  = add_adress_req_bx(bx, adress_web, 9, req_bx_id)
+        return (req,company_bx_id,client_bx_id,req_bx_id,acc_req_bx_id ) 
+    
+    def _serch_other_info_company(req_bx):
+        for req_bx_item in req_bx:
+            
+            
+            
+            
+            
     req_bx = bx.get_all(
         "crm.requisite.list",
         params={
@@ -1252,17 +1274,18 @@ def serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req,client_bx_id,
     #НОВЫЙ РЕКВИЗИТ ДЯЛ БИТРИКС
     else:
         # создать компанию - добавить рекыиззит и банк рек и адресс связать с контактом
-        id_bx_company = chech_client_other_rec_company(bx,client)
-        if id_bx_company  != None:
-            company_bx_id = id_bx_company[0]
-        else:
-            company_bx_id = add_company_bx(bx, req, req_kpp,adress_web)
-        chek_add_contact_company(bx,client_bx_id,company_bx_id)
-        req_bx_id = add_req_bx(bx,company_bx_id,req,req_kpp)
-        req_kpp.id_bitrix = req_bx_id
-        req_kpp.save()
-        acc_req_bx_id = add_acc_req_bx(bx, req_bx_id, acc_req,)
-        adress_bx_id  = add_adress_req_bx(bx, adress_web, 9, req_bx_id)
+        req,company_bx_id,client_bx_id,req_bx_id,acc_req_bx_id  = _add_new_all_company()
+        # id_bx_company = chech_client_other_rec_company(bx,client)
+        # if id_bx_company  != None:
+        #     company_bx_id = id_bx_company[0]
+        # else:
+        #     company_bx_id = add_company_bx(bx, req, req_kpp,adress_web)
+        # chek_add_contact_company(bx,client_bx_id,company_bx_id)
+        # req_bx_id = add_req_bx(bx,company_bx_id,req,req_kpp)
+        # req_kpp.id_bitrix = req_bx_id
+        # req_kpp.save()
+        # acc_req_bx_id = add_acc_req_bx(bx, req_bx_id, acc_req,)
+        # adress_bx_id  = add_adress_req_bx(bx, adress_web, 9, req_bx_id)
 
         
     return (req,company_bx_id,client_bx_id,req_bx_id,acc_req_bx_id   ) 

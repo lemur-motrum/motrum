@@ -22,13 +22,13 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    fetch("/api/v1/project/load-ajax-vacancy-list/", {
+    fetch("/v1/vacancy/load-ajax-vacancy-list/", {
       method: "GET",
       headers: {
         "X-CSRFToken": csrfToken,
       },
     })
-      .then((response) => response.json())
+      .then((response) => response.json(Text))
       .then((response) => console.log(response));
   }
 });

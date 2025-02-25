@@ -22,11 +22,13 @@
                         <div class="arhor_btn">смотреть вакансии</div>
                     </a>
                 </div>
-                {% for photo_motrum_elem in photo_motrum %}
-                    <div class="swiper-slide photo-slide">
-                        <img src="{{ photo_motrum_elem.image.url }}" alt="img">
-                    </div>
-                {% endfor %}
+                {% if photo_motrum|length > 0 %}
+                    {% for photo_motrum_elem in photo_motrum %}
+                        <div class="swiper-slide photo-slide">
+                            <img src="{{ photo_motrum_elem.image.url }}" alt="img">
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
         <div class="work_in_motrum_description_container">
@@ -35,14 +37,60 @@
                     <div class="title">ТК РФ</div>
                     <div class="description">Соблюдение ТК РФ, своевременная выплата «белой» ЗП</div>
                 </div>
-                <div class="centered_elem">РАБОТА В МОТРУМ ЭТО</div>
+                <div class="centered_elem">
+                    <span>РАБОТА В МОТРУМ ЭТО</span>
+                </div>
                 <div class="elem">
                     <div class="title">Руководство</div>
                     <div class="description">Демократический стиль управления</div>
                 </div>
             </div>
-            <div class="middle_content"></div>
-            <div class="down_content"></div>
+            <div class="middle_content">
+                <div class="elem">
+                    <div class="title">СОВРЕМЕННЫЙ ОФИС</div>
+                    <div class="description">
+                        Ухоженный оснащенными офис с удобной транспортной развязкой.
+                        Наличие своей кухни с частичной
+                        компенсацией затрат на обеды.
+                    </div>
+                </div>
+                <div class="elem">
+                    <div class="title">СПОРТ И ОТДЫХ</div>
+                    <div class="description">
+                        Каждый сезон обязательный корпоратив, участие в спортивных мероприятиях и организация досуга вне офиса
+                    </div>
+                </div>
+            </div>
+            <div class="down_content">
+                <div class="elem">
+                    <div class="title">ГРАФИК</div>
+                    <div class="description">Возможна частичная удаленная работа и гибкий график отпусков</div>
+                </div>
+                <div class="elem">
+                    <div class="title">ОБУЧЕНИЕ</div>
+                    <div class="description">Развитая система обучения сотрудников</div>
+                </div>
+            </div>
+        </div>
+        <div class="learing_container">
+            <div class="title">ОБУЧЕНИЕ</div>
+            {% if photo_education|length > 0 %}
+                <div class="learnig_slider">
+                    <div class="swiper-wrapper">
+                        {% for photo_education_elem in photo_education %}
+                            <div class="swiper-slide photo_education_elem_img_container">
+                                <img src="{{ photo_education_elem.image.url }}" alt="img">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="learnig_description">
+                Наши сотрудники регулярно проходят обучение, в том числе по программам Executive MBA, МВА «Управление развитием организации», Школа экспорта РЭЦ, Обучение по ПЛК фирмы Omron, Президентская программа — программа подготовки руководителей и другие
+            </div>
+        </div>
+        <div class="vacancies_container">
+            <div class="title">ОТКРЫТЫЕ ВАКАНСИИ</div>
         </div>
     </div>
     {% comment %} {{ title }}

@@ -1156,7 +1156,7 @@ def add_new_order_web(order):
         e = error_alert(error, location, info)
 
 
-def serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req,client_bx_id,req_kpp):
+def serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req,client_bx_id,req_kpp,client):
     def _get_company_bx_in_req(company):
         company_bx = bx.get_by_ID("crm.company.get", [company])
         return company_bx
@@ -1252,7 +1252,11 @@ def serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req,client_bx_id,
     #НОВЫЙ РЕКВИЗИТ ДЯЛ БИТРИКС
     else:
         # создать компанию - добавить рекыиззит и банк рек и адресс связать с контактом
-        company_bx_id = add_company_bx(bx, req, req_kpp,adress_web)
+        id_bx_company = chech_client_other_rec_company(bx,client)
+        if id_bx_company  != None:
+            company_bx_id = id_bx_company[0]
+        else:
+            company_bx_id = add_company_bx(bx, req, req_kpp,adress_web)
         chek_add_contact_company(bx,client_bx_id,company_bx_id)
         req_bx_id = add_req_bx(bx,company_bx_id,req,req_kpp)
         req_kpp.id_bitrix = req_bx_id

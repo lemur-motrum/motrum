@@ -1823,6 +1823,7 @@ def after_save_order_products(products):
             "quantity": prod.quantity,
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
+            "data_delivery": prod.date_delivery.isoformat(),
         }
 
         order_products.append(data_prod_to_1c)

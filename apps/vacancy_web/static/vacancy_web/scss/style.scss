@@ -264,6 +264,50 @@
           font-size: 1.313rem;
         }
       }
+      .vacancies_wrapper {
+        width: 62.563rem;
+        .vacancies_elems_container {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 0.625rem;
+          .vacancy_item {
+            width: 100%;
+            min-height: 6.813rem;
+            border: 0.094rem solid #000;
+            border-radius: 2.5rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 2.563rem;
+            box-sizing: border-box;
+            .vacancy_tilte_content {
+              display: flex;
+              align-items: center;
+              div {
+                &.vacancy_name {
+                  font-size: 1.5rem;
+                  font-weight: 700;
+                  width: 15.375rem;
+                }
+                &.vacancy_exp {
+                  margin-left: 5.5rem;
+                  font-weight: 300;
+                  font-size: 1.125rem;
+                }
+                &.vacancy_price {
+                  width: 13rem;
+                  margin-left: 6.313rem;
+                }
+                &.show_btn {
+                  margin-left: 5.261rem;
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

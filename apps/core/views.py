@@ -13,7 +13,16 @@ from django.db.models import OuterRef, Subquery
 from apps import client
 from apps.client.models import AccountRequisites, Client, Requisites
 from apps.core.bitrix_api import get_manager
-from apps.core.models import CompanyInfoWeb, CompanyPrijectAutoInfoWeb, IndexInfoWeb, PhotoClientInfoWeb, PhotoEmoloeeInfoWeb, ReviewsAutoInfoWeb, SeoTextSolutions, SliderMain
+from apps.core.models import (
+    CompanyInfoWeb,
+    CompanyPrijectAutoInfoWeb,
+    IndexInfoWeb,
+    PhotoClientInfoWeb,
+    PhotoEmoloeeInfoWeb,
+    ReviewsAutoInfoWeb,
+    SeoTextSolutions,
+    SliderMain,
+)
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
 from rest_framework import status
@@ -193,22 +202,23 @@ def solutions_one(request):
 
 def company(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:2]
-    
     motrum_in_numbers = CompanyInfoWeb.objects.all().last()
     project_in_numbers = CompanyPrijectAutoInfoWeb.objects.all().last()
     reviews = ReviewsAutoInfoWeb.objects.filter().order_by("?")[0:3]
     photo_client = PhotoClientInfoWeb.objects.all()
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
-    
+
+    print("dsadasdas", projects)
+
     context = {
-        "reviews":reviews,
+        "reviews": reviews,
         "projects": projects,
         "motrum_in_numbers": motrum_in_numbers,
-        "project_in_numbers":project_in_numbers,
-        "photo_client":photo_client,
-        "photo_motrum":photo_motrum,
+        "project_in_numbers": project_in_numbers,
+        "photo_client": photo_client,
+        "photo_motrum": photo_motrum,
     }
-    context = {}
+
     return render(request, "core/company.html", context)
 
 

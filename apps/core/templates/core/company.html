@@ -2,14 +2,56 @@
 {% load static %}
 {% block content %}
     <div class="about_container">
-        {% include "core/includes/promo_slider.html" %}
+        <div class="promo-slider">
+            <div class="motrum-slider-requsites">
+                <div class="motrum-slider-requisites-up-content">
+                    <div class="circle">
+                        <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}" />
+                    </div>
+                    <button class="phone-button">Обратный звонок</button>
+                </div>
+                <div class="motrum-slider-requisites-down-content">
+                    <a class="phone-link" href="tel:+78463004117">+7 (846) 300 41 17</a>
+                </div>
+            </div>
+            <div class="motrum-promoslider-one">
+                <div class="swiper-wrapper">
+                    <div class="promoslider-one-elem swiper-slide">
+                        <div class="text">
+                            Мы делаем технологический процесс производственных компаний высокопроизводительным, безопасным, исключающим брак, легко управляемым и прибыльным, за счет внедрения современных средств автоматизации.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="motrum-promosilder-middle-content">
+                <img src="{% static "core/images/promo-slider/motrum-slider-lightning.png" %}"
+                     alt="image" />
+            </div>
+            <div class="motrum-promosilder-two">
+                <div class="swiper-wrapper">
+                    <div class="promoslider-two-elem swiper-slide">
+                        <video playsinline loop autoplay muted>
+                            {% comment %} <source src="{% static "core/images/about_company.mp4" %}" type="video/mp4" /> {% endcomment %}
+                        </video>
+                        <div class="promoslider-two-elem-description">
+                            <div class="promoslider-two-elem-description-up">
+                                <span class="bold-text">Компания</span>
+                            </div>
+                            <div class="promoslider-two-elem-description-down">
+                                <span class="bold-text">Мотрум</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="about_company_key_values_container">
             <div class="up_elems_container">
                 <div class="elem">
                     <div class="title">УВАЖЕНИЕ</div>
                     <div class="content">Учитываем и уважаем интересы партнеров, клиентов и команды</div>
                 </div>
-                <div class="middle_content">КЛЮЧЕВЫЕ ЦЕННОСТИ МОТРУМ</div>
+                <div class="middle_content">КЛЮЧЕВЫЕ ЦЕННОСТИ МОТРУМ </div>
                 <div class="elem">
                     <div class="title">ПОДДЕРЖКА</div>
                     <div class="content">Поддержание долгосрочного сотрудничества для достижения общих целей</div>
@@ -248,6 +290,139 @@
                     </a>
                 </div>
             </div>
+        </div>
+        <div class="motrum_client_container">
+            <div class="title">
+                ВЗАИМООТНОШЕНИЯ
+                С КЛИЕНТАМИ
+            </div>
+            {% if photo_client|length > 0 %}
+                <div class="company_photo_client_swiper">
+                    <div class="swiper-wrapper">
+                        {% for photo_client_elem in photo_client %}
+                            <div class="swiper-slide company_photo_client_swiper_slide">
+                                <img src="{{ photo_client_elem.image.url }}" alt="img">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="company_photo_client_swiper_overlay">
+                        <div class="close_btn">+</div>
+                        <div class="company_photo_client_swiper_overlay_slider">
+                            <div class="swiper-wrapper">
+                                {% for photo_client_elem in photo_client %}
+                                    <div class="swiper-slide">
+                                        <img src="{{ photo_client_elem.image.url }}" alt="img">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="description_container">
+                <div class="description_elem">
+                    <div class="title">СЕМИНАРЫ</div>
+                    <div class="content">
+                        Компания «Мотрум» проводит для клиентов, обучающие семинары, что является отличной возможностью углубить свои знания и обсудить инновации. Участники получают полезную информацию и заводят профессиональные связи.
+                    </div>
+                </div>
+                <div class="description_elem">
+                    <div class="title">ОТНОШЕНИЯ С КЛИЕНТАМИ</div>
+                    <div class="content">
+                        Каждый клиент нашей компании уникален. «Мотрум» применяет индивидуальный подход к каждому из них, адаптируя продукцию под конкретные нужды. Наша цель не только удовлетворить потребности клиентов, но и превзойти их ожидания. 
+                        <br>
+                        На официальных встречах мы внимательно слушаем и изучаем потребности клиента, чтобы предложить наилучшие решения. Неофициальные встречи помогают наладить доверительные отношения между сторонами.
+                        <br>
+                        Внимание к деталям – ключ к успешному сотрудничеству. 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="reviews_thanks_container">
+            <div class="title">ОТЗЫВЫ И БЛАГОДАРНОСТИ</div>
+            {% if reviews|length > 0 %}
+                <div class="reviews_table">
+                    {% for review_item in reviews %}
+                        <div class="review_item">
+                            <div class="text">{{ review_item.text }}</div>
+                            <div class="read_more">читать отзыв целиком</div>
+                            <div class="signature">
+                                <div class="name">{{ review_item.name }}</div>
+                                <div class="company">{{ review_item.Legal_entity }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="company_form_container">
+            <div class="description_container">
+                <div class="title">НУЖНА КОНСУЛЬТАЦИЯ?</div>
+                <div class="description">Оставьте заявку и наши менеджеры свяжутся с вами в ближайшее время</div>
+            </div>
+            <div class="form">
+                <label>
+                    <input type="text" class="name_input" placeholder="Ваше имя">
+                    <div class="error name_error"></div>
+                </label>
+                <label>
+                    <input type="text" class="phone_input" placeholder="Ваш телефон">
+                    <div class="error phone_error"></div>
+                </label>
+                <button class="submit_btn">оставить заявку</button>
+            </div>
+        </div>
+        <div class="employees_container">
+            <div class="title">СОТРУДНИКИ МОТРУМ</div>
+            <div class="employees_table">
+                <div class="table_elem">
+                    <div class="title">ПРОФЕССИОНАЛЫ</div>
+                    <div class="description">
+                        Это профессионалы в своей деятельности, умеющие брать ответственность и предлагать новые решения
+                    </div>
+                </div>
+                <div class="table_elem">
+                    <div class="title">ПЕРФЕКЦИОНИСТЫ</div>
+                    <div class="description">Это люди, которые убеждены, что совершенство – это не цель, а привычка</div>
+                </div>
+                <div class="table_elem">
+                    <div class="title">ПРОГРЕССИВНЫЕ</div>
+                    <div class="description">Это сотрудники постоянно развивающие свои компетенции</div>
+                </div>
+                <div class="table_elem">
+                    <div class="title">КОМАНДА</div>
+                    <div class="description">Это люди, обладающие способностью объединять людей и создавать командный дух</div>
+                    <a href="{% url "core:vacancy_web:vacancy" %}" class="title-link">
+                        <div class="title-link-description">присоединиться</div>
+                        <div class="arrow-container">
+                            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% if photo_motrum|length > 0 %}
+                <div class="employees_photo_swiper">
+                    <div class="swiper-wrapper">
+                        {% for photo_motrum_elem in photo_motrum %}
+                            <div class="swiper-slide employees_photo_swiper_slide">
+                                <img src="{{ photo_motrum_elem.image.url }}" alt="img">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="employees_photo_swiper_overlay">
+                        <div class="close_btn">+</div>
+                        <div class="employees_photo_swiper_overlay_slider">
+                            <div class="swiper-wrapper">
+                                {% for photo_motrum_elem in photo_motrum %}
+                                    <div class="swiper-slide">
+                                        <img src="{{ photo_motrum_elem.image.url }}" alt="img">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

@@ -67,8 +67,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
       changeBtn.onclick = () => {
         changeFormWrapper.classList.add("show");
+        // changeFormWrapper.style.overflow = "auto";
+        // newProduct.style.overflow = "auto";
       };
       closeBtn.onclick = () => {
+        // changeFormWrapper.style.overflow = "hidden";
+        // newProduct.style.overflow = "hidden";
         changeFormWrapper.classList.remove("show");
       };
       inputValidation(priceOneInput);

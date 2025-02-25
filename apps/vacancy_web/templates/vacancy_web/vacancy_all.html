@@ -91,6 +91,22 @@
         </div>
         <div class="vacancies_container">
             <div class="title">ОТКРЫТЫЕ ВАКАНСИИ</div>
+            <div class="description">Ознакомьтесь с вакансиями, которые открыты в нашей компании в данный момент</div>
+            <div class="vacancies_filter_container">
+                <div class="filter_container">
+                    {% if category_vacancy|length > 0 %}
+                        <div class="filter_title">Сфера</div>
+                        <div class="filter_elems_container">
+                            {% for category_vacancy_elem in category_vacancy %}
+                                {% if category_vacancy_elem.is_view %}
+                                    <div class="filter_elem" slug="{{ category_vacancy_elem.slug }}">{{ category_vacancy_elem.name }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="canceled_btn">Сбросить</div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
     {% comment %} {{ title }}

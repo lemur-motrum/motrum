@@ -17,6 +17,7 @@ from apps.client.models import (
     Order,
     PaymentTransaction,
     Requisites,
+    RequisitesAddress,
 )
 
 from apps.core.bitrix_api import (
@@ -35,6 +36,7 @@ from apps.core.bitrix_api import (
     save_new_doc_bx,
     save_payment_order_bx,
     save_shipment_order_bx,
+    serch_or_add_info_client,
 )
 from apps.logs.utils import error_alert
 from dal import autocomplete
@@ -105,7 +107,20 @@ def add_iek(request):
     base_manager = None
     client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
     print(client_bx_id)
-
+    order = Order.objects.get(id=171)
+    client = order.client
+    req = order.requisites
+    req_inn = 631625733376
+    acc_req = order.account_requisites
+    req_kpp = order.account_requisites.requisitesKpp
+    adress_web = RequisitesAddress.objects.filter(
+            requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
+        )
+    
+    
+    # req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
+    #         serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
+    #     )
     result = 1
     if result:
         pass

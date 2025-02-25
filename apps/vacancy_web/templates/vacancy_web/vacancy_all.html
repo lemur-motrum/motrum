@@ -1,8 +1,53 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
-    {{ title }}
+    <div class="vacancy_container">
+        <div class="title_container">
+            <div class="bread_crumbs">
+                <a href="#">главная</a>
+                <a href="#">компания</a>
+            </div>
+            <div class="title">{{ title }}</div>
+        </div>
+        <div class="vacancy_company_slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide first-slide">
+                    <div class="title">Присоединяйся к команде</div>
+                    <div class="description">
+                        Изучи наши вакансии.
+                        <br>
+                        Возможно, там есть то, что ты ищешь.
+                    </div>
+                    <a href="#">
+                        <div class="arhor_btn">смотреть вакансии</div>
+                    </a>
+                </div>
+                {% for photo_motrum_elem in photo_motrum %}
+                    <div class="swiper-slide photo-slide">
+                        <img src="{{ photo_motrum_elem.image.url }}" alt="img">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="work_in_motrum_description_container">
+            <div class="up_content">
+                <div class="elem">
+                    <div class="title">ТК РФ</div>
+                    <div class="description">Соблюдение ТК РФ, своевременная выплата «белой» ЗП</div>
+                </div>
+                <div class="centered_elem">РАБОТА В МОТРУМ ЭТО</div>
+                <div class="elem">
+                    <div class="title">Руководство</div>
+                    <div class="description">Демократический стиль управления</div>
+                </div>
+            </div>
+            <div class="middle_content"></div>
+            <div class="down_content"></div>
+        </div>
+    </div>
+    {% comment %} {{ title }}
     {% for vacancy_item in vacancy %}
         {{ vacancy_item.slug }}
         <a href="{% url 'core:vacancy:vacancy_item' vacancy_item.slug %}">{{ vacancy_item }}</a>
-    {% endfor %}
+    {% endfor %} {% endcomment %}
 {% endblock content %}

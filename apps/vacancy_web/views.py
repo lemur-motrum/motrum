@@ -6,7 +6,7 @@ from apps.vacancy_web.models import PhotoEducationInfoWeb, Vacancy, VacancyCateg
 
 # Create your views here.
 def vacancy(request):
-    title = "Вакансии"
+    title = "Карьера"
     vacancy = Vacancy.objects.filter(is_actual=True)
     category_vacancy = VacancyCategory.objects.filter(is_view=True).order_by("article")
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all()

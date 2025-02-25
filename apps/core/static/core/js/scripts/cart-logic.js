@@ -215,10 +215,10 @@ window.addEventListener("DOMContentLoaded", () => {
           totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
         }
       }
+      getTotalSum();
       addTotalSum();
     }
   }
-
   // сохранение корзины сайт
   const saveCartBtn = document.querySelector(".save_cart_button");
   if (saveCartBtn) {

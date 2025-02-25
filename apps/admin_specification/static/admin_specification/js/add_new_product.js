@@ -201,7 +201,13 @@ function addNewProductLogic(container) {
         ".add_new_item_in_cart_container_error"
       );
       const vendorSelect = newItemContainer.querySelector(".vendor_select");
+      const vendorSelectToggle = vendorSelect.querySelector(
+        ".vendor_select__togle"
+      );
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
+      const supplierSelectToggle = supplierSelect.querySelector(
+        ".supplier_select__togle"
+      );
 
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
@@ -212,23 +218,6 @@ function addNewProductLogic(container) {
       const motrumPrice = newItemContainer.querySelector(
         ".new_item_container_value_motrum_price"
       );
-
-      const options = vendorSelect.querySelectorAll("option");
-      options.forEach((el) => {
-        vendorSelect.addEventListener("change", function () {
-          if (el.selected) {
-            vendorSelect.setAttribute("value", el.getAttribute("value"));
-          }
-        });
-      });
-      const optionsSupplier = supplierSelect.querySelectorAll("option");
-      optionsSupplier.forEach((el) => {
-        supplierSelect.addEventListener("change", function () {
-          if (el.selected) {
-            supplierSelect.setAttribute("value", el.getAttribute("value"));
-          }
-        });
-      });
 
       function changePercent() {
         if (priceOnceInput.value && quantityInput.value) {
@@ -307,9 +296,18 @@ function addNewProductLogic(container) {
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
 
-        if (!vendorSelect.getAttribute("value")) {
+        if (!vendorSelectToggle.getAttribute("value")) {
           validate = false;
-          vendorSelect.style.border = "1px solid red";
+          vendorSelectToggle.style.borderColor = "red";
+        } else {
+          validate = true;
+        }
+
+        if (!supplierSelectToggle.getAttribute("value")) {
+          validate = false;
+          supplierSelectToggle.style.borderColor = "red";
+        } else {
+          validate = true;
         }
 
         if (
@@ -342,8 +340,8 @@ function addNewProductLogic(container) {
             product_new_sale: addPersentSaleInput.value
               ? addPersentSaleInput.value
               : null,
-            vendor: vendorSelect.getAttribute("value"),
-            supplier: supplierSelect.getAttribute("value"),
+            vendor: vendorSelectToggle.getAttribute("value"),
+            supplier: supplierSelectToggle.getAttribute("value"),
           };
           const data = JSON.stringify(dataObjNewProduct);
 

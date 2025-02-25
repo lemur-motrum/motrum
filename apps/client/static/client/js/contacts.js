@@ -116,11 +116,11 @@ window.addEventListener("DOMContentLoaded", () => {
           async function sendContactForm() {
             if (extraPhoneInputs.length > 0) {
               extraPhoneInputs.forEach((el) => {
-                phoneArray.push(el.value);
+                phoneArray.push(el.value.replace(/\D/g, ""));
               });
             }
             if (newExtraPointInput.value) {
-              phoneArray.push(newExtraPointInput.value);
+              phoneArray.push(mask.value.replace(/\D/g, ""));
             }
 
             const dataObj = {

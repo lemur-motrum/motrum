@@ -28,14 +28,10 @@ class VacancyViewSet(viewsets.ModelViewSet):
             
         q_object = Q()
         if vacancy_category is not None:
-            q_object &= Q(varsacancy_category__slug=vacancy_category)
+            q_object &= Q(vacancy_category__slug__in=vacancy_category)
 
         queryset = (
             Vacancy.objects
-            # .select_related("category_project")
-            .prefetch_related(
-                Prefetch("vacancyprice"),
-            )
             .filter(q_object)
             # .order_by("-data_project")[count : count + count_last]
         )

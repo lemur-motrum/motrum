@@ -312,13 +312,13 @@ class RequisitesAddress(models.Model):
         blank=True,
     )
     region = models.CharField(
-        "Регион",
+        "Область",
         max_length=150,
         null=True,
         blank=True,
     )
     province = models.CharField(
-        "Область",
+        "район",
         max_length=150,
         null=True,
         blank=True,

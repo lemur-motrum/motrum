@@ -1137,7 +1137,7 @@ def add_new_order_web(order):
         req_inn = 631625733376
         acc_req = order.account_requisites
         req_kpp = order.account_requisites.requisitesKpp
-        adress_web = RequisitesAddress.objects.filter(
+        adress_web = RequisitesAddress.objects.get(
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
         all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
@@ -1147,10 +1147,10 @@ def add_new_order_web(order):
         # клиент битрикс
         client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
         req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-            serch_or_add_info_client(bx, req_inn, acc_req, client_bx_id, req_kpp)
+            serch_or_add_info_client(bx, req_inn, acc_req, adress_web, client_bx_id, req_kpp,client)
         )
         # сохранение заказа битркис
-        add_new_order_bx(bx, req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
+        # add_new_order_bx(bx, req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -1218,10 +1218,22 @@ def serch_or_add_info_client(
             # if address1_bx ==
         else:
             pass
-
+    
+    def _check_adress_in_web(req_bx_id):
+        adress_bx = bx.get_all(
+            "crm.address.list",
+            params={
+                "filter": {"TYPE_ID": 8,"ENTITY_TYPE_ID": 8, "ENTITY_ID": req_bx_id},
+            },
+        )
+        if len(adress_bx) > 0 :
+            return (True)
+        else:
+            return (False)
+        
     # создать компанию - добавить рекыиззит и банк рек и адресс связать с контактом
     def _add_new_all_company(need_sech_company, company_bx_id):
-        print("need need_sech_company",need_sech_company)
+        print("need need_sech_company", need_sech_company)
         if need_sech_company:
             print("need companu")
         #     id_bx_company = chech_client_other_rec_company(bx, client)
@@ -1232,20 +1244,22 @@ def serch_or_add_info_client(
         print(company_bx_id)
         print(bx, client_bx_id, company_bx_id)
         print(123123)
-        # chek_add_contact_company(bx, client_bx_id, company_bx_id)
-        # req_bx_id = add_req_bx(bx, company_bx_id, req, req_kpp)
-        # req_kpp.id_bitrix = req_bx_id
-        # req_kpp.save()
-        # acc_req_bx_id = add_acc_req_bx(
-        #     bx,
-        #     req_bx_id,
-        #     acc_req,
-        # )
-        # adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id)
+        chek_add_contact_company(bx, client_bx_id, company_bx_id)
+        req_bx_id = add_req_bx(bx, company_bx_id, req, req_kpp)
+        req_kpp.id_bitrix = req_bx_id
+        req_kpp.save()
+        acc_req_bx_id = add_acc_req_bx(
+            bx,
+            req_bx_id,
+            acc_req,
+        )
+        print("adress_web",adress_web)
+        print(3333)
+        adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id,True)
         return (req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
 
     def _serch_other_info_company(req_bx, req_kpp, req):
-        print("_serch_other_info_company",req_kpp.kpp,req_kpp.ogrn)
+        print("_serch_other_info_company", req_kpp.kpp, req_kpp.ogrn)
         company_bx = []
         req_bx_arr = []
         for req_bx_item in req_bx:
@@ -1265,12 +1279,12 @@ def serch_or_add_info_client(
                     if req_bx_item["ID"] not in req_bx_arr:
                         req_bx_arr.append(req_bx_item["ID"])
                 else:
-                    print("req_bx_item[""] == str(req_kpp.ogrn):")
+                    print("req_bx_item[" "] == str(req_kpp.ogrn):")
                     if req_bx_item["ENTITY_ID"] not in company_bx:
                         company_bx.append(req_bx_item["ENTITY_ID"])
-                        
-        print("req_bx_arr",req_bx_arr)
-        print("company_bx, req_bx_arr",company_bx, req_bx_arr)
+
+        print("req_bx_arr", req_bx_arr)
+        print("company_bx, req_bx_arr", company_bx, req_bx_arr)
         return (company_bx, req_bx_arr)
 
     req_bx = bx.get_all(
@@ -1279,30 +1293,33 @@ def serch_or_add_info_client(
             "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": req_inn},
         },
     )
-    print("req_bx",req_bx)
-    
+    print("req_bx", req_bx)
+
     # ТАКОЙ РЕКВИЗИТ ЕСТЬ В БИТРИКС
     if len(req_bx) == 1:
         company_id = req_bx[0]["ENTITY_ID"]
         company_bx_arr, req_bx_arr = _serch_other_info_company(req_bx, req_kpp, req)
+        # ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК
         if len(req_bx_arr) == 1:
-            pass
+            # проверка есть ли адресс + получение договора
+            is_adress = _check_adress_in_web(req_bx[0]['ID'])
+            if not is_adress:
+                adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id,False)
+        
+        #НЕ СОВПАЛИ ДОП ДАННЫЕ        
         else:
-            # добавить рек
+            # добавить рек к компании
             if len(company_bx_arr) == 1:
-                need_sech_company =False
+                need_sech_company = False
                 company_bx_id = company_bx_arr[0]
             else:
                 need_sech_company = True
                 company_bx_id = None
-                
+
             req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-                    _add_new_all_company(need_sech_company, company_bx_id)
-                )
-        
-        
-        
-        
+                _add_new_all_company(need_sech_company, company_bx_id)
+            )
+
         # company_bx = _get_company_bx_in_req(company_id)
         # # Requisites
         # id_bitrix_req = req_bx[0]["ID"]
@@ -1323,8 +1340,7 @@ def serch_or_add_info_client(
         # acc_req_bx = _get_accountreq_bx_in_req(id_bitrix_req, acc_req)
         # # RequisitesAddress
         # adress_bx = _get_adress_bx_in_req(req_bx_id, adress_web)
-     
-        
+
     # # НЕСКОЛЬКО таких РЕКВИЗИТ ЕСТЬ В БИТРИКС
     # elif len(req_bx) > 1:
     #     company_bx_arr, req_bx_arr = _serch_other_info_company(req_bx, req_kpp, req)
@@ -1384,8 +1400,8 @@ def add_or_get_contact_bx(bx, client, base_manager):
             phone_arr.append(phone_new)
             phone_st.append(f"+{ph.phone}")
     print(phone_dop)
-    name = "тест"
-    last_name = None
+    name = "Тест"
+    last_name = "Тест"
     middle_name = "test"
 
     email = "test@test.test"
@@ -1405,6 +1421,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
             ],
         },
     )
+    print("contact_bx", contact_bx)
 
     if len(contact_bx) == 1:
         is_phone = False
@@ -1425,7 +1442,6 @@ def add_or_get_contact_bx(bx, client, base_manager):
                     )
                     # need_new_phone.append()
 
-
                 # if phones_bx["VALUE"] == phone:
                 #     is_phone = True
         print("phone_arr", phone_arr)
@@ -1441,11 +1457,11 @@ def add_or_get_contact_bx(bx, client, base_manager):
         if is_email == False:
             fields["EMAIL"] = [{"VALUE": email, "VALUE_TYPE": "WORK"}]
 
-        print("fields",fields)
+        print("fields", fields)
         if fields:
             contact_upd = {"id": contact_bx[0]["ID"], "fields": fields}
-            # contact_upd_bx = bx.call("crm.contact.update", contact_upd)
-        print("contact_bx",contact_bx)
+            contact_upd_bx = bx.call("crm.contact.update", contact_upd)
+        print("contact_bx", contact_bx)
         return contact_bx[0]["ID"]
     else:
         tasks = {
@@ -1483,11 +1499,12 @@ def add_company_bx(bx, req, req_kpp, adress):
 
 # СОХДАТЬ РЕКВИЗИТ КОМПАНИИ БИТРИКС ВЫХОД ИД БИТРИКС КОМПАНИИ
 def add_req_bx(bx, company_bx_id, req, reqKpp):
+    print("add_req_bx")
     tasks = {
         "fields": {
             "ENTITY_TYPE_ID": 4,
-            "ENTITY_ID": company_bx_id,
-            "PRESET_ID": req.type_client,
+            "ENTITY_ID": int(company_bx_id),
+            "PRESET_ID": int(req.type_client),
             "RQ_INN": req.inn,
             "RQ_PHONE": reqKpp.tel,
         }
@@ -1506,14 +1523,16 @@ def add_req_bx(bx, company_bx_id, req, reqKpp):
         tasks["fields"]["RQ_OGRNIP"] = reqKpp.ogrn
     else:
         pass
-
+    print(tasks)
     req_bx_new = bx.call("crm.requisite.add", tasks)
+    print(req_bx_new)#6790
     return req_bx_new
 
 
 # СОЗДАТЬ АДРЕСС В БИТРИКС
-def add_adress_req_bx(bx, adress, type_id, req_id_bx):
-
+def add_adress_req_bx(bx, adress, type_id, req_id_bx,new):
+    print("adress",adress)
+    print("adress",adress)
     tasks = {
         "fields": {
             "ENTITY_TYPE_ID": 8,
@@ -1523,14 +1542,16 @@ def add_adress_req_bx(bx, adress, type_id, req_id_bx):
             "ADDRESS_2": adress.address2,
             "CITY": adress.city,
             "POSTAL_CODE": adress.post_code,
-            "PROVINCE": adress.province,
+            "PROVINCE": adress.region,
             "COUNTRY": adress.country,
         }
     }
 
     print("tasks", tasks)
-
-    acc_req_new = bx.call("crm.address.add", tasks)
+    if new:
+        acc_req_new = bx.call("crm.address.add", tasks)
+    else:
+        acc_req_new = bx.call("crm.address.update", tasks)
     print("acc_req_new", acc_req_new)
 
 
@@ -1542,35 +1563,44 @@ def add_acc_req_bx(
 ):
     tasks = {
         "fields": {
-            "ENTITY_ID": req_id_bx,
+            "ENTITY_ID": int(req_id_bx),
             "NAME": f"Сайт реквизиты - {account_requisites.bank}",
             "RQ_ACC_NUM": account_requisites.account_requisites,
             "RQ_BANK_NAME": account_requisites.bank,
-            "RQ_COR_ACC_NUM": account_requisites.ks,
+            "RQ_COR_ACC_NUM": account_requisites.kpp,
             "RQ_BIK": account_requisites.bic,
         }
     }
 
     print("tasks", tasks)
-
     acc_req_new = bx.call("crm.requisite.bankdetail.add", tasks)
     print("acc_req_new", acc_req_new)
+    return acc_req_new
 
 
 # связка контакт реквизит
 def chek_add_contact_company(bx, client_bx_id, company_bx_id):
-    tasks = {
-        "id": client_bx_id,
-        "fields": {
-            "COMPANY_ID": company_bx_id,
-            "IS_PRIMARY": "Y",
+    print("chek_add_contact_company", client_bx_id, company_bx_id)
+
+    contacts = bx.call(
+        "crm.contact.company.items.get",
+        {
+            "id": client_bx_id,
         },
-    }
-
-    print("tasks", tasks)
-
-    contact_company = bx.call("crm.contact.company.add", tasks)
-    print("contact_company", contact_company)
+    )
+    
+    if contacts["COMPANY_ID"] != int(company_bx_id):
+        print("contacts[""] != str(company_bx_id)")
+        tasks = {
+            "id": client_bx_id,
+            "fields": {
+                "COMPANY_ID": company_bx_id,
+                "IS_PRIMARY": "Y",
+            },
+        }
+        print(tasks)
+        contact_company = bx.call("crm.contact.company.add", tasks)
+        print("contact_company", contact_company)
 
 
 # СОЗДАТЬСДЕЛКУ БИТРИКС

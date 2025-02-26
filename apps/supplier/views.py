@@ -113,30 +113,16 @@ def add_iek(request):
     req_inn = 631625733376
     acc_req = order.account_requisites
     req_kpp = order.account_requisites.requisitesKpp
-    adress_web = RequisitesAddress.objects.filter(
+    adress_web = RequisitesAddress.objects.get(
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
     
-    contact_bx = bx.get_all(
-        "crm.contact.list",
-        params={
-            "filter": {"NAME": 'тест'},
-            "select": [
-                "ID",
-                "NAME",
-                "LAST_NAME",
-                "EMAIL",
-                "PHONE",
-                "ASSIGNED_BY_ID",
-                "SECOND_NAME",
-            ],
-        },
-    )
-    print(contact_bx)
+    
     # req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
     #         serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
     #     )
-    result = 1
+    # print("result",req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
+    # result = 1
     if result:
         pass
     else:

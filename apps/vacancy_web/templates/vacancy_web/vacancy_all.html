@@ -115,6 +115,39 @@
                 </div>
             </div>
         </div>
+        <div class="vacancies_form_container">
+            <div class="title">НЕ НАШЛИ ПОДХОДЯЩУЮ ВАКАНСИЮ?</div>
+            <div class="vacancy_form">
+                <div class="up_form_content">
+                    <div class="description">
+                        Напишите нам о себе!
+                        <br>
+                        Возможно скоро у нас появится то, что вы искали.
+                    </div>
+                    <div class="inputs_container">
+                        <input type="text" class="name_input" placeholder="Ваше имя" />
+                        <input type="text" class="name_input" placeholder="Ваш телефон" />
+                    </div>
+                </div>
+                <div class="down_form_content">
+                    <textarea class="vacancy_form_textarea" placeholder="Сообщение"></textarea>
+                    <div class="container">
+                        <label class="file_label">
+                            <div class="img_container">
+                                <img src="{% static "vacancy_web/img/Line.png" %}" alt="">
+                            </div>
+                            <div class="file_description">
+                                Прикрепить
+                                <br>
+                                резюме
+                            </div>
+                            <input style="display:none" type="file" />
+                        </label>
+                        <div class="submit_btn">оставить заявку</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% comment %} {{ title }}
     {% for vacancy_item in vacancy %}

@@ -1,10 +1,50 @@
 <div class="vacancy_item"
      vacancy-id="{{ id }}"
      vacancy-elem="vacancy-item">
-      <div class="vacancy_tilte_content">
-            <div class="vacancy_name">{{ name }}</div>
-            <div class="vacancy_exp">{{ experience }}</div>
-            <div class="vacancy_price"></div>
-            <div class="show_btn">подробнее</div>
+      <div>
+            <div class="vacancy_item_description">
+                  <div class="vacancy_tilte_content">
+                        <div class="title_content">
+                              <div class="vacancy_name">{{ name }}</div>
+                              <div class="vacancy_exp">{{ experience }}</div>
+                              <div class="vacancy_price">
+                                    <div class="price_container">
+                                          {% if first %}
+                                                <span class="price_description">
+                                                      от <span class="price">{{ first }}</span> ₽
+                                                </span>
+                                          {% endif %}
+                                          {% if last %}<span class="price_description">до <span class="price">{{ last }}</span> ₽</span>{% endif %}
+                                          {% if fixed %}<span class="price_description"><span class="price">{{ fixed }}</span> ₽</span>{% endif %}
+                                          в месяц
+                                    </div>
+                                    <div class="price_type_payments">{{ type_payments }}</div>
+                              </div>
+                        </div>
+                        <div class="show_btn">подробнее</div>
+                  </div>
+                  <div class="vacancy_description_content">
+                        {% if text %}<div class="vacancy_description">{{ text|safe }}</div>{% endif %}
+                        {% if responsibiliti %}
+                              <div class="vacancy_description_elem">
+                                    <div class="title">Что нужно:</div>
+                                    <div class="description">{{ responsibiliti|safe }}</div>
+                              </div>
+                        {% endif %}
+                        {% if requirement %}
+                              <div class="vacancy_description_elem">
+                                    <div class="title">Что мы приветствуем:</div>
+                                    <div class="description">{{ requirement|safe }}</div>
+                              </div>
+                        {% endif %}
+                        {% if conditions %}
+                              <div class="vacancy_description_elem">
+                                    <div class="title">Мы предлагаем:</div>
+                                    <div class="description">{{ conditions|safe }}</div>
+                              </div>
+                        {% endif %}
+                  </div>
+                  <div class="submit_btn">откликнуться на вакансию</div>
+            </div>
       </div>
 </div>

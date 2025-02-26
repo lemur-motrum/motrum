@@ -24,6 +24,26 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
+    let i = 0;
+    const interval = setInterval(() => {
+      const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
+      if (vacancyItems.length > 0) {
+        clearInterval(interval);
+      }
+      vacancyItems.forEach((vacancyItem) => {
+        const showContentBtn = vacancyItem.querySelector(".show_btn");
+        showContentBtn.onclick = () => {
+          vacancyItem.classList.toggle("is_open");
+          if (vacancyItem.classList.contains("is_open")) {
+            showContentBtn.textContent = "Скрыть";
+          } else {
+            showContentBtn.textContent = "Подробнее";
+          }
+        };
+      });
+    }, 1);
+
     fetch("/api/v1/vacancy/load-ajax-vacancy-list/", {
       method: "GET",
       headers: {

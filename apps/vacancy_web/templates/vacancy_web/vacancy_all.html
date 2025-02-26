@@ -18,7 +18,7 @@
                         <br>
                         Возможно, там есть то, что ты ищешь.
                     </div>
-                    <a href="#">
+                    <a href="#vacancies_container">
                         <div class="arhor_btn">смотреть вакансии</div>
                     </a>
                 </div>
@@ -89,7 +89,7 @@
                 Наши сотрудники регулярно проходят обучение, в том числе по программам Executive MBA, МВА «Управление развитием организации», Школа экспорта РЭЦ, Обучение по ПЛК фирмы Omron, Президентская программа — программа подготовки руководителей и другие
             </div>
         </div>
-        <div class="vacancies_container">
+        <div class="vacancies_container" id="vacancies_container">
             <div class="title">ОТКРЫТЫЕ ВАКАНСИИ</div>
             <div class="description">Ознакомьтесь с вакансиями, которые открыты в нашей компании в данный момент</div>
             <div class="vacancies_filter_container">
@@ -99,7 +99,7 @@
                         <div class="filter_elems_container">
                             {% for category_vacancy_elem in category_vacancy %}
                                 {% if category_vacancy_elem.is_view %}
-                                    <div class="filter_elem" slug="{{ category_vacancy_elem.slug }}">{{ category_vacancy_elem.name }}</div>
+                                    <button class="filter_elem" slug="{{ category_vacancy_elem.slug }}">{{ category_vacancy_elem.name }}</button>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -127,8 +127,14 @@
                         Возможно скоро у нас появится то, что вы искали.
                     </div>
                     <div class="inputs_container">
-                        <input type="text" class="name_input" placeholder="Ваше имя" />
-                        <input type="text" class="name_input" placeholder="Ваш телефон" />
+                        <label>
+                            <input type="text" class="name_input" placeholder="Ваше имя" />
+                            <div class="error name_error"></div>
+                        </label>
+                        <label>
+                            <input type="text" class="phone_input" placeholder="Ваш телефон" />
+                            <div class="error phone_error"></div>
+                        </label>
                     </div>
                 </div>
                 <div class="down_form_content">
@@ -140,10 +146,13 @@
                             </div>
                             <div class="file_description">
                                 Прикрепить
-                                <br>
                                 резюме
                             </div>
-                            <input style="display:none" type="file" />
+                            <input class="file_input"
+                                   style="display:none"
+                                   type="file"
+                                   accept=".xls,.xlsx,.png,.jpeg,.jpg,.pdf,.txt,.doc,.docx,.ppt,.rtf,.tiff" />
+                            <div class="error file_error"></div>
                         </label>
                         <div class="submit_btn">оставить заявку</div>
                     </div>

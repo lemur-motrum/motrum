@@ -10,7 +10,10 @@
       <div class="circle"></div>
     </div>
   {% else %}
-    <a class="navbar_menu_item_link" href="{{ catalog_url }}">Товары</a>
+    <a class="navbar_menu_item_link" href="{{ catalog_url }}">
+      <span>Товары</span>
+      <div class="circle"></div>
+    </a>
   {% endif %}
 </li>
 <li class="nav-elem">
@@ -20,7 +23,10 @@
       <div class="circle"></div>
     </div>
   {% else %}
-    <a class="navbar_menu_item_link" href="{{ solutions_url }}">Решения</a>
+    <a class="navbar_menu_item_link" href="{{ solutions_url }}">
+      <span>Решения</span>
+      <div class="circle"></div>
+    </a>
   {% endif %}
 </li>
 <li class="nav-elem">
@@ -30,17 +36,38 @@
       <div class="circle small_circle"></div>
     </div>
   {% else %}
-    <a class="navbar_menu_item_link" href="{{ projects_url }}">Реализованные проекты</a>
+    <a class="navbar_menu_item_link" href="{{ projects_url }}">
+      <span>Реализованные проекты</span>
+      <div class="circle small_circle"></div>
+    </a>
   {% endif %}
 </li>
-<li class="nav-elem">
-  {% if view_name == 'core:about' or view_name == 'core:about_company' or view_name == 'core:vacancy' %}
+<li class="nav-elem company-nav-elem {% if view_name == 'core:vacancy:vacancy' %}gap{% endif %}">
+  {% if view_name == 'core:about' or view_name == 'core:about_company' or view_name == 'core:vacancy:vacancy' %}
     <div class="disabled-link">
       <span class="navbar_menu_item_text active">Компания</span>
       <div class="circle"></div>
     </div>
+    {% if view_name == 'core:vacancy:vacancy' %}
+      <div class="disabled-link vacancy_link">
+        <span class="navbar_menu_item_text active">Карьера</span>
+        <div class="circle"></div>
+      </div>
+    {% else %}
+      <a href="{% url "core:vacancy_web:vacancy" %}" class="vacancy_link">
+        <span>Карьера</span>
+        <div class="circle"></div>
+      </a>
+    {% endif %}
   {% else %}
-    <a class="navbar_menu_item_link" href="{{ company_url }}">Компания</a>
+    <a class="navbar_menu_item_link" href="{{ company_url }}">
+      <span>Компания</span>
+      <div class="circle"></div>
+    </a>
+    <a href="{% url "core:vacancy_web:vacancy" %}" class="vacancy_link">
+      <span>Карьера</span>
+      <div class="circle"></div>
+    </a>
   {% endif %}
 </li>
 <li class="nav-elem">
@@ -50,11 +77,9 @@
       <div class="circle"></div>
     </div>
   {% else %}
-    <a class="navbar_menu_item_link" href="{{ contact_url }}">Контакты</a>
+    <a class="navbar_menu_item_link" href="{{ contact_url }}">
+      <span>Контакты</span>
+      <div class="circle"></div>
+    </a>
   {% endif %}
 </li>
-{% comment %} <div class="nav-elem">Товары</div>
-<div class="nav-elem">Решения</div>
-<div class="nav-elem">Реализованные проекты</div>
-<div class="nav-elem">Компания</div>
-<div class="nav-elem">Контакты</div> {% endcomment %}

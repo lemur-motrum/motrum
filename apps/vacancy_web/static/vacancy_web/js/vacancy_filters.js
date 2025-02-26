@@ -14,35 +14,29 @@ window.addEventListener("DOMContentLoaded", () => {
     const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );
+    const filtersElems = wrapper.querySelectorAll(".filter_elem");
+    const canceledBtn = wrapper.querySelector(".canceled_btn");
 
     let filtersParamsArray = [];
 
-    const interval = setInterval(() => {
-      const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
-      if (vacancyItems.length > 0) {
-        clearInterval(interval);
-      }
-      vacancyItems.forEach((vacancyItem) => {
-        const showContentBtn = vacancyItem.querySelector(".show_btn");
-        const prices = vacancyItem.querySelectorAll(".price");
-        prices.forEach((price) => {
-          getDigitsNumber(price, price.textContent);
-        });
+    const vacancyGetParam = urlParams.get("vacancy_category");
 
-        showContentBtn.onclick = () => {
-          vacancyItem.classList.toggle("is_open");
-          if (vacancyItem.classList.contains("is_open")) {
-            showContentBtn.textContent = "скрыть";
-          } else {
-            showContentBtn.textContent = "подробнее";
+    if (vacancyGetParam) {
+      filtersParamsArray = vacancyGetParam.split(",");
+      filtersParamsArray.forEach((param) => {
+        if (filtersParamsArray.length > 0) {
+          for (let i = 0; i < filtersElems.length; i++) {
+            if (filtersElems[i].getAttribute("slug") == param) {
+              console.log("Есть такое");
+              filtersElems[i].classList.add("active");
+            }
           }
-        };
+        }
       });
-    }, 1);
+    }
 
     loadItems();
 
-    const filtersElems = wrapper.querySelectorAll(".filter_elem");
     filtersElems.forEach((filterElem) => {
       filterElem.onclick = () => {
         catalogContainer.innerHTML = "";
@@ -61,10 +55,46 @@ window.addEventListener("DOMContentLoaded", () => {
             ? urlParams.set("vacancy_category", filtersParamsArray.join(","))
             : urlParams.delete("vacancy_category");
         }
+        filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
-        history.pushState({}, "", currentUrl);
       };
     });
+
+    canceledBtn.onclick = () => {
+      catalogContainer.innerHTML = "";
+      noneContent.classList.remove("show");
+      loader.classList.remove("hide");
+      filtersElems.forEach((el) => el.classList.remove("active"));
+      filtersParamsArray = [];
+      urlParams.delete("vacancy_category");
+      filtersElems.forEach((el) => (el.disabled = true));
+      loadItems();
+    };
+
+    function getVacancies() {
+      const interval = setInterval(() => {
+        const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
+        if (vacancyItems.length > 0) {
+          clearInterval(interval);
+        }
+        vacancyItems.forEach((vacancyItem) => {
+          const showContentBtn = vacancyItem.querySelector(".show_btn");
+          const prices = vacancyItem.querySelectorAll(".price");
+          prices.forEach((price) => {
+            getDigitsNumber(price, price.textContent);
+          });
+
+          showContentBtn.onclick = () => {
+            vacancyItem.classList.toggle("is_open");
+            if (vacancyItem.classList.contains("is_open")) {
+              showContentBtn.textContent = "скрыть";
+            } else {
+              showContentBtn.textContent = "подробнее";
+            }
+          };
+        });
+      }, 1);
+    }
 
     function loadItems() {
       const data = {
@@ -83,15 +113,21 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then((response) => {
           loader.classList.add("hide");
+          filtersElems.forEach((el) => (el.disabled = false));
           if (response.data.length > 0) {
+            catalogContainer.innerHTML = "";
             for (let i in response.data) {
               addAjaxCatalogItem(response.data[i]);
             }
+            getVacancies();
           } else {
+            catalogContainer.innerHTML = "";
             noneContent.classList.add("show");
           }
         })
         .catch((error) => console.error(error));
+
+      history.pushState({}, "", currentUrl);
     }
 
     function renderCatalogItem(orderData) {

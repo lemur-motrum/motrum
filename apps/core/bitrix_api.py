@@ -1178,6 +1178,7 @@ def serch_or_add_info_client(
                     "RQ_ACC_NUM": acc_req.account_requisites,
                     "RQ_COR_ACC_NUM": acc_req.kpp,
                     "RQ_BIK": acc_req.bic,
+                    "RQ_BANK_NAME": acc_req.bank,
                 },
             },
         )
@@ -1186,16 +1187,13 @@ def serch_or_add_info_client(
         elif len(acc_req_bx) == 0:
             new_acc_req_bx = add_acc_req_bx(
                 bx,
-                6652,
-                acc_req.account_requisites,
-                acc_req.bank,
-                acc_req.kpp,
-                acc_req.bic,
+                int(req_id),
+                acc_req,
             )
             return new_acc_req_bx
         else:
-            pass
-        return acc_req
+            return acc_req_bx[0]["ID"]
+        
 
     def _get_adress_bx_in_req(req_bx_id, adress_web):
 
@@ -1323,7 +1321,10 @@ def serch_or_add_info_client(
             if tel_bx == "" or tel_bx == None or tel_bx =="None":
                 phone = req_kpp.tel
                 upd_req_bx(bx,int(req_bx_id),phone)
-                
+            chek_add_contact_company(bx, client_bx_id, company_bx_id)
+            acc_req_bx_id =  _get_accountreq_bx_in_req(int(req_bx_id), acc_req)  
+            
+           
         #НЕ СОВПАЛИ ДОП ДАННЫЕ        
         else:
             # добавить рек к компании
@@ -1337,21 +1338,6 @@ def serch_or_add_info_client(
             req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
                 _add_new_all_company(need_sech_company, company_bx_id)
             )
-
-       
-        # # RequisitesOtherKpp
-        # kpp = req_bx[0]["RQ_KPP"]
-        # tel_bx = req_bx[0]["RQ_KPP"]
-        # type_req = req_bx[0]["RQ_PHONE"]
-        # if type_req == 1 or type_req == 4:
-        #     ogrn = req_bx[0]["RQ_OGRN"]
-        # else:
-        #     ogrn = req_bx[0]["RQ_OGRNIP"]
-        # req_bx_id = req_bx[0]["ID"]
-        # # AccountRequisites
-        # acc_req_bx = _get_accountreq_bx_in_req(id_bitrix_req, acc_req)
-        # # RequisitesAddress
-        # adress_bx = _get_adress_bx_in_req(req_bx_id, adress_web)
 
     # # НЕСКОЛЬКО таких РЕКВИЗИТ ЕСТЬ В БИТРИКС
     # elif len(req_bx) > 1:

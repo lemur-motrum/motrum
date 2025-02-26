@@ -1298,6 +1298,7 @@ def serch_or_add_info_client(
     # ТАКОЙ РЕКВИЗИТ ЕСТЬ В БИТРИКС
     if len(req_bx) == 1:
         company_id = req_bx[0]["ENTITY_ID"]
+        req_bx_id = req_bx[0]["ID"]
         company_bx_arr, req_bx_arr = _serch_other_info_company(req_bx, req_kpp, req)
         # ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК
         if len(req_bx_arr) == 1:
@@ -1305,7 +1306,24 @@ def serch_or_add_info_client(
             is_adress = _check_adress_in_web(req_bx[0]['ID'])
             if not is_adress:
                 adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id,False)
-        
+                
+            company_bx = _get_company_bx_in_req(company_id)    
+            contract = req_bx[0]["UF_CRM_1736854096"]
+            contract_date = req_bx[0]["UF_CRM_1737611994"]
+            manager_company = company_bx["ASSIGNED_BY_ID"]
+            if contract != "":
+                req_kpp.contract = contract
+                req_kpp.contract_date = req_kpp
+            manager = AdminUser.objects.get(bitrix_id=int(manager_company))
+            req.manager = manager
+            
+            req_kpp.save()
+            req.save()
+            tel_bx = req_bx[0]["RQ_PHONE"]
+            if tel_bx == "" or tel_bx == None or tel_bx =="None":
+                phone = req_kpp.tel
+                upd_req_bx(bx,int(req_bx_id),phone)
+                
         #НЕ СОВПАЛИ ДОП ДАННЫЕ        
         else:
             # добавить рек к компании
@@ -1320,13 +1338,7 @@ def serch_or_add_info_client(
                 _add_new_all_company(need_sech_company, company_bx_id)
             )
 
-        # company_bx = _get_company_bx_in_req(company_id)
-        # # Requisites
-        # id_bitrix_req = req_bx[0]["ID"]
-        # contract = req_bx[0]["UF_CRM_1736854096"]
-        # contract_date = req_bx[0]["UF_CRM_1737611994"]
-        # manager_company = company_bx["ASSIGNED_BY_ID"]
-
+       
         # # RequisitesOtherKpp
         # kpp = req_bx[0]["RQ_KPP"]
         # tel_bx = req_bx[0]["RQ_KPP"]
@@ -1409,7 +1421,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
     contact_bx = bx.get_all(
         "crm.contact.list",
         params={
-            "filter": {"NAME": name, "LAST_NAME": last_name, "PHONE": f"{phone}"},
+            "filter": {"NAME": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ){name}", "LAST_NAME": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ){last_name}", "PHONE": f"{phone}"},
             "select": [
                 "ID",
                 "NAME",
@@ -1466,9 +1478,9 @@ def add_or_get_contact_bx(bx, client, base_manager):
     else:
         tasks = {
             "fields": {
-                "NAME": name,
+                "NAME": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ){name}",
                 "SECOND_NAME": middle_name,
-                "LAST_NAME": last_name,
+                "LAST_NAME": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ){last_name}",
                 "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
                 "POST": position,
                 "ASSIGNED_BY_ID": base_manager.bitrix_id,
@@ -1477,15 +1489,15 @@ def add_or_get_contact_bx(bx, client, base_manager):
             }
         }
 
-        # contact_bx = bx.call("crm.contact.add", tasks)
-        # return contact_bx
+        contact_bx = bx.call("crm.contact.add", tasks)
+        return contact_bx
 
 
 # СОХДАТЬ КОМПАНИЮ БИТРИКС ВЫХОД ИД БИТРИКС КОМПАНИИ
 def add_company_bx(bx, req, req_kpp, adress):
     tasks = {
         "fields": {
-            "TITLE": f"ТЕСТ САЙТ{req.legal_entity}",
+            "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) САЙТ{req.legal_entity}",
             "COMPANY_TYPE": "CUSTOMER",
             "PHONE": [{"VALUE": req_kpp.tel, "VALUE_TYPE": "WORK"}],
             "ADDRESS_CITY": adress.city,
@@ -1510,12 +1522,12 @@ def add_req_bx(bx, company_bx_id, req, reqKpp):
         }
     }
     if req.type_client == "1":
-        tasks["fields"]["NAME"] = "Организация"
+        tasks["fields"]["NAME"] = "САЙТ Организация"
         tasks["fields"]["RQ_COMPANY_NAME"] = req.legal_entity
         tasks["fields"]["RQ_KPP"] = reqKpp.kpp
         tasks["fields"]["RQ_OGRN"] = reqKpp.ogrn
     elif req.type_client == "3":
-        tasks["fields"]["NAME"] = "ИП"
+        tasks["fields"]["NAME"] = "САЙТ ИП"
         tasks["fields"]["RQ_NAME"] = req.legal_entity
         tasks["fields"]["RQ_FIRST_NAME"] = req.first_name
         tasks["fields"]["RQ_LAST_NAME"] = req.last_name
@@ -1608,7 +1620,7 @@ def add_new_order_bx(bx, req, company_bx_id, manager_id, req_bx_id, acc_req_bx_i
     current_date = datetime.datetime.now().strftime("%d.%m.%Y")
     tasks = {
         "fields": {
-            "TITLE": f"ТЕСТ САЙТ {req.legal_entity}{current_date}",
+            "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) {req.legal_entity}{current_date}",
             "TYPE_ID": "SALE",
             "CATEGORY_ID": 8,
             "STAGE_ID": "C8:PREPARATION",
@@ -1704,7 +1716,18 @@ def chech_client_other_rec_company(bx, client):
     else:
         return None
 
+#обновить данные в реквизите 
+def upd_req_bx(bx,reg_bx_id,phone):
+    tasks = {
+        "id": reg_bx_id,
+        "fields": {
+            "RQ_PHONE": f"+{phone}",
+        }
+    }
 
+    print("tasks", tasks)
+    acc_req_new = bx.call("crm.requisite.update", tasks)
+    
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:
 #         file_base64 = base64.b64encode(f.read()).decode("utf-8")

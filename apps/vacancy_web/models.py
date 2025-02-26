@@ -55,7 +55,7 @@ class Vacancy(models.Model):
     name = models.CharField("Название вакансии", max_length=200)
     slug = models.SlugField(null=True, max_length=200)
     is_actual = models.BooleanField("Актуальность", default=True)
-    varsacancy_category = models.ForeignKey(
+    vacancy_category = models.ForeignKey(
         "VacancyCategory",
         verbose_name="Сфера",
         on_delete=models.CASCADE,

@@ -9,10 +9,11 @@ window.addEventListener("DOMContentLoaded", () => {
   const urlParams = currentUrl.searchParams;
 
   if (wrapper) {
+    const loader = wrapper.querySelector(".loader");
+    const noneContent = wrapper.querySelector(".none_content");
     const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );
-    const loader = catalogContainer.querySelector(".loader");
 
     let filtersParamsArray = [];
 
@@ -44,25 +45,36 @@ window.addEventListener("DOMContentLoaded", () => {
     const filtersElems = wrapper.querySelectorAll(".filter_elem");
     filtersElems.forEach((filterElem) => {
       filterElem.onclick = () => {
+        catalogContainer.innerHTML = "";
+        noneContent.classList.remove("show");
+        loader.classList.remove("hide");
         const vacancyAttribute = filterElem.getAttribute("slug");
         filterElem.classList.toggle("active");
         if (filterElem.classList.contains("active")) {
           filtersParamsArray.push(vacancyAttribute);
-          urlParams.set("vacancy", filtersParamsArray.join(","));
+          urlParams.set("vacancy_category", filtersParamsArray.join(","));
         } else {
           filtersParamsArray = filtersParamsArray.filter(
             (el) => el != vacancyAttribute
           );
           filtersParamsArray.length > 0
-            ? urlParams.set("vacancy", filtersParamsArray.join(","))
-            : urlParams.delete("vacancy");
+            ? urlParams.set("vacancy_category", filtersParamsArray.join(","))
+            : urlParams.delete("vacancy_category");
         }
+        loadItems();
         history.pushState({}, "", currentUrl);
       };
     });
 
     function loadItems() {
-      fetch("/api/v1/vacancy/load-ajax-vacancy-list/", {
+      const data = {
+        vacancy_category:
+          filtersParamsArray.length > 0 ? filtersParamsArray : "",
+      };
+
+      const params = new URLSearchParams(data);
+
+      fetch(`/api/v1/vacancy/load-ajax-vacancy-list/?${params.toString()}`, {
         method: "GET",
         headers: {
           "X-CSRFToken": csrfToken,
@@ -76,8 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
               addAjaxCatalogItem(response.data[i]);
             }
           } else {
-            catalogContainer.innerHTML =
-              "<div class='none_content'>Вакансий нет</div>";
+            noneContent.classList.add("show");
           }
         })
         .catch((error) => console.error(error));

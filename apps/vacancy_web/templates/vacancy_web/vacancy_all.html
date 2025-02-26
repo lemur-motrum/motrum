@@ -107,8 +107,9 @@
                     {% endif %}
                 </div>
                 <div class="vacancies_wrapper" project-elem="wrapper">
+                    <div class="loader"></div>
+                    <div class="none_content">Вакансий нет</div>
                     <div class="vacancies_elems_container" project-elem="container">
-                        <div class="loader"></div>
                         {% for vacancy in vacancy_list %}
                             {% include "vacancy_web/includes/ajax_vacancy_item.html" with vacancy=vacancy %}
                         {% endfor %}

@@ -108,6 +108,7 @@
                 </div>
                 <div class="vacancies_wrapper" project-elem="wrapper">
                     <div class="vacancies_elems_container" project-elem="container">
+                        <div class="loader"></div>
                         {% for vacancy in vacancy_list %}
                             {% include "vacancy_web/includes/ajax_vacancy_item.html" with vacancy=vacancy %}
                         {% endfor %}
@@ -149,9 +150,4 @@
             </div>
         </div>
     </div>
-    {% comment %} {{ title }}
-    {% for vacancy_item in vacancy %}
-        {{ vacancy_item.slug }}
-        <a href="{% url 'core:vacancy:vacancy_item' vacancy_item.slug %}">{{ vacancy_item }}</a>
-    {% endfor %} {% endcomment %}
 {% endblock content %}

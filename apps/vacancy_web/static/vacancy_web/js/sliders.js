@@ -1,12 +1,5 @@
-import { getCookie } from "/static/core/js/functions.js";
-
 window.addEventListener("DOMContentLoaded", () => {
-  const currentUrl = new URL(window.location.href);
-  const csrfToken = getCookie("csrftoken");
-  const urlParams = currentUrl.searchParams;
-
   const wrapper = document.querySelector(".vacancy_container");
-  const catalogContainer = wrapper.querySelector('[project-elem="container"]');
 
   if (wrapper) {
     const companySliderWrapper = wrapper.querySelector(
@@ -23,56 +16,5 @@ window.addEventListener("DOMContentLoaded", () => {
         slidesPerView: "auto",
       });
     }
-
-    const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
-    let i = 0;
-    const interval = setInterval(() => {
-      const vacancyItems = wrapper.querySelectorAll(".vacancy_item");
-      if (vacancyItems.length > 0) {
-        clearInterval(interval);
-      }
-      vacancyItems.forEach((vacancyItem) => {
-        const showContentBtn = vacancyItem.querySelector(".show_btn");
-        showContentBtn.onclick = () => {
-          vacancyItem.classList.toggle("is_open");
-          if (vacancyItem.classList.contains("is_open")) {
-            showContentBtn.textContent = "Скрыть";
-          } else {
-            showContentBtn.textContent = "Подробнее";
-          }
-        };
-      });
-    }, 1);
-
-    fetch("/api/v1/vacancy/load-ajax-vacancy-list/", {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    })
-      .then((response) => response.json(Text))
-      .then((response) => {
-        if (response.data.length > 0) {
-          for (let i in response.data) {
-            addAjaxCatalogItem(response.data[i]);
-          }
-        }
-      });
-  }
-
-  function renderCatalogItem(orderData) {
-    let ajaxTemplateWrapper = document.querySelector(
-      '[template-elem="wrapper"]'
-    );
-    let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
-      '[vacancy-elem="vacancy-item"]'
-    ).innerText;
-
-    return nunjucks.renderString(ajaxCatalogElementTemplate, orderData);
-  }
-
-  function addAjaxCatalogItem(ajaxElemData) {
-    let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
-    catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
   }
 });

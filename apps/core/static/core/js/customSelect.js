@@ -56,8 +56,10 @@ export class ItcCustomSelect {
       this._el.innerHTML = this.constructor.template(this._params);
       this._el.classList.add(this.constructor.EL);
     }
-    this._elToggle = this._el.querySelector(this.constructor.DATA_TOGGLE);
-    this._el.addEventListener("click", this._onClickFn);
+    if (this._el) {
+      this._elToggle = this._el.querySelector(this.constructor.DATA_TOGGLE);
+      this._el.addEventListener("click", this._onClickFn);
+    }
   }
 
   _onClick(e) {

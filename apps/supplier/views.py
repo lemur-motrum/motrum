@@ -12,12 +12,15 @@ from regex import D
 import requests
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
+    AccountRequisites,
     Client,
+    ClientRequisites,
     DocumentShipment,
     Order,
     PaymentTransaction,
     Requisites,
     RequisitesAddress,
+    RequisitesOtherKpp,
 )
 
 from apps.core.bitrix_api import (
@@ -103,26 +106,58 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
-    client = None
-    base_manager = None
-    client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
-    print(client_bx_id)
-    order = Order.objects.get(id=171)
-    client = order.client
-    req = order.requisites
-    req_inn = 631625733376
-    acc_req = order.account_requisites
-    req_kpp = order.account_requisites.requisitesKpp
+    
+    base_manager = AdminUser.objects.get(bitrix_id=174)
+    req_inn = 6316000000
+    req_kpp = RequisitesOtherKpp.objects.get(id=17)
+    req = req_kpp.requisites
+    acc_req = AccountRequisites.objects.get(id=25)
     adress_web = RequisitesAddress.objects.get(
-            requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
-        )
+        requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
+    )
+    client = Client.objects.get(id=28)
+    print("client",client)
+    all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
+        "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
+    )
+    # print(adress_web.region)
+    # print(all_rec_client)
+    # client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+    # req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
+    #     serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
+    # )
+    # print("RESULT")
+    # print(req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
+    
+    # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
+
+
+
+
+    # company_bx_fields = bx.get_all("crm.company.fields",)
+    # sity = company_bx_fields['UF_CRM_1558613254']['items']
+    # province = company_bx_fields['UF_CRM_1724223404']['items']
+    # print(province)
+    
+    # adress_city = "Самара"
+    # adress_city_id = ""
+    # for s in sity:
+    #     if s['VALUE'] == adress_city:
+    #         adress_city_id = s['ID']
+    
+    # adress_province = adress_web.region
+    # adress_province_id = ""
+    # for p in province:
+    #     p_val = p['VALUE'].replace(".", "")
+    #     if p_val == adress_province:
+    #         adress_province_id = p['ID']
+        
+    # print(adress_city_id,adress_province_id)    
+        
     
     
-    # req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-    #         serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
-    #     )
-    # print("result",req_bx, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
-    # result = 1
+    
+    result = 1
     if result:
         pass
     else:

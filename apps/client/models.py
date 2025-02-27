@@ -200,6 +200,10 @@ class Requisites(models.Model):
 
     def __str__(self):
         return self.legal_entity
+    def save(self, *args, **kwargs):
+        print(self)
+        print("save req")
+        super().save(*args, **kwargs)
 
     # получить название типа оплаты в шаблон
     def get_type_payment(self):

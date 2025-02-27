@@ -1832,7 +1832,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
+            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA{data}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1884,7 +1884,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o оплатах 1с "
-            info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr}"
+            info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr} дата {data}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:
@@ -1926,7 +1926,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr}"
+            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} data {data}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
         finally:

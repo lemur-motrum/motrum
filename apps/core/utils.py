@@ -25,6 +25,7 @@ from requests.auth import HTTPBasicAuth
 from apps.specification.utils import crete_pdf_specification
 
 
+
 from project.settings import MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
@@ -1739,11 +1740,10 @@ def send_requests(url, headers, data, auth):
         # payload = {}
         headers = {
             # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
-            }
-        auth = HTTPBasicAuth(
-                os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
-            )
+        }
+        auth = HTTPBasicAuth(os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD"))
         import ssl
+
         paths = ssl.get_default_verify_paths()
         certifi1 = certifi.where()
         error = "error"
@@ -1752,12 +1752,16 @@ def send_requests(url, headers, data, auth):
         e = error_alert(error, location, info)
 
         response = requests.request(
-            "POST", url,auth=auth, headers=headers, data=payload, allow_redirects=False, verify=False
+            "POST",
+            url,
+            auth=auth,
+            headers=headers,
+            data=payload,
+            allow_redirects=False,
+            verify=False,
         )
 
         print(response.text)
-        
-        
 
         # response = requests.request(
         #     "POST",
@@ -2187,3 +2191,30 @@ def vendor_delta_optimus_after_load():
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
+
+
+def save_info_bitrix_after_web(data, req):
+    from apps.client.models import RequisitesAddress
+    from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
+    from dateutil.parser import parse
+    from apps.user.models import AdminUser
+    
+    if data["contract_date"]:
+        data_contract = parse(data["contract_date"]).date()
+        # data_contract = datetime.datetime.strptime(
+        #     data["contract_date"], "%Y-%B-%dT%HH:%MM:%SS-%HH:%MM"
+        # ).date()
+    else:
+        data_contract = None
+    print(data)    
+    manager = AdminUser.objects.get(bitrix_id=int(data["manager"]))
+    r = Requisites.objects.get(id=data["id_req"])
+    r.contract_date=data_contract
+    r.manager = manager
+    r.contract = data["contract"]
+    r.save()
+    print(r)
+    # client_req = Requisites.objects.filter(id=data["id_req"]).update(
+    #     contract_date=data_contract, manager= manager ,contract= data["contract"],)
+    # print(client_req)
+    

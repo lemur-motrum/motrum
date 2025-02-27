@@ -25,6 +25,7 @@ from apps.client.models import (
 
 from apps.core.bitrix_api import (
     add_info_order,
+    add_new_order_bx,
     add_new_order_web,
     add_or_get_contact_bx,
     chech_client_other_rec_company,
@@ -124,35 +125,37 @@ def add_iek(request):
     # print(all_rec_client)
     # client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
     # req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-    #     serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client)
+    #     serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client,base_manager)
     # )
     # print("RESULT")
     # print(req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
     
+    
+    
+    company_bx_id = 17826
+    client_bx_id = 65406
+    req_bx_id = 6850
+    acc_req_bx_id = 4254 
     # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
-
-
-
-
-    # company_bx_fields = bx.get_all("crm.company.fields",)
-    # sity = company_bx_fields['UF_CRM_1558613254']['items']
-    # province = company_bx_fields['UF_CRM_1724223404']['items']
-    # print(province)
+    order = Order.objects.get(id=172)
+    order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
+    print("order_new_bx_id",order_new_bx_id)
+    print("int",int(order_new_bx_id))
+    order.id_bitrix = int(order_new_bx_id)
+    order.save()
+    print(order)
     
-    # adress_city = "Самара"
-    # adress_city_id = ""
-    # for s in sity:
-    #     if s['VALUE'] == adress_city:
-    #         adress_city_id = s['ID']
+    # orders_bx = bx.get_by_ID("crm.enum.ownertype", [10568])
+    # orders_bx = bx.get_all("crm.type.list", {
+    # },)
+    # print(orders_bx)
     
-    # adress_province = adress_web.region
-    # adress_province_id = ""
-    # for p in province:
-    #     p_val = p['VALUE'].replace(".", "")
-    #     if p_val == adress_province:
-    #         adress_province_id = p['ID']
-        
-    # print(adress_city_id,adress_province_id)    
+    
+    
+
+
+    
+    print(datetime.date.today().isoformat())
         
     
     

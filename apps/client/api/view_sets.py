@@ -558,10 +558,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
-                    "client": 23,
-                    "cart": 305,
-                    "requisitesKpp": 15,
-                    "account_requisites": 21,
+                    "client": 28,
+                    "cart": 361,
+                    "requisitesKpp": 17,
+                    "account_requisites": 25,
                     "type_delivery": 1
                 }
                 cart = int(data["cart"])

@@ -111,10 +111,11 @@ class Requisites(models.Model):
         blank=True,
     )
     id_bitrix = models.PositiveIntegerField(
-        "Номер клиента битрикс",
+        "Id реквизита в битрикс",
         null=True,
         blank=True,
     )
+    
     number_spec = models.PositiveIntegerField(
         "Номер спецификации клиента", null=True, blank=True, default=0
     )
@@ -456,7 +457,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-   
+    
     name = models.PositiveIntegerField(
         "номер заказа",
         blank=True,

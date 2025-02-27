@@ -66,7 +66,7 @@ def crete_pdf_bill(
             if order.manager.middle_name:
                 name_admin = f"{order.manager.last_name} {order.manager.first_name} {order.manager.middle_name}"
         else:
-            
+
             if specifications.admin_creator:
                 name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name}"
                 if specifications.admin_creator.middle_name:
@@ -79,7 +79,6 @@ def crete_pdf_bill(
         ).order_by("id")
         print(type_delivery)
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
-      
 
         order = Order.objects.get(specification=specification)
         motrum_info = order.motrum_requisites.requisites
@@ -144,7 +143,9 @@ def crete_pdf_bill(
         print(version)
         print(text_version)
         name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
-        name_bill_to_fullname_nosign = f"{name_bill_text} от {date_now} без печати{text_version}"
+        name_bill_to_fullname_nosign = (
+            f"{name_bill_text} от {date_now} без печати{text_version}"
+        )
         name_bill = f"{name_bill_text} от {date_now}{text_version}.pdf"
         name_bill_no_signature = (
             f"{name_bill_text} от {date_now} без печати{text_version}.pdf"
@@ -392,7 +393,7 @@ def crete_pdf_bill(
                 ),
             )
         )
-        
+
         if client_info.type_client == 1 or client_info.type_client == "1":
             # клиент юрлицо
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, КПП {client_info_req_kpp.kpp}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
@@ -400,13 +401,10 @@ def crete_pdf_bill(
         else:
             # клиент ип
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, ОГРНИП {client_info_req_kpp.ogrn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
-        
-        
-        
+
         if client_info_req_kpp.tel:
             info_client = f"{info_client}, тел.: {client_info_req_kpp.tel}"
-
-
+        
         data_info.append(
             (
                 Paragraph(
@@ -419,6 +417,7 @@ def crete_pdf_bill(
                 ),
             )
         )
+        
         data_info.append(
             (
                 Paragraph(f"Основание:", normal_style),
@@ -511,12 +510,12 @@ def crete_pdf_bill(
             )
             product_quantity = product.quantity
             product_data = product.text_delivery
-            
+
             if product.date_delivery_bill:
                 product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
             else:
                 product_data = product.text_delivery
-                
+
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
             # else:
             #     product_data = str("-")
@@ -542,7 +541,6 @@ def crete_pdf_bill(
             .replace(",", " ")
             .replace(".", ",")
         )
-
 
         data.append(
             (
@@ -693,123 +691,163 @@ def crete_pdf_bill(
         rub_word = rub_words(int(specifications.total_amount))
 
         data_text_info = [
-            (Paragraph(f"Всего наименований {i}, на сумму {total_amount_str} руб.",normal_style,),),
-            (Paragraph(
-                f"{total_amount_word} {rub_word} {total_amount_pens} копеек", bold_style
-            ),)
+            (
+                Paragraph(
+                    f"Всего наименований {i}, на сумму {total_amount_str} руб.",
+                    normal_style,
+                ),
+            ),
+            (
+                Paragraph(
+                    f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
+                    bold_style,
+                ),
+            ),
         ]
-  
+
         if is_contract:
             data_text_info.append(
-                (Paragraph(
-                    f"<br></br><br></br>Оплата данного счета означает согласие с условиями поставки товара.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"<br></br><br></br>Оплата данного счета означает согласие с условиями поставки товара.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе.",
+                        normal_style,
+                    ),
+                )
             )
 
             if type_delivery.company_delivery is None:
 
-                    data_text_info.append(
-                        (Paragraph(
+                data_text_info.append(
+                    (
+                        Paragraph(
                             f"Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.",
                             normal_style,
-                        ),)
+                        ),
                     )
+                )
 
             else:
 
                 data_text_info.append(
-                    (Paragraph(
-                        f"Условия доставки: {type_delivery.text_long}",
-                        normal_style,
-                    ),)
+                    (
+                        Paragraph(
+                            f"Условия доставки: {type_delivery.text_long}",
+                            normal_style,
+                        ),
+                    )
                 )
 
         else:
             data_text_info.append(
-                (Paragraph(
-                    f"<br></br><br></br>1. Оплата данного счет-оферты означает полное и безоговорочное согласие (акцепт) с условиями поставки товара по наименованию, ассортименту, количеству и цене. Срок действия счета 3 банковских дня.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"<br></br><br></br>1. Оплата данного счет-оферты означает полное и безоговорочное согласие (акцепт) с условиями поставки товара по наименованию, ассортименту, количеству и цене. Срок действия счета 3 банковских дня.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"2. Поставщик гарантирует отгрузку товара по ценам и в сроки, указанные в настоящем Счет-оферте, при условии зачисления денежных средств на расчетный счет Поставщика в течение 3 банковских дней с даты выставления счета.<br></br>При невыполнении Покупателем указанных условий оплаты, цена и сроки поставки товара могут измениться.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"2. Поставщик гарантирует отгрузку товара по ценам и в сроки, указанные в настоящем Счет-оферте, при условии зачисления денежных средств на расчетный счет Поставщика в течение 3 банковских дней с даты выставления счета.<br></br>При невыполнении Покупателем указанных условий оплаты, цена и сроки поставки товара могут измениться.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"3. Товар отгружается после полной оплаты счета-оферты Покупателем.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"3. Товар отгружается после полной оплаты счета-оферты Покупателем.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"5. Обязательства Поставщика по поставке Товара считаются выполненными с момента подписания УПД или товарной накладной представителями Поставщика и Покупателя или организации перевозчика.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"5. Обязательства Поставщика по поставке Товара считаются выполненными с момента подписания УПД или товарной накладной представителями Поставщика и Покупателя или организации перевозчика.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"6. Каждая партия поставляемой продукции сопровождается Универсальным передаточным документом (УПД): на бумажном носителе в двух экземплярах (1 экз. Покупателя, 1 экз. Поставщика). После каждой поставки продукции с документами, Покупатель обязан вернуть Поставщику один экземпляр, верно оформленного УПД, не позднее 1 месяца с даты подтверждения получения товара. В случае задержки Покупателем возврата, верно оформленного со стороны Покупателя, оригинала УПД на бумажном носителе на срок более 1 (одного) календарного месяца, Поставщик вправе предъявить Покупателю штрафные санкции в размере 5 000 (Пять тысяч) рублей (НДС не облагается) за каждый факт не предоставления подписанного оригинала УПД.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"6. Каждая партия поставляемой продукции сопровождается Универсальным передаточным документом (УПД): на бумажном носителе в двух экземплярах (1 экз. Покупателя, 1 экз. Поставщика). После каждой поставки продукции с документами, Покупатель обязан вернуть Поставщику один экземпляр, верно оформленного УПД, не позднее 1 месяца с даты подтверждения получения товара. В случае задержки Покупателем возврата, верно оформленного со стороны Покупателя, оригинала УПД на бумажном носителе на срок более 1 (одного) календарного месяца, Поставщик вправе предъявить Покупателю штрафные санкции в размере 5 000 (Пять тысяч) рублей (НДС не облагается) за каждый факт не предоставления подписанного оригинала УПД.",
+                        normal_style,
+                    ),
+                )
             )
 
             if type_delivery.company_delivery is None:
                 data_text_info.append(
-                    (Paragraph(
-                        f"7. Доставка товара самовывозом со склада Поставщика",
-                        normal_style,
-                    ),)
+                    (
+                        Paragraph(
+                            f"7. Доставка товара самовывозом со склада Поставщика",
+                            normal_style,
+                        ),
+                    )
                 )
             else:
 
                 data_text_info.append(
-                    (Paragraph(
-                        f"7.{type_delivery.text_long}",
-                        normal_style,
-                    ),)
+                    (
+                        Paragraph(
+                            f"7.{type_delivery.text_long}",
+                            normal_style,
+                        ),
+                    )
                 )
 
             data_text_info.append(
-                (Paragraph(
-                    f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"8. В случае превышения более чем на 15 дней сроков поставки продукции, указанных в Счёте-оферте, Поставщик по требованию Покупателя обязан уплатить неустойку в размере 0,1 % от стоимости не поставленной в срок продукции за каждый день просрочки, но не более 5% от стоимости не поставленной в срок продукции.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-               ( Paragraph(
-                    f"9. Претензии по п. 8 должны быть заявлены Сторонами в письменной форме в течение 5 дней с момента наступления, указанных в них событий. В случае не выставления претензии в указанный срок, это трактуется как освобождение Сторон от уплаты неустойки.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"9. Претензии по п. 8 должны быть заявлены Сторонами в письменной форме в течение 5 дней с момента наступления, указанных в них событий. В случае не выставления претензии в указанный срок, это трактуется как освобождение Сторон от уплаты неустойки.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-               ( Paragraph(
-                    f"10. Срок гарантии на поставляемую продукцию составляет не менее одного года с момента отгрузки.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"10. Срок гарантии на поставляемую продукцию составляет не менее одного года с момента отгрузки.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"11. Правила гарантийного обслуживания оговариваются в гарантийных талонах на поставляемую продукцию.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"11. Правила гарантийного обслуживания оговариваются в гарантийных талонах на поставляемую продукцию.",
+                        normal_style,
+                    ),
+                )
             )
             data_text_info.append(
-                (Paragraph(
-                    f"12.  Стороны принимают необходимые меры к тому, чтобы спорные вопросы и разногласия, возникающие при исполнении и расторжении настоящего договора, были урегулированы путем переговоров. В случае если стороны не достигнут соглашения по спорным вопросам путем переговоров, то спор передается заинтересованной стороной в арбитражный суд.",
-                    normal_style,
-                ),)
+                (
+                    Paragraph(
+                        f"12.  Стороны принимают необходимые меры к тому, чтобы спорные вопросы и разногласия, возникающие при исполнении и расторжении настоящего договора, были урегулированы путем переговоров. В случае если стороны не достигнут соглашения по спорным вопросам путем переговоров, то спор передается заинтересованной стороной в арбитражный суд.",
+                        normal_style,
+                    ),
+                )
             )
-      
+
         table_data_text_info = Table(
             data_text_info,
         )
@@ -959,7 +997,14 @@ def crete_pdf_bill(
             name_bill_no_signature,
         )
         print(4)
-        return (file_path, bill_name, file_path_no_sign, version,name_bill_to_fullname,name_bill_to_fullname_nosign)
+        return (
+            file_path,
+            bill_name,
+            file_path_no_sign,
+            version,
+            name_bill_to_fullname,
+            name_bill_to_fullname_nosign,
+        )
 
     except Exception as e:
         tr = traceback.format_exc()

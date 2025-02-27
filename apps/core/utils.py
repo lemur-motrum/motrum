@@ -1609,7 +1609,7 @@ def client_info_bitrix(data, company_adress):
 
     print("client_info_bitrix")
     print("data", data)
-
+    # "id_company": f"{company}{id_req}",
     print("company_adress", company_adress)
 
     if data["contract_date"]:
@@ -1621,13 +1621,13 @@ def client_info_bitrix(data, company_adress):
         data_contract = None
 
     client_req, client_req_created = Requisites.objects.update_or_create(
-        id_bitrix=data["id_bitrix"],
+        # id_bitrix=data["id_company"],
         inn=data["inn"],
         defaults={
             "contract": data["contract"],
             "legal_entity": data["legal_entity"],
-            "contract": data["contract"],
-            "contract_date": data_contract,
+            # "contract": data["contract"],
+            # "contract_date": data_contract,
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
             # "id_bitrix": data["id_bitrix"],
@@ -1640,7 +1640,7 @@ def client_info_bitrix(data, company_adress):
             "contract_date": data_contract,
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
-            "id_bitrix": data["id_bitrix"],
+            # "id_bitrix": data["id_bitrix"],
         },
     )
     print("client_req, client_req_created", client_req, client_req_created)
@@ -1654,8 +1654,10 @@ def client_info_bitrix(data, company_adress):
     client_req_kpp, client_req_kpp_created = (
         RequisitesOtherKpp.objects.update_or_create(
             requisites=client_req,
-            kpp=data["kpp"],
+            id_bitrix=data["id_bitrix"],
+            # kpp=data["kpp"],
             defaults={
+                "kpp" : data["kpp"],
                 "ogrn": data["ogrn"],
                 "legal_post_code": data["legal_post_code"],
                 "legal_city": data["legal_city"],

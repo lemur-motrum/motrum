@@ -64,7 +64,6 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 context = {"error": error_text}
                 return (next_url, context, True)
             else:
-
                 try:
                     manager = AdminUser.objects.get(bitrix_id=manager_company)
                 except AdminUser.DoesNotExist:
@@ -133,6 +132,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "postpay_persent": client_req.postpay_persent,
                     "manager": manager.id,
                     "text_name": name_order_bx,
+                    "adress_document": data_company["data_commpany"]['adress_type']
                 }
                 serializer_class = OrderSerializer
                 try:
@@ -276,7 +276,7 @@ def get_req_info_bx(bs_id_order, manager, company):
 
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
-
+        adress_type = None
         company_adress_all = []
         for adress in adress_bx:
             not_web_adrees = False
@@ -295,6 +295,7 @@ def get_req_info_bx(bs_id_order, manager, company):
 
             if adress["TYPE_ID"] == "9" or adress["TYPE_ID"] == 9:
                 not_web_adrees = True
+                adress_type = 9
                 legal_post_code = adress["POSTAL_CODE"]
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
@@ -315,6 +316,7 @@ def get_req_info_bx(bs_id_order, manager, company):
             
             if not_web_adrees == False:
                 if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
+                    adress_type = 6
                     legal_post_code = adress["POSTAL_CODE"]
                     bx_city = adress["CITY"]
                     bx_city_post = adress["CITY"]
@@ -346,7 +348,9 @@ def get_req_info_bx(bs_id_order, manager, company):
         bic = req_bank["RQ_BIK"]
 
         company = {
+            "adress_type":adress_type,
             "id_bitrix": id_req,
+            "id_company": f"{company}{id_req}",
             "manager": manager.id,
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',
             "type_client": type_client,
@@ -1285,7 +1289,8 @@ def serch_or_add_info_client(
         # manager_company = company_bx["ASSIGNED_BY_ID"]
         # manager == AdminUser.objects.get(bitrix_id=int(data["manager"]))
         # req.manager = manager
-        req.id_bitrix = req_bx_id
+        id_compane_req_inn = f"{company_bx_id}{req_bx_id}"
+        req.id_bitrix = int(id_compane_req_inn)
         
         req.save()
         req_kpp.id_bitrix = req_bx_id
@@ -1344,14 +1349,19 @@ def serch_or_add_info_client(
         contract_date = req_bx[0]["UF_CRM_1737611994"]
         manager_company = company_bx["ASSIGNED_BY_ID"]
         print("contract,contract_date,manager_company", contract,contract_date,manager_company)
+        id_compane_req_inn = f"{company_bx_id}{req_bx_id}"
+        
+        
         data_upd = {
-            "id_req_bx":req_bx_id,
+            "id_req_bx":int(id_compane_req_inn),
             "id_req":req.id,
             "contract_date":contract_date,
             "contract":contract,
             "manager":manager_company,
         }
         save_info_bitrix_after_web(data_upd, req)
+        req_kpp.id_bitrix = req_bx_id
+        req_kpp.save()
         
         tel_bx = req_bx[0]["RQ_PHONE"]
         if tel_bx == "" or tel_bx == None or tel_bx =="None" or tel_bx != req_kpp.tel :

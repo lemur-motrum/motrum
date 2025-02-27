@@ -10393,3 +10393,5 @@ ddd = [
         "SEMANTICS": None,
     },
 ]
+# id_compane_req_inn = f"{company_bx_id}{req_bx_id}"
+#         req.id_bitrix = int(id_compane_req_inn)

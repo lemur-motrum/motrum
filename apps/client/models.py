@@ -545,6 +545,13 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
+    adress_document = models.ForeignKey(
+        RequisitesAddress,
+        verbose_name="Адрес для документов",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
 
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,

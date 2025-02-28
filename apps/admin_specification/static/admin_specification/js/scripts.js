@@ -1604,6 +1604,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const serialazer = BxBtn.getAttribute("data-serializer-order");
     const bxId = BxBtn.getAttribute("data-bx-id");
     const specificationId = BxBtn.getAttribute("data-spesif-id");
+    const newOrderInWeb = BxBtn.getAttribute("data-serializer-new");
+    console.log(newOrderInWeb)
     let endpoint = "/api/v1/order/order-bitrix/";
 
     const objData = {
@@ -1612,6 +1614,7 @@ window.addEventListener("DOMContentLoaded", () => {
     };
     console.log(objData);
     console.log(7);
+
     BxUpd.onclick = () => {
       document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
       const data = JSON.stringify(objData);

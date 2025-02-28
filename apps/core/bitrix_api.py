@@ -140,7 +140,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     order = Order.objects.get(id_bitrix=bs_id_order)
                     cart = order.cart
                     data_order["cart"] = cart.id
-                    new_order_web = False if order.bill_name == None else True
+                    new_order_web = order.bill_name
                     serializer = serializer_class(order, data=data_order, many=False)
                     next_url = "admin_specification/bx_start.html"
                     context = {

@@ -1561,10 +1561,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         user_admin = AdminUser.objects.get(user=request.user)
         user_admin_type = user_admin.admin_type
-        if user_admin_type == "ALL":
-            q_object &= Q(cart__cart_admin_id__isnull=False)
-        elif user_admin_type == "BASE":
-            q_object &= Q(cart__cart_admin_id=request.user.id)
+        # if user_admin_type == "ALL":
+        #     q_object &= Q(cart__cart_admin_id__isnull=False)
+        # elif user_admin_type == "BASE":
+        #     q_object &= Q(cart__cart_admin_id=request.user.id)
 
         sort_specif = request.query_params.get("specification")
 
@@ -1578,10 +1578,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         print(iframe)
         print(bx_id_order)
         if iframe == "True":
-
             q_object &= Q(id_bitrix=int(bx_id_order))
+        else:
+            if user_admin_type == "ALL":
+                q_object &= Q(cart__cart_admin_id__isnull=False)
+            elif user_admin_type == "BASE":
+                q_object &= Q(cart__cart_admin_id=request.user.id)
+
+            
 
         now_date = datetime.datetime.now()
+        print(q_object)
         queryset = (
             Order.objects.select_related(
                 "specification", "cart", "client", "requisites", "account_requisites"
@@ -1596,9 +1603,11 @@ class OrderViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
-
+        print("queryset",queryset)
+        
         page_count = Order.objects.filter(q_object).count()
 
+        
         queryset_next = Order.objects.filter(q_object)[
             count + count_last : count + count_last + 1
         ].exists()

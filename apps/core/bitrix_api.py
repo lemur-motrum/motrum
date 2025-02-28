@@ -150,6 +150,10 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         "order": order.id,
                         "serializer": data_order,
                     }
+                    location = "new_order_web"
+                    info = f" {order} {bs_id_order} ошибка {new_order_web}"
+                    e = error_alert(error, location, info)
+                    
                     if order.specification:
                         context["spes"] = int(order.specification.id)
                     else:

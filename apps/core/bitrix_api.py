@@ -1082,11 +1082,7 @@ def get_stage_info_bx():
         e = error_alert(error, location, info)
 
 
-#  'ASSIGNED_BY_ID': '1',
-
-
 def get_manager():
-
     try:
         webhook = BITRIX_WEBHOOK
 
@@ -1171,14 +1167,12 @@ def _status_to_order_replace(name_status, id_bx):
 
 
 # ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА
-
-
 def add_new_order_web(order):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
         base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
-        order = Order.objects.get(id=171)
+        order = Order.objects.get(id=154)
         client = order.client
         req = order.requisites
         req_inn = order.requisites.inn
@@ -1187,15 +1181,7 @@ def add_new_order_web(order):
         adress_web = RequisitesAddress.objects.get(
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
-        
-        base_manager = AdminUser.objects.get(bitrix_id=174)
-        req_inn = 6316195950
-        req_kpp = RequisitesOtherKpp.objects.get(id=11)
-        req = req_kpp.requisites
-        acc_req = AccountRequisites.objects.get(id=22)
-        adress_web = RequisitesAddress.objects.get(
-            requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
-        )
+     
         all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
             "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
         )

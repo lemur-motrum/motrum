@@ -154,7 +154,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     }
                     error = "error"
                     location = "new_order_web"
-                    info = f" {order} {bs_id_order} {new_order_web}"
+                    info = f" {order} {bs_id_order} {new_order_web} {context}"
                     e = error_alert(error, location, info)
                     
                     if order.specification:

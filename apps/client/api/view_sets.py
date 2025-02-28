@@ -725,19 +725,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
-            error = "error"
-            location = "взятие заказа при открытие окна битрикс"
-            info = f" ошибка {s}"
-            e = error_alert(error, location, info)
             
             json_acceptable_string = s.replace("'", '"')
             d = json.loads(json_acceptable_string)
-           
-            error = "error"
-            location = "взятие заказа при открытие окна битрикс"
-            info = f" ошибка {d}"
-            e = error_alert(error, location, info)
-            
+
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))
             serializer = serializer_class(order, data=d, many=False)

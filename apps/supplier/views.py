@@ -111,26 +111,26 @@ def add_iek(request):
     title = "TEST"
     
     base_manager = AdminUser.objects.get(bitrix_id=174)
-    req_inn = 6316000000
-    req_kpp = RequisitesOtherKpp.objects.get(id=17)
+    req_inn = 6311140000
+    req_kpp = RequisitesOtherKpp.objects.get(id=15)
     req = req_kpp.requisites
-    acc_req = AccountRequisites.objects.get(id=25)
+    acc_req = AccountRequisites.objects.get(id=20)
     adress_web = RequisitesAddress.objects.get(
         requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
     )
-    client = Client.objects.get(id=28)
+    client = Client.objects.get(id=27)
     print("client",client)
     all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
         "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
     )
-    # print(adress_web.region)
-    # print(all_rec_client)
-    # client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
-    # req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-    #     serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client,base_manager)
-    # )
-    # print("RESULT")
-    # print(req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
+    print(adress_web.region)
+    print(all_rec_client)
+    client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+    req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
+        serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client,base_manager)
+    )
+    print("RESULT")
+    print(req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
     
     
     
@@ -138,47 +138,16 @@ def add_iek(request):
     # client_bx_id = 65406
     # req_bx_id = 6850
     # acc_req_bx_id = 4254 
-    # # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
-    # order = Order.objects.get(id=172)
-    # order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
-    # print("order_new_bx_id",order_new_bx_id)
-    # print("int",int(order_new_bx_id))
-    # order.id_bitrix = int(order_new_bx_id)
-    # order.save()
-    # print(order)
+    # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
+    order = Order.objects.get(id=172)
+    order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
+    print("order_new_bx_id",order_new_bx_id)
+    print("int",int(order_new_bx_id))
+    order.id_bitrix = int(order_new_bx_id)
+    order.save()
+    print(order)
     
 
-    
-    
-    manager_all_bx = bx.get_all(
-            "user.get",
-            params={
-                # "entityTypeId": 2,
-            },
-        )
-    for manager in manager_all_bx:
-        if "EMAIL" in manager:
-            try:
-                admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
-                print(admin_okt)
-                if "PERSONAL_PHOTO" in manager :
-                    print(manager)
-                    photo = manager['PERSONAL_PHOTO']
-                    photo_name = photo.split("/")
-                    photo_name = photo_name[-1]
-                    photo_name = f"{admin_okt.id}{photo_name}"
-                    print(photo_name)
-                    file_path = get_file_path_company_web(None, photo_name)
-                    print(file_path)
-                    p = save_file_product(photo, file_path)
-                    admin_okt.image = file_path
-                    admin_okt.save()
-            except AdminUser.DoesNotExist:
-                    pass
-
-        
-    
-    
     
     result = 1
     if result:

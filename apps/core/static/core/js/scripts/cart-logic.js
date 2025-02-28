@@ -215,8 +215,8 @@ window.addEventListener("DOMContentLoaded", () => {
           totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
         }
       }
-      getTotalSum();
-      addTotalSum();
+      // getTotalSum();
+      // addTotalSum();
     }
   }
   // сохранение корзины сайт

@@ -559,10 +559,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
-                    "client": 28,
-                    "cart": 361,
-                    "requisitesKpp": 17,
-                    "account_requisites": 25,
+                    "client": 27,
+                    "cart": 323,
+                    "requisitesKpp": 15,
+                    "account_requisites": 20,
                     "type_delivery": 1
                 }
                 cart = int(data["cart"])
@@ -595,8 +595,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         all_info_product = False
 
                 # сохранение спецификации для заказа с реквизитами
-                
-                
+
                 if all_info_requisites and all_info_product:
                     status_save_spes, specification, specification_name = save_spesif_web(
                         cart, products_cart, extra_discount, requisites

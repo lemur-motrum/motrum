@@ -176,7 +176,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         serializer._change_reason = "Ручное"
                         order = serializer.save()
                         context = {
-                            "new_order_web": False,
+                            "new_order_web": None,
                             "type_save": "new",
                             "cart": cart.id,
                             "order": order.id,

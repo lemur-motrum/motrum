@@ -1699,6 +1699,7 @@ def bx_save_start_info(request):
                             "spes": context["spes"],
                             "serializer": context["serializer"],
                             "type_save": context["type_save"],
+                            "new_order_web": context["new_order_web"]
                         },
                     )
                     response.set_cookie(
@@ -1804,6 +1805,7 @@ def bx_save_start_info(request):
                             "spes": context["spes"],
                             "serializer": context["serializer"],
                             "type_save": context["type_save"],
+                            "new_order_web": context["new_order_web"],
                         },
                     )
                     response.set_cookie(

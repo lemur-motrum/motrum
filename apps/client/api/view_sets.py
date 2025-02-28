@@ -727,7 +727,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             s = data["serializer"]
             
             json_acceptable_string = s.replace("'", '"')
-            d = json.loads(json_acceptable_string)
+            d = json.loads(r"""(json_acceptable_string)""")
 
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))

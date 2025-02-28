@@ -1621,6 +1621,7 @@ window.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: data,
         headers: {
+          "Content-Type": "application/json; charset=UTF-8",
           "X-CSRFToken": csrfToken,
         },
       })
@@ -1658,6 +1659,7 @@ window.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: data,
         headers: {
+          "Content-Type": "application/json; charset=UTF-8",
           "X-CSRFToken": csrfToken,
         },
       })

@@ -1629,8 +1629,8 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           console.log(data);
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          // document.location.href =
-          //   "/admin_specification/current_specification/";
+          document.location.href =
+            "/admin_specification/current_specification/";
         });
     } else{
     BxUpd.onclick = () => {

@@ -1614,7 +1614,24 @@ window.addEventListener("DOMContentLoaded", () => {
     };
     console.log(objData);
     console.log(7);
-
+    if (newOrderInWeb == 0){
+      document.cookie = `type_save=new; path=/; SameSite=None; Secure`;
+      const data = JSON.stringify(objData);
+      fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+          document.location.href =
+            "/admin_specification/current_specification/";
+        });
+    } else{
     BxUpd.onclick = () => {
       document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
       const data = JSON.stringify(objData);
@@ -1651,7 +1668,7 @@ window.addEventListener("DOMContentLoaded", () => {
           document.location.href =
             "/admin_specification/current_specification/";
         });
-    };
+    };}
   }
 
   const BxError = document.querySelector(".error-bx");

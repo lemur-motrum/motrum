@@ -726,8 +726,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
             
-            json_acceptable_string = s.replace("'", '"')
-            d = json.loads(r"""(json_acceptable_string)""")
+            # json_acceptable_string = s.replace("'", '"')
+            d = json.loads(s)
 
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))

@@ -14,6 +14,15 @@ window.addEventListener("DOMContentLoaded", () => {
   );
   const globalCountCart = document.querySelector(".global_cart_count");
 
+  if (globalCountCart) {
+    if (
+      +globalCountCart.textContent.trim() > 0 &&
+      !globalCountCart.classList.contains("orange")
+    ) {
+      globalCountCart.classList.add("orange");
+    }
+  }
+
   if (filtersAndProductContainer) {
     const productContainer = filtersAndProductContainer.querySelector(
       ".site_catalog_container"
@@ -27,6 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const buttonContainer = procductItem.querySelector(
             ".item-buttons_container"
           );
+
           const productMultiplicity =
             +procductItem.getAttribute("order-multiplicity");
           if (buttonContainer) {
@@ -79,7 +89,6 @@ window.addEventListener("DOMContentLoaded", () => {
             });
 
             plusButton.onclick = () => {
-              console.log("да да да");
               if (productMultiplicity) {
                 countQuantity += +productMultiplicity;
               } else {
@@ -164,7 +173,6 @@ window.addEventListener("DOMContentLoaded", () => {
                   })
                   .catch((error) => console.error(error));
               } else {
-                console.log(22);
                 const cart_id = getCookie("cart");
                 const dataObj = {
                   product: product_id,
@@ -393,108 +401,5 @@ window.addEventListener("DOMContentLoaded", () => {
         inputButtonsContainer.style.zIndex = 1;
       };
     }
-  }
-
-  const cartContainer = document.querySelector(".cart_container");
-  if (cartContainer) {
-    const allPriceContainer = cartContainer.querySelector(".cart_total_price");
-    const cartTotalPriceAll = cartContainer.querySelector(
-      ".cart_total_price_all"
-    );
-    const cartTotalPriceSale = cartContainer.querySelector(
-      ".cart_total_price_sale"
-    );
-    const products = cartContainer.querySelectorAll(".product_item");
-    let allPriceWithoutDiscount = 0;
-    let allPrice = 0;
-
-    products.forEach((product) => {
-      const priceOne = product.querySelector(".cart_price");
-      const cartCountInput = product.querySelector(".quantity");
-      const priceQuantity = product.querySelector(".all_cart_price");
-      const priceWithoutDiscontContainer = product.querySelector(
-        ".all_cart_no_sale_price"
-      );
-      let withoutDiscountPrice = 0;
-
-      if (priceOne) {
-        getDigitsNumber(priceOne, getCurrentPrice(priceOne.textContent));
-
-        setInterval(() => {
-          if (!+new NumberParser("ru").parse(priceQuantity.textContent)) {
-            allPriceWithoutDiscount = 0;
-            allPrice = 0;
-            getDigitsNumber(
-              priceQuantity,
-              new NumberParser("ru").parse(priceOne.textContent) *
-                +cartCountInput.value
-            );
-            if (priceWithoutDiscontContainer) {
-              withoutDiscountPrice = (
-                new NumberParser("ru").parse(
-                  priceWithoutDiscontContainer.textContent
-                ) * +cartCountInput.value
-              ).toFixed(2);
-              priceWithoutDiscontContainer.setAttribute(
-                "count-quantity-price",
-                withoutDiscountPrice
-              );
-            }
-            for (
-              let i = 0;
-              i < cartContainer.querySelectorAll(".all_cart_price").length;
-              i++
-            ) {
-              allPrice += new NumberParser("ru").parse(
-                cartContainer.querySelectorAll(".all_cart_price")[i].textContent
-              );
-            }
-            if (allPriceContainer) {
-              getDigitsNumber(allPriceContainer, allPrice);
-            }
-
-            for (
-              let i = 0;
-              i <
-              cartContainer.querySelectorAll(".all_cart_no_sale_price").length;
-              i++
-            ) {
-              allPriceWithoutDiscount += new NumberParser("ru").parse(
-                cartContainer.querySelectorAll(".all_cart_no_sale_price")[i]
-                  .textContent
-              );
-            }
-            if (cartTotalPriceAll) {
-              const totalPriceArray = [];
-              document
-                .querySelectorAll(".all_cart_no_sale_price")
-                .forEach((el) => {
-                  const price = el.getAttribute("count-quantity-price");
-                  totalPriceArray.push(+price);
-                });
-              const getSumm = (array) => {
-                let summ = 0;
-                for (let i of array) {
-                  console.log(array);
-                  summ += i;
-                }
-                return summ;
-              };
-              getDigitsNumber(cartTotalPriceAll, getSumm(totalPriceArray));
-            }
-
-            if (cartTotalPriceSale) {
-              getDigitsNumber(
-                cartTotalPriceSale,
-                new NumberParser("ru").parse(cartTotalPriceAll.textContent) -
-                  new NumberParser("ru").parse(allPriceContainer.textContent)
-              );
-            }
-          } else {
-            clearInterval();
-          }
-        });
-      }
-    });
   }
 });

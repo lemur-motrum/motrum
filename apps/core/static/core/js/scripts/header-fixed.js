@@ -5,11 +5,9 @@ window.addEventListener("DOMContentLoaded", () => {
   if (header) {
     if (!map) {
       const headerHeigth = header.scrollHeight;
-      console.log(headerHeigth);
       window.onscroll = () => {
         let windowScrollY = window.scrollY;
         if (windowScrollY > headerHeigth * 10) {
-          console.log("headerHeigth", headerHeigth);
           headerWrapper.style.height = headerHeigth * 1.3 + "px";
           header.classList.add("fixed");
         } else {

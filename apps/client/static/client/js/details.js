@@ -134,6 +134,13 @@ window.addEventListener("DOMContentLoaded", () => {
       const regionInput = newLegalEntityForm.querySelector(".region_input");
       const cityInput = newLegalEntityForm.querySelector(".city_input");
 
+      const ipSurnameInput =
+        newLegalEntityForm.querySelector(".ip_surname_input");
+      const ipNameInput = newLegalEntityForm.querySelector(".ip_name_input");
+      const ipPatronymicInput = newLegalEntityForm.querySelector(
+        ".ip_patronymic_input"
+      );
+
       const legalEntitiesContainer = newLegalEntityForm.querySelector(
         ".legal_entitis_container"
       );
@@ -170,38 +177,48 @@ window.addEventListener("DOMContentLoaded", () => {
           })
             .then((response) => response.json(Text))
             .then((response) => {
+              console.log("response", response);
+
               legalEntitiesSearchContainer.innerHTML = "";
               response.forEach((el) => {
-                legalEntitiesSearchContainer.innerHTML += `<div class="legal_entitis_search_elem"><div class="name">${
-                  el["data"]["name"]["short_with_opf"]
-                }</div><div style="display:none" class="inn">${
-                  el["data"]["inn"]
-                }</div><div style="display:none" class="kpp">${
-                  el["data"]["kpp"] ? el["data"]["kpp"] : ""
-                }</div><div style="display:none" class="orgn">${
-                  el["data"]["ogrn"]
-                }</div><div style="display:none" class="address_postal_code">${
-                  el["data"]["address"]["data"]["postal_code"]
-                }</div><div style="display:none" class="address_city">
-                ${
-                  el["data"]["address"]["data"]["region_with_type"]
-                    ? el["data"]["address"]["data"]["region_with_type"] + ", "
-                    : ""
-                }
-                ${
-                  el["data"]["address"]["data"]["city"]
-                    ? el["data"]["address"]["data"]["city"]
-                    : ""
-                }</div><div style="display:none" class="address_street">${
-                  el["data"]["address"]["data"]["settlement_with_type"]
-                    ? el["data"]["address"]["data"]["settlement_with_type"]
-                    : ""
-                }
-                ${
-                  el["data"]["address"]["data"]["street_with_type"]
-                    ? el["data"]["address"]["data"]["street_with_type"] + ", "
-                    : ""
-                }${
+                legalEntitiesSearchContainer.innerHTML += `
+                <div class="legal_entitis_search_elem">
+                  <div class="name">${
+                    el["data"]["name"]["short_with_opf"]
+                  }</div>
+                  <div style="display:none" class="inn">${
+                    el["data"]["inn"]
+                  }</div>
+                  <div style="display:none" class="kpp">${
+                    el["data"]["kpp"] ? el["data"]["kpp"] : ""
+                  }</div>
+                  <div style="display:none" class="orgn">${
+                    el["data"]["ogrn"]
+                  }</div>
+                  <div style="display:none" class="address_postal_code">${
+                    el["data"]["address"]["data"]["postal_code"]
+                  }</div>
+                  <div style="display:none" class="address_city">
+                  ${
+                    el["data"]["address"]["data"]["region_with_type"]
+                      ? el["data"]["address"]["data"]["region_with_type"] + ", "
+                      : ""
+                  }
+                  ${
+                    el["data"]["address"]["data"]["city"]
+                      ? el["data"]["address"]["data"]["city"]
+                      : ""
+                  }</div>
+                  <div style="display:none" class="address_street">${
+                    el["data"]["address"]["data"]["settlement_with_type"]
+                      ? el["data"]["address"]["data"]["settlement_with_type"]
+                      : ""
+                  }
+                  ${
+                    el["data"]["address"]["data"]["street_with_type"]
+                      ? el["data"]["address"]["data"]["street_with_type"] + ", "
+                      : ""
+                  }${
                   el["data"]["address"]["data"]["house_type"]
                     ? el["data"]["address"]["data"]["house_type"] + "."
                     : ""
@@ -209,36 +226,48 @@ window.addEventListener("DOMContentLoaded", () => {
                   el["data"]["address"]["data"]["house"]
                     ? el["data"]["address"]["data"]["house"]
                     : ""
-                }</div><div style="display:none" class="address_apartments">${
-                  el["data"]["address"]["data"]["flat_type"]
-                    ? el["data"]["address"]["data"]["flat_type"]
-                    : ""
-                } ${
+                }</div>
+                  <div style="display:none" class="address_apartments">${
+                    el["data"]["address"]["data"]["flat_type"]
+                      ? el["data"]["address"]["data"]["flat_type"]
+                      : ""
+                  } ${
                   el["data"]["address"]["data"]["flat"]
                     ? el["data"]["address"]["data"]["flat"]
                     : ""
                 }
-                ${
-                  el["data"]["address"]["data"]["room_type"]
-                    ? el["data"]["address"]["data"]["room_type"]
-                    : ""
-                }
-                ${
-                  el["data"]["address"]["data"]["room"]
-                    ? el["data"]["address"]["data"]["room"]
-                    : ""
-                }
-                </div>
-                <div style="display:none" class="country">${
-                  el["data"]["address"]["data"]["country"]
-                }</div>
-                <div style="display:none" class="region">${
-                  el["data"]["address"]["data"]["region_with_type"]
-                }</div><div style="display:none" class="city">
-                     ${el["data"]["address"]["data"]["city"]}
-                </div>
+                  ${
+                    el["data"]["address"]["data"]["room_type"]
+                      ? el["data"]["address"]["data"]["room_type"]
+                      : ""
+                  }
+                  ${
+                    el["data"]["address"]["data"]["room"]
+                      ? el["data"]["address"]["data"]["room"]
+                      : ""
+                  }
+                  </div>
+                  <div style="display:none" class="country">${
+                    el["data"]["address"]["data"]["country"]
+                  }</div>
+                  <div style="display:none" class="region">${
+                    el["data"]["address"]["data"]["region_with_type"]
+                  }</div>
+                  <div style="display:none" class="city">
+                      ${el["data"]["address"]["data"]["city"]}
+                  </div>
+                  <div style="display:none" class="ip_surname>${
+                    el["data"]["fio"] ? el["data"]["fio"]["surname"] : ""
+                  }</div>
+                    <div style="display:none" class="ip_name>${
+                      el["data"]["fio"] ? el["data"]["fio"]["name"] : ""
+                    }</div>
+                     <div style="display:none" class="ip_patronymic>${
+                       el["data"]["fio"] ? el["data"]["fio"]["patronymic"] : ""
+                     }</div>
                 </div>`;
               });
+
               legalEntitiesContainer.classList.add("show");
               const searchElems = legalEntitiesContainer.querySelectorAll(
                 ".legal_entitis_search_elem"
@@ -258,6 +287,9 @@ window.addEventListener("DOMContentLoaded", () => {
                   const country = el.querySelector(".country");
                   const region = el.querySelector(".region");
                   const city = el.querySelector(".city");
+                  const ipName = el.querySelector(".ip_name");
+                  const ipSurname = el.querySelector(".ip_surname");
+                  const ipPatronymic = el.querySelector(".ip_patronymic");
 
                   nameInput.value = name.textContent;
                   innInput.value = inn.textContent;
@@ -280,6 +312,16 @@ window.addEventListener("DOMContentLoaded", () => {
                     .replace(/ +/g, " ")
                     .trim();
                   cityInput.value = city.textContent.replace(/ +/g, " ").trim();
+
+                  ipNameInput.value = ipName.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  ipSurnameInput.value = ipSurname.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
+                  ipPatronymicInput.value = ipPatronymic.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
 
                   enabledInputs();
                   legalEntitiesContainer.classList.remove("show");
@@ -447,6 +489,11 @@ window.addEventListener("DOMContentLoaded", () => {
               client: clientId,
               legal_entity: nameInput.value,
               inn: innInput.value,
+              surname: ipSurnameInput.value ? ipSurnameInput.value : null,
+              name: ipNameInput.value ? ipNameInput.value : null,
+              patronymic: ipPatronymicInput.value
+                ? ipPatronymicInput.value
+                : null,
             },
             requisitesKpp: {
               kpp: kppInput.value,

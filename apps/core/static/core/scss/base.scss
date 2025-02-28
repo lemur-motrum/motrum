@@ -1393,7 +1393,7 @@ a {
       .nav-elem {
         text-transform: lowercase;
         color: #a4a4a4;
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         &.company-nav-elem {
           display: flex;
           flex-direction: column;
@@ -1439,8 +1439,8 @@ a {
             height: 3.563rem;
             border-radius: 1.875rem;
             border: 0.094rem solid black;
-            top: -50%;
-            left: -50%;
+            top: -70%;
+            left: -53%;
             transform: translateX(16%);
             background-color: #fff;
             @media screen and(max-width:576px) {
@@ -1459,8 +1459,8 @@ a {
               height: 3.563rem;
               border-radius: 1.875rem;
               border: 0.094rem solid black;
-              top: -50%;
-              left: -50%;
+              top: -70%;
+              left: -53%;
               transform: translateX(16%);
               @media screen and(max-width:576px) {
                 display: none;
@@ -1483,8 +1483,8 @@ a {
             height: 3.563rem;
             border-radius: 1.875rem;
             border: 0.094rem solid black;
-            top: -50%;
-            left: -50%;
+            top: -70%;
+            left: -53%;
             transform: translateX(16%);
             @media screen and(max-width:576px) {
               display: none;
@@ -1575,7 +1575,7 @@ a {
             align-items: center;
             justify-content: center;
             border-radius: 100%;
-            top: -20%;
+            top: -12%;
             left: 85%;
             font-size: 0.75rem;
             &.orange {

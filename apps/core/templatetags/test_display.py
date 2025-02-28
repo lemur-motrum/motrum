@@ -12,10 +12,15 @@ def test_display(context):
         pass
     else:
         request = context["request"]
+        
         if request.user.id:
-            user = AdminUser.objects.get(id=request.user.id).admin_type
-            if user == "ALL":
-                pass
+            if request.user.is_staff:
+                user = AdminUser.objects.get(id=request.user.id).admin_type
+                if user == "ALL":
+                    pass
+                else:
+                    text = "style=display:none;"
+                    return text
             else:
                 text = "style=display:none;"
                 return text

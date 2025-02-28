@@ -132,24 +132,20 @@ def add_iek(request):
     
     
     
-    company_bx_id = 17826
-    client_bx_id = 65406
-    req_bx_id = 6850
-    acc_req_bx_id = 4254 
-    # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
-    order = Order.objects.get(id=172)
-    order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
-    print("order_new_bx_id",order_new_bx_id)
-    print("int",int(order_new_bx_id))
-    order.id_bitrix = int(order_new_bx_id)
-    order.save()
-    print(order)
+    # company_bx_id = 17826
+    # client_bx_id = 65406
+    # req_bx_id = 6850
+    # acc_req_bx_id = 4254 
+    # # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
+    # order = Order.objects.get(id=172)
+    # order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
+    # print("order_new_bx_id",order_new_bx_id)
+    # print("int",int(order_new_bx_id))
+    # order.id_bitrix = int(order_new_bx_id)
+    # order.save()
+    # print(order)
     
-    # orders_bx = bx.get_by_ID("crm.enum.ownertype", [10568])
-    # orders_bx = bx.get_all("crm.type.list", {
-    # },)
-    # print(orders_bx)
-    
+
     
     
 

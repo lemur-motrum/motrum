@@ -2,9 +2,10 @@ import {
   getCookie,
   deleteCookie,
   getDigitsNumber,
+  NumberParser,
 } from "/static/core/js/functions.js";
 
-let csrfToken = getCookie("csrftoken");
+const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartContainer = document.querySelector(".cart_container");
@@ -19,6 +20,32 @@ window.addEventListener("DOMContentLoaded", () => {
       let totalSumSaleCart = 0;
       let totalSalePriceCart = 0;
       let itemNotPrice = 0;
+      function getTotalSum() {
+        totalSumCart = 0;
+        totalSumSaleCart = 0;
+        totalSalePriceCart = 0;
+        itemNotPrice = 0;
+        const productItems = productContainer.querySelectorAll(".product_item");
+        productItems.forEach((productItem) => {
+          const priceAll = productItem.querySelector(".all_cart_price");
+          const priceAllNoSale = productItem.querySelector(
+            ".all_cart_no_sale_price"
+          );
+          if (priceAll) {
+            totalSumSaleCart += new NumberParser("ru").parse(
+              priceAll.textContent
+            );
+            if (personalDiscount.dataset.personalDiscount != "0") {
+              totalSumCart += new NumberParser("ru").parse(
+                priceAllNoSale.textContent
+              );
+              totalSalePriceCart = totalSumCart - totalSumSaleCart;
+            }
+          } else {
+            itemNotPrice += 1;
+          }
+        });
+      }
 
       const productItems = productContainer.querySelectorAll(".product_item");
 
@@ -42,12 +69,13 @@ window.addEventListener("DOMContentLoaded", () => {
         const priceAllNoSale = productItem.querySelector(
           ".all_cart_no_sale_price"
         );
-
+        getDigitsNumber(priceOnce, priceOnce.textContent.replace(",", "."));
         function getAllProductSumm() {
           if (priceOnce) {
             const priceAll = productItem.querySelector(".all_cart_price");
             priceAll.textContent = (
-              +priceOnce.textContent.replace(",", ".") * +inputCount.value
+              +new NumberParser("ru").parse(priceOnce.textContent) *
+              +inputCount.value
             ).toFixed(2);
             getDigitsNumber(priceAll, priceAll.textContent);
           } else {
@@ -58,10 +86,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         function getAllProductSummNoSale() {
           if (priceOnce) {
-            priceAllNoSale.textContent = (+priceOnceNoSale.replace(
-              ",",
-              "."
-            )).toFixed(2);
+            priceAllNoSale.textContent = (
+              +priceOnceNoSale.replace(",", ".") * +inputCount.value
+            ).toFixed(2);
             getDigitsNumber(priceAllNoSale, priceAllNoSale.textContent);
           } else {
             return;
@@ -72,20 +99,8 @@ window.addEventListener("DOMContentLoaded", () => {
           getAllProductSummNoSale();
         }
 
-        function getTotalSum() {
-          if (priceAll) {
-            totalSumSaleCart += Number.parseFloat(priceAll.textContent);
-            if (personalDiscount.dataset.personalDiscount != "0") {
-              totalSumCart += Number.parseFloat(+priceAllNoSale.textContent);
-              totalSalePriceCart = totalSumCart - totalSumSaleCart;
-            }
-          } else {
-            itemNotPrice += 1;
-          }
-        }
-        getTotalSum();
-
         function updateProduct() {
+          addTotalSum();
           setTimeout(() => {
             const dataObj = {
               quantity: +inputCount.value,
@@ -150,7 +165,6 @@ window.addEventListener("DOMContentLoaded", () => {
           if (personalDiscount.dataset.personalDiscount != "0") {
             getAllProductSummNoSale();
           }
-
           updateProduct();
         };
         minusButton.onclick = () => {
@@ -190,14 +204,16 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       function addTotalSum() {
-        let totalSalePriceCartItem =
+        getTotalSum();
+        const totalSalePriceCartItem =
           cartContainer.querySelector(".cart_total_price");
-        totalSalePriceCartItem.textContent = totalSumSaleCart.toFixed(2);
+
+        getDigitsNumber(totalSalePriceCartItem, totalSumSaleCart);
 
         if (itemNotPrice > 0) {
-          let totalSumItem = cartContainer.querySelector(".total_sum_all");
+          const totalSumItem = cartContainer.querySelector(".total_sum_all");
 
-          let div_message_price = document.createElement("div");
+          const div_message_price = document.createElement("div");
           div_message_price.className = "alert_total_sum_all";
           div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
           // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
@@ -205,18 +221,18 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (personalDiscount.dataset.personalDiscount != "0") {
-          let totalSumCartItem = cartContainer.querySelector(
+          const totalSumCartItem = cartContainer.querySelector(
             ".cart_total_price_all"
           );
-          let totalSumSaleCartItem = cartContainer.querySelector(
+          const totalSumSaleCartItem = cartContainer.querySelector(
             ".cart_total_price_sale"
           );
-          totalSumCartItem.textContent = totalSumCart.toFixed(2);
-          totalSumSaleCartItem.textContent = totalSalePriceCart.toFixed(2);
+
+          getDigitsNumber(totalSumCartItem, totalSumCart);
+          getDigitsNumber(totalSumSaleCartItem, totalSalePriceCart);
         }
       }
-      // getTotalSum();
-      // addTotalSum();
+      addTotalSum();
     }
   }
   // сохранение корзины сайт

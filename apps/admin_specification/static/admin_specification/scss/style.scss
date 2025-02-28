@@ -577,6 +577,7 @@ h1 {
             width: -webkit-max-content;
             width: -moz-max-content;
             width: max-content;
+            z-index: 1;
             .add_new_item_in_cart {
               cursor: pointer;
               width: 13rem;
@@ -1216,6 +1217,8 @@ h1 {
         overflow: hidden;
         width: 100%;
         min-height: 7rem;
+        position: relative;
+        z-index: 2;
         .change_item_container {
           top: 102%;
           left: 0;
@@ -2029,6 +2032,7 @@ h1 {
             width: -webkit-max-content;
             width: -moz-max-content;
             width: max-content;
+            z-index: 1;
             .add_new_item_in_cart {
               cursor: pointer;
               width: 13rem;

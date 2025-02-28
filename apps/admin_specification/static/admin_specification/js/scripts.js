@@ -588,7 +588,6 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           console.log("date-delivery", deliveryDate.value);
-          // console.log("comment", commentItem);
 
           if (
             inputPrice

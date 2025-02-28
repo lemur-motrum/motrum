@@ -154,12 +154,14 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         context["spes"] = int(order.specification.id)
                     else:
                         context["spes"] = None
+                        
                     if new_order_web:
                         context["type_save"] = "new"
                         return ("/admin_specification/current_specification/", context, False)
                     else:
                         context["type_save"] = "old"
                         return (next_url, context, False)
+                    
                 except Order.DoesNotExist:
                     data["order"]["manager"] = manager
                     cart = Cart.create_cart_admin(None, manager)

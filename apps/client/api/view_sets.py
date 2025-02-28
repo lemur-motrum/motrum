@@ -1791,6 +1791,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         prod.date_delivery_bill = date_delivery
 
                 if order_products_item["date_shipment"]:
+                    date_shipment = order_products_item["date_shipment"]
                     if date_shipment != "":
                         date_shipment = datetime.datetime.strptime(
                             order_products_item["date_shipment"], "%d-%m-%Y"

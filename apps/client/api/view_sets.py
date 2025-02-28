@@ -721,13 +721,14 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
         try:
+            import ast
             print("def order_bitrix")
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
-            
+            json_data = ast.literal_eval(json.dumps(s))
             # json_acceptable_string = s.replace("'", '"')
-            d = json.loads(s)
+            d = json.loads(json_data)
 
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))

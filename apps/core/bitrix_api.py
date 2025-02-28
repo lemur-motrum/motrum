@@ -1204,8 +1204,11 @@ def add_new_order_web(order):
         
         # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
         # сохранение заказа битркис
-        add_new_order_bx(bx, req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
-
+        
+        order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
+        order.id_bitrix = order_new_bx_id
+        order.save()
+        
     except Exception as e:
         tr = traceback.format_exc()
         error = "error"
@@ -1720,7 +1723,7 @@ def chek_add_contact_company(bx, client_bx_id, company_bx_id):
         print("contact_company", contact_company)
 
 
-# СОЗДАТЬСДЕЛКУ БИТРИКС
+# СОЗДАТЬСДЕЛКУ БИТРИКСbx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id
 def add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id):
     current_date = datetime.datetime.now().strftime("%d.%m.%Y")
     company_bx = bx.get_by_ID("crm.company.get", [company_bx_id])

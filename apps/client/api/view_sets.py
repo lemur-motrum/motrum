@@ -729,7 +729,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             # json_acceptable_string = s.replace("': \"", '": "').replace("', \"", '", "').replace("'", '"')
             raw_s = r'{}'.format(s)
             
-            d= json.loads(fr"{s}")
+            d= json.loads(raw_s)
             
             # d = json.loads(json_acceptable_string)
 
@@ -750,7 +750,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "error"
             location = "взятие заказа при открытие окна битрикс"
-            info = f" ошибка {e}{tr}{json_acceptable_string}"
+            info = f" ошибка {e}{tr}{s}"
             e = error_alert(error, location, info)
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 

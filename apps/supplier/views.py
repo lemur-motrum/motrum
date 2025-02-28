@@ -109,7 +109,8 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
-    add_new_order_web(None)
+    
+    
     # base_manager = AdminUser.objects.get(bitrix_id=174)
     # req_inn = 6311140000
     # req_kpp = RequisitesOtherKpp.objects.get(id=15)

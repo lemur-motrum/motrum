@@ -747,8 +747,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "error"
             location = "взятие заказа при открытие окна битрикс"
-            info = f" ошибка {e}{tr}{s}"
+            info = f" ошибка {e}{tr}{json_acceptable_string}"
             e = error_alert(error, location, info)
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение спецификации OKT дмин специф
     @action(detail=False, methods=["post"], url_path=r"add-order-admin")

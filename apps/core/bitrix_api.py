@@ -150,9 +150,9 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         "order": order.id,
                         "serializer": data_order,
                     }
-                    location = "new_order_web"
-                    info = f" {order} {bs_id_order} ошибка {new_order_web}"
-                    e = error_alert(error, location, info)
+                    # location = "new_order_web"
+                    # info = f" {order} {bs_id_order} {new_order_web}"
+                    # e = error_alert(error, location, info)
                     
                     if order.specification:
                         context["spes"] = int(order.specification.id)
@@ -186,7 +186,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         }
                         return (next_url, context, False)
                     else:
-                        tr = traceback.format_exc()
+                        
                         error = "error"
                         location = "первичное открытие сделки битрикс"
                         info = f" сделка {bs_id_order} {context}{serializer.errors}"

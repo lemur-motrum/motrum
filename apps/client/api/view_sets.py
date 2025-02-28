@@ -726,7 +726,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
-            json_acceptable_string = s.replace("\'", "\"").replace("'", '"')
+            json_acceptable_string = s.replace("'", '"')
             d = json.loads(s)
 
             serializer_class = OrderSerializer
@@ -736,10 +736,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                print(serializer.errors)
                 tr = serializer.errors
                 error = "error"
-                location = "взятие заказа при открытие окна битрикс"
+                location = "взятие заказа при открытие окна битрикс 2"
                 info = f" ошибка {tr}{data}"
                 e = error_alert(error, location, info)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -747,7 +746,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             error = "error"
             location = "взятие заказа при открытие окна битрикс"
-            info = f" ошибка {e}{tr}"
+            info = f" ошибка {e}{tr}{s}"
             e = error_alert(error, location, info)
 
     # сохранение спецификации OKT дмин специф

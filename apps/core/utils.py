@@ -1887,7 +1887,9 @@ def create_info_request_order_1c(order, order_products):
                 name_admin = f"{specifications.admin_creator.last_name} {specifications.admin_creator.first_name} {specifications.admin_creator.middle_name}"
         else:
             name_admin = " "
-
+    contract_date = order.requisites.contract_date
+    if contract_date:
+        contract_date = order.requisites.contract_date.isoformat()
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
@@ -1897,7 +1899,7 @@ def create_info_request_order_1c(order, order_products):
             # "id_bitrix": order.id_bitrix,
             # "legal_entity_motrum": None,
             "contract": order.requisites.contract,
-            "contract_date": order.requisites.contract_date.isoformat(),
+            "contract_date": contract_date,
             "legal_entity": order.requisites.legal_entity,
             "inn": int(order.requisites.inn),
             "kpp": int(order.account_requisites.requisitesKpp.kpp),

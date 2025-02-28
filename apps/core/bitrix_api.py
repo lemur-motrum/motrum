@@ -145,26 +145,23 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     next_url = "admin_specification/bx_start.html"
                     context = {
                         "new_order_web":new_order_web,
-                        # "type_save": "old",
+                        "type_save": "old",
                         "cart": cart.id,
                         "order": order.id,
                         "serializer": data_order,
                     }
-                    # location = "new_order_web"
-                    # info = f" {order} {bs_id_order} {new_order_web}"
-                    # e = error_alert(error, location, info)
+                    error = "error"
+                    location = "new_order_web"
+                    info = f" {order} {bs_id_order} {new_order_web}"
+                    e = error_alert(error, location, info)
                     
                     if order.specification:
                         context["spes"] = int(order.specification.id)
                     else:
                         context["spes"] = None
                         
-                    if new_order_web:
-                        context["type_save"] = "new"
-                        return ("/admin_specification/current_specification/", context, False)
-                    else:
-                        context["type_save"] = "old"
-                        return (next_url, context, False)
+                    
+                    return (next_url, context, False)
                     
                 except Order.DoesNotExist:
                     data["order"]["manager"] = manager

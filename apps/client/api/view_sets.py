@@ -159,7 +159,8 @@ class ClientViewSet(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     print("serializersave")
                     client = serializer.save()
-                    client.add_manager()
+                    if client.manager == None:
+                        client.add_manager()
 
                 # старый юзер логин
                 else:

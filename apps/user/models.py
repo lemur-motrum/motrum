@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
+from apps.core.utils_web import get_file_path_company_web
 from apps.user.signals import update_group, user_admin_logged_in
 from apps.user.utils import perform_some_action_on_login
 
@@ -34,6 +35,13 @@ class AdminUser(CustomUser):
         "Номер менеджера битрикс",
         null=True,
         blank=True,
+    )
+    image = models.ImageField(
+        "Картинка",
+        upload_to=get_file_path_company_web,
+        max_length=500,
+        blank=True,
+        null=True,
     )
 
     class Meta:

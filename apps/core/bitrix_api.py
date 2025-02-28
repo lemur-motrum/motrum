@@ -24,7 +24,8 @@ from apps.client.models import (
     RequisitesOtherKpp,
 )
 from apps.core.models import Currency, StageDealBx
-from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix, save_info_bitrix_after_web
+from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix, save_file_product, save_info_bitrix_after_web
+from apps.core.utils_web import get_file_path_company_web
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
@@ -1096,6 +1097,7 @@ def get_manager():
                 # "entityTypeId": 2,
             },
         )
+        
 
         for manager in manager_all_bx:
             print(manager)
@@ -1103,12 +1105,20 @@ def get_manager():
                 # if manager["EMAIL"] != "":
                 try:
                     admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
-                    # admin_okt = AdminUser.objects.filter(email=manager["EMAIL"]).last()
                     admin_okt.bitrix_id = manager["ID"]
                     admin_okt.save()
-                    print(manager)
+                    photo_manager_bx(manager,admin_okt)
                 except AdminUser.DoesNotExist:
                     pass
+            elif "UF_USR_1656306737602" in manager:
+                try:
+                    admin_okt = AdminUser.objects.get(username=manager["UF_USR_1656306737602"])
+                    admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.save()
+                    photo_manager_bx(manager,admin_okt)
+                except AdminUser.DoesNotExist:
+                        pass
+            
 
         return True
     except Exception as e:
@@ -1121,7 +1131,21 @@ def get_manager():
         e = error_alert(error, location, info)
         return False
 
-
+def photo_manager_bx(manager,admin_okt):
+     if "PERSONAL_PHOTO" in manager :
+            if "PERSONAL_PHOTO" in manager :
+                photo = manager['PERSONAL_PHOTO']
+                photo_name = photo.split("/")
+                photo_name = photo_name[-1]
+                photo_name = f"{admin_okt.id}{photo_name}"
+               
+                file_path = get_file_path_company_web(None, photo_name)
+              
+                p = save_file_product(photo, file_path)
+                admin_okt.image = file_path
+                admin_okt.save()
+    
+    
 def _status_to_order_replace(name_status, id_bx):
     status = None
     for choice in STATUS_ORDER_BITRIX:

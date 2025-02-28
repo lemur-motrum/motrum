@@ -19,6 +19,7 @@ class AdminUserAdmin(admin.ModelAdmin):
             "Персональная информация",
             {
                 "fields": (
+                    
                     "username",
                     "bitrix_id",
                     "first_name",
@@ -27,7 +28,8 @@ class AdminUserAdmin(admin.ModelAdmin):
                     "email",
                     "admin_type",
                     "password",
-                    "is_active"
+                    "is_active",
+                    "image"
                 )
             },
         ),

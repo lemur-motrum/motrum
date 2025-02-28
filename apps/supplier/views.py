@@ -42,6 +42,7 @@ from apps.core.bitrix_api import (
     save_shipment_order_bx,
     serch_or_add_info_client,
 )
+from apps.core.utils_web import get_file_path_company_web
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -59,6 +60,7 @@ from apps.core.utils import (
     create_time_stop_specification,
     image_error_check,
     product_cart_in_file,
+    save_file_product,
     send_requests,
     vendor_delta_optimus_after_load,
 )
@@ -148,10 +150,32 @@ def add_iek(request):
 
     
     
+    manager_all_bx = bx.get_all(
+            "user.get",
+            params={
+                # "entityTypeId": 2,
+            },
+        )
+    for manager in manager_all_bx:
+        if "EMAIL" in manager:
+            try:
+                admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
+                print(admin_okt)
+                if "PERSONAL_PHOTO" in manager :
+                    print(manager)
+                    photo = manager['PERSONAL_PHOTO']
+                    photo_name = photo.split("/")
+                    photo_name = photo_name[-1]
+                    photo_name = f"{admin_okt.id}{photo_name}"
+                    print(photo_name)
+                    file_path = get_file_path_company_web(None, photo_name)
+                    print(file_path)
+                    p = save_file_product(photo, file_path)
+                    admin_okt.image = file_path
+                    admin_okt.save()
+            except AdminUser.DoesNotExist:
+                    pass
 
-
-    
-    print(datetime.date.today().isoformat())
         
     
     

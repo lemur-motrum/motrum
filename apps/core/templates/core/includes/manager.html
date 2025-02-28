@@ -2,7 +2,12 @@
 {% if is_need == True %}
   <div class="personal-manager-container">
     <div class="img-container">
-      <img src={% static "core/images/no_manager_photo.jpg" %} alt="">
+      {% if manager.image %}
+        <img src="{{ manager.image.url  }}"alt="">
+      {% else %}
+        <img src={% static "core/images/no_manager_photo.jpg" %} alt="">
+      {% endif %}
+      
     </div>
     <div class="description-container">
       <div class="name-description">

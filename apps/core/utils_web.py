@@ -138,6 +138,7 @@ def get_file_path_company_web(instance, filename):
         base_dir,
         filename,
     )
+    
 # проверка есть ли путь и папка
 def check_media_directory_exist_web(base_dir, type_dir):
     new_dir = "{0}/{1}/{2}".format(

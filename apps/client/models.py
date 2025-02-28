@@ -7,6 +7,7 @@ from django.db.models import Case, Value, When
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
+
 # Create your models here.
 
 
@@ -15,6 +16,7 @@ from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
+from project.settings import BASE_MANAGER_FOR_BX
 
 
 # клиент на сайте
@@ -33,7 +35,7 @@ class Client(CustomUser):
         blank=True,
         null=True,
     )
-    position = models.CharField("Номер телефона", max_length=200,null=True, blank=True)
+    position = models.CharField("Номер телефона", max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name = "Клиент сайта"
@@ -51,6 +53,12 @@ class Client(CustomUser):
 
     # добавление менеджера клиенту рандом
     def add_manager(self):
+        if self.manager == None:
+            base_manager =  AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
+            self.manager = base_manager
+            self.save()
+
+    def add_manager_random(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
             old_user_manager = old_user.manager
@@ -73,7 +81,6 @@ class Client(CustomUser):
                 self.manager = admin
                 self.save()
 
-    # def send_email_notification(self,text_email):
 
 class PhoneClient(models.Model):
     phone = models.CharField("Номер телефона", max_length=40)
@@ -82,7 +89,8 @@ class PhoneClient(models.Model):
         verbose_name="Клиент",
         on_delete=models.CASCADE,
     )
-    
+
+
 TYPE_PAYMENT = (
     ("100% prepay", "100% предоплата"),
     ("payment in installments", "Оплата частями"),
@@ -100,6 +108,7 @@ TYPE_CLIENT = (
     ("5", "Физ. лицо"),
 )
 
+
 # TODO: unique=True вернуть
 # юрлицо  клиента главна сущность ИНН
 class Requisites(models.Model):
@@ -115,7 +124,7 @@ class Requisites(models.Model):
         null=True,
         blank=True,
     )
-    
+
     number_spec = models.PositiveIntegerField(
         "Номер спецификации клиента", null=True, blank=True, default=0
     )
@@ -193,7 +202,6 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
-    
 
     class Meta:
         verbose_name = "Юридическое лицо"
@@ -201,6 +209,7 @@ class Requisites(models.Model):
 
     def __str__(self):
         return self.legal_entity
+
     def save(self, *args, **kwargs):
         print(self)
         print("save req")
@@ -212,6 +221,7 @@ class Requisites(models.Model):
             if choice[0] == self.type_payment:
                 return choice[1]
         return ""
+
     # получить название типа rkbtynf
     def get_type_client(self):
         print("TYPE_CLIENT")
@@ -285,9 +295,10 @@ TYPE_ADDRESS = (
     (8, "Адрес для корреспонденции"),
     (9, "Адрес бенефициара"),
     (11, "Адрес доставки"),
-    
     ("web-lk-adress", "Юридический адрес сайт"),
 )
+
+
 class ClientRequisites(models.Model):
     client = models.ForeignKey(
         Client,
@@ -298,6 +309,7 @@ class ClientRequisites(models.Model):
         verbose_name="",
         on_delete=models.CASCADE,
     )
+
 
 # адреса реквизитов кпп
 class RequisitesAddress(models.Model):
@@ -424,7 +436,7 @@ STATUS_ORDER_BITRIX = (
     ("CANCELED", "C8:2"),
     ("COMPLETED", "C8:WON"),
 )
-#чистые статусы битрикс
+# чистые статусы битрикс
 CLEAN_STATUS_ORDER_BITRIX = (
     ("NEW", "Квалификация"),
     ("PREPARATION", "Квалификация"),
@@ -457,7 +469,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    
+
     name = models.PositiveIntegerField(
         "номер заказа",
         blank=True,
@@ -482,7 +494,7 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    
+
     date_completed = models.DateField(
         verbose_name="Дата завершения",
         blank=True,
@@ -718,15 +730,15 @@ class Order(models.Model):
             if choice[0] == self.status:
                 return choice[1]
         return ""
-    
+
     def get_absolute_url_web(self):
 
-            return reverse(
-                "client:order_client_one",
-                kwargs={
-                    "pk": self.pk,
-                },
-            )  
+        return reverse(
+            "client:order_client_one",
+            kwargs={
+                "pk": self.pk,
+            },
+        )
 
 
 # фаилы счетов все версии
@@ -839,4 +851,3 @@ class DocumentShipment(models.Model):
         null=True,
     )
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-

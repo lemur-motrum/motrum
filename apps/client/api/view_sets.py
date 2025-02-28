@@ -1827,15 +1827,23 @@ class OrderViewSet(viewsets.ModelViewSet):
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
 
                     print(order_pdf)
-            return Response(None, status=status.HTTP_200_OK)
+            data_resp = {
+                "result": "ok",
+                "error": None
+            }
+            return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA{data}"
+            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            data_resp = {
+                "result": "error",
+                "error": f"info-error {info}"
+            }
+            return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
 
         finally:
             # МЕСТО ДЛЯ ОТПРАВКИ ЭТОЙ ЖЕ ИНФЫ В БИТРИКС
@@ -1877,17 +1885,26 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order.bill_sum_paid = order.bill_sum_paid + amount_sum
                 order.save()
                 print(tarnsaction)
-
-            return Response(None, status=status.HTTP_200_OK)
+                
+            data_resp = {
+                "result": "ok",
+                "error": None
+            }
+            return Response(data_resp, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o оплатах 1с "
-            info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr} дата {data}"
+            info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            data_resp = {
+                "result": "error",
+                "error": f"info-error {info}"
+            }
+            
+            return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
             if IS_WEB:
                 pass
@@ -1920,16 +1937,23 @@ class OrderViewSet(viewsets.ModelViewSet):
                 print(image_path)
                 document_shipment.file = image_path
                 document_shipment.save()
-
-            return Response(None, status=status.HTTP_200_OK)
+            data_resp = {
+                "result": "ok",
+                "error": None
+            }
+            return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} data {data}"
+            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            data_resp = {
+                "result": "error",
+                "error": f"info-error {info}"
+            }
+            return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
             if IS_WEB:
                 pass

@@ -7,9 +7,10 @@
          data-cart-id='{{ cart }}'
          data-spesif-id='{{ spes }}'
          data-serializer-order='{{ serializer }}''
-         data-serializer-new='{% if new_order_web %}1{% else %}0{% endif %}'>
+         data-serializer-new='{% if new_order_web != None %}1{% else %}0{% endif %}'>
          
         <div class='bx-btn-upd'>
+        <p>{% if new_order_web != None %}1{% else %}0{% endif %}</p>
             <span class="first">Изменить счет</span>
             <span class="second">(номер старый, дата новая)</span>
         </div>

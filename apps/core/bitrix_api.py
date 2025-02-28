@@ -180,6 +180,12 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         }
                         return (next_url, context, False)
                     else:
+                        tr = traceback.format_exc()
+                        error = "error"
+                        location = "первичное открытие сделки битрикс"
+                        info = f" сделка {bs_id_order} {context}{serializer.errors}"
+                        e = error_alert(error, location, info)
+                        
                         next_url = "/admin_specification/error-b24/"
                         context = {
                             "error": "Неприведенная ошибка во время создания заказа. Презагрузите страницу. "
@@ -1191,6 +1197,11 @@ def add_new_order_web(order):
         req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
             serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client,base_manager)
         )
+        error = "error"
+        location = "Сохранение заказа с сайта в  инфо"
+        info = f" сделка {order} {req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id}"
+        e = error_alert(error, location, info)
+        
         # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
         # сохранение заказа битркис
         add_new_order_bx(bx, req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)

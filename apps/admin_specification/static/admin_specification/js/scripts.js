@@ -1614,7 +1614,7 @@ window.addEventListener("DOMContentLoaded", () => {
     };
     console.log(objData);
     console.log(7);
-    if (newOrderInWeb == "0" ){
+    if (newOrderInWeb == 0 ){
       document.cookie = `type_save=new; path=/; SameSite=None; Secure`;
       const data = JSON.stringify(objData);
       fetch(endpoint, {
@@ -1629,8 +1629,8 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           console.log(data);
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          document.location.href =
-            "/admin_specification/current_specification/";
+          // document.location.href =
+          //   "/admin_specification/current_specification/";
         });
     } else{
     BxUpd.onclick = () => {

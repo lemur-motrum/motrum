@@ -122,7 +122,9 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 #     manager = AdminUser.objects.get(bitrix_id=manager_company)
                 # except AdminUser.DoesNotExist:
                 #     manager = AdminUser.objects.filter(admin_type="ALL").first()
-
+                
+                adress_document = RequisitesAddress.objects.get(requisitesKpp_id = acc_req.requisitesKpp.id,type_address_bx = data_company["data_commpany"]['adress_type'] )
+                
                 data_order = {
                     "id_bitrix": bs_id_order,
                     "name": int(bs_id_order),
@@ -133,7 +135,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "postpay_persent": client_req.postpay_persent,
                     "manager": manager.id,
                     "text_name": name_order_bx,
-                    "adress_document": data_company["data_commpany"]['adress_type']
+                    "adress_document": adress_document.id
                 }
                 serializer_class = OrderSerializer
                 try:

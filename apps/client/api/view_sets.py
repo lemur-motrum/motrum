@@ -1872,17 +1872,24 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
+        data_payment = data['payment']
         try:
-            print("add_payment_order_1c")
+            # print("add_payment_order_1c")
+           
             # data = [
             #     {
             #         "bitrix_id": "10568",
             #         "amount_sum": "1000.22",
             #         "date_transaction": "22-12-2024",
             #     },
+            #      {
+            #         "bitrix_id": "10567",
+            #         "amount_sum": "1000.22",
+            #         "date_transaction": "22-12-2024",
+            #     },
             # ]
 
-            for data_item in data:
+            for data_item in data_payment:
                 print(data_item)
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
                 amount_sum = float(data_item["amount_sum"])
@@ -1928,6 +1935,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         data = request.data
+        data_shipment = data['shipment']
         try:
             # data = [
             #     {
@@ -1936,7 +1944,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             #         "date": "22-11-2024",
             #     },
             # ]
-            for data_item in data:
+            for data_item in data_shipment:
                 print(data_item)
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
                 date = datetime.datetime.strptime(data_item["date"], "%d-%m-%Y").date()
@@ -1956,8 +1964,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             print(e)
             tr = traceback.format_exc()
             error = "file_api_error"
-            location = "Получение\сохранение данных o товаратах 1с "
-            info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
+            location = "ОКТ 1С получение документов откгрузки ОКТ Б24"
+            info = f"ОКТ 1С получение документов откгрузки ОКТ Б24 . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
             data_resp = {
                 "result": "error",

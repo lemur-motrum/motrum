@@ -256,13 +256,13 @@ window.addEventListener("DOMContentLoaded", () => {
                   <div style="display:none" class="city">
                       ${el["data"]["address"]["data"]["city"]}
                   </div>
-                  <div style="display:none" class="ip_surname>${
+                  <div style="display:none" class="ip_surname">${
                     el["data"]["fio"] ? el["data"]["fio"]["surname"] : ""
                   }</div>
-                    <div style="display:none" class="ip_name>${
+                    <div style="display:none" class="ip_name">${
                       el["data"]["fio"] ? el["data"]["fio"]["name"] : ""
                     }</div>
-                     <div style="display:none" class="ip_patronymic>${
+                     <div style="display:none" class="ip_patronymic">${
                        el["data"]["fio"] ? el["data"]["fio"]["patronymic"] : ""
                      }</div>
                 </div>`;
@@ -290,6 +290,11 @@ window.addEventListener("DOMContentLoaded", () => {
                   const ipName = el.querySelector(".ip_name");
                   const ipSurname = el.querySelector(".ip_surname");
                   const ipPatronymic = el.querySelector(".ip_patronymic");
+
+                  const inputs = newLegalEntityForm.querySelectorAll("input");
+                  inputs.forEach((el) => {
+                    el.value = "";
+                  });
 
                   nameInput.value = name.textContent;
                   innInput.value = inn.textContent;

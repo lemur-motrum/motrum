@@ -67,13 +67,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
       changeBtn.onclick = () => {
         changeFormWrapper.classList.add("show");
-        // changeFormWrapper.style.overflow = "auto";
-        // newProduct.style.overflow = "auto";
+        setTimeout(() => {
+          changeFormWrapper.classList.add("visible");
+        }, 600);
       };
       closeBtn.onclick = () => {
-        // changeFormWrapper.style.overflow = "hidden";
-        // newProduct.style.overflow = "hidden";
-        changeFormWrapper.classList.remove("show");
+        changeFormWrapper.classList.remove("visible");
+        setTimeout(() => {
+          changeFormWrapper.classList.remove("show");
+        }, 600);
       };
       inputValidation(priceOneInput);
       inputValidationQuantity(quantityInput);

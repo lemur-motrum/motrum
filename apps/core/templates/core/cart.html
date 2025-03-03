@@ -99,25 +99,34 @@
                             </div>
                         {% endfor %}
                     </div>
-                    {% if discount_client %}
-                        <div class="total_sum">
-                            <div class="total_sum_item">
-                                <span>Розничная цена:</span><span><span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
-                            <div class="total_sum_item">
-                                <span>Ваша скидка:</span><span><span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
-                            <div class="total_sum_item total_sum_all">
-                                <span>Итого:</span><span><span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
+                    <div class="total_sum_container">
+                        <div class="no_price_container">
+                            <b>Обратите внимание! </b>
+                            <br>
+                            <span>Стоимость заказа не окончательная.</span>
+                            <br>
+                            <span>Часть товаров требуют уточнения стоимости.</span>
                         </div>
-                    {% else %}
-                        <div class="total_sum">
-                            <div class="total_sum_item total_sum_all">
-                                <span>Итого:</span> <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        {% if discount_client %}
+                            <div class="total_sum">
+                                <div class="total_sum_item">
+                                    <span>Розничная цена:</span><span><span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
+                                </div>
+                                <div class="total_sum_item">
+                                    <span>Ваша скидка:</span><span><span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
+                                </div>
+                                <div class="total_sum_item total_sum_all">
+                                    <span>Итого:</span><span><span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="total_sum">
+                                <div class="total_sum_item total_sum_all">
+                                    <span>Итого:</span> <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                     {% if client %}
                         <div class="client-order-details">
                             {% if requisites %}

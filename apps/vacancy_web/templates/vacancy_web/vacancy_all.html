@@ -4,8 +4,8 @@
     <div class="vacancy_container">
         <div class="title_container">
             <div class="bread_crumbs">
-                <a href="#">главная</a>
-                <a href="#">компания</a>
+                <a href="{% url "core:index" %}">главная</a>
+                <a href="{% url "core:about" %}">компания</a>
             </div>
             <div class="title">{{ title }}</div>
         </div>

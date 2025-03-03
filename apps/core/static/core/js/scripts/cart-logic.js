@@ -69,7 +69,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const priceAllNoSale = productItem.querySelector(
           ".all_cart_no_sale_price"
         );
-        getDigitsNumber(priceOnce, priceOnce.textContent.replace(",", "."));
+        if (priceOnce) {
+          getDigitsNumber(priceOnce, priceOnce.textContent.replace(",", "."));
+        }
         function getAllProductSumm() {
           if (priceOnce) {
             const priceAll = productItem.querySelector(".all_cart_price");
@@ -211,13 +213,17 @@ window.addEventListener("DOMContentLoaded", () => {
         getDigitsNumber(totalSalePriceCartItem, totalSumSaleCart);
 
         if (itemNotPrice > 0) {
-          const totalSumItem = cartContainer.querySelector(".total_sum_all");
-
-          const div_message_price = document.createElement("div");
-          div_message_price.className = "alert_total_sum_all";
-          div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
+          // const totalSumItem = cartContainer.querySelector(".total_sum_all");
+          // const div_message_price = document.createElement("div");
+          // div_message_price.className = "alert_total_sum_all";
+          // div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
           // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
-          totalSumItem.append(div_message_price);
+          // totalSumItem.append(div_message_price);
+
+          const descriptionContainer = cartContainer.querySelector(
+            ".total_sum_container"
+          );
+          descriptionContainer.classList.add("show");
         }
 
         if (personalDiscount.dataset.personalDiscount != "0") {

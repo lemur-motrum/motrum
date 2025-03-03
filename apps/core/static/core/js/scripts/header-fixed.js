@@ -3,6 +3,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const map = document.querySelector("#map");
   const headerWrapper = document.querySelector(".header_wrapper124");
   if (header) {
+    const orderCounts = header.querySelectorAll(".order_count");
+    orderCounts.forEach((orderCount) => {
+      if (+orderCount.textContent.trim() > 0) {
+        orderCount.classList.add("blue");
+      }
+    });
+
     if (!map) {
       const headerHeigth = header.scrollHeight;
       window.onscroll = () => {

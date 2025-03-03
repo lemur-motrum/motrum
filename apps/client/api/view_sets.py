@@ -442,17 +442,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             address1=adress["legal_adress"]["legal_address1"],
             address2=adress["legal_adress"]["legal_address2"],
         )
-        # adress_req =  RequisitesAddress.objects.get_or_create(
-        #         requisitesKpp=reqKpp[0],
-        #         type_address_bx = 111,
-        #         country = adress["postal_adress"]["country"],
-        #         region = adress["postal_adress"]["region"],
-        #         province=adress["postal_adress"]["province"],
-        #         post_code=adress["postal_adress"]["post_code"],
-        #         city=adress["postal_adress"]["city"],
-        #         address1=adress["postal_adress"]["legal_address1"],
-        #         address2=adress["postal_adress"]["legal_address2"],
-        #     )
+ 
 
         for account_req in account_requisites:
             reqAcc = AccountRequisites.objects.update_or_create(
@@ -1017,7 +1007,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-
+            if order.specification.pdf:
+                Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION",order.specification.pdf)
+                
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
@@ -1156,8 +1148,15 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         serializer_class = LkOrderSerializer
         current_user = request.user.id
+        
         client = Client.objects.get(pk=current_user)
-
+        req_user_all = ClientRequisites.objects.filter(client = client)
+        all_inn = []
+        for req_user in req_user_all:
+            if req_user.requisitesotherkpp.requisites.id not in all_inn:
+                all_inn.append(req_user.requisitesotherkpp.requisites.id)
+            
+        print(req_user_all)
         # сортировки
         sorting = "-notification_count"
         # direction = "ASC"
@@ -1279,9 +1278,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         # ordering = {k:v for k,v in ordering.items() if v is not None}
         # ordering = list(ordering.values())
         # lot = Lot.objects.all()
-
+        print(all_inn)
+        print(DocumentShipment.objects.filter(order_id=172))
         orders = (
-            Order.objects.filter(client=client)
+            Order.objects.filter(requisites_id__in=all_inn)
+            # Order.objects.filter(client=client)
             .select_related(
                 "specification",
                 "cart",
@@ -1374,7 +1375,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer_class = LkOrderDocumentSerializer
         current_user = request.user.id
         client = Client.objects.get(pk=current_user)
-
+        req_user_all = ClientRequisites.objects.filter(client = client)
+        
+        all_inn = []
+        for req_user in req_user_all:
+            if req_user.requisitesotherkpp.requisites.id not in all_inn:
+                all_inn.append(req_user.requisitesotherkpp.requisites.id)
+            
+        print(req_user_all)
+        
         # сортировки
         sorting = None
         # sorting_spesif = "specification__date"
@@ -1387,7 +1396,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # заказы сериализировать
         orders = (
-            Order.objects.filter(client=client)
+            Order.objects.filter(requisites_id__in=all_inn)
+            # Order.objects.filter(client=client)
             .select_related(
                 "specification",
                 "cart",
@@ -1409,9 +1419,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # формирование отдельных документов из сериализированных заказов
         documents = []
+        print(serializer.data)
         for order in serializer.data:
 
-            if order["specification"]:
+            if order["specification_list"]["file"] :
 
                 data_spesif = {
                     "type": 1,
@@ -1427,6 +1438,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["specification_list"]["total_amount"],
                     "notification_set": [],
                     "type_notification": "DOCUMENT_SPECIFICATION",
+                    "number_document":order["specification_list"]["number"],
                 }
 
                 for notification_set in order["notification_set"]:
@@ -1454,6 +1466,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["bill_sum"],
                     "notification_set": [],
                     "type_notification": "DOCUMENT_BILL",
+                    "number_document":order["specification_list"]["bill_name"],
                 }
 
                 for notification_set in order["notification_set"]:
@@ -1462,26 +1475,30 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 documents.append(data_bill)
 
-            # if order["bill_file"]:
-            #     data_act = {
-            #         "type": 3,
-            #         "name": "акт",
-            #         "order": order["cart"],
-            #         "status": order["status"],
-            #         "status_full": order["status_full"],
-            #         "pdf": order["bill_file"],
-            #         "requisites_contract": order["requisites_full"]["contract"],
-            #         "requisites_legal_entity": order["requisites_full"]["legal_entity"],
-            #         "date_created": order["bill_date_start"],
-            #         "data_stop": order["bill_date_stop"],
-            #         "amount": order["bill_sum"],
-            #         "notification_set" : []
-            #     }
-            #  for notification_set in order["notification_set"]:
-            #         if notification_set['type_notification'] == 'DOCUMENT_ACT':
-            #             data_spesif['notification_set'].append(notification_set)
+            if len(order['documentshipment_set']) > 0  :
+                for doc_shipment in order['documentshipment_set']:
+                    data_act = {
+                        "type": 3,
+                        "name": "акт",
+                        "order": order["cart"],
+                        "status": order["status"],
+                        "status_full": order["status_full"],
+                        "pdf": doc_shipment["file"],
+                        "requisites_contract": order["requisites_full"]["contract"],
+                        "requisites_legal_entity": order["requisites_full"]["legal_entity"],
+                        "date_created": order["bill_date_start"],
+                        "data_stop": doc_shipment["date"],
+                        "amount": 0,
+                        "notification_set" : [],
+                        "number_document":order["specification_list"]["id"],
+                    }
+          
+                    for notification_set in order["notification_set"]:
+                            if notification_set['type_notification'] == 'DOCUMENT_ACT'  :
+                                if notification_set['file'] == doc_shipment["file"]:
+                                    data_spesif['notification_set'].append(notification_set)
 
-            #     documents.append(data_act)
+                documents.append(data_act)
 
         # сортировки для документов
         if sorting:
@@ -1580,10 +1597,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         if iframe == "True":
             q_object &= Q(id_bitrix=int(bx_id_order))
         else:
-            if user_admin_type == "ALL":
-                q_object &= Q(cart__cart_admin_id__isnull=False)
-            elif user_admin_type == "BASE":
-                q_object &= Q(cart__cart_admin_id=request.user.id)
+            if IS_WEB:
+                pass
+            else:
+                if user_admin_type == "ALL":
+                    q_object &= Q(cart__cart_admin_id__isnull=False)
+                elif user_admin_type == "BASE":
+                    q_object &= Q(cart__cart_admin_id=request.user.id)
 
             
 
@@ -1808,7 +1828,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         ).date()
 
                         prod.date_shipment = date_shipment
-
+                
                 if order_products_item["reserve"]:
                     prod.reserve = int(order_products_item["reserve"])
 
@@ -1953,6 +1973,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 image_path = save_shipment_doc(data_item["pdf"], document_shipment)
                 print(image_path)
+                document_shipment.name = int(data_item["document_name"])
                 document_shipment.file = image_path
                 document_shipment.save()
             data_resp = {

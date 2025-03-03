@@ -109,7 +109,7 @@ window.addEventListener("DOMContentLoaded", () => {
           paginationLastElem.textContent = `${lastPage}`;
 
           for (let i in data.data) {
-            data.data[i]["bill_sum"] = data.data[i]["bill_sum"].toFixed(2);
+            // data.data[i]["bill_sum"] = data.data[i]["bill_sum"].toFixed(2);
             addAjaxCatalogItem(data.data[i]);
           }
           if (data.next) {

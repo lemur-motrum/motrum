@@ -1,7 +1,20 @@
 <div class="document_item"
      document-id="{{ id }}"
      document-elem="document-item">
-    <div class="name">{{ name }} № {{ order }} от {{ date_created }}</div>
+
+    <div class="name">
+    {% if name == "спецификация" %}
+        {{ name }} № {{ order }} от {{ date_created }}
+    {% elif name == "счет" %}
+        {{ name }} № {{ order }} от {{ date_created }}
+    {% elif name == "акт" %}
+        {{ name }} № {{ order }} от {{ date_created }}
+    {% else %}
+    {% endif %}
+   
+    
+    
+    </div>
     <div class="contract">договор -{{ requisites_legal_entity }}{{ requisites_contract }}</div>
     <div class="summ_and_status">
         <div class="summ_container">

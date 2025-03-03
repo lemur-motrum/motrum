@@ -34,11 +34,17 @@
         {% if specification_list.file %}
             <a href="{{ specification_list.file }}"
                target="_blank"
-               class="order_documents_item">спецификация #{{ specification_list.number }} от {{ specification_list.date }}</a>
+               class="order_documents_item">спецификация №{{ specification_list.number }} от {{ specification_list.date }}</a>
         {% endif %}
         {% if bill_file %}
-            <a class="order_documents_item" href="{{ bill_file }}" target="_blank">счёт # {{ bill_name }} от {{ bill_date_start }}</a>
+            <a class="order_documents_item" href="{{ bill_file }}" target="_blank">счёт № {{ bill_name }} от {{ bill_date_start }}</a>
         {% endif %}
+        {% for documentshipment_item in documentshipment_set %}
+           <a class="order_documents_item" href="{{ documentshipment_item.file }}" target="_blank">акт № {{ documentshipment_item.id }} от {{ documentshipment_item.date }} </a> 
+          
+        {% endfor %}
+            
+      
         {% if act_file %}<a class="order_documents_item">акт {{ act_file }}</a>{% endif %}
     </div>
 </div>

@@ -4,14 +4,16 @@ from sys import version
 from token import TYPE_COMMENT
 from django.db import models
 from django.db.models import Case, Value, When
+from django.dispatch import receiver
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
-
+from django.db.models.signals import post_save,pre_save
 # Create your models here.
 
 
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
+
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
 from apps.supplier.models import Discount
@@ -118,7 +120,7 @@ class Requisites(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-    )
+    )#НА УДАЛЕНИЕ
     id_bitrix = models.PositiveIntegerField(
         "Id реквизита в битрикс",
         null=True,
@@ -686,8 +688,9 @@ class Order(models.Model):
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
 
-            if self.client:
-                Notification.add_notification(self.id, "DOCUMENT_BILL")
+            # if self.client:
+            #     Notification.add_notification(self.id, "DOCUMENT_BILL")
+            Notification.add_notification(self.id, "DOCUMENT_BILL",pdf_file)
             self._change_reason = "Ручное"
             self.save()
 
@@ -739,6 +742,15 @@ class Order(models.Model):
                 "pk": self.pk,
             },
         )
+    
+@receiver(pre_save, sender=Order)
+def add_notif_status(sender, instance, update_fields, **kwargs):
+    from apps.notifications.models import Notification
+    if update_fields.status:
+        if instance.status != update_fields.status:
+            Notification.add_notification(instance.id, "STATUS_ORDERING",None)
+
+        
 
 
 # фаилы счетов все версии
@@ -850,4 +862,17 @@ class DocumentShipment(models.Model):
         blank=True,
         null=True,
     )
+    name = models.PositiveIntegerField(
+        "номер",
+        default=None,
+        null=True,
+    )
+
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    def save(self, *args, **kwargs):
+        from apps.notifications.models import Notification
+        
+        Notification.add_notification(self.order.id, "DOCUMENT_ACT",self.file)
+
+        super().save(*args, **kwargs)
+    

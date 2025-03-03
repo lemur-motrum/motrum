@@ -1,4 +1,4 @@
-from apps.client.models import Client, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesAddress, RequisitesOtherKpp
+from apps.client.models import Client, DocumentShipment, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesAddress, RequisitesOtherKpp
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -119,8 +119,29 @@ class OrderSaveCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-
-
+        
+        
+class LkOrderDocumentShipmentSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = DocumentShipment 
+        fields = (
+            "id",
+            "date",
+            "file",
+            "order",
+        )
+        
+    def to_representation(self, instance):
+        representation = super(LkOrderDocumentShipmentSerializer, self).to_representation(
+            instance
+        )
+        if instance.date:
+            representation["date"] = instance.date.strftime("%d.%m.%Y")
+       
+        return representation
+        
+        
 class LkOrderSerializer(serializers.ModelSerializer):
     status_full = serializers.CharField(source="get_status_display", read_only=True)
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
@@ -130,6 +151,8 @@ class LkOrderSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source="get_absolute_url_web", read_only=True)
     # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
     notification_count = serializers.CharField()
+    documentshipment_set  = LkOrderDocumentShipmentSerializer( read_only=True, many=True
+    )
 
     class Meta:
         model = Order
@@ -155,7 +178,8 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "act_file",
             # "notification_set",
             "notification_count",
-            "url"
+            "url",
+            "documentshipment_set",
         )
         read_only_fields = ("status_full",)
 
@@ -176,6 +200,8 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
     specification_list = ListsSpecificationSerializer(
         source="specification", read_only=True
+    )
+    documentshipment_set  = LkOrderDocumentShipmentSerializer( read_only=True, many=True
     )
     notification_set = NotificationSerializer(
         source="filtered_notification_items", read_only=False, many=True
@@ -203,6 +229,7 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
             "bill_date_stop",
             "bill_date_start",
             "notification_set",
+            "documentshipment_set",
         )
         read_only_fields = ("status_full",)
 

@@ -27,6 +27,7 @@ from apps.core.models import Currency, StageDealBx
 from apps.core.utils import client_info_bitrix, create_info_request_order_bitrix, save_file_product, save_info_bitrix_after_web
 from apps.core.utils_web import get_file_path_company_web
 from apps.logs.utils import error_alert
+from apps.notifications.models import Notification
 from apps.product.models import Cart, CurrencyRate, Price, Product
 from apps.specification.models import ProductSpecification
 from apps.user.models import AdminUser
@@ -522,6 +523,9 @@ def get_status_order():
                     else:
                         status = "SHIPMENT_AUTO"
                 print(status)
+                if order.status != status:
+                    Notification.add_notification(order.id, "STATUS_ORDERING",None)
+                    
                 order.status = status
                 order.save()
 

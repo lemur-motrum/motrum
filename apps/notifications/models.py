@@ -21,6 +21,11 @@ class Notification(models.Model):
     type_notification = models.CharField(
         max_length=100, choices=TYPE_NOTIFICATION, default="STATUS_ORDERING"
     )
+    file = models.CharField(
+        max_length=5000, 
+        blank=True,
+        null=True,
+    )
     
     is_viewed = models.BooleanField("Прочитано", default=False)
 
@@ -30,7 +35,7 @@ class Notification(models.Model):
         ordering = ("is_viewed", "-date")    
     
     @staticmethod
-    def add_notification(order,type_notification):
+    def add_notification(order,type_notification,file):
         request = RequestMiddleware(get_response=None)
         request = request.thread_local.current_request
 
@@ -40,6 +45,7 @@ class Notification(models.Model):
         Notification.objects.create(
             order=order,
             client=client,
+            file=file,
             type_notification=type_notification,
         )
         name_notification =  None

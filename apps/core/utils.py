@@ -1235,6 +1235,8 @@ def save_specification(
             specification.file = pdf
             specification._change_reason = "Ручное"
 
+            
+        
             if post_update == False:
                 specification.date_create_pdf = datetime.datetime.today()
 
@@ -1572,8 +1574,8 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
     if serializer.is_valid():
         order = serializer.save()
         if all_info_requisites and all_info_product:
-            Notification.add_notification(order.id, "STATUS_ORDERING")
-            Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
+            # Notification.add_notification(order.id, "STATUS_ORDERING")
+            # Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION")
 
             bill_name = (
                 Order.objects.filter(bill_name__isnull=False)
@@ -1890,6 +1892,12 @@ def create_info_request_order_1c(order, order_products):
     contract_date = order.requisites.contract_date
     if contract_date:
         contract_date = order.requisites.contract_date.isoformat()
+    
+    if order.account_requisites.requisitesKpp.kpp:
+        kpp = int(order.account_requisites.requisitesKpp.kpp)
+    else:
+        kpp = None
+
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
@@ -1902,7 +1910,7 @@ def create_info_request_order_1c(order, order_products):
             "contract_date": contract_date,
             "legal_entity": order.requisites.legal_entity,
             "inn": int(order.requisites.inn),
-            "kpp": int(order.account_requisites.requisitesKpp.kpp),
+            "kpp": kpp,
             "ogrn": int(order.account_requisites.requisitesKpp.ogrn),
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,

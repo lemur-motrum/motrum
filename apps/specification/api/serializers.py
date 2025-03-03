@@ -26,8 +26,8 @@ class SpecificationSerializer(serializers.ModelSerializer):
         representation = super(SpecificationSerializer, self).to_representation(
             instance
         )
-
-        representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
+        if instance.date_stop:
+            representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
         if instance.total_amount:
             representation["total_amount"] = (
                 "{0:,}".format(instance.total_amount).replace(",", " ").replace(".", ",")
@@ -196,7 +196,8 @@ class ListsProductSpecificationSerializer(serializers.ModelSerializer):
             ListsProductSpecificationSerializer, self
         ).to_representation(instance)
         representation["date"] = instance.date.strftime("%d.%m.%Y")
-        representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
+        if instance.date_stop:
+            representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
         return representation
 
 
@@ -210,6 +211,7 @@ class ListsSpecificationSerializer(serializers.ModelSerializer):
             "date",
             "date_stop",
             "total_amount",
+            "number",
         )
 
     def to_representation(self, instance):
@@ -217,7 +219,8 @@ class ListsSpecificationSerializer(serializers.ModelSerializer):
             instance
         )
         representation["date"] = instance.date.strftime("%d.%m.%Y")
-        representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
+        if instance.date_stop:
+            representation["date_stop"] = instance.date_stop.strftime("%d.%m.%Y")
         return representation
 
 

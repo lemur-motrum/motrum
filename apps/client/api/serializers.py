@@ -102,6 +102,7 @@ class ClientRequisitesSerializer(serializers.ModelSerializer):
             "last_name",
             "user_permissions",
             "username",
+            "requisites_set",
         )
 
 
@@ -206,7 +207,6 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
     notification_set = NotificationSerializer(
         source="filtered_notification_items", read_only=False, many=True
     )
-
     class Meta:
         model = Order
         fields = (
@@ -228,6 +228,7 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
             "bill_date_start",
             "bill_date_stop",
             "bill_date_start",
+            "bill_name",
             "notification_set",
             "documentshipment_set",
         )

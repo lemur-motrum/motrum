@@ -4,23 +4,29 @@
 
     <div class="name">
     {% if name == "спецификация" %}
-        {{ name }} № {{ order }} от {{ date_created }}
-    {% elif name == "счет" %}
-        {{ name }} № {{ order }} от {{ date_created }}
+        {{ name }} № {{ number_document }} от {{ date_created }}
+    {% elif name == "счёт" %}
+        {{ name }} № {{ number_document }} от {{ date_created }}
     {% elif name == "акт" %}
-        {{ name }} № {{ order }} от {{ date_created }}
+        {{ name }} № {{ number_document }} от {{ date_created }}
     {% else %}
     {% endif %}
-   
-    
     
     </div>
-    <div class="contract">договор -{{ requisites_legal_entity }}{{ requisites_contract }}</div>
+    <div class="contract">
+    {% if contract %} №{{contract}} c {% endif %}
+     {{ requisites_legal_entity }}
+    
+    {{ requisites_contract }}</div>
     <div class="summ_and_status">
         <div class="summ_container">
-            <span class="summ price">{{ amount }}</span> ₽
+            {% if amount != 0 %}
+                <span class="summ price">{{ amount }}</span> ₽
+            {% else %}
+            {% endif %}
+            
         </div>
-        <div class="status">Подтверждена</div>
+        <div style="display:none" class="status">Подтверждена</div>
     </div>
     <div class="download">
         <a href="{{ pdf }}" target="_blank">скачать</a>

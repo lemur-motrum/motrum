@@ -864,7 +864,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             except Order.DoesNotExist:
                 data_order = {
                     "client": client,
-                    "name": 123131,
+                    "name": None,
                     "specification": specification.id,
                     "requisites": requisites.id,
                     "account_requisites": account_requisites.id,
@@ -946,7 +946,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         data_order = {
             "client": client,
-            "name": 123131,
+            "name": None,
             "specification": None,
             "requisites": requisites_id,
             "account_requisites": account_requisites_id,
@@ -1466,9 +1466,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["bill_sum"],
                     "notification_set": [],
                     "type_notification": "DOCUMENT_BILL",
-                    "number_document":order["specification_list"]["bill_name"],
+                    "number_document":order["bill_name"],
                 }
-
+                print(data_bill)
                 for notification_set in order["notification_set"]:
                     if notification_set["type_notification"] == "DOCUMENT_BILL":
                         data_bill["notification_set"].append(notification_set)
@@ -1486,11 +1486,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                         "pdf": doc_shipment["file"],
                         "requisites_contract": order["requisites_full"]["contract"],
                         "requisites_legal_entity": order["requisites_full"]["legal_entity"],
-                        "date_created": order["bill_date_start"],
+                        "date_created": doc_shipment["date"],
                         "data_stop": doc_shipment["date"],
                         "amount": 0,
                         "notification_set" : [],
-                        "number_document":order["specification_list"]["id"],
+                        "number_document":doc_shipment["id"],
                     }
           
                     for notification_set in order["notification_set"]:
@@ -1501,6 +1501,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 documents.append(data_act)
 
         # сортировки для документов
+        print(documents)
         if sorting:
             if sorting == "date":
                 documents = sorted(

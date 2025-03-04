@@ -1,30 +1,27 @@
 <div class="document_item"
      document-id="{{ id }}"
      document-elem="document-item">
-
     <div class="name">
-    {% if name == "спецификация" %}
-        {{ name }} № {{ number_document }} от {{ date_created }}
-    {% elif name == "счёт" %}
-        {{ name }} № {{ number_document }} от {{ date_created }}
-    {% elif name == "акт" %}
-        {{ name }} № {{ number_document }} от {{ date_created }}
-    {% else %}
-    {% endif %}
-    
+        {% if name == "спецификация" %}
+            {{ name }} № {{ number_document }} от {{ date_created }}
+        {% elif name == "счёт" %}
+            {{ name }} № {{ number_document }} от {{ date_created }}
+        {% elif name == "акт" %}
+            {{ name }} № {{ number_document }} от {{ date_created }}
+        {% else %}
+        {% endif %}
     </div>
     <div class="contract">
-    {% if contract %} №{{contract}} c {% endif %}
-     {{ requisites_legal_entity }}
-    
-    {{ requisites_contract }}</div>
+        {% if contract %}№{{ contract }} c{% endif %}
+        {{ requisites_legal_entity }}
+        {{ requisites_contract }}
+    </div>
     <div class="summ_and_status">
         <div class="summ_container">
             {% if amount != 0 %}
                 <span class="summ price">{{ amount }}</span> ₽
             {% else %}
             {% endif %}
-            
         </div>
         <div style="display:none" class="status">Подтверждена</div>
     </div>

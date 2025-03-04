@@ -9,7 +9,7 @@
             <div class="bread-crumbs">
                 <a href={% url "core:index" %}>главная</a>
             </div>
-            <h1>Заказ {{order.id}}</h1>
+            <h1>Заказ {{ order.id }}</h1>
         </div>
         <div class="cart_elems_container">
             {% if product %}
@@ -56,105 +56,105 @@
                                                 {% else %}
                                                 {% endif %}
                                             {% else %}
-                                                <span>по запросу</span> {% endcomment %}
+                                            <span>по запросу</span> {% endcomment %}
                                         {% endif %}
-                                            <input class="cart_price_one_no_sale"
-                                                   type="hidden"
-                                                   data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
-                                        </div>
-                                    </div>
-                                    <div class="item-buttons_container">
-                                        <div class="cart_buttons_container">
-                                            <div class="quantity-buttons">
-                                                <button class="minus-button">
-                                                    <img src={% static "core/images/minus.png" %} alt="icon" />
-                                                </button>
-                                                <input class="quantity"
-                                                       type="number"
-                                                       value="{{ product_item.quantity }}"
-                                                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                       maxlength="3"
-                                                       onkeypress='validate(event)'>
-                                                <button class="plus-button">
-                                                    <img src={% static "core/images/plus.png" %} alt="icon" />
-                                                </button>
-                                            </div>
-                                            <div class="price">
-                                                {% if product_item.price.rub_price_supplier == 0 %}
-                                                    <span>по запросу</span>
-                                                {% else %}
-                                                    <span class="all_cart_price">0</span> ₽
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <button class="delete_cart_button">
-                                            <img src={% static "core/images/delete_cart_btn.png" %} alt="icon" />
-                                        </button>
+                                        <input class="cart_price_one_no_sale"
+                                               type="hidden"
+                                               data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
                                     </div>
                                 </div>
+                                <div class="item-buttons_container">
+                                    <div class="cart_buttons_container">
+                                        <div class="quantity-buttons">
+                                            <button class="minus-button">
+                                                <img src={% static "core/images/minus.png" %} alt="icon" />
+                                            </button>
+                                            <input class="quantity"
+                                                   type="number"
+                                                   value="{{ product_item.quantity }}"
+                                                   oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                   maxlength="3"
+                                                   onkeypress='validate(event)'>
+                                            <button class="plus-button">
+                                                <img src={% static "core/images/plus.png" %} alt="icon" />
+                                            </button>
+                                        </div>
+                                        <div class="price">
+                                            {% if product_item.price.rub_price_supplier == 0 %}
+                                                <span>по запросу</span>
+                                            {% else %}
+                                                <span class="all_cart_price">0</span> ₽
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <button class="delete_cart_button">
+                                        <img src={% static "core/images/delete_cart_btn.png" %} alt="icon" />
+                                    </button>
+                                </div>
                             </div>
-                        {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if discount_client %}
+                    <div class="total_sum">
+                        <div class="total_sum_item">
+                            <span>Розничная цена:</span><span><span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                        <div class="total_sum_item">
+                            <span>Ваша скидка:</span><span><span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
+                        <div class="total_sum_item total_sum_all">
+                            <span>Итого:</span><span><span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
+                        </div>
                     </div>
-                    {% if discount_client %}
-                        <div class="total_sum">
-                            <div class="total_sum_item">
-                                <span>Розничная цена:</span><span><span class="cart_total_price_all">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
-                            <div class="total_sum_item">
-                                <span>Ваша скидка:</span><span><span class="cart_total_price_sale">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
-                            <div class="total_sum_item total_sum_all">
-                                <span>Итого:</span><span><span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
+                {% else %}
+                    <div class="total_sum">
+                        <div class="total_sum_item total_sum_all">
+                            <span>Итого:</span> <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
                         </div>
-                    {% else %}
-                        <div class="total_sum">
-                            <div class="total_sum_item total_sum_all">
-                                <span>Итого:</span> <span> <span class="cart_total_price">{{ product_item.sale_price }}</span> ₽</span>
-                            </div>
-                        </div>
-                    {% endif %}
-                    {% if client %}
-                        <div class="client-order-details">
-                            {% if requisites %}
-                                <select class="select_account_requisites">
-                                    {% for requisit in requisites %}
-                                        <option data-requisites-id="{{ requisit.id }}"
-                                                data-account-requisites-id="{{ requisit.accountrequisit_id }}">
-                                            Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <div class="button_cart-wrapper">
-                                    <button class="save_cart_button">оформить заказ</button>
-                                </div>
-                            {% else %}
-                                <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="logout_container">
-                            <form class="autification-form-cart">
-                                <label class="name-label">
-                                    <input class="name-input" placeholder="Ваше имя" type="text">
-                                    <div class="error-maessage name-error"></div>
-                                </label>
-                                <label class="phone-label">
-                                    <input class="phone-input" placeholder="Ваш телефон" type="text">
-                                    <div class="error-maessage phone-error"></div>
-                                </label>
-                            </form>
+                    </div>
+                {% endif %}
+                {% if client %}
+                    <div class="client-order-details">
+                        {% if requisites %}
+                            <select class="select_account_requisites">
+                                {% for requisit in requisites %}
+                                    <option data-requisites-id="{{ requisit.id }}"
+                                            data-account-requisites-id="{{ requisit.accountrequisit_id }}">
+                                        Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                             <div class="button_cart-wrapper">
                                 <button class="save_cart_button">оформить заказ</button>
                             </div>
-                        </div>
-                    {% endif %}
-                    {% comment %} <div class="button_cart-wrapper">
-                    <button class="save_cart_button">оформить заказ</button>
-                    </div> {% endcomment %}
+                        {% else %}
+                            <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <div class="empty_cart_content">Корзина пока пуста</div>
+                    <div class="logout_container">
+                        <form class="autification-form-cart">
+                            <label class="name-label">
+                                <input class="name-input" placeholder="Ваше имя" type="text">
+                                <div class="error-maessage name-error"></div>
+                            </label>
+                            <label class="phone-label">
+                                <input class="phone-input" placeholder="Ваш телефон" type="text">
+                                <div class="error-maessage phone-error"></div>
+                            </label>
+                        </form>
+                        <div class="button_cart-wrapper">
+                            <button class="save_cart_button">оформить заказ</button>
+                        </div>
+                    </div>
                 {% endif %}
-            </div>
+                {% comment %} <div class="button_cart-wrapper">
+                    <button class="save_cart_button">оформить заказ</button>
+                </div> {% endcomment %}
+            {% else %}
+                <div class="empty_cart_content">Корзина пока пуста</div>
+            {% endif %}
         </div>
-    {% endblock content %}
+    </div>
+{% endblock content %}

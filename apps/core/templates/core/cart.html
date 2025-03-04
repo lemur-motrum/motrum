@@ -80,7 +80,7 @@
                                                        maxlength="3"
                                                        onkeypress='validate(event)'>
                                                 <button class="plus-button">
-                                                    <img src={% static "core/images/plus.png" %} alt="icon" />
+                                                    <img src="{% static "core/images/plus.png" %}" alt="icon" />
                                                 </button>
                                             </div>
                                             <div class="price">
@@ -92,7 +92,7 @@
                                             </div>
                                         </div>
                                         <button class="delete_cart_button">
-                                            <img src={% static "core/images/delete_cart_btn.png" %} alt="icon" />
+                                            <img src="{% static "core/images/delete_cart_btn.png" %}" alt="icon" />
                                         </button>
                                     </div>
                                 </div>
@@ -138,9 +138,9 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <div class="button_cart-wrapper">
+                                {% comment %} <div class="button_cart-wrapper">
                                     <button class="save_cart_button">оформить заказ</button>
-                                </div>
+                                </div> {% endcomment %}
                             {% else %}
                                 <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
                             {% endif %}
@@ -166,9 +166,6 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% comment %} <div class="button_cart-wrapper">
-                    <button class="save_cart_button">оформить заказ</button>
-                    </div> {% endcomment %}
                 {% else %}
                     <div class="empty_cart_content">Корзина пока пуста</div>
                 {% endif %}

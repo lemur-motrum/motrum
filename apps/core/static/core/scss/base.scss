@@ -1433,7 +1433,7 @@ a {
           opacity: 0;
           transition: 0.6s;
           position: relative;
-          .circle {
+          .vacancy_circle {
             position: absolute;
             width: 150.39%;
             height: 3.563rem;
@@ -1452,23 +1452,28 @@ a {
           text-decoration: none;
           color: #000;
           position: relative;
+          .circle {
+            position: absolute;
+            width: 150.39%;
+            height: 3.563rem;
+            border-radius: 1.875rem;
+            border: 0.094rem solid black;
+            top: -70%;
+            left: -53%;
+            transform: translateX(16%);
+            opacity: 0;
+            transition: 0.6s;
+            @media screen and(max-width:576px) {
+              display: none;
+            }
+            &.small_circle {
+              width: 117%;
+              left: -28%;
+            }
+          }
           &:hover {
             .circle {
-              position: absolute;
-              width: 150.39%;
-              height: 3.563rem;
-              border-radius: 1.875rem;
-              border: 0.094rem solid black;
-              top: -70%;
-              left: -53%;
-              transform: translateX(16%);
-              @media screen and(max-width:576px) {
-                display: none;
-              }
-              &.small_circle {
-                width: 117%;
-                left: -28%;
-              }
+              opacity: 1;
             }
           }
         }

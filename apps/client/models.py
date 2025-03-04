@@ -284,6 +284,13 @@ class RequisitesOtherKpp(models.Model):
         blank=True,
         null=True,
     )
+    email = models.CharField(
+        "Email",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+
 
     def __str__(self):
         return f"{self.requisites.legal_entity} {self.kpp}"
@@ -360,12 +367,7 @@ class RequisitesAddress(models.Model):
         null=True,
         blank=True,
     )
-    email = models.CharField(
-        "Email",
-        max_length=200,
-        null=True,
-        blank=True,
-    )
+
 
 
 # банковские реквизиты прикрепленны к рекам с кпп

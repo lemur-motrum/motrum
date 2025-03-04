@@ -480,3 +480,11 @@ class PhotoEmoloeeInfoWeb(models.Model):
         
     def __str__(self):
         return f"{self.image}"
+
+class UpdatedUpdatedCompanyBX24BX24(models.Model):
+    company_bx_id = models.IntegerField(
+        "company_bx_id"
+    )
+    
+    def __str__(self):
+        return f"{self.image}"

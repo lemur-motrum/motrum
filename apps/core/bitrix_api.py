@@ -1,3 +1,4 @@
+from asyncio import current_task
 import base64
 import datetime
 import os
@@ -14,6 +15,7 @@ from apps.client.api.serializers import OrderSerializer
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
     AccountRequisites,
+    Client,
     ClientRequisites,
     DocumentShipment,
     Order,
@@ -1553,6 +1555,8 @@ def add_or_get_contact_bx(bx, client, base_manager):
             contact_upd = {"id": contact_bx[0]["ID"], "fields": fields}
             contact_upd_bx = bx.call("crm.contact.update", contact_upd)
         print("contact_bx", contact_bx)
+        client.bitrix_id_client = int(contact_bx[0]["ID"])
+        client.save()
         return contact_bx[0]["ID"]
     else:
         tasks = {
@@ -1570,6 +1574,8 @@ def add_or_get_contact_bx(bx, client, base_manager):
         }
 
         contact_bx = bx.call("crm.contact.add", tasks)
+        client.bitrix_id_client = int(contact_bx)
+        client.save()
         return contact_bx
 
 
@@ -1604,7 +1610,7 @@ def add_company_bx(bx, req, req_kpp, adress,base_manager):
             "UF_CRM_1558613254":adress_city_id,
             "UF_CRM_1724223404":adress_province_id,
             "UF_CRM_1558613176":current_date,
-             "ASSIGNED_BY_ID": base_manager.bitrix_id,
+            "ASSIGNED_BY_ID": base_manager.bitrix_id,
             
             
         }
@@ -1849,9 +1855,31 @@ def upd_req_bx(bx,reg_bx_id,phone):
 
     print("tasks", tasks)
     acc_req_new = bx.call("crm.requisite.update", tasks)
+
+
+
   
+def get_upd_clirnt_manager():
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    current_date = datetime.date.today()
+    final_date = current_date - datetime.timedelta(days=60)
+    client =  Client.objects.filter(is_active=True,bitrix_id_client__isnull = False,last_login__date__gte=final_date)
+    print(client)
+    client_id = list(client.values_list('bitrix_id_client', flat=True))
+    print(client_id)
+    print(type(client_id))
+    
   
-  
+    contact_bx = bx.get_by_ID(
+    'crm.contact.company.items.get',
+    client_id)
+    print("contact_bx", contact_bx)
+    # contact_bx {'65444': [{'COMPANY_ID': 17834, 'SORT': 10, 'ROLE_ID': 0, 'IS_PRIMARY': 'Y'}], '65362': [{'COMPANY_ID': 11728, 'SORT': 140, 'ROLE_ID': 0, 'IS_PRIMARY': 'N'}]}
+    for contact in contact_bx:
+        client.get(bitrix_id_client = int(contact))
+        print(contact)
+    
   
   
   

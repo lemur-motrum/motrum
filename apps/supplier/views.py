@@ -36,6 +36,7 @@ from apps.core.bitrix_api import (
     get_product_price_up,
     get_stage_info_bx,
     get_status_order,
+    get_upd_clirnt_manager,
     remove_file_bx,
     save_new_doc_bx,
     save_payment_order_bx,
@@ -109,7 +110,7 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
-    
+    get_upd_clirnt_manager()
     
     # base_manager = AdminUser.objects.get(bitrix_id=174)
     # req_inn = 6311140000

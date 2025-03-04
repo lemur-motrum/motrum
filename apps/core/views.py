@@ -81,9 +81,9 @@ def cart(request):
         discount_client = 0
         if cart_qs.client:
             client = Client.objects.get(id=cart_qs.client.id)
-            discount_client = client.percent
-            if discount_client is None:
-                discount_client = 0
+            # discount_client = client.percent
+            # if discount_client is None:
+            #     discount_client = 0
 
             requisites = (
                 Requisites.objects.filter(client=client)

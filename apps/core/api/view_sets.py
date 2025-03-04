@@ -17,11 +17,10 @@ class Bitrix24ViewSet(viewsets.ModelViewSet):
     def client_b24(self, request, *args, **kwargs):
         try:
             data = request.data
-            event = request.event
             print(data)
             error = "file_api_error"
             location = "OK "
-            info = f"OK {event}{data}"
+            info = f"OK {data}"
             e = error_alert(error, location, info)
         except Exception as e:
             print(e)

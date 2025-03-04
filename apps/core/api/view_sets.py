@@ -16,14 +16,12 @@ class Bitrix24ViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"client-b24")
     def client_b24(self, request, *args, **kwargs):
         try:
-            form = request.form
             data = request.data
-            
-            print(form)
+            event = request.event
             print(data)
             error = "file_api_error"
             location = "OK "
-            info = f"OK {form}{data}"
+            info = f"OK {event}{data}"
             e = error_alert(error, location, info)
         except Exception as e:
             print(e)

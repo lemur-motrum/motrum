@@ -442,7 +442,6 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             address1=adress["legal_adress"]["legal_address1"],
             address2=adress["legal_adress"]["legal_address2"],
         )
- 
 
         for account_req in account_requisites:
             reqAcc = AccountRequisites.objects.update_or_create(
@@ -505,30 +504,25 @@ class RequisitesViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="serch-requisites")
     def serch_requisites(self, request, *args, **kwargs):
-        
+
         data = request.data
         with Dadata(DADATA_TOKEN, DADATA_SECRET) as dadata:
             info = dadata.suggest(name="party", query=data["inn"])
-           
+
             return Response(info, status=status.HTTP_200_OK)
 
 
 class RequisitesAddressViewSet(viewsets.ModelViewSet):
     queryset = RequisitesAddress.objects.all()
     serializer_class = RequisitesAddressSerializer
-    http_method_names = ["get", "post", "patch","put"]
+    http_method_names = ["get", "post", "patch", "put"]
 
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
     serializer_class = AccountRequisitesSerializer
 
-    http_method_names = [
-        "get",
-        "post",
-        "put",
-        "patch"
-    ]
+    http_method_names = ["get", "post", "put", "patch"]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -549,11 +543,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
-                    "client": 28,
-                    "cart": 370,
-                    "requisitesKpp": 17,
-                    "account_requisites": 25,
-                    "type_delivery": 1
+                    "client": 7,
+                    "cart": 298,
+                    "requisitesKpp": 2,
+                    "account_requisites": 8,
+                    "type_delivery": 1,
                 }
                 cart = int(data["cart"])
                 cart = Cart.objects.get(id=data["cart"])
@@ -568,10 +562,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 account_requisites_id = None
                 # motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
                 motrum_requisites = None
-                type_delivery = data['type_delivery']
+                type_delivery = data["type_delivery"]
                 if "requisitesKpp" in data:
                     all_info_requisites = True
-                    requisitesKpp = RequisitesOtherKpp.objects.get(id=data["requisitesKpp"])
+                    requisitesKpp = RequisitesOtherKpp.objects.get(
+                        id=data["requisitesKpp"]
+                    )
                     requisitesKpp_id = requisitesKpp.id
                     requisites_id = requisitesKpp.requisites.id
                     requisites = Requisites.objects.get(id=requisites_id)
@@ -587,15 +583,20 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # сохранение спецификации для заказа с реквизитами
 
                 if all_info_requisites and all_info_product:
-                    status_save_spes, specification, specification_name = save_spesif_web(
-                        cart, products_cart, extra_discount, requisites
+                    status_save_spes, specification, specification_name = (
+                        save_spesif_web(cart, products_cart, extra_discount, requisites)
                     )
-                    print(" status_save_spes, specification, specification_name", status_save_spes, specification, specification_name)
+                    print(
+                        " status_save_spes, specification, specification_name",
+                        status_save_spes,
+                        specification,
+                        specification_name,
+                    )
                     if status_save_spes == "ok" and specification_name:
                         status_order = "PROCESSING"
-                        
+
                     try:
-                        
+
                         order = Order.objects.get(cart_id=cart)
                         pass
                     except Order.DoesNotExist:
@@ -629,17 +630,19 @@ class OrderViewSet(viewsets.ModelViewSet):
                             cart.save()
                             serializer.save()
 
-                            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                            return Response(
+                                serializer.data, status=status.HTTP_201_CREATED
+                            )
                         else:
                             print(serializer.errors)
                             return Response(
                                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
                             )
-        
+
                 return Response(
-                        "",
-                        status=status.HTTP_200_OK,
-                    )
+                    "",
+                    status=status.HTTP_200_OK,
+                )
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -647,20 +650,20 @@ class OrderViewSet(viewsets.ModelViewSet):
             location = "Сохранение спецификации админам окт"
             info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
-            
-            
+
     # сохранение рыбы Заказа БИТРИКС
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")
     def order_bitrix(self, request, *args, **kwargs):
         try:
             import ast
+
             print("def order_bitrix")
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
-            json_acceptable_string = s.replace("\"", '').replace("'", '"')
-            d= json.loads(json_acceptable_string)
-            
+            json_acceptable_string = s.replace('"', "").replace("'", '"')
+            d = json.loads(json_acceptable_string)
+
             serializer_class = OrderSerializer
             order = Order.objects.get(id_bitrix=int(id_bitrix))
             serializer = serializer_class(order, data=d, many=False)
@@ -940,7 +943,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         url_path=r"create-bill-admin",
     )
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
-        
+
         try:
             user = request.user
 
@@ -950,8 +953,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
             if order.specification.pdf:
-                Notification.add_notification(order.id, "DOCUMENT_SPECIFICATION",order.specification.pdf)
-                
+                Notification.add_notification(
+                    order.id, "DOCUMENT_SPECIFICATION", order.specification.pdf
+                )
+
             for obj in products:
                 prod = ProductSpecification.objects.filter(id=obj["id"]).update(
                     text_delivery=obj["text_delivery"]
@@ -1001,7 +1006,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         print("if IS_WEB or user.username == testadmin")
                         url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
                         headers = {"Content-type": "application/json"}
-                        response = send_requests(url, headers, json_data,"1c")
+                        response = send_requests(url, headers, json_data, "1c")
                         print(response)
                     pass
                 else:
@@ -1021,8 +1026,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
 
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
-
-
 
     @action(
         detail=False,
@@ -1090,14 +1093,14 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         serializer_class = LkOrderSerializer
         current_user = request.user.id
-        
+
         client = Client.objects.get(pk=current_user)
-        req_user_all = ClientRequisites.objects.filter(client = client)
+        req_user_all = ClientRequisites.objects.filter(client=client)
         all_inn = []
         for req_user in req_user_all:
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
-            
+
         print(req_user_all)
         # сортировки
         sorting = "-notification_count"
@@ -1240,8 +1243,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             #         to_attr="filtered_notification_items",
             #     )
             # )
-            .prefetch_related(Prefetch("specification__productspecification_set"))
             .prefetch_related(
+                Prefetch("specification__productspecification_set")
+            ).prefetch_related(
                 Prefetch("specification__productspecification_set__product")
             )
             # .prefetch_related(
@@ -1317,15 +1321,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer_class = LkOrderDocumentSerializer
         current_user = request.user.id
         client = Client.objects.get(pk=current_user)
-        req_user_all = ClientRequisites.objects.filter(client = client)
-        
+        req_user_all = ClientRequisites.objects.filter(client=client)
+
         all_inn = []
         for req_user in req_user_all:
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
-            
+
         print(req_user_all)
-        
+
         # сортировки
         sorting = None
         # sorting_spesif = "specification__date"
@@ -1345,8 +1349,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "cart",
                 "requisites",
                 "account_requisites",
-            )
-            .prefetch_related(
+            ).prefetch_related(
                 Prefetch(
                     "notification_set",
                     queryset=Notification.objects.filter(is_viewed=False).exclude(
@@ -1364,7 +1367,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         print(serializer.data)
         for order in serializer.data:
 
-            if order["specification_list"]["file"] :
+            if order["specification_list"]["file"]:
 
                 data_spesif = {
                     "type": 1,
@@ -1380,7 +1383,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["specification_list"]["total_amount"],
                     "notification_set": [],
                     "type_notification": "DOCUMENT_SPECIFICATION",
-                    "number_document":order["specification_list"]["number"],
+                    "number_document": order["specification_list"]["number"],
                 }
 
                 for notification_set in order["notification_set"]:
@@ -1408,7 +1411,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "amount": order["bill_sum"],
                     "notification_set": [],
                     "type_notification": "DOCUMENT_BILL",
-                    "number_document":order["bill_name"],
+                    "number_document": order["bill_name"],
                 }
                 print(data_bill)
                 for notification_set in order["notification_set"]:
@@ -1417,8 +1420,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 documents.append(data_bill)
 
-            if len(order['documentshipment_set']) > 0  :
-                for doc_shipment in order['documentshipment_set']:
+            if len(order["documentshipment_set"]) > 0:
+                for doc_shipment in order["documentshipment_set"]:
                     data_act = {
                         "type": 3,
                         "name": "акт",
@@ -1427,18 +1430,20 @@ class OrderViewSet(viewsets.ModelViewSet):
                         "status_full": order["status_full"],
                         "pdf": doc_shipment["file"],
                         "requisites_contract": order["requisites_full"]["contract"],
-                        "requisites_legal_entity": order["requisites_full"]["legal_entity"],
+                        "requisites_legal_entity": order["requisites_full"][
+                            "legal_entity"
+                        ],
                         "date_created": doc_shipment["date"],
                         "data_stop": doc_shipment["date"],
                         "amount": 0,
-                        "notification_set" : [],
-                        "number_document":doc_shipment["id"],
+                        "notification_set": [],
+                        "number_document": doc_shipment["id"],
                     }
-          
+
                     for notification_set in order["notification_set"]:
-                            if notification_set['type_notification'] == 'DOCUMENT_ACT'  :
-                                if notification_set['file'] == doc_shipment["file"]:
-                                    data_spesif['notification_set'].append(notification_set)
+                        if notification_set["type_notification"] == "DOCUMENT_ACT":
+                            if notification_set["file"] == doc_shipment["file"]:
+                                data_spesif["notification_set"].append(notification_set)
 
                 documents.append(data_act)
 
@@ -1548,8 +1553,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 elif user_admin_type == "BASE":
                     q_object &= Q(cart__cart_admin_id=request.user.id)
 
-            
-
         now_date = datetime.datetime.now()
         print(q_object)
         queryset = (
@@ -1566,11 +1569,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             .order_by("-id")[count : count + count_last]
         )
-        print("queryset",queryset)
-        
+        print("queryset", queryset)
+
         page_count = Order.objects.filter(q_object).count()
 
-        
         queryset_next = Order.objects.filter(q_object)[
             count + count_last : count + count_last + 1
         ].exists()
@@ -1704,7 +1706,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 vendor_str = data_sheet.cell(row=index, column=1).value
 
     # ОКТ 1С сроки поставки товаров ОКТ Б24
- 
+
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
@@ -1742,7 +1744,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             #     print(serialazer_order_pr_1c.data)
             # else:
             #     print(serialazer_order_pr_1c.error_messages)
-            
+
             order = Order.objects.get(id_bitrix=int(data["bitrix_id"]))
             product_spesif = ProductSpecification.objects.filter(
                 specification=order.specification
@@ -1771,7 +1773,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         ).date()
 
                         prod.date_shipment = date_shipment
-                
+
                 if order_products_item["reserve"]:
                     prod.reserve = int(order_products_item["reserve"])
 
@@ -1800,10 +1802,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     pdf_signed = request.build_absolute_uri(order.bill_file.url)
 
                     print(order_pdf)
-            data_resp = {
-                "result": "ok",
-                "error": None
-            }
+            data_resp = {"result": "ok", "error": None}
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -1812,10 +1811,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             location = "Получение\сохранение данных o товаратах 1с "
             info = f"Получение\сохранение данных o товаратах 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            data_resp = {
-                "result": "error",
-                "error": f"info-error {info}"
-            }
+            data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
 
         finally:
@@ -1835,10 +1831,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
-        data_payment = data['payment']
+        data_payment = data["payment"]
         try:
             # print("add_payment_order_1c")
-           
+
             # data = [
             #     {
             #         "bitrix_id": "10568",
@@ -1865,11 +1861,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order.bill_sum_paid = order.bill_sum_paid + amount_sum
                 order.save()
                 print(tarnsaction)
-                
-            data_resp = {
-                "result": "ok",
-                "error": None
-            }
+
+            data_resp = {"result": "ok", "error": None}
             return Response(data_resp, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -1879,11 +1872,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             location = "Получение\сохранение данных o оплатах 1с "
             info = f"Получение\сохранение данных o оплатах 1с. Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            data_resp = {
-                "result": "error",
-                "error": f"info-error {info}"
-            }
-            
+            data_resp = {"result": "error", "error": f"info-error {info}"}
+
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
             if IS_WEB:
@@ -1898,7 +1888,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         data = request.data
-        data_shipment = data['shipment']
+        data_shipment = data["shipment"]
         try:
             # data = [
             #     {
@@ -1919,10 +1909,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 document_shipment.name = int(data_item["document_name"])
                 document_shipment.file = image_path
                 document_shipment.save()
-            data_resp = {
-                "result": "ok",
-                "error": None
-            }
+            data_resp = {"result": "ok", "error": None}
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -1931,10 +1918,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             location = "ОКТ 1С получение документов откгрузки ОКТ Б24"
             info = f"ОКТ 1С получение документов откгрузки ОКТ Б24 . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            data_resp = {
-                "result": "error",
-                "error": f"info-error {info}"
-            }
+            data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
             if IS_WEB:

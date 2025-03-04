@@ -633,12 +633,12 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!deliveryRequsits || deliveryRequsits == "null") {
           validate = false;
           document.querySelector(".select_delevery").style.border =
-            "1px solid red";
+            "0.094rem 1px solid red";
         }
         if (!motrumRequsits || motrumRequsits == "null") {
           validate = false;
           document.querySelector(".select_motrum_requisites").style.border =
-            "1px solid red";
+            "0.094rem solid red";
         }
         if (validate == false) {
           const saveButtonContainer = document.querySelector(
@@ -687,9 +687,6 @@ window.addEventListener("DOMContentLoaded", () => {
               document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
               document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
               document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-              // deleteCookie("key", "/", window.location.hostname);
-              // deleteCookie("specificationId", "/", window.location.hostname);
-              // deleteCookie("cart", "/", window.location.hostname);
 
               window.location.href = "/admin_specification/all_specifications/";
             })
@@ -714,9 +711,6 @@ window.addEventListener("DOMContentLoaded", () => {
             document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-            // document.cookie = `specificationId=; Path=/; Max-Age=-1; SameSite=None; Secure`
-            // deleteCookie("specificationId", "/", window.location.hostname);
-            // deleteCookie("cart", "/", window.location.hostname);
             window.location.href = "/admin_specification/all_specifications/";
           });
       }
@@ -1140,161 +1134,7 @@ window.addEventListener("DOMContentLoaded", () => {
       nextEl: ".slider-arrow",
     },
   });
-  //
 
-  //выпадающий поиск
-  // const searhForm = document.querySelector(".search-form-container");
-  // if (searhForm) {
-  //   const searchInput = searhForm.querySelector(['[name="search_input"]']);
-
-  //   let searchValue;
-  //   const category = searhForm.getAttribute("category");
-  //   const group = searhForm.getAttribute("group");
-  //   const searchDescriptionField = searhForm.querySelector(
-  //     ".search-elem-fields"
-  //   );
-  //   const closebtn = searhForm.querySelector(".close-sreach-field-button");
-  //   const loader = searhForm.querySelector(".loader");
-
-  //   function searchProduct(arr) {
-  //     arr.forEach((el) => {
-  //       el.onclick = () => {
-  //         searchInput.value = el.textContent;
-  //         closeSearchWindow();
-  //       };
-  //     });
-  //   }
-  //   function openSearchWindow() {
-  //     searchDescriptionField.style.display = "flex";
-  //     searchDescriptionField.style.gap = "";
-  //     searchDescriptionField.style.opacity = "1";
-  //   }
-  //   function closeSearchWindow() {
-  //     searchDescriptionField.style.opacity = 0;
-  //     setTimeout(() => {
-  //       searchDescriptionField.style.display = "none";
-  //     }, 600);
-  //     searchDescriptionField.innerHTML = "<div class='loader'>loading</div>";
-  //   }
-
-  //   let start = 0;
-  //   let counter = 10;
-  //   const objData = {
-  //     category: category,
-  //     group: group,
-  //     value: searchValue,
-  //     start: start,
-  //     counter: counter,
-  //   };
-
-  //   function getNewSearchValues() {
-  //     start += 10;
-  //     counter += 10;
-  //     objData.start = start;
-  //     objData.counter = counter;
-  //   }
-  //   searchInput.oninput = () => {
-  //     searchValue = searchInput.value;
-  //     objData.value = searchValue.trim();
-  //     objData.value = objData.value.replace(/ {1,}/g, " ");
-  //     objData.start = start;
-  //     objData.counter = counter;
-  //     if (searchInput.value.length > 2) {
-  //       searchInput.style.borderBottomLeftRadius = 0;
-  //       searchInput.style.borderBottomRightRadius = 0;
-  //       openSearchWindow();
-  //       closebtn.classList.add("show");
-  //       const data = JSON.stringify(objData);
-  //       fetch(searchEndpoint, {
-  //         method: "POST",
-  //         body: data,
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           "X-CSRFToken": csrfToken,
-  //         },
-  //       }).then((response) =>
-  //         response.json().then((response) => {
-  //           if (response.status == "ok") {
-  //             loader.classList.add("remove");
-  //             start = 0;
-  //             counter = 10;
-  //             objData.start = start;
-  //             objData.counter = counter;
-  //             const products = JSON.parse(response.products);
-  //             searchDescriptionField.innerHTML = "";
-  //             products.forEach((product) => {
-  //               searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-  //             });
-  //             const searchProducts =
-  //               searchDescriptionField.querySelectorAll(".product");
-  //             if (searchProducts) {
-  //               searchProduct(searchProducts);
-  //               searchDescriptionField.onscroll = () => {
-  //                 if (
-  //                   searchDescriptionField.scrollHeight -
-  //                     searchDescriptionField.scrollTop <=
-  //                   searchDescriptionField.offsetHeight
-  //                 ) {
-  //                   const data = JSON.stringify(objData);
-  //                   fetch(searchEndpoint, {
-  //                     method: "POST",
-  //                     body: data,
-  //                     headers: {
-  //                       "Content-Type": "application/json",
-  //                       "X-CSRFToken": csrfToken,
-  //                     },
-  //                   }).then((response) =>
-  //                     response.json().then((response) => {
-  //                       if (response.status == "ok") {
-  //                         getNewSearchValues();
-  //                         const products = JSON.parse(response.products);
-  //                         products.forEach((product) => {
-  //                           searchDescriptionField.innerHTML += `<div class="product">${product.fields.name}</div>`;
-  //                         });
-  //                         const searchProducts =
-  //                           searchDescriptionField.querySelectorAll(".product");
-  //                         if (searchProducts) {
-  //                           searchProduct(searchProducts);
-  //                         }
-  //                       }
-  //                     })
-  //                   );
-  //                 }
-  //               };
-  //               if (products.length == 0) {
-  //                 searchDescriptionField.innerHTML =
-  //                   "<div>Таких товаров нет</div>";
-  //               }
-  //             }
-  //           }
-  //         })
-  //       );
-  //     } else {
-  //       if (searchInput.value.length < 2) {
-  //         searchInput.style.borderBottomLeftRadius = "1.875rem";
-  //         searchInput.style.borderBottomRightRadius = "1.875rem";
-  //         closebtn.classList.remove("show");
-  //         start = 0;
-  //         counter = 10;
-  //         objData.start = start;
-  //         objData.counter = counter;
-  //         closeSearchWindow();
-  //       }
-  //     }
-  //     closebtn.onclick = () => {
-  //       closeSearchWindow();
-  //       searchInput.style.borderBottomLeftRadius = "1.875rem";
-  //       searchInput.style.borderBottomRightRadius = "1.875rem";
-  //       closebtn.classList.remove("show");
-  //       searchInput.value = "";
-  //       start = 0;
-  //       counter = 10;
-  //       objData.start = start;
-  //       objData.counter = counter;
-  //     };
-  //   };
-  // }
-  //
   const allSpecifications = document.querySelector(".all_specifications_table");
   if (allSpecifications) {
     const prices = allSpecifications.querySelectorAll(".price");
@@ -1427,6 +1267,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
   // поиск клиентов по инн имени в корзине
   const searhClientForm = document.querySelector(".serch-client");
   if (searhClientForm) {
@@ -1458,18 +1299,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const motrumRequsits = document.querySelector(".select_motrum_requisites");
     changeSelect(motrumRequsits);
-    //const clientOptions = motrumRequsits.querySelectorAll("option");
-    // motrumRequsits.setAttribute(
-    //   "value",
-    //   clientOptions[0].getAttribute("data-account-requisites-id")
-    // );
-    // clientOptions.forEach((el) => {
-    //   motrumRequsits.addEventListener("change", function () {
-    //     if (el.selected) {
-    //       motrumRequsits.setAttribute("value", el.getAttribute("value"));
-    //     }
-    //   });
-    // });
+
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButtonContainer = document.querySelector(".save_button-wrapper");
@@ -1485,23 +1315,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (saveInvoiceButtonContainer) {
           saveInvoiceButtonContainer.classList.add("show");
         }
-        // if (clientRequsitsSelect) {
-        //   const clientOptions = clientRequsitsSelect.querySelectorAll("option");
-        //   clientRequsitsSelect.setAttribute(
-        //     "value",
-        //     clientOptions[0].getAttribute("value")
-        //   );
-        //   clientOptions.forEach((el) => {
-        //     clientRequsitsSelect.addEventListener("change", function () {
-        //       if (el.selected) {
-        //         clientRequsitsSelect.setAttribute(
-        //           "value",
-        //           el.getAttribute("value")
-        //         );
-        //       }
-        //     });
-        //   });
-        // }
       }
     };
     searchClientInput.onkeyup = () => {
@@ -1564,10 +1377,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       } else {
                         clientRequsitsSelect.innerHTML = "";
                       }
-                      // clientInfo.innerHTML = `
-                      //        <div>Предоплата: ${el.prepay_persent}%</div>
-                      //        <div>Доставка: <select class="select_delevery" name='delevery-requisit'><option value="pickup">Самовывоз</option><option value="paid_delivery">Доставка до терминала за счет покупателя</option></select></div>
-                      //        `;
+
                       clientInfo.innerHTML = `<div>Предоплата: ${el.prepay_persent}%</div>`;
                       const selectDelevery =
                         searhClientForm.querySelector(".select_delevery");
@@ -1604,7 +1414,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const bxId = BxBtn.getAttribute("data-bx-id");
     const specificationId = BxBtn.getAttribute("data-spesif-id");
     const newOrderInWeb = BxBtn.getAttribute("data-serializer-new");
-    console.log(newOrderInWeb)
+    console.log(newOrderInWeb);
     let endpoint = "/api/v1/order/order-bitrix/";
 
     const objData = {
@@ -1613,7 +1423,7 @@ window.addEventListener("DOMContentLoaded", () => {
     };
     console.log(objData);
     console.log(7);
-    if (newOrderInWeb == 0 ){
+    if (newOrderInWeb == 0) {
       document.cookie = `type_save=new; path=/; SameSite=None; Secure`;
       const data = JSON.stringify(objData);
       fetch(endpoint, {
@@ -1631,45 +1441,46 @@ window.addEventListener("DOMContentLoaded", () => {
           document.location.href =
             "/admin_specification/current_specification/";
         });
-    } else{
-    BxUpd.onclick = () => {
-      document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
-      const data = JSON.stringify(objData);
-      fetch(endpoint, {
-        method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          "X-CSRFToken": csrfToken,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          document.location.href =
-            "/admin_specification/current_specification/";
-        });
-    };
-    BxHardUpd.onclick = () => {
-      document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
-      const data = JSON.stringify(objData);
-      fetch(endpoint, {
-        method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          "X-CSRFToken": csrfToken,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          document.location.href =
-            "/admin_specification/current_specification/";
-        });
-    };}
+    } else {
+      BxUpd.onclick = () => {
+        document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
+        const data = JSON.stringify(objData);
+        fetch(endpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+            document.location.href =
+              "/admin_specification/current_specification/";
+          });
+      };
+      BxHardUpd.onclick = () => {
+        document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
+        const data = JSON.stringify(objData);
+        fetch(endpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
+            document.location.href =
+              "/admin_specification/current_specification/";
+          });
+      };
+    }
   }
 
   const BxError = document.querySelector(".error-bx");
@@ -1690,7 +1501,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function changeSelect(select) {
   if (select) {
     const clientOptions = select.querySelectorAll("option");
-    // select.setAttribute("value", clientOptions[0].getAttribute("value"));
+
     clientOptions.forEach((el) => {
       if (el.selected) {
         select.setAttribute("value", el.getAttribute("value"));

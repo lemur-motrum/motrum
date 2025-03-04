@@ -404,7 +404,7 @@ def crete_pdf_bill(
 
         if client_info_req_kpp.tel:
             info_client = f"{info_client}, тел.: {client_info_req_kpp.tel}"
-        
+
         data_info.append(
             (
                 Paragraph(
@@ -417,7 +417,7 @@ def crete_pdf_bill(
                 ),
             )
         )
-        
+
         data_info.append(
             (
                 Paragraph(f"Основание:", normal_style),

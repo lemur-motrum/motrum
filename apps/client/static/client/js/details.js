@@ -131,6 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       const bicMask = IMask(bic, bicMaskOptions);
       const countryInput = newLegalEntityForm.querySelector(".country_input");
+      const provinceInput = newLegalEntityForm.querySelector(".province_input");
       const regionInput = newLegalEntityForm.querySelector(".region_input");
       const cityInput = newLegalEntityForm.querySelector(".city_input");
 
@@ -140,6 +141,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const ipPatronymicInput = newLegalEntityForm.querySelector(
         ".ip_patronymic_input"
       );
+      const emailInput = newLegalEntityForm.querySelector(".email_input");
 
       const legalEntitiesContainer = newLegalEntityForm.querySelector(
         ".legal_entitis_container"
@@ -207,11 +209,16 @@ window.addEventListener("DOMContentLoaded", () => {
                   ${
                     el["data"]["address"]["data"]["city"]
                       ? el["data"]["address"]["data"]["city"]
-                      : ""
-                  }</div>
-                  <div style="display:none" class="address_street">${
-                    el["data"]["address"]["data"]["settlement_with_type"]
+                      : el["data"]["address"]["data"]["settlement_with_type"]
                       ? el["data"]["address"]["data"]["settlement_with_type"]
+                      : ""
+                  }
+                  </div>
+                  <div style="display:none" class="address_street">${
+                    el["data"]["address"]["data"]["city"]
+                      ? el["data"]["address"]["data"]["settlement_with_type"]
+                        ? el["data"]["address"]["data"]["settlement_with_type"]
+                        : ""
                       : ""
                   }
                   ${
@@ -226,12 +233,22 @@ window.addEventListener("DOMContentLoaded", () => {
                   el["data"]["address"]["data"]["house"]
                     ? el["data"]["address"]["data"]["house"]
                     : ""
-                }</div>
-                  <div style="display:none" class="address_apartments">${
-                    el["data"]["address"]["data"]["flat_type"]
-                      ? el["data"]["address"]["data"]["flat_type"]
+                } ${
+                  el["data"]["address"]["data"]["block"]
+                    ? el["data"]["address"]["data"]["block"]
+                    : ""
+                }
+                  ${
+                    el["data"]["address"]["data"]["block_type"]
+                      ? el["data"]["address"]["data"]["block_type"]
                       : ""
-                  } ${
+                  }
+                  </div>
+                    <div style="display:none" class="address_apartments">${
+                      el["data"]["address"]["data"]["flat_type"]
+                        ? el["data"]["address"]["data"]["flat_type"]
+                        : ""
+                    } ${
                   el["data"]["address"]["data"]["flat"]
                     ? el["data"]["address"]["data"]["flat"]
                     : ""
@@ -254,17 +271,46 @@ window.addEventListener("DOMContentLoaded", () => {
                     el["data"]["address"]["data"]["region_with_type"]
                   }</div>
                   <div style="display:none" class="city">
-                      ${el["data"]["address"]["data"]["city"]}
+                      ${
+                        el["data"]["address"]["data"]["city"]
+                          ? el["data"]["address"]["data"]["city"]
+                          : el["data"]["address"]["data"][
+                              "settlement_with_type"
+                            ]
+                          ? el["data"]["address"]["data"][
+                              "settlement_with_type"
+                            ]
+                          : ""
+                      }
                   </div>
                   <div style="display:none" class="ip_surname">${
                     el["data"]["fio"] ? el["data"]["fio"]["surname"] : ""
                   }</div>
-                    <div style="display:none" class="ip_name">${
-                      el["data"]["fio"] ? el["data"]["fio"]["name"] : ""
-                    }</div>
-                     <div style="display:none" class="ip_patronymic">${
-                       el["data"]["fio"] ? el["data"]["fio"]["patronymic"] : ""
-                     }</div>
+                  <div style="display:none" class="ip_name">${
+                    el["data"]["fio"] ? el["data"]["fio"]["name"] : ""
+                  }</div>
+                  <div style="display:none" class="ip_patronymic">${
+                    el["data"]["fio"] ? el["data"]["fio"]["patronymic"] : ""
+                  }</div>
+                  <div style="display:none" class="email">${
+                    el["data"]["emails"] && el["data"]["emails"].length > 0
+                      ? el["data"]["emails"][0]
+                      : ""
+                  }</div>
+                  <div style="display:none" class="phone">
+                  ${
+                    el["data"]["phones"] && el["data"]["phones"].length > 0
+                      ? el["data"]["phones"][0]
+                      : ""
+                  }
+                  </div>
+                  <div style="display:none" class="province">
+                  ${
+                    el["data"]["address"]["data"]["area_with_type"]
+                      ? el["data"]["address"]["data"]["area_with_type"]
+                      : ""
+                  }
+                  </div>
                 </div>`;
               });
 
@@ -285,11 +331,15 @@ window.addEventListener("DOMContentLoaded", () => {
                     ".address_apartments"
                   );
                   const country = el.querySelector(".country");
+                  const province = el.querySelector(".province");
                   const region = el.querySelector(".region");
                   const city = el.querySelector(".city");
                   const ipName = el.querySelector(".ip_name");
                   const ipSurname = el.querySelector(".ip_surname");
                   const ipPatronymic = el.querySelector(".ip_patronymic");
+
+                  const email = el.querySelector(".email");
+                  const phone = el.querySelector(".phone");
 
                   const inputs = newLegalEntityForm.querySelectorAll("input");
                   inputs.forEach((el) => {
@@ -313,11 +363,13 @@ window.addEventListener("DOMContentLoaded", () => {
                   countryInput.value = country.textContent
                     .replace(/ +/g, " ")
                     .trim();
+                  provinceInput.value = province.textContent
+                    .replace(/ +/g, " ")
+                    .trim();
                   regionInput.value = region.textContent
                     .replace(/ +/g, " ")
                     .trim();
                   cityInput.value = city.textContent.replace(/ +/g, " ").trim();
-
                   ipNameInput.value = ipName.textContent
                     .replace(/ +/g, " ")
                     .trim();
@@ -327,6 +379,12 @@ window.addEventListener("DOMContentLoaded", () => {
                   ipPatronymicInput.value = ipPatronymic.textContent
                     .replace(/ +/g, " ")
                     .trim();
+                  emailInput.value = email.textContent
+                    ? email.textContent.replace(/ +/g, " ").trim()
+                    : "";
+                  phone.textContent.replace(/ +/g, " ").trim()
+                    ? (phoneInput.value = phone.textContent)
+                    : "";
 
                   enabledInputs();
                   legalEntitiesContainer.classList.remove("show");
@@ -499,6 +557,8 @@ window.addEventListener("DOMContentLoaded", () => {
               patronymic: ipPatronymicInput.value
                 ? ipPatronymicInput.value
                 : null,
+              phone: phoneInput.value,
+              email: emailInput.value ? emailInput.value : null,
             },
             requisitesKpp: {
               kpp: kppInput.value,
@@ -508,7 +568,7 @@ window.addEventListener("DOMContentLoaded", () => {
               legal_adress: {
                 country: countryInput.value ? countryInput.value : null,
                 region: regionInput.value ? regionInput.value : null,
-                province: null,
+                province: provinceInput.value ? provinceInput.value : null,
                 post_code: legalIndexInput.value,
                 city: cityInput.value ? cityInput.value : null,
                 legal_address1: legalAdressInput.value,

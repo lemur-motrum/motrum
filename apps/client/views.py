@@ -19,7 +19,6 @@ from apps.notifications.models import Notification
 from apps.specification.models import ProductSpecification
 
 
-
 def index(request):
     title = "Клиенты"
     context = {
@@ -29,7 +28,9 @@ def index(request):
     }
     return render(request, "client/index_client.html", context)
 
+
 # СТРАНИЦЫ ЛК
+
 
 # МОИ ЗАКАЗЫ
 def my_orders(request):
@@ -47,6 +48,7 @@ def my_orders(request):
 
     return render(request, "client/my_orders.html", context)
 
+
 # МОИ ДОКУМЕНТЫ
 def my_documents(request):
     current_user = request.user.id
@@ -61,6 +63,7 @@ def my_documents(request):
     }
     return render(request, "client/my_documents.html", context)
 
+
 # МОИ РЕКВИЗИТЫ
 def my_details(request):
     # cookie = request.COOKIES.get("client_id")
@@ -72,18 +75,19 @@ def my_details(request):
         .values_list("requisitesotherkpp__id", flat=True)
         .order_by("id")
     )
-    
+
     requisites = RequisitesOtherKpp.objects.filter(id__in=req).prefetch_related(
         Prefetch("accountrequisites_set"),
         Prefetch("requisitesaddress_set"),
     )
-    
+
     context = {
         "title": "Личный кабинет | мои реквизиты",
         "details": requisites,
         "requisites": requisites,
     }
     return render(request, "client/my_details.html", context)
+
 
 # ПЕРСОНАЛЬНЫЕ ДАННЫЕ
 def my_contacts(request):
@@ -98,6 +102,7 @@ def my_contacts(request):
         "other_phone_client": other_phone_client,
     }
     return render(request, "client/my_contacts.html", context)
+
 
 # ЗАКАЗ ОТДЕЛЬНАЯ СТРАНИЦА
 def order_client_one(request, pk):

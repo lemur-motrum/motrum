@@ -8,7 +8,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
-from django.db.models.signals import post_save,pre_save
+from django.db.models.signals import post_save, pre_save
+
 # Create your models here.
 
 
@@ -56,7 +57,7 @@ class Client(CustomUser):
     # добавление менеджера клиенту рандом
     def add_manager(self):
         if self.manager == None:
-            base_manager =  AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
+            base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
             self.manager = base_manager
             self.save()
 
@@ -120,7 +121,7 @@ class Requisites(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-    )#НА УДАЛЕНИЕ
+    )  # НА УДАЛЕНИЕ
     id_bitrix = models.PositiveIntegerField(
         "Id реквизита в битрикс",
         null=True,
@@ -291,7 +292,6 @@ class RequisitesOtherKpp(models.Model):
         blank=True,
     )
 
-
     def __str__(self):
         return f"{self.requisites.legal_entity} {self.kpp}"
 
@@ -367,7 +367,6 @@ class RequisitesAddress(models.Model):
         null=True,
         blank=True,
     )
-
 
 
 # банковские реквизиты прикрепленны к рекам с кпп
@@ -635,25 +634,25 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.id)
-    
+
     @classmethod
     def from_db(cls, db, field_names, values):
         instance = super().from_db(db, field_names, values)
-        
+
         # save original values, when model is loaded from database,
         # in a separate attribute on the model
         instance._loaded_values = dict(zip(field_names, values))
-        
+
         return instance
-    
+
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
+
         if not self._state.adding:
-            if self._loaded_values['status'] != self.status:
-                Notification.add_notification(self.id, "STATUS_ORDERING",None)
+            if self._loaded_values["status"] != self.status:
+                Notification.add_notification(self.id, "STATUS_ORDERING", None)
         super().save(*args, **kwargs)
-        
-        
+
     # создание документов счета
     def create_bill(
         self,
@@ -716,7 +715,7 @@ class Order(models.Model):
 
             # if self.client:
             #     Notification.add_notification(self.id, "DOCUMENT_BILL")
-            Notification.add_notification(self.id, "DOCUMENT_BILL",pdf_file)
+            Notification.add_notification(self.id, "DOCUMENT_BILL", pdf_file)
             self._change_reason = "Ручное"
             self.save()
 
@@ -768,7 +767,8 @@ class Order(models.Model):
                 "pk": self.pk,
             },
         )
-    
+
+
 # @receiver(pre_save, sender=Order)
 # def add_notif_status(sender, instance, **kwargs):
 #     from apps.notifications.models import Notification
@@ -776,8 +776,6 @@ class Order(models.Model):
 #     if update_fields.status:
 #         if instance.status != update_fields.status:
 #             Notification.add_notification(instance.id, "STATUS_ORDERING",None)
-
-        
 
 
 # фаилы счетов все версии
@@ -898,8 +896,7 @@ class DocumentShipment(models.Model):
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
-        
-        Notification.add_notification(self.order.id, "DOCUMENT_ACT",self.file)
+
+        Notification.add_notification(self.order.id, "DOCUMENT_ACT", self.file)
 
         super().save(*args, **kwargs)
-    

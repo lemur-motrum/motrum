@@ -21,17 +21,6 @@ class Bitrix24ViewSet(viewsets.ModelViewSet):
             data = request.data
             application_token = data.get("auth[application_token]")   
             if  application_token:
-                QueryDict = {
-                    "event": ["ONCRMCOMPANYUPDATE"],
-                    "event_handler_id": ["110"],
-                    "data[FIELDS][ID]": ["17682"],
-                    "ts": ["1741082419"],
-                    "auth[domain]": ["pmn.bitrix24.ru"],
-                    "auth[client_endpoint]": ["https://pmn.bitrix24.ru/rest/"],
-                    "auth[server_endpoint]": ["https://oauth.bitrix.info/rest/"],
-                    "auth[member_id]": ["bd180ebaa3274830710fcdc4fd61de8f"],
-                    "auth[application_token]": ["a63ib122zuoyc5nuo69i8pkstp4mci52"],
-                }
                 companu = data.get("data[FIELDS][ID]")
                 obj, created = UpdatedCompanyBX24.objects.get_or_create(company_bx_id=int(companu))
                 

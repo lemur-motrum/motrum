@@ -1,12 +1,14 @@
 import traceback
+
 from rest_framework import routers, serializers, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.client.models import Client
 from apps.logs.utils import error_alert
 
 class Bitrix24ViewSet(viewsets.ModelViewSet):
-    queryset = None
+    queryset = Client.objects.all()
     serializer_class = None
 
     http_method_names = ["get", "post", "put"]

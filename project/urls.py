@@ -30,6 +30,7 @@ from apps.product.urls import router as product_router
 from apps.notifications.urls import router as notifications_router
 from apps.projects_web.urls import router as projects_web_router
 from apps.vacancy_web.urls import router as vacancy_web_router
+from apps.core.urls import router as core_router
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -40,6 +41,7 @@ router.registry.extend(product_router.registry)
 router.registry.extend(notifications_router.registry)
 router.registry.extend(projects_web_router.registry)
 router.registry.extend(vacancy_web_router.registry)
+router.registry.extend(core_router.registry)
 
 
 urlpatterns = [

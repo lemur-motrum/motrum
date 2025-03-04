@@ -4,10 +4,10 @@ from apps import product
 from . import views
 from django.views.generic.base import TemplateView
 
-# from .api import view_sets
-from rest_framework import routers
+
+from . import views
 from .api import view_sets
-from django.urls import re_path as url
+from rest_framework import routers
 
 app_name = "core"
 

@@ -549,10 +549,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
-                    "client": 27,
-                    "cart": 323,
-                    "requisitesKpp": 15,
-                    "account_requisites": 20,
+                    "client": 28,
+                    "cart": 370,
+                    "requisitesKpp": 17,
+                    "account_requisites": 25,
                     "type_delivery": 1
                 }
                 cart = int(data["cart"])
@@ -635,65 +635,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             return Response(
                                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
                             )
-                        
-                        # pdf = crete_pdf_specification(
-                        #     specification.id,
-                        #     requisites,
-                        #     account_requisites,
-                        #     request,
-                        #     motrum_requisites,
-                        #     None,
-                        #     "paid_delivery",
-                        #     False,
-                        #     specification_name,
-                        # )
-
-                        # if pdf:
-                        #     specification.file = pdf
-                        #     specification._change_reason = "Ручное"
-                        #     specification.save()
-
-                        
-                        # # сохранение ордера
-
-                        # serializer_class = OrderSerializer
-                        # data_order = {
-                        #     "client": client,
-                        #     "name": 123131,
-                        #     "specification": specification.id,
-                        #     "cart": cart.id,
-                        #     # "status": status_order,
-                        #     "requisites": requisites_id,
-                        #     "account_requisites": account_requisites_id,
-                        #     "bill_name": None,
-                        #     "bill_file": None,
-                        #     "bill_date_start": None,
-                        #     "bill_date_stop": None,
-                        #     "bill_sum": None,
-                        #     # "prepay_persent": 100,
-                        #     # "postpay_persent": 0,
-                        #     # "motrum_requisites": motrum_requisites.id,
-                        #     "id_bitrix": None,
-                        #     # "type_delivery": "paid_delivery",
-                        # }
-
-                #         status_save_order, data = save_order_web(
-                #             request, data_order, all_info_requisites, all_info_product
-                #         )
-                #         status_save_order = "ok"
-                #         if status_save_order == "ok":
-
-                #             # cart.is_active = True
-                #             # cart.save()
-                #             return Response(data, status=status.HTTP_200_OK)
-                #         else:
-                #             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-                #     else:
-                #         return Response(
-                #             "товары без цены или заказ без реквизитов",
-                #             status=status.HTTP_400_BAD_REQUEST,
-                #         )
-                # else:
+        
                 return Response(
                         "",
                         status=status.HTTP_200_OK,

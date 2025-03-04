@@ -23,7 +23,7 @@
                                     {% for productimage in product_item.productimage_set.all %}
                                         {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="">{% endif %}
                                     {% empty %}
-                                        <img src={% static "core/images/nophoto.png" %} alt="">
+                                        <img src="{% static "core/images/nophoto1.png" %}" alt="img" />
                                     {% endfor %}
                                 </div>
                             </a>

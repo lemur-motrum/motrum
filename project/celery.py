@@ -63,6 +63,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.add_iek_individual",
         "schedule": crontab(minute=3, hour=0, day_of_week=1),
     },
+    "vacancy_file_delite_week": {
+        "task": "apps.core.tasks.vacancy_file_delite",
+        "schedule": crontab(minute=22, hour=0, day_of_week=6),
+    },
     
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год

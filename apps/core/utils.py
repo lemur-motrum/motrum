@@ -473,6 +473,44 @@ def get_file_path_add(instance, filename):
         filename,
     )
 
+def get_file_path_add_more_vac(product, type_doc, filename):
+
+    from apps.product.models import ProductDocument
+    from apps.product.models import ProductImage
+
+    from pytils import translit
+
+    base_dir = "documents"
+    path_name = "vacancy"
+    type_doc = type_doc
+
+    slug_text = str(filename)
+    regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+    slugish = re.sub(regex, "", slug_text)
+    slugish = translit.translify(slugish)
+    slugish = slugify(slugish)
+
+    # link_file = f"{new_dir}/{slugish}"
+    new_dir = "{0}/{1}/{2}".format(
+        MEDIA_ROOT,
+        base_dir,
+        # base_dir_supplier,
+        # base_dir_vendor,
+        path_name,
+    )
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+
+    link = "{0}/{1}".format(
+        base_dir,
+        # base_dir_supplier,
+        # base_dir_vendor,
+        path_name,
+    )
+    print(new_dir, link, slugish)
+
+    return (new_dir, link, slugish)
+
 
 def get_file_path_add_more_doc(product, type_doc, filename):
 
@@ -2232,3 +2270,7 @@ def save_info_bitrix_after_web(data, req):
     #     contract_date=data_contract, manager= manager ,contract= data["contract"],)
     # print(client_req)
     
+def delete_everything_in_folder(folder_path):
+    shutil.rmtree(folder_path)
+    os.mkdir(folder_path) 
+ 

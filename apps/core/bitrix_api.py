@@ -1624,6 +1624,7 @@ def add_req_bx(bx, company_bx_id, req, reqKpp):
             "PRESET_ID": int(req.type_client),
             "RQ_INN": req.inn,
             "RQ_PHONE": reqKpp.tel if reqKpp.tel else "",
+            "RQ_EMAIL": reqKpp.email if reqKpp.email else "",
         }
     }
     if req.type_client == "1":
@@ -1660,6 +1661,7 @@ def add_adress_req_bx(bx, adress, type_id, req_id_bx,is_adress):
             "CITY": adress.city,
             "POSTAL_CODE": adress.post_code,
             "PROVINCE": adress.region,
+            "REGION":adress.province,
             "COUNTRY": adress.country,
         }
     }

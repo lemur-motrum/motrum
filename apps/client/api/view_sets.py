@@ -340,48 +340,22 @@ class RequisitesViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add")
     def add_all_requisites(self, request, *args, **kwargs):
         data = request.data
-        # data = {
-        #     "requisites": {
-        #         "client": 23,
-        #         "legal_entity": "333 лицо231",
-        #         "inn": 631625733376,
-        #     },
-        #     "requisitesKpp": {
-        #         "kpp": "11111",
-        #         "ogrn": "1111",
-        #     },
-        #     "adress": {
-        #         "legal_adress": {
-        #             "country": None,
-        #             "region": None,
-        #             "province": None,
-        #             "post_code": "22222",
-        #             "city": "22222",
-        #             "legal_address1": "22222",
-        #             "legal_address2": "22222",
-        #         }
-        #     },
-        #     "account_requisites": [
-        #         {
-        #             "account_requisites": "2222",
-        #             "bank": "sfdfs",
-        #             "kpp": "22222",
-        #             "bic": "2222",
-        #         },
-        #         {
-        #             "account_requisites": "3333333",
-        #             "bank": "sfdfs",
-        #             "kpp": "33333",
-        #             "bic": "3333",
-        #         },
-        #     ],
-        # }
-
+        print(data)
         requisites = data["requisites"]
         requisitesKpp = data["requisitesKpp"]
         adress = data["adress"]
         account_requisites = data["account_requisites"]
-
+        for k, v in adress["legal_adress"].items():
+            if v == "" or v == "null" or v == "None":
+                print(adress["legal_adress"][k] )
+                adress["legal_adress"][k] = None
+        
+        for k, v in requisitesKpp.items():
+            if v == "" or v == "null" or v == "None":
+                requisitesKpp[k] = None
+                
+            
+        print(adress)
         # i = -1
         valid_all = True
 
@@ -410,6 +384,9 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "postal_post_code": adress["legal_adress"]["post_code"],
                     "postal_city": adress["legal_adress"]["city"],
                     "postal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
+                    "phone": requisitesKpp["phone"],
+                    "email": requisitesKpp["email"],
+                    
                 },
             )
         elif type_client == 2:
@@ -628,6 +605,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                             cart.is_active = True
                             cart.save()
                             serializer.save()
+                            
+                            
 
                             return Response(serializer.data, status=status.HTTP_201_CREATED)
                         else:

@@ -203,6 +203,19 @@ def send_email_message_and_file(subject, message, to_email, file):
 
     return email
 
+def send_email_message_and_file_alternative(subject, message, to_email, file,html_content ):
+    from django.core.mail import EmailMultiAlternatives
+    email = EmailMultiAlternatives(subject, message, settings.EMAIL_HOST_USER, [to_email])
+   
+    if html_content:    
+        email.attach_alternative(html_content, "text/html")
+        
+    if file:
+        email.attach_file(file)
+    email.send()
+
+    return email
+
 
 def send_email_message_html(subject, message, to_email, html_message):
     print(subject, message, to_email, html_message)

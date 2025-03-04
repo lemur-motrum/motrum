@@ -8,12 +8,14 @@ from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
 from apps.core.models import BaseInfo, CalendarHoliday, Currency
-from apps.core.utils import image_error_check
+from apps.core.utils import delete_everything_in_folder, image_error_check
 from apps.logs.utils import error_alert
 from apps.product.models import Cart, CurrencyRate, Price
 from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
 from django.db.models import Prefetch, OuterRef
+
+from project.settings import MEDIA_ROOT
 
 
 @app.task(
@@ -316,5 +318,23 @@ def image_error_check_in(self):
         location = f"удаление битых картинок {exc}"
 
         info = f"удаление битых картинок {exc}"
+        e = error_alert(error, location, info)
+        
+# чистка папки с вакансиями
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def vacancy_file_delite(self):
+    try:
+        folder_path = f"{MEDIA_ROOT}/documents/vacancy"
+           
+        delete_everything_in_folder(folder_path)
+            
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"чистка папки с вакансиями {exc}"
+
+        info = f"чистка папки с вакансиями {exc}"
         e = error_alert(error, location, info)
   

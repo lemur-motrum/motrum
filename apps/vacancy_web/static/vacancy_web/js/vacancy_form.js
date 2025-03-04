@@ -63,19 +63,29 @@ window.addEventListener("DOMContentLoaded", () => {
         showErrorValidation("Файл не прикреплен", fileError);
       }
       if (validate) {
+        let file = fileInput.files[0];
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('name', nameInput.value); 
+        formData.append('phone', phoneInput.value); 
+        formData.append('message',  textArea.value ? textArea.value : ""); 
+        formData.append('vacancy', ""); 
         const dataObj = {
           name: nameInput.value,
           phone: phoneInput.value,
           message: textArea.value ? textArea.value : "",
-          file: fileInput.value,
+          file: fileInput.files[0],
+          // file: fileInput.value,
         };
         const data = JSON.stringify(dataObj);
 
-        fetch("", {
+        fetch("/api/v1/vacancy/send-vacancy/", {
           method: "POST",
-          body: data,
+          body: formData,
+          // body: data,
           headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "multipart/form-data",
+            // "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
         })

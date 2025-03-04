@@ -6,11 +6,13 @@ from django.views.generic.base import TemplateView
 
 # from .api import view_sets
 from rest_framework import routers
+from .api import view_sets
 from django.urls import re_path as url
 
 app_name = "core"
 
 router = routers.DefaultRouter()
+router.register(r"v1/core", view_sets.Bitrix24ViewSet)
 
 
 urlpatterns = [

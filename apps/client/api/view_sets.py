@@ -524,6 +524,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
+                    "all_client_info": 0,
                     "client": 28,
                     "cart": 372,
                     "requisitesKpp": None,

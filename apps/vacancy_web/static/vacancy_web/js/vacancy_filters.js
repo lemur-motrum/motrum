@@ -251,7 +251,14 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           })
             .then((response) => response.json())
-            .then((response) => console.log(response))
+            .then((response) => {
+              overlay.classList.remove("visible");
+              setTimeout(() => {
+                overlay.classList.remove("show");
+              }, 600);
+              document.body.style.overflowY = "auto";
+              resetInputs(formContainer, fileLabelDescription);
+            })
             .catch((error) => console.error(error));
         }
       };

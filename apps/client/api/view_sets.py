@@ -1890,7 +1890,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 image_path = save_shipment_doc(data_item["pdf"], document_shipment)
                 print(image_path)
-                document_shipment.name = int(data_item["document_name"])
+                document_shipment.name = data_item["document_name"]
                 document_shipment.file = image_path
                 document_shipment.save()
             data_resp = {"result": "ok", "error": None}

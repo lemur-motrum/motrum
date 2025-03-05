@@ -240,12 +240,27 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 50000
 
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = True
+# для гугл
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+# EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+# EMAIL_USE_SSL = False
+# EMAIL_USE_TLS = True
+
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER_YANDEX")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD_YANDEX")
 EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+# EMAIL_USE_TLS = False
+# # EMAIL_USE_SSL = True
+# SERVER_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
 
 
 

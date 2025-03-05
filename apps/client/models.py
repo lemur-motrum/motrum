@@ -891,9 +891,16 @@ class DocumentShipment(models.Model):
         blank=True,
         null=True,
     )
-    name = models.PositiveIntegerField(
+    # name = models.PositiveIntegerField(
+    #     "номер",
+    #     default=None,
+    #     null=True,
+    # )
+    name = models.CharField(
         "номер",
         default=None,
+        max_length=1000,
+        blank=True,
         null=True,
     )
 

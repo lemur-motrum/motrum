@@ -102,14 +102,14 @@ class VacancyViewSet(viewsets.ModelViewSet):
                     
                 },
             )
-            
+            print("html_message-",html_message)
+            print("subject",subject)
+            print("path_file",path_file)
             to_manager = os.environ.get("EMAIL_HR")
             test = send_email_message_and_file_alternative(subject, None, "anastasiashvechkova@yandex.ru", path_file, html_message )
-            print(test)
+            print("test-email",test)
             
-            folder_path = f"{MEDIA_ROOT}/documents/vacancy"
-            print(folder_path)
-            delete_everything_in_folder(folder_path)
+            
             
             return Response(data=None, status=status.HTTP_200_OK)
         except Exception as e:

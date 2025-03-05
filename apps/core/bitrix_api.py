@@ -1925,6 +1925,70 @@ def get_upd_clirnt_manager():
     #     print(contact)
 
 
+
+# ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА без всей инфы
+def add_new_order_web_not_info(order):
+    try:
+        webhook = BITRIX_WEBHOOK
+        bx = Bitrix(webhook)
+        
+        order = Order.objects.get(id=154)
+        client = order.client
+        req = order.requisites
+        req_inn = order.requisites.inn
+        acc_req = order.account_requisites
+        req_kpp = order.account_requisites.requisitesKpp
+        adress_web = RequisitesAddress.objects.get(
+            requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
+        )
+
+        all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
+            "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
+        )
+
+        # клиент битрикс
+        client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+        req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
+            serch_or_add_info_client(
+                bx,
+                req_inn,
+                acc_req,
+                adress_web,
+                req,
+                client_bx_id,
+                req_kpp,
+                client,
+                base_manager,
+            )
+        )
+        error = "error"
+        location = "Сохранение заказа с сайта в  инфо"
+        info = f" сделка {order} {req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id}"
+        e = error_alert(error, location, info)
+
+        # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
+        # сохранение заказа битркис
+
+        order_new_bx_id = add_new_order_bx(
+            bx, req, company_bx_id, req_bx_id, acc_req_bx_id, client_bx_id
+        )
+        order.id_bitrix = order_new_bx_id
+        order.save()
+
+    except Exception as e:
+        tr = traceback.format_exc()
+        error = "error"
+        location = "Сохранение заказа с сайта в битркис"
+        info = f" сделка {order} ошибка {e}{tr}"
+        e = error_alert(error, location, info)
+
+
+
+
+
+
+
+
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):
 #     with open(file, "rb") as f:
 #         file_base64 = base64.b64encode(f.read()).decode("utf-8")

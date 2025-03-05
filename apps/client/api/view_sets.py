@@ -525,8 +525,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 data = {
                     "all_client_info": 0,
-                    "client": 28,
-                    "cart": 372,
+                    "client": 33,
+                    "cart": 376,
                     "requisitesKpp": None,
                     "account_requisites": None,
                     "type_delivery": None,
@@ -581,13 +581,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                     order = Order.objects.get(cart_id=cart)
                     pass
                 except Order.DoesNotExist:
-                    if data["requisitesKpp"] != None:
+                    if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
                         data_order = {
                             "client": client,
                             "name": None,
                             "specification": specification.id,
-                            "requisites": requisites.id,
-                            "account_requisites": account_requisites.id,
+                            "requisites": requisites.id if data["requisitesKpp"] != None else None,
+                            "account_requisites": account_requisites.id if data["requisitesKpp"] != None else None,
                             "status": "PROCESSING",
                             "cart": cart.id,
                             "bill_name": None,
@@ -596,11 +596,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "bill_date_stop": None,
                             "bill_sum": None,
                             # "comment": data["comment"],
-                            "prepay_persent": requisites.prepay_persent,
-                            "postpay_persent": requisites.postpay_persent,
+                            "prepay_persent": requisites.prepay_persent if data["requisitesKpp"] != None else None,
+                            "postpay_persent": requisites.postpay_persent if data["requisitesKpp"] != None else None,
                             # "motrum_requisites": motrum_requisites.id,
                             "id_bitrix": None,
-                            "type_delivery": type_delivery,
+                            "type_delivery": type_delivery if data["requisitesKpp"] != None else None,
                             # "manager": admin_creator_id,
                         }
 

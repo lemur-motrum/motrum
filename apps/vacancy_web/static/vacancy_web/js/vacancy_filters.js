@@ -236,25 +236,29 @@ window.addEventListener("DOMContentLoaded", () => {
         if (validate) {
           const file = fileInput.files[0];
 
-          const dataObj = {
-            file: file,
-            name: nameInput.value,
-            phone: phoneInput.value,
-            message: vacancyTextArea.value ? vacancyTextArea.value : "",
-            vacancy: vacancyName,
-          };
-
-          const data = JSON.stringify(dataObj);
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("name", nameInput.value);
+          formData.append("phone", phoneInput.value);
+          formData.append("message", vacancyTextArea.value);
+          formData.append("vacancy", vacancyName);
 
           fetch("/api/v1/vacancy/send-vacancy/", {
             method: "POST",
-            body: data,
+            body: formData,
             headers: {
               "X-CSRFToken": csrfToken,
             },
           })
             .then((response) => response.json())
-            .then((response) => console.log(response))
+            .then((response) => {
+              overlay.classList.remove("visible");
+              setTimeout(() => {
+                overlay.classList.remove("show");
+              }, 600);
+              document.body.style.overflowY = "auto";
+              resetInputs(formContainer, fileLabelDescription);
+            })
             .catch((error) => console.error(error));
         }
       };

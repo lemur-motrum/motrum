@@ -692,7 +692,8 @@ def save_multi_file_all_bx(bx, type_file, file_dict, id_bx, method, field_name):
             file = f"{MEDIA_ROOT}/{ file.bill_file_no_signature}"
 
         elif type_file == "file_dict_shipment":
-            name = file.file
+            # name = file.file
+            name = f"{file.name}.pdf"
 
             file = f"{MEDIA_ROOT}/{ file.file}"
         else:

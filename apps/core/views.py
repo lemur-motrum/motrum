@@ -11,7 +11,7 @@ from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
 
 from apps import client
-from apps.client.models import AccountRequisites, Client, Requisites
+from apps.client.models import AccountRequisites, Client, ClientRequisites, Requisites, RequisitesAddress, RequisitesOtherKpp
 from apps.core.bitrix_api import get_manager
 from apps.core.models import (
     CompanyInfoWeb,
@@ -22,6 +22,7 @@ from apps.core.models import (
     ReviewsAutoInfoWeb,
     SeoTextSolutions,
     SliderMain,
+    TypeDelivery,
 )
 from apps.product.models import Cart, CategoryProduct, Price, Product, ProductProperty
 
@@ -75,28 +76,49 @@ def index(request):
 def cart(request):
 
     cart = request.COOKIES.get("cart")
-
+    requisites = None
+    type_delivery = None
     if cart:
         cart_qs = Cart.objects.get(id=cart)
         discount_client = 0
         if cart_qs.client:
+            all_client_info = False
+            client_info = False
+            req_info = False
             client = Client.objects.get(id=cart_qs.client.id)
+            if client.email and client.middle_name and client.last_name:
+                client_info =  True
+            
             # discount_client = client.percent
             # if discount_client is None:
             #     discount_client = 0
-
-            requisites = (
-                Requisites.objects.filter(client=client)
-                # .prefetch_related("accountrequisites_set")
-                .annotate(
-                    # accountrequisit=F("accountrequisites__account_requisites"),
-                    # accountrequisit_id=F("accountrequisites__id"),
+            clent_req_kpp  = ClientRequisites.objects.filter(client = client)
+            print("clent_req_kpp",clent_req_kpp)
+            if clent_req_kpp.count() > 0:
+                clent_req_kpp_arr = clent_req_kpp.values_list("requisitesotherkpp")
+                req_kpp = RequisitesOtherKpp.objects.filter(id__in = clent_req_kpp_arr).prefetch_related("accountrequisites_set").annotate(
+                    accountrequisit=F("accountrequisites__account_requisites"),
+                    accountrequisit_id=F("accountrequisites__id"),
                 )
-            )
+                req_adress = RequisitesAddress.objects.filter(requisitesKpp__in = clent_req_kpp_arr)
+                req_adress_arr = req_adress.values_list("id")
+                req_acc = AccountRequisites.objects.filter(requisitesKpp__in = clent_req_kpp_arr)
+                
+                if req_kpp.count() > 0 and req_adress.count() > 0 and req_acc.count() > 0:
+                    requisites = req_kpp
+                    req_info = True
+                    
+       
+            if req_info and client_info:
+                all_client_info = True
+                print(type_delivery)
+                type_delivery = TypeDelivery.objects.all()
+                print(type_delivery)
 
         else:
             requisites = None
             client = None
+            all_client_info = False
 
         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
             "product__id"
@@ -151,7 +173,7 @@ def cart(request):
         discount_client = None
         requisites = None
         client = None
-
+        all_client_info = False
     context = {
         "client": client,
         "product": product,
@@ -160,8 +182,11 @@ def cart(request):
         "title": "Корзина",
         "discount_client": discount_client,
         "requisites": requisites,
+        "all_client_info":all_client_info,
+        "type_delivery":type_delivery,
         # "account_requisites":account_requisites,
     }
+    print(context)
 
     return render(request, "core/cart.html", context)
 

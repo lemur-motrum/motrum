@@ -205,6 +205,7 @@ def send_email_message_and_file(subject, message, to_email, file):
 
 def send_email_message_and_file_alternative(subject, message, to_email, file,html_content ):
     from django.core.mail import EmailMultiAlternatives
+    print("EMAIL_HOST_USER",settings.EMAIL_HOST_USER)
     email = EmailMultiAlternatives(subject, message, settings.EMAIL_HOST_USER, [to_email])
     print("email",email)
     if html_content:    

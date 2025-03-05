@@ -129,12 +129,24 @@
                     </div>
                     {% if client %}
                         <div class="client-order-details">
-                            {% if requisites %}
+                            {% if all_client_info %}
                                 <select class="select_account_requisites">
                                     {% for requisit in requisites %}
-                                        <option data-requisites-id="{{ requisit.id }}"
+                                        <option data-requisites-id="{{ requisit.requisites.id }}"
+                                                data-requisites-kpp-id="{{ requisit.id }}"
                                                 data-account-requisites-id="{{ requisit.accountrequisit_id }}">
-                                            Юр.лицо - {{ requisit.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                            Юр.лицо - {{ requisit.requisites.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <select class="select_delevery" name='delevery-requisit' value="0">
+
+                                    <option disabled selected>Способ доставки</option>
+                                    {% for delivery in type_delivery %}
+                                        <option 
+                                                value="{{ delivery.id }}">
+                                            {{ delivery.text }}
+                                            {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
                                         </option>
                                     {% endfor %}
                                 </select>

@@ -51,11 +51,13 @@
                     <div class="documentation_title">Документация</div>
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
-                        
+                            {% if productdocument.document.url %}
                             <div class="documentation_item">
                                 <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
                                 <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }})</span>
                             </div>
+                            {% endif %}
+                            
                         {% empty %}
                         {% endfor %}
                     </div>

@@ -132,6 +132,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         data = request.data
         # phone = data["phone"].replace(" ", "")
         phone = re.sub(r"[^0-9+]+", r"", data["phone"])
+        # if "first_name" in data:
+        #     data["is_active"] = first_name
+        #     first_name  = data['name']
+        # else:
+        #     first_name = None
+            
         pin_user = data["pin"]
         data["is_active"] = True
         data["username"] = phone
@@ -929,8 +935,9 @@ class OrderViewSet(viewsets.ModelViewSet):
     def create_bill_admin(self, request, pk=None, *args, **kwargs):
 
         try:
+            import json
+            
             user = request.user
-
             data_get = request.data
             type_save = request.COOKIES.get("type_save")
             post_update = data_get["post_update"]
@@ -981,10 +988,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 if IS_WEB or user.username == "testadmin":
 
-                    import json
+                    
 
                     json_data = json.dumps(data_for_1c)
-                    # json_data = json_serial(data_for_1c)
                     print("json_data", json_data)
                     if user.username == "testadmin":
                         print("if IS_WEB or user.username == testadmin")
@@ -994,6 +1000,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                         print(response)
                     pass
                 else:
+                    json_data = json.dumps(data_for_1c)
+                    url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+                    headers = {"Content-type": "application/json"}
+                    response = send_requests(url, headers, json_data, "1c")
                     add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
@@ -1700,35 +1710,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         pdf = None
         pdf_signed = None
         try:
-
-            # data = {
-            #     "bitrix_id": "10568",
-            #     "order_products": [
-            #         {
-            #             "product__article": "0011",
-            #             "date_delivery": "25-02-2025",
-            #             "reserve": "1",
-            #             "client_shipment": "0",
-            #             "date_shipment": "",
-            #         },
-            #         {
-            #             "product__article": "0021",
-            #             "date_delivery": "25-02-2025",
-            #             "reserve": "1",
-            #             "client_shipment": "0",
-            #             "date_shipment": "",
-            #         },
-            #     ],
-            # }
-            # order_pr_1c = data['order_products']
-            # serialazer_order_pr_1c = ProductSpecification1cSerializer(data=order_pr_1c,many=True)
-            # # print(serialazer_order_pr_1c)
-            # if serialazer_order_pr_1c.is_valid():
-            #     print(111111111111111111111111)
-            #     print(serialazer_order_pr_1c.data)
-            # else:
-            #     print(serialazer_order_pr_1c.error_messages)
-
             order = Order.objects.get(id_bitrix=int(data["bitrix_id"]))
             product_spesif = ProductSpecification.objects.filter(
                 specification=order.specification
@@ -1806,8 +1787,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_WEB:
                     pass
                 else:
-                    pass
-                    # is_save_new_doc_bx = save_new_doc_bx(order)
+                    is_save_new_doc_bx = save_new_doc_bx(order)
 
     # ОКТ 1С получение оплат ОКТ Б24
     @authentication_classes([BasicAuthentication])
@@ -1817,20 +1797,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         data_payment = data["payment"]
         try:
-            # print("add_payment_order_1c")
-
-            # data = [
-            #     {
-            #         "bitrix_id": "10568",
-            #         "amount_sum": "1000.22",
-            #         "date_transaction": "22-12-2024",
-            #     },
-            #      {
-            #         "bitrix_id": "10567",
-            #         "amount_sum": "1000.22",
-            #         "date_transaction": "22-12-2024",
-            #     },
-            # ]
 
             for data_item in data_payment:
                 print(data_item)
@@ -1863,8 +1829,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             if IS_WEB:
                 pass
             else:
-                pass
-                # save_payment_order_bx(data)
+                save_payment_order_bx(data)
 
     # ОКТ 1С получение документов откгрузки ОКТ Б24
     @authentication_classes([BasicAuthentication])
@@ -1874,13 +1839,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         data_shipment = data["shipment"]
         try:
-            # data = [
-            #     {
-            #         "bitrix_id": "10568",
-            #         "pdf": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
-            #         "date": "22-11-2024",
-            #     },
-            # ]
             for data_item in data_shipment:
                 print(data_item)
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -1908,8 +1866,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             if IS_WEB:
                 pass
             else:
-                pass
-                # save_shipment_order_bx(data)
+                save_shipment_order_bx(data)
 
 
 class EmailsViewSet(viewsets.ModelViewSet):

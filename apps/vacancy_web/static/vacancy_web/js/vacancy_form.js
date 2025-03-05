@@ -58,26 +58,16 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       if (validate) {
         const file = fileInput.files[0];
-        // let formData = new FormData();
-        // formData.append("file", file);
-        // formData.append("name", nameInput.value);
-        // formData.append("phone", phoneInput.value);
-        // formData.append("message", textArea.value ? textArea.value : "");
-        // formData.append("vacancy", "");
-
-        const dataObj = {
-          file: file,
-          name: nameInput.value,
-          phone: phoneInput.value,
-          message: textArea.value ? textArea.value : "",
-          vacancy: "",
-        };
-
-        const data = JSON.stringify(dataObj);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("name", nameInput.value);
+        formData.append("phone", phoneInput.value);
+        formData.append("message", textArea.value ? textArea.value : "");
+        formData.append("vacancy", "");
 
         fetch("/api/v1/vacancy/send-vacancy/", {
           method: "POST",
-          body: data,
+          body: formData,
           headers: {
             // "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,

@@ -900,7 +900,7 @@ class DocumentShipment(models.Model):
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
-
-        Notification.add_notification(self.order.id, "DOCUMENT_ACT", self.file)
-
+        if self.order.client:
+            Notification.add_notification(self.order.id, "DOCUMENT_ACT", self.file)
+            
         super().save(*args, **kwargs)

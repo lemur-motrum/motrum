@@ -1564,7 +1564,8 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                     specification._change_reason = "Клиент с сайта"
                     # specification.skip_history_when_saving = True
                     specification.save()
-                    if requisites.contract:
+                    if requisites and requisites.contract:
+                    # if requisites.contract:
 
                         specification_name = requisites.number_spec + 1
                         requisites.number_spec = specification_name

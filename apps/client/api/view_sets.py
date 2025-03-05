@@ -347,14 +347,13 @@ class RequisitesViewSet(viewsets.ModelViewSet):
         account_requisites = data["account_requisites"]
         for k, v in adress["legal_adress"].items():
             if v == "" or v == "null" or v == "None":
-                print(adress["legal_adress"][k] )
+                print(adress["legal_adress"][k])
                 adress["legal_adress"][k] = None
-        
+
         for k, v in requisitesKpp.items():
             if v == "" or v == "null" or v == "None":
                 requisitesKpp[k] = None
-                
-            
+
         print(adress)
         # i = -1
         valid_all = True
@@ -386,7 +385,6 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "postal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
                     "phone": requisitesKpp["phone"],
                     "email": requisitesKpp["email"],
-                    
                 },
             )
         elif type_client == 2:
@@ -520,12 +518,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             with transaction.atomic():
                 data = {
-                    "client": 7,
-                    "cart": 298,
-                    "requisitesKpp": 2,
-                    "account_requisites": 8,
-                    "type_delivery": 1,
+                    "client": 28,
+                    "cart": 372,
+                    "requisitesKpp": None,
+                    "account_requisites": None,
+                    "type_delivery": None,
                 }
+                print(data)
                 cart = int(data["cart"])
                 cart = Cart.objects.get(id=data["cart"])
                 client = cart.client
@@ -537,10 +536,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 all_info_product = True
                 requisites_id = None
                 account_requisites_id = None
-                # motrum_requisites = BaseInfoAccountRequisites.objects.filter().last()
                 motrum_requisites = None
+                requisites = None
                 type_delivery = data["type_delivery"]
-                if "requisitesKpp" in data:
+                if data["requisitesKpp"] != None:
                     all_info_requisites = True
                     requisitesKpp = RequisitesOtherKpp.objects.get(
                         id=data["requisitesKpp"]
@@ -557,26 +556,25 @@ class OrderViewSet(viewsets.ModelViewSet):
                     if product_cart.product.price.rub_price_supplier == 0:
                         all_info_product = False
 
-                # сохранение спецификации для заказа с реквизитами
+                # сохранение спецификации для заказа 
+                status_save_spes, specification, specification_name = (
+                    save_spesif_web(cart, products_cart, extra_discount, requisites)
+                )
+                print(
+                    " status_save_spes, specification, specification_name",
+                    status_save_spes,
+                    specification,
+                    specification_name,
+                )
+                if status_save_spes == "ok" and specification_name:
+                    status_order = "PROCESSING"
 
-                if all_info_requisites and all_info_product:
-                    status_save_spes, specification, specification_name = (
-                        save_spesif_web(cart, products_cart, extra_discount, requisites)
-                    )
-                    print(
-                        " status_save_spes, specification, specification_name",
-                        status_save_spes,
-                        specification,
-                        specification_name,
-                    )
-                    if status_save_spes == "ok" and specification_name:
-                        status_order = "PROCESSING"
+                try:
 
-                    try:
-
-                        order = Order.objects.get(cart_id=cart)
-                        pass
-                    except Order.DoesNotExist:
+                    order = Order.objects.get(cart_id=cart)
+                    pass
+                except Order.DoesNotExist:
+                    if data["requisitesKpp"] != None:
                         data_order = {
                             "client": client,
                             "name": None,
@@ -599,15 +597,15 @@ class OrderViewSet(viewsets.ModelViewSet):
                             # "manager": admin_creator_id,
                         }
 
-                        serializer = self.serializer_class(data=data_order, many=False)
+                        serializer = self.serializer_class(
+                            data=data_order, many=False
+                        )
 
                         if serializer.is_valid():
                             print("serializer.is_valid(ORDER):")
                             cart.is_active = True
                             cart.save()
                             serializer.save()
-                            
-                            
 
                             return Response(
                                 serializer.data, status=status.HTTP_201_CREATED
@@ -615,20 +613,27 @@ class OrderViewSet(viewsets.ModelViewSet):
                         else:
                             print(serializer.errors)
                             return Response(
-                                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                                serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST,
                             )
-
-                return Response(
-                    "",
-                    status=status.HTTP_200_OK,
-                )
+                    else:
+                        cart.is_active = True
+                        cart.save()
+                        return Response(
+                            None, status=status.HTTP_201_CREATED
+                        )
+            
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
+            print(tr)
             error = "error"
             location = "Сохранение спецификации админам окт"
             info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
+            return Response(
+                            e, status=status.HTTP_400_BAD_REQUEST
+                        )
 
     # сохранение рыбы Заказа БИТРИКС
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")

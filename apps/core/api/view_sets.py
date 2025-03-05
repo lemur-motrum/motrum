@@ -19,11 +19,13 @@ class Bitrix24ViewSet(viewsets.ModelViewSet):
     def client_b24(self, request, *args, **kwargs):
         try:
             data = request.data
-            application_token = data.get("auth[application_token]")   
-            if  application_token:
+            application_token = data.get("auth[application_token]")
+            if application_token:
                 companu = data.get("data[FIELDS][ID]")
-                obj, created = UpdatedCompanyBX24.objects.get_or_create(company_bx_id=int(companu))
-                
+                obj, created = UpdatedCompanyBX24.objects.get_or_create(
+                    company_bx_id=int(companu)
+                )
+
         except Exception as e:
             print(e)
             tr = traceback.format_exc()

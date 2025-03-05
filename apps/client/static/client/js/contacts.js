@@ -2,6 +2,7 @@ import {
   isEmailValid,
   showErrorValidation,
   getCookie,
+  maskOptions,
 } from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
@@ -21,15 +22,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const contactPersonDetails = contactPerson.querySelector(
           ".contact_person_details"
         );
-        const maskOptions = {
-          mask: "+{7} (000) 000-00-00",
-          prepare: function (appended, masked) {
-            if (appended === "8" && masked.value === "") {
-              return "7";
-            }
-            return appended;
-          },
-        };
 
         const changeForm = contactPerson.querySelector(".contact_person_form");
         const changeFormFormSubmitBtn = changeForm.querySelector(".sumbit_btn");

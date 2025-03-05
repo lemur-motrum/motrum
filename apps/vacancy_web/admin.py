@@ -27,24 +27,25 @@ from project.admin import website_admin
 #     extra = 1
 class VacancyCategoryWebAdmin(admin.ModelAdmin):
     exclude = ["slug"]
-    
+
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
+
 # class VacancyPriceInlineWeb(admin.TabularInline):
 #     model = VacancyPrice
-    
 
 
 class VacancyWebAdmin(admin.ModelAdmin):
     exclude = ["slug"]
     inlines = [
-    #    VacancyPriceInlineWeb,
+        #    VacancyPriceInlineWeb,
     ]
     list_display = [
         "name",
         "is_actual",
     ]
+
     def has_delete_permission(self, request, obj=None):
         return False
 

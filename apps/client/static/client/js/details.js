@@ -1,4 +1,8 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  maskOptions,
+} from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
 const clientId = +getCookie("client_id");
@@ -58,16 +62,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const phoneInput = newLegalEntityForm.querySelector(".phone");
       const phoneError = newLegalEntityForm.querySelector(".phone_error");
 
-      const phoneMaskOptions = {
-        mask: "+{7} (000) 000-00-00",
-        prepare: function (appended, masked) {
-          if (appended === "8" && masked.value === "") {
-            return "7";
-          }
-          return appended;
-        },
-      };
-      const phoneMask = IMask(phoneInput, phoneMaskOptions);
+      const phoneMask = IMask(phoneInput, maskOptions);
       const legalIndexInput = newLegalEntityForm.querySelector(
         ".legal-adress-index"
       );

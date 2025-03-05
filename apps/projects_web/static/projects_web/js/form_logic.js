@@ -1,4 +1,4 @@
-import { showErrorValidation } from "/static/core/js/functions.js";
+import { showErrorValidation, maskOptions } from "/static/core/js/functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const formWrapper = document.querySelector(".project_one_form");
@@ -8,16 +8,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const nameError = formWrapper.querySelector(".name_error");
     const phoneInput = formWrapper.querySelector(".phone_input");
     const phoneError = formWrapper.querySelector(".phone_error");
-
-    const maskOptions = {
-      mask: "+{7} (000) 000-00-00",
-      prepare: function (appended, masked) {
-        if (appended === "8" && masked.value === "") {
-          return "7";
-        }
-        return appended;
-      },
-    };
 
     const mask = IMask(phoneInput, maskOptions);
 

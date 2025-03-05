@@ -1,4 +1,8 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  maskOptions,
+} from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -10,15 +14,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if (overlay) {
       const autificationForm = overlay.querySelector(".autification-form");
       const phoneInput = autificationForm.querySelector(".phone-input");
-      const maskPhoneOptions = {
-        mask: "+{7} (000) 000-00-00",
-        prepare: function (appended, masked) {
-          if (appended === "8" && masked.value === "") {
-            return "7";
-          }
-          return appended;
-        },
-      };
 
       const pinInput = autificationForm.querySelector(".password-input");
       const maskPinOptions = {
@@ -27,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
         overwrite: "shift",
       };
 
-      const phoneMask = IMask(phoneInput, maskPhoneOptions);
+      const phoneMask = IMask(phoneInput, maskOptions);
       const pinMask = IMask(pinInput, maskPinOptions);
 
       const button = autificationForm.querySelector(".autification-button");

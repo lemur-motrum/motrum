@@ -1,12 +1,16 @@
-import { getCookie, getDigitsNumber } from "/static/core/js/functions.js";
+import {
+  getCookie,
+  getDigitsNumber,
+  showErrorValidation,
+  maskOptions,
+} from "/static/core/js/functions.js";
+
+const csrfToken = getCookie("csrftoken");
+const currentUrl = new URL(window.location.href);
+const urlParams = currentUrl.searchParams;
 
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".vacancy_container");
-
-  const csrfToken = getCookie("csrftoken");
-
-  const currentUrl = new URL(window.location.href);
-  const urlParams = currentUrl.searchParams;
 
   if (wrapper) {
     const loader = wrapper.querySelector(".loader");
@@ -20,6 +24,12 @@ window.addEventListener("DOMContentLoaded", () => {
     let filtersParamsArray = [];
 
     const vacancyGetParam = urlParams.get("vacancy_category");
+
+    function truncate(str, maxlength) {
+      return str.length > maxlength
+        ? str.slice(0, 3) + "…" + str.slice(maxlength - 4, maxlength - 1)
+        : str;
+    }
 
     if (vacancyGetParam) {
       filtersParamsArray = vacancyGetParam.split(",");
@@ -92,6 +102,8 @@ window.addEventListener("DOMContentLoaded", () => {
               showContentBtn.textContent = "подробнее";
             }
           };
+
+          overlayLogic(vacancyItem);
         });
       }, 1);
     }
@@ -131,10 +143,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderCatalogItem(orderData) {
-      let ajaxTemplateWrapper = document.querySelector(
+      const ajaxTemplateWrapper = document.querySelector(
         '[template-elem="wrapper"]'
       );
-      let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
+      const ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
         '[vacancy-elem="vacancy-item"]'
       ).innerText;
 
@@ -142,8 +154,110 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function addAjaxCatalogItem(ajaxElemData) {
-      let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
+      const renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
       catalogContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+    }
+
+    function resetInputs(form, descr) {
+      const inputs = form.querySelectorAll("input");
+      const textArea = form.querySelector("textarea");
+      inputs.forEach((el) => {
+        el.value = "";
+      });
+      textArea.value = "";
+      descr.textContent = "Прикрепить резюме";
+    }
+
+    function overlayLogic(container) {
+      const submitBtn = container.querySelector(".submit_btn");
+      const overlay = container.querySelector(".overlay_vacancy");
+      const closeBtn = overlay.querySelector(".close_btn");
+      const formContainer = overlay.querySelector(".vacancy_modal_form");
+      const vacancyName = formContainer.getAttribute("vacancy-name");
+      const nameInput = formContainer.querySelector(".name_input");
+      const nameError = formContainer.querySelector(".name_error");
+      const phoneInput = formContainer.querySelector(".phone_input");
+      const phoneError = formContainer.querySelector(".phone_error");
+      const filelabel = overlay.querySelector(".file_label");
+      const fileLabelDescription = filelabel.querySelector(".file_description");
+      const fileInput = filelabel.querySelector(".file_input");
+      const fileError = filelabel.querySelector(".file_error");
+      const vacancyTextArea = formContainer.querySelector(
+        ".vacancy_form_textarea"
+      );
+      const formSubmitBtn = formContainer.querySelector(".submit_btn");
+
+      const mask = IMask(phoneInput, maskOptions);
+
+      submitBtn.onclick = () => {
+        overlay.classList.add("show");
+        setTimeout(() => {
+          overlay.classList.add("visible");
+        }, 600);
+        document.body.style.overflowY = "hidden";
+      };
+
+      closeBtn.onclick = () => {
+        overlay.classList.remove("visible");
+        setTimeout(() => {
+          overlay.classList.remove("show");
+        }, 600);
+        document.body.style.overflowY = "auto";
+        resetInputs(formContainer, fileLabelDescription);
+      };
+
+      fileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        const array = file["name"].split(".");
+        const fileName = array[0];
+        const fileType = array.at(-1);
+        fileLabelDescription.textContent =
+          truncate(fileName, 8) + "." + fileType;
+      });
+
+      formSubmitBtn.onclick = () => {
+        let validate = true;
+        if (!nameInput.value) {
+          showErrorValidation("Обязательное поле", nameError);
+          validate = false;
+        }
+        if (!phoneInput.value) {
+          showErrorValidation("Обязательное поле", phoneError);
+          validate = false;
+        }
+        if (phoneInput.value && phoneInput.value.length < 18) {
+          showErrorValidation("Некорректный номер", phoneError);
+          validate = false;
+        }
+        if (!fileInput.value) {
+          validate = false;
+          showErrorValidation("Файл не прикреплен", fileError);
+        }
+        if (validate) {
+          const file = fileInput.files[0];
+
+          const dataObj = {
+            file: file,
+            name: nameInput.value,
+            phone: phoneInput.value,
+            message: vacancyTextArea.value ? vacancyTextArea.value : "",
+            vacancy: vacancyName,
+          };
+
+          const data = JSON.stringify(dataObj);
+
+          fetch("/api/v1/vacancy/send-vacancy/", {
+            method: "POST",
+            body: data,
+            headers: {
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => response.json())
+            .then((response) => console.log(response))
+            .catch((error) => console.error(error));
+        }
+      };
     }
   }
 });

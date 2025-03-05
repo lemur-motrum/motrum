@@ -186,3 +186,14 @@ export function getDeliveryDate(dates) {
   }
   return result;
 }
+
+//маска для телефона, с первой заменой цифры на 8
+export const maskOptions = {
+  mask: "+{7} (000) 000-00-00",
+  prepare: function (appended, masked) {
+    if (appended === "8" && masked.value === "") {
+      return "7";
+    }
+    return appended;
+  },
+};

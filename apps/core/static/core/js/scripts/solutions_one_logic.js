@@ -1,4 +1,4 @@
-import { showErrorValidation } from "/static/core/js/functions.js";
+import { showErrorValidation, maskOptions } from "/static/core/js/functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".solution_one_container");
@@ -15,17 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const phoneError = formContainer.querySelector(".phone_error");
       const submitBtn = formContainer.querySelector(".btn");
 
-      const maskPhoneOptions = {
-        mask: "+{7} (000) 000-00-00",
-        prepare: function (appended, masked) {
-          if (appended === "8" && masked.value === "") {
-            return "7";
-          }
-          return appended;
-        },
-      };
-
-      const phoneMask = IMask(phoneInput, maskPhoneOptions);
+      const phoneMask = IMask(phoneInput, maskOptions);
 
       submitBtn.onclick = () => {
         if (!nameInput.value) {

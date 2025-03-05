@@ -45,6 +45,44 @@
                         {% endif %}
                   </div>
                   <div class="submit_btn">откликнуться на вакансию</div>
+                  <div class="overlay_vacancy">
+                        <div class="modal_window">
+                              <div class="close_btn">+</div>
+                              <div class="title">Отклик на вакансию</div>
+                              <div vacancy-name="{{ name }}" class="vacancy_modal_form">
+                                    <label>
+                                          <input class="name_input" type="text" placeholder="Ваше имя" />
+                                          <div class="error name_error"></div>
+                                    </label>
+                                    <label>
+                                          <input class="phone_input" type="tel" placeholder="Ваш телефон">
+                                          <div class="error phone_error"></div>
+                                    </label>
+                                    <label class="file_label">
+                                          <div class="img_container">
+                                                <svg width="27"
+                                                     height="26"
+                                                     viewBox="0 0 27 26"
+                                                     fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M15.195 20.5424L22.5666 13.1708L24.4204 11.317C26.6599 9.07747 26.6599 5.44641 24.4204 3.20685V3.20685V3.20685C22.0968 0.883299 18.3296 0.883297 16.006 3.20685L9.26445 9.94844L2.18613 17.0268C0.42648 18.7864 0.426476 21.6394 2.18612 23.399V23.399V23.399C3.65059 24.8635 6.02496 24.8635 7.48942 23.399L20.1421 10.7463" stroke="black" stroke-width="1.5" />
+                                                </svg>
+                                          </div>
+                                          <div class="file_description">
+                                                Прикрепить
+                                                резюме
+                                          </div>
+                                          <input class="file_input"
+                                                 style="display:none"
+                                                 type="file"
+                                                 accept=".xls,.xlsx,.png,.jpeg,.jpg,.pdf,.txt,.doc,.docx,.ppt,.rtf,.tiff" />
+                                          <div class="error file_error"></div>
+                                    </label>
+                                    <textarea class="vacancy_textarea" placeholder="Ваше сообщение"></textarea>
+                                    <button class="submit_btn">Отправить</button>
+                              </div>
+                        </div>
+                  </div>
             </div>
       </div>
 </div>

@@ -30,6 +30,20 @@
                     {% endfor %}
                 {% endif %}
             </div>
+            <div class="vacancy_company_slider_overlay">
+                <div class="close_btn">+</div>
+                <div class="vacancy_company_slider_overlay_slider">
+                    <div class="swiper-wrapper">
+                        {% if photo_motrum|length > 0 %}
+                            {% for photo_motrum_elem in photo_motrum %}
+                                <div class="swiper-slide photo-slide">
+                                    <img src="{{ photo_motrum_elem.image.url }}" alt="img">
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="work_in_motrum_description_container">
             <div class="up_content">
@@ -82,6 +96,18 @@
                                 <img src="{{ photo_education_elem.image.url }}" alt="img">
                             </div>
                         {% endfor %}
+                    </div>
+                    <div class="learning_slider_overlay">
+                        <div class="close_btn">+</div>
+                        <div class="learning_slider_overlay_slider">
+                            <div class="swiper-wrapper">
+                                {% for photo_education_elem in photo_education %}
+                                    <div class="swiper-slide">
+                                        <img src="{{ photo_education_elem.image.url }}" alt="img">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% endif %}

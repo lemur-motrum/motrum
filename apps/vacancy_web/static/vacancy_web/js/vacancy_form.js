@@ -1,4 +1,8 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  maskOptions,
+} from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -16,16 +20,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const fileInput = filelabel.querySelector(".file_input");
     const fileError = filelabel.querySelector(".file_error");
     const submitBtn = vacancyForm.querySelector(".submit_btn");
-
-    const maskOptions = {
-      mask: "+{7} (000) 000-00-00",
-      prepare: function (appended, masked) {
-        if (appended === "8" && masked.value === "") {
-          return "7";
-        }
-        return appended;
-      },
-    };
 
     const mask = IMask(phoneInput, maskOptions);
 
@@ -63,28 +57,28 @@ window.addEventListener("DOMContentLoaded", () => {
         showErrorValidation("Файл не прикреплен", fileError);
       }
       if (validate) {
-        let file = fileInput.files[0];
-        let formData = new FormData();
-        formData.append('file', file);
-        formData.append('name', nameInput.value); 
-        formData.append('phone', phoneInput.value); 
-        formData.append('message',  textArea.value ? textArea.value : ""); 
-        formData.append('vacancy', ""); 
+        const file = fileInput.files[0];
+        // let formData = new FormData();
+        // formData.append("file", file);
+        // formData.append("name", nameInput.value);
+        // formData.append("phone", phoneInput.value);
+        // formData.append("message", textArea.value ? textArea.value : "");
+        // formData.append("vacancy", "");
+
         const dataObj = {
+          file: file,
           name: nameInput.value,
           phone: phoneInput.value,
           message: textArea.value ? textArea.value : "",
-          file: fileInput.files[0],
-          // file: fileInput.value,
+          vacancy: "",
         };
+
         const data = JSON.stringify(dataObj);
 
         fetch("/api/v1/vacancy/send-vacancy/", {
           method: "POST",
-          body: formData,
-          // body: data,
+          body: data,
           headers: {
-            // "Content-Type": "multipart/form-data",
             // "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },

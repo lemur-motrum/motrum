@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from tinymce import models as tinymce_models
 from apps.core.utils_web import get_file_path_company_web
 
+
 # Create your models here.
 class PhotoEducationInfoWeb(models.Model):
     image = models.ImageField(
@@ -13,12 +14,14 @@ class PhotoEducationInfoWeb(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Фото блок обучение"
         verbose_name_plural = "Фото блок обучение"
-        
+
     def __str__(self):
         return f"{self.image}"
+
 
 class VacancyCategory(models.Model):
     name = models.CharField("Название вакансии", max_length=200)
@@ -29,15 +32,14 @@ class VacancyCategory(models.Model):
         blank=True,
         null=True,
     )
-    
-    
+
     class Meta:
         verbose_name = "Категория вакансий"
         verbose_name_plural = "категории вакансий"
-        
+
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         slug_text = self.name
         slugish = translit.translify(slug_text)
@@ -62,40 +64,50 @@ class Vacancy(models.Model):
         blank=True,
         null=True,
     )
-    experience =  models.CharField("Опыт", max_length=200,null=True,)
-    first = models.FloatField(
-        "от", blank=True, null=True,
+    experience = models.CharField(
+        "Опыт",
+        max_length=200,
+        null=True,
     )
-    
+    first = models.FloatField(
+        "от",
+        blank=True,
+        null=True,
+    )
+
     last = models.FloatField(
-        "до", blank=True, null=True,
+        "до",
+        blank=True,
+        null=True,
     )
     fixed = models.FloatField(
-        "фиксированная сумма", blank=True, null=True,
+        "фиксированная сумма",
+        blank=True,
+        null=True,
     )
     type_payments = models.CharField("Условия выплат", max_length=500)
     # text = models.TextField("Описание текстовое")
-    text= tinymce_models.HTMLField(
-            "Общее описание",
-            blank=True,
-            null=True,
-        )
-    responsibiliti= tinymce_models.HTMLField(
-            "Что нужно",
-            blank=True,
-            null=True,
-        )
+    text = tinymce_models.HTMLField(
+        "Общее описание",
+        blank=True,
+        null=True,
+    )
+    responsibiliti = tinymce_models.HTMLField(
+        "Что нужно",
+        blank=True,
+        null=True,
+    )
     requirement = tinymce_models.HTMLField(
-            "Что мы приветствуем",
-            blank=True,
-            null=True,
-        )
+        "Что мы приветствуем",
+        blank=True,
+        null=True,
+    )
     conditions = tinymce_models.HTMLField(
-            "Мы предлагаем",
-            blank=True,
-            null=True,
-        )
-    
+        "Мы предлагаем",
+        blank=True,
+        null=True,
+    )
+
     class Meta:
         verbose_name = "Вакансия"
         verbose_name_plural = "Вакансии"
@@ -129,17 +141,23 @@ class VacancyPrice(models.Model):
     )
     # type_price = models.CharField(max_length=100, choices=TYPE_PRICE_VACANCY, default="3")
     first = models.FloatField(
-        "от", blank=True, null=True,
+        "от",
+        blank=True,
+        null=True,
     )
-    
+
     last = models.FloatField(
-        "до", blank=True, null=True,
+        "до",
+        blank=True,
+        null=True,
     )
     fixed = models.FloatField(
-        "фиксированная сумма", blank=True, null=True,
+        "фиксированная сумма",
+        blank=True,
+        null=True,
     )
     type_payments = models.CharField("Условия выплат", max_length=500)
-    
+
     class Meta:
         verbose_name = "Оплата"
         verbose_name_plural = "Оплаты"

@@ -3028,6 +3028,192 @@ a {
           background-color: #ff5b00;
         }
       }
+      .contact_page_overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba($color: #000000, $alpha: 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: 0.6s;
+        opacity: 0;
+        &.show {
+          display: flex;
+        }
+        &.visible {
+          opacity: 1;
+        }
+        .modal_window {
+          width: 23.75rem;
+          height: auto;
+          padding: 1.813rem;
+          background-color: #fff;
+          border-radius: 2.5rem;
+          position: relative;
+          box-sizing: border-box;
+          .close_btn {
+            font-size: 2rem;
+            position: absolute;
+            transform: rotate(45deg);
+            top: 1%;
+            right: 7%;
+            cursor: pointer;
+            color: #bdbdbd;
+            font-weight: 700;
+            transition: 0.6s;
+            &:hover {
+              color: gray;
+            }
+          }
+          .title {
+            text-align: center;
+            margin: 0 auto;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+          }
+          .modal_window_form {
+            margin: 0 auto;
+            margin-top: 0.875rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+            width: 13.938rem;
+            label {
+              width: 100%;
+              height: 3.563rem;
+              position: relative;
+              input {
+                width: 100%;
+                height: 100%;
+                border: 0.094rem solid #000;
+                border-radius: 2rem;
+                display: flex;
+                align-items: center;
+                font-family: "Nunito", sans-serif;
+                font-size: 1.313rem;
+                padding: 0 1.939rem;
+                box-sizing: border-box;
+                &:focus {
+                  outline: none;
+                  &::-webkit-input-placeholder {
+                    color: transparent;
+                  }
+                  &::-moz-placeholder {
+                    color: transparent;
+                  }
+                  &:-ms-input-placeholder {
+                    color: transparent;
+                  }
+                  &::-ms-input-placeholder {
+                    color: transparent;
+                  }
+                  &::placeholder {
+                    color: transparent;
+                  }
+                }
+                &::-webkit-input-placeholder {
+                  color: #000;
+                }
+                &::-moz-placeholder {
+                  color: #000;
+                }
+                &:-ms-input-placeholder {
+                  color: #000;
+                }
+                &::-ms-input-placeholder {
+                  color: #000;
+                }
+                &::placeholder {
+                  color: #000;
+                }
+              }
+              .error {
+                color: red;
+                font-size: 0.5rem;
+                position: absolute;
+                top: 102%;
+                left: 15%;
+                transition: 0.6s;
+                opacity: 0;
+                font-weight: bold;
+                &.show {
+                  opacity: 1;
+                }
+              }
+            }
+            .modal_textarea {
+              border: 0.094rem solid #000;
+              border-radius: 2rem;
+              width: 100%;
+              height: 10.689rem;
+              padding: 1.5rem;
+              box-sizing: border-box;
+              font-family: "Nunito", sans-serif;
+              font-size: 1.125rem;
+              resize: none;
+              &::-webkit-scrollbar {
+                width: 0;
+              }
+              &:focus {
+                outline: none;
+                &::-webkit-input-placeholder {
+                  color: transparent;
+                }
+                &::-moz-placeholder {
+                  color: transparent;
+                }
+                &:-ms-input-placeholder {
+                  color: transparent;
+                }
+                &::-ms-input-placeholder {
+                  color: transparent;
+                }
+                &::placeholder {
+                  color: transparent;
+                }
+              }
+              &::-webkit-input-placeholder {
+                color: #000;
+              }
+              &::-moz-placeholder {
+                color: #000;
+              }
+              &:-ms-input-placeholder {
+                color: #000;
+              }
+              &::-ms-input-placeholder {
+                color: #000;
+              }
+              &::placeholder {
+                color: #000;
+              }
+            }
+            .submit_btn {
+              width: 100%;
+              height: 3.563rem;
+              margin: 0 auto;
+              cursor: pointer;
+              border: none;
+              background-color: #95bad4;
+              border-radius: 1.875rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.313rem;
+              text-transform: lowercase;
+              transition: 0.6s;
+              color: #fff;
+              &:hover {
+                background-color: #ff5b00;
+              }
+            }
+          }
+        }
+      }
     }
     .map-wrapper {
       [class*="ymaps"][class*="-ground-pane"] {

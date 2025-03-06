@@ -71,7 +71,7 @@ def get_id_bd_in_contact_order(bx,contsct_order_id_bx):
     contact_bd_arr = []
     for contact_bx_item in contact_bx:
         try:
-            contact_bd = Client.objects.get(id_bitrix = int(contact_bx_item['ID']))
+            contact_bd = Client.objects.get(bitrix_id_client=int(contact_bx_item['ID']))
             contact_bd_arr.append(contact_bd.id)
         except:
             contact_bd = None

@@ -1662,6 +1662,7 @@ def client_info_bitrix(data, company_adress):
         # id_bitrix=data["id_company"],
         inn=data["inn"],
         defaults={
+            "id_bitrix":data["req_id_bitrix"],
             "legal_entity": data["legal_entity"],
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
@@ -1673,7 +1674,7 @@ def client_info_bitrix(data, company_adress):
             # "id_bitrix": data["id_bitrix"],
         },
         create_defaults={
-            
+            "id_bitrix":data["req_id_bitrix"],
             "legal_entity": data["legal_entity"],
             "inn": data["inn"],
             "contract": data["contract"],
@@ -1718,7 +1719,6 @@ def client_info_bitrix(data, company_adress):
     )
     
     if len(data['contact_bd_arr']) > 0:
-        
         for contact_bd in data['contact_bd_arr']:
             client_req, client_req_created = RequisitesOtherKpp.objects.update_or_create(client_id = int(contact_bd),requisitesotherkpp=client_req_kpp)
            
@@ -1727,6 +1727,7 @@ def client_info_bitrix(data, company_adress):
                 requisitesKpp=client_req_kpp,
                 type_address_bx="web-lk-adress",
             )
+    
     for company_bx_adress in company_adress:
 
         if company_bx_adress["region"]:
@@ -1755,7 +1756,7 @@ def client_info_bitrix(data, company_adress):
             )
         )
         
-        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == 9:
+        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "9":
             client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,

@@ -1645,7 +1645,7 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
 
 def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
-    from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
+    from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp,ClientRequisites
     from dateutil.parser import parse
 
     if data["contract_date"]:
@@ -1716,6 +1716,17 @@ def client_info_bitrix(data, company_adress):
     print(
         "client_req_kpp, client_req_kpp_created", client_req_kpp, client_req_kpp_created
     )
+    
+    if len(data['contact_bd_arr']) > 0:
+        
+        for contact_bd in data['contact_bd_arr']:
+            client_req, client_req_created = RequisitesOtherKpp.objects.update_or_create(client_id = int(contact_bd),requisitesotherkpp=client_req_kpp)
+           
+    
+    req_adress_web = RequisitesAddress.objects.filter(
+                requisitesKpp=client_req_kpp,
+                type_address_bx="web-lk-adress",
+            )
     for company_bx_adress in company_adress:
 
         if company_bx_adress["region"]:
@@ -1727,7 +1738,7 @@ def client_info_bitrix(data, company_adress):
             pass
         else:
             company_bx_adress["province"] == None
-
+        
         client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,
@@ -1743,12 +1754,37 @@ def client_info_bitrix(data, company_adress):
                 },
             )
         )
+        
+        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == 9:
+            client_req_kpp_address, client_req_kpp_created_address = (
+            RequisitesAddress.objects.update_or_create(
+                requisitesKpp=client_req_kpp,
+                type_address_bx="web-lk-adress",
+                defaults={
+                    "country": company_bx_adress["country"],
+                    "post_code": int(company_bx_adress["post_code"]),
+                    "region": company_bx_adress["province"],
+                    "province": company_bx_adress["region"],
+                    "city": company_bx_adress["city"],
+                    "address1": company_bx_adress["address1"],
+                    "address2": company_bx_adress["address2"],
+                },
+            )
+        )
+            
+        
+            
+        
         print(
             "client_req_kpp_address, client_req_kpp_created_address",
             client_req_kpp_address,
             client_req_kpp_created_address,
         )
 
+    
+    
+        
+    
     acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
         requisitesKpp=client_req_kpp,
         account_requisites=data["account_requisites"],

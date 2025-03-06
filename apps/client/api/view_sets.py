@@ -404,6 +404,8 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "postal_post_code": adress["postal_adress"]["post_code"],
                     "postal_city": adress["postal_adress"]["city"],
                     "postal_address": f"{adress["postal_adress"]["legal_address1"]}{adress["postal_adress"]["legal_address2"]}",
+                    "tel": requisitesKpp["phone"],
+                    "email": requisitesKpp["email"],
                 },
             )
 

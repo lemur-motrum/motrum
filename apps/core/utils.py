@@ -1648,11 +1648,6 @@ def client_info_bitrix(data, company_adress):
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
     from dateutil.parser import parse
 
-    print("client_info_bitrix")
-    print("data", data)
-    # "id_company": f"{company}{id_req}",
-    print("company_adress", company_adress)
-
     if data["contract_date"]:
         data_contract = parse(data["contract_date"]).date()
         # data_contract = datetime.datetime.strptime(
@@ -1660,27 +1655,35 @@ def client_info_bitrix(data, company_adress):
         # ).date()
     else:
         data_contract = None
-
+        
+    if len(data['contact_bd_arr']) > 0:
+        pass
     client_req, client_req_created = Requisites.objects.update_or_create(
         # id_bitrix=data["id_company"],
         inn=data["inn"],
         defaults={
-            "contract": data["contract"],
             "legal_entity": data["legal_entity"],
-            # "contract": data["contract"],
-            # "contract_date": data_contract,
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
+            "first_name": int(data["first_name"]),
+            "last_name": int(data["last_name"]),
+            "middle_name": int(data["middle_name"]),
+             # "contract": data["contract"],
+            # "contract_date": data_contract,
             # "id_bitrix": data["id_bitrix"],
         },
         create_defaults={
-            "contract": data["contract"],
+            
             "legal_entity": data["legal_entity"],
             "inn": data["inn"],
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
+            
+            "first_name": int(data["first_name"]),
+            "last_name": int(data["last_name"]),
+            "middle_name": int(data["middle_name"]),
             # "id_bitrix": data["id_bitrix"],
         },
     )

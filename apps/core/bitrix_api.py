@@ -432,7 +432,7 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
             "contact_bd_arr":contact_bd_arr,
             "adress_type": adress_type,
             "id_bitrix": id_req,
-            "req_id_bitrix": f"{company}{id_req}",
+            "req_id_bitrix": f"{company}{inn}",
             "id_company": f"{company}",
             "manager": manager.id,
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',

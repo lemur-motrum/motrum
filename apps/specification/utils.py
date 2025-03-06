@@ -655,12 +655,14 @@ def save_nomenk_doc(link):
         r = requests.get(link, stream=True)
         with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
             ofile.write(r.content)
-
-        return "{0}/{1}/{2}".format(
+            
+        path = "{0}/{1}/{2}".format(
             "documents",
             "shipment",
             name_doc,
         )
+        return (path,None,None)
+    
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -668,5 +670,5 @@ def save_nomenk_doc(link):
         location = "Получение\сохранение данных o складов 1с "
         info = f"Получение\сохранение данных o складов 1с . Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
-        return "ERROR"
+        return ("ERROR",tr,e)
         

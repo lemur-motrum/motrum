@@ -16,10 +16,11 @@ from apps.supplier.models import Supplier, Vendor
 from project.settings import MEDIA_ROOT
 
 
-def get_motrum_storage():
+def get_motrum_storage(path):
     try:
-        new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
+        new_dir = "{0}/{1}".format(MEDIA_ROOT, path)
         path_storage = f"{new_dir}/nomenk/1.xlsx"
+        path_storage = new_dir
         
         # path_storage_motrum = f"{new_dir}/test_ooo.xlsx"
         # path_storage_pnm = f"{new_dir}/test_pmn.xlsx"

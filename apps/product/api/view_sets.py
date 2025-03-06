@@ -32,6 +32,7 @@ from apps.specification.models import ProductSpecification
 import threading
 
 from apps.specification.utils import save_nomenk_doc
+from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from project.settings import MEDIA_ROOT
 import datetime
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -250,20 +251,25 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
     def get_nomenclature(self, request, *args, **kwargs):
         print("get_nomenclature")
+        
         data = request.data
-        data = (
-            {
-                "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
+        # data = (
+        #     {
+        #         "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
                 
-            },
-        )
+        #     },
+        # )
 
-        image_path = save_nomenk_doc(data["pdf"])
-        if image_path == "ERROR":
+        path,tr,e = save_nomenk_doc(data["file"])
+        if path == "ERROR":
+            
             #сюда разбор фаила 
-            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+            data_resp = {"result": "error", "error": f"info-error {tr}{e}"}
+            return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(None, status=status.HTTP_200_OK)
+            get_motrum_storage(path)
+            data_resp = {"result": "ok", "error": None}
+            return Response(data_resp, status=status.HTTP_200_OK)
 
 
 class CartViewSet(viewsets.ReadOnlyModelViewSet):

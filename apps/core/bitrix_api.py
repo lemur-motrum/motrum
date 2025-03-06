@@ -1932,7 +1932,7 @@ def add_new_order_web_not_info(order):
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
         
-        order = Order.objects.get(id=154)
+        order = Order.objects.get(id=177)
         client = order.client
         req = order.requisites
         req_inn = order.requisites.inn
@@ -1948,38 +1948,13 @@ def add_new_order_web_not_info(order):
 
         # клиент битрикс
         client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
-        req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-            serch_or_add_info_client(
-                bx,
-                req_inn,
-                acc_req,
-                adress_web,
-                req,
-                client_bx_id,
-                req_kpp,
-                client,
-                base_manager,
-            )
-        )
-        error = "error"
-        location = "Сохранение заказа с сайта в  инфо"
-        info = f" сделка {order} {req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id}"
-        e = error_alert(error, location, info)
-
-        # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
-        # сохранение заказа битркис
-
-        order_new_bx_id = add_new_order_bx(
-            bx, req, company_bx_id, req_bx_id, acc_req_bx_id, client_bx_id
-        )
-        order.id_bitrix = order_new_bx_id
-        order.save()
+        
 
     except Exception as e:
         tr = traceback.format_exc()
         error = "error"
-        location = "Сохранение заказа с сайта в битркис"
-        info = f" сделка {order} ошибка {e}{tr}"
+        location = "Сохранение заказа с сайта клиента без инфы в битркис"
+        info = f" клиента без инфы  сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
 

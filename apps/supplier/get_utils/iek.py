@@ -1330,7 +1330,6 @@ def iek_api():
     # остатки на складах
     def get_iek_stock_one(prod):
         try:
-
             url_params = f"sku={prod.article_supplier}"
             url_service = "/residues/json/"
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
@@ -1430,9 +1429,10 @@ def iek_api():
                 try:
                     prod_article = data_item["Code"]
                     prod_tm = data_item["TM"]
+                    prod_tm = prod_tm.lower()
                     try:
                         prod = Product.objects.get(
-                            supplier=supplier,vendor=prod_tm, article_supplier=prod_article
+                            supplier=supplier,vendor__slug=prod_tm, article_supplier=prod_article
                         )
                         old_prop = ProductProperty.objects.filter(product=prod).exists()
                         if old_prop == False:

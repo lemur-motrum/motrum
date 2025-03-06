@@ -1720,7 +1720,7 @@ def client_info_bitrix(data, company_adress):
     
     if len(data['contact_bd_arr']) > 0:
         for contact_bd in data['contact_bd_arr']:
-            client_req, client_req_created = ClientRequisites.objects.update_or_create(client_id = int(contact_bd),requisitesotherkpp=client_req_kpp)
+            client_req_ty, client_req_created_ty = ClientRequisites.objects.update_or_create(client_id = int(contact_bd),requisitesotherkpp=client_req_kpp)
            
     
     req_adress_web = RequisitesAddress.objects.filter(

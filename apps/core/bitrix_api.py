@@ -459,6 +459,10 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
             "legal_post_code": legal_post_code,
             "bx_city": bx_city,
             "bx_city_post": bx_city_post,
+            "first_name":first_name,
+            "last_name":last_name,
+            "middle_name":middle_name,
+            
         }
 
         context = {

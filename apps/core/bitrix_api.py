@@ -48,11 +48,12 @@ def get_contact_order(bx,order_id_bx):
     )
     print("contacts", contacts)
     if len(contacts) == 1:
-        return [contacts["CONTACT_ID"]]
+        return [int(contacts["CONTACT_ID"])]
     elif len(contacts) > 1:
         contact_idx = []
         for contact in contacts:
-            contact_idx.append(contact["CONTACT_ID"])
+            print(contact)
+            contact_idx.append(int(contact["CONTACT_ID"]))
         return contact_idx
             
     else:

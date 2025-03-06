@@ -44,7 +44,7 @@ from project.settings import BASE_MANAGER_FOR_BX, MEDIA_ROOT, BITRIX_WEBHOOK
 def get_contact_order(bx,order_id_bx):
     
     contacts = bx.get_by_ID(
-        "crm.deal.contact.items.get",[order_id_bx]
+        "crm.deal.contact.items.get",[int(order_id_bx)]
     )
     print("contacts", contacts)
     if len(contacts) == 1:

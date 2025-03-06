@@ -126,10 +126,12 @@ class Requisites(models.Model):
         null=True,
         blank=True,
     )  # НА УДАЛЕНИЕ
-    id_bitrix = models.PositiveIntegerField(
+    id_bitrix = models.CharField(
         "Id реквизита в битрикс",
-        null=True,
+        
+        max_length=1000,
         blank=True,
+        null=True,
     )
 
     number_spec = models.PositiveIntegerField(
@@ -138,7 +140,7 @@ class Requisites(models.Model):
 
     contract = models.CharField(
         "Договор",
-        max_length=150,
+        max_length=200,
         blank=True,
         null=True,
     )

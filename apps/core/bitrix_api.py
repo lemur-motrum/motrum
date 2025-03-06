@@ -46,9 +46,10 @@ def get_contact_order(bx,order_id_bx):
     contacts = bx.get_by_ID(
         "crm.deal.contact.items.get",[int(order_id_bx)]
     )
+    contacts = [contacts]
     print("contacts", contacts)
     if len(contacts) == 1:
-        return [int(contacts["CONTACT_ID"])]
+        return [int(contacts[0]["CONTACT_ID"])]
     elif len(contacts) > 1:
         contact_idx = []
         for contact in contacts:

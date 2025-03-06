@@ -19,7 +19,7 @@ beautifulsoup4==4.12.3
 djangorestframework==3.15.2
 num2words==0.5.14
 django-tinymce==4.1.0
-fast-bitrix24==1.8.3
+fast-bitrix24==1.8.4
 drf_spectacular==0.28.0
 dadata
 

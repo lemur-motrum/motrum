@@ -3,6 +3,7 @@ import datetime
 from locale import LC_ALL, setlocale
 import os
 import random
+import re
 import threading
 import traceback
 from django.conf import settings
@@ -30,6 +31,8 @@ from apps.core.bitrix_api import (
     add_or_get_contact_bx,
     chech_client_other_rec_company,
     currency_check_bx,
+    get_contact_order,
+    get_id_bd_in_contact_order,
     get_info_for_order_bitrix,
     get_manager,
     get_order_carrency_up,
@@ -105,51 +108,20 @@ from fast_bitrix24 import Bitrix
 
 # тестовая страница скриптов
 def add_iek(request):
-    from requests.auth import HTTPBasicAuth
+    # from requests.auth import HTTPBasicAuth
+    # import logging
 
+    # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
+    
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
-    get_upd_clirnt_manager()
-    
-    # base_manager = AdminUser.objects.get(bitrix_id=174)
-    # req_inn = 6311140000
-    # req_kpp = RequisitesOtherKpp.objects.get(id=15)
-    # req = req_kpp.requisites
-    # acc_req = AccountRequisites.objects.get(id=20)
-    # adress_web = RequisitesAddress.objects.get(
-    #     requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
-    # )
-    # client = Client.objects.get(id=27)
-    # print("client",client)
-    # all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
-    #     "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
-    # )
-    # print(adress_web.region)
-    # print(all_rec_client)
-    # client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
-    # req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-    #     serch_or_add_info_client(bx, req_inn, acc_req, adress_web, req, client_bx_id, req_kpp, client,base_manager)
-    # )
-    # print("RESULT")
-    # print(req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
     
     
+    contsct_order_id_bx = get_contact_order(bx,11388)
+    print("contacts", contsct_order_id_bx)
+  
     
-    # # company_bx_id = 17826
-    # # client_bx_id = 65406
-    # # req_bx_id = 6850
-    # # acc_req_bx_id = 4254 
-    # # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
-    # order = Order.objects.get(id=172)
-    # order_new_bx_id = add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id,client_bx_id)
-    # print("order_new_bx_id",order_new_bx_id)
-    # print("int",int(order_new_bx_id))
-    # order.id_bitrix = int(order_new_bx_id)
-    # order.save()
-    # print(order)
-    
-
     
     result = 1
     if result:

@@ -39,7 +39,7 @@ class Client(CustomUser):
         null=True,
     )
     position = models.CharField("Номер телефона", max_length=200, null=True, blank=True)
-    bitrix_id_client = models.PositiveIntegerField(
+    id_bitrix = models.PositiveIntegerField(
         "Номер  битрикс",
         null=True,
         blank=True,

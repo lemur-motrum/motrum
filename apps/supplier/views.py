@@ -82,7 +82,7 @@ from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_shipment_doc
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
-from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature
+from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature,nomek_test_2
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
@@ -117,12 +117,8 @@ def add_iek(request):
     bx = Bitrix(webhook)
     title = "TEST"
     
-    
-    contsct_order_id_bx = get_contact_order(bx,11388)
-    print("contacts", contsct_order_id_bx)
-  
-    
-    
+    nomek_test_2()
+   
     result = 1
     if result:
         pass

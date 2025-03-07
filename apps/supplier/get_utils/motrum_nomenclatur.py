@@ -35,7 +35,7 @@ def get_motrum_nomenclature():
             "В группе",
             "Код",
         ]
-        
+
         fieldnames_nomenclature_written = [
             "Номенклатура",
             "Артикул",
@@ -50,52 +50,56 @@ def get_motrum_nomenclature():
         path_nomenclature_xlsx = f"{new_dir}/Номенктатура-25.xlsx"
         workbook = load_workbook(path_nomenclature_xlsx)
         sheet = workbook.active
-        
-        with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile, open(
+
+        with open(
+            path_nomenclature, "r", newline="", encoding="UTF-8"
+        ) as csvfile, open(
             path_nomenclature_write_file, "w", encoding="UTF-8"
         ) as writerFile:
             reader_nomenk = csv.DictReader(
                 csvfile, delimiter=",", fieldnames=fieldnames_nomenclature
             )
             writer_nomenk = csv.DictWriter(
-                writerFile, delimiter=",",fieldnames=fieldnames_nomenclature_written
+                writerFile, delimiter=",", fieldnames=fieldnames_nomenclature_written
             )
             # writer_nomenk.writeheader()
-            
-          
+
             i = 0
             vendor = ""
             vendor_arr = []
             for row_nomenk in reader_nomenk:
                 i += 1
                 try:
-                        
 
                     if (
-                        i > 2 
+                        i > 2
                         and row_nomenk["Артикул"] != ""
                         and row_nomenk["Артикул"] != None
                     ):
-                        print(i,"NEW STR")
+                        print(i, "NEW STR")
                         cell_value_pass = sheet.cell(row=i, column=8).fill.fgColor.value
-                        cell_value_vendor = sheet.cell(row=i, column=7).fill.fgColor.value
-                        print("cell_value_pass",cell_value_pass,type(cell_value_pass))
-                        print("cell_value_vendor",cell_value_vendor)
+                        cell_value_vendor = sheet.cell(
+                            row=i, column=7
+                        ).fill.fgColor.value
+                        print("cell_value_pass", cell_value_pass, type(cell_value_pass))
+                        print("cell_value_vendor", cell_value_vendor)
                         if cell_value_pass == "00000000":
                             if cell_value_vendor == 8:
                                 tag_view = True
                             else:
                                 tag_view = False
-                            print("tag_view",tag_view)    
+                            print("tag_view", tag_view)
                             vendor_row = str(row_nomenk["В группе"]).strip()
                             supplier_qs, vendor_qs = get_or_add_vendor(vendor_row)
                             article_supplier = str(row_nomenk["Артикул"]).strip()
                             article_supplier = " ".join(article_supplier.split())
                             print(article_supplier)
                             lot_str = (
-                                str(row_nomenk["Единица измерения"]).replace(".", "").strip()
+                                str(row_nomenk["Единица измерения"])
+                                .replace(".", "")
+                                .strip()
                             )
-                            print("lot",lot_str)
+                            print("lot", lot_str)
                             lot = Lot.objects.get_or_create(
                                 name_shorts=lot_str, defaults={"name": lot_str}
                             )[0]
@@ -106,7 +110,8 @@ def get_motrum_nomenclature():
                             if vendor_qs.slug == "emas" or vendor_qs.slug == "tbloc":
 
                                 product = Product.objects.filter(
-                                    supplier=supplier_qs, article_supplier=article_supplier
+                                    supplier=supplier_qs,
+                                    article_supplier=article_supplier,
                                 )
 
                                 if product:
@@ -154,34 +159,33 @@ def get_motrum_nomenclature():
                             product.in_view_website = tag_view
                             product._change_reason = "Автоматическое"
                             product.save()
-                    
+
                             # update_change_reason(product, "Автоматическое")
 
                             add_stok_motrum_article(
                                 product,
                                 lot,
                             )
-                        
-                            
+
                             row_nomenk["Артикул мотрум"] = product.article
-                           
+
                             name = name.replace(";", "").replace(",", "")
-                            print("name",name)
+                            print("name", name)
                             row_nomenk["Номенклатура"] = product.name
                             writer_nomenk.writerow(row_nomenk)
-                            
+
                     elif i == 2:
-        
+
                         row_nomenk["Артикул мотрум"] = "Артикул мотрум"
-                    
+
                         writer_nomenk.writerow(row_nomenk)
                     elif i < 2:
-                    
+
                         writer_nomenk.writerow(row_nomenk)
                     else:
                         pass
                 except Exception as e:
-                    tr =  traceback.format_exc()
+                    tr = traceback.format_exc()
                     print(e)
                     error = "file_error"
                     location = "Загрузка фаилов номенклатура "
@@ -193,13 +197,14 @@ def get_motrum_nomenclature():
         writerFile.close()
     except Exception as e:
         print(e)
-        tr =  traceback.format_exc()
+        tr = traceback.format_exc()
         error = "file_error"
         location = "Обработка фаилов номенклатура мотрум"
 
         info = f"ошибка при чтении фаила{e} { tr}"
-        e = error_alert(error, location, info)    
-    
+        e = error_alert(error, location, info)
+
+
 def add_new_product(
     supplier_qs,
     article_supplier,
@@ -217,7 +222,7 @@ def add_new_product(
     )
     prod_new._change_reason = "Автоматическое"
     prod_new.save()
-     
+
     update_change_reason(prod_new, "Автоматическое")
     currency = Currency.objects.get(words_code="RUB")
     vat = Vat.objects.get(name=20)
@@ -237,7 +242,7 @@ def get_or_add_vendor(vendor):
     if vendor_name == "AuCom Electronics":
         vendor_name = "AuCom"
         supplier_qs = Supplier.objects.get(slug="delta")
-        
+
     elif vendor_name == "OptimusDrive":
         vendor_name = "Optimus Drive"
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
@@ -254,25 +259,23 @@ def get_or_add_vendor(vendor):
         supplier_qs = Supplier.objects.get(slug="avangard")
     elif vendor_name == "ONI":
         supplier_qs = Supplier.objects.get(slug="iek")
-    elif vendor_name == "RAAD" :
+    elif vendor_name == "RAAD":
         supplier_qs = Supplier.objects.get(slug="emas")
     elif vendor_name == "Roundss":
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
     elif vendor_name == "SINE":
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
-    elif vendor_name == "TBLOC" :
+    elif vendor_name == "TBLOC":
         supplier_qs = Supplier.objects.get(slug="emas")
-    elif vendor_name == "VEDA" :
+    elif vendor_name == "VEDA":
         supplier_qs = Supplier.objects.get(slug="veda-mc")
-    elif vendor_name == "Veichi" :
+    elif vendor_name == "Veichi":
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
-    elif vendor_name == "Emas" :
+    elif vendor_name == "Emas":
         supplier_qs = Supplier.objects.get(slug="emas")
     else:
         supplier_qs = Supplier.objects.get(slug="drugoj")
-        
-        
-        
+
     slugish = translit.translify(vendor_name)
     slugish = slugify(slugish)
 
@@ -311,3 +314,29 @@ def add_stok_motrum_article(
 
     stock.save()
 
+
+def nomek_test_2():
+    new_dir = "{0}/{1}".format(MEDIA_ROOT, "ones")
+    path_nomenclature = f"{new_dir}/Номенктатура_last.csv"
+    print(path_nomenclature)
+    arr_nomenclature = []
+    fieldnames_nomenclature = [
+        "Номенклатура",
+        "Артикул",
+        "Единица измерения",
+        "Категория",
+        "Склад",
+        "Тип",
+        "В группе",
+        "Код",
+        "Артикул мотрум",
+    ]
+    with open(path_nomenclature, "r", newline="", encoding="UTF-8") as csvfile:
+        reader_nomenk = csv.DictReader(
+            csvfile, delimiter=",", fieldnames=fieldnames_nomenclature
+        )
+        i = 0
+        for row_nomenk in reader_nomenk:
+            i += 1
+            if i < 60:
+                print(row_nomenk)

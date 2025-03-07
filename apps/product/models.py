@@ -730,7 +730,7 @@ class ProductImage(models.Model):
     )
     photo = models.ImageField("Изображение", upload_to=get_file_path_add, null=True)
     # file = models.CharField("фаил в системе", max_length=100, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=150)
+    link = models.CharField("Ссылка у поставщика", max_length=250)
     hide = models.BooleanField("Скрыть", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 

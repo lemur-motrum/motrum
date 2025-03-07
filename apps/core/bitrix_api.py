@@ -73,11 +73,28 @@ def get_id_bd_in_contact_order(bx,contsct_order_id_bx):
         try:
             contact_bd = Client.objects.get(bitrix_id_client=int(contact_bx_item['ID']))
             contact_bd_arr.append(contact_bd.id)
+            # upd_client_info_in_bd(contact_bx_item,contact_bd)
+            
         except:
             contact_bd = None
     print(contact_bd_arr)
     return contact_bd_arr
     
+    
+def upd_client_info_in_bd(contact_bx_info_one,contact_bd):
+    
+    email =  contact_bx_info_one['EMAIL']
+    if len(email) > 0:
+        email_nb = contact_bx_info_one['EMAIL'][0]['VALUE']
+    else:
+        email_nb = None
+        
+    client = Client.objects.update(
+        middle_name= contact_bx_info_one['SECOND_NAME'],
+        first_name =contact_bx_info_one['NAME'],
+        last_name=contact_bx_info_one['LAST_NAME'],
+        email=email_nb,
+        position=contact_bx_info_one['POST'],)
     
 # проверка данных при открытии iframe в битрикс заказе - проверка реквизитов и заполненности
 def get_info_for_order_bitrix(bs_id_order, request):
@@ -2112,19 +2129,7 @@ def add_new_order_web_not_info(order):
         )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
-        # req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
-        #     serch_or_add_info_client(
-        #         bx,
-        #         req_inn,
-        #         acc_req,
-        #         adress_web,
-        #         req,
-        #         client_bx_id,
-        #         req_kpp,
-        #         client,
-        #         base_manager,
-        #     )
-        # )
+        
         
 
     except Exception as e:

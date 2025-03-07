@@ -1,6 +1,7 @@
 import base64
 import math
 import os
+import traceback
 from django.db.models import Max
 from django.db.models import Prefetch
 from unicodedata import category
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
 from apps.core.utils import check_file_price_directory_exist, product_cart_in_file
+from apps.logs.utils import error_alert
 from apps.product.api.serializers import (
     CartSerializer,
     ProductCartSerializer,
@@ -253,23 +255,33 @@ class ProductViewSet(viewsets.ModelViewSet):
         print("get_nomenclature")
         
         data = request.data
-        # data = (
-        #     {
-        #         "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
-                
-        #     },
-        # )
+        try:
+            # data = (
+            #     {
+            #         "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
+                    
+            #     },
+            # )
 
-        path,tr,e = save_nomenk_doc(data["file"])
-        if path == "ERROR":
-            
-            #сюда разбор фаила 
-            data_resp = {"result": "error", "error": f"info-error {tr}{e}"}
+            path,tr,e = save_nomenk_doc(data["file"])
+            if path == "ERROR":
+                
+                #сюда разбор фаила 
+                data_resp = {"result": "error", "error": f"info-error {tr}{e}"}
+                return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                get_motrum_storage(path)
+                data_resp = {"result": "ok", "error": None}
+                return Response(data_resp, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Получение\сохранение данных складов 1с "
+            info = f"Получение\сохранение данных складов 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
+            e = error_alert(error, location, info)
+            data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            get_motrum_storage(path)
-            data_resp = {"result": "ok", "error": None}
-            return Response(data_resp, status=status.HTTP_200_OK)
 
 
 class CartViewSet(viewsets.ReadOnlyModelViewSet):

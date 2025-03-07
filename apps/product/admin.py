@@ -932,6 +932,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     # история изменений
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
+        print("""The 'history' admin view for this model.""")
         request.current_app = self.admin_site.name
 
         model = self.model
@@ -1086,6 +1087,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         context = {
             "title": self.history_view_title(request, obj),
             "object_history_list_template": self.object_history_list_template,
+            # "object_history_list_template":"product/templates_history.html",
             "historical_records": result_list,
             "module_name": capfirst(force_str(opts.verbose_name_plural)),
             "object": obj,
@@ -1100,6 +1102,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         context.update(extra_context or {})
         extra_kwargs = {}
+        print("self.object_history_template",self.object_history_template)
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )

@@ -122,7 +122,7 @@ def add_iek(request):
     # path =  'ones/nomenk/склады_2025-03-07.xlsx'
     # get_motrum_storage(path)
     
-    
+    iek_api()
     result = 1
     if result:
         pass

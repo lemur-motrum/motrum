@@ -256,13 +256,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         data = request.data
         try:
-            data = (
-                {
-                    "file": "https://zagorie.ru/upload/iblock/4ea/4eae10bf98dde4f7356ebef161d365d5.pdf",
-                    
-                },
-            )
-
             path,tr,e = save_nomenk_doc(data["file"])
             print(path)
             if path == "ERROR":

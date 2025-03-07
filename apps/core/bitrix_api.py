@@ -927,7 +927,8 @@ def save_shipment_order_bx(data):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
-        for data_item in data:
+        data_shipment = data["shipment"]
+        for data_item in data_shipment:
             order = Order.objects.get(id_bitrix=data_item["bitrix_id"])
             id_bitrix_order = order.id_bitrix
             document_shipment = DocumentShipment.objects.filter(order=order).order_by(

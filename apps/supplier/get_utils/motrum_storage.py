@@ -146,9 +146,9 @@ def get_motrum_storage(path):
             data_sheet = workbook.active
             print(data_sheet.max_row)
             for index in range(2, data_sheet.max_row):
-                print("index",index)
+                
                 article = data_sheet.cell(row=index, column=1).value
-                if article != "" :
+                if article != "" and article == "0011342":
                     article = article.strip()
                     all_fredom_remaining = data_sheet.cell(row=index, column=4).value
                     print(all_fredom_remaining)
@@ -236,13 +236,21 @@ def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_rese
         },
     )
     
-    data_now =  datetime.datetime.now()
+    data_now =  datetime.datetime.today().date()
+    print(type(data_now))
+
+    
+    
     stock = product_stock[0]
+    print(stock.data_update_motrum )
     old_stock_data =  stock.data_update
     if stock.data_update_motrum == data_now:
+        print(999999999)
         stock.stock_motrum = stock.stock_motrum + int_stock_motrum
+        print(stock.stock_motrum_reserve )
+        print(int_stock_reserve_motrum )
         stock.stock_motrum_reserve = stock.stock_motrum_reserve + int_stock_reserve_motrum
-    else :
+    else:
         stock.stock_motrum = int_stock_motrum
         stock.stock_motrum_reserve = int_stock_reserve_motrum
     

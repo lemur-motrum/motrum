@@ -899,8 +899,8 @@ def save_payment_order_bx(data):
 
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
-
-        for data_item in data:
+        data_payment = data["payment"]
+        for data_item in data_payment:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
             id_bitrix_order = order.id_bitrix
             order_debt = order.bill_sum - order.bill_sum_paid

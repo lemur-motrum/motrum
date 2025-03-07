@@ -80,9 +80,12 @@ from apps.product.models import (
 )
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
-from apps.specification.utils import save_shipment_doc
+from apps.specification.utils import save_nomenk_doc, save_shipment_doc
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
-from apps.supplier.get_utils.motrum_nomenclatur import get_motrum_nomenclature,nomek_test_2
+from apps.supplier.get_utils.motrum_nomenclatur import (
+    get_motrum_nomenclature,
+    nomek_test_2,
+)
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
@@ -112,13 +115,21 @@ def add_iek(request):
     # import logging
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
-    
+
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     title = "TEST"
+    # path =  'ones/nomenk/склады_2025-03-07.xlsx'
+    # get_motrum_storage(path)
+    def background_task():
+        # Долгосрочная фоновая задача
+        get_motrum_nomenclature()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
     
-    nomek_test_2()
-   
+    
     result = 1
     if result:
         pass

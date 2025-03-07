@@ -41,42 +41,42 @@ class Notification(models.Model):
 
         order = Order.objects.get(id=order)
         client = order.client
-        
-        Notification.objects.create(
-            order=order,
-            client=client,
-            file=file,
-            type_notification=type_notification,
-        )
-        name_notification =  None
-        link = ""
-        for name_notifications in TYPE_NOTIFICATION:
+        if client:
+            Notification.objects.create(
+                order=order,
+                client=client,
+                file=file,
+                type_notification=type_notification,
+            )
+        # name_notification =  None
+        # link = ""
+        # for name_notifications in TYPE_NOTIFICATION:
             
-            if type_notification in name_notifications:
-                print(name_notifications)
-                name_notification =  name_notifications[1]
-                if name_notifications[0] == "STATUS_ORDERING":
-                    link = "/lk/my_orders"
-                    # client.is_status_notification_counter = True
-                    # client.save() 
-                else:
-                    link = "/lk/my_documents"    
+        #     if type_notification in name_notifications:
+        #         print(name_notifications)
+        #         name_notification =  name_notifications[1]
+        #         if name_notifications[0] == "STATUS_ORDERING":
+        #             link = "/lk/my_orders"
+        #             # client.is_status_notification_counter = True
+        #             # client.save() 
+        #         else:
+        #             link = "/lk/my_documents"    
                     
-        url_absolute = request.build_absolute_uri('/').strip("/")
-        link = f'{url_absolute}/{link}'        
+        # url_absolute = request.build_absolute_uri('/').strip("/")
+        # link = f'{url_absolute}/{link}'        
        
-        title_email = f"У вашего заказа {order.name} на сайте Motrum новый {name_notification}"
-        text_email = f"У вашего заказа {order.name} на сайте Motrum новый {name_notification}"
-        to_client = client.email
+        # title_email = f"У вашего заказа {order.name} на сайте Motrum новый {name_notification}"
+        # text_email = f"У вашего заказа {order.name} на сайте Motrum новый {name_notification}"
+        # to_client = client.email
         
         
-        html_message = loader.render_to_string(
-            "core/emails/email_client_status.html",
-            {
-                "text": text_email,
-                "link" : link,
-            },
-        )
+        # html_message = loader.render_to_string(
+        #     "core/emails/email_client_status.html",
+        #     {
+        #         "text": text_email,
+        #         "link" : link,
+        #     },
+        # )
         
         # result = send_email_message_html(
         #     title_email, text_email, to_client, html_message=html_message

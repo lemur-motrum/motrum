@@ -116,8 +116,8 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
     title = "TEST"
     # path =  'ones/nomenk/склады_2025-03-07.xlsx'
     # get_motrum_storage(path)

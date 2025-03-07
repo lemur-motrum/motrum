@@ -19,7 +19,6 @@ from project.settings import MEDIA_ROOT
 def get_motrum_storage(path):
     try:
         new_dir = "{0}/{1}".format(MEDIA_ROOT, path)
-        path_storage = f"{new_dir}"
         path_storage = new_dir
         
         # path_storage_motrum = f"{new_dir}/test_ooo.xlsx"
@@ -149,38 +148,37 @@ def get_motrum_storage(path):
             for index in range(2, data_sheet.max_row):
                 print("index",index)
                 article = data_sheet.cell(row=index, column=1).value
-                print(article)
-                article = data_sheet.cell(row=index, column=1).value
-                article = article.strip()
-                all_fredom_remaining = data_sheet.cell(row=index, column=4).value
-                print(all_fredom_remaining)
-                all_reserve_remaining = data_sheet.cell(row=index, column=5).value
-                print(all_reserve_remaining)
-                if all_fredom_remaining:
-                    int_stock_motrum = int(all_fredom_remaining)
-                else:
-                    int_stock_motrum = 0
+                if article != "" :
+                    article = article.strip()
+                    all_fredom_remaining = data_sheet.cell(row=index, column=4).value
+                    print(all_fredom_remaining)
+                    all_reserve_remaining = data_sheet.cell(row=index, column=5).value
+                    print(all_reserve_remaining)
+                    if all_fredom_remaining:
+                        int_stock_motrum = int(all_fredom_remaining)
+                    else:
+                        int_stock_motrum = 0
+                        
+                    if all_reserve_remaining :    
+                        int_stock_reserve_motrum = int(all_reserve_remaining)
+                    else:
+                        int_stock_reserve_motrum = 0  
+                    print("int_stock_reserve_motrum",int_stock_motrum,int_stock_reserve_motrum)
                     
-                if all_reserve_remaining :    
-                    int_stock_reserve_motrum = int(all_reserve_remaining)
-                else:
-                    int_stock_reserve_motrum = 0  
-                print("int_stock_reserve_motrum",int_stock_motrum,int_stock_reserve_motrum)
-                
-                # try:
-                #     product = Product.objects.get(article=article)
-                #     print(333)
-                #     print("product",product)
-                #     add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
-                
-                # # товары НЕ находяться в окт с артикулом и производителем
-                # except Product.DoesNotExist:
-                #     print("NOT PROD")
-                #     error = "info_error"
-                #     location = "Загрузка фаилов остатков"
+                    try:
+                        product = Product.objects.get(article=article)
+                        print(333)
+                        print("product",product)
+                        add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_reserve_motrum)
+                    
+                    # товары НЕ находяться в окт с артикулом и производителем
+                    except Product.DoesNotExist:
+                        print("NOT PROD")
+                        error = "info_error"
+                        location = "Загрузка фаилов остатков"
 
-                #     info = f"Загрузка фаилов остатков- такого товара нет в ОКТ.Артикул мотрум {article}"
-                #     e = error_alert(error, location, info)    
+                        info = f"Загрузка фаилов остатков- такого товара нет в ОКТ.Артикул мотрум {article}"
+                        e = error_alert(error, location, info)    
                 
                
                     

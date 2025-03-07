@@ -657,8 +657,8 @@ def save_nomenk_doc(link):
             ofile.write(r.content)
             
         path = "{0}/{1}/{2}".format(
-            "ones",
-            "nomenk",
+            "documents",
+            "shipment",
             name_doc,
         )
         return (path,None,None)

@@ -121,13 +121,6 @@ def add_iek(request):
     title = "TEST"
     # path =  'ones/nomenk/склады_2025-03-07.xlsx'
     # get_motrum_storage(path)
-    def background_task():
-        # Долгосрочная фоновая задача
-        get_motrum_nomenclature()
-
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
     
     
     result = 1

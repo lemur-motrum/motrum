@@ -148,7 +148,7 @@ def get_motrum_storage(path):
             for index in range(2, data_sheet.max_row):
                 
                 article = data_sheet.cell(row=index, column=1).value
-                if article != "" and article == "0011342":
+                if article != "" :
                     article = article.strip()
                     all_fredom_remaining = data_sheet.cell(row=index, column=4).value
                     print(all_fredom_remaining)

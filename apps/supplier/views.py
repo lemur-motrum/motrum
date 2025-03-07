@@ -119,9 +119,14 @@ def add_iek(request):
     # webhook = BITRIX_WEBHOOK
     # bx = Bitrix(webhook)
     title = "TEST"
-    path =  'ones/nomenk/склады_2025-03-07.xlsx'
-    get_motrum_storage(path)
-    
+    def background_task():
+        path =  'ones/nomenk/склады_2025-03-07.xlsx'
+        get_motrum_storage(path)
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+        
     iek_api()
     result = 1
     if result:

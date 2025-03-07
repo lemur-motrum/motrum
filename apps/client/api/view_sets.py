@@ -946,7 +946,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
-            if order.specification.pdf:
+            if order.specification.file and order.client:
                 Notification.add_notification(
                     order.id, "DOCUMENT_SPECIFICATION", order.specification.pdf
                 )

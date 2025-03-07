@@ -159,7 +159,7 @@ def get_motrum_storage(path):
                     else:
                         int_stock_motrum = 0
                         
-                    if all_reserve_remaining :    
+                    if all_reserve_remaining:
                         int_stock_reserve_motrum = int(all_reserve_remaining)
                     else:
                         int_stock_reserve_motrum = 0  
@@ -236,11 +236,15 @@ def add_stok_motrum_old_article(product,lot_auto,int_stock_motrum,int_stock_rese
         },
     )
     
-
+    data_now =  datetime.datetime.now()
     stock = product_stock[0]
     old_stock_data =  stock.data_update
-    stock.stock_motrum = int_stock_motrum
-    stock.stock_motrum_reserve = int_stock_reserve_motrum
+    if stock.data_update_motrum == data_now:
+        stock.stock_motrum = stock.stock_motrum + int_stock_motrum
+        stock.stock_motrum_reserve = stock.stock_motrum_reserve + int_stock_reserve_motrum
+    else :
+        stock.stock_motrum = int_stock_motrum
+        stock.stock_motrum_reserve = int_stock_reserve_motrum
     
     stock._change_reason = "Автоматическое"
     stock.save()

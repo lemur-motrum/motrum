@@ -119,8 +119,8 @@ def add_iek(request):
     # webhook = BITRIX_WEBHOOK
     # bx = Bitrix(webhook)
     title = "TEST"
-    # path =  'ones/nomenk/склады_2025-03-07.xlsx'
-    # get_motrum_storage(path)
+    path =  'ones/nomenk/склады_2025-03-07.xlsx'
+    get_motrum_storage(path)
     
     iek_api()
     result = 1

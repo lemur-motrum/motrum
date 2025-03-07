@@ -659,6 +659,9 @@ class Stock(models.Model):
     data_update = models.DateField(
         auto_now=True, verbose_name="Дата обновления поставщика"
     )
+    data_update_motrum = models.DateField(
+        auto_now=True, verbose_name="Дата обновления motrum"
+    )
     transit_count = models.PositiveIntegerField(
         "Ближайшая поставка количество", blank=True, null=True
     )

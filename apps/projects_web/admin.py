@@ -59,6 +59,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "is_view_home_web",
+        "company",
     ]
     exclude = ["slug","data_create"]
     fieldsets = [
@@ -66,6 +67,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
             "Основные параметры",
             {
                 "fields": [
+                    "company",
                     "is_view_home_web",
                     "image_main",
                     "name",

@@ -37,7 +37,11 @@ class Project(models.Model):
     )
 
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    data_project = models.DateField(verbose_name="Дата реализации проекта")
+    data_project = models.DateField(
+        verbose_name="Дата реализации проекта",
+        blank=True,
+        null=True,
+    )
     place_object = models.CharField(
         "Место реализации",
         max_length=500,

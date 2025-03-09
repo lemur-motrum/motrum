@@ -55,7 +55,7 @@ class Project(models.Model):
         self.name = " ".join(self.name.split())
 
         is_project = Project.objects.filter(name=self.name).exists()
-        if is_project:
+        if is_project and self.slug != None:
             project_id = Project.objects.filter(name=self.name).count()
             project_id = int(project_id) + 1
             name = f"{self.name} {project_id}"

@@ -11,6 +11,8 @@ from apps.core.utils_web import get_file_path_catalog_web, get_file_path_project
 
 # Create your models here.
 class Project(models.Model):
+    company = models.CharField("Компания(не отображается на сайте)", max_length=100,blank=True,
+        null=True,)
     name = models.CharField("Название проекта", max_length=200)
     slug = models.SlugField(null=True, max_length=200)
     # short_text = models.CharField("Короткий текст вступление", max_length=500)

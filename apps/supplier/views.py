@@ -116,18 +116,16 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
-    title = "TEST"
-    path =  'ones/nomenk/склады_2025-03-07.xlsx'
-    get_motrum_storage(path)
-        
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    
 
     result = 1
     if result:
         pass
     else:
         result = 1
+    title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
 

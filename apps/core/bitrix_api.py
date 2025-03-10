@@ -46,9 +46,10 @@ def get_contact_order(bx,order_id_bx):
     contacts = bx.get_by_ID(
         "crm.deal.contact.items.get",[int(order_id_bx)]
     )
-    contacts = [contacts]
+    
     print("contacts", contacts)
     if len(contacts) == 1:
+        contacts = [contacts]
         return [int(contacts[0]["CONTACT_ID"])]
     elif len(contacts) > 1:
         contact_idx = []
@@ -487,7 +488,7 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
             "company_adress": company_adress_all,
         }
         error = "error"
-        location = "первичное открытие сделки битрикс"
+        location = "НЕ ОШИБКА ТОЛЬКО ИНФО get_req_info_bx первичное открытие сделки битрикс"
         info = f" сделка {context}"
         e = error_alert(error, location, info)
         return (False, "All", context)

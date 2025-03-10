@@ -15,6 +15,9 @@
             {% if product %}
                 <div class="products">
                     {% for product_item in product %}
+     
+
+
                         <div class="product_item"
                              product-id="{{ product_item.product.id_product_cart }}"
                              order-multiplicity="{{ product_item.product.stock.order_multiplicity }}">

@@ -3,6 +3,7 @@ import random
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
+from django.db.models import Q, F, OrderBy, Case, When, Value
 
 from apps.admin_specification.views import specifications
 from apps.client.models import (
@@ -107,13 +108,67 @@ def my_contacts(request):
 # ЗАКАЗ ОТДЕЛЬНАЯ СТРАНИЦА
 def order_client_one(request, pk):
     order = Order.objects.get(pk=pk)
-
-    product = ProductSpecification.objects.filter(
-        specification=order.specification
-    ).select_related(
-        "product",
-    )
-    print(product)
+    print(order.bill_name)
+    if order.bill_name:
+        print(order.bill_name)
+        product = (
+            ProductSpecification.objects.filter(specification=order.specification)
+            .select_related(
+                "product",
+                "product__stock",
+                "product__stock__lot",
+                "product__price",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "product__productproperty_set",
+                ),
+                Prefetch(
+                    "product__productimage_set",
+                ),
+            )
+            .annotate(
+                # full_price=(F("price_one") / 100 * F("extra_discount")),
+                full_price=F("product__price"),
+                sale_price= Case(
+                            When(
+                                price_one=None,
+                                then=("price_one"),
+                            ),
+                            When(
+                                price_one_original_new=None,
+                                then=("price_one_original_new"),
+                            ))
+            )
+        )
+    else:
+        print("order.bill_nameNONE")
+        product = (
+            ProductSpecification.objects.filter(specification=order.specification)
+            .select_related(
+                "product",
+                "product__stock",
+                "product__stock__lot",
+                "product__price",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "product__productproperty_set",
+                ),
+                Prefetch(
+                    "product__productimage_set",
+                ),
+            )
+            .annotate(
+                # full_price=(F("price_one") / 100 * F("extra_discount")),
+                # full_price=F("product__price__currency"),
+            
+            )
+        )
+    
+    
+    # print(product)
+    product = None
     context = {
         "order": order,
         "product": product,

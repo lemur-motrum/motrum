@@ -1785,6 +1785,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                     print(order_pdf)
             data_resp = {"result": "ok", "error": None}
+            
+            error = "file_api_error"
+            location = "OK INFO add_info_order_1c"
+            info = f"OK INFO add_info_order_1c{data}"
+            e = error_alert(error, location, info)
+            
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -1813,15 +1819,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
         data_payment = data["payment"]
-        error = "file_api_error"
-        location = "add-payment-info-1c"
-        info = f"ИНФО add-payment data_payment {data_payment} DATA из 1с -  {data}"
-        e = error_alert(error, location, info)
+       
         try:
 
             for data_item in data_payment:
-                print(data_item)
-                
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
                 amount_sum = float(data_item["amount_sum"])
                 date_tarnsaction = datetime.datetime.strptime(
@@ -1832,13 +1833,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 order.bill_sum_paid = order.bill_sum_paid + amount_sum
                 order.save()
-                error = "file_api_error"
-                location = "add-payment-info-1c"
-                info = f"ИНФО add-payment-info-1c {data_item}{tarnsaction} DATA из 1с -  {data}"
-                e = error_alert(error, location, info)
+                
                 
 
             data_resp = {"result": "ok", "error": None}
+            error = "file_api_error"
+            location = "add-payment-info-1c"
+            info = f"OK INFO add-payment-info-1c  DATA из 1с -  {data}"
+            e = error_alert(error, location, info)
             return Response(data_resp, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -1866,18 +1868,23 @@ class OrderViewSet(viewsets.ModelViewSet):
         data_shipment = data["shipment"]
         try:
             for data_item in data_shipment:
-                print(data_item)
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
                 date = datetime.datetime.strptime(data_item["date"], "%d-%m-%Y").date()
                 document_shipment = DocumentShipment.objects.create(
                     order=order, date=date
                 )
                 image_path = save_shipment_doc(data_item["pdf"], document_shipment)
-                print(image_path)
+           
                 document_shipment.name = data_item["document_name"]
                 document_shipment.file = image_path
                 document_shipment.save()
             data_resp = {"result": "ok", "error": None}
+            
+            error = "file_api_error"
+            location = "shipment-info-1c"
+            info = f"OK INFO shipment-info-1c  DATA из 1с -  {data}"
+            e = error_alert(error, location, info)
+            
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)

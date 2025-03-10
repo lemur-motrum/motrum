@@ -859,10 +859,7 @@ def save_new_doc_bx(order):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
-        error = "file_api_error"
-        location = "save_new_doc_bx"
-        info = f"{bx}bx"
-        e = error_alert(error, location, info)
+        
         id_bitrix_order = order.id_bitrix
         file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
         file_dict_signed = file_dict.exclude(bill_file="")
@@ -883,6 +880,10 @@ def save_new_doc_bx(order):
             "crm.deal.update",
             "UF_CRM_1734772537613",
         )
+        error = "file_api_error"
+        location = "save_new_doc_bx"
+        info = f"OK SIGNAL BX NEW DOC AFTER 1c DATE{bx}bx"
+        e = error_alert(error, location, info)
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -914,10 +915,10 @@ def save_payment_order_bx(data):
             }
             orders_bx = bx.call("crm.deal.update", data_order)
             
-            error = "file_api_error"
-            location = "save_payment_order_bx"
-            info = f"save_payment_order_bx{orders_bx}bx"
-            e = error_alert(error, location, info)
+        error = "file_api_error"
+        location = "save_payment_order_bx"
+        info = f"OK SIGNAL BX save_payment_order_bx{data_item["bitrix_id"]}bx"
+        e = error_alert(error, location, info)
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -947,6 +948,10 @@ def save_shipment_order_bx(data):
                 "crm.deal.update",
                 "UF_CRM_1734772575764",
             )
+            
+        error = "file_api_error"
+        location = "save_shipment_order_bx"
+        info = f"OK SIGNAL BX save_shipment_order_bx{data_item["bitrix_id"]}bx"
 
     except Exception as e:
         print(e)

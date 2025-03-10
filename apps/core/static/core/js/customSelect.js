@@ -68,9 +68,8 @@ export class ItcCustomSelect {
     if (type === "toggle") {
       this.toggle();
     } else if (type === "option") {
-      this._changeValue(target);
-      this.toggle();
       this.hide();
+      this._changeValue(target);
     }
   }
 
@@ -88,7 +87,6 @@ export class ItcCustomSelect {
     this._elToggle.dataset.index = elOption.dataset.index;
     this._el.dispatchEvent(new CustomEvent("itc.select.change"));
     this._params.onSelected ? this._params.onSelected(this, elOption) : null;
-
     return elOption.dataset.value;
   }
 
@@ -109,9 +107,9 @@ export class ItcCustomSelect {
 
   _changeValue(el) {
     if (el.classList.contains(this.constructor.EL_OPTION_SELECTED)) {
-      return;
+      // return;
     }
-    this.hide();
+    this.toggle();
     this._updateOption(el);
   }
 

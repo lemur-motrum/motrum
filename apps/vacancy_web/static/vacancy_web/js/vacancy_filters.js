@@ -44,6 +44,15 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
     }
+    const filterButton = wrapper.querySelector(".mobile_filter_button");
+    const filterContainer = wrapper.querySelector(".filter_container");
+    filterButton.onclick = () => {
+      filterContainer.classList.add("show");
+    };
+    const closeBtn = filterContainer.querySelector(".close_btn");
+    closeBtn.onclick = () => {
+      filterContainer.classList.remove("show");
+    };
 
     loadItems();
 
@@ -65,6 +74,9 @@ window.addEventListener("DOMContentLoaded", () => {
             ? urlParams.set("vacancy_category", filtersParamsArray.join(","))
             : urlParams.delete("vacancy_category");
         }
+        if (filterContainer.classList.contains("show")) {
+          filterContainer.classList.remove("show");
+        }
         filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
       };
@@ -78,6 +90,9 @@ window.addEventListener("DOMContentLoaded", () => {
       filtersParamsArray = [];
       urlParams.delete("vacancy_category");
       filtersElems.forEach((el) => (el.disabled = true));
+      if (filterContainer.classList.contains("show")) {
+        filterContainer.classList.remove("show");
+      }
       loadItems();
     };
 

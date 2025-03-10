@@ -1,9 +1,11 @@
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
 function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-      "=([^;]*)"
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+        "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -29,7 +31,13 @@ function addNewClient(endpointClient, phone, pin) {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then((data) => {
           console.log(data);
         });
@@ -57,7 +65,7 @@ function updateClient() {
       let csrfToken = getCookie("csrftoken");
       console.log(data);
       fetch(endpoint, {
-        // изменила метод 
+        // изменила метод
         method: "POST",
         body: data,
         headers: {
@@ -65,7 +73,13 @@ function updateClient() {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then((data) => {
           console.log(data);
         });
@@ -98,10 +112,7 @@ function addRequisites() {
             client: idClient,
           },
 
-          account_requisites: [
-
-          ],
-
+          account_requisites: [],
         },
       ];
 
@@ -116,7 +127,13 @@ function addRequisites() {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then((data) => {
           console.log(data);
         });
@@ -175,7 +192,7 @@ function updateRequisites() {
       let csrfToken = getCookie("csrftoken");
       console.log(data);
       fetch(endpoint, {
-        // изменила метод 
+        // изменила метод
         method: "POST",
         body: data,
         headers: {
@@ -183,7 +200,13 @@ function updateRequisites() {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then((data) => {
           console.log(data);
         });
@@ -210,7 +233,13 @@ function getAllClient() {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then((data) => {
           console.log(data);
         });

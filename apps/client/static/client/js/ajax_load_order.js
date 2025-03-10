@@ -1,4 +1,5 @@
 import { getCookie, getDigitsNumber } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;
@@ -99,7 +100,13 @@ window.addEventListener("DOMContentLoaded", () => {
           "X-CSRFToken": csrfToken,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
         .then(function (data) {
           endContent.classList.add("show");
           smallLoader.classList.remove("show");

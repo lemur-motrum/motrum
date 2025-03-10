@@ -38,7 +38,7 @@ def pars():
         cvb = root.findall(
             f"./Классификатор/Группы/Группа[Наименование='{cat.text}']/Группы/Группа//"
         )
-     
+
         print("Категория", cat.text)
 
         if not cvb:

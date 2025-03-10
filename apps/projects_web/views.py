@@ -76,13 +76,14 @@ def project(request, project):
         other_project = project_in_client_category.exclude(id=project_one.id)
     else:
         other_project = None
-        other_project = Project.objects.filter(
-            category_project=project_one.category_project
-        ).prefetch_related(
-            Prefetch("projectclientcategoryprojectmarking_set"),
-            Prefetch("projectclientcategoryprojectmarking_set__name")
-            
-            ).exclude(id=project_one.id)
+        other_project = (
+            Project.objects.filter(category_project=project_one.category_project)
+            .prefetch_related(
+                Prefetch("projectclientcategoryprojectmarking_set"),
+                Prefetch("projectclientcategoryprojectmarking_set__name"),
+            )
+            .exclude(id=project_one.id)
+        )
 
     print(other_project)
     context = {

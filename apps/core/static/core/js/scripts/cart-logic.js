@@ -3,7 +3,13 @@ import {
   deleteCookie,
   getDigitsNumber,
   NumberParser,
+  showErrorValidation,
+  maskOptions,
 } from "/static/core/js/functions.js";
+
+import { ItcCustomSelect } from "/static/core/js/customSelect.js";
+
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -75,11 +81,13 @@ window.addEventListener("DOMContentLoaded", () => {
         function getAllProductSumm() {
           if (priceOnce) {
             const priceAll = productItem.querySelector(".all_cart_price");
-            priceAll.textContent = (
-              +new NumberParser("ru").parse(priceOnce.textContent) *
-              +inputCount.value
-            ).toFixed(2);
-            getDigitsNumber(priceAll, priceAll.textContent);
+            if (priceAll) {
+              priceAll.textContent = (
+                +new NumberParser("ru").parse(priceOnce.textContent) *
+                +inputCount.value
+              ).toFixed(2);
+              getDigitsNumber(priceAll, priceAll.textContent);
+            }
           } else {
             return;
           }
@@ -116,15 +124,15 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken,
               },
-            })
-              .then((response) => {
-                if (response.status == 200) {
-                  console.log(
-                    `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
-                  );
-                }
-              })
-              .catch((error) => console.error(error));
+            }).then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                console.log(
+                  `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
+                );
+              } else {
+                setErrorModal();
+              }
+            });
           }, 1500);
         }
 
@@ -195,13 +203,13 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
               "X-CSRFToken": csrfToken,
             },
-          })
-            .then((response) => {
-              if (response.status == 200) {
-                window.location.reload();
-              }
-            })
-            .catch((error) => console.error(error));
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              window.location.reload();
+            } else {
+              setErrorModal();
+            }
+          });
         };
       });
 
@@ -240,30 +248,192 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       addTotalSum();
     }
-  }
 
-  // сохранение корзины сайт
-  const saveCartBtn = document.querySelector(".save_cart_button");
-  if (saveCartBtn) {
-    const user = document
-      .querySelector("#client_id")
-      .getAttribute("data-user-id");
-    saveCartBtn.onclick = () => {
-      saveCartBtn.disabled = true;
-      saveCartBtn.textContent = "";
-      saveCartBtn.innerHTML = "<div class='btn_loader'></div>";
-      if (user == "None") {
-        saveCartNoAuthentication();
-      } else {
-        saveCart();
+    const logoutFormContainer =
+      cartContainer.querySelector(".logout_container");
+    if (logoutFormContainer) {
+      const form = logoutFormContainer.querySelector(".autification-form-cart");
+      const nameInput = form.querySelector(".name_input");
+      const nameError = form.querySelector(".name_error");
+      const phoneInput = form.querySelector(".phone_input");
+      const phoneError = form.querySelector(".phone_error");
+      const pinInput = form.querySelector(".pin_input");
+      const pinError = form.querySelector(".pin_error");
+      const submitBtn = form.querySelector(".save_cart_button");
+
+      const phoneMask = IMask(phoneInput, maskOptions);
+
+      const maskPinOptions = {
+        mask: "0000",
+        lazy: false,
+        overwrite: "shift",
+      };
+      const pinMask = IMask(pinInput, maskPinOptions);
+
+      submitBtn.onclick = (e) => {
+        e.preventDefault();
+        let validate = true;
+        if (!nameInput.value) {
+          showErrorValidation("Обязательное поле", nameError);
+          validate = false;
+        }
+        if (!phoneInput.value) {
+          showErrorValidation("Обязательное поле", phoneError);
+          validate = false;
+        }
+        if (phoneInput.value && phoneInput.value.length < 18) {
+          showErrorValidation("Некорректный номер", phoneError);
+          validate = false;
+        }
+        if (validate) {
+          const phone = phoneMask.unmaskedValue;
+          const name = nameInput.value;
+
+          const dataObj = {
+            phone: phone,
+            pin: "",
+            first_name: name,
+          };
+
+          const data = JSON.stringify(dataObj);
+
+          fetch("/api/v1/client/login/", {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                return response.json();
+              } else {
+                setErrorModal();
+              }
+            })
+            .then((response) => {
+              submitBtn.classList.add("hide");
+              pinInput.oninput = () => {
+                const arrayPinInputValue = pinInput.value.split("");
+                const validateValue = +arrayPinInputValue[3];
+                if (!isNaN(validateValue)) {
+                  const dataObj = {
+                    phone: phone,
+                    pin: pinInput.value,
+                    first_name: name,
+                  };
+
+                  const data = JSON.stringify(dataObj);
+                  fetch("/api/v1/client/login/", {
+                    method: "POST",
+                    body: data,
+                    headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRFToken": csrfToken,
+                    },
+                  })
+                    .then((response) => {
+                      response.json();
+                      if (response.status == 201) {
+                        console.log("Новый Клиент");
+                        window.location.reload();
+                      }
+                      if (response.status == 200) {
+                        console.log("Вы вошли");
+                        window.location.reload();
+                      }
+                      if (response.status == 400) {
+                        showErrorValidation("Некорректный Пин-код", pinError);
+                      }
+                      if (response.status == 403) {
+                        console.log("Вы заблокированы");
+                      }
+                    })
+                    .catch((error) => console.error(error));
+                }
+              };
+            });
+        }
+      };
+    }
+    const clientOrderDetails = cartContainer.querySelector(
+      ".client-order-details"
+    );
+    if (clientOrderDetails) {
+      const selectRequisites = new ItcCustomSelect("#select_requisites");
+      const selectDelevery = new ItcCustomSelect("#select_delevery");
+      const submitBtn = clientOrderDetails.querySelector(".save_cart_button");
+
+      function showCartButton(select) {
+        select.addEventListener("itc.select.change", () => {
+          if (selectDelevery.value && selectRequisites.value) {
+            submitBtn.classList.remove("hide");
+          } else {
+            submitBtn.classList.add("hide");
+          }
+        });
       }
-    };
+      showCartButton(document.querySelector("#select_delevery"));
+      showCartButton(document.querySelector("#select_requisites"));
+
+      submitBtn.onclick = () => {
+        const cartId = getCookie("cart");
+        const clientId = getCookie("client_id");
+        const selectRequisitesValuesArray = selectRequisites.value.split(",");
+        const requisitesKppValue = selectRequisitesValuesArray[0];
+        const accountRequisitValue = selectRequisitesValuesArray[1];
+        const deleveryIdValue = selectDelevery.value;
+
+        const dataObj = {
+          all_client_info: 1,
+          client: +clientId,
+          cart: +cartId,
+          requisitesKpp: +requisitesKppValue,
+          account_requisites: +accountRequisitValue,
+          type_delivery: +deleveryIdValue,
+        };
+
+        const data = JSON.stringify(dataObj);
+
+        fetch("/api/v1/order/add_order/", {
+          method: "POST",
+          body: data,
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json",
+          },
+        }).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            window.location.reload();
+          } else {
+            setErrorModal();
+          }
+        });
+      };
+    }
   }
+  // сохранение корзины сайт
+  // const saveCartBtn = document.querySelector(".save_cart_button");
+  // if (saveCartBtn) {
+  //   const user = document
+  //     .querySelector("#client_id")
+  //     .getAttribute("data-user-id");
+  //   saveCartBtn.onclick = () => {
+  //     saveCartBtn.disabled = true;
+  //     saveCartBtn.textContent = "";
+  //     saveCartBtn.innerHTML = "<div class='btn_loader'></div>";
+  //     if (user == "None") {
+  //       saveCartNoAuthentication();
+  //     } else {
+  //       saveCart();
+  //     }
+  //   };
+  // }
 });
 
 function saveCart() {
   let validate = true;
-  const products = [];
   const cart_id = getCookie("cart");
 
   if (validate == true) {
@@ -281,12 +451,17 @@ function saveCart() {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          setErrorModal();
+        }
+      })
       .then((response) => {
         // deleteCookie("cart", "/", window.location.hostname);
         // window.location.href = "/lk/my_orders";
-      })
-      .catch((error) => console.error(error));
+      });
   }
 }
 

@@ -107,8 +107,12 @@ class ProjectVideo(models.Model):
 class CategoryProject(models.Model):
     name = models.CharField("Название решений", max_length=200)
     slug = models.SlugField(null=True, max_length=100)
-    short_name = models.CharField("Короткое название решений", max_length=100,blank=True,
-        null=True,)
+    short_name = models.CharField(
+        "Короткое название решений",
+        max_length=100,
+        blank=True,
+        null=True,
+    )
 
     # image = models.ImageField(
     #     "Изображение решений",
@@ -143,8 +147,12 @@ class CategoryProject(models.Model):
 
 class ClientCategoryProject(models.Model):
     name = models.CharField("Название отрасли", max_length=200)
-    short_name = models.CharField("Короткое название ", max_length=100,blank=True,
-        null=True,)
+    short_name = models.CharField(
+        "Короткое название ",
+        max_length=100,
+        blank=True,
+        null=True,
+    )
     slug = models.SlugField(null=True, max_length=100)
     article = models.PositiveIntegerField(
         "Очередность",
@@ -171,8 +179,12 @@ class ClientCategoryProject(models.Model):
 
 class ClientCategoryProjectMarking(models.Model):
     name = models.CharField("Название маркировки", max_length=200)
-    short_name = models.CharField("Короткое название решений", max_length=100,blank=True,
-        null=True,)
+    short_name = models.CharField(
+        "Короткое название решений",
+        max_length=100,
+        blank=True,
+        null=True,
+    )
     slug = models.SlugField(null=True, max_length=100)
     article = models.PositiveIntegerField(
         "Очередность",

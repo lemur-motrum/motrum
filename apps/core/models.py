@@ -3,7 +3,11 @@ import threading
 from django.db import models
 
 
-from apps.core.utils_web import get_file_path_company_web, get_file_path_reviews_web, get_file_path_slider_web
+from apps.core.utils_web import (
+    get_file_path_company_web,
+    get_file_path_reviews_web,
+    get_file_path_slider_web,
+)
 from pytils import translit
 from django.utils.text import slugify
 
@@ -254,10 +258,9 @@ class BaseInfoAccountRequisites(models.Model):
     class Meta:
         verbose_name = "Расчётный счёт"
         verbose_name_plural = "Расчётные счёта"
-    
+
     def __str__(self):
         return self.requisites.short_name_legal_entity
-
 
 
 class BaseImage(models.Model):
@@ -273,9 +276,10 @@ class BaseImage(models.Model):
     class Meta:
         verbose_name = "Базовые изображения для документов "
         verbose_name_plural = "Базовые изображения для документов"
-    
+
     def __str__(self):
         return "Базовые изображения для документов"
+
 
 class TypeDelivery(models.Model):
     text = models.CharField(
@@ -389,23 +393,20 @@ class SeoTextSolutions(models.Model):
         null=True,
         blank=True,
     )
-    
+
     class Meta:
         verbose_name = "Сео для страниц решений"
         verbose_name_plural = "Сео дял страниц решений"
 
     # def __str__(self):
     #     return f"Счетчики"
-    
+
+
 class CompanyInfoWeb(models.Model):
-    year = models.SmallIntegerField(
-        " лет на рынке год основания – 2012"
-    )
+    year = models.SmallIntegerField(" лет на рынке год основания – 2012")
     emploee_high = models.SmallIntegerField("высококвалифицированных сотрудника")
 
-    profit = models.SmallIntegerField(
-        "оборот группы компаний"
-    )
+    profit = models.SmallIntegerField("оборот группы компаний")
     emploee_engineer = models.SmallIntegerField(" инженерский состав")
 
     class Meta:
@@ -414,29 +415,31 @@ class CompanyInfoWeb(models.Model):
 
     def __str__(self):
         return f"Счетчики"
-    
+
+
 class CompanyPrijectAutoInfoWeb(models.Model):
-    tech_project = models.SmallIntegerField(
-        "установок с техническим зрением"
-    )
+    tech_project = models.SmallIntegerField("установок с техническим зрением")
     shkaf_upravleniya = models.SmallIntegerField("собрано шкафов управления")
 
-    honest_sign = models.SmallIntegerField(
-        "линий маркировки «Честный знак»"
+    honest_sign = models.SmallIntegerField("линий маркировки «Честный знак»")
+    project_all = models.SmallIntegerField(
+        "более ___ реализованных проектов по всей России и СН"
     )
-    project_all = models.SmallIntegerField("более ___ реализованных проектов по всей России и СН")
 
     class Meta:
         verbose_name = "Инфа ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ страница о компании"
-        verbose_name_plural = "Инфа ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ страница о компании"
+        verbose_name_plural = (
+            "Инфа ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ страница о компании"
+        )
 
     def __str__(self):
         return f"Счетчики"
 
+
 class ReviewsAutoInfoWeb(models.Model):
     name = models.CharField("Имя сотрудника", max_length=200, blank=True, null=True)
     Legal_entity = models.CharField("Компания", max_length=200, blank=True, null=True)
-    text = models.TextField("Текст",  blank=True, null=True)    
+    text = models.TextField("Текст", blank=True, null=True)
     image = models.ImageField(
         "Картинка",
         upload_to=get_file_path_reviews_web,
@@ -444,13 +447,15 @@ class ReviewsAutoInfoWeb(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
-        
+
     def __str__(self):
         return f"{self.Legal_entity}"
-    
+
+
 class PhotoClientInfoWeb(models.Model):
     image = models.ImageField(
         "Картинка",
@@ -459,12 +464,14 @@ class PhotoClientInfoWeb(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Фото блок клиенты"
         verbose_name_plural = "Фото блок клиенты"
-        
+
     def __str__(self):
         return f"{self.image}"
+
 
 class PhotoEmoloeeInfoWeb(models.Model):
     image = models.ImageField(
@@ -474,17 +481,17 @@ class PhotoEmoloeeInfoWeb(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         verbose_name = "Фото блок сотрудники"
         verbose_name_plural = "Фото блок сотрудники"
-        
+
     def __str__(self):
         return f"{self.image}"
 
+
 class UpdatedCompanyBX24(models.Model):
-    company_bx_id = models.IntegerField(
-        "company_bx_id"
-    )
+    company_bx_id = models.IntegerField("company_bx_id")
 
     def __str__(self):
         return f"{self.image}"

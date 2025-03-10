@@ -12,7 +12,7 @@ def test_display(context):
         pass
     else:
         request = context["request"]
-        
+
         if request.user.id:
             if request.user.is_staff:
                 user = AdminUser.objects.get(id=request.user.id).admin_type

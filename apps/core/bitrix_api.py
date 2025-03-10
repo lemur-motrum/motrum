@@ -1925,13 +1925,12 @@ def get_upd_clirnt_manager():
     #     print(contact)
 
 
-
 # ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА без всей инфы
 def add_new_order_web_not_info(order):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
-        
+
         order = Order.objects.get(id=154)
         client = order.client
         req = order.requisites
@@ -1981,12 +1980,6 @@ def add_new_order_web_not_info(order):
         location = "Сохранение заказа с сайта в битркис"
         info = f" сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
-
-
-
-
-
-
 
 
 # def save_multi_file_bx(bx, file, id_bx, method, field_name):

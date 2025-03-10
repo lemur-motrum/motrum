@@ -29,6 +29,8 @@ class ClientAdminWeb(admin.ModelAdmin):
     # inlines = [
     #     RequisitesInlineWeb,
     # ]
+
+
 #     # def has_add_permission(self, request):
 #     #     return False
 #     # def has_delete_permission(self, request,obj=None):
@@ -38,34 +40,30 @@ class ClientAdminWeb(admin.ModelAdmin):
 class AccountRequisitesAdminInline(admin.TabularInline):
     extra = 1
     model = AccountRequisites
-    
+
+
 class RequisitesOtherKppAdminInline(admin.TabularInline):
     extra = 1
     model = RequisitesOtherKpp
 
+
 class RequisitesAdmin(admin.ModelAdmin):
-    list_display = [
-        "legal_entity",
-        "client"
-    ]
-    inlines = RequisitesOtherKppAdminInline,
+    list_display = ["legal_entity", "client"]
+    inlines = (RequisitesOtherKppAdminInline,)
     exclude = ["discount"]
     # fields = 'legal_entity'
 
+
 class AccountRequisitesAdmin(admin.ModelAdmin):
-    list_display = [
-        "requisitesKpp",
-        "account_requisites"
-    ]
-  
-    # fields = 'legal_entity'    
+    list_display = ["requisitesKpp", "account_requisites"]
 
-
+    # fields = 'legal_entity'
 
     # def image_inline(self, *args, **kwargs):
     #     context = getattr(self.response, 'context_data', None) or {} # somtimes context.copy() is better
     #     inline = context['inline_admin_formset'] = context['inline_admin_formsets'].pop(0)
     #     return get_template(inline.opts.template).render(context, self.request)
+
 
 #     def render_change_form(self, request, *args, **kwargs):
 #         self.request = request
@@ -104,5 +102,5 @@ class AccountRequisitesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Client, ClientAdminWeb)
-admin.site.register(Requisites,RequisitesAdmin)
-admin.site.register(AccountRequisites,AccountRequisitesAdmin)
+admin.site.register(Requisites, RequisitesAdmin)
+admin.site.register(AccountRequisites, AccountRequisitesAdmin)

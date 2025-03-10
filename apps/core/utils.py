@@ -25,7 +25,6 @@ from requests.auth import HTTPBasicAuth
 from apps.specification.utils import crete_pdf_specification
 
 
-
 from project.settings import MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
@@ -472,6 +471,7 @@ def get_file_path_add(instance, filename):
         path_name,
         filename,
     )
+
 
 def get_file_path_add_more_vac(product, type_doc, filename):
 
@@ -1273,8 +1273,6 @@ def save_specification(
             specification.file = pdf
             specification._change_reason = "Ручное"
 
-            
-        
             if post_update == False:
                 specification.date_create_pdf = datetime.datetime.today()
 
@@ -1565,7 +1563,7 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                     # specification.skip_history_when_saving = True
                     specification.save()
                     if requisites and requisites.contract:
-                    # if requisites.contract:
+                        # if requisites.contract:
 
                         specification_name = requisites.number_spec + 1
                         requisites.number_spec = specification_name
@@ -1698,7 +1696,7 @@ def client_info_bitrix(data, company_adress):
             id_bitrix=data["id_bitrix"],
             # kpp=data["kpp"],
             defaults={
-                "kpp" : data["kpp"],
+                "kpp": data["kpp"],
                 "ogrn": data["ogrn"],
                 "legal_post_code": data["legal_post_code"],
                 "legal_city": data["legal_city"],
@@ -1931,7 +1929,7 @@ def create_info_request_order_1c(order, order_products):
     contract_date = order.requisites.contract_date
     if contract_date:
         contract_date = order.requisites.contract_date.isoformat()
-    
+
     if order.account_requisites.requisitesKpp.kpp:
         kpp = int(order.account_requisites.requisitesKpp.kpp)
     else:
@@ -2249,7 +2247,7 @@ def save_info_bitrix_after_web(data, req):
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp
     from dateutil.parser import parse
     from apps.user.models import AdminUser
-    
+
     if data["contract_date"]:
         data_contract = parse(data["contract_date"]).date()
         # data_contract = datetime.datetime.strptime(
@@ -2258,10 +2256,10 @@ def save_info_bitrix_after_web(data, req):
     else:
         data_contract = None
     print(data)
-    id_req_bx = data['req_bx_id']
+    id_req_bx = data["req_bx_id"]
     manager = AdminUser.objects.get(bitrix_id=int(data["manager"]))
     r = Requisites.objects.get(id=data["id_req"])
-    r.contract_date=data_contract
+    r.contract_date = data_contract
     r.manager = manager
     r.contract = data["contract"]
     r.id_bitrix = id_req_bx
@@ -2270,8 +2268,8 @@ def save_info_bitrix_after_web(data, req):
     # client_req = Requisites.objects.filter(id=data["id_req"]).update(
     #     contract_date=data_contract, manager= manager ,contract= data["contract"],)
     # print(client_req)
-    
+
+
 def delete_everything_in_folder(folder_path):
     shutil.rmtree(folder_path)
-    os.mkdir(folder_path) 
- 
+    os.mkdir(folder_path)

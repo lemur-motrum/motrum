@@ -912,7 +912,7 @@ def create_specification(request):
         "client_req_all": client_req_all,
         "bill_upd": bill_upd,
         "vendor": vendor,
-        "supplier":supplier,
+        "supplier": supplier,
         "type_save": type_save,
         "type_delivery": type_delivery,
         "type_save_cookee": type_save_cookee,
@@ -957,7 +957,7 @@ def get_all_specifications(request):
         http_frame = True
         q_object &= Q(id_bitrix=int(bitrix_id_order))
         q_object_2 &= Q(id_bitrix=int(bitrix_id_order))
-        
+
     all_specifications = (
         Specification.objects.filter(admin_creator__isnull=False)
         .select_related("admin_creator", "cart")
@@ -973,7 +973,7 @@ def get_all_specifications(request):
         "specification",
         "cart",
     ).filter(q_object_2)
-    
+
     tag_need_btn_other_orders = False
     if queryset.count() > 0:
         tag_need_btn_other_orders = True
@@ -997,7 +997,7 @@ def get_all_specifications(request):
         "post_data_bx_id": post_data_bx_id,
         "bitrix_id_order": bitrix_id_order,
         "http_frame": http_frame,
-        "tag_need_btn_other_orders":tag_need_btn_other_orders
+        "tag_need_btn_other_orders": tag_need_btn_other_orders,
     }
 
     return render(request, "admin_specification/all_specifications.html", context)
@@ -1699,7 +1699,7 @@ def bx_save_start_info(request):
                             "spes": context["spes"],
                             "serializer": context["serializer"],
                             "type_save": context["type_save"],
-                            "new_order_web": context["new_order_web"]
+                            "new_order_web": context["new_order_web"],
                         },
                     )
                     response.set_cookie(
@@ -1709,7 +1709,7 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
-              
+
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,
@@ -1815,7 +1815,7 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
-                
+
                 response.set_cookie(
                     "bitrix_id_order",
                     post_data_bx_id,

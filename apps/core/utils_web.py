@@ -103,23 +103,25 @@ def get_file_path_slider_web(instance, filename):
         filename,
     )
 
+
 def get_file_path_reviews_web(instance, filename):
 
     base_dir = "website/reviews"
-    
 
     images_last_list = filename.split(".")
     filenames = images_last_list[0]
     type_dir = images_last_list[0]
-    
+
     type_file = "." + images_last_list[-1]
     filename = f"{filenames}{type_file}"
-    
+
     check_media_directory_exist_web(base_dir, type_dir)
     return "{0}/{1}".format(
         base_dir,
         filename,
     )
+
+
 def get_file_path_company_web(instance, filename):
 
     base_dir = "website/company"
@@ -130,7 +132,7 @@ def get_file_path_company_web(instance, filename):
     filenames = images_last_list[0]
     type_dir = images_last_list[0]
     type_file = "." + images_last_list[-1]
-    
+
     filename = f"{filenames}{type_file}"
 
     check_media_directory_exist_web(base_dir, type_dir)
@@ -138,7 +140,8 @@ def get_file_path_company_web(instance, filename):
         base_dir,
         filename,
     )
-    
+
+
 # проверка есть ли путь и папка
 def check_media_directory_exist_web(base_dir, type_dir):
     new_dir = "{0}/{1}/{2}".format(
@@ -203,20 +206,26 @@ def send_email_message_and_file(subject, message, to_email, file):
 
     return email
 
-def send_email_message_and_file_alternative(subject, message, to_email, file,html_content ):
+
+def send_email_message_and_file_alternative(
+    subject, message, to_email, file, html_content
+):
     from django.core.mail import EmailMultiAlternatives
-    print("EMAIL_HOST_USER",settings.EMAIL_HOST_USER)
-    email = EmailMultiAlternatives(subject, message, settings.EMAIL_HOST_USER, [to_email])
-    print("email",email)
-    if html_content:    
+
+    print("EMAIL_HOST_USER", settings.EMAIL_HOST_USER)
+    email = EmailMultiAlternatives(
+        subject, message, settings.EMAIL_HOST_USER, [to_email]
+    )
+    print("email", email)
+    if html_content:
         email.attach_alternative(html_content, "text/html")
-        
+
     if file:
         email.attach_file(file)
-        
-    print("email_all",email)
+
+    print("email_all", email)
     email.send()
-    print("email-ok",email)
+    print("email-ok", email)
     return email
 
 
@@ -305,7 +314,9 @@ def promote_product_slider(product):
 #             request.session['cart'] = request.session.session_key
 
 
-def get_product_item_data(specification, product, extra_discount, quantity,product_item_cart):
+def get_product_item_data(
+    specification, product, extra_discount, quantity, product_item_cart
+):
     from apps.product.models import Price, Product
     from apps.specification.models import ProductSpecification, Specification
     from apps.specification.utils import crete_pdf_specification
@@ -314,23 +325,23 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
 
     price = Price.objects.get(prod=product)
     sale_motrum = price.get_sale_price_motrum()
-    
+
     if price.extra_price:
         product_item_data = {
             "id_cart": product_item_cart.id,
-            "id_bitrix":None,
+            "id_bitrix": None,
             "specification": specification.id,
             "product": product.id,
             "product_currency": price.currency.id,
             "quantity": quantity,
             "price_one": 0,
-            "product_price_catalog":0,
+            "product_price_catalog": 0,
             "price_all": 0,
             "price_one_motrum": 0,
             "price_all_motrum": 0,
             "price_exclusive": price.extra_price,
             "extra_discount": extra_discount,
-            "sale_motrum":sale_motrum
+            "sale_motrum": sale_motrum,
         }
     else:
         if price.in_auto_sale:
@@ -338,7 +349,7 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
 
         price_one = price.rub_price_supplier
         price_one_motrum = price.price_motrum
-        
+
         # if extra_discount:
         #     price_one = price_one - (price_one / 100 * float(extra_discount))
         #     price_one = round(price_one, 2)
@@ -350,19 +361,18 @@ def get_product_item_data(specification, product, extra_discount, quantity,produ
         # ДАТУ ДОСТАВКИ
         product_item_data = {
             "id_cart": product_item_cart.id,
-            "id_bitrix":None,
+            "id_bitrix": None,
             "specification": specification.id,
             "product": product.id,
             "product_currency": price.currency.id,
             "quantity": quantity,
             "price_one": price_one,
-            "product_price_catalog":price_one,
+            "product_price_catalog": price_one,
             "price_all": price_all,
             "price_one_motrum": price_one_motrum,
             "price_all_motrum": price_all_motrum,
             "price_exclusive": price.extra_price,
             "extra_discount": extra_discount,
-            "sale_motrum":sale_motrum
-
+            "sale_motrum": sale_motrum,
         }
     return product_item_data

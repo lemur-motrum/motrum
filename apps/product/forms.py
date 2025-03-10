@@ -58,7 +58,7 @@ class ProductForm(forms.ModelForm):
         queryset=SupplierCategoryProduct.objects.all(),
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
-            url="product:category_supplier-autocomplete", forward=["supplier","vendor"]
+            url="product:category_supplier-autocomplete", forward=["supplier", "vendor"]
         ),
     )
 
@@ -93,15 +93,21 @@ class ProductForm(forms.ModelForm):
             ),
         }
 
+
 class DocumentForm(forms.ModelForm):
-    # type_doc = forms.ChoiceField(choices = TYPE_DOCUMENT) 
-    document =  forms.FileField()
+    # type_doc = forms.ChoiceField(choices = TYPE_DOCUMENT)
+    document = forms.FileField()
+
     class Meta:
         model = ProductDocument
         # fields = "__all__"
 
-        fields = [ "type_doc", "name",]
-   
+        fields = [
+            "type_doc",
+            "name",
+        ]
+
+
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
     category = forms.ModelChoiceField(
@@ -154,11 +160,13 @@ class ProductChangeForm(forms.ModelForm):
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier-autocomplete",
-            forward=["supplier","vendor",],
+            forward=[
+                "supplier",
+                "vendor",
+            ],
             attrs={"class": "form-control"},
         ),
     )
-
 
     group_supplier = forms.ModelChoiceField(
         queryset=SupplierGroupProduct.objects.all(),
@@ -288,11 +296,13 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         label="Категория поставщика",
         widget=autocomplete.ModelSelect2(
             url="product:category_supplier-autocomplete",
-            forward=["supplier","vendor",],
+            forward=[
+                "supplier",
+                "vendor",
+            ],
             attrs={"class": "form-control"},
         ),
     )
-
 
     group_supplier = forms.ModelChoiceField(
         queryset=SupplierGroupProduct.objects.all(),

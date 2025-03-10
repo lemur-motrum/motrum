@@ -84,7 +84,7 @@
                                                 </button>
                                             </div>
                                             <div class="price">
-                                                {% if product_item.price.rub_price_supplier == 0 %}
+                                                {% if product_item.price.rub_price_supplier == None %}
                                                     <span>по запросу</span>
                                                 {% else %}
                                                     <span class="all_cart_price">0</span> ₽
@@ -130,52 +130,76 @@
                     {% if client %}
                         <div class="client-order-details">
                             {% if all_client_info %}
-                                <select class="select_account_requisites">
-                                    {% for requisit in requisites %}
-                                        <option data-requisites-id="{{ requisit.requisites.id }}"
-                                                data-requisites-kpp-id="{{ requisit.id }}"
-                                                data-account-requisites-id="{{ requisit.accountrequisit_id }}">
-                                            Юр.лицо - {{ requisit.requisites.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <select class="select_delevery" name='delevery-requisit' value="0">
-
-                                    <option disabled selected>Способ доставки</option>
-                                    {% for delivery in type_delivery %}
-                                        <option 
-                                                value="{{ delivery.id }}">
-                                            {{ delivery.text }}
-                                            {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                {% comment %} <div class="button_cart-wrapper">
-                                    <button class="save_cart_button">оформить заказ</button>
-                                </div> {% endcomment %}
+                                <div class="selects_container">
+                                    <div class="itc-select" id="select_requisites">
+                                        <button type="button"
+                                                class="itc-select__toggle"
+                                                name="requisites"
+                                                value=""
+                                                data-select="toggle"
+                                                data-index="0">Выберите юр.лицо из списка</button>
+                                        <!-- Выпадающий список -->
+                                        <div class="itc-select__dropdown">
+                                            <ul class="itc-select__options">
+                                                {% for requisit in requisites %}
+                                                    <li class="itc-select__option"
+                                                        data-select="option"
+                                                        data-value="{{ requisit.id }},{{ requisit.accountrequisit_id }}"
+                                                        data-index="0">
+                                                        Юр.лицо - {{ requisit.requisites.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="itc-select" id="select_delevery">
+                                        <button type="button"
+                                                class="itc-select__toggle"
+                                                name="delevery"
+                                                value=""
+                                                data-select="toggle"
+                                                data-index="0">Способ доставки</button>
+                                        <div class="itc-select__dropdown">
+                                            <ul class="itc-select__options">
+                                                {% for delivery in type_delivery %}
+                                                    <li class="itc-select__option"
+                                                        data-select="option"
+                                                        data-value="{{ delivery.id }}"
+                                                        data-index="0">
+                                                        {{ delivery.text }}
+                                                        {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="button_cart-wrapper">
+                                    <button class="save_cart_button hide">оформить заказ</button>
+                                </div>
                             {% else %}
                                 <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
                             {% endif %}
-                        </div>
-                        <!--УДАЛИТЬ ДОБАВИЛА ДЛЯ ТЕСТА -->
-                        <div class="button_cart-wrapper">
-                            <button class="save_cart_button">оформить заказ</button>
                         </div>
                     {% else %}
                         <div class="logout_container">
                             <form class="autification-form-cart">
                                 <label class="name-label">
-                                    <input class="name-input" placeholder="Ваше имя" type="text">
-                                    <div class="error-maessage name-error"></div>
+                                    <input class="name_input" placeholder="Ваше имя" type="text" />
+                                    <div class="error name_error"></div>
                                 </label>
                                 <label class="phone-label">
-                                    <input class="phone-input" placeholder="Ваш телефон" type="text">
-                                    <div class="error-maessage phone-error"></div>
+                                    <input class="phone_input" placeholder="Ваш телефон" type="tel" />
+                                    <div class="error phone_error"></div>
                                 </label>
+                                <div class="button_cart-wrapper">
+                                    <label>
+                                        <input class="pin_input" type="tel" placeholder="____" />
+                                        <div class="error pin_error"></div>
+                                    </label>
+                                    <button class="save_cart_button">оформить заказ</button>
+                                </div>
                             </form>
-                            <div class="button_cart-wrapper">
-                                <button class="save_cart_button">оформить заказ</button>
-                            </div>
                         </div>
                     {% endif %}
                 {% else %}

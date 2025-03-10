@@ -184,6 +184,7 @@ def get_year_holiday(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
+
 # НЕ ИСПУЛЬЗУЮ  рабочие дня на след год(теперь внутри ежемесячной проверки берет за в )
 @app.task(
     bind=True,
@@ -274,6 +275,7 @@ def del_void_cart(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
+
 # получение статусов б24 к сделкам
 @app.task(
     bind=True,
@@ -289,7 +291,8 @@ def get_status_order_bx(self):
         info = f"получение в б24 статусов{exc}"
         e = error_alert(error, location, info)
 
-# проверка и запись в Б24 курса валют и измеения цен на товары 
+
+# проверка и запись в Б24 курса валют и измеения цен на товары
 @app.task(
     bind=True,
     max_retries=1,
@@ -303,8 +306,8 @@ def get_curr_price_check_bx(self):
 
         info = f"отправка в б24 Критичные изменения цен и курса валют{exc}"
         e = error_alert(error, location, info)
-  
-       
+
+
 # проверка битых изображений - удаление
 @app.task(
     bind=True,
@@ -319,7 +322,8 @@ def image_error_check_in(self):
 
         info = f"удаление битых картинок {exc}"
         e = error_alert(error, location, info)
-        
+
+
 # чистка папки с вакансиями
 @app.task(
     bind=True,
@@ -328,13 +332,12 @@ def image_error_check_in(self):
 def vacancy_file_delite(self):
     try:
         folder_path = f"{MEDIA_ROOT}/documents/vacancy"
-           
+
         delete_everything_in_folder(folder_path)
-            
+
     except Exception as exc:
         error = "file_api_error"
         location = f"чистка папки с вакансиями {exc}"
 
         info = f"чистка папки с вакансиями {exc}"
         e = error_alert(error, location, info)
-  

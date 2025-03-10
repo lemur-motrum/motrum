@@ -137,7 +137,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         #     first_name  = data['name']
         # else:
         #     first_name = None
-            
+
         pin_user = data["pin"]
         data["is_active"] = True
         data["username"] = phone
@@ -389,7 +389,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "postal_post_code": adress["legal_adress"]["post_code"],
                     "postal_city": adress["legal_adress"]["city"],
                     "postal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
-                    "phone": requisitesKpp["phone"],
+                    "tel": requisitesKpp["phone"],
                     "email": requisitesKpp["email"],
                 },
             )
@@ -404,6 +404,8 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "postal_post_code": adress["postal_adress"]["post_code"],
                     "postal_city": adress["postal_adress"]["city"],
                     "postal_address": f"{adress["postal_adress"]["legal_address1"]}{adress["postal_adress"]["legal_address2"]}",
+                    "tel": requisitesKpp["phone"],
+                    "email": requisitesKpp["email"],
                 },
             )
 
@@ -563,9 +565,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     if product_cart.product.price.rub_price_supplier == 0:
                         all_info_product = False
 
-                # сохранение спецификации для заказа 
-                status_save_spes, specification, specification_name = (
-                    save_spesif_web(cart, products_cart, extra_discount, requisites)
+                # сохранение спецификации для заказа
+                status_save_spes, specification, specification_name = save_spesif_web(
+                    cart, products_cart, extra_discount, requisites
                 )
                 print(
                     " status_save_spes, specification, specification_name",
@@ -586,8 +588,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "client": client,
                             "name": None,
                             "specification": specification.id,
-                            "requisites": requisites.id if data["requisitesKpp"] != None else None,
-                            "account_requisites": account_requisites.id if data["requisitesKpp"] != None else None,
+                            "requisites": (
+                                requisites.id if data["requisitesKpp"] != None else None
+                            ),
+                            "account_requisites": (
+                                account_requisites.id
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
                             "status": "PROCESSING",
                             "cart": cart.id,
                             "bill_name": None,
@@ -596,17 +604,25 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "bill_date_stop": None,
                             "bill_sum": None,
                             # "comment": data["comment"],
-                            "prepay_persent": requisites.prepay_persent if data["requisitesKpp"] != None else None,
-                            "postpay_persent": requisites.postpay_persent if data["requisitesKpp"] != None else None,
+                            "prepay_persent": (
+                                requisites.prepay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            "postpay_persent": (
+                                requisites.postpay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
                             # "motrum_requisites": motrum_requisites.id,
                             "id_bitrix": None,
-                            "type_delivery": type_delivery if data["requisitesKpp"] != None else None,
+                            "type_delivery": (
+                                type_delivery if data["requisitesKpp"] != None else None
+                            ),
                             # "manager": admin_creator_id,
                         }
 
-                        serializer = self.serializer_class(
-                            data=data_order, many=False
-                        )
+                        serializer = self.serializer_class(data=data_order, many=False)
 
                         if serializer.is_valid():
                             print("serializer.is_valid(ORDER):")
@@ -626,10 +642,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     else:
                         cart.is_active = True
                         cart.save()
-                        return Response(
-                            None, status=status.HTTP_201_CREATED
-                        )
-            
+                        return Response(None, status=status.HTTP_201_CREATED)
+
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -638,9 +652,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             location = "Сохранение спецификации админам окт"
             info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
-            return Response(
-                            e, status=status.HTTP_400_BAD_REQUEST
-                        )
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)
 
     # сохранение рыбы Заказа БИТРИКС
     @action(detail=False, methods=["post", "get"], url_path=r"order-bitrix")
@@ -937,7 +949,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         try:
             import json
-            
+
             user = request.user
             data_get = request.data
             type_save = request.COOKIES.get("type_save")
@@ -988,8 +1000,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 type_save = request.COOKIES.get("type_save")
 
                 if IS_WEB or user.username == "testadmin":
-
-                    
 
                     json_data = json.dumps(data_for_1c)
                     print("json_data", json_data)

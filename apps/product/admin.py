@@ -533,7 +533,7 @@ class ProductImageInline(admin.TabularInline):
 
 class ProductDocumentInline(admin.TabularInline):
     model = ProductDocument
-    fields = ("document","name", "type_doc", "hide")
+    fields = ("document", "name", "type_doc", "hide")
     extra = 0
     form = ProductDocumentAdminForm
 
@@ -786,13 +786,15 @@ class ProductAdmin(SimpleHistoryAdmin):
                 #         "category_supplier_all",
                 #     ]
 
-                return ["article_supplier", 
-                        # "supplier"
-                        ]
+                return [
+                    "article_supplier",
+                    # "supplier"
+                ]
             else:
-                return ["article_supplier",
-                        # "supplier"
-                        ]
+                return [
+                    "article_supplier",
+                    # "supplier"
+                ]
         return [
             "",
         ]

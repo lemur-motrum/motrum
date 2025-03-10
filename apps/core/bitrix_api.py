@@ -227,10 +227,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                         "order": order.id,
                         "serializer": data_order,
                     }
-                    error = "error"
-                    location = "new_order_web"
-                    info = f" {order} {bs_id_order} {new_order_web} {context}"
-                    e = error_alert(error, location, info)
+                    
 
                     if order.specification:
                         context["spes"] = int(order.specification.id)
@@ -863,7 +860,7 @@ def save_new_doc_bx(order):
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
         error = "file_api_error"
-        location = "Получение\сохранение данных o товаратах 1с "
+        location = "save_new_doc_bx"
         info = f"{bx}bx"
         e = error_alert(error, location, info)
         id_bitrix_order = order.id_bitrix
@@ -901,6 +898,7 @@ def save_payment_order_bx(data):
 
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
+      
         data_payment = data["payment"]
         for data_item in data_payment:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
@@ -915,6 +913,11 @@ def save_payment_order_bx(data):
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)
+            
+            error = "file_api_error"
+            location = "save_payment_order_bx"
+            info = f"save_payment_order_bx{orders_bx}bx"
+            e = error_alert(error, location, info)
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

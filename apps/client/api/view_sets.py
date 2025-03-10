@@ -1817,6 +1817,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             for data_item in data_payment:
                 print(data_item)
+                
                 order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
                 amount_sum = float(data_item["amount_sum"])
                 date_tarnsaction = datetime.datetime.strptime(
@@ -1827,7 +1828,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 order.bill_sum_paid = order.bill_sum_paid + amount_sum
                 order.save()
-                print(tarnsaction)
+                error = "file_api_error"
+                location = "add-payment-info-1c"
+                info = f"ИНФО add-payment-info-1c {data_item}{tarnsaction} DATA из 1с -  {data}"
+                e = error_alert(error, location, info)
+                
 
             data_resp = {"result": "ok", "error": None}
             return Response(data_resp, status=status.HTTP_200_OK)

@@ -70,6 +70,7 @@ export class ItcCustomSelect {
     } else if (type === "option") {
       this._changeValue(target);
       this.toggle();
+      this.hide();
     }
   }
 
@@ -110,8 +111,8 @@ export class ItcCustomSelect {
     if (el.classList.contains(this.constructor.EL_OPTION_SELECTED)) {
       return;
     }
-    this._updateOption(el);
     this.hide();
+    this._updateOption(el);
   }
 
   show() {

@@ -5,7 +5,8 @@ import {
   getDeliveryDate,
 } from "/static/core/js/functions.js";
 
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 window.addEventListener("DOMContentLoaded", () => {

@@ -4,6 +4,7 @@ import {
   getCookie,
   maskOptions,
 } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -137,9 +138,10 @@ window.addEventListener("DOMContentLoaded", () => {
                 },
               }
             );
-            if (response.status == 200) {
+            if (response.status >= 200 && response.status < 300) {
               window.location.reload();
             } else {
+              setErrorModal();
               throw new Error("Ошибка");
             }
           }

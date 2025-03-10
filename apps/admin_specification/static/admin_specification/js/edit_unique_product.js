@@ -8,7 +8,7 @@ import {
   inputValidation,
   inputValidationQuantity,
 } from "../js/add_new_product_without_cart.js";
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

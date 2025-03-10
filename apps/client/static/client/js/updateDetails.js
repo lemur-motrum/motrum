@@ -1,4 +1,6 @@
 import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -76,8 +78,10 @@ window.addEventListener("DOMContentLoaded", () => {
                 "X-CSRFToken": csrfToken,
               },
             }).then((response) => {
-              if (response.status == 200) {
+              if (response.status >= 200 && response.status < 300) {
                 window.location.reload();
+              } else {
+                setErrorModal();
               }
             });
           }
@@ -187,9 +191,10 @@ window.addEventListener("DOMContentLoaded", () => {
                 "X-CSRFToken": csrfToken,
               },
             }).then((response) => {
-              if (response.status == 200) {
+              if (response.status >= 200 && response.status < 300) {
                 window.location.reload();
               } else {
+                setErrorModal();
                 throw new Error("Ошибка");
               }
             });
@@ -299,9 +304,10 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
             },
           }).then((response) => {
-            if (response.status == 201) {
+            if (response.status >= 200 && response.status < 300) {
               window.location.reload();
             } else {
+              setErrorModal();
               throw new Error("Ошибка");
             }
           });

@@ -151,6 +151,7 @@ class IndexInfoWebAdminWeb(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 class CompanyInfoWebAdminWeb(admin.ModelAdmin):
     # model = CurrencyPercent
     # list_display = ("percent",)
@@ -167,7 +168,8 @@ class CompanyInfoWebAdminWeb(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
+
 class CompanyPrijectAutoInfoWebAdminWeb(admin.ModelAdmin):
     # model = CurrencyPercent
     # list_display = ("percent",)
@@ -184,11 +186,13 @@ class CompanyPrijectAutoInfoWebAdminWeb(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
+
 class ReviewsAutoInfoWebAdminWeb(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
 
 class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
     list_display = (

@@ -1,5 +1,5 @@
 import { getCookie } from "/static/core/js/functions.js";
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".spetification_table");

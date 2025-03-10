@@ -114,7 +114,7 @@ def catalog_group(request, category):
                 #     "name": "NONE",
                 #     "slug": category,
                 # }
-                
+
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
@@ -194,10 +194,12 @@ def product_one(request, category, group, article):
         )
         .get(article=article)
     )
-    print("1231231",)
-    product_document = ProductDocument.objects.filter(product=product,hide=False)
-    print("product_document",product_document)
-    
+    print(
+        "1231231",
+    )
+    product_document = ProductDocument.objects.filter(product=product, hide=False)
+    print("product_document", product_document)
+
     context = {
         "product": product,
         "current_category": product.category,
@@ -239,7 +241,7 @@ def product_one_without_group(request, category, article):
         )
         .get(article=article)
     )
-    product_document = ProductDocument.objects.filter(product=product,hide=False)
+    product_document = ProductDocument.objects.filter(product=product, hide=False)
     # product = Product.objects.get(article=article)
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)
@@ -294,16 +296,16 @@ def add_document_admin(request):
 
     if request.method == "POST":
         file_path = None
-    
+
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-          
+
             profile = form.save(commit=False)
             file_name = request.FILES["document"].name
-            print("request.POST",request.POST)
+            print("request.POST", request.POST)
             type_doc = request.POST["type_doc"]
             name_doc = request.POST["name"]
-            
+
             images_last_list = file_name.split(".")
             type_file = "." + images_last_list[-1]
 
@@ -316,17 +318,15 @@ def add_document_admin(request):
             #     in_memory_file_obj.name, in_memory_file_obj
             # )
             doc_name = f"{slugish}{type_file}"
-            f = FileSystemStorage(location=new_dir).save(
-                doc_name, in_memory_file_obj
-            )
+            f = FileSystemStorage(location=new_dir).save(doc_name, in_memory_file_obj)
             print(f)
             for id_prod in id_selected:
                 doc = f"{link}/{f}"
                 product_doc = ProductDocument.objects.create(
                     product_id=int(id_prod),
-                    type_doc = type_doc,
-                    name = name_doc,
-                    document = doc
+                    type_doc=type_doc,
+                    name=name_doc,
+                    document=doc,
                 )
                 print(product_doc)
 
@@ -433,8 +433,8 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)
         vendor = self.forwarded.get("vendor", None)
-        print(supplier,vendor)
-        
+        print(supplier, vendor)
+
         supplier = self.forwarded.get("supplier", None)
         if supplier:
             qs = qs.filter(supplier=supplier)
@@ -446,10 +446,8 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         # if supplier and vendor:
         #     qs = qs.filter(supplier=supplier,vendor=vendor)
         #     if qs.count() == 0:
-        #         qs = SupplierCategoryProduct.objects.filter(supplier=supplier)   
-            
+        #         qs = SupplierCategoryProduct.objects.filter(supplier=supplier)
 
-        
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))
@@ -463,7 +461,7 @@ class SupplierGroupProductAutocomplete(autocomplete.Select2QuerySetView):
         category_supplier = self.forwarded.get("category_supplier", None)
         if category_supplier:
             qs = qs.filter(category_supplier=category_supplier)
-            
+
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))

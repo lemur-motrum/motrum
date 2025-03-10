@@ -1,5 +1,5 @@
 import { getCookie } from "/static/core/js/functions.js";
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 export function invoiceItem(container) {
   if (container) {
@@ -148,7 +148,7 @@ export function invoiceItem(container) {
                         fetch(
                           `/api/v1/order/${specificationId}/create-bill-admin/`,
                           {
-                            // изменила метод 
+                            // изменила метод
                             method: "GET",
                             headers: {
                               "Content-Type": "application/json",

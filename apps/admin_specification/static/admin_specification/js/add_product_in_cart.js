@@ -1,6 +1,6 @@
 import { getCookie, getClosestInteger } from "/static/core/js/functions.js";
 
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -30,8 +30,8 @@ export function buttonsLogic(wrapper) {
           let objData = {
             iframe: false,
           };
-          const isInIframe = window.self !== window.top
-    
+          const isInIframe = window.self !== window.top;
+
           if (isInIframe) {
             objData = {
               iframe: isInIframe,
@@ -43,7 +43,7 @@ export function buttonsLogic(wrapper) {
             method: "POST",
             body: data,
             headers: {
-              'Content-Type': 'application/json; charset=UTF-8',
+              "Content-Type": "application/json; charset=UTF-8",
               "X-CSRFToken": csrfToken,
             },
           })

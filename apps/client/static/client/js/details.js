@@ -3,6 +3,7 @@ import {
   getCookie,
   maskOptions,
 } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 const clientId = +getCookie("client_id");
@@ -172,10 +173,15 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
             },
           })
-            .then((response) => response.json(Text))
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                return response.json(Text);
+              } else {
+                setErrorModal();
+              }
+            })
             .then((response) => {
               console.log("response", response);
-
               legalEntitiesSearchContainer.innerHTML = "";
               response.forEach((el) => {
                 legalEntitiesSearchContainer.innerHTML += `
@@ -552,10 +558,10 @@ window.addEventListener("DOMContentLoaded", () => {
               patronymic: ipPatronymicInput.value
                 ? ipPatronymicInput.value
                 : null,
-              phone: phoneInput.value,
-              email: emailInput.value ? emailInput.value : null,
             },
             requisitesKpp: {
+              email: emailInput.value ? emailInput.value : null,
+              phone: phoneMask.unmaskedValue,
               kpp: kppInput.value,
               ogrn: orgnInput.value,
             },
@@ -592,12 +598,10 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
             },
           }).then((response) => {
-            response.json();
-            if (response.status == 200) {
-              console.log("ok");
-            }
-            if (response.status == 400) {
-              console.log("Ошибка");
+            if (response.status >= 200 && response.status < 300) {
+              window.location.reload();
+            } else {
+              setErrorModal();
             }
           });
         }

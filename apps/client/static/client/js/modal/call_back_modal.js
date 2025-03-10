@@ -1,4 +1,6 @@
 import { getCookie } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
 const btn = document.querySelector(".call-back-link");
 if (btn) {
   btn.addEventListener("click", () => {
@@ -18,7 +20,13 @@ if (btn) {
         "X-CSRFToken": csrfToken,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          setErrorModal();
+        }
+      })
       .then((data) => {
         console.log(data);
         window.location.reload();

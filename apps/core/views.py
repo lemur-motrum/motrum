@@ -11,7 +11,14 @@ from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
 
 from apps import client
-from apps.client.models import AccountRequisites, Client, ClientRequisites, Requisites, RequisitesAddress, RequisitesOtherKpp
+from apps.client.models import (
+    AccountRequisites,
+    Client,
+    ClientRequisites,
+    Requisites,
+    RequisitesAddress,
+    RequisitesOtherKpp,
+)
 from apps.core.bitrix_api import get_manager
 from apps.core.models import (
     CompanyInfoWeb,
@@ -87,28 +94,39 @@ def cart(request):
             req_info = False
             client = Client.objects.get(id=cart_qs.client.id)
             if client.email and client.middle_name and client.last_name:
-                client_info =  True
-            
+                client_info = True
+
             # discount_client = client.percent
             # if discount_client is None:
             #     discount_client = 0
-            clent_req_kpp  = ClientRequisites.objects.filter(client = client)
-            print("clent_req_kpp",clent_req_kpp)
+            clent_req_kpp = ClientRequisites.objects.filter(client=client)
+            print("clent_req_kpp", clent_req_kpp)
             if clent_req_kpp.count() > 0:
                 clent_req_kpp_arr = clent_req_kpp.values_list("requisitesotherkpp")
-                req_kpp = RequisitesOtherKpp.objects.filter(id__in = clent_req_kpp_arr).prefetch_related("accountrequisites_set").annotate(
-                    accountrequisit=F("accountrequisites__account_requisites"),
-                    accountrequisit_id=F("accountrequisites__id"),
+                req_kpp = (
+                    RequisitesOtherKpp.objects.filter(id__in=clent_req_kpp_arr)
+                    .prefetch_related("accountrequisites_set")
+                    .annotate(
+                        accountrequisit=F("accountrequisites__account_requisites"),
+                        accountrequisit_id=F("accountrequisites__id"),
+                    )
                 )
-                req_adress = RequisitesAddress.objects.filter(requisitesKpp__in = clent_req_kpp_arr)
+                req_adress = RequisitesAddress.objects.filter(
+                    requisitesKpp__in=clent_req_kpp_arr
+                )
                 req_adress_arr = req_adress.values_list("id")
-                req_acc = AccountRequisites.objects.filter(requisitesKpp__in = clent_req_kpp_arr)
-                
-                if req_kpp.count() > 0 and req_adress.count() > 0 and req_acc.count() > 0:
+                req_acc = AccountRequisites.objects.filter(
+                    requisitesKpp__in=clent_req_kpp_arr
+                )
+
+                if (
+                    req_kpp.count() > 0
+                    and req_adress.count() > 0
+                    and req_acc.count() > 0
+                ):
                     requisites = req_kpp
                     req_info = True
-                    
-       
+
             if req_info and client_info:
                 all_client_info = True
                 print(type_delivery)
@@ -182,13 +200,14 @@ def cart(request):
         "title": "Корзина",
         "discount_client": discount_client,
         "requisites": requisites,
-        "all_client_info":all_client_info,
-        "type_delivery":type_delivery,
+        "all_client_info": all_client_info,
+        "type_delivery": type_delivery,
         # "account_requisites":account_requisites,
     }
     print(context)
 
     return render(request, "core/cart.html", context)
+
 
 # РЕШЕНИЯ ОБЩАЯ
 def solutions_all(request):
@@ -196,12 +215,14 @@ def solutions_all(request):
     context = {"projects": projects}
     return render(request, "core/solutions/solutions_all.html", context)
 
+
 # КОБОТЫ ОБЩАЯ
 def cobots_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
 
     context = {"projects": projects}
     return render(request, "core/solutions/cobots.html", context)
+
 
 # РЕШЕНИЕ ОДНО ОТЛЕЬЕНАЯ СТРАНИЦА
 def solutions_one(request):
@@ -216,6 +237,7 @@ def solutions_one(request):
     print(234234)
     context = {"seo_test": seo_test, "projects": projects}
     return render(request, "core/solutions/solutions_one.html", context)
+
 
 # ККОМПАНИЯ
 def company(request):
@@ -238,6 +260,7 @@ def company(request):
     }
 
     return render(request, "core/company.html", context)
+
 
 # УДАЛИТЬ
 def company_about(request):

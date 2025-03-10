@@ -1,3 +1,13 @@
+import {
+  showErrorValidation,
+  getCookie,
+  maskOptions,
+} from "/static/core/js/functions.js";
+
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
+const csrfToken = getCookie("csrftoken");
+
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".about_container");
   if (wrapper) {
@@ -79,6 +89,58 @@ window.addEventListener("DOMContentLoaded", () => {
           document.body.style.overflowY = "scroll";
         };
       });
+    }
+
+    const companyForm = wrapper.querySelector(".company_form_container");
+    if (companyForm) {
+      const form = companyForm.querySelector(".form");
+      const nameInput = form.querySelector(".name_input");
+      const nameError = form.querySelector(".name_error");
+      const phoneInput = form.querySelector(".phone_input");
+      const phoneError = form.querySelector(".phone_error");
+      const submitBtn = form.querySelector(".submit_btn");
+
+      const mask = IMask(phoneInput, maskOptions);
+
+      submitBtn.onclick = () => {
+        let validate = true;
+        if (!nameInput.value) {
+          showErrorValidation("Обязательное поле", nameError);
+          validate = false;
+        }
+        if (!phoneInput.value) {
+          showErrorValidation("Обязательное поле", phoneError);
+          validate = false;
+        }
+        if (phoneInput.value && phoneInput.value.length < 18) {
+          showErrorValidation("Некорректный номер", phoneError);
+          validate = false;
+        }
+        if (validate) {
+          const dataObj = {
+            name: nameInput.value,
+            phone: phoneInput.value,
+          };
+
+          const data = JSON.stringify(dataObj);
+
+          fetch("", {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              window.location.reload();
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          });
+        }
+      };
     }
   }
 });

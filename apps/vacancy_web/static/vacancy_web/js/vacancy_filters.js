@@ -182,9 +182,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const fileLabelDescription = filelabel.querySelector(".file_description");
       const fileInput = filelabel.querySelector(".file_input");
       const fileError = filelabel.querySelector(".file_error");
-      const vacancyTextArea = formContainer.querySelector(
-        ".vacancy_form_textarea"
-      );
+      const vacancyTextArea = formContainer.querySelector(".vacancy_textarea");
       const formSubmitBtn = formContainer.querySelector(".submit_btn");
 
       const mask = IMask(phoneInput, maskOptions);
@@ -249,17 +247,23 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
               "X-CSRFToken": csrfToken,
             },
-          })
-            .then((response) => response.json())
-            .then((response) => {
-              overlay.classList.remove("visible");
-              setTimeout(() => {
-                overlay.classList.remove("show");
-              }, 600);
-              document.body.style.overflowY = "auto";
-              resetInputs(formContainer, fileLabelDescription);
-            })
-            .catch((error) => console.error(error));
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+            } else {
+              setErrorModal();
+            }
+          });
+
+          //   response.text())
+          // .then((response) => {
+          //   overlay.classList.remove("visible");
+          //   setTimeout(() => {
+          //     overlay.classList.remove("show");
+          //   }, 600);
+          //   document.body.style.overflowY = "auto";
+          //   resetInputs(formContainer, fileLabelDescription);
+          // })
+          // .catch((error) => console.error(error));
         }
       };
     }

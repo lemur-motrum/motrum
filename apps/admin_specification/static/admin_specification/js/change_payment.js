@@ -3,7 +3,7 @@ import {
   getCookie,
   getDigitsNumber,
 } from "/static/core/js/functions.js";
-import { setErrorModal } from "../js/error_modal.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 import { completeOrder } from "../js/complete_order.js";
 import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 

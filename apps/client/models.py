@@ -44,6 +44,7 @@ class Client(CustomUser):
         null=True,
         blank=True,
     )
+
     class Meta:
         verbose_name = "Клиент сайта"
         verbose_name_plural = "Клиенты на сайте"
@@ -909,7 +910,8 @@ class DocumentShipment(models.Model):
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
+
         if self.order.client:
             Notification.add_notification(self.order.id, "DOCUMENT_ACT", self.file)
-            
+
         super().save(*args, **kwargs)

@@ -1,4 +1,13 @@
-from apps.client.models import Client, DocumentShipment, EmailsAllWeb, EmailsCallBack, Order, PhoneClient, RequisitesAddress, RequisitesOtherKpp
+from apps.client.models import (
+    Client,
+    DocumentShipment,
+    EmailsAllWeb,
+    EmailsCallBack,
+    Order,
+    PhoneClient,
+    RequisitesAddress,
+    RequisitesOtherKpp,
+)
 from rest_framework import serializers
 
 from apps.client.models import AccountRequisites, Requisites
@@ -21,7 +30,8 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         exclude = ("password", "date_joined")
-        
+
+
 class PhoneClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhoneClient
@@ -34,19 +44,21 @@ class RequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisites
         fields = "__all__"
-        
+
+
 class RequisitesV2Serializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Requisites
         fields = "__all__"
-        
+
+
 class RequisitesAddressSerializer(serializers.ModelSerializer):
-    
 
     class Meta:
         model = RequisitesAddress
         fields = "__all__"
+
 
 class AccountRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,12 +66,14 @@ class AccountRequisitesSerializer(serializers.ModelSerializer):
         fields = "__all__"
         # exclude = ('requisites',)
 
+
 class RequisitesOtherKppSerializer(serializers.ModelSerializer):
     accountrequisites_set = AccountRequisitesSerializer(read_only=False, many=True)
+
     class Meta:
         model = RequisitesOtherKpp
         fields = "__all__"
-        # exclude = ('requisites',)        
+        # exclude = ('requisites',)
 
 
 class AllAccountRequisitesSerializer(serializers.ModelSerializer):
@@ -70,17 +84,16 @@ class AllAccountRequisitesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisites
         exclude = ("client",)
-        
-        
+
+
 class RequisitesToOktOrderSerializer(serializers.ModelSerializer):
     type_payment_full = serializers.CharField(source="get_type_payment")
     requisitesotherkpp_set = RequisitesOtherKppSerializer(read_only=False, many=True)
-    
+
     class Meta:
         model = Requisites
         fields = "__all__"
-        
-        
+
 
 class ClientRequisitesSerializer(serializers.ModelSerializer):
     requisites_set = AllAccountRequisitesSerializer(read_only=False, many=True)
@@ -120,29 +133,29 @@ class OrderSaveCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-        
-        
+
+
 class LkOrderDocumentShipmentSerializer(serializers.ModelSerializer):
-   
+
     class Meta:
-        model = DocumentShipment 
+        model = DocumentShipment
         fields = (
             "id",
             "date",
             "file",
             "order",
         )
-        
+
     def to_representation(self, instance):
-        representation = super(LkOrderDocumentShipmentSerializer, self).to_representation(
-            instance
-        )
+        representation = super(
+            LkOrderDocumentShipmentSerializer, self
+        ).to_representation(instance)
         if instance.date:
             representation["date"] = instance.date.strftime("%d.%m.%Y")
-       
+
         return representation
-        
-        
+
+
 class LkOrderSerializer(serializers.ModelSerializer):
     status_full = serializers.CharField(source="get_status_display", read_only=True)
     requisites_full = RequisitesSerializer(source="requisites", read_only=True)
@@ -152,8 +165,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source="get_absolute_url_web", read_only=True)
     # notification_set = NotificationSerializer(source='filtered_notification_items',read_only=False, many=True)
     notification_count = serializers.CharField()
-    documentshipment_set  = LkOrderDocumentShipmentSerializer( read_only=True, many=True
-    )
+    documentshipment_set = LkOrderDocumentShipmentSerializer(read_only=True, many=True)
 
     class Meta:
         model = Order
@@ -202,11 +214,11 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
     specification_list = ListsSpecificationSerializer(
         source="specification", read_only=True
     )
-    documentshipment_set  = LkOrderDocumentShipmentSerializer( read_only=True, many=True
-    )
+    documentshipment_set = LkOrderDocumentShipmentSerializer(read_only=True, many=True)
     notification_set = NotificationSerializer(
         source="filtered_notification_items", read_only=False, many=True
     )
+
     class Meta:
         model = Order
         fields = (
@@ -321,10 +333,9 @@ class EmailsCallBackSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailsCallBack
         fields = "__all__"
-        
+
+
 class EmailsAllWebSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailsAllWeb
         fields = "__all__"
-
-

@@ -1,6 +1,5 @@
 import { getCookie, setCookie } from "/static/core/js/functions.js";
-import { setErrorModal } from "../js/error_modal.js";
-
+import { setErrorModal } from "/static/core/js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -10,7 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let objData = {
         iframe: false,
       };
-      const isInIframe = window.self !== window.top
+      const isInIframe = window.self !== window.top;
 
       if (isInIframe) {
         objData = {
@@ -22,7 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: data,
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
+          "Content-Type": "application/json; charset=UTF-8",
           "X-CSRFToken": csrfToken,
         },
       }).then((response) => {

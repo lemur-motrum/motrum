@@ -21,12 +21,14 @@ class ProjectImageInlineWeb(admin.TabularInline):
     model = ProjectImage
     extra = 1
     fields = ("image",)
-    
+
+
 class ProjectVideoInlineWeb(admin.TabularInline):
     model = ProjectVideo
     extra = 1
     fields = ("video",)
-    
+
+
 class ProjectTextBlockWeb(admin.TabularInline):
     model = ProjectTextBlock
     extra = 3
@@ -38,22 +40,23 @@ class ProjectTextBlockWeb(admin.TabularInline):
                 "fields": [
                     ("title"),
                     ("text"),
-                    
                 ]
             },
         )
     ]
-    
-    
+
+
 class ProjectClientCategoryProjectInlineWeb(admin.TabularInline):
     model = ProjectClientCategoryProject
     extra = 1
     fields = ("client_category",)
-    
+
+
 class ProjectClientCategoryProjectMarkingeWeb(admin.TabularInline):
     model = ProjectClientCategoryProjectMarking
     extra = 1
-    fields = ("client_category_marking",)    
+    fields = ("client_category_marking",)
+
 
 class ProjectWebAdmin(admin.ModelAdmin):
     list_display = [
@@ -61,7 +64,7 @@ class ProjectWebAdmin(admin.ModelAdmin):
         "is_view_home_web",
         "company",
     ]
-    exclude = ["slug","data_create"]
+    exclude = ["slug", "data_create"]
     fieldsets = [
         (
             "Основные параметры",
@@ -72,9 +75,8 @@ class ProjectWebAdmin(admin.ModelAdmin):
                     "image_main",
                     "name",
                     "text",
-                    ("data_project","place_object"),
+                    ("data_project", "place_object"),
                     "category_project",
-
                 ],
             },
         ),
@@ -85,7 +87,6 @@ class ProjectWebAdmin(admin.ModelAdmin):
         ProjectImageInlineWeb,
         ProjectVideoInlineWeb,
         ProjectTextBlockWeb,
-        
     ]
     # def has_delete_permission(self, request,obj=None):
     #     return False
@@ -97,8 +98,10 @@ class CategoryProjectWebAdmin(admin.ModelAdmin):
         "article",
     ]
     exclude = ["slug"]
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
+
 
 class ClientCategoryProjectMarkingAdmin(admin.ModelAdmin):
     list_display = [
@@ -106,9 +109,9 @@ class ClientCategoryProjectMarkingAdmin(admin.ModelAdmin):
         "article",
     ]
     exclude = ["slug"]
-    
-    def has_delete_permission(self, request,obj=None):
-        return False    
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
@@ -117,7 +120,8 @@ class ClientCategoryProjectWebAdmin(admin.ModelAdmin):
         "article",
     ]
     exclude = ["slug"]
-    def has_delete_permission(self, request,obj=None):
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 

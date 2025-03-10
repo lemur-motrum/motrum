@@ -78,6 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const dataArr = {
             phone: phone,
             pin: "",
+            first_name: "",
           };
           const data = JSON.stringify(dataArr);
           fetch("/api/v1/client/login/", {
@@ -100,6 +101,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     const dataArr = {
                       phone: phone,
                       pin: pinInput.value,
+                      first_name: "",
                     };
                     const data = JSON.stringify(dataArr);
                     fetch("/api/v1/client/login/", {

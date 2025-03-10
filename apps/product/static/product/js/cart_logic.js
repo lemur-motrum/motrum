@@ -6,7 +6,9 @@ import {
   getCurrentPrice,
 } from "/static/core/js/functions.js";
 
-let csrfToken = getCookie("csrftoken");
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
+const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
   const filtersAndProductContainer = document.querySelector(
@@ -138,7 +140,13 @@ window.addEventListener("DOMContentLoaded", () => {
                     "X-CSRFToken": csrfToken,
                   },
                 })
-                  .then((response) => response.json())
+                  .then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                    } else {
+                      setErrorModal();
+                    }
+                  })
                   .then((cart_id) => {
                     if (cart_id) {
                       const dataObj = {
@@ -156,9 +164,10 @@ window.addEventListener("DOMContentLoaded", () => {
                         },
                       })
                         .then((response) => {
-                          if (response.status == 200) {
+                          if (response.status >= 200 && response.status < 300) {
                             return response.json();
                           } else {
+                            setErrorModal();
                             throw new Error("Ошибка");
                           }
                         })
@@ -190,9 +199,10 @@ window.addEventListener("DOMContentLoaded", () => {
                   },
                 })
                   .then((response) => {
-                    if (response.status == 200) {
+                    if (response.status >= 200 && response.status < 300) {
                       return response.json();
                     } else {
+                      setErrorModal();
                       throw new Error("Ошибка");
                     }
                   })
@@ -325,7 +335,13 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
             },
           })
-            .then((response) => response.json())
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                return response.json();
+              } else {
+                setErrorModal();
+              }
+            })
             .then((cart_id) => {
               if (cart_id) {
                 const dataObj = {
@@ -345,9 +361,10 @@ window.addEventListener("DOMContentLoaded", () => {
                   },
                 })
                   .then((response) => {
-                    if (response.status == 200) {
+                    if (response.status >= 200 && response.status < 300) {
                       return response.json();
                     } else {
+                      setErrorModal();
                       throw new Error("Ошибка");
                     }
                   })
@@ -379,9 +396,10 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           })
             .then((response) => {
-              if (response.status == 200) {
+              if (response.status >= 200 && response.status < 300) {
                 return response.json();
               } else {
+                setErrorModal();
                 throw new Error("Ошибка");
               }
             })

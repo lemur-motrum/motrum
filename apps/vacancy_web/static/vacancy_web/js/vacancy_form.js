@@ -4,6 +4,8 @@ import {
   maskOptions,
 } from "/static/core/js/functions.js";
 
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -72,10 +74,12 @@ window.addEventListener("DOMContentLoaded", () => {
             // "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        })
-          .then((response) => response.json())
-          .then((response) => console.log(response))
-          .catch((error) => console.error(error));
+        }).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+          } else {
+            setErrorModal();
+          }
+        });
       }
     };
   }

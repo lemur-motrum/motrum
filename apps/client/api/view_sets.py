@@ -522,17 +522,18 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
+        print(data)
         try:
 
             with transaction.atomic():
-                data = {
-                    "all_client_info": 0,
-                    "client": 33,
-                    "cart": 376,
-                    "requisitesKpp": None,
-                    "account_requisites": None,
-                    "type_delivery": None,
-                }
+                # data = {
+                #     "all_client_info": 0,
+                #     "client": 33,
+                #     "cart": 376,
+                #     "requisitesKpp": None,
+                #     "account_requisites": None,
+                #     "type_delivery": None,
+                # }
                 print(data)
                 cart = int(data["cart"])
                 cart = Cart.objects.get(id=data["cart"])

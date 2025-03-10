@@ -366,13 +366,15 @@ window.addEventListener("DOMContentLoaded", () => {
       const submitBtn = clientOrderDetails.querySelector(".save_cart_button");
 
       function showCartButton(select) {
-        select.addEventListener("itc.select.change", () => {
-          if (selectDelevery.value && selectRequisites.value) {
-            submitBtn.classList.remove("hide");
-          } else {
-            submitBtn.classList.add("hide");
-          }
-        });
+        if (select) {
+          select.addEventListener("itc.select.change", () => {
+            if (selectDelevery.value && selectRequisites.value) {
+              submitBtn.classList.remove("hide");
+            } else {
+              submitBtn.classList.add("hide");
+            }
+          });
+        }
       }
       showCartButton(document.querySelector("#select_delevery"));
       showCartButton(document.querySelector("#select_requisites"));

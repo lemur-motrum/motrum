@@ -118,8 +118,8 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    
-
+    е = get_contact_order(bx,11498)
+    print(е)
     result = 1
     if result:
         pass

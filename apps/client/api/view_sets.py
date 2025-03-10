@@ -1813,6 +1813,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
         data_payment = data["payment"]
+        error = "file_api_error"
+        location = "add-payment-info-1c"
+        info = f"ИНФО add-payment data_payment {data_payment} DATA из 1с -  {data}"
+        e = error_alert(error, location, info)
         try:
 
             for data_item in data_payment:

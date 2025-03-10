@@ -1802,25 +1802,10 @@ def send_requests(url, headers, data, auth):
 
     if auth == "1c":
         print("auth1c")
-
-        # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-
-        # payload = {}
-        # headers = {"Authorization": "Basic Qk1HT1RLOjEyMzQ="}
-
-        # response = requests.request(
-        #     "POST", url, headers=headers, data=payload, allow_redirects=False,verify=False
-        # )
-
-        # print(response.text)
-
         payload = data
-        print(payload)
         url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-
-        # payload = {}
         headers = {
-            # "Authorization": "Basic Qk1HT1RLOjEyMzQ="
+           
         }
         auth = HTTPBasicAuth(os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD"))
         import ssl
@@ -1844,21 +1829,10 @@ def send_requests(url, headers, data, auth):
 
         print(response.text)
 
-        # response = requests.request(
-        #     "POST",
-        #     url,
-        #     auth=HTTPBasicAuth(
-        #         os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD")
-        #     ),
-        #     headers=headers,
-        #     data=payload,
-        #     verify=False,
-        #     # allow_redirects=False,
-        # )
     else:
         response = requests.post(url, headers=headers, data=data, json=data)
 
-    print(response)
+
     if response.status_code != 200:
         error = "error"
         location = "отправка requests"
@@ -1866,12 +1840,7 @@ def send_requests(url, headers, data, auth):
         e = error_alert(error, location, info)
 
     return response.status_code
-    # print(response.status_code)
-    # print(response.text)
-    # if response.status_code == requests.codes.ok:
-
-    # else:
-    #     print('Request failed with status code:', response.status_code)
+    
 
 
 def json_serial(obj):

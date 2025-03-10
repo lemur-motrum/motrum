@@ -997,7 +997,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 data_for_1c = create_info_request_order_1c(order, order_products)
                 print("data_for_1c", data_for_1c)
-
+                tr = traceback.format_exc()
+                error = "error"
+                location = "ИНФО НЕ ОШИБКА"
+                info = f"ИНФО НЕ ОШИБКА data_for_1c{data_for_1c}"
+                e = error_alert(error, location, info)
+                
                 type_save = request.COOKIES.get("type_save")
 
                 if IS_WEB or user.username == "testadmin":

@@ -190,11 +190,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     data["order"]["status"], bs_id_order
                 )
 
-                # try:
-                #     manager = AdminUser.objects.get(bitrix_id=manager_company)
-                # except AdminUser.DoesNotExist:
-                #     manager = AdminUser.objects.filter(admin_type="ALL").first()
-
+               
                 adress_document = RequisitesAddress.objects.get(
                     requisitesKpp_id=acc_req.requisitesKpp.id,
                     type_address_bx=data_company["data_commpany"]["adress_type"],

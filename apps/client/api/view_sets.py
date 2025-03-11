@@ -595,7 +595,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     specification_name,
                 )
                 if status_save_spes == "ok" and specification_name:
-                    status_order = "PROCESSING"
+                    status_order = "PRE-PROCESSING"
 
                 try:
 
@@ -615,7 +615,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                                 if data["requisitesKpp"] != None
                                 else None
                             ),
-                            "status": "PROCESSING",
+                            "status": "PRE-PROCESSING",
                             "cart": cart.id,
                             "bill_name": None,
                             "bill_file": None,

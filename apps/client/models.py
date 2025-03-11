@@ -430,19 +430,20 @@ class EmailsCallBack(models.Model):
 # статусы которые в окт и на сайте
 STATUS_ORDER = (
     ("", "----"),
+    ("PRE-PROCESSING", "В обработке"),
     ("PROCESSING", "В обработке"),
     ("PAYMENT", "Счёт на оплату"),
     ("IN_MOTRUM", "Заказ у поставщика"),
-    ("SHIPMENT_AUTO", "На доставке "),
+    ("SHIPMENT_AUTO", "На доставке"),
     ("SHIPMENT_PICKUP", "Готов к отгрузке самовывозом"),
     ("CANCELED", "Отменен"),
     ("COMPLETED", "Заказ завершен"),
 )
 # конвертация статусов битрикс в статусы окт
 STATUS_ORDER_BITRIX = (
-    ("PROCESSING", "NEW"),
-    ("PROCESSING", "PREPARATION"),
-    ("PROCESSING", "C8:NEW"),
+    ("PRE-PROCESSING", "NEW"),
+    ("PRE-PROCESSING", "PREPARATION"),
+    ("PRE-PROCESSING", "C8:NEW"),
     ("PROCESSING", "C8:PREPARATION"),
     ("PROCESSING", "C8:PREPAYMENT_INVOICE"),  # На удаление
     ("PAYMENT", "C8:EXECUTING"),
@@ -518,7 +519,7 @@ class Order(models.Model):
     )
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     status = models.CharField(
-        max_length=100, choices=STATUS_ORDER, default="PROCESSING"
+        max_length=100, choices=STATUS_ORDER, default="PRE-PROCESSING"
     )
     specification = models.OneToOneField(
         Specification,
@@ -654,12 +655,23 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
-
+        print("order-save")
         if not self._state.adding:
             if self._loaded_values["status"] != self.status:
                 Notification.add_notification(self.id, "STATUS_ORDERING", None)
+            
+            if self._loaded_values["status"] == "PRE-PROCESSING" and self.status == "PROCESSING" :
+               print("== PRE-PROCESSING and self.status == PROCESSING")
+               
+               
         super().save(*args, **kwargs)
-
+        
+    def send_email_order_info(self):
+        client = self.client
+        if client and client.email:
+            if self.status == "PROCESSING":
+                pass
+            
     # создание документов счета
     def create_bill(
         self,

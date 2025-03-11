@@ -11,6 +11,7 @@ from django.shortcuts import render
 
 from regex import D
 import requests
+from apps.client.api.serializers import OrderSerializer
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
     AccountRequisites,
@@ -118,8 +119,23 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    е = get_contact_order(bx,11498)
-    print(е)
+    
+    order = Order.objects.get(id=172)
+    
+    serializer_class = OrderSerializer
+    d = {
+        "status":"PROCESSING"
+    }
+    serializer = serializer_class(order, data=d, many=False)
+    if serializer.is_valid():
+        orders = serializer.save()
+        
+       
+    else:
+        orders = serializer.errors
+    print(orders)
+    
+        
     result = 1
     if result:
         pass

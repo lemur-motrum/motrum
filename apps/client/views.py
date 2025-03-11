@@ -134,6 +134,7 @@ def order_client_one(request, pk):
             .annotate(
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
+                sale_price_all=Round(F("price_one") * F("quantity")),
                 # sale_price=Case(
                 #     When(
                 #         price_one=None,
@@ -179,6 +180,8 @@ def order_client_one(request, pk):
             .annotate(
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
+                sale_price_all=Round(F("price_one") * F("quantity")),
+              
                 # sale_price=Case(
                 #     When(
                 #         price_one=None,
@@ -204,8 +207,8 @@ def order_client_one(request, pk):
         )
 
     total_full_price = product.aggregate(
-        all_sum_sale_price=Sum("sale_price"),
-        all_sum_full_price=Sum("full_price"),
+        all_sum_sale_price=Sum("sale_price_all"),
+        all_sum_full_price=Sum("price_all_item"),
         all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
     )
     total_full_price['all_sum_sale'] = abs(total_full_price['all_sum_sale'])

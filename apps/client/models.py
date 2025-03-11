@@ -17,6 +17,7 @@ from django.template import loader
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 
 from apps.core.utils_web import send_email_message_and_file_alternative
+from apps.logs.utils import error_alert
 from apps.product.models import CategoryProduct
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
@@ -688,7 +689,7 @@ class Order(models.Model):
                 request = request.thread_local.current_request
                 print(request)
                 data = {
-                    "request":request,
+                    "request": request,
                     "categ": categ,
                 }
                 print(data)
@@ -721,15 +722,13 @@ class Order(models.Model):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
+        error = "error"
+        location = "ИНФО Сохранение пдф счета "
+        info = f"ИНФО Сохранение пдф счета  ошибка {pdf_file},{pdf_name},{file_path_no_sign},{version},{name_bill_to_fullname},{name_bill_to_fullname_nosign}"
+        e = error_alert(error, location, info)
 
-        (
-            pdf_file,
-            pdf_name,
-            file_path_no_sign,
-            version,
-            name_bill_to_fullname,
-            name_bill_to_fullname_nosign,
-        ) = crete_pdf_bill(
+    
+        pdf_file, pdf_name,file_path_no_sign,version,name_bill_to_fullname,name_bill_to_fullname_nosign, = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
@@ -740,35 +739,19 @@ class Order(models.Model):
             type_save,
         )
         if pdf_file:
-            # if post_update:
-            #     bill_date_start = self.bill_date_start
-            #     data_stop = self.bill_date_stop
-            # else:
-            #     self.bill_date_start = datetime.date.today()
-            #     bill_date_start = datetime.date.today()
-            #     data_stop = create_time_stop_specification()
-            #     self.bill_date_stop = data_stop
-            #     self.status = "PAYMENT"
+          
             self.bill_date_start = datetime.date.today()
             bill_date_start = datetime.date.today()
             data_stop = create_time_stop_specification()
             data_stop = datetime.datetime.strptime(data_stop, "%Y-%m-%d").date()
             self.bill_date_stop = data_stop
 
-            # if type_save == "new":
-            #     self.status = "PAYMENT"
-            # elif type_save == "update":
-            #     pass
-            # elif type_save == "hard_update":
-            #     self.status = "PAYMENT"
-
             self.bill_file = pdf_file
             self.bill_file_no_signature = file_path_no_sign
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
 
-            # if self.client:
-            #     Notification.add_notification(self.id, "DOCUMENT_BILL")
+  
             Notification.add_notification(self.id, "DOCUMENT_BILL", pdf_file)
             self._change_reason = "Ручное"
             self.save()

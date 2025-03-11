@@ -260,6 +260,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   post_update: false,
                 };
                 const data = JSON.stringify(dataObj);
+                
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,
                   {

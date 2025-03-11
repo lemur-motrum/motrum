@@ -211,13 +211,13 @@
                                     <input class="delivery_date"
                                            type="date"
                                            name="calendar"
-                                           onfocus="this.showPicker()"
+                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                            value="{{ item.date_delivery_bill|date:"Y-m-d" }}">
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
                                            name="calendar"
-                                           onfocus="this.showPicker()"
+                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                            min="{{ current_date }}">
                                     {% if item.date_delivery %}
                                         <br>
@@ -363,13 +363,13 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                value="{{ item.date_delivery_bill|date:"Y-m-d" }}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                min="{{ current_date }}">
                                         {% if item.date_delivery %}
                                             <br>
@@ -579,13 +579,13 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                value="{{ item.date_delivery_bill|date:"Y-m-d" }}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                min="{{ current_date }}">
                                     {% endif %}
                                 </label>
@@ -795,13 +795,13 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                value="{{ item.date_delivery_bill|date:"Y-m-d" }}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               onfocus="this.showPicker()"
+                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                                min="{{ current_date }}">
                                     {% endif %}
                                 </label>
@@ -969,7 +969,7 @@
                                 <label class="new_item_container_value_calendar_label">
                                     <input class="new_item_container_calendar"
                                            type="date"
-                                           onfocus="this.showPicker()"
+                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                            min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>
@@ -1222,7 +1222,7 @@
                                 <label class="new_item_container_value_calendar_label">
                                     <input class="new_item_container_calendar"
                                            type="date"
-                                           onfocus="this.showPicker()"
+                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
                                            min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>

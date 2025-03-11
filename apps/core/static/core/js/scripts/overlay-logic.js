@@ -14,13 +14,39 @@ window.addEventListener("DOMContentLoaded", () => {
     if (overlay) {
       const autificationForm = overlay.querySelector(".autification-form");
       const phoneInput = autificationForm.querySelector(".phone-input");
-
       const pinInput = autificationForm.querySelector(".password-input");
       const maskPinOptions = {
         mask: "0000",
         lazy: false,
         overwrite: "shift",
       };
+
+      let amountTime = 119;
+      let errorsQuantity = 3;
+
+      function timer() {
+        const timer = autificationForm.querySelector(".timer");
+        let minutes = Math.floor(amountTime / 60);
+        let seconds = amountTime % 60;
+
+        if (seconds < 10) {
+          seconds = "0" + seconds;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        timer.textContent = `${minutes}:${seconds}`;
+        amountTime--;
+
+        if (amountTime < 0) {
+          stopTimer();
+          amountTime = 0;
+          window.location.reload();
+        }
+        function stopTimer() {
+          clearInterval();
+        }
+      }
 
       const phoneMask = IMask(phoneInput, maskOptions);
       const pinMask = IMask(pinInput, maskPinOptions);
@@ -92,6 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               response.json();
               if (response.status == 200) {
+                setInterval(timer, 1000);
                 button.style.display = "none";
                 pinLabel.classList.add("show");
                 pinInput.onkeyup = () => {
@@ -123,7 +150,19 @@ window.addEventListener("DOMContentLoaded", () => {
                           window.location.reload();
                         }
                         if (response.status == 400) {
-                          showErrorValidation("Некорректный Пин-код", pinError);
+                          if (errorsQuantity == 0) {
+                            showErrorValidation(
+                              "Повторите после перезагрузки",
+                              pinError
+                            );
+                            window.location.reload();
+                          } else {
+                            showErrorValidation(
+                              `Некорректный Пин-код, осталось попыток ${errorsQuantity}`,
+                              pinError
+                            );
+                          }
+                          errorsQuantity -= 1;
                         }
                         if (response.status == 403) {
                           console.log("Вы заблокированы");

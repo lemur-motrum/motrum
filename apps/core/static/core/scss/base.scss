@@ -185,13 +185,24 @@ a {
             display: none;
             &.show {
               display: flex;
+              .timer {
+                position: absolute;
+                z-index: 3;
+                top: -25%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.8rem;
+                width: -webkit-max-content;
+                width: -moz-max-content;
+                width: max-content;
+              }
             }
           }
           .error-maessage {
             color: red;
-            font-size: 0.5rem;
+            font-size: 0.6rem;
             position: absolute;
-            top: 102%;
+            top: 101%;
             left: 50%;
             transform: translateX(-50%);
             transition: 0.6s;
@@ -514,6 +525,7 @@ a {
           text-align: center;
           font-size: 0.813rem;
         }
+
         input {
           height: 3.125rem;
           font-size: 1.125rem;
@@ -1829,6 +1841,7 @@ a {
     @media screen and (max-width: 576px) {
       width: 5rem;
       height: 4rem;
+      border-radius: 1.5rem;
     }
     img {
       width: 100%;
@@ -1849,6 +1862,7 @@ a {
     @media screen and (max-width: 576px) {
       width: 100%;
       padding: 1rem 1.5rem;
+      border-radius: 1.5rem;
     }
     .name-description {
       display: flex;
@@ -2682,7 +2696,7 @@ a {
                 width: 1.2rem;
                 height: 1.2rem;
                 top: 5%;
-                right: 5%;
+                right: 3%;
               }
               img {
                 width: 100%;
@@ -2702,6 +2716,12 @@ a {
       justify-content: flex-end;
       margin-top: 1.125rem;
       align-items: flex-start;
+      @media screen and (max-width: 576px) {
+        width: 100%;
+        margin-left: 0;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
       .no_price_container {
         display: none;
         color: #ff5b00;
@@ -2711,6 +2731,10 @@ a {
         justify-content: space-between;
         .no_price_container {
           display: block;
+          @media screen and(max-width:576px) {
+            width: 100%;
+            font-size: 0.7rem;
+          }
         }
       }
       .total_sum {
@@ -2773,14 +2797,26 @@ a {
       gap: 1rem;
       margin-top: 0.813rem;
       margin-right: 5.188rem;
+      @media screen and (max-width: 576px) {
+        width: 100%;
+        margin-top: 0.5rem;
+        margin-right: 0;
+        gap: 0.5rem;
+      }
       .selects_container {
         display: flex;
         align-items: flex-end;
         flex-direction: column;
         gap: 1rem;
+        @media screen and (max-width: 576px) {
+          gap: 0.5rem;
+        }
         .itc-select {
           position: relative;
           width: 13.938rem;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+          }
           &.itc-select_show {
             .itc-select__dropdown {
               display: block;
@@ -2875,7 +2911,7 @@ a {
                 }
               }
               &:hover {
-                background-color: #f5f5f5;
+                background-color: #95bad4;
                 cursor: pointer;
                 transition: 0.2s background-color ease-in-out;
               }
@@ -2888,6 +2924,9 @@ a {
         display: flex;
         justify-content: flex-end;
         height: 3.563rem;
+        @media screen and (max-width: 576px) {
+          width: 100%;
+        }
         .save_cart_button {
           width: 14rem;
           height: 100%;
@@ -2901,6 +2940,9 @@ a {
           background-color: #95bad4;
           border: none;
           transition: 0.6s;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+          }
           cursor: pointer;
           &.hide {
             display: none;
@@ -2990,6 +3032,7 @@ a {
             width: 100%;
             height: 2.5rem;
           }
+
           input {
             width: 100%;
             height: 100%;

@@ -968,6 +968,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         try:
             import json
+            error = "error"
+            location = "НАЧАЛо СКРИПТА СОХОРАНЕНИЯ СЧЕТА"
+            info = f"НАЧАЛо СКРИПТА СОХОРАНЕНИЯ СЧЕТА "
+            e = error_alert(error, location, info)
 
             user = request.user
             data_get = request.data

@@ -9,16 +9,20 @@ from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save, pre_save
+from django.template import loader
 
 # Create your models here.
 
 
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
 
+from apps.core.utils_web import send_email_message_and_file_alternative
+from apps.product.models import CategoryProduct
 from apps.specification.models import Specification
 from apps.specification.utils import get_document_bill_path, get_shipment_doc_path
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
+from middlewares.middlewares import RequestMiddleware
 from project.settings import BASE_MANAGER_FOR_BX
 
 
@@ -129,7 +133,6 @@ class Requisites(models.Model):
     )  # НА УДАЛЕНИЕ
     id_bitrix = models.CharField(
         "Id реквизита в битрикс",
-        
         max_length=1000,
         blank=True,
         null=True,
@@ -655,23 +658,55 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
+
         print("order-save")
+        self.send_email_order_info()
         if not self._state.adding:
             if self._loaded_values["status"] != self.status:
                 Notification.add_notification(self.id, "STATUS_ORDERING", None)
-            
-            if self._loaded_values["status"] == "PRE-PROCESSING" and self.status == "PROCESSING" :
-               print("== PRE-PROCESSING and self.status == PROCESSING")
-               
-               
+
+            if (
+                self._loaded_values["status"] == "PRE-PROCESSING"
+                and self.status == "PROCESSING"
+            ):
+                print("== PRE-PROCESSING and self.status == PROCESSING")
+                self.send_email_order_info()
+
         super().save(*args, **kwargs)
-        
+
     def send_email_order_info(self):
         client = self.client
+        need_email = False
+        data = None
         if client and client.email:
             if self.status == "PROCESSING":
-                pass
-            
+                need_email = True
+                html_message_template = "core/emails/email_get_order_to_client.html"
+                categ = CategoryProduct.objects.filter(is_send_email=True)
+                print(categ)
+                request = RequestMiddleware(get_response=None)
+                request = request.thread_local.current_request
+                print(request)
+                data = {
+                    "request":request,
+                    "categ": categ,
+                }
+                print(data)
+                subject = f"Заказ в магазине motrum.ru"
+
+        if need_email:
+            html_message = loader.render_to_string(
+                html_message_template,
+                {"context": data},
+            )
+            print(html_message)
+
+            to_email = client.email
+            test = send_email_message_and_file_alternative(
+                subject, None, to_email, None, html_message
+            )
+            print("test-email", test)
+
     # создание документов счета
     def create_bill(
         self,
@@ -771,7 +806,7 @@ class Order(models.Model):
         else:
             return None
 
-    # Получение руского названия статуса в шаблоны
+    # Получение русского названия статуса в шаблоны
     def get_status_name(self):
         for choice in STATUS_ORDER:
             if choice[0] == self.status:

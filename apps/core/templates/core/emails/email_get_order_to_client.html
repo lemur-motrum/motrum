@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        {% comment %} <h2>{{ client_name }}</h2>
+        <h2>Телефон:{{ client_phone }}</h2> {% endcomment %}
+        {% comment %} <h3>Сообщение:{{ text }}</h3>
+        <h2>ссылка лк:</h2>
+        <a href="{{ link }}">ссылка</a> {% endcomment %}
+        <p style="color: black;">Здравствуйте! Благодарим за обращение в нашу компанию. Уже взяли Ваш запрос в работу, в скором времени вышлем КП.  </p>
+        
+       <p style="color: black;">Вас могут заинтересовать другие товары из  нашего каталога: </p>
+        
+        <ul>
+            {% for categ_item in context.categ %}
+            {{ request.path }}
+                <li><a href="{{ request.path }}{{ categ_item.get_absolute_url }}" target="_blank" rel="noopener noreferrer">{{categ_item.name}}</a></li>
+                
+                
+            {% endfor %}
+            
+        </ul>
+     <p></p>
+        С уважением,
+        компания <a href="https://www.motrum.ru/" target="_blank" rel="noopener noreferrer">Motrum</a> 
+        <a href="tel:+78462337814">+7 (846) 233-78-14</a>
+        
+        
+    </body>
+</html>

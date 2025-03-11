@@ -707,11 +707,12 @@ def add_info_order(request, order, type_save):
                 closedate = datetime.datetime.fromisoformat(
                     order.bill_date_stop.isoformat()
                 )
-
+                year = datetime.datetime.now().year
+                accountNumber = f"{order.bill_name}_{year}"
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,
-                        "accountNumber": order.bill_name,
+                        "accountNumber": accountNumber,
                         "opportunity": order.bill_sum,
                         # "parentId2": id_bitrix_order,
                         "begindate": begindate,
@@ -722,11 +723,12 @@ def add_info_order(request, order, type_save):
                         "crm.item.update",
                         {"entityTypeId": 31, "id": order.bill_id_bx, "fields": invoice},
                     )
+               
 
                 else:
                     invoice = {
                         "title": order.bill_name,
-                        "accountNumber": order.bill_name,
+                        "accountNumber": accountNumber,
                         "opportunity": order.bill_sum,
                         "parentId2": id_bitrix_order,
                         "closedate": closedate,

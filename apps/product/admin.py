@@ -1104,7 +1104,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         context.update(extra_context or {})
         extra_kwargs = {}
-        print("self.object_history_template",self.object_history_template)
+        print("self.object_history_template", self.object_history_template)
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )
@@ -1177,13 +1177,21 @@ class GroupProductInlineWeb(admin.TabularInline):
 
 
 class CategoryProductAdminWeb(admin.ModelAdmin):
-    fields = ("name", "article_home_web", "article_name", "image", "is_view_home_web")
+    fields = (
+        "name",
+        "article_home_web",
+        "article_name",
+        "image",
+        "is_view_home_web",
+        "is_send_email",
+    )
     list_display = [
         "name",
         "article_home_web",
         "article_name",
         "get_name",
         "is_view_home_web",
+        "is_send_email",
     ]
 
     inlines = [

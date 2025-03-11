@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load number_into_digits %}
 {% block content %}
-    <div class="cart_container">
+    <div class="order_one_container">
         <input class="personal_discount"
                type="hidden"
                data-personal-discount="{{ discount_client }}" />
@@ -15,16 +16,11 @@
             {% if product|length > 0 %}
                 <div class="products">
                     {% for product_item in product %}
-                  
-                        {{product_item.sale_price}}
-                        {{product_item.full_price}}
-                        {{product_item.price_all_item}}
-                        {{total_full_price}}
-                        {{product_item.bill_name}}
-                        
-
-
-
+                        {{ product_item.sale_price }}
+                        {{ product_item.full_price }}
+                        {{ product_item.price_all_item }}
+                        {{ total_full_price }}
+                        {{ product_item.bill_name }}
                         <div class="product_item"
                              product-id="{{ product_item.product.id_product_cart }}"
                              order-multiplicity="{{ product_item.product.stock.order_multiplicity }}">
@@ -55,27 +51,43 @@
                                     </div>
                                 </div>
                                 <div class="one-prce-container">
-                                    <div class="lot">{{ product_item.quantity }} {{ product_item.product.stock.lot.name_shorts }}</div>
+                                    <div class="lot">{{ product_item.product.stock.lot_complect }} {{ product_item.product.stock.lot.name_shorts }}</div>
                                     <div class="price_once">
-                                        {% if product_item.product.price.rub_price_supplier %}
-                                            <span> <span class="cart_price">{{ product_item.price_one }}</span> ₽</span>
-                                            {% comment %} {% if discount_client %}
-                                                <br />
-                                                <span class="discount">розничная цена:
-                                                    <span class="all_cart_no_sale_price">{{ product_item.price.rub_price_supplier }}</span> ₽ </span>
-                                                {% else %}
-                                                {% endif %}{% endcomment %}
-                                        {% else %}
-                                        <span>по запросу</span> 
-                                        {% endif %}
+                                        <span> <span class="cart_price">{{ product_item.sale_price|number_into_digits }}</span> ₽</span>
                                         <input class="cart_price_one_no_sale"
                                                type="hidden"
                                                data-cart-one-no-sale="{{ product_item.price.rub_price_supplier }}" />
                                     </div>
+                                    {% if product_item.full_price > product_item.sale_price %}
+                                        <div class="price_no_sale">
+                                            <div>Розничная цена:</div>
+                                            <span><span>{{ product_item.full_price|number_into_digits }}</span> ₽</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="total_price_container">
+                                    <div class="lot">{{ product_item.quantity }} {{ product_item.product.stock.lot.name_shorts }}</div>
+                                    <div class="price">{{ product_item.price_all_item|number_into_digits }}  ₽</div>
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
+                </div>
+                <div class="total_sum_wrapper">
+                    <div class="total_sum_container">
+                        <div class="total_sum_elem">
+                            <div class="descr">Розничная цена</div>
+                            <div class="price">{{ total_full_price.all_sum_full_price|number_into_digits }} ₽</div>
+                        </div>
+                        <div class="total_sum_elem">
+                            <div class="descr">Ваша скидка</div>
+                            <div class="price">{{ total_full_price.all_sum_sale|number_into_digits }} ₽</div>
+                        </div>
+                        <div class="total_sum_elem">
+                            <div class="descr">Итого</div>
+                            <div class="price">{{ total_full_price.all_sum_sale_price|number_into_digits }} ₽</div>
+                        </div>
+                    </div>
                 </div>
             {% endif %}
         </div>

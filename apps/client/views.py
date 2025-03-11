@@ -211,8 +211,9 @@ def order_client_one(request, pk):
         all_sum_full_price=Sum("price_all_item"),
         all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
     )
-    total_full_price['all_sum_sale'] = abs(total_full_price['all_sum_sale'])
- 
+    total_full_price["all_sum_sale"] = abs(total_full_price["all_sum_sale"])
+
+    print("product", product)
     context = {
         "order": order,
         "product": product,

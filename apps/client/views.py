@@ -134,17 +134,6 @@ def order_client_one(request, pk):
             .annotate(
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
-                sale_price_all=Round(F("price_one") * F("quantity")),
-                # sale_price=Case(
-                #     When(
-                #         price_one=None,
-                #         then=("price_one_original_new"),
-                #     ),
-                #     When(
-                #         price_one_original_new=None,
-                #         then=("price_one"),
-                #     ),
-                # ),
                 full_price=Case(
                     When(
                         extra_discount=None,
@@ -155,7 +144,9 @@ def order_client_one(request, pk):
                         then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
                     ),
                 ),
+                
                 price_all_item=F("price_all"),
+                sum_full_price = Round(F("full_price") * F("quantity"))
             )
         )
 
@@ -182,16 +173,6 @@ def order_client_one(request, pk):
                 sale_price=F("price_one"),
                 sale_price_all=Round(F("price_one") * F("quantity")),
               
-                # sale_price=Case(
-                #     When(
-                #         price_one=None,
-                #         then=("price_one_original_new"),
-                #     ),
-                #     When(
-                #         price_one_original_new=None,
-                #         then=("price_one"),
-                #     ),
-                # ),
                 full_price=Case(
                     When(
                         extra_discount=None,
@@ -203,17 +184,20 @@ def order_client_one(request, pk):
                     ),
                 ),
                 price_all_item=F("price_all"),
+                sum_full_price = Round(F("full_price") * F("quantity"))
             )
         )
 
     total_full_price = product.aggregate(
-        all_sum_sale_price=Sum("sale_price_all"),
-        all_sum_full_price=Sum("price_all_item"),
+        all_sum_sale_price=Sum("price_all_item"),
+        
+        all_sum_full_price=Sum("sum_full_price"),
+        
+        
         all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
     )
-    total_full_price["all_sum_sale"] = abs(total_full_price["all_sum_sale"])
-
-    print("product", product)
+    total_full_price['all_sum_sale'] = abs(total_full_price['all_sum_sale'])
+ 
     context = {
         "order": order,
         "product": product,

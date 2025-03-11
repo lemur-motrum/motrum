@@ -18,8 +18,8 @@
                     {% for product_item in product %}
                         {{ product_item.sale_price }}
                         {{ product_item.full_price }}
-                        {{ product_item.price_all_item }}
-                        {{ total_full_price }}
+                       
+                      
                         {{ product_item.bill_name }}
                         <div class="product_item"
                              product-id="{{ product_item.product.id_product_cart }}"
@@ -75,18 +75,18 @@
                 </div>
                 <div class="total_sum_wrapper">
                     <div class="total_sum_container">
-                        <div class="total_sum_elem">
+                     <div class="total_sum_elem">
                             <div class="descr">Розничная цена</div>
                             <div class="price">{{ total_full_price.all_sum_full_price|number_into_digits }} ₽</div>
-                        </div>
-                        <div class="total_sum_elem">
+                        </div> 
+                      <div class="total_sum_elem">
                             <div class="descr">Ваша скидка</div>
                             <div class="price">{{ total_full_price.all_sum_sale|number_into_digits }} ₽</div>
                         </div>
                         <div class="total_sum_elem">
                             <div class="descr">Итого</div>
                             <div class="price">{{ total_full_price.all_sum_sale_price|number_into_digits }} ₽</div>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             {% endif %}

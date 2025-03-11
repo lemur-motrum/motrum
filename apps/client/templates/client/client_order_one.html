@@ -15,7 +15,14 @@
             {% if product %}
                 <div class="products">
                     {% for product_item in product %}
-     
+                  
+                        {{product_item.sale_price}}
+                        {{product_item.full_price}}
+                        {{product_item.price_all_item}}
+                        {{total_full_price}}
+                        {{product_item.bill_name}}
+                        
+
 
 
                         <div class="product_item"

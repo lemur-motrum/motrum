@@ -5,7 +5,7 @@ import os
 from django.views.decorators.cache import cache_control
 from django.core import serializers
 from django.db.models import Prefetch, OuterRef
-from django.db.models import Sum
+from django.db.models import Avg, Count, Min, Sum
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from apps import specification, supplier

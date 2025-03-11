@@ -4,7 +4,8 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
 from django.db.models import Q, F, OrderBy, Case, When, Value
-
+from django.db.models.functions import Round
+from django.db.models import Sum
 from apps.admin_specification.views import specifications
 from apps.client.models import (
     AccountRequisites,
@@ -108,9 +109,12 @@ def my_contacts(request):
 # ЗАКАЗ ОТДЕЛЬНАЯ СТРАНИЦА
 def order_client_one(request, pk):
     order = Order.objects.get(pk=pk)
-    print(order.bill_name)
+    is_final_price = False
+
+    print("order.bill_name", order.bill_name)
     if order.bill_name:
-        print(order.bill_name)
+        is_final_price = True
+        print(" TRUE")
         product = (
             ProductSpecification.objects.filter(specification=order.specification)
             .select_related(
@@ -128,19 +132,32 @@ def order_client_one(request, pk):
                 ),
             )
             .annotate(
-                # full_price=(F("price_one") / 100 * F("extra_discount")),
-                full_price=F("product__price"),
-                sale_price= Case(
-                            When(
-                                price_one=None,
-                                then=("price_one"),
-                            ),
-                            When(
-                                price_one_original_new=None,
-                                then=("price_one_original_new"),
-                            ))
+                bill_name=F("specification__order__bill_name"),
+                sale_price=F("price_one"),
+                # sale_price=Case(
+                #     When(
+                #         price_one=None,
+                #         then=("price_one_original_new"),
+                #     ),
+                #     When(
+                #         price_one_original_new=None,
+                #         then=("price_one"),
+                #     ),
+                # ),
+                full_price=Case(
+                    When(
+                        extra_discount=None,
+                        then=("sale_price"),
+                    ),
+                    When(
+                        extra_discount__isnull=False,
+                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
+                    ),
+                ),
+                price_all_item=F("price_all"),
             )
         )
+
     else:
         print("order.bill_nameNONE")
         product = (
@@ -160,18 +177,44 @@ def order_client_one(request, pk):
                 ),
             )
             .annotate(
-                # full_price=(F("price_one") / 100 * F("extra_discount")),
-                # full_price=F("product__price__currency"),
-            
+                bill_name=F("specification__order__bill_name"),
+                sale_price=F("price_one"),
+                # sale_price=Case(
+                #     When(
+                #         price_one=None,
+                #         then=("price_one_original_new"),
+                #     ),
+                #     When(
+                #         price_one_original_new=None,
+                #         then=("price_one"),
+                #     ),
+                # ),
+                full_price=Case(
+                    When(
+                        extra_discount=None,
+                        then=("sale_price"),
+                    ),
+                    When(
+                        extra_discount__isnull=False,
+                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
+                    ),
+                ),
+                price_all_item=F("price_all"),
             )
         )
-    
-    
-    # print(product)
-    product = None
+
+    total_full_price = product.aggregate(
+        all_sum_sale_price=Sum("sale_price"),
+        all_sum_full_price=Sum("full_price"),
+        all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
+    )
+    total_full_price['all_sum_sale'] = abs(total_full_price['all_sum_sale'])
+ 
     context = {
         "order": order,
         "product": product,
+        "is_final_price": is_final_price,
+        "total_full_price": total_full_price,
     }
 
     return render(request, "client/client_order_one.html", context)

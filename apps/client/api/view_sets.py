@@ -179,9 +179,10 @@ class ClientViewSet(viewsets.ModelViewSet):
                     # логин старого пользователя
                     if client.last_login:
                         login(request, client)
-
-                        try:
-                            cart = Cart.objects.get(client=client, is_active=False)
+                      
+                        cart = Cart.objects.filter(client=client, is_active=False)
+                        if cart.count() > 0:
+                            cart = cart[0]
                             if cart_id is None:
                                 response = Response()
                                 response.data = serializer.data["id"]
@@ -203,24 +204,41 @@ class ClientViewSet(viewsets.ModelViewSet):
                                 response.status = status.HTTP_200_OK
                                 response.set_cookie("cart", cart.id, max_age=2629800)
                                 return response
-                                # return Response(serializer.data, status=status.HTTP_200_OK)
-
-                        except Cart.DoesNotExist:
+                        else:   
                             Cart.objects.filter(id=cart_id).update(client=client)
                             return Response(serializer.data, status=status.HTTP_200_OK)
-                        # if cart_id:
+            
+            
+
+                        # try:
+                        #     cart = Cart.objects.get(client=client, is_active=False)
+                        #     if cart_id is None:
+                        #         response = Response()
+                        #         response.data = serializer.data["id"]
+                        #         response.status = status.HTTP_200_OK
+                        #         response.set_cookie("cart", cart.id, max_age=2629800)
+                        #         return response
+                        #     else:
+
+                        #         product_cart_no_user = ProductCart.objects.filter(
+                        #             cart=cart_id
+                        #         )
+                        #         for products_no_user in product_cart_no_user:
+                        #             products_no_user.cart = cart
+                        #             products_no_user.save()
+
+                        #         product_cart_no_user.delete()
+                        #         response = Response()
+                        #         response.data = serializer.data["id"]
+                        #         response.status = status.HTTP_200_OK
+                        #         response.set_cookie("cart", cart.id, max_age=2629800)
+                        #         return response
+                        #         # return Response(serializer.data, status=status.HTTP_200_OK)
+
+                        # except Cart.DoesNotExist:
                         #     Cart.objects.filter(id=cart_id).update(client=client)
-
-                        # if  Cart.objects.get(client=client,is_active=False) :
-                        #     response = Response()
-                        #     response.data = serializer.data["id"]
-                        #     response.status = status.HTTP_200_OK
-                        #     response.set_cookie("cart", Cart.id, max_age=2629800)
-                        #     return response
-                        # else:
                         #     return Response(serializer.data, status=status.HTTP_200_OK)
-
-                        # return Response(serializer.data, status=status.HTTP_200_OK)
+                
                     # логин нового пользоваеля
                     else:
 

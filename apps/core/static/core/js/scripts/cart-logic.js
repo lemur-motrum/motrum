@@ -379,40 +379,42 @@ window.addEventListener("DOMContentLoaded", () => {
       showCartButton(document.querySelector("#select_delevery"));
       showCartButton(document.querySelector("#select_requisites"));
 
-      submitBtn.onclick = () => {
-        const cartId = getCookie("cart");
-        const clientId = getCookie("client_id");
-        const selectRequisitesValuesArray = selectRequisites.value.split(",");
-        const requisitesKppValue = selectRequisitesValuesArray[0];
-        const accountRequisitValue = selectRequisitesValuesArray[1];
-        const deleveryIdValue = selectDelevery.value;
+      if (submitBtn) {
+        submitBtn.onclick = () => {
+          const cartId = getCookie("cart");
+          const clientId = getCookie("client_id");
+          const selectRequisitesValuesArray = selectRequisites.value.split(",");
+          const requisitesKppValue = selectRequisitesValuesArray[0];
+          const accountRequisitValue = selectRequisitesValuesArray[1];
+          const deleveryIdValue = selectDelevery.value;
 
-        const dataObj = {
-          all_client_info: 1,
-          client: +clientId,
-          cart: +cartId,
-          requisitesKpp: +requisitesKppValue,
-          account_requisites: +accountRequisitValue,
-          type_delivery: +deleveryIdValue,
+          const dataObj = {
+            all_client_info: 1,
+            client: +clientId,
+            cart: +cartId,
+            requisitesKpp: +requisitesKppValue,
+            account_requisites: +accountRequisitValue,
+            type_delivery: +deleveryIdValue,
+          };
+
+          const data = JSON.stringify(dataObj);
+
+          fetch("/api/v1/order/add_order/", {
+            method: "POST",
+            body: data,
+            headers: {
+              "X-CSRFToken": csrfToken,
+              "Content-Type": "application/json",
+            },
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              window.location.reload();
+            } else {
+              setErrorModal();
+            }
+          });
         };
-
-        const data = JSON.stringify(dataObj);
-
-        fetch("/api/v1/order/add_order/", {
-          method: "POST",
-          body: data,
-          headers: {
-            "X-CSRFToken": csrfToken,
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            window.location.reload();
-          } else {
-            setErrorModal();
-          }
-        });
-      };
+      }
     }
   }
   // сохранение корзины сайт

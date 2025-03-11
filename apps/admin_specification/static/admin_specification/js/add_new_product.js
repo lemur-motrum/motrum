@@ -202,11 +202,11 @@ function addNewProductLogic(container) {
       );
       const vendorSelect = newItemContainer.querySelector(".vendor_select");
       const vendorSelectToggle = vendorSelect.querySelector(
-        ".vendor_select__togle"
+        ".vendor_select__toggle"
       );
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
       const supplierSelectToggle = supplierSelect.querySelector(
-        ".supplier_select__togle"
+        ".supplier_select__toggle"
       );
 
       const addNewItemInCartButton = newItemContainer.querySelector(

@@ -13,15 +13,10 @@ export function buttonsLogic(wrapper) {
   if (wrapper) {
     const products = wrapper.querySelectorAll(".catalog-item");
     products.forEach((product) => {
-      const addProductInCartBtn = product.querySelector(
-        ".first_display_button"
-      );
-      const hiddenProductButtonsForCart =
-        product.querySelector(".quantity-buttons");
+      const addProductInCartBtn = product.querySelector(".first_display_button");
+      const hiddenProductButtonsForCart = product.querySelector(".quantity-buttons");
       const productId = product.getAttribute("data-id");
-      const productMultiplicityQuantity = product.getAttribute(
-        "data-order-multiplicity"
-      );
+      const productMultiplicityQuantity = product.getAttribute("data-order-multiplicity");
 
       addProductInCartBtn.onclick = () => {
         addProductInCartBtn.classList.add("hide");
@@ -76,12 +71,9 @@ export function buttonsLogic(wrapper) {
       };
 
       if (hiddenProductButtonsForCart) {
-        const minusButton =
-          hiddenProductButtonsForCart.querySelector(".minus-button");
-        const quantityInput =
-          hiddenProductButtonsForCart.querySelector(".quantity_input");
-        const plusButton =
-          hiddenProductButtonsForCart.querySelector(".plus-button");
+        const minusButton = hiddenProductButtonsForCart.querySelector(".minus-button");
+        const quantityInput = hiddenProductButtonsForCart.querySelector(".quantity_input");
+        const plusButton = hiddenProductButtonsForCart.querySelector(".plus-button");
 
         if (productMultiplicityQuantity) {
           quantityInput.value = +productMultiplicityQuantity;
@@ -191,15 +183,9 @@ function deleteProductInCart(product) {
   })
     .then((response) => {
       if (response.status == 200) {
-        if (
-          document.querySelector(".admin_specification_cart_length")
-            .textContent != 0
-        ) {
-          document.querySelector(
-            ".admin_specification_cart_length"
-          ).textContent =
-            +document.querySelector(".admin_specification_cart_length")
-              .textContent - 1;
+        if (document.querySelector(".admin_specification_cart_length").textContent != 0) {
+          document.querySelector(".admin_specification_cart_length").textContent =
+            +document.querySelector(".admin_specification_cart_length").textContent - 1;
         }
         cartItemsQuantity();
       }
@@ -229,8 +215,7 @@ function addProductInCart(cart_id, data, product) {
     })
     .then((response) => {
       product.setAttribute("data-cart-product", response.cart_prod);
-      document.querySelector(".admin_specification_cart_length").textContent =
-        response.cart_len;
+      document.querySelector(".admin_specification_cart_length").textContent = response.cart_len;
       cartItemsQuantity();
     })
     .catch((error) => {
@@ -240,9 +225,7 @@ function addProductInCart(cart_id, data, product) {
 }
 
 function cartItemsQuantity() {
-  const cartItemsQuantity = document.querySelector(
-    ".admin_specification_cart_length"
-  );
+  const cartItemsQuantity = document.querySelector(".admin_specification_cart_length");
   if (cartItemsQuantity) {
     if (cartItemsQuantity.textContent != 0) {
       cartItemsQuantity.classList.add("orange");

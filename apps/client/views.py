@@ -181,7 +181,6 @@ def order_client_one(request, pk):
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
                 sale_price_all=Round(F("price_one") * F("quantity")),
-              
                 # sale_price=Case(
                 #     When(
                 #         price_one=None,

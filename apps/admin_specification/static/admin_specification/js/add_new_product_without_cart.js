@@ -6,9 +6,7 @@ const csrfToken = getCookie("csrftoken");
 window.addEventListener("DOMContentLoaded", () => {
   const noContentContainer = document.querySelector(".no_content-container");
   if (noContentContainer) {
-    const overlay = document.querySelector(
-      ".overlay_new_product_in_specification"
-    );
+    const overlay = document.querySelector(".overlay_new_product_in_specification");
     const modalWindow = overlay.querySelector(".modal_window");
     const form = modalWindow.querySelector("form");
     const nameInput = form.querySelector(".name");
@@ -20,8 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const quantityInput = form.querySelector(".quantity");
     const quantityError = form.querySelector(".quantity-error");
     const closeBtn = modalWindow.querySelector(".close-btn");
-    const openPopupButton =
-      noContentContainer.querySelector(".add_new_product");
+    const openPopupButton = noContentContainer.querySelector(".add_new_product");
 
     let cartId = "";
 
@@ -77,12 +74,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!articleInput.value) {
           showErrorValidation("Обязательное поле", articleError);
         }
-        if (
-          nameInput.value &&
-          priceInput.value &&
-          quantityInput.value &&
-          articleInput.value
-        ) {
+        if (nameInput.value && priceInput.value && quantityInput.value && articleInput.value) {
           console.log("Ура, товар добавлен в корзину");
 
           const dataObj = {
@@ -108,20 +100,14 @@ window.addEventListener("DOMContentLoaded", () => {
                 return response.json();
               }
               if (response.status == 409) {
-                showErrorValidation(
-                  "Товар с таким артикулом в корзине уже есть ",
-                  articleError
-                );
+                showErrorValidation("Товар с таким артикулом в корзине уже есть ", articleError);
               } else {
                 setErrorModal();
                 throw new Error("Ошибка");
               }
             })
             .then(
-              (response) =>
-                (document.querySelector(
-                  ".admin_specification_cart_length"
-                ).textContent = response.cart_len)
+              (response) => (document.querySelector(".admin_specification_cart_length").textContent = response.cart_len)
             )
             .catch((error) => {
               setErrorModal();
@@ -165,11 +151,9 @@ export function inputValidation(input) {
 
 export function inputValidationQuantity(input) {
   input.addEventListener("input", function (e) {
-    const currentValue = this.value
-      .replace(/[^.\d]+/g, "")
-      .replace(/(\d+)(\.|,)/g, function (o, a) {
-        return a;
-      });
+    const currentValue = this.value.replace(/[^.\d]+/g, "").replace(/(\d+)(\.|,)/g, function (o, a) {
+      return a;
+    });
     input.value = currentValue;
     if (input.value == ".") {
       e.target.value = "";

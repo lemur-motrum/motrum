@@ -16,11 +16,11 @@
             {% if product|length > 0 %}
                 <div class="products">
                     {% for product_item in product %}
-                        {{ product_item.sale_price }}
+                        {% comment %} {{ product_item.sale_price }}
                         {{ product_item.full_price }}
                         {{ product_item.price_all_item }}
                         {{ total_full_price }}
-                        {{ product_item.bill_name }}
+                        {{ product_item.bill_name }} {% endcomment %}
                         <div class="product_item"
                              product-id="{{ product_item.product.id_product_cart }}"
                              order-multiplicity="{{ product_item.product.stock.order_multiplicity }}">
@@ -28,12 +28,18 @@
                                 {% for productimage in product_item.product.productimage_set.all %}
                                     {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="">{% endif %}
                                 {% empty %}
-                                    <img src={% static "core/images/nophoto.png" %} alt="">
+                                    <img src="{% static "core/images/nophoto1.png" %}" alt="img">
                                 {% endfor %}
                             </div>
                             <div class="product_item_description_container">
                                 <div class="product_item-description">
-                                    <div class="name">{{ product_item.product.name }}</div>
+                                    <div class="name">
+                                        {% if product_item.product.in_view_website %}
+                                            <a href="{{ product_item.product.get_absolute_url }}">{{ product_item.product.name }}</a>
+                                        {% else %}
+                                            {{ product_item.product.name }}
+                                        {% endif %}
+                                    </div>
                                     <div class="article">Артикул: {{ product_item.product.article }}</div>
                                     <div class="chars">
                                         {% if product_item.product.productproperty_set != 'product.ProductProperty.None' %}
@@ -73,7 +79,14 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="total_sum_wrapper">
+                <div class="total_sum_wrapper {% if is_final_price == False %}between{% endif %}">
+                    {% if is_final_price == False %}
+                        <div class="final_price_description">
+                            <div>Обратите внимание!</div>
+                            <div>Стоимость заказа не окончательная.</div>
+                            <div>Часть товаров требуют уточнения стоимости.</div>
+                        </div>
+                    {% endif %}
                     <div class="total_sum_container">
                         <div class="total_sum_elem">
                             <div class="descr">Розничная цена</div>

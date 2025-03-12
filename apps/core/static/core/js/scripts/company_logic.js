@@ -1,11 +1,10 @@
-import { version } from "/static/core/js/scripts/version.js";
+import {
+  showErrorValidation,
+  getCookie,
+  maskOptions,
+} from "/static/core/js/functions.js";
 
-const { showErrorValidation, getCookie, maskOptions } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

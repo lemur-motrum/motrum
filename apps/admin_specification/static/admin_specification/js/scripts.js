@@ -1,30 +1,21 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const {
+import "/static/core/js/slider.js";
+import {
   NumberParser,
   getCookie,
+  deleteCookie,
   getClosestInteger,
   getDigitsNumber,
   showErrorValidation,
   getCurrentPrice,
   getDeliveryDate,
-} = await import(`/static/core/js/functions.js?ver=${version}`);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
-const { changeDateInOrder } = await import(
-  `../js/change_date_in_order.js?ver=${version}`
-);
-const { editMotrumPrice } = await import(
-  `../js/edit_motrum_price.js?ver=${version}`
-);
-const { getMarginality } = await import(`../js/marginality.js?ver=${version}`);
-const { buttonsLogic } = await import(
-  `../js/add_product_in_cart.js?ver=${version}`
-);
-const { setCommentProductItem } = await import(
-  `../js/setCommnetToProduct.js?ver=${version}`
-);
+} from "/static/core/js/functions.js";
+
+import { setErrorModal } from "/static/core/js/error_modal.js";
+import { changeDateInOrder } from "../js/change_date_in_order.js";
+import { editMotrumPrice } from "../js/edit_motrum_price.js";
+import { getMarginality } from "../js/marginality.js";
+import { buttonsLogic } from "../js/add_product_in_cart.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");

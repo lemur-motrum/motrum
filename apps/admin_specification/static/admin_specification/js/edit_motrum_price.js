@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { getCurrentPrice, getDigitsNumber } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
+import { getCurrentPrice, getDigitsNumber } from "/static/core/js/functions.js";
 
 export function editMotrumPrice(container) {
   if (container) {

@@ -1,18 +1,9 @@
-import { version } from "/static/core/js/scripts/version.js";
+import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
+import { invoiceItem } from "../js/invoice_elems.js";
+import { changePayment } from "../js/change_payment.js";
+import { completeOrder } from "../js/complete_order.js";
 
-const { getCookie, showErrorValidation } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { invoiceItem } = await import(`../js/invoice_elems.js?ver=${version}`);
-const { changePayment } = await import(
-  `../js/change_payment.js?ver=${version}`
-);
-const { completeOrder } = await import(
-  `../js/complete_order.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 let csrfToken = getCookie("csrftoken");
 

@@ -1,11 +1,5 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { getCookie, showErrorValidation } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 export function completeOrder(container) {
   if (container) {

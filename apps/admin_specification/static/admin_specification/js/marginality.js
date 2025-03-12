@@ -1,8 +1,8 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { NumberParser, getDigitsNumber, getCurrentPrice } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
+import {
+  NumberParser,
+  getDigitsNumber,
+  getCurrentPrice,
+} from "/static/core/js/functions.js";
 
 export function getMarginality(wrapper) {
   if (wrapper) {

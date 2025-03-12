@@ -2,6 +2,7 @@
 {% load manager_client %}
 {% load js_templates %}
 {% load test_display %}
+
 {% with request.resolver_match.url_name as url_name %}
   <!DOCTYPE html>
   <html lang="ru">
@@ -44,6 +45,7 @@
         {% include "core/includes/contacts_modal_overlay.html" %}
         {% include "core/includes/overlay_modal_error.html" %}
       </div>
+
       {% js_templates %}
       {% include "core/includes/scripts.html" %}
       <script>

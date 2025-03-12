@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { showErrorValidation } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
+import { showErrorValidation } from "/static/core/js/functions.js";
 
 export function setCommentProductItem(el) {
   if (el) {

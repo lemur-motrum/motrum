@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { ItcCustomSelect } = await import(
-  `/static/core/js/customSelect.js?ver=${version}`
-);
+import { ItcCustomSelect } from "/static/core/js/customSelect.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const select1 = new ItcCustomSelect("#select-1");

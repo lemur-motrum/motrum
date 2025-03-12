@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { showErrorValidation, maskOptions } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
+import { showErrorValidation, maskOptions } from "/static/core/js/functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".solution_one_container");

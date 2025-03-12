@@ -1,13 +1,12 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { getCookie, showErrorValidation, getCurrentPrice, getDeliveryDate } =
-  await import(`/static/core/js/functions.js?ver=${version}`);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
-const { setCommentProductItem } = await import(
-  `../js/setCommnetToProduct.js?ver=${version}`
-);
+import {
+  getCookie,
+  showErrorValidation,
+  getCurrentPrice,
+  deleteCookie,
+  getDeliveryDate,
+} from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 const csrfToken = getCookie("csrftoken");
 

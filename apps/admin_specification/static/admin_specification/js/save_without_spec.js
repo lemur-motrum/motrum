@@ -1,14 +1,13 @@
-import { version } from "/static/core/js/scripts/version.js";
+import {
+  getCookie,
+  deleteCookie,
+  getCurrentPrice,
+  getDeliveryDate,
+} from "/static/core/js/functions.js";
 
-const { getCookie, getCurrentPrice, getDeliveryDate } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
-const { setCommentProductItem } = await import(
-  `../js/setCommnetToProduct.js?ver=${version}`
-);
+import { setErrorModal } from "/static/core/js/error_modal.js";
+
+import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");

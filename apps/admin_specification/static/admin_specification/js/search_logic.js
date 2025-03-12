@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { getCookie } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
+import { getCookie } from "/static/core/js/functions.js";
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;

@@ -1,18 +1,14 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const {
+import {
   getCookie,
   getDigitsNumber,
   NumberParser,
   showErrorValidation,
   maskOptions,
-} = await import(`/static/core/js/functions.js?ver=${version}`);
-const { ItcCustomSelect } = await import(
-  `/static/core/js/customSelect.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+} from "/static/core/js/functions.js";
+
+import { ItcCustomSelect } from "/static/core/js/customSelect.js";
+
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

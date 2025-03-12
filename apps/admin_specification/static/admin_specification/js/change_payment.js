@@ -1,17 +1,11 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { showErrorValidation, getCookie, getDigitsNumber } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
-const { completeOrder } = await import(
-  `../js/complete_order.js?ver=${version}`
-);
-const { uptadeOrChanegeSpecification } = await import(
-  `../js/ajax_specification_load.js?ver=${version}`
-);
+import {
+  showErrorValidation,
+  getCookie,
+  getDigitsNumber,
+} from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
+import { completeOrder } from "../js/complete_order.js";
+import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 
 export function changePayment(container, errorFn) {
   if (container) {

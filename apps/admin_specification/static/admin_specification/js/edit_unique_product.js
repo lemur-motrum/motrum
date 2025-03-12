@@ -1,14 +1,14 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { getCookie, getDigitsNumber, getCurrentPrice } = await import(
-  `/static/core/js/functions.js?ver=${version}`
-);
-const { inputValidation, inputValidationQuantity } = await import(
-  `../js/add_new_product_without_cart.js?ver=${version}`
-);
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+import {
+  showErrorValidation,
+  getCookie,
+  getDigitsNumber,
+  getCurrentPrice,
+} from "/static/core/js/functions.js";
+import {
+  inputValidation,
+  inputValidationQuantity,
+} from "../js/add_new_product_without_cart.js";
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

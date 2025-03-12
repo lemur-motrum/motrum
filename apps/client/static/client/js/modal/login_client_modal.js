@@ -1,8 +1,4 @@
-import { version } from "/static/core/js/scripts/version.js";
-
-const { setErrorModal } = await import(
-  `/static/core/js/error_modal.js?ver=${version}`
-);
+import { setErrorModal } from "/static/core/js/error_modal.js";
 
 function getCookie(name) {
   let matches = document.cookie.match(

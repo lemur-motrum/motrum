@@ -1579,7 +1579,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(id_bitrix=int(bx_id_order))
         else:
             if user_admin_type == "ALL":
-                q_object &= Q(cart__cart_admin_id__isnull=False)
+                pass
+                # q_object &= Q(cart__cart_admin_id__isnull=False)
             elif user_admin_type == "BASE":
                 q_object &= Q(cart__cart_admin_id=request.user.id)
             # if IS_WEB:

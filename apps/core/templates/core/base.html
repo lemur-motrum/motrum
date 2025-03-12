@@ -51,11 +51,10 @@
         {% include "core/includes/contacts_modal_overlay.html" %}
         {% include "core/includes/overlay_modal_error.html" %}
       </div>
-
       {% js_templates %}
       {% include "core/includes/scripts.html" %}
       <script>
-        {% comment %} Cache.delete() {% endcomment %}
+ 
       function validate(evt) {
         let theEvent = evt || window.event;
         let key = theEvent.keyCode || theEvent.which;

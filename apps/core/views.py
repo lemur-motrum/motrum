@@ -93,14 +93,14 @@ def cart(request):
             client_info = False
             req_info = False
             client = Client.objects.get(id=cart_qs.client.id)
-            if client.email and client.middle_name and client.last_name:
+            if client.email and client.last_name:
                 client_info = True
 
             # discount_client = client.percent
             # if discount_client is None:
             #     discount_client = 0
             clent_req_kpp = ClientRequisites.objects.filter(client=client)
-            print("clent_req_kpp", clent_req_kpp)
+       
             if clent_req_kpp.count() > 0:
                 clent_req_kpp_arr = clent_req_kpp.values_list("requisitesotherkpp")
                 req_kpp = (

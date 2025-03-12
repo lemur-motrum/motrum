@@ -70,7 +70,7 @@ class Client(CustomUser):
             base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
             self.manager = base_manager
             self.save()
-
+    
     def add_manager_random(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
@@ -720,10 +720,7 @@ class Order(models.Model):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
-        error = "error"
-        location = "!!!ИНФО Сохранение пдф счета "
-        info = f"ИНФО Сохранение пдф счета  ошибка {self.specification.id}{request},{is_contract},{order},{ self.type_delivery},{post_update}, {type_save},"
-        e = error_alert(error, location, info)
+        
 
     
         pdf_file, pdf_name,file_path_no_sign,version,name_bill_to_fullname,name_bill_to_fullname_nosign, = crete_pdf_bill(
@@ -738,10 +735,7 @@ class Order(models.Model):
         )
         
         if pdf_file:
-            error = "error"
-            location = "ИНФО Сохранение пдф счета "
-            info = f"ИНФО Сохранение пдф счета  ошибка {pdf_file},{pdf_name},{file_path_no_sign},{version},{name_bill_to_fullname},{name_bill_to_fullname_nosign}"
-            e = error_alert(error, location, info)
+            
           
             self.bill_date_start = datetime.date.today()
             bill_date_start = datetime.date.today()

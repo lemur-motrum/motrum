@@ -28,21 +28,21 @@
                     <form class="contact_person_form">
                         <div>
                             <label>
-                                <input value="{% if client.first_name %}{{ client.first_name }}{% endif %}"
+                                <input value="{% if client.last_name %}{{ client.last_name }}{% endif %}"
                                        type="text"
                                        class="surname"
                                        placeholder="Фамилия" />
                                 <div class="error surname_error"></div>
                             </label>
                             <label>
-                                <input value="{% if client.middle_name %}{{ client.middle_name }}{% endif %}"
+                                <input value="{% if client.first_name %}{{ client.first_name }}{% endif %}"
                                        type="text"
                                        class="name-input"
                                        placeholder="Имя" />
                                 <div class="error name_error"></div>
                             </label>
                             <label>
-                                <input value="{% if client.last_name %}{{ client.last_name }}{% endif %}"
+                                <input value="{% if client.middle_name %}{{ client.middle_name }}{% endif %}"
                                        type="text"
                                        class="last-name"
                                        placeholder="Отчество">

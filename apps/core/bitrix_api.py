@@ -1285,12 +1285,12 @@ def _status_to_order_replace(name_status, id_bx):
 
 
 # ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА
-def add_new_order_web(order):
+def add_new_order_web(order_id):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
         base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
-        order = Order.objects.get(id=154)
+        order = Order.objects.get(id=order_id)
         client = order.client
         req = order.requisites
         req_inn = order.requisites.inn
@@ -2101,13 +2101,13 @@ def get_upd_clirnt_manager():
 
 
 # ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА без всей инфы
-def add_new_order_web_not_info(order):
+def add_new_order_web_not_info(order_id):
     try:
         webhook = BITRIX_WEBHOOK
         bx = Bitrix(webhook)
         base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
         
-        order = Order.objects.get(id=177)
+        order = Order.objects.get(id=order_id)
         client = order.client
         req = None
         req_inn = None

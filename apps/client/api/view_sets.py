@@ -30,6 +30,8 @@ from apps import specification
 from apps.client.utils import crete_pdf_bill
 from apps.core.bitrix_api import (
     add_info_order,
+    add_new_order_web,
+    add_new_order_web_not_info,
     get_info_for_order_bitrix,
     
     save_new_doc_bx,
@@ -137,10 +139,11 @@ class ClientViewSet(viewsets.ModelViewSet):
         #     first_name  = data['name']
         # else:
         #     first_name = None
-
+        first_name = data["first_name"]
         pin_user = data["pin"]
         data["is_active"] = True
         data["username"] = phone
+        data["first_name"] = first_name
         cart_id = request.COOKIES.get("cart")
         print(data)
         # pin = _get_pin(4)
@@ -391,12 +394,31 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             type_client = 1
         else:
             type_client = 3
-
+        
+        first_name = None
+        last_name = None
+        middle_name =  None
+        
+        if requisites['name']:
+            first_name = requisites['first_name']
+        
+        if requisites['surname']:
+            first_name = requisites['last_name']
+            
+        if requisites['patronymic']:
+            first_name = requisites['middle_name']
+        
+        
+        
         req = Requisites.objects.update_or_create(
             inn=requisites["inn"],
             defaults={
                 "legal_entity": requisites["legal_entity"],
                 "type_client": type_client,
+                "first_name":first_name,
+                "last_name":last_name,
+                "middle_name":middle_name,
+                
             },
         )
         if type_client == 1:
@@ -652,10 +674,18 @@ class OrderViewSet(viewsets.ModelViewSet):
                             cart.is_active = True
                             cart.save()
                             serializer.save()
-                            if data["requisitesKpp"] != None:
+                            print("serializer.data",serializer.data)
+                            print("serializer.data",serializer.data['id'])
+                            order_id = serializer.data['id']
+                            if IS_WEB:
                                 pass
                             else:
-                                pass
+                                
+                                if data["requisitesKpp"] != None:
+                                    
+                                    add_new_order_web(order_id)
+                                else:
+                                    add_new_order_web_not_info(order_id)
 
                             return Response(
                                 serializer.data, status=status.HTTP_201_CREATED
@@ -976,10 +1006,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         try:
             import json
-            error = "error"
-            location = "НАЧАЛо СКРИПТА СОХОРАНЕНИЯ СЧЕТА"
-            info = f"НАЧАЛо СКРИПТА СОХОРАНЕНИЯ СЧЕТА "
-            e = error_alert(error, location, info)
+            
 
             user = request.user
             data_get = request.data

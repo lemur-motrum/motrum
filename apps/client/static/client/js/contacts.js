@@ -118,9 +118,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
             const dataObj = {
               client: {
-                last_name: inputLastName.value,
-                first_name: inputFirstName.value,
-                middle_name: inputName.value,
+                last_name: inputFirstName.value,
+                first_name: inputName.value,
+                middle_name: inputLastName.value,
                 position: inputJobTitle.value ? inputJobTitle.value : "",
                 email: inputEmail.value,
               },

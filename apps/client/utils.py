@@ -996,10 +996,7 @@ def crete_pdf_bill(
             "bill",
             name_bill_no_signature,
         )
-        error = "error"
-        location = "ИНФО Сохранение пдф счета "
-        info = f"ИНФО Сохранение пдф счета  ошибка {name_bill}{name_bill_no_signature}"
-        e = error_alert(error, location, info)
+       
         return (
             file_path,
             bill_name,

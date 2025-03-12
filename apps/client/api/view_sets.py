@@ -31,7 +31,7 @@ from apps.client.utils import crete_pdf_bill
 from apps.core.bitrix_api import (
     add_info_order,
     get_info_for_order_bitrix,
-    order_bitrix,
+    
     save_new_doc_bx,
     save_payment_order_bx,
     save_shipment_order_bx,
@@ -190,13 +190,17 @@ class ClientViewSet(viewsets.ModelViewSet):
                                 response.set_cookie("cart", cart.id, max_age=2629800)
                                 return response
                             else:
-
+                                old_cart_prod = ProductCart.objects.filter(
+                                    cart=cart.id
+                                ).values_list("product_id",flat=True)
+                                print(old_cart_prod)
                                 product_cart_no_user = ProductCart.objects.filter(
                                     cart=cart_id
                                 )
                                 for products_no_user in product_cart_no_user:
-                                    products_no_user.cart = cart
-                                    products_no_user.save()
+                                    if products_no_user.product.id not in old_cart_prod:
+                                        products_no_user.cart = cart
+                                        products_no_user.save()
 
                                 product_cart_no_user.delete()
                                 response = Response()
@@ -648,6 +652,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                             cart.is_active = True
                             cart.save()
                             serializer.save()
+                            if data["requisitesKpp"] != None:
+                                pass
+                            else:
+                                pass
 
                             return Response(
                                 serializer.data, status=status.HTTP_201_CREATED

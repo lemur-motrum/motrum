@@ -192,6 +192,7 @@ def cart(request):
         requisites = None
         client = None
         all_client_info = False
+        
     context = {
         "client": client,
         "product": product,

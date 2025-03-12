@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [
     "192.168.0.104",
     "192.168.0.110",
 ]
+DOMIAN = os.environ.get("DOMIAN")
 
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True

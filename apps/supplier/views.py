@@ -63,6 +63,7 @@ from apps.core.tasks import (
 )
 from apps.core.utils import (
     create_time_stop_specification,
+    delete_everything_in_folder,
     image_error_check,
     product_cart_in_file,
     save_file_product,
@@ -119,28 +120,11 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    
-    order = Order.objects.get(id=172)
-    
-    serializer_class = OrderSerializer
-    d = {
-        "status":"PROCESSING"
-    }
-    serializer = serializer_class(order, data=d, many=False)
-    if serializer.is_valid():
-        orders = serializer.save()
-        
-       
-    else:
-        orders = serializer.errors
-    print(orders)
-    
-        
+    folder_path = f"{MEDIA_ROOT}/documents/vacancy"
+
+    delete_everything_in_folder(folder_path)
+   
     result = 1
-    if result:
-        pass
-    else:
-        result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)

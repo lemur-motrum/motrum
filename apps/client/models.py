@@ -24,7 +24,7 @@ from apps.specification.utils import get_document_bill_path, get_shipment_doc_pa
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 from middlewares.middlewares import RequestMiddleware
-from project.settings import BASE_MANAGER_FOR_BX
+from project.settings import BASE_DIR, BASE_MANAGER_FOR_BX, DOMIAN
 
 
 # клиент на сайте
@@ -661,7 +661,7 @@ class Order(models.Model):
         from apps.notifications.models import Notification
 
         print("order-save")
-        self.send_email_order_info()
+        
         if not self._state.adding:
             if self._loaded_values["status"] != self.status:
                 Notification.add_notification(self.id, "STATUS_ORDERING", None)
@@ -671,26 +671,24 @@ class Order(models.Model):
                 and self.status == "PROCESSING"
             ):
                 print("== PRE-PROCESSING and self.status == PROCESSING")
-                self.send_email_order_info()
+                self.send_email_order_info(self,"PROCESSING")
 
         super().save(*args, **kwargs)
 
-    def send_email_order_info(self):
+    def send_email_order_info(self,type):
         client = self.client
         need_email = False
         data = None
         if client and client.email:
-            if self.status == "PROCESSING":
+            if type == "PROCESSING":
                 need_email = True
                 html_message_template = "core/emails/email_get_order_to_client.html"
                 categ = CategoryProduct.objects.filter(is_send_email=True)
-                print(categ)
-                request = RequestMiddleware(get_response=None)
-                request = request.thread_local.current_request
-                print(request)
+                domian = DOMIAN[:-1]
+                print(DOMIAN)
                 data = {
-                    "request": request,
                     "categ": categ,
+                    "domian":domian,
                 }
                 print(data)
                 subject = f"Заказ в магазине motrum.ru"

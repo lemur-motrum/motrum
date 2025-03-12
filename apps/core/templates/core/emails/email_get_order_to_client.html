@@ -13,8 +13,8 @@
         
         <ul>
             {% for categ_item in context.categ %}
-            {{ request.path }}
-                <li><a href="{{ request.path }}{{ categ_item.get_absolute_url }}" target="_blank" rel="noopener noreferrer">{{categ_item.name}}</a></li>
+           
+                <li><a href="{{context.domian}}{{ categ_item.get_absolute_url }}" target="_blank" rel="noopener noreferrer">{{categ_item.name}}</a></li>
                 
                 
             {% endfor %}
@@ -22,7 +22,7 @@
         </ul>
      <p></p>
         С уважением,
-        компания <a href="https://www.motrum.ru/" target="_blank" rel="noopener noreferrer">Motrum</a> 
+        компания <a href="{{context.domian}}" target="_blank" rel="noopener noreferrer">Motrum</a> 
         <a href="tel:+78462337814">+7 (846) 233-78-14</a>
         
         

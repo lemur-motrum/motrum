@@ -594,16 +594,8 @@ def get_status_order():
 
         for order_bx in orders_bx.values():
 
-            print(order_bx)
             id_bx = order_bx["ID"]
-
             status_bx = order_bx["STAGE_ID"]
-            # stage_bd = StageDealBx.objects.get(entity_id="Общая", status_id=status_bx)
-            # stage_bd = StageDealBx.objects.get(
-            #     entity_id="Квалификация", status_id=status_bx
-            # )
-            # print("stage_bd", stage_bd)
-            print(id_bx, status_bx)
             order = Order.objects.filter(id_bitrix=id_bx).last()
 
             if order:
@@ -613,7 +605,7 @@ def get_status_order():
                         status = "SHIPMENT_PICKUP"
                     else:
                         status = "SHIPMENT_AUTO"
-                print(status)
+                
                 if order.status != status:
                     Notification.add_notification(order.id, "STATUS_ORDERING", None)
 
@@ -627,6 +619,10 @@ def get_status_order():
         location = "Получение статусов битрикс24"
         info = f"Получение статусов битрикс24. Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
+
+
+
+
 
 
 # сохранение всех данных по заказу:

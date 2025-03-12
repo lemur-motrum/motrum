@@ -36,7 +36,9 @@ function setCurrentPriceCataloItem(elems) {
     const priceContainer = el.querySelector(".price");
     const price = priceContainer.querySelector(".price-count");
     const supplerPriceContainer = el.querySelector(".suppler-price");
-    const supplerPrice = supplerPriceContainer.querySelector(".price-suppler-count");
+    const supplerPrice = supplerPriceContainer.querySelector(
+      ".price-suppler-count"
+    );
 
     if (price) {
       const priceValue = new NumberParser("ru").parse(price.textContent);
@@ -57,9 +59,13 @@ function catalogLogic(elems) {
     const buttonContainer = catalogItem.querySelector(".quantity-buttons");
     const plusButton = buttonContainer.querySelector(".plus-button");
     const minusButton = buttonContainer.querySelector(".minus-button");
-    const addSpecificationButton = catalogItem.querySelector(".add-specification-button");
+    const addSpecificationButton = catalogItem.querySelector(
+      ".add-specification-button"
+    );
     const countQuantityZone = buttonContainer.querySelector("input");
-    const productMultiplicityQuantity = catalogItem.getAttribute("data-order-multiplicity");
+    const productMultiplicityQuantity = catalogItem.getAttribute(
+      "data-order-multiplicity"
+    );
 
     let countQuantity = +countQuantityZone.value;
 
@@ -236,7 +242,9 @@ function backendDataFormat(string) {
 window.addEventListener("DOMContentLoaded", () => {
   const catalogContainer = document.querySelector(".catalog_container");
   if (catalogContainer) {
-    const catalog = catalogContainer.querySelector(".spetification-product-catalog");
+    const catalog = catalogContainer.querySelector(
+      ".spetification-product-catalog"
+    );
     if (catalog) {
       const catalogItems = catalog.querySelectorAll(".catalog-item");
       catalogLogic(catalogItems);
@@ -258,7 +266,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const endpoint = "/admin_specification/load_products/";
 
         const urlParams = new URL(document.location).searchParams;
-        const urlParamasArray = urlParams.get("vendor") ? urlParams.get("vendor").split(",") : null;
+        const urlParamasArray = urlParams.get("vendor")
+          ? urlParams.get("vendor").split(",")
+          : null;
         const priceUrl = urlParams.get("price") ? urlParams.get("price") : null;
         const objData = {
           group: group,
@@ -292,21 +302,36 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk}  data-price=${
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                    product.pk
+                  }  data-price=${
                     !product.price ? 0 : product.price
-                  }  data-motrum-id=${product.article} data-saler-id=${product.saler_article} data-discoutnt=${
+                  }  data-motrum-id=${product.article} data-saler-id=${
+                    product.saler_article
+                  } data-discoutnt=${
                     product.discount
                   } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
                                 <div class="name">${
-                                  product.supplier != product.vendor && product.vendor != null
-                                    ? product.supplier + " " + product.vendor + " " + product.name
+                                  product.supplier != product.vendor &&
+                                  product.vendor != null
+                                    ? product.supplier +
+                                      " " +
+                                      product.vendor +
+                                      " " +
+                                      product.name
                                     : product.supplier + " " + product.name
                                 }</div>
-                                <div class="article-motrum">${product.article}</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
                                 <div class="charactiristics">
-                                    ${product.chars.length == 0 ? "-" : product.chars.join(" ")}
+                                    ${
+                                      product.chars.length == 0
+                                        ? "-"
+                                        : product.chars.join(" ")
+                                    }
                                 </div>
                                 <div class="stock">
                                 ${
@@ -322,35 +347,54 @@ window.addEventListener("DOMContentLoaded", () => {
                                           }`
                                     }
                                         </div>
-                                        <div class="stock_item">Motrum:${product.stock_motrum}</div>
-                                        <span class="span-transit">${backendDataFormat(product.data_update)}</span>
+                                        <div class="stock_item">Motrum:${
+                                          product.stock_motrum
+                                        }</div>
+                                        <span class="span-transit">${backendDataFormat(
+                                          product.data_update
+                                        )}</span>
                                         <br>
                                         <span class="span-transit">
                                         ${
                                           product.transit_count
-                                            ? `Ближайшая поставка: ${backendDataFormat(product.data_transit)} - ${
-                                                product.transit_count
-                                              } шт.`
+                                            ? `Ближайшая поставка: ${backendDataFormat(
+                                                product.data_transit
+                                              )} - ${product.transit_count} шт.`
                                             : ""
                                         }
                                         </span>`
-                                    : `${product.stok_to_order ? "Под заказ" : ""} Неизвестно`
+                                    : `${
+                                        product.stok_to_order ? "Под заказ" : ""
+                                      } Неизвестно`
                                 }
                                 </div>
                                 <div class="lot">
                                 ${
                                   product.stock
                                     ? `${
-                                        product.multiplicity != 1 && !product.is_one_sale
+                                        product.multiplicity != 1 &&
+                                        !product.is_one_sale
                                           ? `<span class="span-min">Минимальный заказ ${
-                                              product.multiplicity + " " + product.lot
+                                              product.multiplicity +
+                                              " " +
+                                              product.lot
                                             }
                                            </span>`
                                           : ""
                                       }${
                                         product.lot_complect != 1
-                                          ? `${product.lot + "." + product.lot_complect + "ед."}`
-                                          : `${product.lot_complect + " " + product.lot + "."}`
+                                          ? `${
+                                              product.lot +
+                                              "." +
+                                              product.lot_complect +
+                                              "ед."
+                                            }`
+                                          : `${
+                                              product.lot_complect +
+                                              " " +
+                                              product.lot +
+                                              "."
+                                            }`
                                       }
                                         `
                                     : "-"
@@ -358,7 +402,8 @@ window.addEventListener("DOMContentLoaded", () => {
                                 </div>
                                  <div class="suppler-price">
                                  ${
-                                   product.price_suppler && product.price_suppler != 0
+                                   product.price_suppler &&
+                                   product.price_suppler != 0
                                      ? `<span class="price-suppler-count">${product.price_suppler}</span> ₽`
                                      : "<span>По запросу</span>"
                                  }
@@ -366,8 +411,12 @@ window.addEventListener("DOMContentLoaded", () => {
                                 <div class="price">
                                 ${
                                   product.price && product.price != 0
-                                    ? `<span class="span-update">${backendDataFormat(product.data_update)}</span>
-                                        <span class="price-count">${product.price}</span> ₽`
+                                    ? `<span class="span-update">${backendDataFormat(
+                                        product.data_update
+                                      )}</span>
+                                        <span class="price-count">${
+                                          product.price
+                                        }</span> ₽`
                                     : `<span>По запросу</span>`
                                 }
                                 </div>
@@ -402,15 +451,22 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const specificationContainer = document.querySelector(".specification-container");
+  const specificationContainer = document.querySelector(
+    ".specification-container"
+  );
 
   if (specificationContainer) {
-    const spetificationTable = specificationContainer.querySelector(".spetification_table");
+    const spetificationTable = specificationContainer.querySelector(
+      ".spetification_table"
+    );
     if (spetificationTable) {
-      const productItems = spetificationTable.querySelectorAll(".item_container");
-      const totalPriceValueContainer = spetificationTable.querySelector(".price_description");
+      const productItems =
+        spetificationTable.querySelectorAll(".item_container");
+      const totalPriceValueContainer =
+        spetificationTable.querySelector(".price_description");
       const valueContainer = totalPriceValueContainer.querySelector(".price");
-      const marginality = totalPriceValueContainer.querySelector(".marginality_value");
+      const marginality =
+        totalPriceValueContainer.querySelector(".marginality_value");
       const revenue = totalPriceValueContainer.querySelector(".revenue");
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
@@ -419,10 +475,15 @@ window.addEventListener("DOMContentLoaded", () => {
         let margSum = 0;
         let sum = 0;
         const allElems = spetificationTable.querySelectorAll(".total_cost");
-        const allElemsMarginaliry = spetificationTable.querySelectorAll(".marginality");
-        const allMarginalityPercent = spetificationTable.querySelector(".marginality_prcent_value");
+        const allElemsMarginaliry =
+          spetificationTable.querySelectorAll(".marginality");
+        const allMarginalityPercent = spetificationTable.querySelector(
+          ".marginality_prcent_value"
+        );
         for (let i = 0; i < allElems.length; i++) {
-          margSum += new NumberParser("ru").parse(allElemsMarginaliry[i].textContent);
+          margSum += new NumberParser("ru").parse(
+            allElemsMarginaliry[i].textContent
+          );
         }
 
         for (let i = 0; i < allElems.length; i++) {
@@ -430,7 +491,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         getDigitsNumber(valueContainer, +sum);
         getDigitsNumber(marginality, +margSum);
-        allMarginalityPercent.textContent = isNaN(((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2))
+        allMarginalityPercent.textContent = isNaN(
+          ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
+        )
           ? 0
           : ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2);
       }
@@ -439,13 +502,23 @@ window.addEventListener("DOMContentLoaded", () => {
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
-        const commentAll = document.querySelector('textarea[name="comment-input-name-all"]').value;
-        const dateDeliveryAll = document.querySelector('textarea[name="delivery-date-all-input-name-all"]').value;
+        const commentAll = document.querySelector(
+          'textarea[name="comment-input-name-all"]'
+        ).value;
+        const dateDeliveryAll = document.querySelector(
+          'textarea[name="delivery-date-all-input-name-all"]'
+        ).value;
         let validate = true;
         const products = [];
-        const motrumRequsits = document.querySelector("[name='mortum_req']").getAttribute("value");
-        const clientRequsits = document.querySelector("[name='client-requisit']").getAttribute("value");
-        const deliveryRequsits = document.querySelector("[name='delevery-requisit']").getAttribute("value");
+        const motrumRequsits = document
+          .querySelector("[name='mortum_req']")
+          .getAttribute("value");
+        const clientRequsits = document
+          .querySelector("[name='client-requisit']")
+          .getAttribute("value");
+        const deliveryRequsits = document
+          .querySelector("[name='delevery-requisit']")
+          .getAttribute("value");
 
         const bitrixInput = document.querySelector(".bitrix-input");
         const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
@@ -457,7 +530,9 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemPrice = item.getAttribute("data-price");
 
           const extraDiscount = item.querySelector(".discount-input");
-          const productSpecificationId = item.getAttribute("data-product-specification-id");
+          const productSpecificationId = item.getAttribute(
+            "data-product-specification-id"
+          );
           const vendor = item.getAttribute("data-vendor");
           const supplier = itemQuantity.getAttribute("data-supplier");
           const deliveryDate = item.querySelector(".delivery_date");
@@ -483,7 +558,11 @@ window.addEventListener("DOMContentLoaded", () => {
               return words[2];
             }
             if (dayDifference > 7) {
-              return `${resultDays} ${num_word(resultDays, ["неделя", "недели", "недель"])}`;
+              return `${resultDays} ${num_word(resultDays, [
+                "неделя",
+                "недели",
+                "недель",
+              ])}`;
             } else {
               return "1 неделя";
             }
@@ -493,7 +572,9 @@ window.addEventListener("DOMContentLoaded", () => {
             quantity: +itemQuantity,
             price_exclusive: +itemPriceStatus,
             price_one: +getCurrentPrice(itemPrice),
-            product_specif_id: productSpecificationId ? productSpecificationId : null,
+            product_specif_id: productSpecificationId
+              ? productSpecificationId
+              : null,
             extra_discount: extraDiscount.value,
             date_delivery: deliveryDate.value,
             text_delivery: createTextDateDelivery(),
@@ -508,7 +589,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
           console.log("date-delivery", deliveryDate.value);
 
-          if (inputPrice ? !inputPrice.value || !deliveryDate.value : !deliveryDate.value) {
+          if (
+            inputPrice
+              ? !inputPrice.value || !deliveryDate.value
+              : !deliveryDate.value
+          ) {
             validate = false;
             if (!deliveryDate.value) {
               deliveryDate.style.border = "1px solid red";
@@ -534,7 +619,8 @@ window.addEventListener("DOMContentLoaded", () => {
             validate = false;
             bitrixInput.style.border = "1px solid red";
 
-            const dateDeliveryPosition = document.querySelectorAll(".delivery_date");
+            const dateDeliveryPosition =
+              document.querySelectorAll(".delivery_date");
             const arrayDateValues = [];
             dateDeliveryPosition.forEach((el) => {
               arrayDateValues.push(el.value);
@@ -546,14 +632,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if (!deliveryRequsits || deliveryRequsits == "null") {
           validate = false;
-          document.querySelector(".select_delevery").style.border = "0.094rem 1px solid red";
+          document.querySelector(".select_delevery").style.border =
+            "0.094rem 1px solid red";
         }
         if (!motrumRequsits || motrumRequsits == "null") {
           validate = false;
-          document.querySelector(".select_motrum_requisites").style.border = "0.094rem solid red";
+          document.querySelector(".select_motrum_requisites").style.border =
+            "0.094rem solid red";
         }
         if (validate == false) {
-          const saveButtonContainer = document.querySelector(".save_button-wrapper");
+          const saveButtonContainer = document.querySelector(
+            ".save_button-wrapper"
+          );
           const error = saveButtonContainer.querySelector(".error");
           showErrorValidation("Заполните все поля", error);
         }
@@ -570,7 +660,9 @@ window.addEventListener("DOMContentLoaded", () => {
             id_specification: specificationId ? specificationId : null,
             id_cart: +getCookie("cart"),
             comment: commentAll ? commentAll : null,
-            date_delivery: getDeliveryDate(dateDeliveryInputs) ? getDeliveryDate(dateDeliveryInputs) : null,
+            date_delivery: getDeliveryDate(dateDeliveryInputs)
+              ? getDeliveryDate(dateDeliveryInputs)
+              : null,
             motrum_requisites: +motrumRequsits,
             client_requisites: +clientRequsits,
             type_delivery: deliveryRequsits,
@@ -642,11 +734,18 @@ window.addEventListener("DOMContentLoaded", () => {
           discountInput.value = getCurrentPrice(discountInput.value);
         }
         if (inputPrice) {
-          getDigitsNumber(productTotalPrice, +inputPrice.value * +quantity.value);
+          getDigitsNumber(
+            productTotalPrice,
+            +inputPrice.value * +quantity.value
+          );
         }
         if (itemPriceOnce) {
           if (discountInput) {
-            getDigitsNumber(itemPriceOnce, (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) / 100);
+            getDigitsNumber(
+              itemPriceOnce,
+              (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
+                100
+            );
           } else {
             const currnetPriceOne = +getCurrentPrice(itemPriceOnce.textContent);
             getDigitsNumber(itemPriceOnce, currnetPriceOne);
@@ -673,7 +772,9 @@ window.addEventListener("DOMContentLoaded", () => {
             })
               .then((response) => {
                 if (response.status == 200) {
-                  console.log(`Товар с id ${productID}, успешно изменен на количество ${quantity.value}`);
+                  console.log(
+                    `Товар с id ${productID}, успешно изменен на количество ${quantity.value}`
+                  );
                 }
               })
               .catch((error) => {
@@ -712,9 +813,14 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           if (itemPriceOnce) {
             const currentPrice = !discountInput.value
-              ? +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value
+              ? +getCurrentPrice(item.getAttribute("data-price")) *
+                +quantity.value
               : +quantity.value *
-                ((+getCurrentPrice(item.getAttribute("data-price")) * (100 - +discountInput.value)) / 100).toFixed(2);
+                (
+                  (+getCurrentPrice(item.getAttribute("data-price")) *
+                    (100 - +discountInput.value)) /
+                  100
+                ).toFixed(2);
 
             getDigitsNumber(productTotalPrice, currentPrice);
             editMotrumPrice(spetificationTable);
@@ -733,9 +839,14 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           quantity.value = +countQuantity;
           const currentPrice = !discountInput.value
-            ? +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value
+            ? +getCurrentPrice(item.getAttribute("data-price")) *
+              +quantity.value
             : +quantity.value *
-              ((+getCurrentPrice(item.getAttribute("data-price")) * (100 - +discountInput.value)) / 100).toFixed(2);
+              (
+                (+getCurrentPrice(item.getAttribute("data-price")) *
+                  (100 - +discountInput.value)) /
+                100
+              ).toFixed(2);
           getDigitsNumber(productTotalPrice, currentPrice);
 
           if (countQuantity >= 99999) {
@@ -769,9 +880,14 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
           const currentPrice = !discountInput.value
-            ? +getCurrentPrice(item.getAttribute("data-price")) * +quantity.value
+            ? +getCurrentPrice(item.getAttribute("data-price")) *
+              +quantity.value
             : +quantity.value *
-              ((+getCurrentPrice(item.getAttribute("data-price")) * (100 - +discountInput.value)) / 100).toFixed(2);
+              (
+                (+getCurrentPrice(item.getAttribute("data-price")) *
+                  (100 - +discountInput.value)) /
+                100
+              ).toFixed(2);
           getDigitsNumber(productTotalPrice, currentPrice);
 
           if (countQuantity >= 99999) {
@@ -800,7 +916,10 @@ window.addEventListener("DOMContentLoaded", () => {
             countQuantity = +quantity.value;
             const currentPrice = !discountInput.value
               ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
-              : (new NumberParser("ru").parse(inputPrice.value) * +quantity.value * (100 - +discountInput.value)) / 100;
+              : (new NumberParser("ru").parse(inputPrice.value) *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -813,7 +932,10 @@ window.addEventListener("DOMContentLoaded", () => {
           plusButton.onclick = () => {
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
-              : (+item.getAttribute("data-price") * +quantity.value * (100 - +discountInput.value)) / 100;
+              : (+item.getAttribute("data-price") *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
             if (multiplicity) {
               countQuantity += +multiplicity;
@@ -823,7 +945,9 @@ window.addEventListener("DOMContentLoaded", () => {
             quantity.value = +countQuantity;
             minusButton.disabled = false;
             if (countQuantity >= 99999) {
-              quantity.value = multiplicity ? getClosestInteger(99999, +multiplicity) : 99999;
+              quantity.value = multiplicity
+                ? getClosestInteger(99999, +multiplicity)
+                : 99999;
               plusButton.disabled = true;
               minusButton.disabled = false;
             } else {
@@ -842,7 +966,10 @@ window.addEventListener("DOMContentLoaded", () => {
           minusButton.onclick = () => {
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
-              : (+item.getAttribute("data-price") * +quantity.value * (100 - +discountInput.value)) / 100;
+              : (+item.getAttribute("data-price") *
+                  +quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(productTotalPrice, currentPrice);
 
             if (multiplicity) {
@@ -886,12 +1013,18 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             let price = !discountInput.value
               ? +inputPrice.value * quantity.value
-              : (+inputPrice.value * quantity.value * (100 - +discountInput.value)) / 100;
+              : (+inputPrice.value *
+                  quantity.value *
+                  (100 - +discountInput.value)) /
+                100;
             getDigitsNumber(totalPrice, price);
             if (!discountInput.value) {
               item.setAttribute("data-price", +inputPrice.value);
             } else {
-              item.setAttribute("data-price", (+inputPrice.value * 100) / (100 - +discountInput.value));
+              item.setAttribute(
+                "data-price",
+                (+inputPrice.value * 100) / (100 - +discountInput.value)
+              );
             }
             if (!inputPrice.value) {
               totalPrice.textContent = 0;
@@ -916,7 +1049,8 @@ window.addEventListener("DOMContentLoaded", () => {
               curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
             } else {
               curentPrice = (
-                (+getCurrentPrice(item.getAttribute("data-price")) * (100 - +discountInput.value)) /
+                (+getCurrentPrice(item.getAttribute("data-price")) *
+                  (100 - +discountInput.value)) /
                 100
               ).toFixed(2);
             }
@@ -941,7 +1075,11 @@ window.addEventListener("DOMContentLoaded", () => {
             if (discountInput.value == "-") {
               curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
             } else {
-              curentPrice = ((+getCurrentPrice(productPrice) * (100 - +discountInput.value)) / 100).toFixed(2);
+              curentPrice = (
+                (+getCurrentPrice(productPrice) *
+                  (100 - +discountInput.value)) /
+                100
+              ).toFixed(2);
             }
 
             getDigitsNumber(productPriceContainer, curentPrice);
@@ -1006,7 +1144,9 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     //редактирование спецификации
-    const currentSpecificatons = allSpecifications.querySelectorAll("div[data-status='True']");
+    const currentSpecificatons = allSpecifications.querySelectorAll(
+      "div[data-status='True']"
+    );
     currentSpecificatons.forEach((item) => {
       const changeButton = item.querySelector(".change-specification-button");
       const link = item.querySelector("a");
@@ -1027,14 +1167,17 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-            window.location.href = "/admin_specification/current_specification/";
+            window.location.href =
+              "/admin_specification/current_specification/";
           });
       };
     });
     //
 
     //актуализация спецификации
-    const overdueSpecifications = allSpecifications.querySelectorAll("div[data-status='False']");
+    const overdueSpecifications = allSpecifications.querySelectorAll(
+      "div[data-status='False']"
+    );
 
     //добавление счета
 
@@ -1064,7 +1207,8 @@ window.addEventListener("DOMContentLoaded", () => {
     overdueSpecifications.forEach((item) => {
       const updatingBtn = item.querySelector(".uptate-specification-button");
 
-      const specificationId = +item.querySelectorAll(".table_item_value")[0].textContent;
+      const specificationId =
+        +item.querySelectorAll(".table_item_value")[0].textContent;
       let cartId = item.querySelectorAll(".table_item_value")[0];
 
       updatingBtn.onclick = () => {
@@ -1083,14 +1227,17 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((response) => {
-            window.location.href = "/admin_specification/current_specification/";
+            window.location.href =
+              "/admin_specification/current_specification/";
           });
       };
     });
     //
   }
 
-  const priceDiscountInput = document.querySelectorAll('[name="price-input-discount"]');
+  const priceDiscountInput = document.querySelectorAll(
+    '[name="price-input-discount"]'
+  );
   if (priceDiscountInput) {
     priceDiscountInput.forEach((el) => {
       el.addEventListener("input", function (e) {
@@ -1124,10 +1271,16 @@ window.addEventListener("DOMContentLoaded", () => {
   // поиск клиентов по инн имени в корзине
   const searhClientForm = document.querySelector(".serch-client");
   if (searhClientForm) {
-    const searchClientInput = searhClientForm.querySelector(['[name="serch-client_input"]']);
+    const searchClientInput = searhClientForm.querySelector([
+      '[name="serch-client_input"]',
+    ]);
     const clientsContainer = searhClientForm.querySelector(".clients");
-    const clientRequsitsSelectLabel = searhClientForm.querySelector(".select-client-requsits_label");
-    const specificationContainer = document.querySelector(".specification-container");
+    const clientRequsitsSelectLabel = searhClientForm.querySelector(
+      ".select-client-requsits_label"
+    );
+    const specificationContainer = document.querySelector(
+      ".specification-container"
+    );
     if (specificationContainer) {
       const orderStatus = specificationContainer.getAttribute("order");
       if (orderStatus) {
@@ -1136,7 +1289,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(".select-client-requsits");
+    const clientRequsitsSelect = clientRequsitsSelectLabel.querySelector(
+      ".select-client-requsits"
+    );
     changeSelect(clientRequsitsSelect);
 
     const selectDelevery = document.querySelector(".select_delevery");
@@ -1148,7 +1303,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const clientInfo = searhClientForm.querySelector(".client-info");
     const searchEndpoint = "/api/v1/client/get-client-requisites/";
     const saveButtonContainer = document.querySelector(".save_button-wrapper");
-    const saveInvoiceButtonContainer = document.querySelector(".save_invoice_button-wrapper");
+    const saveInvoiceButtonContainer = document.querySelector(
+      ".save_invoice_button-wrapper"
+    );
 
     window.onload = () => {
       if (searchClientInput.value) {
@@ -1194,15 +1351,23 @@ window.addEventListener("DOMContentLoaded", () => {
                     client.onclick = () => {
                       clientInfo.innerHTML = "";
                       searchClientInput.value = client.textContent;
-                      searchClientInput.setAttribute("client-id", client.getAttribute("data-client-id"));
+                      searchClientInput.setAttribute(
+                        "client-id",
+                        client.getAttribute("data-client-id")
+                      );
                       if (el.requisitesotherkpp_set.length > 0) {
                         clientRequsitsSelect.innerHTML = "";
                         el.requisitesotherkpp_set.forEach((elem) => {
-                          if (+searchClientInput.getAttribute("client-id") === +elem.requisites) {
+                          if (
+                            +searchClientInput.getAttribute("client-id") ===
+                            +elem.requisites
+                          ) {
                             clientRequsitsSelectLabel.classList.add("show");
-                            elem.accountrequisites_set.forEach((accountrequisit) => {
-                              clientRequsitsSelect.innerHTML += `<option class="client-option" value="${accountrequisit.id}">КПП: ${elem.kpp}, Р/С: ${accountrequisit.account_requisites}</option>`;
-                            });
+                            elem.accountrequisites_set.forEach(
+                              (accountrequisit) => {
+                                clientRequsitsSelect.innerHTML += `<option class="client-option" value="${accountrequisit.id}">КПП: ${elem.kpp}, Р/С: ${accountrequisit.account_requisites}</option>`;
+                              }
+                            );
                           }
                         });
 
@@ -1214,7 +1379,8 @@ window.addEventListener("DOMContentLoaded", () => {
                       }
 
                       clientInfo.innerHTML = `<div>Предоплата: ${el.prepay_persent}%</div>`;
-                      const selectDelevery = searhClientForm.querySelector(".select_delevery");
+                      const selectDelevery =
+                        searhClientForm.querySelector(".select_delevery");
                       changeSelect(selectDelevery);
                       clientsContainer.classList.remove("show");
                       saveButtonContainer.classList.add("show");
@@ -1224,7 +1390,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 });
               });
             } else {
-              clientsContainer.innerHTML = "<div class='none'>Клинтов нет</div>";
+              clientsContainer.innerHTML =
+                "<div class='none'>Клинтов нет</div>";
               searchClientInput.setAttribute("client-id", "");
             }
           });
@@ -1271,7 +1438,8 @@ window.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           console.log(data);
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-          document.location.href = "/admin_specification/current_specification/";
+          document.location.href =
+            "/admin_specification/current_specification/";
         });
     } else {
       BxUpd.onclick = () => {
@@ -1289,7 +1457,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((data) => {
             console.log(data);
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-            document.location.href = "/admin_specification/current_specification/";
+            document.location.href =
+              "/admin_specification/current_specification/";
           });
       };
       BxHardUpd.onclick = () => {
@@ -1307,7 +1476,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((data) => {
             console.log(data);
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
-            document.location.href = "/admin_specification/current_specification/";
+            document.location.href =
+              "/admin_specification/current_specification/";
           });
       };
     }

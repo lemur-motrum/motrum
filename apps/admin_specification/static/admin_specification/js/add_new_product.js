@@ -1,19 +1,32 @@
-import { showErrorValidation, getCookie, getDigitsNumber } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  getDigitsNumber,
+} from "/static/core/js/functions.js";
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 
 function addNewProductLogic(container) {
   if (container) {
-    const addNewProductContainer = container.querySelector(".add_new_product_container");
+    const addNewProductContainer = container.querySelector(
+      ".add_new_product_container"
+    );
     const searchInput = addNewProductContainer.querySelector(".search_input");
-    const searchElemsContainer = addNewProductContainer.querySelector(".search_container");
-    const addProductContainer = addNewProductContainer.querySelector(".add_product_container");
+    const searchElemsContainer =
+      addNewProductContainer.querySelector(".search_container");
+    const addProductContainer = addNewProductContainer.querySelector(
+      ".add_product_container"
+    );
     const error = addNewProductContainer.querySelector(".add_product_error");
 
-    const addProductButton = addNewProductContainer.querySelector(".add_product");
-    const addNewProductButton = addNewProductContainer.querySelector(".add_new_product");
-    const deleteSearchButton = addNewProductContainer.querySelector(".delete_search_details_btn");
+    const addProductButton =
+      addNewProductContainer.querySelector(".add_product");
+    const addNewProductButton =
+      addNewProductContainer.querySelector(".add_new_product");
+    const deleteSearchButton = addNewProductContainer.querySelector(
+      ".delete_search_details_btn"
+    );
 
     function closeSearchWindow() {
       searchElemsContainer.innerHTML = "";
@@ -125,9 +138,15 @@ function addNewProductLogic(container) {
       closeSearchWindow();
     };
     addNewProductButton.onclick = () => {
-      document.querySelector(".new_item_container_wrapper").classList.toggle("is_open");
+      document
+        .querySelector(".new_item_container_wrapper")
+        .classList.toggle("is_open");
 
-      if (document.querySelector(".new_item_container_wrapper").classList.contains("is_open")) {
+      if (
+        document
+          .querySelector(".new_item_container_wrapper")
+          .classList.contains("is_open")
+      ) {
         addNewProductButton.textContent = "Скрыть";
       } else {
         addNewProductButton.textContent = "Добавить новый товар";
@@ -168,27 +187,45 @@ function addNewProductLogic(container) {
 
     const newItemContainer = container.querySelector(".new_item_container");
     if (newItemContainer) {
-      const nameInput = newItemContainer.querySelector(".new_item_container_name_input");
-      const articleInput = newItemContainer.querySelector(".new_item_container_article_input");
+      const nameInput = newItemContainer.querySelector(
+        ".new_item_container_name_input"
+      );
+      const articleInput = newItemContainer.querySelector(
+        ".new_item_container_article_input"
+      );
       const priceOnceInput = newItemContainer.querySelector(".price_input");
       const quantityInput = newItemContainer.querySelector(".quantity_input");
       const persentSaleInput = newItemContainer.querySelector(".persent_sale");
       const addPersentSaleInput = newItemContainer.querySelector(".add_sale");
-      const newProductError = newItemContainer.querySelector(".add_new_item_in_cart_container_error");
+      const newProductError = newItemContainer.querySelector(
+        ".add_new_item_in_cart_container_error"
+      );
       const vendorSelect = newItemContainer.querySelector(".vendor_select");
-      const vendorSelectToggle = vendorSelect.querySelector(".vendor_select__toggle");
+      const vendorSelectToggle = vendorSelect.querySelector(
+        ".vendor_select__toggle"
+      );
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
-      const supplierSelectToggle = supplierSelect.querySelector(".supplier_select__toggle");
+      const supplierSelectToggle = supplierSelect.querySelector(
+        ".supplier_select__toggle"
+      );
 
-      const addNewItemInCartButton = newItemContainer.querySelector(".add_new_item_in_cart");
-      const newItemContainerTotalCost = newItemContainer.querySelector(".new_item_container_value_total_cost");
-      const motrumPrice = newItemContainer.querySelector(".new_item_container_value_motrum_price");
+      const addNewItemInCartButton = newItemContainer.querySelector(
+        ".add_new_item_in_cart"
+      );
+      const newItemContainerTotalCost = newItemContainer.querySelector(
+        ".new_item_container_value_total_cost"
+      );
+      const motrumPrice = newItemContainer.querySelector(
+        ".new_item_container_value_motrum_price"
+      );
 
       function changePercent() {
         if (priceOnceInput.value && quantityInput.value) {
           getDigitsNumber(
             motrumPrice,
-            (priceOnceInput.value / 100) * (100 - persentSaleInput.value) * quantityInput.value
+            (priceOnceInput.value / 100) *
+              (100 - persentSaleInput.value) *
+              quantityInput.value
           );
         }
       }
@@ -207,7 +244,10 @@ function addNewProductLogic(container) {
         if (+persentSaleInput.value < -99.99) {
           persentSaleInput.value = -99.99;
         }
-        if (persentSaleInput.value.length > 1 && persentSaleInput.value.at(-1) === "-") {
+        if (
+          persentSaleInput.value.length > 1 &&
+          persentSaleInput.value.at(-1) === "-"
+        ) {
           persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
         }
         if (persentSaleInput.value == ".") {
@@ -230,7 +270,10 @@ function addNewProductLogic(container) {
             });
           input1.value = currentValue;
           if (input2.value) {
-            getDigitsNumber(newItemContainerTotalCost, +input1.value * +input2.value);
+            getDigitsNumber(
+              newItemContainerTotalCost,
+              +input1.value * +input2.value
+            );
           }
           changePercent();
         });
@@ -291,8 +334,12 @@ function addNewProductLogic(container) {
             product_new_price: +priceOnceInput.value,
             cart: +cartId,
             quantity: +quantityInput.value,
-            product_new_sale_motrum: persentSaleInput.value ? persentSaleInput.value : null,
-            product_new_sale: addPersentSaleInput.value ? addPersentSaleInput.value : null,
+            product_new_sale_motrum: persentSaleInput.value
+              ? persentSaleInput.value
+              : null,
+            product_new_sale: addPersentSaleInput.value
+              ? addPersentSaleInput.value
+              : null,
             vendor: vendorSelectToggle.getAttribute("value"),
             supplier: supplierSelectToggle.getAttribute("value"),
           };
@@ -321,12 +368,18 @@ function addNewProductLogic(container) {
                 addNewItemInCartButton.disabled = false;
                 addNewItemInCartButton.innerHTML = "";
                 addNewItemInCartButton.textContent = "Добавить товар";
-                showErrorValidation("Данный товар уже есть в ОКТ", newProductError);
+                showErrorValidation(
+                  "Данный товар уже есть в ОКТ",
+                  newProductError
+                );
               } else if (response.status == "product_in_cart") {
                 addNewItemInCartButton.disabled = false;
                 addNewItemInCartButton.innerHTML = "";
                 addNewItemInCartButton.textContent = "Добавить товар";
-                showErrorValidation("Товар с таким артикулом уже есть в корзине", newProductError);
+                showErrorValidation(
+                  "Товар с таким артикулом уже есть в корзине",
+                  newProductError
+                );
               }
             });
         }
@@ -363,7 +416,8 @@ function addNewProductLogic(container) {
             }
             if (searchProductItems[counterElems - 1]) {
               searchProductItems[counterElems - 1].classList.add("active");
-              const name = searchProductItems[counterElems - 1].querySelector(".name");
+              const name =
+                searchProductItems[counterElems - 1].querySelector(".name");
               searchInput.value = name.textContent;
             }
           }
@@ -378,7 +432,8 @@ function addNewProductLogic(container) {
             }
             if (searchProductItems[counterElems - 1]) {
               searchProductItems[counterElems - 1].classList.add("active");
-              const name = searchProductItems[counterElems - 1].querySelector(".name");
+              const name =
+                searchProductItems[counterElems - 1].querySelector(".name");
               searchInput.value = name.textContent;
             }
           }

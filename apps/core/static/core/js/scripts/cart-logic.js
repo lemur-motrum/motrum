@@ -1,6 +1,5 @@
 import {
   getCookie,
-  deleteCookie,
   getDigitsNumber,
   NumberParser,
   showErrorValidation,
@@ -380,6 +379,7 @@ window.addEventListener("DOMContentLoaded", () => {
       showCartButton(document.querySelector("#select_requisites"));
 
       if (submitBtn) {
+        const dataInfoValue = submitBtn.getAttribute("data-client-info");
         submitBtn.onclick = () => {
           const cartId = getCookie("cart");
           const clientId = getCookie("client_id");
@@ -388,14 +388,25 @@ window.addEventListener("DOMContentLoaded", () => {
           const accountRequisitValue = selectRequisitesValuesArray[1];
           const deleveryIdValue = selectDelevery.value;
 
-          const dataObj = {
-            all_client_info: 1,
-            client: +clientId,
-            cart: +cartId,
-            requisitesKpp: +requisitesKppValue,
-            account_requisites: +accountRequisitValue,
-            type_delivery: +deleveryIdValue,
-          };
+          let dataObj;
+
+          dataInfoValue == "1"
+            ? (dataObj = {
+                all_client_info: 1,
+                client: +clientId,
+                cart: +cartId,
+                requisitesKpp: +requisitesKppValue,
+                account_requisites: +accountRequisitValue,
+                type_delivery: +deleveryIdValue,
+              })
+            : (dataObj = {
+                all_client_info: 0,
+                client: +clientId,
+                cart: +cartId,
+                requisitesKpp: null,
+                account_requisites: null,
+                type_delivery: null,
+              });
 
           const data = JSON.stringify(dataObj);
 

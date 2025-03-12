@@ -1,4 +1,4 @@
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   const container = document.querySelector(".motrum_in_numbers-container");
   if (container) {
     const dynamicContentContainer = container.querySelector(

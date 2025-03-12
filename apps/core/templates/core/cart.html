@@ -175,10 +175,13 @@
                                     </div>
                                 </div>
                                 <div class="button_cart-wrapper">
-                                    <button class="save_cart_button hide">оформить заказ</button>
+                                    <button data-client-info="1" class="save_cart_button hide">оформить заказ</button>
                                 </div>
                             {% else %}
                                 <a href="{% url 'client:my_details' %}">Сcылка на добавление реквизитов</a>
+                                <div class="button_cart-wrapper">
+                                    <button data-client-info="0" class="save_cart_button">оформить заказ</button>
+                                </div>
                             {% endif %}
                         </div>
                     {% else %}

@@ -4,7 +4,9 @@ import { setErrorModal } from "/static/core/js/error_modal.js";
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".spetification_table");
   if (wrapper) {
-    const productItems = wrapper.querySelectorAll(".data-base-product-container");
+    const productItems = wrapper.querySelectorAll(
+      ".data-base-product-container"
+    );
     productItems.forEach((productItem) => {
       const productCartId = productItem.getAttribute("data-product-id-cart");
       const productId = productItem.getAttribute("data-product-pk");
@@ -12,10 +14,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const priceInput = productItem.querySelector(".price-input");
       const saveBtn = productItem.querySelector(".save_icon_container");
       const priceContainer = productItem.querySelector(".price_once");
-      const motrumSaleContainer = productItem.querySelector(".motrum_sale_persent");
+      const motrumSaleContainer = productItem.querySelector(
+        ".motrum_sale_persent"
+      );
       const changePriceInput = productItem.querySelector(".change_input_price");
-      const changeMotrumSaleInput = productItem.querySelector(".change-input-sale-percent-motrum");
-      const changeMotrumSaleInputWithoutSale = productItem.querySelector(".change-motrum-sale-percent-without-sale");
+      const changeMotrumSaleInput = productItem.querySelector(
+        ".change-input-sale-percent-motrum"
+      );
+      const changeMotrumSaleInputWithoutSale = productItem.querySelector(
+        ".change-motrum-sale-percent-without-sale"
+      );
 
       changeBtn.onclick = () => {
         changeBtn.style.display = "none";
@@ -26,7 +34,9 @@ window.addEventListener("DOMContentLoaded", () => {
           changePriceInput.classList.add("show");
           inputLogic(changePriceInput);
         }
-        changeMotrumSaleInput.value = getReplacedInputValue(changeMotrumSaleInput);
+        changeMotrumSaleInput.value = getReplacedInputValue(
+          changeMotrumSaleInput
+        );
         inputLogic(changeMotrumSaleInput);
         if (motrumSaleContainer) {
           motrumSaleContainer.style.display = "none";
@@ -43,7 +53,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const dataObj = {
           product: productId,
-          product_price: changePriceInput ? changePriceInput.value : priceInput.value,
+          product_price: changePriceInput
+            ? changePriceInput.value
+            : priceInput.value,
           cart: cartId,
           product_sale_motrum: changeMotrumSaleInput.value,
         };

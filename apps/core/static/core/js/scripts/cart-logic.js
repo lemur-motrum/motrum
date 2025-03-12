@@ -4,6 +4,7 @@ import {
   NumberParser,
   showErrorValidation,
   maskOptions,
+  deleteCookie,
 } from "/static/core/js/functions.js";
 
 import { ItcCustomSelect } from "/static/core/js/customSelect.js";
@@ -421,6 +422,7 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
+              deleteCookie("cart", "/", window.location.hostname);
               window.location.reload();
             } else {
               setErrorModal();

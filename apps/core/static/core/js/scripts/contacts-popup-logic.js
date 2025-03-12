@@ -1,7 +1,8 @@
-import {
-  showErrorValidation,
-  isEmailValid,
-} from "/static/core/js/functions.js";
+import { version } from "/static/core/js/scripts/version.js";
+
+const { showErrorValidation, isEmailValid } = await import(
+  `/static/core/js/functions.js?ver=${version}`
+);
 
 window.addEventListener("DOMContentLoaded", () => {
   const contactsBtn = document.querySelector(".contacts-btn");

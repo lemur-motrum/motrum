@@ -1,4 +1,7 @@
-import { deleteCookie } from "/static/core/js/functions.js";
+import { version } from "/static/core/js/scripts/version.js";
+const { deleteCookie } = await import(
+  `/static/core/js/functions.js?ver=${version}`
+);
 
 window.addEventListener("DOMContentLoaded", () => {
   const clientInput = document.querySelector("#client_id");

@@ -1,5 +1,11 @@
-import { getCookie, getDigitsNumber } from "/static/core/js/functions.js";
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { version } from "/static/core/js/scripts/version.js";
+
+const { getCookie, getDigitsNumber } = await import(
+  `/static/core/js/functions.js?ver=${version}`
+);
+const { setErrorModal } = await import(
+  `/static/core/js/error_modal.js?ver=${version}`
+);
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;

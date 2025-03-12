@@ -1,19 +1,34 @@
-import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
-import { invoiceItem } from "../js/invoice_elems.js";
-import { changePayment } from "../js/change_payment.js";
-import { completeOrder } from "../js/complete_order.js";
+import { version } from "/static/core/js/scripts/version.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+const { getCookie, showErrorValidation } = await import(
+  `/static/core/js/functions.js?ver=${version}`
+);
+const { invoiceItem } = await import(`../js/invoice_elems.js?ver=${version}`);
+const { changePayment } = await import(
+  `../js/change_payment.js?ver=${version}`
+);
+const { completeOrder } = await import(
+  `../js/complete_order.js?ver=${version}`
+);
+const { setErrorModal } = await import(
+  `/static/core/js/error_modal.js?ver=${version}`
+);
 
 let csrfToken = getCookie("csrftoken");
 
 const currentUrl = new URL(window.location.href);
 
 window.addEventListener("DOMContentLoaded", () => {
-  const specificationWrapper = document.querySelector('[specification-elem="wrapper"]');
+  const specificationWrapper = document.querySelector(
+    '[specification-elem="wrapper"]'
+  );
   if (specificationWrapper) {
-    const allSpecifications = document.querySelector(".all_specifications_table");
-    const specificationContainer = specificationWrapper.querySelector('[specification-elem="container"]');
+    const allSpecifications = document.querySelector(
+      ".all_specifications_table"
+    );
+    const specificationContainer = specificationWrapper.querySelector(
+      '[specification-elem="container"]'
+    );
     let specificationCount = 0;
     let pageCount = 0;
     let lastPage = 0;
@@ -93,8 +108,15 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function loadItems(pagintaionFn = false, cleanArray = false, addMoreBtn = false, specification = false) {
-      const WrapOrders = document.querySelector(".all_specifications_container");
+    function loadItems(
+      pagintaionFn = false,
+      cleanArray = false,
+      addMoreBtn = false,
+      specification = false
+    ) {
+      const WrapOrders = document.querySelector(
+        ".all_specifications_container"
+      );
       const IsFrame = WrapOrders.getAttribute("data-http-frame");
       const BxIdOrder = WrapOrders.getAttribute("data-bitrix-id-order");
 
@@ -108,13 +130,16 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       let params = new URLSearchParams(data);
 
-      fetch(`/api/v1/order/load-ajax-specification-list/?${params.toString()}`, {
-        method: "GET",
-        headers: {
-          "X-CSRFToken": csrfToken,
-          Accept: "application/json",
-        },
-      })
+      fetch(
+        `/api/v1/order/load-ajax-specification-list/?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            Accept: "application/json",
+          },
+        }
+      )
         .then((response) => {
           if (response.status >= 200 && response.status < 299) {
             return response.json();
@@ -131,23 +156,45 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           for (let i in data.data) {
             addAjaxCatalogItem(data.data[i]);
-            const currentSpecificatons = allSpecifications.querySelectorAll(".table_item");
+            const currentSpecificatons =
+              allSpecifications.querySelectorAll(".table_item");
             currentSpecificatons.forEach((item) => {
-              const changeButton = item.querySelector(".change-specification-button");
-              const changeBillButton = item.querySelector(".change-bill-button");
-              const updateButton = item.querySelector(".uptate-specification-button");
+              const changeButton = item.querySelector(
+                ".change-specification-button"
+              );
+              const changeBillButton = item.querySelector(
+                ".change-bill-button"
+              );
+              const updateButton = item.querySelector(
+                ".uptate-specification-button"
+              );
 
               const specificationId = item.getAttribute("specification-id");
               const cartId = item.getAttribute("data-cart-id");
 
               if (changeButton) {
-                uptadeOrChanegeSpecification(changeButton, null, specificationId, cartId);
+                uptadeOrChanegeSpecification(
+                  changeButton,
+                  null,
+                  specificationId,
+                  cartId
+                );
               }
               if (updateButton) {
-                uptadeOrChanegeSpecification(updateButton, null, specificationId, cartId);
+                uptadeOrChanegeSpecification(
+                  updateButton,
+                  null,
+                  specificationId,
+                  cartId
+                );
               }
               if (changeBillButton) {
-                uptadeOrChanegeSpecification(changeBillButton, "bill-upd=True", specificationId, cartId);
+                uptadeOrChanegeSpecification(
+                  changeBillButton,
+                  "bill-upd=True",
+                  specificationId,
+                  cartId
+                );
               }
             });
           }
@@ -160,7 +207,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
           for (
             let i = pageCount == 0 ? pageCount : pageCount - 1;
-            !data.small ? i < pageCount + 2 : +data.count > 1 ? i <= pageCount + 1 : i <= pageCount;
+            !data.small
+              ? i < pageCount + 2
+              : +data.count > 1
+              ? i <= pageCount + 1
+              : i <= pageCount;
             i++
           ) {
             pagintationArray.push(i);
@@ -225,7 +276,9 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     function renderCatalogItem(orderData) {
-      let ajaxTemplateWrapper = document.querySelector('[template-elem="wrapper"]');
+      let ajaxTemplateWrapper = document.querySelector(
+        '[template-elem="wrapper"]'
+      );
       let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
         '[specification-elem="specification-item"]'
       ).innerText;
@@ -235,7 +288,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function addAjaxCatalogItem(ajaxElemData) {
       let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
-      specificationContainer.insertAdjacentHTML("beforeend", renderCatalogItemHtml);
+      specificationContainer.insertAdjacentHTML(
+        "beforeend",
+        renderCatalogItemHtml
+      );
     }
     function preloaderLogic() {
       endContent.classList.remove("show");
@@ -243,15 +299,21 @@ window.addEventListener("DOMContentLoaded", () => {
       loader.classList.remove("hide");
       specificationCount = pageCount * 10;
     }
-    const allSpecificationsContainer = document.querySelector(".all_specifications_container");
+    const allSpecificationsContainer = document.querySelector(
+      ".all_specifications_container"
+    );
     if (allSpecificationsContainer) {
       let currentUrl = new URL(window.location.href);
 
       const titles = allSpecificationsContainer.querySelector(".title");
-      const ordersWithoutSpecification = titles.querySelector(".orders_without_specifications");
+      const ordersWithoutSpecification = titles.querySelector(
+        ".orders_without_specifications"
+      );
       const titleItems = titles.querySelectorAll("span");
-      const smallAllSpecificationTitles = allSpecificationsContainer.querySelector(".all_specifications_titles");
-      const smallNoSpecificationTitles = allSpecificationsContainer.querySelector(".no_specification_titles");
+      const smallAllSpecificationTitles =
+        allSpecificationsContainer.querySelector(".all_specifications_titles");
+      const smallNoSpecificationTitles =
+        allSpecificationsContainer.querySelector(".no_specification_titles");
       const searchParams = currentUrl.searchParams;
 
       for (let i = 0; i < titleItems.length; i++) {
@@ -290,7 +352,12 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-export function uptadeOrChanegeSpecification(button, getParams, idCart, idSpecification) {
+export function uptadeOrChanegeSpecification(
+  button,
+  getParams,
+  idCart,
+  idSpecification
+) {
   button.onclick = () => {
     console.log(button);
     button.setAttribute("text-content", button.textContent);

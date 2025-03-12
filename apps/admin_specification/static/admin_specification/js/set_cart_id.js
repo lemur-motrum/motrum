@@ -1,5 +1,12 @@
-import { getCookie, setCookie } from "/static/core/js/functions.js";
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { version } from "/static/core/js/scripts/version.js";
+
+const { getCookie } = await import(
+  `/static/core/js/functions.js?ver=${version}`
+);
+const { setErrorModal } = await import(
+  `/static/core/js/error_modal.js?ver=${version}`
+);
+
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {

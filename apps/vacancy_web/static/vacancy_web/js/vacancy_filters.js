@@ -1,9 +1,7 @@
-import {
-  getCookie,
-  getDigitsNumber,
-  showErrorValidation,
-  maskOptions,
-} from "/static/core/js/functions.js";
+import { version } from "/static/core/js/scripts/version.js";
+
+const { getCookie, getDigitsNumber, showErrorValidation, maskOptions } =
+  await import(`/static/core/js/functions.js?ver=${version}`);
 
 const csrfToken = getCookie("csrftoken");
 const currentUrl = new URL(window.location.href);

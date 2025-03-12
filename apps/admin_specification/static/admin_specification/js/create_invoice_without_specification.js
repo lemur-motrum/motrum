@@ -1,10 +1,12 @@
-import {
+import { version } from "/static/core/js/scripts/version.js";
+
+const {
   getCookie,
   showErrorValidation,
   getCurrentPrice,
   deleteCookie,
   getDeliveryDate,
-} from "/static/core/js/functions.js";
+} = await import(`/static/core/js/functions.js?ver=${version}`);
 import { setErrorModal } from "/static/core/js/error_modal.js";
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 const csrfToken = getCookie("csrftoken");

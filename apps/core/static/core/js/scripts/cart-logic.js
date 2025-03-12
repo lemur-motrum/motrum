@@ -383,30 +383,32 @@ window.addEventListener("DOMContentLoaded", () => {
         submitBtn.onclick = () => {
           const cartId = getCookie("cart");
           const clientId = getCookie("client_id");
-          const selectRequisitesValuesArray = selectRequisites.value.split(",");
-          const requisitesKppValue = selectRequisitesValuesArray[0];
-          const accountRequisitValue = selectRequisitesValuesArray[1];
-          const deleveryIdValue = selectDelevery.value;
-
           let dataObj;
+          if (dataInfoValue == "1") {
+            const selectRequisitesValuesArray =
+              selectRequisites.value.split(",");
+            const requisitesKppValue = selectRequisitesValuesArray[0];
+            const accountRequisitValue = selectRequisitesValuesArray[1];
+            const deleveryIdValue = selectDelevery.value;
 
-          dataInfoValue == "1"
-            ? (dataObj = {
-                all_client_info: 1,
-                client: +clientId,
-                cart: +cartId,
-                requisitesKpp: +requisitesKppValue,
-                account_requisites: +accountRequisitValue,
-                type_delivery: +deleveryIdValue,
-              })
-            : (dataObj = {
-                all_client_info: 0,
-                client: +clientId,
-                cart: +cartId,
-                requisitesKpp: null,
-                account_requisites: null,
-                type_delivery: null,
-              });
+            dataObj = {
+              all_client_info: 1,
+              client: +clientId,
+              cart: +cartId,
+              requisitesKpp: +requisitesKppValue,
+              account_requisites: +accountRequisitValue,
+              type_delivery: +deleveryIdValue,
+            };
+          } else {
+            dataObj = {
+              all_client_info: 0,
+              client: +clientId,
+              cart: +cartId,
+              requisitesKpp: null,
+              account_requisites: null,
+              type_delivery: null,
+            };
+          }
 
           const data = JSON.stringify(dataObj);
 

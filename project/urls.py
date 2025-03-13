@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.urls import re_path as url
+from django.views.static import serve
 
 from project.admin import website_admin
 from rest_framework import routers
@@ -46,6 +47,7 @@ router.registry.extend(core_router.registry)
 
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
+    
     path("admin/", admin.site.urls),
     # path('admin/', include("apps.user.urls", namespace="user")),
     path("website_admin/", website_admin.urls),
@@ -78,8 +80,11 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# else:
-#     urlpatterns += staticfiles_urlpatterns()
+else:
+    urlpatterns += re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
+    urlpatterns += re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    
+    # urlpatterns += staticfiles_urlpatterns()
 
 handler403 = "apps.core.views.permission_denied"
 handler404 = "apps.core.views.page_not_found"

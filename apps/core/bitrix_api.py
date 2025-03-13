@@ -579,38 +579,38 @@ def get_status_order():
         actual_order = Order.objects.exclude(
             status__in=not_view_status, id_bitrix__isnull=True
         ).values("id_bitrix")
+        if actual_order.count() > 0:
+            webhook = BITRIX_WEBHOOK
+            bx = Bitrix(webhook)
+            
+            orders = [d["id_bitrix"] for d in actual_order]
 
-        webhook = BITRIX_WEBHOOK
+            # orders = [1]
 
-        bx = Bitrix(webhook)
-        orders = [d["id_bitrix"] for d in actual_order]
+            orders_bx = bx.get_by_ID("crm.deal.get", orders)
 
-        # orders = [1]
+            if len(orders) == 1:
+                orders_bx = {orders_bx["ID"]: orders_bx}
 
-        orders_bx = bx.get_by_ID("crm.deal.get", orders)
+            for order_bx in orders_bx.values():
 
-        if len(orders) == 1:
-            orders_bx = {orders_bx["ID"]: orders_bx}
+                id_bx = order_bx["ID"]
+                status_bx = order_bx["STAGE_ID"]
+                order = Order.objects.filter(id_bitrix=id_bx).last()
 
-        for order_bx in orders_bx.values():
+                if order:
+                    status = get_status_bx(status_bx)
+                    if status == "SHIPMENT_":
+                        if order.type_delivery == "Самовывоз":
+                            status = "SHIPMENT_PICKUP"
+                        else:
+                            status = "SHIPMENT_AUTO"
+                    
+                    if order.status != status:
+                        Notification.add_notification(order.id, "STATUS_ORDERING", None)
 
-            id_bx = order_bx["ID"]
-            status_bx = order_bx["STAGE_ID"]
-            order = Order.objects.filter(id_bitrix=id_bx).last()
-
-            if order:
-                status = get_status_bx(status_bx)
-                if status == "SHIPMENT_":
-                    if order.type_delivery == "Самовывоз":
-                        status = "SHIPMENT_PICKUP"
-                    else:
-                        status = "SHIPMENT_AUTO"
-                
-                if order.status != status:
-                    Notification.add_notification(order.id, "STATUS_ORDERING", None)
-
-                order.status = status
-                order.save()
+                    order.status = status
+                    order.save()
 
     except Exception as e:
         print(e)

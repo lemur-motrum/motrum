@@ -74,6 +74,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.get_year_holiday",
         "schedule": crontab(minute=3, hour=0, day_of_month=1),
     },
+    # "nomenk_file_delite_month": {
+    #     "task": "apps.core.tasks.nomenk_file_delite",
+    #     "schedule": crontab(minute=14, hour=0, day_of_month=1),
+    # },
     
     # ТАСКИ раз  в год
     # обнуление счетчиков счетов

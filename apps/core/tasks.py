@@ -341,3 +341,22 @@ def vacancy_file_delite(self):
 
         info = f"чистка папки с вакансиями {exc}"
         e = error_alert(error, location, info)
+
+# чистка папки с 1c каталогами
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def nomenk_file_delite(self):
+    try:
+        folder_path = f"{MEDIA_ROOT}/ones/nomenk"
+
+        delete_everything_in_folder(folder_path)
+
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"чистка папки  с 1c каталогами {exc}"
+
+        info = f"чистка папки  с 1c каталогами {exc}"
+        e = error_alert(error, location, info)
+

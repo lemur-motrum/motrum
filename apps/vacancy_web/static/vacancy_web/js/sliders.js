@@ -24,14 +24,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const closeBtn = overlay.querySelector(".close_btn");
 
       sliderElems.forEach((el, i) => {
-        el.onclick = () => {
-          overlay.classList.add("show");
-          setTimeout(() => {
-            overlay.classList.add("visible");
-          }, 600);
-          slider1.activeIndex = i;
-          document.body.style.overflowY = "hidden";
-        };
+        if (window.innerWidth > 576) {
+          el.onclick = () => {
+            overlay.classList.add("show");
+            setTimeout(() => {
+              overlay.classList.add("visible");
+            }, 600);
+            slider1.activeIndex = i;
+            document.body.style.overflowY = "hidden";
+          };
+        }
       });
 
       closeBtn.onclick = () => {
@@ -60,14 +62,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const closeBtn = overlay.querySelector(".close_btn");
 
       sliderElems.forEach((el, i) => {
-        el.onclick = () => {
-          overlay.classList.add("show");
-          setTimeout(() => {
-            overlay.classList.add("visible");
-          }, 600);
-          slider1.activeIndex = i;
-          document.body.style.overflowY = "hidden";
-        };
+        if (window.innerWidth > 576) {
+          el.onclick = () => {
+            overlay.classList.add("show");
+            setTimeout(() => {
+              overlay.classList.add("visible");
+            }, 600);
+            slider1.activeIndex = i;
+            document.body.style.overflowY = "hidden";
+          };
+        }
       });
 
       closeBtn.onclick = () => {

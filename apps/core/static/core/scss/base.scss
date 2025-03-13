@@ -65,7 +65,7 @@ a {
     }
     .modal-window {
       width: 23.75rem;
-      height: 18rem;
+      // height: 18rem;
       background-color: #fff;
       padding: 1.7rem;
       box-sizing: border-box;
@@ -188,10 +188,10 @@ a {
               .timer {
                 position: absolute;
                 z-index: 3;
-                top: -25%;
+                top: -22%;
                 left: 50%;
                 transform: translateX(-50%);
-                font-size: 0.8rem;
+                font-size: 0.6rem;
                 width: -webkit-max-content;
                 width: -moz-max-content;
                 width: max-content;
@@ -237,6 +237,67 @@ a {
           }
           &:hover {
             background-color: #ff5b00;
+          }
+        }
+        .private_policy_container {
+          display: flex;
+          gap: 0.75rem;
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          .checked_radio_button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.313rem;
+            border: 0.094rem solid #000;
+            position: relative;
+            cursor: pointer;
+            &.check {
+              border-color: #95bad4;
+              .checker {
+                width: 100%;
+                height: 100%;
+              }
+            }
+            .checker {
+              width: 0;
+              height: 0;
+              background-color: #95bad4;
+              transition: 0.6s;
+            }
+          }
+          .descr {
+            font-size: 1.125rem;
+            font-weight: 300;
+            width: 50%;
+            a {
+              color: #95bad4;
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+          .privacy_policy_error {
+            color: red;
+            font-size: 0.6rem;
+            position: absolute;
+            top: 101%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: 0.6s;
+            opacity: 0;
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
+            &.show {
+              opacity: 1;
+            }
           }
         }
       }
@@ -1418,7 +1479,13 @@ a {
           flex-direction: column;
           align-items: center;
           gap: 2.5rem;
-
+          @media screen and(max-width:576px) {
+            gap: 0.5rem;
+            align-items: flex-start;
+            .vacancy_link {
+              opacity: 1;
+            }
+          }
           &:hover {
             .vacancy_link {
               opacity: 1;

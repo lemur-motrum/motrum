@@ -37,15 +37,6 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         );
 
-      //   options: {
-      //     size: "small",
-      //     position: {
-      //       right: 10,
-      //       top: 500,
-      //     },
-      //   },
-      // });
-
       myMap.behaviors.disable("scrollZoom");
       myMap.controls.remove("geolocationControl");
       myMap.controls.remove("routeButtonControl");

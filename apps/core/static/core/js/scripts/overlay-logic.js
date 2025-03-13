@@ -60,6 +60,20 @@ window.addEventListener("DOMContentLoaded", () => {
       const mobHeader = document.querySelector(".user-navigation");
       const burgerMenuNav = document.querySelector(".burger_menu_nav ");
 
+      const privatePolicyContainer = autificationForm.querySelector(
+        ".private_policy_container"
+      );
+      const checkZone = privatePolicyContainer.querySelector(
+        ".checked_radio_button"
+      );
+      const privatePolicyError = autificationForm.querySelector(
+        ".privacy_policy_error"
+      );
+
+      checkZone.onclick = () => {
+        checkZone.classList.toggle("check");
+      };
+
       enterBtn.onclick = () => {
         if (mobHeader.classList.contains("show")) {
           mobHeader.classList.remove("show");
@@ -84,6 +98,9 @@ window.addEventListener("DOMContentLoaded", () => {
           autificationForm.reset();
           pinLabel.classList.remove("show");
           button.style.display = "flex";
+          if (checkZone.classList.contains("check")) {
+            checkZone.classList.remove("check");
+          }
         };
       };
       overlay.querySelector(".modal-window").onclick = (e) => {
@@ -91,14 +108,22 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       button.onclick = (e) => {
+        let validate = true;
         e.preventDefault();
         if (!phoneInput.value) {
+          validate = false;
           showErrorValidation("Введите номер телефона", phoneError);
         }
         if (phoneInput.value && phoneInput.value.length < 18) {
+          validate = false;
           showErrorValidation("Введите корректный номер телефона", phoneError);
         }
-        if (phoneInput.value.length == 18) {
+        if (!checkZone.classList.contains("check")) {
+          validate = false;
+          showErrorValidation("Требуется согласие", privatePolicyError);
+        }
+
+        if (validate) {
           const phone = phoneMask.unmaskedValue;
 
           const dataArr = {
@@ -143,11 +168,11 @@ window.addEventListener("DOMContentLoaded", () => {
                         response.json();
                         if (response.status == 201) {
                           console.log("Новый Клиент");
-                          window.location.reload();
+                          window.location.reload(true);
                         }
                         if (response.status == 200) {
                           console.log("Вы вошли");
-                          window.location.reload();
+                          window.location.reload(true);
                         }
                         if (response.status == 400) {
                           if (errorsQuantity == 0) {

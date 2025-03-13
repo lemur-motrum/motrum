@@ -12,9 +12,9 @@
                 <div class="contact_person">
                     <div class="contact_person_details">
                         <div class="contact_preson_elem">
-                            {% if client.last_name %}{{ client.last_name }}{% endif %}
                             {% if client.first_name %}{{ client.first_name }}{% endif %}
                             {% if client.middle_name %}{{ client.middle_name }}{% endif %}
+                            {% if client.last_name %}{{ client.last_name }}{% endif %}
                         </div>
                         <div class="contact_preson_elem">
                             {% if client.position %}{{ client.position }}{% endif %}
@@ -66,7 +66,7 @@
                             </label>
                             <label>
                                 <input value="{{ client.user }}"
-                                       type="text"
+                                       type="tel"
                                        class="phone-input"
                                        placeholder="Телефон"
                                        disabled />
@@ -76,7 +76,7 @@
                                 {% for phone in other_phone_client %}
                                     <label>
                                         <input value="{{ phone.phone }}"
-                                               type="text"
+                                               type="tel"
                                                class="extra_phone_field"
                                                placeholder="Доп телефон"
                                                autocomplete="off" />

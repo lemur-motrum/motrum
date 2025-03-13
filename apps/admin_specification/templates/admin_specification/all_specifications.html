@@ -6,13 +6,9 @@
     <div class="all_specifications_container"
          data-http-frame="{{ http_frame }}"
          data-bitrix-id-order="{{ bitrix_id_order }}">
-      
         <h1 class="title">
             <span class="all_orders active">сформированные заказы</span>
-            {% if tag_need_btn_other_orders %}
-            <span   span class="orders_without_specifications">отложенные заказы</span>
-            {% endif %}
-          
+            {% if tag_need_btn_other_orders %}<span class="orders_without_specifications">отложенные заказы</span>{% endif %}
         </h1>
         <div class="specification_container all_specifications_content">
             <div class="table-titles all_specifications_titles show">

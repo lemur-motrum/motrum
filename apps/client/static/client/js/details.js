@@ -24,6 +24,11 @@ window.addEventListener("DOMContentLoaded", () => {
         detailsContainer.querySelector(".add_legal_entity");
       addLegalEntity.onclick = () => {
         newLegalEntityContainerWrapper.classList.toggle("show");
+        if (newLegalEntityContainerWrapper.classList.contains("show")) {
+          addLegalEntity.textContent = "Скрыть";
+        } else {
+          addLegalEntity.textContent = "Добавить юридическое лицо";
+        }
       };
       const newLegalEntityForm =
         newLegalEntityContainer.querySelector(".legal_entity_form");
@@ -338,7 +343,6 @@ window.addEventListener("DOMContentLoaded", () => {
                   const ipName = el.querySelector(".ip_name");
                   const ipSurname = el.querySelector(".ip_surname");
                   const ipPatronymic = el.querySelector(".ip_patronymic");
-
                   const email = el.querySelector(".email");
                   const phone = el.querySelector(".phone");
 

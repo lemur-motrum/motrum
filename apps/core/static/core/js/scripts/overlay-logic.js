@@ -52,10 +52,8 @@ window.addEventListener("DOMContentLoaded", () => {
       const pinMask = IMask(pinInput, maskPinOptions);
 
       const button = autificationForm.querySelector(".autification-button");
-
       const phoneError = autificationForm.querySelector(".phone-error");
       const pinError = autificationForm.querySelector(".pin-error");
-
       const pinLabel = autificationForm.querySelector(".password-label");
       const mobHeader = document.querySelector(".user-navigation");
       const burgerMenuNav = document.querySelector(".burger_menu_nav ");
@@ -146,10 +144,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 setInterval(timer, 1000);
                 button.style.display = "none";
                 pinLabel.classList.add("show");
-                pinInput.onkeyup = () => {
+                pinInput.oninput = () => {
                   const arrayPinInputValue = pinInput.value.split("");
                   const validateValue = +arrayPinInputValue[3];
                   if (!isNaN(validateValue)) {
+                    pinInput.disabled = true;
                     const dataArr = {
                       phone: phone,
                       pin: pinInput.value,
@@ -186,6 +185,7 @@ window.addEventListener("DOMContentLoaded", () => {
                               `Некорректный Пин-код, осталось попыток ${errorsQuantity}`,
                               pinError
                             );
+                            pinInput.disabled = false;
                           }
                           errorsQuantity -= 1;
                         }

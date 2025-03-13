@@ -93,6 +93,8 @@ window.addEventListener("DOMContentLoaded", () => {
         count: productCount,
         page: pageCount,
         addMoreBtn: addMoreBtn ? true : false,
+        sort: sort ? sort : "",
+        direction: direction ? direction : "",
       };
 
       const params = new URLSearchParams(data);

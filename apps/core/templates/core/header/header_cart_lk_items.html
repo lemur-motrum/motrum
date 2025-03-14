@@ -43,13 +43,3 @@
         <img src="{% static "core/images/header_account.png" %}" alt="img">
     </div>
 {% endif %}
-{% comment %} {% if request.user.username and request.user.is_staff == False %}
-        {% order_link %}
-        {% cart_link %}
-        {% lk_link %}
-    {% elif request.user.is_staff  %}    
-        <div class="cart-elem enter-in-site">вход</div>
-    {% else %}
-        {% cart_link %}
-        <div class="cart-elem enter-in-site">вход</div>
-{% endif %} {% endcomment %}

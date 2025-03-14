@@ -58,6 +58,7 @@ if IS_PROD:
 else:
     DEBUG = True
 
+
     
 
 # Application definition

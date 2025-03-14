@@ -121,7 +121,9 @@ def add_iek(request):
 
     # webhook = BITRIX_WEBHOOK
     # bx = Bitrix(webhook)
-    update_prod_iek_get_okt()
+    folder_path = f"{MEDIA_ROOT}/ones/nomenk"
+
+    delete_everything_in_folder(folder_path)
    
     result = 1
     title = "TEST"

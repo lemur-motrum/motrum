@@ -1,1 +1,235 @@
-<h1>Custom  403</h1>
+{% load static %}
+{% load manager_client %}
+{% load js_templates %}
+{% load test_display %}
+{% load header_menu_counter %}
+{% load header_menu_url %}
+{% url 'core:index' as index_url %}
+{% url 'product:catalog' as catalog_url %}
+{% url 'core:solutions' as solutions_url %}
+{% url 'project:projects' as projects_url %}
+{% url 'core:about' as company_url %}
+{% url 'core:contact' as contact_url %}
+
+  <!DOCTYPE html>
+  <html lang="ru">
+    <head>
+  
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv='cache-control' content='no-cache'>
+
+      <!--css инклудить в общий -->
+      {% include "core/includes/stylesheets.html" %}
+      <title>{{ title }}</title>
+      <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
+    </head>
+    <body {% test_display %}>
+      <div class="wrapper">
+        
+
+        <header class="header">
+            <div class="logo-container">
+                <a class="navbar_menu_item_link" href="/">
+                  <img src={% static "core/images/logo.png" %} alt="logo" />
+                </a>
+            </div>
+            <div class="fixed-logo-container">
+                <a class="navbar_menu_item_link" href="/">
+                  <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+                </a>
+            </div>
+            <div class="user-navigation">
+                <div class="navigation">
+                <li class="nav-elem">
+                    {% if namespace == 'product' %}
+                      <div class="disabled-link">
+                        <span class="navbar_menu_item_text active">Товары</span>
+                        <div class="circle"></div>
+                      </div>
+                    {% else %}
+                      <a class="navbar_menu_item_link" href="{{ catalog_url }}">
+                        <span>Товары</span>
+                        <div class="circle"></div>
+                      </a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-elem">
+                    {% if view_name == 'core:solutions' %}
+                      <div class="disabled-link">
+                        <span class="navbar_menu_item_text active">Решения</span>
+                        <div class="circle"></div>
+                      </div>
+                    {% else %}
+                      <a class="navbar_menu_item_link" href="{{ solutions_url }}">
+                        <span>Решения</span>
+                        <div class="circle"></div>
+                      </a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-elem">
+                    {% if view_name == 'project:projects' %}
+                      <div class="disabled-link">
+                        <span class="navbar_menu_item_text active">Реализованные проекты</span>
+                        <div class="circle small_circle"></div>
+                      </div>
+                    {% else %}
+                      <a class="navbar_menu_item_link" href="{{ projects_url }}">
+                        <span>Реализованные проекты</span>
+                        <div class="circle small_circle"></div>
+                      </a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-elem company-nav-elem {% if view_name == 'core:vacancy:vacancy' %}gap{% endif %}">
+                    {% if view_name == 'core:about' or view_name == 'core:about_company' or view_name == 'core:vacancy:vacancy' %}
+                      <div class="disabled-link">
+                        <span class="navbar_menu_item_text active">Компания</span>
+                        <div class="circle"></div>
+                      </div>
+                      {% if view_name == 'core:vacancy:vacancy' %}
+                        <div class="disabled-link vacancy_link">
+                          <span class="navbar_menu_item_text active">Карьера</span>
+                          <div class="circle"></div>
+                        </div>
+                      {% else %}
+                        <a href="{% url "core:vacancy_web:vacancy" %}" class="vacancy_link">
+                          <span>Карьера</span>
+                          <div class="circle"></div>
+                        </a>
+                      {% endif %}
+                    {% else %}
+                      <a class="navbar_menu_item_link" href="{{ company_url }}">
+                        <span>Компания</span>
+                        <div class="circle"></div>
+                      </a>
+                      <a href="{% url "core:vacancy_web:vacancy" %}" class="vacancy_link">
+                        <span>Карьера</span>
+                        <div class="vacancy_circle"></div>
+                      </a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-elem">
+                    {% if view_name == 'core:contact' %}
+                      <div class="disabled-link">
+                        <span class="navbar_menu_item_text active">Контакты</span>
+                        <div class="circle"></div>
+                      </div>
+                    {% else %}
+                      <a class="navbar_menu_item_link" href="{{ contact_url }}">
+                        <span>Контакты</span>
+                        <div class="circle"></div>
+                      </a>
+                    {% endif %}
+                  </li>
+                  
+              </div>
+             
+              <div class="cart-elems">
+                {% if request.user.username and request.user.is_staff == False %}
+                    <a href={% url 'client:my_orders' %} class="cart-elem">
+                        <div class="img-container">
+                            <img src={% static "core/images/header_orders.png" %} />
+                        </div>
+                        <span class="order_count">
+                            {% if notifications_order %}{{ notifications_order }}{% endif %}
+                        </span>
+                    </a>
+                    <a href={% url "core:cart" %} class="cart-elem">
+                        <div class="img-container">
+                            <img src={% static "core/images/header_bascet.png" %} />
+                        </div>
+                        <span class="global_cart_count cart-count">
+                            {% if count_cart %}{{ count_cart }}{% endif %}
+                        </span>
+                    </a>
+                    <a href={% url 'client:my_orders' %} class="cart-elem">
+                        <div class="img-container">
+                            <img src={% static "core/images/header_account.png" %} />
+                        </div>
+                        <span class="order_count">
+                            {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
+                        </span>
+                    </a>
+                {% elif request.user.is_staff %}
+                    <div class="cart-elem enter-in-site">
+                        <div class="img-container">
+                            <img src="{% static "core/images/header_account.png" %}" alt="img">
+                        </div>
+                    </div>
+                {% else %}
+                    <a href={% url "core:cart" %} class="cart-elem">
+                        <div class="img-container">
+                            <img src={% static "core/images/header_bascet.png" %} />
+                        </div>
+                        <span class="global_cart_count cart-count">
+                            {% if count_cart %}{{ count_cart }}{% endif %}
+                        </span>
+                    </a>
+                    <div class="cart-elem enter-in-site">
+                        <img src="{% static "core/images/header_account.png" %}" alt="img">
+                    </div>
+                {% endif %}
+            </div> 
+            </div>
+            <svg class="burger_menu_nav"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 width="1.063rem"
+                 height="1rem">
+              <path fill-rule="evenodd"  fill="rgb(0, 0, 20)" d="M-0.000,-0.000 L17.000,-0.000 L17.000,2.000 L-0.000,2.000 L-0.000,-0.000 Z" />
+              <path fill-rule="evenodd"  fill="rgb(0, 0, 0)" d="M-0.000,7.000 L17.000,7.000 L17.000,9.000 L-0.000,9.000 L-0.000,7.000 Z" />
+              <path fill-rule="evenodd"  fill="rgb(0, 0, 0)" d="M-0.000,14.000 L17.000,14.000 L17.000,16.000 L-0.000,16.000 L-0.000,14.000 Z" />
+            </svg>
+          </header>
+
+
+
+        <div class="site-content {% if url_name == "contact" %}no-margin{% endif %}">
+        <div class="header_wrapper124"></div>
+        <div class="site-description-content {% if url_name == "contact" %}no-margin{% endif %}">
+            <input id="user_id"
+                    type="hidden"
+                    data-user-id="{% if request.user.is_staff %}{{ request.user.id }}{% endif %}" />
+            <input id="client_id"
+                    type="hidden"
+                    data-user-id="{% if request.user.is_staff == False %}{{ request.user.id }}{% endif %}" />
+        
+        <div class="custom_404_text" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    ">
+            <div class="text_error">
+                <h1>Доступ запрещен: 403</h1>
+                {% comment %} <div>500</div> {% endcomment %}
+            </div>
+            <p> Доступ к запрашиваемой странице запрещен или у пользователя нет прав на просмотр контента</p>
+        </div>
+        </div>
+        {% if url_name != "contact" %}
+            {% manager_client %}
+        {% endif %}
+        {% if privacy_policy %}
+        {% else %}
+            {% if url_name != "contact" %}
+            {% include "core/includes/cookie.html" %}
+            {% endif %}
+        {% endif %}
+        </div>
+        
+        
+        {% include "core/includes/footer.html" %}
+        {% include "core/includes/overlay-modal.html" %}
+        {% include "core/includes/overlay_new_product_in_specification.html" %}
+        {% include "core/includes/contacts_modal_overlay.html" %}
+        {% include "core/includes/overlay_modal_error.html" %} 
+      </div>
+      {% js_templates %}
+      {% include "core/includes/scripts.html" %}
+
+    </body>
+  </html>
+
+
+

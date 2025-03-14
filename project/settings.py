@@ -48,12 +48,17 @@ CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
 
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
 IS_PROD = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
+
+if IS_PROD:
+    DEBUG = False
+else:
+    DEBUG = True
+
+    
 
 # Application definition
 

@@ -14,15 +14,15 @@ pypdf==5.2.0
 celery==5.4.0
 redis==5.2.1
 flower==2.0.1
-django-simple-history==3.8.0
+django-simple-history==3.7.0
 beautifulsoup4==4.12.3
 djangorestframework==3.15.2
 num2words==0.5.14
 django-tinymce==4.1.0
 fast-bitrix24==1.8.4
 drf_spectacular==0.28.0
-dadata
-smsru-api
+dadata==24.10.0
+smsru-api==0.1.7
 
 djlint==1.36.4
 libsass==0.23.0

@@ -1238,7 +1238,7 @@ def get_manager():
         print(e, tr)
         error = "error"
         location = "Менеджеры битрикс"
-        info = f" Получение Менеджеры битрикс в бд {e}{tr}"
+        info = f" Получение Менеджеры битрикс в бд {e}{tr} webhook {webhook}"
         e = error_alert(error, location, info)
         return False
 

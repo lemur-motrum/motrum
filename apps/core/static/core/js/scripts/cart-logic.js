@@ -221,13 +221,6 @@ window.addEventListener("DOMContentLoaded", () => {
         getDigitsNumber(totalSalePriceCartItem, totalSumSaleCart);
 
         if (itemNotPrice > 0) {
-          // const totalSumItem = cartContainer.querySelector(".total_sum_all");
-          // const div_message_price = document.createElement("div");
-          // div_message_price.className = "alert_total_sum_all";
-          // div_message_price.innerHTML = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
-          // html_message_no_price_item = `<span>${itemNotPrice} товара с ценой по запросу</span>`;
-          // totalSumItem.append(div_message_price);
-
           const descriptionContainer = cartContainer.querySelector(
             ".total_sum_container"
           );
@@ -432,91 +425,4 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-  // сохранение корзины сайт
-  // const saveCartBtn = document.querySelector(".save_cart_button");
-  // if (saveCartBtn) {
-  //   const user = document
-  //     .querySelector("#client_id")
-  //     .getAttribute("data-user-id");
-  //   saveCartBtn.onclick = () => {
-  //     saveCartBtn.disabled = true;
-  //     saveCartBtn.textContent = "";
-  //     saveCartBtn.innerHTML = "<div class='btn_loader'></div>";
-  //     if (user == "None") {
-  //       saveCartNoAuthentication();
-  //     } else {
-  //       saveCart();
-  //     }
-  //   };
-  // }
 });
-
-function saveCart() {
-  let validate = true;
-  const cart_id = getCookie("cart");
-
-  if (validate == true) {
-    const dataObj = {
-      cart: +cart_id,
-    };
-
-    const data = JSON.stringify(dataObj);
-    let endpoint = "/api/v1/order/add_order/";
-    fetch(endpoint, {
-      method: "POST",
-      body: data,
-      headers: {
-        "X-CSRFToken": csrfToken,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          setErrorModal();
-        }
-      })
-      .then((response) => {
-        // deleteCookie("cart", "/", window.location.hostname);
-        // window.location.href = "/lk/my_orders";
-      });
-  }
-}
-
-function saveCartNoAuthentication() {
-  let validate = true;
-  const products = [];
-  const cart_id = getCookie("cart");
-
-  if (validate == true) {
-    const select = document.querySelector(".select_account_requisites");
-
-    const dataObj = {
-      cart: +cart_id,
-    };
-    const dataArr = {
-      phone: phone,
-      pin: "",
-    };
-
-    // const data = JSON.stringify(dataObj);
-    // let endpoint = "/api/v1/order/add_order/";
-    // fetch(endpoint, {
-    //   method: "POST",
-    //   body: data,
-    //   headers: {
-    //     "X-CSRFToken": csrfToken,
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((response) => response.json())
-    //   .then((response) => {
-    //     deleteCookie("cart", "/", window.location.hostname);
-
-    //     // window.location.href =
-    //     //   "/lk/my_orders";
-    //   })
-    //   .catch((error) => console.error(error));
-  }
-}

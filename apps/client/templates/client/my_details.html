@@ -18,7 +18,7 @@
                                     <div class="head_legal_entity_details">
                                         <div class="detail name_detail">
                                             <div class="detail">{{ detail.requisites.legal_entity }}</div>
-                                            <div class="detail">
+                                            <div class="contract_detail">
                                                 {% if detail.requisites.contract %}Договор №{{ detail.requisites.contract }}{% endif %}
                                             </div>
                                         </div>
@@ -177,7 +177,7 @@
                                     <div class="error new_legal_entity_ogrn_error"></div>
                                 </label>
                                 <label>
-                                    <input class="phone" type="text" placeholder="Телефон юрлица" disabled />
+                                    <input class="phone" type="tel" placeholder="Телефон юрлица" disabled />
                                     <div class="error phone_error"></div>
                                 </label>
                             </div>

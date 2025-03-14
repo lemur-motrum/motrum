@@ -2,6 +2,12 @@
 {% block personal_account_content %}
     <div class="order_container">
         <div class="order_wrapper" order-elem="wrapper">
+            <div class="order_filters">
+                <div value="date_order" descr="ASC" class="order_filter">по дате</div>
+                <div value="bill_sum" descr="ASC" class="order_filter">по сумме</div>
+                <div value="status" descr="ASC" class="order_filter">по статусу</div>
+                <div class="canсeled_btn">сбросить</div>
+            </div>
             <div class="loader"></div>
             <div class="site_order_container" order-elem="container">
                 {% for order in order_list %}

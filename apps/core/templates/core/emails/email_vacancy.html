@@ -2,12 +2,23 @@
 <html>
     <head></head>
     <body>
-    {% if vacancy %}
-        <div><h3>Вакансия:</h3> <p>{{ vacancy }}</p></div>
-    {% endif %}
-        
-        <div><h3>Имя:</h3> <p>{{ client_name }}</p></div>
-        <div><h3>Телефон:</h3><p>{{ client_phone }}</p> </div>
-        <div><h3>Сообщение:</h3><p>{{ text }}</p></div>
+        {% if vacancy %}
+            <div>
+                <h3>Вакансия:</h3>
+                <p>{{ vacancy }}</p>
+            </div>
+        {% endif %}
+        <div>
+            <h3>Имя:</h3>
+            <p>{{ client_name }}</p>
+        </div>
+        <div>
+            <h3>Телефон:</h3>
+            <p>{{ client_phone }}</p>
+        </div>
+        <div>
+            <h3>Сообщение:</h3>
+            <p>{{ text }}</p>
+        </div>
     </body>
 </html>

@@ -52,12 +52,11 @@
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
                             {% if productdocument.document.url %}
-                            <div class="documentation_item">
-                                <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
-                                <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }})</span>
-                            </div>
+                                <div class="documentation_item">
+                                    <a class="documentation_link" href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
+                                    <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }})</span>
+                                </div>
                             {% endif %}
-                            
                         {% empty %}
                         {% endfor %}
                     </div>
@@ -77,21 +76,18 @@
                     <div class="properties">
                         {% if product.productproperty_set.all %}
                             {% for product_property in product.productproperty_set.all %}
-                            
-                            {% if product_property.hide == False %}
-                                <div class="property">
-                                    <div class="property_name">{{ product_property.name }}</div>
-                                    <div class="property_description">
-                                        {% if product_property.value %}
-                                            {{ product_property.value }}
-                                        {% else %}
-                                            -
-                                        {% endif %}
+                                {% if product_property.hide == False %}
+                                    <div class="property">
+                                        <div class="property_name">{{ product_property.name }}</div>
+                                        <div class="property_description">
+                                            {% if product_property.value %}
+                                                {{ product_property.value }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                                
-                                
+                                {% endif %}
                             {% endfor %}
                         {% else %}
                             -

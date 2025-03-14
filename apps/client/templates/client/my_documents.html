@@ -2,6 +2,12 @@
 {% block personal_account_content %}
     <div class="document_container">
         <div class="document_wrapper" document-elem="wrapper">
+            <div class="document_filters">
+                <div value="date" descr="ASC" class="document_filter">по дате</div>
+                <div value="type" descr="ASC" class="document_filter">по типу</div>
+                <div value="requisites_legal_entity" descr="ASC" class="document_filter">по юр.лицу</div>
+                <div class="canсeled_btn">сбросить</div>
+            </div>
             <div class="loader"></div>
             <div class="site_document_container" document-elem="container">
                 {% for document in document_list %}

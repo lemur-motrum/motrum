@@ -3,7 +3,13 @@
      id="{{ inline_admin_formset.formset.prefix }}-group"
      data-inline-type="tabular"
      data-inline-formset="{{ inline_admin_formset.inline_formset_data }}">
-  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %} {{ request.current_app }} {{ request.resolver_match.url_name }}  {% if request.resolver_match.url_name == "product_product_change" %}{% endif %} " {% comment %} {% if request.resolver_match.url_name == "product_product_change" %} {% for inline_admin_form in inline_admin_formset %} {{inline_admin_form.original}} {% if forloop.first %} {% if  inline_admin_form.original == None %} style="border: 1px solid red" {% endif %}{% endif %} {% endfor %} {% endif %} {% endcomment %}>
+  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %} {{ request.current_app }} {{ request.resolver_match.url_name }}  {% if request.resolver_match.url_name == "product_product_change" %}{% endif %} "
+       {% comment %}
+       {% if request.resolver_match.url_name == "product_product_change" %} {% for inline_admin_form in inline_admin_formset %} {{inline_admin_form.original}} {% if forloop.first %} {% if  inline_admin_form.original == None %} style="border: 1px solid red" {% endif %}
+       {% endif %}
+       {% endfor %}
+       {% endif %}
+       {% endcomment %}>
     {{ inline_admin_formset.formset.management_form }}
     <fieldset class="module {{ inline_admin_formset.classes }}">
       {% if inline_admin_formset.formset.max_num == 1 %}
@@ -20,7 +26,12 @@
               <th class="column-{{ field.name }}{% if field.required %} required{% endif %}{% if field.widget.is_hidden %} hidden{% endif %}">
                 {{ field.label|capfirst }}
                 {% if field.help_text %}
-                  <img src="{% static "admin/img/icon-unknown.svg" %}" class="help help-tooltip" width="10" height="10" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}">
+                  <img src="{% static "admin/img/icon-unknown.svg" %}"
+                       class="help help-tooltip"
+                       width="10"
+                       height="10"
+                       alt="({{ field.help_text|striptags }})"
+                       title="{{ field.help_text|striptags }}">
                 {% endif %}
               </th>
             {% endfor %}

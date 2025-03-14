@@ -2,7 +2,6 @@
 {% load manager_client %}
 {% load js_templates %}
 {% load test_display %}
-
 {% with request.resolver_match.url_name as url_name %}
   <!DOCTYPE html>
   <html lang="ru">
@@ -51,7 +50,6 @@
       {% js_templates %}
       {% include "core/includes/scripts.html" %}
       <script>
- 
       function validate(evt) {
         let theEvent = evt || window.event;
         let key = theEvent.keyCode || theEvent.which;

@@ -22,10 +22,14 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationLastElem = pagination.querySelector(".last");
     const firstDots = pagination.querySelector(".first_dots");
     const lastDots = pagination.querySelector(".last_dots");
+    const filtersElems = catalogWrapper.querySelectorAll(".order_filter");
+    const canсeledBtn = catalogWrapper.querySelector(".canсeled_btn");
 
     let pageCount = 0;
     let productCount = 0;
     let lastPage = 0;
+    let sort;
+    let direction;
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -90,6 +94,8 @@ window.addEventListener("DOMContentLoaded", () => {
         count: productCount,
         page: pageCount,
         addMoreBtn: addMoreBtn ? true : false,
+        sort: sort ? sort : "",
+        direction: direction ? direction : "",
       };
 
       let params = new URLSearchParams(data);
@@ -150,6 +156,7 @@ window.addEventListener("DOMContentLoaded", () => {
               getDigitsNumber(price, price.textContent);
             }
           });
+
           urlParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
         });
@@ -178,6 +185,68 @@ window.addEventListener("DOMContentLoaded", () => {
         };
       }
     });
+
+    filtersElems.forEach((filterElem) => {
+      if (urlParams.get("sort") == filterElem.getAttribute("value")) {
+        filterElem.classList.add("active");
+        canсeledBtn.classList.add("show");
+        sort = urlParams.get("sort");
+        if (urlParams.get("direction") == "ASC") {
+          if (filterElem.classList.contains("active")) {
+            filterElem.classList.add("asc");
+          }
+          direction = urlParams.get("direction");
+        } else {
+          if (filterElem.classList.contains("active")) {
+            filterElem.classList.add("desc");
+          }
+          direction = urlParams.get("direction");
+        }
+        loadItems(true);
+      }
+      filterElem.onclick = () => {
+        canсeledBtn.classList.add("show");
+        filtersElems.forEach((el) => {
+          el.classList.remove("active");
+          el.classList.remove("desc");
+          el.classList.remove("asc");
+        });
+        filterElem.classList.add("active");
+        sort = filterElem.getAttribute("value");
+        if (direction == "ASC") {
+          direction = "DESC";
+          filterElem.classList.add("desc");
+        } else {
+          direction = filterElem.getAttribute("descr");
+          filterElem.classList.add("asc");
+        }
+        endContent.classList.remove("show");
+        catalogContainer.innerHTML = "";
+        loader.classList.remove("hide");
+        if (sort) {
+          urlParams.set("sort", sort);
+        }
+        if (direction) {
+          urlParams.set("direction", direction);
+        }
+        loadItems(true);
+      };
+    });
+
+    canсeledBtn.onclick = () => {
+      canсeledBtn.classList.remove("show");
+      filtersElems.forEach((el) => {
+        el.classList.remove("active");
+      });
+      sort = "";
+      direction = "";
+      urlParams.delete("sort");
+      urlParams.delete("direction");
+      endContent.classList.remove("show");
+      catalogContainer.innerHTML = "";
+      loader.classList.remove("hide");
+      loadItems(true);
+    };
 
     paginationFirstElem.onclick = () => {
       pageCount = 0;

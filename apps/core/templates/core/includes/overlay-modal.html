@@ -3,15 +3,22 @@
         <div class="title">авторизация на сайте</div>
         <form class="autification-form">
             <label class="phone-label">
-                <input class="phone-input" placeholder="Ваш телефон" type="text" />
+                <input class="phone-input" placeholder="Ваш телефон" type="tel" />
                 <div class="error-maessage phone-error"></div>
             </label>
             <label class="password-label">
-                <input class="password-input" placeholder="_ _ _ _" type="text" />
+                <input class="password-input" placeholder="_ _ _ _" type="tel" />
                 <div class="error-maessage pin-error"></div>
                 <div class="timer">00:00</div>
             </label>
             <button class="autification-button">подтвердить</button>
+            <div class="private_policy_container">
+                <div class="checked_radio_button">
+                    <div class="checker"></div>
+                </div>
+                <div class="descr">согласие с <a href="{% url "core:privacy-policy" %}">политикой конфиденциальности</a></div>
+                <div class="privacy_policy_error"></div>
+            </div>
         </form>
     </div>
 </div>

@@ -1403,10 +1403,11 @@ class OrderViewSet(viewsets.ModelViewSet):
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
 
-        print(req_user_all)
+        # print(req_user_all)
 
         # сортировки
         sorting = None
+        sorting_directing = None
         # sorting_spesif = "specification__date"
         # sorting_bill = "bill_date_start"
         if request.query_params.get("sort"):
@@ -1439,7 +1440,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # формирование отдельных документов из сериализированных заказов
         documents = []
-        print(serializer.data)
+        # print(serializer.data)
         for order in serializer.data:
 
             if order["specification_list"]["file"]:
@@ -1524,8 +1525,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # сортировки для документов
         print(documents)
+        print(sorting)
+        print(sorting_directing)
+        if sorting_directing:
+            if sorting_directing == "ASC":
+                sorting_directing = False
+            elif sorting_directing == "DESC":
+                sorting_directing = True
         if sorting:
             if sorting == "date":
+                print("sort date")
                 documents = sorted(
                     documents,
                     key=lambda x: datetime.datetime.strptime(
@@ -1533,6 +1542,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     ),
                     reverse=sorting_directing,
                 )
+                print(documents)
             else:
                 documents = sorted(
                     documents, key=itemgetter(sorting), reverse=sorting_directing

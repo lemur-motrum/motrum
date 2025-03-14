@@ -584,9 +584,7 @@ def get_status_order():
             bx = Bitrix(webhook)
             
             orders = [d["id_bitrix"] for d in actual_order]
-
-            # orders = [1]
-
+            
             orders_bx = bx.get_by_ID("crm.deal.get", orders)
 
             if len(orders) == 1:

@@ -99,6 +99,7 @@ from apps.core.utils_web import (
     send_email_message,
     send_email_message_html,
     send_pin,
+    send_pin_smsru,
 )
 from apps.product.api.serializers import ProductCartSerializer
 from apps.product.models import Cart, CurrencyRate, Lot, Price, Product, ProductCart
@@ -147,12 +148,17 @@ class ClientViewSet(viewsets.ModelViewSet):
         cart_id = request.COOKIES.get("cart")
         print(data)
         # pin = _get_pin(4)
-        pin = 1111
-        cache.set(phone, pin, 120)
+        # pin = 1111
+        # cache.set(phone, pin, 120)
         # первый шаг отправка пин
         if pin_user == "":
+            pin = _get_pin(4)
+            print(pin)
+            # pin = 1111
+            
+            cache.set(phone, pin, 120)
             # cache.set(phone, pin, 120)
-            # send_pin(pin, phone)
+            send_pin_smsru(pin, phone)
             return Response(pin, status=status.HTTP_200_OK)
 
         # сравнение пин и логин
@@ -163,17 +169,17 @@ class ClientViewSet(viewsets.ModelViewSet):
             if verify_pin:
                 print("@@@", verify_pin)
                 serializer = self.serializer_class(data=data, many=False)
-                print(serializer)
+                
                 # создание новый юзер
                 if serializer.is_valid():
-                    print("serializersave")
+                    print(serializer.data)
                     client = serializer.save()
                     if client.manager == None:
                         client.add_manager()
 
                 # старый юзер логин
                 else:
-                    print(serializer.errors)
+                    print(serializer.data)
                     client = Client.objects.get(username=phone)
                     serializer = ClientSerializer(client, many=False)
 
@@ -259,7 +265,7 @@ class ClientViewSet(viewsets.ModelViewSet):
 
             # коды не совпадают
             else:
-                return Response(pin, status=status.HTTP_400_BAD_REQUEST)
+                return Response(pin_user, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["post"], url_path=r"get-client-requisites")
     def get_client_requisites(self, request, *args, **kwargs):
@@ -1193,17 +1199,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         if sorting == "status":
             if direction == "ASC":
                 sorting = Case(
-                    When(status="PROCESSING", then=Value(1)),
-                    When(status="PAYMENT", then=Value(2)),
-                    When(status="IN_MOTRUM", then=Value(3)),
-                    When(status="SHIPMENT_AUTO", then=Value(4)),
-                    When(status="SHIPMENT_PICKUP", then=Value(5)),
-                    When(status="CANCELED", then=Value(6)),
-                    When(status="COMPLETED", then=Value(7)),
+                    When(status="PRE-PROCESSING", then=Value(1)),
+                    When(status="PROCESSING", then=Value(2)),
+                    When(status="PAYMENT", then=Value(3)),
+                    When(status="IN_MOTRUM", then=Value(4)),
+                    When(status="SHIPMENT_AUTO", then=Value(5)),
+                    When(status="SHIPMENT_PICKUP", then=Value(6)),
+                    When(status="CANCELED", then=Value(7)),
+                    When(status="COMPLETED", then=Value(8)),
                     output_field=IntegerField(),
                 )
             else:
                 sorting = Case(
+                    When(status="PRE-PROCESSING", then=Value(8)),
                     When(status="PROCESSING", then=Value(7)),
                     When(status="PAYMENT", then=Value(6)),
                     When(status="IN_MOTRUM", then=Value(5)),

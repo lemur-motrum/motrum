@@ -18,6 +18,57 @@ from django.db.models import Prefetch, OuterRef
 from project.settings import MEDIA_ROOT
 
 
+def old_get_currency(need_day):
+
+    date_now = datetime.datetime.now()
+    seven_days = datetime.timedelta(need_day)
+    in_seven_days = date_now - seven_days
+    dates_list = [
+        in_seven_days + datetime.timedelta(days=n)
+        for n in range((date_now - in_seven_days).days + 1)
+    ]
+
+    currency_list = Currency.objects.exclude(words_code="RUB")
+    currency_first = currency_list[0]
+
+    curr_rate = CurrencyRate.objects.filter(
+        currency=currency_first, date__gte=in_seven_days
+    ).values_list("date", flat=True)
+
+    for dates in dates_list:
+        if dates.date() not in curr_rate:
+            print("dates", dates.date())
+            date = dates.date()
+            date_cbr = dates.date().strftime("%d/%m/%Y")
+          
+            resp = f"https://www.cbr.ru/scripts/XML_daily.asp?date_req={date_cbr}"
+            response = urlopen(resp)
+            item = ET.parse(response)
+            root = item.getroot()
+            ElementInclude.include(root)
+
+            for current in currency_list:
+                current_world_code = current.words_code
+                value = item.findtext(
+                    f".//Valute[CharCode='{current_world_code}']/Value"
+                )
+                vunit_rate = item.findtext(
+                    f".//Valute[CharCode='{current_world_code}']/VunitRate"
+                )
+                count = item.findtext(
+                    f".//Valute[CharCode='{current_world_code}']/Nominal"
+                )
+
+                v = float(value.replace(",", "."))
+                vi = float(vunit_rate.replace(",", "."))
+                now_rate = CurrencyRate.objects.get_or_create(
+                    currency=current,
+                    date=date,
+                    defaults={"value": v, "vunit_rate": vi, "count": int(count)},
+                )
+                print(now_rate)
+
+
 @app.task(
     bind=True,
     max_retries=10,
@@ -54,7 +105,7 @@ def get_currency(self):
             update_currency_price(current, current_world_code)
             print(current, now_rate[0])
             # currency_chek(current, now_rate[0])
-
+    
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -63,7 +114,20 @@ def get_currency(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=160)
 
-
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def get_currency_old(self):
+    try:
+        old_get_currency(7)
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Обновление валют недельные проверки "
+            info = f"Обновление валют недельные проверки и валютных цен не удалось"
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=160)
 # удаление старых курсов
 def del_currency():
 
@@ -342,6 +406,7 @@ def vacancy_file_delite(self):
         info = f"чистка папки с вакансиями {exc}"
         e = error_alert(error, location, info)
 
+
 # чистка папки с 1c каталогами
 @app.task(
     bind=True,
@@ -359,4 +424,3 @@ def nomenk_file_delite(self):
 
         info = f"чистка папки  с 1c каталогами {exc}"
         e = error_alert(error, location, info)
-

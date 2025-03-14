@@ -90,6 +90,7 @@ def login_clear(request, next_url, form):
     if form.is_valid():
         cd = form.cleaned_data
         user = authenticate(username=cd["username"], password=cd["password"])
+        print(user)
         # если прошел аутентификация
         if user is not None:
             # если не заблокирова

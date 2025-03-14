@@ -22,6 +22,7 @@ from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
 
+
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -2282,3 +2283,37 @@ def save_info_bitrix_after_web(data, req):
 def delete_everything_in_folder(folder_path):
     shutil.rmtree(folder_path)
     os.mkdir(folder_path)
+
+
+# save_props_etim
+
+def get_etim_prors_iek(prop_list,article):
+    from apps.product.models import ProductProperty
+    for item_prop in prop_list:
+        if len(item_prop) > 0:
+            pass_item = False
+            name = item_prop["Attribute"]
+            value = item_prop["value"]
+            unit_measure = None
+            names = name.split("_")
+
+            if len(names) > 1:
+                name = names[0]
+                if names[1] == "Code":
+                    pass_item = True
+
+            if "unit" in item_prop:
+                unit_measure = item_prop["unit"]
+                if unit_measure != None:
+                    name = f"{name} {unit_measure}"
+            
+            prop = ProductProperty(
+                    product=article,
+                    name=name,
+                    value=value,
+                    hide=False,
+                    unit_measure=unit_measure,
+                )
+
+            prop.save()
+            update_change_reason(prop, "Автоматическое")

@@ -14,6 +14,7 @@ from apps.core.utils import (
     create_article_motrum,
     create_name_file_downloading,
     get_category,
+    get_etim_prors_iek,
     get_file_path,
     get_file_path_add,
     get_lot,
@@ -497,14 +498,14 @@ def iek_api():
             data=payload,
             allow_redirects=False,
         )
-       
+      
         responset = response_request(response.status_code, "IEK получение товаров")
         if responset and response.headers["content-type"].strip().startswith(
             "application/json"
         ):
             data = response.json()
             data_items = data['items']
-            if data_items:
+            if data_items :
                 totalPage = data['totalPage']
                 print("totalPage",totalPage)
               
@@ -513,431 +514,448 @@ def iek_api():
                     next_page = False
                     print("totalPagenext_page",next_page)
                 
-                # for data_item in data_items:
-                #     try:
+                for data_item in data_items:
+                 
+                    try:
 
-                #         # основная инфа
-                #         # получение или добавление вендора
+                        # основная инфа
+                        # получение или добавление вендора
 
-                #         if data_item["TM"] == None:
-                #             break
-                #         else:
-                #             vendor_add = Vendor.objects.get_or_create(
-                #                 # supplier=supplier,
-                #                 name=data_item["TM"],
-                #                 defaults={
-                #                     "vat_catalog": None,
-                #                     "currency_catalog": currency,
-                #                 },
-                #             )
+                        if data_item["TM"] == None:
+                            break
+                        else:
+                            vendor_add = Vendor.objects.get_or_create(
+                                # supplier=supplier,
+                                name=data_item["TM"],
+                                defaults={
+                                    "vat_catalog": None,
+                                    "currency_catalog": currency,
+                                },
+                            )
 
-                #             article_suppliers = data_item["art"]
-                #             category = data_item["groupId"]
+                            article_suppliers = data_item["art"]
+                            print("article_suppliers",article_suppliers)
+                            category = data_item["groupId"]
 
-                #             categ_names = SupplierCategoryProductAll.objects.filter(
-                #                 supplier=supplier, article_name=category
-                #             )
+                            categ_names = SupplierCategoryProductAll.objects.filter(
+                                supplier=supplier, article_name=category
+                            )
 
-                #             item_category_all = get_category(
-                #                 supplier, vendor_add[0], categ_names[0].name
-                #             )
+                            item_category_all = get_category(
+                                supplier, vendor_add[0], categ_names[0].name
+                            )
 
-                #             item_category = item_category_all[0]
-                #             item_group = item_category_all[1]
-                #             item_group_all = item_category_all[2]
+                            item_category = item_category_all[0]
+                            item_group = item_category_all[1]
+                            item_group_all = item_category_all[2]
 
-                #             name = data_item["name"]
+                            name = data_item["name"]
 
-                #         # цены
-                #         if "price" in data_item:
-                #             price = data_item["price"]
-                #             extra = data_item["extra"]
-                #             if extra == "Цена по запросу":
-                #                 extra = True
-                #                 price_supplier = 0
-                #             else:
-                #                 extra = False
-                #                 price_supplier = price
-                #         else:
-                #             extra = True
-                #             price_supplier = 0
+                        # цены
+                        if "price" in data_item:
+                            price = data_item["price"]
+                            extra = data_item["extra"]
+                            if extra == "Цена по запросу":
+                                extra = True
+                                price_supplier = 0
+                            else:
+                                extra = False
+                                price_supplier = price
+                        else:
+                            extra = True
+                            price_supplier = 0
 
-                #         # ндс
-                #         if "vat" in data_item:
-                #             vat = data_item["vat"]
-                #             vat_catalog = Vat.objects.get(name=vat)
+                        # ндс
+                        if "vat" in data_item:
+                            vat = data_item["vat"]
+                            vat_catalog = Vat.objects.get(name=vat)
 
-                #             vat_include = data_item["vat_included"]
-                #         else:
-                #             vat_catalog = Vat.objects.get(name=20)
-                #             vat_include = True
+                            vat_include = data_item["vat_included"]
+                        else:
+                            vat_catalog = Vat.objects.get(name=20)
+                            vat_include = True
 
-                #         # описание
-                #         if "Description" in data_item:
-                #             description_arr = data_item["Description"]
-                #             for desc in description_arr:
-                #                 description = desc["desc_ru"]
-                #         else:
-                #             description = None
+                        # описание
+                        if "Description" in data_item:
+                            description_arr = data_item["Description"]
+                            for desc in description_arr:
+                                description = desc["desc_ru"]
+                        else:
+                            description = None
 
-                #         def add_save_image(img_list):
-                #             # img_list = data_item[name]
-                #             for item_image in img_list:
-                #                 # item_count = 0
-                #                 if len(item_image) > 0:
-                #                     # item_count += 1
-                #                     img = item_image["file_ref"]["uri"]
+                        def add_save_image(img_list):
+                            # img_list = data_item[name]
+                            for item_image in img_list:
+                                # item_count = 0
+                                if len(item_image) > 0:
+                                    # item_count += 1
+                                    img = item_image["file_ref"]["uri"]
 
-                #                     image = ProductImage.objects.create(product=article)
-                #                     update_change_reason(image, "Автоматическое")
-                #                     image_path = get_file_path_add(image, img)
-                #                     p = save_file_product(img, image_path)
-                #                     image.photo = image_path
-                #                     image.link = img
-                #                     image.save()
-                #                     update_change_reason(image, "Автоматическое")
+                                    image = ProductImage.objects.create(product=article)
+                                    update_change_reason(image, "Автоматическое")
+                                    image_path = get_file_path_add(image, img)
+                                    p = save_file_product(img, image_path)
+                                    image.photo = image_path
+                                    image.link = img
+                                    image.save()
+                                    update_change_reason(image, "Автоматическое")
 
-                #         def add_save_image_logistic(img_list):
+                        def add_save_image_logistic(img_list):
 
-                #             img = img_list["uri"]
+                            img = img_list["uri"]
 
-                #             image = ProductImage.objects.create(product=article)
-                #             update_change_reason(image, "Автоматическое")
-                #             image_path = get_file_path_add(image, img)
-                #             p = save_file_product(img, image_path)
-                #             image.photo = image_path
-                #             image.link = img
-                #             image.save()
-                #             update_change_reason(image, "Автоматическое")
+                            image = ProductImage.objects.create(product=article)
+                            update_change_reason(image, "Автоматическое")
+                            image_path = get_file_path_add(image, img)
+                            p = save_file_product(img, image_path)
+                            image.photo = image_path
+                            image.link = img
+                            image.save()
+                            update_change_reason(image, "Автоматическое")
 
-                #         def save_image(
-                #             new_product,
-                #         ):
-                #             if "ImgPng" in data_item:
-                #                 img_list = data_item["ImgPng"]
-                #                 add_save_image(img_list)
+                        def save_image(
+                            new_product,
+                        ):
+                            if "ImgPng" in data_item:
+                                img_list = data_item["ImgPng"]
+                                add_save_image(img_list)
 
-                #             elif "ImgJpeg" in data_item:
-                #                 img_list = data_item["ImgJpeg"]
-                #                 add_save_image(img_list)
+                            elif "ImgJpeg" in data_item:
+                                img_list = data_item["ImgJpeg"]
+                                add_save_image(img_list)
 
-                #             else:
-                #                 pass
+                            else:
+                                pass
 
-                #             if "IndPacking" in data_item:
-                #                 print(data_item["IndPacking"])
-                #                 if "png_ref" in data_item["IndPacking"][0]:
-                #                     print(data_item["IndPacking"][0]["png_ref"])
-                #                     img_list = data_item["IndPacking"][0]["png_ref"]
-                #                     add_save_image_logistic(img_list)
-                #                 elif "jpg_ref" in data_item["IndPacking"]:
-                #                     print(data_item["IndPacking"]["jpg_ref"])
-                #                     img_list = data_item["IndPacking"]["jpg_ref"]
-                #                     add_save_image_logistic(img_list)
-                #                 else:
-                #                     pass
+                            if "IndPacking" in data_item:
+                                print(data_item["IndPacking"])
+                                if "png_ref" in data_item["IndPacking"][0]:
+                                    print(data_item["IndPacking"][0]["png_ref"])
+                                    img_list = data_item["IndPacking"][0]["png_ref"]
+                                    add_save_image_logistic(img_list)
+                                elif "jpg_ref" in data_item["IndPacking"]:
+                                    print(data_item["IndPacking"]["jpg_ref"])
+                                    img_list = data_item["IndPacking"]["jpg_ref"]
+                                    add_save_image_logistic(img_list)
+                                else:
+                                    pass
+                        def save_props_etim(
+                            new_product,article
+                        ):
+                            if "ArtEtim" in data_item :
+                                prop_list = data_item["ArtEtim"]
+                                get_etim_prors_iek(prop_list,article)
+                            
+                        def saves_doc(item, article, name_str, type_doc):
+                            for sertif in item:
 
-                #         def saves_doc(item, article, name_str, type_doc):
-                #             for sertif in item:
+                                doc = sertif["file_ref"]["uri"]
+                                print(doc)
+                                document_bd = ProductDocument.objects.filter(
+                                    type_doc=type_doc, link=doc
+                                )
 
-                #                 doc = sertif["file_ref"]["uri"]
-                #                 print(doc)
-                #                 document_bd = ProductDocument.objects.filter(
-                #                     type_doc=type_doc, link=doc
-                #                 )
+                                document = ProductDocument.objects.create(
+                                    product=article, type_doc=type_doc
+                                )
+                                update_change_reason(document, "Автоматическое")
+                                if document_bd.count() > 0:
+                                    print("old_doc")
+                                    document_bd = document_bd[0]
+                                    document.document = document_bd.document
+                                    document.link = doc
+                                    document.name = sertif[name_str]
+                                    document.save()
+                                    update_change_reason(document, "Автоматическое")
+                                else:
+                                    print("new_doc")
+                                    document_path = get_file_path_add(document, doc)
+                                    p = save_file_product(doc, document_path)
+                                    document.document = document_path
+                                    document.link = doc
+                                    document.name = sertif[name_str]
+                                    document.save()
+                                    update_change_reason(document, "Автоматическое")
 
-                #                 document = ProductDocument.objects.create(
-                #                     product=article, type_doc=type_doc
-                #                 )
-                #                 update_change_reason(document, "Автоматическое")
-                #                 if document_bd.count() > 0:
-                #                     print("old_doc")
-                #                     document_bd = document_bd[0]
-                #                     document.document = document_bd.document
-                #                     document.link = doc
-                #                     document.name = sertif[name_str]
-                #                     document.save()
-                #                     update_change_reason(document, "Автоматическое")
-                #                 else:
-                #                     print("new_doc")
-                #                     document_path = get_file_path_add(document, doc)
-                #                     p = save_file_product(doc, document_path)
-                #                     document.document = document_path
-                #                     document.link = doc
-                #                     document.name = sertif[name_str]
-                #                     document.save()
-                #                     update_change_reason(document, "Автоматическое")
+                        def save_all_doc(data_item, article):
 
-                #         def save_all_doc(data_item, article):
+                            if "Certificates" in data_item:
+                                saves_doc(
+                                    data_item["Certificates"],
+                                    article,
+                                    "name",
+                                    "Certificates",
+                                )
+                            if "InstallationProduct" in data_item:
+                                saves_doc(
+                                    data_item["InstallationProduct"],
+                                    article,
+                                    "name",
+                                    "InstallationProduct",
+                                )
+                            if "DimensionDrawing" in data_item:
+                                saves_doc(
+                                    data_item["DimensionDrawing"],
+                                    article,
+                                    "name",
+                                    "DimensionDrawing",
+                                )
+                            if "Passport" in data_item:
+                                saves_doc(
+                                    data_item["Passport"],
+                                    article,
+                                    "pubName",
+                                    "Passport",
+                                )
+                            if "WiringDiagram" in data_item:
+                                saves_doc(
+                                    data_item["WiringDiagram"],
+                                    article,
+                                    "name",
+                                    "WiringDiagram",
+                                )
+                            if "Models3d" in data_item:
+                                saves_doc(
+                                    data_item["Models3d"],
+                                    article,
+                                    "pubName",
+                                    "Models3d",
+                                )
+                            if "Brochure" in data_item:
+                                saves_doc(
+                                    data_item["Brochure"],
+                                    article,
+                                    "pubName",
+                                    "Brochure",
+                                )
 
-                #             if "Certificates" in data_item:
-                #                 saves_doc(
-                #                     data_item["Certificates"],
-                #                     article,
-                #                     "name",
-                #                     "Certificates",
-                #                 )
-                #             if "InstallationProduct" in data_item:
-                #                 saves_doc(
-                #                     data_item["InstallationProduct"],
-                #                     article,
-                #                     "name",
-                #                     "InstallationProduct",
-                #                 )
-                #             if "DimensionDrawing" in data_item:
-                #                 saves_doc(
-                #                     data_item["DimensionDrawing"],
-                #                     article,
-                #                     "name",
-                #                     "DimensionDrawing",
-                #                 )
-                #             if "Passport" in data_item:
-                #                 saves_doc(
-                #                     data_item["Passport"],
-                #                     article,
-                #                     "pubName",
-                #                     "Passport",
-                #                 )
-                #             if "WiringDiagram" in data_item:
-                #                 saves_doc(
-                #                     data_item["WiringDiagram"],
-                #                     article,
-                #                     "name",
-                #                     "WiringDiagram",
-                #                 )
-                #             if "Models3d" in data_item:
-                #                 saves_doc(
-                #                     data_item["Models3d"],
-                #                     article,
-                #                     "pubName",
-                #                     "Models3d",
-                #                 )
-                #             if "Brochure" in data_item:
-                #                 saves_doc(
-                #                     data_item["Brochure"],
-                #                     article,
-                #                     "pubName",
-                #                     "Brochure",
-                #                 )
+                            # # остатки
+                            # param = "шт"
+                            # if "LogisticParameters" in data_item:
 
-                #             # # остатки
-                #             # param = "шт"
-                #             # if "LogisticParameters" in data_item:
+                            #     i = 0
+                            #     for logistic_param in data_item["LogisticParameters"]:
+                            #         i+= 1
+                            #         if i == 1:
+                            #             param = logistic_param
 
-                #             #     i = 0
-                #             #     for logistic_param in data_item["LogisticParameters"]:
-                #             #         i+= 1
-                #             #         if i == 1:
-                #             #             param = logistic_param
+                            # lot_short_name = data_item["LogisticParameters"][param]["unit"]
+                            # lot_quantity = data_item["LogisticParameters"][param]["quantity"]
+                            # if  lot_short_name == "шт":
+                            #        lot_short = "штука"
+                            #        lot = Lot.objects.get(name_shorts="шт")
+                            #        lot_complect = 1
+                            #        stock_supplier = 0
+                            #        stock_supplier_unit = 0
+                            # else:
+                            #     lot = Lot.objects.get(name_shorts=lot_short_name)
 
-                #             # lot_short_name = data_item["LogisticParameters"][param]["unit"]
-                #             # lot_quantity = data_item["LogisticParameters"][param]["quantity"]
-                #             # if  lot_short_name == "шт":
-                #             #        lot_short = "штука"
-                #             #        lot = Lot.objects.get(name_shorts="шт")
-                #             #        lot_complect = 1
-                #             #        stock_supplier = 0
-                #             #        stock_supplier_unit = 0
-                #             # else:
-                #             #     lot = Lot.objects.get(name_shorts=lot_short_name)
+                            # if "min_ship" in data_item:
+                            #     if data_item["min_ship"] > 1:
+                            #         # lot_short = "набор"
+                            #         lot_short = "штука"
+                            #     else:
+                            #         lot_short = "штука"
+                            # else:
+                            #     lot_short = "штука"
 
-                #             # if "min_ship" in data_item:
-                #             #     if data_item["min_ship"] > 1:
-                #             #         # lot_short = "набор"
-                #             #         lot_short = "штука"
-                #             #     else:
-                #             #         lot_short = "штука"
-                #             # else:
-                #             #     lot_short = "штука"
+                            # stock_supplier = 0
+                            # lot_complect = 1
 
-                #             # stock_supplier = 0
-                #             # lot_complect = 1
+                            # lots = get_lot(lot_short, stock_supplier, lot_complect)
 
-                #             # lots = get_lot(lot_short, stock_supplier, lot_complect)
+                            # lot = lots[0]
+                            # stock_supplier_unit = lots[1]
 
-                #             # lot = lots[0]
-                #             # stock_supplier_unit = lots[1]
+                        if "order_multiplicity" in data_item:
+                            if data_item["order_multiplicity"] > 1:
+                                order_multiplicity = data_item["order_multiplicity"]
+                                is_one_sale = False
+                            else:
+                                order_multiplicity = 1
+                                is_one_sale = True
+                        else:
+                            order_multiplicity = 1
+                            is_one_sale = True
 
-                #         if "order_multiplicity" in data_item:
-                #             if data_item["order_multiplicity"] > 1:
-                #                 order_multiplicity = data_item["order_multiplicity"]
-                #                 is_one_sale = False
-                #             else:
-                #                 order_multiplicity = 1
-                #                 is_one_sale = True
-                #         else:
-                #             order_multiplicity = 1
-                #             is_one_sale = True
+                        # основной товар
+                        print(article_suppliers)
+                        try:
+                            article = Product.objects.get(
+                                supplier=supplier,
+                                article_supplier=article_suppliers,
+                                vendor=vendor_add[0],
+                            )
+                            save_update_product_attr(
+                                article,
+                                supplier,
+                                vendor_add[0],
+                                None,
+                                item_category_all[2],
+                                item_category_all[1],
+                                item_category_all[0],
+                                description,
+                                name,
+                            )
 
-                #         # основной товар
-                #         print(article_suppliers)
-                #         try:
-                #             article = Product.objects.get(
-                #                 supplier=supplier,
-                #                 article_supplier=article_suppliers,
-                #                 vendor=vendor_add[0],
-                #             )
-                #             save_update_product_attr(
-                #                 article,
-                #                 supplier,
-                #                 vendor_add[0],
-                #                 None,
-                #                 item_category_all[2],
-                #                 item_category_all[1],
-                #                 item_category_all[0],
-                #                 description,
-                #                 name,
-                #             )
+                            if IS_PROD:
+                                image = ProductImage.objects.filter(
+                                    product=article
+                                ).exists()
+                                if image == False:
+                                    save_image(article)
 
-                #             if IS_PROD:
-                #                 image = ProductImage.objects.filter(
-                #                     product=article
-                #                 ).exists()
-                #                 if image == False:
-                #                     save_image(article)
+                                documents = ProductDocument.objects.filter(
+                                    product=article
+                                ).exists()
+                                if documents == False:
+                                    save_all_doc(data_item, article)
+                            
+                            props = ProductProperty.objects.filter(
+                                    product=article
+                                ).exists()
+                            if props == False:
+                                save_props_etim(data_item, article)
 
-                #                 documents = ProductDocument.objects.filter(
-                #                     product=article
-                #                 ).exists()
-                #                 if documents == False:
-                #                     save_all_doc(data_item, article)
+                        except Product.DoesNotExist:
+                            new_article = create_article_motrum(supplier.id)
+                            article = Product(
+                                article=new_article,
+                                supplier=supplier,
+                                vendor=vendor_add[0],
+                                article_supplier=article_suppliers,
+                                name=name,
+                                description=description,
+                                category_supplier_all=item_category_all[2],
+                                group_supplier=item_category_all[1],
+                                category_supplier=item_category_all[0],
+                            )
+                            article.save()
+                            update_change_reason(article, "Автоматическое")
 
-                #         except Product.DoesNotExist:
-                #             new_article = create_article_motrum(supplier.id)
-                #             article = Product(
-                #                 article=new_article,
-                #                 supplier=supplier,
-                #                 vendor=vendor_add[0],
-                #                 article_supplier=article_suppliers,
-                #                 name=name,
-                #                 description=description,
-                #                 category_supplier_all=item_category_all[2],
-                #                 group_supplier=item_category_all[1],
-                #                 category_supplier=item_category_all[0],
-                #             )
-                #             article.save()
-                #             update_change_reason(article, "Автоматическое")
+                            if IS_PROD:
+                                save_image(article)
+                                save_all_doc(data_item, article)
+                                save_props_etim(data_item, article)
 
-                #             if IS_PROD:
-                #                 save_image(article)
-                #                 save_all_doc(data_item, article)
+                        # цены товара
+                        print(article)
+                        try:
+                            price_product = Price.objects.get(prod=article)
 
-                #         # цены товара
-                #         print(article)
-                #         try:
-                #             price_product = Price.objects.get(prod=article)
+                        except Price.DoesNotExist:
+                            price_product = Price(prod=article)
 
-                #         except Price.DoesNotExist:
-                #             price_product = Price(prod=article)
+                        finally:
+                            price_product.currency = currency
+                            price_product.price_supplier = price_supplier
+                            price_product.vat = vat_catalog
+                            price_product.vat_include = vat_include
+                            price_product.extra_price = extra
+                            price_product._change_reason = "Автоматическое"
+                            price_product.save()
 
-                #         finally:
-                #             price_product.currency = currency
-                #             price_product.price_supplier = price_supplier
-                #             price_product.vat = vat_catalog
-                #             price_product.vat_include = vat_include
-                #             price_product.extra_price = extra
-                #             price_product._change_reason = "Автоматическое"
-                #             price_product.save()
+                            # update_change_reason(price_product, "Автоматическое")
 
-                #             # update_change_reason(price_product, "Автоматическое")
+                        # остатки
 
-                #         # остатки
+                        param = "шт"
+                        lot = None
+                        logistic_parametr_quantity = 1
+                        if "LogisticParameters" in data_item:
+                            i = 0
+                            for logistic_param in data_item["LogisticParameters"]:
+                                i += 1
+                                if i == 1:
+                                    param = logistic_param
 
-                #         param = "шт"
-                #         lot = None
-                #         logistic_parametr_quantity = 1
-                #         if "LogisticParameters" in data_item:
-                #             i = 0
-                #             for logistic_param in data_item["LogisticParameters"]:
-                #                 i += 1
-                #                 if i == 1:
-                #                     param = logistic_param
+                            if "individual" in data_item["LogisticParameters"]:
+                                logistic_parametr_quantity = data_item[
+                                    "LogisticParameters"
+                                ]["individual"]["quantity"]
+                            elif "group" in data_item["LogisticParameters"]:
+                                logistic_parametr_quantity = data_item[
+                                    "LogisticParameters"
+                                ]["group"]["quantity"]
+                            elif "transport" in data_item["LogisticParameters"]:
+                                logistic_parametr_quantity = data_item[
+                                    "LogisticParameters"
+                                ]["transport"]["quantity"]
 
-                #             if "individual" in data_item["LogisticParameters"]:
-                #                 logistic_parametr_quantity = data_item[
-                #                     "LogisticParameters"
-                #                 ]["individual"]["quantity"]
-                #             elif "group" in data_item["LogisticParameters"]:
-                #                 logistic_parametr_quantity = data_item[
-                #                     "LogisticParameters"
-                #                 ]["group"]["quantity"]
-                #             elif "transport" in data_item["LogisticParameters"]:
-                #                 logistic_parametr_quantity = data_item[
-                #                     "LogisticParameters"
-                #                 ]["transport"]["quantity"]
+                            if logistic_parametr_quantity == None:
+                                logistic_parametr_quantity = 1
 
-                #             if logistic_parametr_quantity == None:
-                #                 logistic_parametr_quantity = 1
+                            lot_short_name = data_item["LogisticParameters"][param][
+                                "unit"
+                            ]
+                            lot_quantity = data_item["LogisticParameters"][param][
+                                "quantity"
+                            ]
 
-                #             lot_short_name = data_item["LogisticParameters"][param][
-                #                 "unit"
-                #             ]
-                #             lot_quantity = data_item["LogisticParameters"][param][
-                #                 "quantity"
-                #             ]
+                            if lot_short_name == "шт":
+                                lot_short = "штука"
+                                lot = Lot.objects.get(name_shorts="шт")
+                                lot_complect = int(logistic_parametr_quantity)
+                                stock_supplier = 0
+                                stock_supplier_unit = 0
+                            else:
+                                lot = lot_chek(lot_short_name)
+                                # try:
+                                #     lot = Lot.objects.get(name_shorts=lot_short_name)
+                                # except Lot.DoesNotExist:
+                                #     lot = lot_chek(lot_short_name)
 
-                #             if lot_short_name == "шт":
-                #                 lot_short = "штука"
-                #                 lot = Lot.objects.get(name_shorts="шт")
-                #                 lot_complect = int(logistic_parametr_quantity)
-                #                 stock_supplier = 0
-                #                 stock_supplier_unit = 0
-                #             else:
-                #                 lot = lot_chek(lot_short_name)
-                #                 # try:
-                #                 #     lot = Lot.objects.get(name_shorts=lot_short_name)
-                #                 # except Lot.DoesNotExist:
-                #                 #     lot = lot_chek(lot_short_name)
+                                lot_complect = int(logistic_parametr_quantity)
+                                stock_supplier = 0
 
-                #                 lot_complect = int(logistic_parametr_quantity)
-                #                 stock_supplier = 0
+                        stock, to_order, is_none_error = get_iek_stock_one(
+                            article
+                        )  # (stock,to_order,is_none_error)
 
-                #         stock, to_order, is_none_error = get_iek_stock_one(
-                #             article
-                #         )  # (stock,to_order,is_none_error)
+                        if is_none_error == False:
+                            stock = 0
 
-                #         if is_none_error == False:
-                #             stock = 0
+                        if lot:
+                            print("if lot true")
+                            if stock != 0:
+                                stock_prod_stock_supplier = stock / int(
+                                    order_multiplicity
+                                )
+                            else:
+                                stock_prod_stock_supplier = 0
 
-                #         if lot:
-                #             print("if lot true")
-                #             if stock != 0:
-                #                 stock_prod_stock_supplier = stock / int(
-                #                     order_multiplicity
-                #                 )
-                #             else:
-                #                 stock_prod_stock_supplier = 0
+                            try:
+                                stock_prod = Stock.objects.get(prod=article)
 
-                #             try:
-                #                 stock_prod = Stock.objects.get(prod=article)
+                            except Stock.DoesNotExist:
+                                stock_prod = Stock(
+                                    prod=article,
+                                )
 
-                #             except Stock.DoesNotExist:
-                #                 stock_prod = Stock(
-                #                     prod=article,
-                #                 )
+                            finally:
+                                stock_prod.lot = lot
+                                stock_prod.stock_supplier = int(
+                                    stock_prod_stock_supplier
+                                )
+                                stock_prod.stock_supplier_unit = stock
+                                stock_prod.to_order = to_order
+                                stock_prod.lot_complect = lot_complect
+                                stock_prod.order_multiplicity = order_multiplicity
+                                stock_prod.is_one_sale = is_one_sale
+                                stock_prod._change_reason = "Автоматическое"
+                                stock_prod.data_update = datetime.datetime.now()
+                                stock_prod.save()
 
-                #             finally:
-                #                 stock_prod.lot = lot
-                #                 stock_prod.stock_supplier = int(
-                #                     stock_prod_stock_supplier
-                #                 )
-                #                 stock_prod.stock_supplier_unit = stock
-                #                 stock_prod.to_order = to_order
-                #                 stock_prod.lot_complect = lot_complect
-                #                 stock_prod.order_multiplicity = order_multiplicity
-                #                 stock_prod.is_one_sale = is_one_sale
-                #                 stock_prod._change_reason = "Автоматическое"
-                #                 stock_prod.data_update = datetime.datetime.now()
-                #                 stock_prod.save()
-
-                #     except Exception as e:
-                #         print(e)
-                #         error = "file_api_error"
-                #         location = "Загрузка фаилов IEK"
-                #         info = f"ошибка при чтении товара артикул: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
-                #         e = error_alert(error, location, info)
-                #     finally:
-                #         continue
+                            
+                            
+                    except Exception as e:
+                        print(e)
+                        error = "file_api_error"
+                        location = "Загрузка фаилов IEK"
+                        info = f"ошибка при чтении товара артикул: {article_suppliers}.{traceback.print_exc()} Тип ошибки:{e}"
+                        e = error_alert(error, location, info)
+                    finally:
+                        continue
                 return next_page
             else:
                 # пустая группа
@@ -1105,13 +1123,16 @@ def iek_api():
             # нет свойств
             pass
     #TODO! вернуть !!!!
-    # all_categ_iek("ddp", None)
+    all_categ_iek("ddp", None)
     true_categ = SupplierCategoryProductAll.objects.filter(
                             supplier=supplier,is_correct = True,is_need = True
                         )
+    # next_page = get_iek_product("products", f"groupId=04.10.07",1)
     if true_categ.count() > 0:
         for true_cat in true_categ:
-            print("TRUECATEG",true_cat)
+            pass
+            print("TRUECATEG",true_cat.article_name)
+            
             page = 0
             next_page = True
             while next_page :
@@ -1120,7 +1141,9 @@ def iek_api():
                 print(next_page)
                 next_page = get_iek_product("products", f"groupId={true_cat.article_name}",page)
                 print(next_page)
-            get_iek_property("etim", f"groupId={true_cat.article_name}")
+            
+            
+            # get_iek_property("etim", f"groupId={true_cat.article_name}")
 
 
 # остатки на складах отдельная функция
@@ -1215,9 +1238,9 @@ def update_prod_iek_in_okt():
     try:
         products = Product.objects.filter(supplier=supplier)
         for product in products:
-
+            
             url_params = f"art={product.article_supplier}"
-
+            print(url_params)
             url_service = "products"
 
             url = "{0}{1}?{2}".format(base_url, url_service, url_params)
@@ -1262,4 +1285,249 @@ def update_prod_iek_in_okt():
         location = "Загрузка товаров отдельно от групп IEK2"
 
         info = f"Загрузка товаров отдельно от групп IEK2 Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+
+
+def update_prod_iek_get_okt():
+    encoded = base64.b64encode(os.environ.get("IEK_API_TOKEN").encode())
+    decoded = encoded.decode()
+    headers = {
+        "Authorization": f"Basic {decoded}",
+    }
+    payload = {}
+    base_url = "https://lk.iek.ru/api/"
+    supplier = Supplier.objects.get(slug="iek")
+    currency = Currency.objects.get(words_code="RUB")
+    vat = Vat.objects.get(name="20")
+    try:
+        products = Product.objects.filter(supplier=supplier)
+        
+        for product in products:
+            print(product)
+            vendor = products.vendor
+            url_params = f"art={product.article_supplier}"
+            print(url_params)
+            url_service = "products"
+
+            url = "{0}{1}?{2}".format(base_url, url_service, url_params)
+            print("url", url)
+            response = requests.request(
+                "GET",
+                url,
+                auth=HTTPBasicAuth(
+                    os.environ.get("IEK_API_LOGIN"), os.environ.get("IEK_API_PASSWORD")
+                ),
+                headers=headers,
+                data=payload,
+                allow_redirects=False,
+            )
+            data = response.json()
+            if data and data != []:
+                for data_item in data:
+                    category = data_item["groupId"]
+                    categ_names = SupplierCategoryProductAll.objects.filter(
+                                supplier=supplier, article_name=category
+                            )
+
+                    item_category_all = get_category(
+                        supplier, vendor, categ_names[0].name
+                    )
+
+                    item_category = item_category_all[0]
+                    item_group = item_category_all[1]
+                    item_group_all = item_category_all[2]
+                    
+                    name = data_item["name"]
+                    if "Description" in data_item:
+                            description_arr = data_item["Description"]
+                            for desc in description_arr:
+                                description = desc["desc_ru"]
+                    else:
+                        description = None
+                    
+                    def add_save_image(img_list):
+                        # img_list = data_item[name]
+                        for item_image in img_list:
+                            # item_count = 0
+                            if len(item_image) > 0:
+                                # item_count += 1
+                                img = item_image["file_ref"]["uri"]
+
+                                image = ProductImage.objects.create(product=article)
+                                update_change_reason(image, "Автоматическое")
+                                image_path = get_file_path_add(image, img)
+                                p = save_file_product(img, image_path)
+                                image.photo = image_path
+                                image.link = img
+                                image.save()
+                                update_change_reason(image, "Автоматическое")
+
+                    def add_save_image_logistic(img_list):
+
+                        img = img_list["uri"]
+
+                        image = ProductImage.objects.create(product=article)
+                        update_change_reason(image, "Автоматическое")
+                        image_path = get_file_path_add(image, img)
+                        p = save_file_product(img, image_path)
+                        image.photo = image_path
+                        image.link = img
+                        image.save()
+                        update_change_reason(image, "Автоматическое")
+
+                    def save_image(
+                        new_product,
+                    ):
+                        if "ImgPng" in data_item:
+                            img_list = data_item["ImgPng"]
+                            add_save_image(img_list)
+
+                        elif "ImgJpeg" in data_item:
+                            img_list = data_item["ImgJpeg"]
+                            add_save_image(img_list)
+
+                        else:
+                            pass
+
+                        if "IndPacking" in data_item:
+                            print(data_item["IndPacking"])
+                            if "png_ref" in data_item["IndPacking"][0]:
+                                print(data_item["IndPacking"][0]["png_ref"])
+                                img_list = data_item["IndPacking"][0]["png_ref"]
+                                add_save_image_logistic(img_list)
+                            elif "jpg_ref" in data_item["IndPacking"]:
+                                print(data_item["IndPacking"]["jpg_ref"])
+                                img_list = data_item["IndPacking"]["jpg_ref"]
+                                add_save_image_logistic(img_list)
+                            else:
+                                pass
+                    def save_props_etim(
+                        new_product,article
+                    ):
+                        if "ArtEtim" in data_item :
+                            prop_list = data_item["ArtEtim"]
+                            get_etim_prors_iek(prop_list,article)
+                        
+                    def saves_doc(item, article, name_str, type_doc):
+                        for sertif in item:
+
+                            doc = sertif["file_ref"]["uri"]
+                            print(doc)
+                            document_bd = ProductDocument.objects.filter(
+                                type_doc=type_doc, link=doc
+                            )
+
+                            document = ProductDocument.objects.create(
+                                product=article, type_doc=type_doc
+                            )
+                            update_change_reason(document, "Автоматическое")
+                            if document_bd.count() > 0:
+                                print("old_doc")
+                                document_bd = document_bd[0]
+                                document.document = document_bd.document
+                                document.link = doc
+                                document.name = sertif[name_str]
+                                document.save()
+                                update_change_reason(document, "Автоматическое")
+                            else:
+                                print("new_doc")
+                                document_path = get_file_path_add(document, doc)
+                                p = save_file_product(doc, document_path)
+                                document.document = document_path
+                                document.link = doc
+                                document.name = sertif[name_str]
+                                document.save()
+                                update_change_reason(document, "Автоматическое")
+
+                    def save_all_doc(data_item, article):
+
+                        if "Certificates" in data_item:
+                            saves_doc(
+                                data_item["Certificates"],
+                                article,
+                                "name",
+                                "Certificates",
+                            )
+                        if "InstallationProduct" in data_item:
+                            saves_doc(
+                                data_item["InstallationProduct"],
+                                article,
+                                "name",
+                                "InstallationProduct",
+                            )
+                        if "DimensionDrawing" in data_item:
+                            saves_doc(
+                                data_item["DimensionDrawing"],
+                                article,
+                                "name",
+                                "DimensionDrawing",
+                            )
+                        if "Passport" in data_item:
+                            saves_doc(
+                                data_item["Passport"],
+                                article,
+                                "pubName",
+                                "Passport",
+                            )
+                        if "WiringDiagram" in data_item:
+                            saves_doc(
+                                data_item["WiringDiagram"],
+                                article,
+                                "name",
+                                "WiringDiagram",
+                            )
+                        if "Models3d" in data_item:
+                            saves_doc(
+                                data_item["Models3d"],
+                                article,
+                                "pubName",
+                                "Models3d",
+                            )
+                        if "Brochure" in data_item:
+                            saves_doc(
+                                data_item["Brochure"],
+                                article,
+                                "pubName",
+                                "Brochure",
+                            ) 
+                    
+                    
+                    
+                    save_update_product_attr(
+                                product.article_supplier,
+                                supplier,
+                                None,
+                                None,
+                                item_category_all[2],
+                                item_category_all[1],
+                                item_category_all[0],
+                                description,
+                                name,
+                            )
+                    if IS_PROD:
+                        image = ProductImage.objects.filter(
+                            product=product
+                        ).exists()
+                        if image == False:
+                            save_image(product)
+
+                        documents = ProductDocument.objects.filter(
+                            product=product
+                        ).exists()
+                        if documents == False:
+                            save_all_doc(data_item, product)
+                    
+                    props = ProductProperty.objects.filter(
+                            product=product
+                        ).exists()
+                    if props == False:
+                        save_props_etim(data_item, product)
+                
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "Загрузка товаров отдельно от групп IEK3"
+
+        info = f"Загрузка товаров отдельно от групп IEK3 Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)

@@ -47,7 +47,7 @@ from apps.core.bitrix_api import (
     save_shipment_order_bx,
     serch_or_add_info_client,
 )
-from apps.core.utils_web import get_file_path_company_web
+from apps.core.utils_web import send_email_message, get_file_path_company_web, send_pin_smsru
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -59,6 +59,7 @@ from apps.core.tasks import (
     del_currency,
     del_void_cart,
     get_currency,
+    old_get_currency,
     update_currency_price,
 )
 from apps.core.utils import (
@@ -83,7 +84,7 @@ from apps.product.models import (
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_nomenk_doc, save_shipment_doc
-from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
+from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_get_okt, update_prod_iek_in_okt
 from apps.supplier.get_utils.motrum_nomenclatur import (
     get_motrum_nomenclature,
     nomek_test_2,
@@ -118,11 +119,9 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    folder_path = f"{MEDIA_ROOT}/documents/vacancy"
-
-    delete_everything_in_folder(folder_path)
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    update_prod_iek_get_okt()
    
     result = 1
     title = "TEST"

@@ -58,6 +58,7 @@ class AdminUser(CustomUser):
                 password_old = user.password
                 if password_old == self.password:
                     pass
+                    print(password_old)
                 else:
                     self.set_password(self.password)
             else:

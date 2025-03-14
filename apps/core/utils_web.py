@@ -4,6 +4,8 @@ import os
 import random
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
+import requests
+import smsru_api
 
 from django.http import HttpResponse
 from django.contrib.sessions.models import Session
@@ -179,6 +181,33 @@ def send_pin(pin, mobile_number):
     #                     from_=settings.TWILIO_FROM_NUMBER,
     #                 )
     # return HttpResponse("Message %s sent" % 123123, mimetype='text/plain', status=200)
+    return "пин отправлен"
+
+def send_pin_smsru(pin, mobile_number):
+    """Sends SMS PIN to the specified number"""
+    from smsru_api import SmsRu
+    api = os.environ.get("SMS_RU_API_KEY")
+    sms_ru = SmsRu(api)
+    # response = sms_ru.senders()
+    text_sms = f'{pin} - motrum.ru код для входа на сайте'
+    print(text_sms)
+    response = sms_ru.send('9276892240', message=text_sms,)
+    # response = {'status': 'OK', 'status_code': 100, 'sms': {'9276892240': {'status': 'ERROR', 'status_code': 204, 'status_text': 'Вы не подключили данного оператора. Подайте заявку через раздел *Отправители* на сайте SMS.RU - https://sms.ru/?panel=senders'}}, 'balance': 54.94}
+
+    # response = {
+    #     'status': 'OK', 'status_code': 100, 'sms': 
+    #         {'9649838612': {
+    #             'status': 'OK', 'status_code': 100, 'sms_id': '202511-1000000', 'cost': '0', 'sms': 1
+    #             }
+    #          },
+    #         'balance': 10}
+    
+    if response["balance"] < 100:
+        text_sms_balance = f"sms.ru - Баланс на сервисе меньше 100р. Пополните баланс"
+        to_phone = "9277688149"
+        response = sms_ru.send('9276892240', message=text_sms,)
+
+    print(response)
     return "пин отправлен"
 
 

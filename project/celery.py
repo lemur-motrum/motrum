@@ -30,6 +30,11 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.get_currency",
         "schedule": crontab(minute=10, hour=0),
     },
+    # курсы валют проверка отсутствующих дат 
+    "current_rate_old": {
+        "task": "apps.core.tasks.get_currency_old",
+        "schedule": crontab(minute=15, hour=0),
+    },
     # проверка целостности изображений каталога
     "image_check": {
         "task": "apps.core.tasks.image_error_check_in",
@@ -74,10 +79,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.get_year_holiday",
         "schedule": crontab(minute=3, hour=0, day_of_month=1),
     },
-    # "nomenk_file_delite_month": {
-    #     "task": "apps.core.tasks.nomenk_file_delite",
-    #     "schedule": crontab(minute=14, hour=0, day_of_month=1),
-    # },
+    "nomenk_file_delite_month": {
+        "task": "apps.core.tasks.nomenk_file_delite",
+        "schedule": crontab(minute=14, hour=0, day_of_month=1),
+    },
     
     # ТАСКИ раз  в год
     # обнуление счетчиков счетов

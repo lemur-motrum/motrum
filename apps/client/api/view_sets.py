@@ -154,12 +154,11 @@ class ClientViewSet(viewsets.ModelViewSet):
         if pin_user == "":
             pin = _get_pin(4)
             print(pin)
-            # pin = 1111
+            pin = 1111
             
             cache.set(phone, pin, 120)
-            # cache.set(phone, pin, 120)
-            send_pin_smsru(pin, phone)
-            return Response(pin, status=status.HTTP_200_OK)
+            # send_pin_smsru(pin, phone)
+            return Response(pin_user, status=status.HTTP_200_OK)
 
         # сравнение пин и логин
         else:

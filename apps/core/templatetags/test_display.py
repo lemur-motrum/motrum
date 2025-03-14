@@ -1,6 +1,6 @@
 from django import template
 from apps.user.models import AdminUser
-from project.settings import IS_WEB
+from project.settings import IS_TESTING, IS_WEB
 
 register = template.Library()
 
@@ -8,7 +8,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def test_display(context):
 
-    if IS_WEB:
+    if IS_TESTING:
         pass
     else:
         request = context["request"]

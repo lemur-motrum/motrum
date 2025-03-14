@@ -10,7 +10,11 @@
             <div class="bread-crumbs">
                 <a href={% url "core:index" %}>главная</a>
             </div>
-            <h1>Заказ {{ order.id }}</h1>
+            <h1>Заказ 
+            {% if order.id_bitrix %}
+                {{ order.id_bitrix }}
+            {% endif %}
+                </h1>
         </div>
         <div class="cart_elems_container">
             {% if product|length > 0 %}

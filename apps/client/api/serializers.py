@@ -193,6 +193,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "notification_count",
             "url",
             "documentshipment_set",
+            "id_bitrix",
         )
         read_only_fields = ("status_full",)
 

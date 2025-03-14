@@ -495,7 +495,11 @@ class Price(models.Model):
 
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
-            self.price_motrum = price_motrum
+            if self.price_motrum:
+                self.price_motrum = self.price_motrum
+            else:
+                self.price_motrum = price_motrum
+                
             self.sale = sale
         else:
             self.price_motrum = self.rub_price_supplier

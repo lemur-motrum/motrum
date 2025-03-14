@@ -114,7 +114,7 @@ from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 from openpyxl import load_workbook
 
-from project.settings import IS_WEB, DADATA_TOKEN, DADATA_SECRET
+from project.settings import IS_TESTING, IS_WEB, DADATA_TOKEN, DADATA_SECRET
 from dadata import Dadata
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -612,7 +612,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     account_requisites_id = account_requisites.id
 
                 for product_cart in products_cart:
-                    if product_cart.product.price.rub_price_supplier == 0:
+                    print(product_cart)
+                    if  product_cart.product.price and product_cart.product.price.rub_price_supplier == 0:
                         all_info_product = False
 
                 # сохранение спецификации для заказа
@@ -682,7 +683,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             print("serializer.data",serializer.data)
                             print("serializer.data",serializer.data['id'])
                             order_id = serializer.data['id']
-                            if IS_WEB:
+                            if IS_TESTING:
                                 pass
                             else:
                                 
@@ -1067,12 +1068,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 
                 type_save = request.COOKIES.get("type_save")
 
-                if IS_WEB or user.username == "testadmin":
+                if IS_TESTING or user.username == "testadmin":
 
                     json_data = json.dumps(data_for_1c)
                     print("json_data", json_data)
                     if user.username == "testadmin":
-                        print("if IS_WEB or user.username == testadmin")
+                        print("if IS_TESTING or user.username == testadmin")
                         url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
                         headers = {"Content-type": "application/json"}
                         response = send_requests(url, headers, json_data, "1c")
@@ -1635,7 +1636,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # q_object &= Q(cart__cart_admin_id__isnull=False)
             elif user_admin_type == "BASE":
                 q_object &= Q(cart__cart_admin_id=request.user.id)
-            # if IS_WEB:
+            # if IS_TESTING:
             #     pass
             # else:
             #     if user_admin_type == "ALL":
@@ -1886,7 +1887,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             # если есть изденения даты для переделки счета:
 
             if pdf:
-                if IS_WEB:
+                if IS_TESTING:
                     pass
                 else:
                     is_save_new_doc_bx = save_new_doc_bx(order)
@@ -1933,7 +1934,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            if IS_WEB:
+            if IS_TESTING:
                 pass
             else:
                 save_payment_order_bx(data)
@@ -1975,7 +1976,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            if IS_WEB:
+            if IS_TESTING:
                 pass
             else:
                 save_shipment_order_bx(data)

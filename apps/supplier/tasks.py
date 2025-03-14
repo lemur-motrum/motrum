@@ -32,7 +32,8 @@ def add_iek(self):
 def add_iek_individual(self):
     try:
         update_prod_iek_in_okt()
-        get_iek_stock()
+        # update_prod_iek_in_okt()
+        # get_iek_stock()
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"

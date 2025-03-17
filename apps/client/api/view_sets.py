@@ -114,7 +114,7 @@ from apps.specification.utils import crete_pdf_specification, save_shipment_doc
 from apps.user.models import AdminUser
 from openpyxl import load_workbook
 
-from project.settings import IS_TESTING, IS_WEB, DADATA_TOKEN, DADATA_SECRET
+from project.settings import IS_PROD, IS_TESTING, IS_WEB, DADATA_TOKEN, DADATA_SECRET
 from dadata import Dadata
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -152,12 +152,15 @@ class ClientViewSet(viewsets.ModelViewSet):
         # cache.set(phone, pin, 120)
         # первый шаг отправка пин
         if pin_user == "":
-            pin = _get_pin(4)
-            print(pin)
-            pin = 1111
+            if IS_PROD:
+                pin = _get_pin(4)
+                cache.set(phone, pin, 180)
+                send_pin_smsru(pin, phone)
+            else:
+                pin = 1111
+                cache.set(phone, pin, 180)
             
-            cache.set(phone, pin, 120)
-            # send_pin_smsru(pin, phone)
+            
             return Response(pin_user, status=status.HTTP_200_OK)
 
         # сравнение пин и логин

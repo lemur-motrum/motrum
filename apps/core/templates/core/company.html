@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
+{% load number_space %}
     <div class="about_container">
         <div class="promo-slider">
             <div class="motrum-slider-requsites">
@@ -86,42 +87,42 @@
             <div class="dynamics_content-container">
                 <div class="dynamics_content-elem">
                     <div class="number_container">
-                        <span data-quantity="13" class="quantity">0</span>
+                        <span data-quantity="{{ motrum_in_numbers.year }}" class="quantity">0</span>
                     </div>
                     <div class="content">
-                        13 лет на рынке
+                        {{motrum_in_numbers.year}} лет на рынке
                         <br>
                         год основания – 2012
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="number_container">
-                        <span data-quantity="34" class="quantity">0</span>
+                        <span data-quantity="{{motrum_in_numbers.emploee_high}}" class="quantity">0</span>
                     </div>
                     <div class="content">
-                        34 высококвалифицированных
+                        {{motrum_in_numbers.emploee_high}} высококвалифицированных
                         <br>
                         сотрудника
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="content short_content">
-                        200 000 000 ₽
+                        {{motrum_in_numbers.profit}}  000 000 ₽
                         <br>
                         оборот группы компаний
                     </div>
                     <div class="number_container long_number">
-                        <span data-quantity="200" class="quantity">0</span>
+                        <span data-quantity="{{motrum_in_numbers.profit}}" class="quantity">0</span>
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="content short_content">
-                        44% сотрудников
+                        {{motrum_in_numbers.emploee_engineer}}% сотрудников
                         <br>
                         – инженерский состав
                     </div>
                     <div class="number_container long_number">
-                        <span data-quantity="44" class="quantity">0</span>
+                        <span data-quantity="{{motrum_in_numbers.emploee_engineer}}" class="quantity">0</span>
                     </div>
                 </div>
             </div>
@@ -239,15 +240,15 @@
                     <div class="title">ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ</div>
                     <div class="content_table">
                         <div class="elem">
-                            <div class="number_container">200+</div>
+                            <div class="number_container">{{project_in_numbers.tech_project}}+</div>
                             <div class="description_container">установок с техническим зрением</div>
                         </div>
                         <div class="elem">
-                            <div class="number_container">1 000+</div>
+                            <div class="number_container">{{project_in_numbers.shkaf_upravleniya|number_space}}+</div>
                             <div class="description_container">собрано шкафов управления</div>
                         </div>
                         <div class="elem">
-                            <div class="number_container">100+</div>
+                            <div class="number_container">{{project_in_numbers.honest_sign}}+</div>
                             <div class="description_container">линий маркировки «Честный знак»</div>
                         </div>
                     </div>
@@ -262,8 +263,8 @@
                     <img src="{% static "core/images/map_one.png" %}" alt="map" />
                 </div>
                 <div class="absolute_elem">
-                    <div class="number_container">500+</div>
-                    <div class="description_container">более 500 реализованных проектов по всей России и СНГ</div>
+                    <div class="number_container">{{project_in_numbers.project_all}}+</div>
+                    <div class="description_container">более {{project_in_numbers.project_all}} реализованных проектов по всей России и СНГ</div>
                 </div>
             </div>
             <div class="down_content">

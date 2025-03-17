@@ -191,19 +191,13 @@ def send_pin_smsru(pin, mobile_number):
     # response = sms_ru.senders()
     text_sms = f'{pin} - motrum.ru код для входа на сайте'
     print(text_sms)
-    response = sms_ru.send('9276892240', message=text_sms,)
-    # response = {'status': 'OK', 'status_code': 100, 'sms': {'9276892240': {'status': 'ERROR', 'status_code': 204, 'status_text': 'Вы не подключили данного оператора. Подайте заявку через раздел *Отправители* на сайте SMS.RU - https://sms.ru/?panel=senders'}}, 'balance': 54.94}
-
-    # response = {
-    #     'status': 'OK', 'status_code': 100, 'sms': 
-    #         {'9649838612': {
-    #             'status': 'OK', 'status_code': 100, 'sms_id': '202511-1000000', 'cost': '0', 'sms': 1
-    #             }
-    #          },
-    #         'balance': 10}
+    response = sms_ru.send(mobile_number, message=text_sms,)
     
+   
+    print(response)
     if response["balance"] < 100:
         text_sms_balance = f"sms.ru - Баланс на сервисе меньше 100р. Пополните баланс"
+        print(text_sms_balance)
         to_phone = "9277688149"
         response = sms_ru.send('9276892240', message=text_sms,)
 

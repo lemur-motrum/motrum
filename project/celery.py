@@ -20,7 +20,7 @@ app.conf.beat_schedule = {
     },
     # уведомления о повышения цен на товары и курсов ежедневно
     'add_currency_check_bx': {
-        'task': 'apps.core.tasks.currency_check_bx',
+        'task': 'apps.core.tasks.get_curr_price_check_bx',
         'schedule': crontab(minute=00, hour=5),
     },
     
@@ -65,7 +65,7 @@ app.conf.beat_schedule = {
     # },
     # ТАСКИ раз в неделю
     "iek_individual": {
-        "task": "apps.core.tasks.add_iek_individual",
+        "task": "apps.supplier.tasks.add_iek_individual",
         "schedule": crontab(minute=3, hour=0, day_of_week=1),
     },
     "vacancy_file_delite_week": {

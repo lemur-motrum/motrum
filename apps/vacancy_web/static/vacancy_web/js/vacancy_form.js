@@ -5,6 +5,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -39,6 +40,15 @@ window.addEventListener("DOMContentLoaded", () => {
       console.log("fileType", fileType);
       fileLabelDescription.textContent = truncate(fileName, 8) + "." + fileType;
     });
+
+    function clearInputs() {
+      const inputs = vacancyForm.querySelectorAll("input");
+      inputs.forEach((input) => {
+        input.value = "";
+      });
+      vacancyForm.querySelector("textarea").value = "";
+      fileLabelDescription.textContent = "Прикрепить резюме";
+    }
 
     submitBtn.onclick = () => {
       let validate = true;
@@ -76,6 +86,10 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            clearInputs();
+            successModal(
+              "Спасибо за отклик, мы рассмотрим Ваше резюме и свяжемся с Вами"
+            );
           } else {
             setErrorModal();
           }

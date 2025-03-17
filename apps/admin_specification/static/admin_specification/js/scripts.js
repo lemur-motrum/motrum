@@ -404,19 +404,37 @@ window.addEventListener("DOMContentLoaded", () => {
                                  ${
                                    product.price_suppler &&
                                    product.price_suppler != 0
-                                     ? `<span class="price-suppler-count">${product.price_suppler}</span> ₽`
+                                     ? `<span class="price-suppler-count">${new Intl.NumberFormat(
+                                         "ru"
+                                       )
+                                         .format(+product.price_suppler)
+                                         .replace(
+                                           /(\d+)(\.|,)(\d+)/g,
+                                           function (o, a, b, c) {
+                                             return a + b + c.slice(0, 2);
+                                           }
+                                         )}
+                                       </span> `
                                      : "<span>По запросу</span>"
                                  }
                                 </div>
                                 <div class="price">
                                 ${
                                   product.price && product.price != 0
-                                    ? `<span class="span-update">${backendDataFormat(
+                                    ? `
+                                  <span class="price-count">
+                                        ${new Intl.NumberFormat("ru")
+                                          .format(+product.price)
+                                          .replace(
+                                            /(\d+)(\.|,)(\d+)/g,
+                                            function (o, a, b, c) {
+                                              return a + b + c.slice(0, 2);
+                                            }
+                                          )}
+                                      </span>
+                                      <span class="span-update"> от ${backendDataFormat(
                                         product.data_update
-                                      )}</span>
-                                        <span class="price-count">${
-                                          product.price
-                                        }</span> ₽`
+                                      )}</span>`
                                     : `<span>По запросу</span>`
                                 }
                                 </div>
@@ -446,7 +464,6 @@ window.addEventListener("DOMContentLoaded", () => {
             });
         };
       }
-
       setCurrentPriceCataloItem(catalogItems);
     }
   }
@@ -633,7 +650,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!deliveryRequsits || deliveryRequsits == "null") {
           validate = false;
           document.querySelector(".select_delevery").style.border =
-            "0.094rem 1px solid red";
+            "0.094rem solid red";
         }
         if (!motrumRequsits || motrumRequsits == "null") {
           validate = false;

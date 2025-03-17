@@ -51,15 +51,13 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
 IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
-IS_PROD = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
+IS_PROD = os.environ.get("IS_PROD", "False").lower() in ("true", "1", "t")
 
 if IS_PROD:
     DEBUG = False
 else:
     DEBUG = True
 
-
-    
 
 # Application definition
 
@@ -91,6 +89,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "tinymce",
     "drf_spectacular",
+    "sorl.thumbnail",
 ]
 
 STATICFILES_FINDERS = [
@@ -269,11 +268,6 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 # # EMAIL_USE_SSL = True
 # SERVER_EMAIL = EMAIL_HOST_USER
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-
-
-
 
 
 SPECTACULAR_SETTINGS = {

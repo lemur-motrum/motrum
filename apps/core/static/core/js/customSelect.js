@@ -21,12 +21,12 @@ export class ItcCustomSelect {
         selectedContent = option[1];
       }
       items.push(`<li class="itc-select__option${selectedClass}" data-select="option"
-          data-value="${option[0]}" data-index="${index}">${option[1]}</li>`);
+        data-value="${option[0]}" data-index="${index}">${option[1]}</li>`);
     });
     return `<button type="button" class="itc-select__toggle" name="${name}"
-        value="${selectedValue}" data-select="toggle" data-index="${selectedIndex}">
-        ${selectedContent}</button><div class="itc-select__dropdown">
-        <ul class="itc-select__options">${items.join("")}</ul></div>`;
+      value="${selectedValue}" data-select="toggle" data-index="${selectedIndex}">
+      ${selectedContent}</button><div class="itc-select__dropdown">
+      <ul class="itc-select__options">${items.join("")}</ul></div>`;
   }
 
   static hideOpenSelect() {
@@ -68,7 +68,6 @@ export class ItcCustomSelect {
     if (type === "toggle") {
       this.toggle();
     } else if (type === "option") {
-      this.hide();
       this._changeValue(target);
     }
   }
@@ -107,10 +106,10 @@ export class ItcCustomSelect {
 
   _changeValue(el) {
     if (el.classList.contains(this.constructor.EL_OPTION_SELECTED)) {
-      // return;
+      return;
     }
-    this.toggle();
     this._updateOption(el);
+    this.hide();
   }
 
   show() {

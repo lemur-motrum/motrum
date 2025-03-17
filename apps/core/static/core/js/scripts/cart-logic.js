@@ -281,7 +281,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (validate) {
           const phone = phoneMask.unmaskedValue;
           const name = nameInput.value;
-
           const dataObj = {
             phone: phone,
             pin: "",

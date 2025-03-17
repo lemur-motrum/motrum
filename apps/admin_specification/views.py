@@ -1646,7 +1646,7 @@ def bx_start_page(request):
 @csrf_exempt
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_save_start_info(request):
-    
+
     if "POST" in request.method:
         if request.user.is_authenticated:
             post_data = request.POST

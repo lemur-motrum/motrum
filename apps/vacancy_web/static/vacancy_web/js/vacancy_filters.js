@@ -5,6 +5,9 @@ import {
   maskOptions,
 } from "/static/core/js/functions.js";
 
+import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
+
 const csrfToken = getCookie("csrftoken");
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;
@@ -202,6 +205,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const mask = IMask(phoneInput, maskOptions);
 
+      function closeOverlay() {
+        overlay.classList.remove("visible");
+        setTimeout(() => {
+          overlay.classList.remove("show");
+        }, 600);
+        document.body.style.overflowY = "auto";
+        resetInputs(formContainer, fileLabelDescription);
+      }
+
       submitBtn.onclick = () => {
         overlay.classList.add("show");
         setTimeout(() => {
@@ -210,14 +222,7 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflowY = "hidden";
       };
 
-      closeBtn.onclick = () => {
-        overlay.classList.remove("visible");
-        setTimeout(() => {
-          overlay.classList.remove("show");
-        }, 600);
-        document.body.style.overflowY = "auto";
-        resetInputs(formContainer, fileLabelDescription);
-      };
+      closeBtn.onclick = () => closeOverlay();
 
       fileInput.addEventListener("change", function () {
         const file = this.files[0];
@@ -264,6 +269,10 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
+              closeOverlay();
+              successModal(
+                `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
+              );
             } else {
               setErrorModal();
             }

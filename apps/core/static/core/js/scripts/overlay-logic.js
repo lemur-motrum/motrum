@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const enterBtn = document.querySelector(".enter-in-site");
   if (enterBtn) {
     const overlay = document.querySelector(".overlay");
-    console.log(overlay);
+
     if (overlay) {
       const autificationForm = overlay.querySelector(".autification-form");
       const phoneInput = autificationForm.querySelector(".phone-input");
@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       let amountTime = 119;
-      let errorsQuantity = 3;
+      let errorsQuantity = 2;
 
       function timer() {
         const timer = autificationForm.querySelector(".timer");
@@ -185,7 +185,10 @@ window.addEventListener("DOMContentLoaded", () => {
                               `Некорректный Пин-код, осталось попыток ${errorsQuantity}`,
                               pinError
                             );
-                            pinInput.disabled = false;
+                            pinInput.value = null;
+                            setTimeout(() => {
+                              pinInput.disabled = false;
+                            }, 1000);
                           }
                           errorsQuantity -= 1;
                         }

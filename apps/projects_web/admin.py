@@ -97,7 +97,7 @@ class CategoryProjectWebAdmin(admin.ModelAdmin):
         "name",
         "article",
     ]
-    exclude = ["slug"]
+    exclude = ["slug","short_name",]
 
     def has_delete_permission(self, request, obj=None):
         return False

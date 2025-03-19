@@ -1127,6 +1127,8 @@ class LotAdmin(admin.ModelAdmin):
         "name",
         "name_shorts",
     )
+    readonly_fields = [ "name",
+        "name_shorts",]
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -1173,7 +1175,8 @@ class CategoryProductAdmin(admin.ModelAdmin):
 class GroupProductInlineWeb(admin.TabularInline):
     model = GroupProduct
     extra = 1
-    fields = ("name", "article_name", "image")
+    fields = ("name", "article_name",)
+    # readonly_fields = ["name"]
 
 
 class CategoryProductAdminWeb(admin.ModelAdmin):
@@ -1193,7 +1196,7 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
         "is_view_home_web",
         "is_send_email",
     ]
-
+    # readonly_fields = ["name"]
     inlines = [
         GroupProductInlineWeb,
     ]
@@ -1219,4 +1222,4 @@ website_admin.register(CategoryProduct, CategoryProductAdminWeb)
 # admin.site.register(GroupProduct)
 
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Lot)
+admin.site.register(Lot,LotAdmin)

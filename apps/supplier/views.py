@@ -36,6 +36,7 @@ from apps.core.bitrix_api import (
     get_id_bd_in_contact_order,
     get_info_for_order_bitrix,
     get_manager,
+    get_manager_info,
     get_order_carrency_up,
     get_product_price_up,
     get_stage_info_bx,
@@ -47,7 +48,11 @@ from apps.core.bitrix_api import (
     save_shipment_order_bx,
     serch_or_add_info_client,
 )
-from apps.core.utils_web import send_email_message, get_file_path_company_web, send_pin_smsru
+from apps.core.utils_web import (
+    send_email_message,
+    get_file_path_company_web,
+    send_pin_smsru,
+)
 from apps.logs.utils import error_alert
 from dal import autocomplete
 from django.db.models import Q
@@ -84,7 +89,12 @@ from apps.product.models import (
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
 from apps.specification.utils import save_nomenk_doc, save_shipment_doc
-from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_get_okt, update_prod_iek_in_okt
+from apps.supplier.get_utils.iek import (
+    get_iek_stock,
+    iek_api,
+    update_prod_iek_get_okt,
+    update_prod_iek_in_okt,
+)
 from apps.supplier.get_utils.motrum_nomenclatur import (
     get_motrum_nomenclature,
     nomek_test_2,
@@ -119,12 +129,18 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
-    folder_path = f"{MEDIA_ROOT}/ones/nomenk"
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    
+    get_manager_info()
+    # manager_all_bx = bx.get_all(
+    #     "user.get",
+    #     params={
+    #         # "entityTypeId": 2,
+    #     },
+    # )
+    # print(manager_all_bx)
 
-    delete_everything_in_folder(folder_path)
-   
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

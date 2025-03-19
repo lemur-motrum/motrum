@@ -179,7 +179,7 @@
                             </div>
                             <div class="">
                                 {% if item.sale_motrum != item.price.sale.percent %}
-                                    <span style=" color: red; "> cкидка в OKT:
+                                    <span style=" color: #ff5b00 "> cкидка в OKT:
                                         {% if item.price.sale %}
                                             {{ item.price.sale.percent }} %
                                         {% else %}
@@ -1069,7 +1069,8 @@
                             </div>
                         </label>
                         <label class="bitrix-id-label">
-                            <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
+                            <input disabled
+                            {% comment %} {% if bill_upd or order.id_bitrix %}disabled{% endif %} {% endcomment %}
                                    class="bitrix-input"
                                    type="text"
                                    onkeypress='validate(event)'

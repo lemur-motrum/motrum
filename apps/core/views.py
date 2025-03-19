@@ -65,7 +65,7 @@ def index(request):
     )[0:7]
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
     promo_slider = SliderMain.objects.filter(active=True).order_by("article")
-    vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")
+    vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")[0:4]
 
     motrum_in_numbers = IndexInfoWeb.objects.all().last()
 
@@ -130,7 +130,7 @@ def cart(request):
             if req_info and client_info:
                 all_client_info = True
                 print(type_delivery)
-                type_delivery = TypeDelivery.objects.all()
+                type_delivery = TypeDelivery.objects.filter(actual=True)
                 print(type_delivery)
 
         else:

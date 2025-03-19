@@ -893,7 +893,7 @@ def create_specification(request):
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
-    type_delivery = TypeDelivery.objects.all()
+    type_delivery = TypeDelivery.objects.filter(actual=True)
     supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
     context = {

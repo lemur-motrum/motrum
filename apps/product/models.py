@@ -80,28 +80,28 @@ class Product(models.Model):
     category_supplier_all = models.ForeignKey(
         SupplierCategoryProductAll,
         verbose_name="Подгруппа категории товара от поставщиков",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     group_supplier = models.ForeignKey(
         SupplierGroupProduct,
         verbose_name="Группа товара от поставщиков",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     category_supplier = models.ForeignKey(
         SupplierCategoryProduct,
         verbose_name="Категории товара от поставщиков",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     category = models.ForeignKey(
         "CategoryProduct",
         verbose_name="Категория Мотрум",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
@@ -109,7 +109,7 @@ class Product(models.Model):
     group = models.ForeignKey(
         "GroupProduct",
         verbose_name="Группа Мотрум",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
@@ -646,7 +646,7 @@ class CurrencyRate(models.Model):
 class Stock(models.Model):
     prod = models.OneToOneField(
         Product,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         # blank=True,
         null=True,
     )

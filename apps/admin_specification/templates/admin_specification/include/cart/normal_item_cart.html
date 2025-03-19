@@ -97,9 +97,9 @@
             <input class="change_input_price" value="{{ item.price_cart }}" />
             {% if item.price_cart != item.actual_price %}
                 {% if item.actual_price %}
-                    <span style="color: red; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
+                    <span style="color: #ff5b00; display:block;">цена товара в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
                 {% else %}
-                    <span style="color: red; display:block;">цена по запросу</span>
+                    <span style="color: #ff5b00; display:block;">цена по запросу</span>
                 {% endif %}
             {% endif %}
         </div>

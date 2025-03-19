@@ -75,7 +75,7 @@ class CalendarHoliday(models.Model):
 
 SLIDER_TYPE = (
     ("MAIN", "Лево-изображение. Право-видео или изображение + текст 2 строки"),
-    ("PROMOTE", "Продвижение товара"),
+    # ("PROMOTE", "Продвижение товара"),
 )
 
 
@@ -85,8 +85,6 @@ class SliderMain(models.Model):
     slug = models.CharField(
         max_length=200,
     )
-    # title = models.CharField("Заголовок слайда", max_length=200, blank=True, null=True)
-    # text = models.CharField("Описание слайда", max_length=200, blank=True, null=True)
     text1 = models.CharField("Текст 1 строка", max_length=200, blank=True, null=True)
     text2 = models.CharField("Текст в обводке", max_length=200, blank=True, null=True)
     icon3 = models.ImageField(
@@ -130,7 +128,7 @@ class SliderMain(models.Model):
         null=True,
     )
 
-    type_slider = models.CharField(max_length=7, choices=SLIDER_TYPE, default="MAIN")
+    type_slider = models.CharField("Тип слайдера",max_length=7, choices=SLIDER_TYPE, default="MAIN")
     article = models.PositiveIntegerField(
         "Очередность",
         blank=True,
@@ -220,7 +218,7 @@ class BaseInfo(models.Model):
         "Номер счета клиента", null=True, blank=True, default=0
     )
     counter_bill_offer = models.PositiveIntegerField(
-        "Номер счета клиента", null=True, blank=True, default=0
+        "Номер Счет-оферта клиента", null=True, blank=True, default=0
     )
 
     class Meta:
@@ -297,6 +295,7 @@ class TypeDelivery(models.Model):
         null=True,
         blank=True,
     )
+    actual = models.BooleanField("Активно", default=True)
 
     class Meta:
         verbose_name = "Типы доставки"
@@ -318,8 +317,8 @@ class IndexInfoWeb(models.Model):
     installation = models.SmallIntegerField("запущенных установок")
 
     class Meta:
-        verbose_name = "Инфа для главной страницы"
-        verbose_name_plural = "Инфа для главной страницы"
+        verbose_name = "Мотрум в цифрах главной страницы"
+        verbose_name_plural = "Мотрум в цифрах для главной страницы"
 
     def __str__(self):
         return f"Счетчики"

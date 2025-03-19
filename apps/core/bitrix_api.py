@@ -402,11 +402,19 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
                     legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                 else:
                     legal_city = f"г.{adress['CITY']},"
-                legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                    
+                if adress['ADDRESS_2'] == None or adress['ADDRESS_2'] == "None":
+                    legal_address = f"{adress['ADDRESS_1']}"
+                else:
+                    legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
                 postal_post_code = adress["POSTAL_CODE"]
                 postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+             
+                if adress['ADDRESS_2'] == None or adress['ADDRESS_2'] == "None":
+                    postal_address = f"{adress['ADDRESS_1']}"
+                else:
+                    postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
             if not_web_adrees == False:
                 if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
@@ -423,11 +431,19 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
                         legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
                     else:
                         legal_city = f"г.{adress['CITY']},"
-                    legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                        
+                    if adress['ADDRESS_2'] == None or adress['ADDRESS_2'] == "None":
+                        legal_address = f"{adress['ADDRESS_1']}"
+                    else:
+                        legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                        
 
                     postal_post_code = adress["POSTAL_CODE"]
                     postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                    postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                    if adress['ADDRESS_2'] == None or adress['ADDRESS_2'] == "None":
+                        postal_address = f"{adress['ADDRESS_1']}"
+                    else:
+                        postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
         # банковские реквизиыт привязанные к сделки значение
         req_bank = bx.get_by_ID(
@@ -481,9 +497,9 @@ def get_req_info_bx(bs_id_order, manager, company,contsct_order_id_bx):
             "data_commpany": company,
             "company_adress": company_adress_all,
         }
-        error = "error"
+        error = "info_error_order"
         location = "НЕ ОШИБКА ТОЛЬКО ИНФО get_req_info_bx первичное открытие сделки битрикс"
-        info = f" сделка {context}"
+        info = f" сделка {bs_id_order} {context}"
         e = error_alert(error, location, info)
         return (False, "All", context)
 
@@ -872,7 +888,7 @@ def save_new_doc_bx(order):
             "crm.deal.update",
             "UF_CRM_1734772537613",
         )
-        error = "file_api_error"
+        error = "info_error_order"
         location = "save_new_doc_bx"
         info = f"OK SIGNAL BX NEW DOC AFTER 1c DATE{bx}bx"
         e = error_alert(error, location, info)
@@ -907,7 +923,7 @@ def save_payment_order_bx(data):
             }
             orders_bx = bx.call("crm.deal.update", data_order)
             
-        error = "file_api_error"
+        error = "info_error_order"
         location = "save_payment_order_bx"
         info = f"OK SIGNAL BX save_payment_order_bx{data_item["bitrix_id"]}bx"
         e = error_alert(error, location, info)
@@ -941,7 +957,7 @@ def save_shipment_order_bx(data):
                 "UF_CRM_1734772575764",
             )
             
-        error = "file_api_error"
+        error = "info_error_order"
         location = "save_shipment_order_bx"
         info = f"OK SIGNAL BX save_shipment_order_bx{data_item["bitrix_id"]}bx"
 
@@ -965,6 +981,7 @@ def currency_check_bx():
         product = get_product_price_up()
 
         data_dict = {}
+      
         for carrency_item in carrency:
             data_curr = carrency_item["currency"]
             for item in carrency_item["order"]:
@@ -1872,7 +1889,7 @@ def add_acc_req_bx(
     return acc_req_new
 
 
-# связка контакт реквизит
+# связка контакт компания
 def chek_add_contact_company(bx, client_bx_id, company_bx_id):
     print("chek_add_contact_company", client_bx_id, company_bx_id)
     is_need = False
@@ -2058,44 +2075,48 @@ def get_upd_clirnt_manager():
         "company_bx_id", flat=True
     )
     upd_company = list(upd_company)
-
-    upd_company = [17834]
-
+    
+    upd_company = [17682]
+    print(upd_company)
+    
     final_date = current_date - datetime.timedelta(days=60)
-    client = ClientRequisites.objects.filter(
-        client__is_active=True,
-        client__bitrix_id_client__isnull=False,
-        client__last_login__date__gte=final_date,
-        requisitesotherkpp__id_bitrix__in=upd_company,
-    )
-    client_companu_cl_list = client.values(
-        "client__bitrix_id_client", "requisitesotherkpp__id_bitrix"
-    )
-    print(client_companu_cl_list)
-    # client = Client.objects.filter(
-    #     is_active=True, bitrix_id_client__isnull=False, last_login__date__gte=final_date
-    # )
-    print(client)
-    # client_id = list(client.values_list("bitrix_id_client", flat=True))
-    client_id = list(client.values_list("client__bitrix_id_client", flat=True))
-    print(client_id)
-    print(type(client_id))
+    for upd_companys in upd_company:
+        print(upd_companys)
+        client = ClientRequisites.objects.filter(
+            client__is_active=True,
+            client__bitrix_id_client__isnull=False,
+            client__last_login__date__gte=final_date,
+            requisitesotherkpp__requisites__id_bitrix__startswith=upd_companys,
+        )
+        print(client)
+        client_companu_cl_list = client.values(
+            "client__bitrix_id_client", "requisitesotherkpp__id_bitrix"
+        )
+        print(client_companu_cl_list)
+        # client = Client.objects.filter(
+        #     is_active=True, bitrix_id_client__isnull=False, last_login__date__gte=final_date
+        # )
+        print(client)
+        # client_id = list(client.values_list("bitrix_id_client", flat=True))
+        client_id = list(client.values_list("client__bitrix_id_client", flat=True))
+        print(client_id)
+        print(type(client_id))
 
-    contact_bx = bx.get_by_ID("crm.contact.company.items.get", client_id)
-    print("contact_bx", contact_bx)
-    companu_need_bx = []
-    if len(client_id) == 1:
-        contact_bx = {client_id[0]: [contact_bx]}
-    # contact_bx {'65444': [{'COMPANY_ID': 17834, 'SORT': 10, 'ROLE_ID': 0, 'IS_PRIMARY': 'Y'}], '65362': [{'COMPANY_ID': 11728, 'SORT': 140, 'ROLE_ID': 0, 'IS_PRIMARY': 'N'}]}
-    for k, v in contact_bx.items():
-        companu = int(v[0]["COMPANY_ID"])
-        if companu in upd_company:
-            companu_need_bx.append(companu)
-            # client.filter(bitrix_id_client = int(k)).update()
-    print(companu_need_bx)
-    # for contact in contact_bx:
-    #     client.get(bitrix_id_client = int(contact))
-    #     print(contact)
+        contact_bx = bx.get_by_ID("crm.contact.company.items.get", client_id)
+        print("contact_bx", contact_bx)
+        companu_need_bx = []
+        if len(client_id) == 1:
+            contact_bx = {client_id[0]: [contact_bx]}
+        # contact_bx {'65444': [{'COMPANY_ID': 17834, 'SORT': 10, 'ROLE_ID': 0, 'IS_PRIMARY': 'Y'}], '65362': [{'COMPANY_ID': 11728, 'SORT': 140, 'ROLE_ID': 0, 'IS_PRIMARY': 'N'}]}
+        for k, v in contact_bx.items():
+            companu = int(v[0]["COMPANY_ID"])
+            if companu in upd_company:
+                companu_need_bx.append(companu)
+                # client.filter(bitrix_id_client = int(k)).update()
+        print(companu_need_bx)
+        # for contact in contact_bx:
+        #     client.get(bitrix_id_client = int(contact))
+        #     print(contact)
 
 
 # ДОБАВЛЕНИЕ ЗАКАЗОВ И ИНФЫ С САЙТА без всей инфы
@@ -2141,6 +2162,81 @@ def add_new_order_web_not_info(order_id):
         info = f" клиента без инфы  сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
 
-
-
+def get_manager_info():
+    print(1111111)
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
+    current_date = datetime.date.today()
+    final_date = current_date - datetime.timedelta(days=60)
+    client = ClientRequisites.objects.filter(
+                client__is_active=True,
+                client__bitrix_id_client__isnull=False,
+                client__last_login__date__gte=final_date,
+                # requisitesotherkpp__requisites__id_bitrix__isnull=False,
+            ).distinct("client")
+    # .distinct("requisitesotherkpp")
+    print(client)
+    for clien in client:
+        
+        inn = clien.requisitesotherkpp.requisites.inn
+        req_id_bitrix_and_inn = clien.requisitesotherkpp.requisites.id_bitrix
+        req_id_bitrix = req_id_bitrix_and_inn.replace(inn,'')
+        client_bx_id = clien.client.bitrix_id_client
+        print(client_bx_id)
+        try:
+            print(9999)
+            contact_bx = bx.get_by_ID(
+            "crm.contact.get",[client_bx_id]
+        )
+            print(contact_bx)
+            manager = AdminUser.objects.filter(bitrix_id=contact_bx['ASSIGNED_BY_ID'])
+            if manager.count() == 0:
+                error = "error"
+                location = "обновление менеджеров компаний на сайте"
+                info = f" обновление менеджеров компаний на сайте - менеджер с id {contact_bx['ASSIGNED_BY_ID']} - не существует в окт. Данные для клиента не обновились. Добавле менеджерв в окт"
+                e = error_alert(error, location, info)
+            else:
+                client_item = clien.client
+                client_item.manager=manager[0]
+                client_item.save()
+            # company_bx = bx.get_by_ID("crm.company.get", [req_id_bitrix])
+            # print(company_bx['ASSIGNED_BY_ID'])
+            # manager = AdminUser.objects.filter(bitrix_id=company_bx['ASSIGNED_BY_ID'])
+            # print("manager",manager)
+            # if manager.count() == 0:
+            #     error = "error"
+            #     location = "обновление менеджеров компаний на сайте"
+            #     info = f" обновление менеджеров компаний на сайте - менеджер с id {company_bx['ASSIGNED_BY_ID']} - не существует в окт. Данные для клиента не обновились. Добавле менеджерв в окт"
+            #     e = error_alert(error, location, info)
+            # else:
+            #     client_item = clien.client
+            #     client_item.manager=manager[0]
+            #     client_item.save()
+                
+                
+        except:
+            print("exept")
+            pass
+        
+        
+        
+        # try:
+        #     company_bx = bx.get_by_ID("crm.company.get", [req_id_bitrix])
+        #     print(company_bx['ASSIGNED_BY_ID'])
+        #     manager = AdminUser.objects.filter(bitrix_id=company_bx['ASSIGNED_BY_ID'])
+        #     print("manager",manager)
+        #     if manager.count() == 0:
+        #         error = "error"
+        #         location = "обновление менеджеров компаний на сайте"
+        #         info = f" обновление менеджеров компаний на сайте - менеджер с id {company_bx['ASSIGNED_BY_ID']} - не существует в окт. Данные для клиента не обновились. Добавле менеджерв в окт"
+        #         e = error_alert(error, location, info)
+        #     else:
+        #         client_item = clien.client
+        #         client_item.manager=manager[0]
+        #         client_item.save()
+                
+                
+        # except:
+        #     pass
+        
 

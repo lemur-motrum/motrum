@@ -18,6 +18,11 @@ app.conf.beat_schedule = {
         'task': 'apps.core.tasks.get_status_order_bx',
         'schedule': crontab(minute=0, hour='6-21'),
     },
+    # получение менеджеров клиентов ежедневно
+    'get_manager_info_bx': {
+        'task': 'apps.core.tasks.get_manager_info_bx',
+        'schedule': crontab(minute=00, hour=22),
+    },
     # уведомления о повышения цен на товары и курсов ежедневно
     'add_currency_check_bx': {
         'task': 'apps.core.tasks.get_curr_price_check_bx',

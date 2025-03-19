@@ -64,10 +64,27 @@ class BaseInfoAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+    
+class BaseImageAdmin(admin.ModelAdmin):
+    def has_add_permission(
+        self,
+        request,
+    ):
+        img = BaseImage.objects.filter().exists()
+        if img == True:
+            return False
+        else:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class TypeDeliveryAdmin(admin.ModelAdmin):
-    list_display = ("text", "text_long", "company_delivery")
+    list_display = ("text", "text_long", "company_delivery","actual")
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # АДМИНКА ДЛЯ ВЕБСАЙТА
@@ -203,7 +220,7 @@ class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
 
 # Register your models here.
 
-admin.site.register(BaseImage)
+admin.site.register(BaseImage,BaseImageAdmin)
 admin.site.register(BaseInfo, BaseInfoAdmin)
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(CurrencyPercent, CurrencyPercentAdmin)

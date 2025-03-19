@@ -3,7 +3,7 @@ from trace import Trace
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
-from apps.core.bitrix_api import currency_check_bx, get_status_order
+from apps.core.bitrix_api import currency_check_bx, get_manager_info, get_status_order
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
@@ -424,3 +424,19 @@ def nomenk_file_delite(self):
 
         info = f"чистка папки  с 1c каталогами {exc}"
         e = error_alert(error, location, info)
+
+
+# получение менеджеров клиентов
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def get_manager_info_bx(self):
+    try:
+        get_manager_info()
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"получение в б24 менеджеров клиентов"
+        info = f"получение в б24 менеджеров клиентов{exc}"
+        e = error_alert(error, location, info)
+

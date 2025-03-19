@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.forms import Textarea
 from django.utils.html import mark_safe
 
-from apps.logs.models import LogsAddProduct,LogsError, LogsInfoError
+from apps.logs.models import LogsAddProduct,LogsError, LogsInfoError, LogsOrderError
 
 # Register your models here.
 class LogsErrorAdmin(admin.ModelAdmin):
@@ -14,6 +14,7 @@ class LogsErrorAdmin(admin.ModelAdmin):
         "date",
         "location",
         "info",
+        "created_timestamp",
     ]
     
 class LogsAddProductAdmin(admin.ModelAdmin):
@@ -42,7 +43,18 @@ class LogsInfoErrorAdmin(admin.ModelAdmin):
         "date",
         "location",
         "info",
-    ]    
+        "created_timestamp",
+    ]   
+    
+class LogsOrderErrorAdmin(admin.ModelAdmin):
+    list_display_links = None
+    list_display = [
+        "date",
+        "location",
+        "info",
+        "created_timestamp",
+    ]   
 admin.site.register(LogsAddProduct,LogsAddProductAdmin)    
 admin.site.register(LogsError,LogsErrorAdmin)
 admin.site.register(LogsInfoError,LogsInfoErrorAdmin)
+admin.site.register(LogsOrderError,LogsOrderErrorAdmin)

@@ -51,6 +51,7 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
 IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
+IS_TEST_SERVER = os.environ.get("IS_TEST_SERVER", "False").lower() in ("true", "1", "t")
 IS_PROD = os.environ.get("IS_PROD", "False").lower() in ("true", "1", "t")
 
 if IS_PROD:
@@ -295,7 +296,13 @@ REST_FRAMEWORK = {
 
 NDS = 20
 
+if IS_TESTING:
+    BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK_TEST_SERVER")
+else:
+    BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+    
 BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+
 DADATA_TOKEN = os.environ.get("DADATA_TOKEN")
 DADATA_SECRET = os.environ.get("DADATA_SECRET")
 

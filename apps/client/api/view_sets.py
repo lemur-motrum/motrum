@@ -429,6 +429,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                 
             },
         )
+        
         if type_client == 1:
             reqKpp = RequisitesOtherKpp.objects.update_or_create(
                 requisites=req[0],
@@ -1062,11 +1063,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order_products = after_save_order_products(products)
 
                 data_for_1c = create_info_request_order_1c(order, order_products)
-                print("data_for_1c", data_for_1c)
+               
                 tr = traceback.format_exc()
-                error = "error"
+                error = "info_error_order"
                 location = "ИНФО НЕ ОШИБКА"
-                info = f"ИНФО НЕ ОШИБКА data_for_1c{data_for_1c}"
+                info = f"ИНФО НЕ ОШИБКА данные по заказу для отпарвки в 1с data_for_1c{data_for_1c}"
                 e = error_alert(error, location, info)
                 
                 type_save = request.COOKIES.get("type_save")
@@ -1095,7 +1096,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print(e)
+            
             tr = traceback.format_exc()
             error = "error"
             location = "Сохранение счета админам окт"
@@ -1869,7 +1870,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     print(order_pdf)
             data_resp = {"result": "ok", "error": None}
             
-            error = "file_api_error"
+            error = "info_error_order"
             location = "OK INFO add_info_order_1c"
             info = f"OK INFO add_info_order_1c{data}"
             e = error_alert(error, location, info)
@@ -1920,7 +1921,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 
 
             data_resp = {"result": "ok", "error": None}
-            error = "file_api_error"
+            error = "info_error_order"
             location = "add-payment-info-1c"
             info = f"OK INFO add-payment-info-1c  DATA из 1с -  {data}"
             e = error_alert(error, location, info)
@@ -1963,7 +1964,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 document_shipment.save()
             data_resp = {"result": "ok", "error": None}
             
-            error = "file_api_error"
+            error = "info_error_order"
             location = "shipment-info-1c"
             info = f"OK INFO shipment-info-1c  DATA из 1с -  {data}"
             e = error_alert(error, location, info)

@@ -35,7 +35,7 @@ from project.settings import MEDIA_ROOT, MEDIA_URL
 def catalog_all(request):
     print("catalog_all")
     category = CategoryProduct.objects.all().order_by("article_name")
-    vendors = Vendor.objects.filter(is_view_index_web=True)
+    vendors = Vendor.objects.filter(is_view_index_web=True)[0:4]
 
     context = {
         "category": category,

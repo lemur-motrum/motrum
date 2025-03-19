@@ -3,7 +3,7 @@
 
 def error_alert(error, location, info):
 
-    from apps.logs.models import LogsError, TYPE_LOGS_ERROR,LogsInfoError
+    from apps.logs.models import LogsError, TYPE_LOGS_ERROR,LogsInfoError,LogsOrderError
 
     t = TYPE_LOGS_ERROR
     if error == "file structure":
@@ -40,8 +40,15 @@ def error_alert(error, location, info):
         ) 
            
     elif error == "info_error":
+        type_error = t[1]
 
         error_alert = LogsInfoError.objects.create(
+            type_error="type_error", location=location, info=info
+        )
+    
+    elif error == "info_error_order":
+        type_error = t[1]
+        error_alert = LogsOrderError.objects.create(
             type_error="type_error", location=location, info=info
         )
 

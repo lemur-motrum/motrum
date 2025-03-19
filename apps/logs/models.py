@@ -33,6 +33,8 @@ class LogsProductChange(models.Model):
     old_value = models.CharField("Старое значение", max_length=130)
     new_value = models.CharField("Новое значение", max_length=130)
     date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    created_timestamp = models.DateTimeField(default=timezone.now, verbose_name="Дата добавления"
+                                             )
     user = models.ForeignKey(
         AdminUser,
         verbose_name="Администратор",
@@ -50,6 +52,8 @@ class LogsProductChange(models.Model):
 class LogsError(models.Model):
 
     date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    created_timestamp = models.DateTimeField(default=timezone.now, verbose_name="Дата добавления"
+                                             )
     type_error = models.CharField(
         max_length=20, choices=TYPE_LOGS_ERROR, default="error"
     )
@@ -77,6 +81,8 @@ class LogsError(models.Model):
 class LogsAddProduct(models.Model):
 
     date = models.DateField(auto_now=True, verbose_name="Дата добавления")
+    created_timestamp = models.DateTimeField(default=timezone.now, verbose_name="Дата добавления"
+                                             )
     product = models.ForeignKey(
         Product,
         verbose_name="Товар",
@@ -100,6 +106,8 @@ class LogsAddProduct(models.Model):
 class LogsInfoError(models.Model):
 
     date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    created_timestamp = models.DateTimeField(default=timezone.now, verbose_name="Дата добавления"
+                                             )
     type_error = models.CharField(
         max_length=20, choices=TYPE_LOGS_ERROR, default="error"
     )
@@ -119,6 +127,34 @@ class LogsInfoError(models.Model):
     class Meta:
         verbose_name = "Информационные сообщения"
         verbose_name_plural = "Информационные сообщения"
+
+    def __str__(self):
+        return f"Тип ошибки: {self.type_error},{self.date} "
+    
+class LogsOrderError(models.Model):
+
+    date = models.DateField(default=timezone.now, verbose_name="Дата добавления")
+    created_timestamp = models.DateTimeField(default=timezone.now, verbose_name="Дата добавления"
+                                             )
+    type_error = models.CharField(
+        max_length=20, choices=TYPE_LOGS_ERROR, default="error"
+    )
+    location = models.CharField(
+        "Место ошибки",
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    info = models.CharField(
+        "Инфо о ошибке",
+        max_length=5000,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Логи фоновые по сделкам"
+        verbose_name_plural = "Логи фоновые по сделкам"
 
     def __str__(self):
         return f"Тип ошибки: {self.type_error},{self.date} "

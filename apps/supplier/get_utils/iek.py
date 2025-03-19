@@ -328,7 +328,7 @@ def iek_api():
                         if all_categ.count() > 0:
                             for all_cat_item in all_categ:
                                 # категории с названиями совпадают- все ок
-                                if all_cat_item.name == category_lower:
+                                if all_cat_item.name == category_lower and all_cat_item.is_correct == True:
                                     pass
                                 # категории с названиями не совпадают 
                                 else:
@@ -338,7 +338,7 @@ def iek_api():
                                     all_cat_item.save()
                                     error = "info_error"
                                     location = "У категори iek изменились параметры"
-                                    info = f"У категори iek изменились параметры{all_cat_item.article_name}{all_cat_item.name}"
+                                    info = f"У категори iek изменились параметры - она больше не действительна{all_cat_item.article_name}{all_cat_item.name}"
                                     e = error_alert(error, location, info)
                                     sp = SupplierCategoryProductAll.objects.filter(
                                         supplier=supplier,

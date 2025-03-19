@@ -1813,10 +1813,7 @@ def send_requests(url, headers, data, auth):
 
         paths = ssl.get_default_verify_paths()
         certifi1 = certifi.where()
-        error = "error"
-        location = "отправка requests"
-        info = f"отправка requests {paths} / {certifi1}"
-        e = error_alert(error, location, info)
+        
 
         response = requests.request(
             "POST",
@@ -1827,6 +1824,10 @@ def send_requests(url, headers, data, auth):
             allow_redirects=False,
             verify=False,
         )
+        error = "info_error_order"
+        location = "отправка requests 1c"
+        info = f"отправка requests 1c {response} / {response.text}"
+        e = error_alert(error, location, info)
 
         print(response.text)
 

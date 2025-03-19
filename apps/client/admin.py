@@ -50,8 +50,16 @@ class RequisitesOtherKppAdminInline(admin.TabularInline):
 class RequisitesAdmin(admin.ModelAdmin):
     list_display = ["legal_entity", "client"]
     inlines = (RequisitesOtherKppAdminInline,)
-    exclude = ["discount"]
+    exclude = ["discount","client",]
+    readonly_fields = ["id_bitrix", "client", "manager", "legal_entity", "inn", "type_client", "first_name", "last_name", "middle_name"]
     # fields = 'legal_entity'
+    search_help_text = "Поиск может осуществляться по: ИНН и названию Юр лица "
+    search_fields = [
+        "legal_entity",
+        "inn",
+    ]
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class AccountRequisitesAdmin(admin.ModelAdmin):
@@ -101,6 +109,6 @@ class AccountRequisitesAdmin(admin.ModelAdmin):
 #         yield from ((inline, vars(inline).update(modeladmin=self))[0] for inline in super().get_inline_instances(*args, **kwargs))
 
 
-admin.site.register(Client, ClientAdminWeb)
+# admin.site.register(Client, ClientAdminWeb)
 admin.site.register(Requisites, RequisitesAdmin)
-admin.site.register(AccountRequisites, AccountRequisitesAdmin)
+# admin.site.register(AccountRequisites, AccountRequisitesAdmin)

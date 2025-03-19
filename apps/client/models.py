@@ -29,14 +29,14 @@ from project.settings import BASE_DIR, BASE_MANAGER_FOR_BX, DOMIAN
 
 # клиент на сайте
 class Client(CustomUser):
-    user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.PROTECT)
     contact_name = models.CharField(
         "Контактное лицо", max_length=40, blank=True, null=True
     )
     middle_name = models.CharField("Отчество", max_length=50, null=True, blank=True)
     phone = models.CharField("Номер телефона", max_length=40, unique=True)
     manager = models.ForeignKey(
-        AdminUser, blank=True, null=True, on_delete=models.CASCADE
+        AdminUser, blank=True, null=True, on_delete=models.PROTECT
     )
     percent = models.FloatField(
         "Процент скидки",
@@ -70,7 +70,7 @@ class Client(CustomUser):
             base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
             self.manager = base_manager
             self.save()
-    
+
     def add_manager_random(self):
         if self.manager == None:
             old_user = Client.objects.filter().last()
@@ -132,6 +132,7 @@ class Requisites(models.Model):
         null=True,
         blank=True,
     )  # НА УДАЛЕНИЕ
+
     id_bitrix = models.CharField(
         "Id реквизита в битрикс",
         max_length=1000,
@@ -176,14 +177,12 @@ class Requisites(models.Model):
         null=True,
     )
     manager = models.ForeignKey(
-        AdminUser, blank=True, null=True, on_delete=models.CASCADE
+        AdminUser,
+        verbose_name="Менеджер в битрикс",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
-    # type_delivery = models.CharField(
-    #     "Тип доставки",
-    #     max_length=1000,
-    #     blank=True,
-    #     null=True,
-    # )
 
     legal_entity = models.CharField(
         "Юридическое лицо",
@@ -253,7 +252,7 @@ class RequisitesOtherKpp(models.Model):
         blank=True,
     )
     requisites = models.ForeignKey(
-        Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
+        Requisites, verbose_name="Реквизиты", on_delete=models.PROTECT
     )
     kpp = models.CharField(
         "КПП",
@@ -334,7 +333,7 @@ class ClientRequisites(models.Model):
 # адреса реквизитов кпп
 class RequisitesAddress(models.Model):
     requisitesKpp = models.ForeignKey(
-        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
+        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.PROTECT
     )
     type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=6)
     country = models.CharField(
@@ -383,7 +382,7 @@ class RequisitesAddress(models.Model):
 # банковские реквизиты прикрепленны к рекам с кпп
 class AccountRequisites(models.Model):
     requisitesKpp = models.ForeignKey(
-        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.CASCADE
+        RequisitesOtherKpp, verbose_name="Реквизиты", on_delete=models.PROTECT
     )
     # requisites = models.ForeignKey(
     #     Requisites, verbose_name="Реквизиты", on_delete=models.CASCADE
@@ -507,7 +506,7 @@ class Order(models.Model):
         # unique=True
     )
     manager = models.ForeignKey(
-        AdminUser, blank=True, null=True, on_delete=models.CASCADE
+        AdminUser, blank=True, null=True, on_delete=models.PROTECT
     )
     date_order = models.DateField(
         default=datetime.date.today,
@@ -528,28 +527,28 @@ class Order(models.Model):
     specification = models.OneToOneField(
         Specification,
         verbose_name="Спецификация",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     cart = models.OneToOneField(
         "product.Cart",
         verbose_name="Корзина",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     requisites = models.ForeignKey(
         Requisites,
         verbose_name="Реквизиты заказа",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
     account_requisites = models.ForeignKey(
         AccountRequisites,
         verbose_name="Расчетный счет",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
@@ -574,7 +573,7 @@ class Order(models.Model):
     type_delivery = models.ForeignKey(
         TypeDelivery,
         verbose_name="Тип доставки ",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
@@ -589,7 +588,7 @@ class Order(models.Model):
     motrum_requisites = models.ForeignKey(
         BaseInfoAccountRequisites,
         verbose_name="Реквизиты мотрум ",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
     )
@@ -661,7 +660,7 @@ class Order(models.Model):
         from apps.notifications.models import Notification
 
         print("order-save")
-        
+
         if not self._state.adding:
             if self._loaded_values["status"] != self.status:
                 Notification.add_notification(self.id, "STATUS_ORDERING", None)
@@ -671,11 +670,11 @@ class Order(models.Model):
                 and self.status == "PROCESSING"
             ):
                 print("== PRE-PROCESSING and self.status == PROCESSING")
-                self.send_email_order_info(self,"PROCESSING")
+                self.send_email_order_info(self, "PROCESSING")
 
         super().save(*args, **kwargs)
 
-    def send_email_order_info(self,type):
+    def send_email_order_info(self, type):
         client = self.client
         need_email = False
         data = None
@@ -688,7 +687,7 @@ class Order(models.Model):
                 print(DOMIAN)
                 data = {
                     "categ": categ,
-                    "domian":domian,
+                    "domian": domian,
                 }
                 print(data)
                 subject = f"Заказ в магазине motrum.ru"
@@ -720,10 +719,15 @@ class Order(models.Model):
         from apps.core.utils import create_time_stop_specification
         from apps.client.utils import crete_pdf_bill
         from apps.notifications.models import Notification
-        
 
-    
-        pdf_file, pdf_name,file_path_no_sign,version,name_bill_to_fullname,name_bill_to_fullname_nosign, = crete_pdf_bill(
+        (
+            pdf_file,
+            pdf_name,
+            file_path_no_sign,
+            version,
+            name_bill_to_fullname,
+            name_bill_to_fullname_nosign,
+        ) = crete_pdf_bill(
             self.specification.id,
             request,
             is_contract,
@@ -733,10 +737,9 @@ class Order(models.Model):
             post_update,
             type_save,
         )
-        
+
         if pdf_file:
-            
-          
+
             self.bill_date_start = datetime.date.today()
             bill_date_start = datetime.date.today()
             data_stop = create_time_stop_specification()
@@ -748,7 +751,6 @@ class Order(models.Model):
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
 
-  
             Notification.add_notification(self.id, "DOCUMENT_BILL", pdf_file)
             self._change_reason = "Ручное"
             self.save()

@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "tinymce",
     "drf_spectacular",
+    "sorl.thumbnail",
 ]
 
 STATICFILES_FINDERS = [
@@ -272,11 +273,6 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 # # EMAIL_USE_SSL = True
 # SERVER_EMAIL = EMAIL_HOST_USER
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-
-
-
 
 
 SPECTACULAR_SETTINGS = {

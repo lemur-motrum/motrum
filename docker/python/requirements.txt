@@ -23,6 +23,7 @@ fast-bitrix24==1.8.4
 drf_spectacular==0.28.0
 dadata==24.10.0
 smsru-api==0.1.7
+sorl-thumbnail
 
 djlint==1.36.4
 libsass==0.23.0

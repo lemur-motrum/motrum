@@ -10,13 +10,13 @@ import { uptadeOrChanegeSpecification } from "../js/ajax_specification_load.js";
 export function changePayment(container, errorFn) {
   if (container) {
     const overlay = document.querySelector(".change_of_payment_overlay");
+    const closeBtn = overlay.querySelector(".close_btn");
     const modalWindow = overlay.querySelector(".modal-window");
     const paymentInput = modalWindow.querySelector(".payment_input");
     const paymentError = modalWindow.querySelector(".payment_error");
     const paymentChangeButton = modalWindow.querySelector(
       ".change-payment-btn"
     );
-    const closeBtn = modalWindow.querySelector(".close-btn");
     const interval = setInterval(() => {
       const specifications = container.querySelectorAll(".table_item");
       if (specifications.length > 0) {
@@ -230,8 +230,6 @@ export function changePayment(container, errorFn) {
           closeBtn.onclick = () => {
             document.querySelectorAll(".add_payment_button").forEach((el) => {
               el.disabled = false;
-              el.innerHTML = "";
-              el.textContent = "Внести cумму";
             });
             overlay.classList.remove("visible");
             if (overlay.classList.contains("show")) {
@@ -248,9 +246,9 @@ export function changePayment(container, errorFn) {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  const specificationContainer = document.querySelector(
-    ".all_specifications_table"
-  );
-  changePayment(specificationContainer, showErrorValidation);
-});
+// window.addEventListener("DOMContentLoaded", () => {
+//   const specificationContainer = document.querySelector(
+//     ".all_specifications_table"
+//   );
+//   changePayment(specificationContainer, showErrorValidation);
+// });

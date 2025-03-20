@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   getDigitsNumber,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
@@ -282,9 +284,7 @@ function addNewProductLogic(container) {
       changeTotalCost(quantityInput, priceOnceInput);
       let validate = true;
       addNewItemInCartButton.onclick = () => {
-        addNewItemInCartButton.textContent = "";
-        addNewItemInCartButton.innerHTML = "<div class='small_loader'></div>";
-        addNewItemInCartButton.disabled = true;
+        setPreloaderInButton(addNewItemInCartButton);
         function inputValidate(input) {
           if (!input.value) {
             validate = false;
@@ -365,17 +365,13 @@ function addNewProductLogic(container) {
             })
             .then((response) => {
               if (response.status == "product_in_okt") {
-                addNewItemInCartButton.disabled = false;
-                addNewItemInCartButton.innerHTML = "";
-                addNewItemInCartButton.textContent = "Добавить товар";
+                hidePreloaderAndEnabledButton(addNewItemInCartButton);
                 showErrorValidation(
                   "Данный товар уже есть в ОКТ",
                   newProductError
                 );
               } else if (response.status == "product_in_cart") {
-                addNewItemInCartButton.disabled = false;
-                addNewItemInCartButton.innerHTML = "";
-                addNewItemInCartButton.textContent = "Добавить товар";
+                hidePreloaderAndEnabledButton(addNewItemInCartButton);
                 showErrorValidation(
                   "Товар с таким артикулом уже есть в корзине",
                   newProductError

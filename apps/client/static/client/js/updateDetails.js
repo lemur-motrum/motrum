@@ -1,4 +1,9 @@
-import { showErrorValidation, getCookie } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  getCookie,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
+} from "/static/core/js/functions.js";
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
@@ -57,6 +62,7 @@ window.addEventListener("DOMContentLoaded", () => {
             validate = false;
           }
           if (validate) {
+            setPreloaderInButton(submitBtn);
             const dataObj = {
               country: addressCountry ? addressCountry : null,
               region: regionInput.value,
@@ -180,6 +186,7 @@ window.addEventListener("DOMContentLoaded", () => {
               kpp: correspondentAccountInput.value,
               bic: bic.value,
             };
+            setPreloaderInButton(submitButton);
 
             const data = JSON.stringify(dataObj);
 
@@ -287,6 +294,7 @@ window.addEventListener("DOMContentLoaded", () => {
           validate = false;
         }
         if (validate) {
+          setPreloaderInButton(submitButton);
           const dataObj = {
             requisitesKpp: dataID,
             account_requisites: currentAccountInput.value,

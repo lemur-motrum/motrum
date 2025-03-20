@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
@@ -494,17 +496,7 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           validate = false;
         }
-        // if (!legalAdressInput.value) {
-        //   showErrorValidation(
-        //     "Обязательное поле",
-        //     newLegalEntityLegalAdressError
-        //   );
-        //   validate = false;
-        // }
-        // if (!legalAddressHouseInput.value) {
-        //   showErrorValidation("Обязательное поле", legalAddressHouseError);
-        //   validate = false;
-        // }
+
         if (!currentAccount.value) {
           showErrorValidation(
             "Обязательное поле",
@@ -552,6 +544,8 @@ window.addEventListener("DOMContentLoaded", () => {
           validate = false;
         }
         if (validate) {
+          const btn = newLegalEntityForm.querySelector(".save_legal_entity");
+
           const dataObj = {
             requisites: {
               client: clientId,
@@ -594,6 +588,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
           const data = JSON.stringify(dataObj);
 
+          setPreloaderInButton(btn);
+
           fetch(`/api/v1/requisites/add/`, {
             method: "POST",
             body: data,
@@ -604,6 +600,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
               window.location.reload();
+              hidePreloaderAndEnabledButton(btn);
             } else {
               setErrorModal();
             }

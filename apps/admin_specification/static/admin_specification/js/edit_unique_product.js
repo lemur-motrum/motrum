@@ -3,7 +3,10 @@ import {
   getCookie,
   getDigitsNumber,
   getCurrentPrice,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
+
 import {
   inputValidation,
   inputValidationQuantity,
@@ -32,7 +35,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
-      const supplierSelect = changeFormWrapper.querySelector(".vendor_select");
+      const supplierSelect = changeFormWrapper.querySelector(
+        ".vendor_select__toggle_change"
+      );
+
       const options = supplierSelect.querySelectorAll("option");
       options.forEach((el) => {
         if (el.selected && el.getAttribute("value")) {
@@ -138,15 +144,11 @@ window.addEventListener("DOMContentLoaded", () => {
       changeTotalCost(quantityInput, priceOneInput);
 
       changeButton.onclick = () => {
-        changeButton.textContent = "";
-        changeButton.innerHTML = "<div class='small_loader'></div>";
-        changeButton.disabled = true;
+        setPreloaderInButton(changeButton);
         function validate(input) {
           if (!input.value) {
             input.style.border = "0.063rem solid red";
-            changeButton.disabled = false;
-            changeButton.innerHTML = "";
-            changeButton.textContent = "Изменить";
+            hidePreloaderAndEnabledButton(changeButton);
           }
         }
         validate(nameInput);
@@ -154,6 +156,7 @@ window.addEventListener("DOMContentLoaded", () => {
         validate(priceOneInput);
         validate(quantityInput);
         if (!supplierSelect.getAttribute("value")) {
+          setPreloaderInButton(changeButton);
           supplierSelect.style.border = "0.063rem solid red";
         }
         if (

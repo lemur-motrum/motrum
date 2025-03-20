@@ -7,10 +7,11 @@
         {% if productimage_set|length > 0 %}
             {% for productimage in productimage_set %}
                 {% if productimage.photo and productimage.hide == false %}
-                    {% if loop.first %}<img src="{{ productimage.photo }}">{% endif %}
-                    111
+                    {% if loop.first %}
+                        <img src="{{ productimage.photo }}" loading="lazy" alt="img">
+                    {% endif %}
                 {% else %}
-                    <img src="/static/core/images/nophoto1.png">
+                    <img src="/static/core/images/nophoto1.png" loading="lazy" alt="img">
                 {% endif %}
             {% endfor %}
         {% else %}

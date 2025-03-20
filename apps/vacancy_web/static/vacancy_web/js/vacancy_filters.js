@@ -3,6 +3,8 @@ import {
   getDigitsNumber,
   showErrorValidation,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
@@ -261,6 +263,8 @@ window.addEventListener("DOMContentLoaded", () => {
           formData.append("message", vacancyTextArea.value);
           formData.append("vacancy", vacancyName);
 
+          setPreloaderInButton(formSubmitBtn);
+
           fetch("/api/v1/vacancy/send-vacancy/", {
             method: "POST",
             body: formData,
@@ -273,6 +277,7 @@ window.addEventListener("DOMContentLoaded", () => {
               successModal(
                 `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
               );
+              hidePreloaderAndEnabledButton(formSubmitBtn);
             } else {
               setErrorModal();
             }

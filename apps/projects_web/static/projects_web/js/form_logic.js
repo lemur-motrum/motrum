@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   maskOptions,
   getCookie,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
@@ -16,12 +18,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const nameError = formWrapper.querySelector(".name_error");
     const phoneInput = formWrapper.querySelector(".phone_input");
     const phoneError = formWrapper.querySelector(".phone_error");
+    const btn = form.querySelector("button");
 
     const mask = IMask(phoneInput, maskOptions);
 
-    form.onsubmit = (e) => {
+    function validate() {
       let validate = true;
-      e.preventDefault();
       if (!nameInput.value) {
         showErrorValidation("Обязательное поле", nameError);
         validate = false;
@@ -34,12 +36,20 @@ window.addEventListener("DOMContentLoaded", () => {
         showErrorValidation("Некорректный номер телефона", phoneError);
         validate = false;
       }
-      if (validate) {
+      return validate;
+    }
+
+    form.onsubmit = (e) => {
+      let val = validate();
+      e.preventDefault();
+      if (val) {
         const dataObj = {
           name: nameInput.value,
           phone: phoneInput.value,
         };
         const data = JSON.stringify(dataObj);
+
+        setPreloaderInButton(btn);
 
         fetch("", {
           method: "POST",
@@ -50,6 +60,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            hidePreloaderAndEnabledButton(btn);
           } else {
             setErrorModal();
           }

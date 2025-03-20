@@ -796,6 +796,11 @@ def create_specification(request):
                 ).values(
                     "date_delivery_bill",
                 ),
+                date_delivery_first=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery",
+                ),
                 sale_motrum=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_sale_motrum",
                 ),

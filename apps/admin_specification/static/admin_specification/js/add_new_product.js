@@ -221,6 +221,20 @@ function addNewProductLogic(container) {
         ".new_item_container_value_motrum_price"
       );
 
+      function closeSelectDropdown(select) {
+        const options = select.querySelectorAll(".itc-select__options");
+
+        options.forEach((el) => {
+          el.onclick = () => {
+            setTimeout(() => {
+              select.classList.remove("itc-select_show");
+            });
+          };
+        });
+      }
+      closeSelectDropdown(supplierSelect);
+      closeSelectDropdown(vendorSelect);
+
       function changePercent() {
         if (priceOnceInput.value && quantityInput.value) {
           getDigitsNumber(

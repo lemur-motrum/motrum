@@ -36,21 +36,20 @@ window.addEventListener("DOMContentLoaded", () => {
         ".new_item_container_article_input"
       );
       const select = changeFormWrapper.querySelector(".vendor_select");
-      const supplierSelect = changeFormWrapper.querySelector(
+      const supplierSelect = select.querySelector(
         ".vendor_select__toggle_change"
       );
 
-      const options = supplierSelect.querySelectorAll(".itc-select__option");
+      const options = select.querySelectorAll(".itc-select__options");
+
       options.forEach((el) => {
-        if (el.selected && el.getAttribute("value")) {
-          supplierSelect.setAttribute("value", el.getAttribute("value"));
-        }
-        supplierSelect.addEventListener("change", function () {
-          if (el.selected) {
-            supplierSelect.setAttribute("value", el.getAttribute("value"));
-          }
-        });
+        el.onclick = () => {
+          setTimeout(() => {
+            select.classList.remove("itc-select_show");
+          });
+        };
       });
+
       const priceOneInput = changeFormWrapper.querySelector(".price_input");
       priceOneInput.value = getCurrentPrice(priceOneInput.value);
       const quantityInput = changeFormWrapper.querySelector(".quantity_input");

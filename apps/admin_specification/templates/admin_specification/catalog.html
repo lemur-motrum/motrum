@@ -721,7 +721,7 @@
                                     <div class="comment false">Добавить комментарий</div>
                                 {% endif %}
                             </div>
-                        
+                            <div class="item_value"></div>
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
@@ -848,15 +848,24 @@
                                     </div>
                                     <div class="change_item_container_value">
                                         <label class="vedor_label">
-                                            <select class="vendor_select" value="">
-                                                <option value="" disabled selected>Выберете производителя</option>
-                                                {% for vendor_item in vendor %}
-                                                    <option value="{{ vendor_item.id }}"
-                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}>
-                                                        {{ vendor_item.name }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                                                <button type="button"
+                                                        class="itc-select__toggle vendor_select__toggle_change"
+                                                        name="vendor"
+                                                        value=""
+                                                        data-select="toggle"
+                                                        data-index="-1">Производитель</button>
+                                                <div class="itc-select__dropdown">
+                                                    <ul class="itc-select__options">
+                                                        {% for vendor_item in vendor %}
+                                                            <li class="itc-select__option"
+                                                                data-select="option"
+                                                                data-value="{{ vendor_item.id }}"
+                                                                data-index="0">{{ vendor_item.name }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
@@ -883,7 +892,7 @@
                                     <div class="change_item_container_value">
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
-                                            Cкидка Motrum
+                                            Cкидка
                                             <input class="persent_sale"
                                                    type="text"
                                                    placeholder="%"

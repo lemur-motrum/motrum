@@ -3,6 +3,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
@@ -127,6 +129,9 @@ window.addEventListener("DOMContentLoaded", () => {
               phone: phoneArray[0] == "" ? [] : phoneArray,
             };
             const data = JSON.stringify(dataObj);
+
+            setPreloaderInButton(changeFormFormSubmitBtn);
+
             const response = await fetch(
               `/api/v1/client/${clientId}/upd-user-lk/`,
               {
@@ -140,6 +145,7 @@ window.addEventListener("DOMContentLoaded", () => {
             );
             if (response.status >= 200 && response.status < 300) {
               window.location.reload();
+              hidePreloaderAndEnabledButton(changeFormFormSubmitBtn);
             } else {
               setErrorModal();
               throw new Error("Ошибка");

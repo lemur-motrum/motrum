@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
@@ -127,6 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           const data = JSON.stringify(dataObj);
+          setPreloaderInButton(submitBtn);
 
           fetch("", {
             method: "POST",
@@ -137,7 +140,7 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
-              window.location.reload();
+              // window.location.reload();
             } else {
               setErrorModal();
               throw new Error("Ошибка");

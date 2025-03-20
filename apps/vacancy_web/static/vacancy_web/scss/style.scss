@@ -803,6 +803,20 @@
                   &.visible {
                     opacity: 1;
                   }
+                  .close_btn {
+                    position: absolute;
+                    top: 2.5%;
+                    right: 5%;
+                    transform: rotate(45deg);
+                    font-weight: 300;
+                    font-size: 6rem;
+                    cursor: pointer;
+                    color: #fff;
+                    transition: 0.6s;
+                    &:hover {
+                      color: #a4a4a4;
+                    }
+                  }
                   .modal_window {
                     width: 23.75rem;
                     height: auto;
@@ -815,24 +829,7 @@
                       width: 90%;
                       border-radius: 1.5rem;
                     }
-                    .close_btn {
-                      font-size: 2rem;
-                      position: absolute;
-                      transform: rotate(45deg);
-                      top: 1%;
-                      right: 7%;
-                      cursor: pointer;
-                      color: #bdbdbd;
-                      font-weight: 700;
-                      transition: 0.6s;
-                      @media screen and(max-width:576px) {
-                        top: 20%;
-                        right: -73%;
-                      }
-                      &:hover {
-                        color: gray;
-                      }
-                    }
+
                     .title {
                       text-align: center;
                       margin: 0 auto;
@@ -1010,6 +1007,56 @@
                       transition: 0.6s;
                       &:hover {
                         background-color: #ff5b00;
+                      }
+                      &:disabled,
+                      &[disabled] {
+                        cursor: auto;
+                        &:hover {
+                          background-color: #95bad4;
+                        }
+                        .small_loader {
+                          display: block;
+                          overflow: hidden;
+                          font-size: 10px;
+                          text-indent: -9999em;
+                          width: 1rem;
+                          height: 1rem;
+                          border-radius: 50%;
+                          background: #65abf8;
+                          margin: 0 auto;
+                          background: linear-gradient(
+                            to right,
+                            #fff 10%,
+                            rgba(101, 171, 248, 0) 42%
+                          );
+                          position: relative;
+                          -webkit-animation: load3 1.4s infinite linear;
+                          animation: load3 1.4s infinite linear;
+                          transform: translateZ(0);
+                          &:before {
+                            width: 50%;
+                            height: 50%;
+                            background: #fff;
+                            border-radius: 100% 0 0 0;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            content: "";
+                          }
+                          &:after {
+                            background-color: #95bad4;
+                            width: 75%;
+                            height: 75%;
+                            border-radius: 50%;
+                            content: "";
+                            margin: auto;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                          }
+                        }
                       }
                     }
                   }
@@ -1265,7 +1312,55 @@
           text-transform: lowercase;
           background-color: #fff;
           border-radius: 1.875rem;
+          border: none;
           cursor: pointer;
+          &:disabled,
+          &[disabled] {
+            cursor: auto;
+            .small_loader {
+              display: block;
+              overflow: hidden;
+              font-size: 10px;
+              text-indent: -9999em;
+              width: 1rem;
+              height: 1rem;
+              border-radius: 50%;
+              background: #65abf8;
+              margin: 0 auto;
+              background: linear-gradient(
+                to right,
+                #000 10%,
+                rgba(101, 171, 248, 0) 42%
+              );
+              position: relative;
+              -webkit-animation: load3 1.4s infinite linear;
+              animation: load3 1.4s infinite linear;
+              transform: translateZ(0);
+              &:before {
+                width: 50%;
+                height: 50%;
+                background: #000;
+                border-radius: 100% 0 0 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: "";
+              }
+              &:after {
+                background-color: #fff;
+                width: 75%;
+                height: 75%;
+                border-radius: 50%;
+                content: "";
+                margin: auto;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+              }
+            }
+          }
         }
       }
     }

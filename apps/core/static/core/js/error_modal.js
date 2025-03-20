@@ -1,14 +1,18 @@
+import { setPreloaderInButton } from "/static/core/js/functions.js";
+
 export function setErrorModal() {
   const overlay = document.querySelector(".error_overlay_modal");
   const btn = overlay.querySelector(".btn");
   overlay.classList.add("show");
-  setTimeout(() => {
+
+  requestAnimationFrame(() => {
     overlay.classList.add("visible");
-  }, 500);
+  });
 
   btn.onclick = () => {
-    btn.textContent = "";
-    btn.innerHTML = "<div class='small_loader'></div>";
-    window.location.reload();
+    setPreloaderInButton(btn);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 }

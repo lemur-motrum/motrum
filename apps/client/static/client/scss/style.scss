@@ -1954,6 +1954,55 @@
               &:hover {
                 background-color: #ff5b00;
               }
+              &:disabled,
+              &[disabled] {
+                &:hover {
+                  background-color: #95bad4;
+                }
+                .small_loader {
+                  display: block;
+                  overflow: hidden;
+                  font-size: 10px;
+                  text-indent: -9999em;
+                  width: 1rem;
+                  height: 1rem;
+                  border-radius: 50%;
+                  background: #65abf8;
+                  margin: 0 auto;
+                  background: linear-gradient(
+                    to right,
+                    #fff 10%,
+                    rgba(101, 171, 248, 0) 42%
+                  );
+                  position: relative;
+                  -webkit-animation: load3 1.4s infinite linear;
+                  animation: load3 1.4s infinite linear;
+                  transform: translateZ(0);
+                  &:before {
+                    width: 50%;
+                    height: 50%;
+                    background: #fff;
+                    border-radius: 100% 0 0 0;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    content: "";
+                  }
+                  &:after {
+                    background-color: #95bad4;
+                    width: 75%;
+                    height: 75%;
+                    border-radius: 50%;
+                    content: "";
+                    margin: auto;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                  }
+                }
+              }
             }
           }
         }
@@ -2221,6 +2270,55 @@
             }
             &:hover {
               background-color: #ff5b00;
+            }
+            &:disabled,
+            &[disabled] {
+              &:hover {
+                background-color: #95bad4;
+              }
+              .small_loader {
+                display: block;
+                overflow: hidden;
+                font-size: 10px;
+                text-indent: -9999em;
+                width: 1rem;
+                height: 1rem;
+                border-radius: 50%;
+                background: #65abf8;
+                margin: 0 auto;
+                background: linear-gradient(
+                  to right,
+                  #fff 10%,
+                  rgba(101, 171, 248, 0) 42%
+                );
+                position: relative;
+                -webkit-animation: load3 1.4s infinite linear;
+                animation: load3 1.4s infinite linear;
+                transform: translateZ(0);
+                &:before {
+                  width: 50%;
+                  height: 50%;
+                  background: #fff;
+                  border-radius: 100% 0 0 0;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  content: "";
+                }
+                &:after {
+                  background-color: #95bad4;
+                  width: 75%;
+                  height: 75%;
+                  border-radius: 50%;
+                  content: "";
+                  margin: auto;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  bottom: 0;
+                  right: 0;
+                }
+              }
             }
           }
         }

@@ -197,3 +197,18 @@ export const maskOptions = {
     return appended;
   },
 };
+
+// прелодер на кнопку
+export function setPreloaderInButton(button) {
+  button.disabled = true;
+  button.setAttribute("button-text", button.textContent);
+  button.textContent = "";
+  button.innerHTML = "<div class='small_loader'></div>";
+}
+
+// возвращение кнопки в активное состояние
+export function hidePreloaderAndEnabledButton(button) {
+  button.innerHTML = "";
+  button.textContent = button.getAttribute("button-text");
+  button.disabled = "true";
+}

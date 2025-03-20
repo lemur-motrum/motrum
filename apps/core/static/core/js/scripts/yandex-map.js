@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
@@ -59,8 +61,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const contactsFormOverlay = contactsWrapper.querySelector(
       ".contact_page_overlay"
     );
+    const closeBtn = contactsFormOverlay.querySelector(".close_btn");
     const modalWindow = contactsFormOverlay.querySelector(".modal_window");
-    const closeBtn = modalWindow.querySelector(".close_btn");
     const nameInput = modalWindow.querySelector(".name_input");
     const nameError = modalWindow.querySelector(".name_error");
     const phoneInput = modalWindow.querySelector(".phone_input");
@@ -119,6 +121,8 @@ window.addEventListener("DOMContentLoaded", () => {
         };
         const data = JSON.stringify(dataObj);
 
+        setPreloaderInButton(submitBtn);
+
         fetch("", {
           method: "POST",
           body: data,
@@ -134,8 +138,7 @@ window.addEventListener("DOMContentLoaded", () => {
               throw new Error("Ошибка");
             }
           })
-          .then((response) => console.log(response))
-          .catch((error) => console.error(error));
+          .then((response) => console.log(response));
       }
     };
   }

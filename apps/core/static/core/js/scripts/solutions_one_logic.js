@@ -1,4 +1,15 @@
-import { showErrorValidation, maskOptions } from "/static/core/js/functions.js";
+import {
+  showErrorValidation,
+  maskOptions,
+  getCookie,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
+} from "/static/core/js/functions.js";
+
+import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
+
+const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".solution_one_container");
@@ -18,14 +29,43 @@ window.addEventListener("DOMContentLoaded", () => {
       const phoneMask = IMask(phoneInput, maskOptions);
 
       submitBtn.onclick = () => {
+        let validate = true;
         if (!nameInput.value) {
           showErrorValidation("Обязательное поле", nameError);
+          validate = false;
         }
         if (!phoneInput.value) {
           showErrorValidation("Обязательное поле", phoneError);
+          validate = false;
         }
         if (phoneInput.value && phoneInput.value.length < 18) {
           showErrorValidation("Некорректный номер телефона", phoneError);
+          validate = false;
+        }
+        if (validate) {
+          const dataObj = {
+            name: nameInput.value,
+            phone: phoneInput.value,
+          };
+          const data = JSON.stringify(dataObj);
+
+          setPreloaderInButton(submitBtn);
+
+          fetch("", {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              // window.location.reload();
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          });
         }
       };
     }

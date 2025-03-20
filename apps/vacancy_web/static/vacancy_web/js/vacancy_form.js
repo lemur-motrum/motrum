@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
@@ -77,6 +79,8 @@ window.addEventListener("DOMContentLoaded", () => {
         formData.append("message", textArea.value ? textArea.value : "");
         formData.append("vacancy", "");
 
+        setPreloaderInButton(submitBtn);
+
         fetch("/api/v1/vacancy/send-vacancy/", {
           method: "POST",
           body: formData,
@@ -90,6 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
             successModal(
               "Спасибо за отклик, мы рассмотрим Ваше резюме и свяжемся с Вами"
             );
+            hidePreloaderAndEnabledButton(submitBtn);
           } else {
             setErrorModal();
           }

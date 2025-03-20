@@ -2,6 +2,8 @@ import {
   showErrorValidation,
   getCookie,
   maskOptions,
+  setPreloaderInButton,
+  hidePreloaderAndEnabledButton,
 } from "/static/core/js/functions.js";
 
 const csrfToken = getCookie("csrftoken");
@@ -12,6 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const overlay = document.querySelector(".overlay");
 
     if (overlay) {
+      const closeBtn = overlay.querySelector(".close_btn");
       const autificationForm = overlay.querySelector(".autification-form");
       const phoneInput = autificationForm.querySelector(".phone-input");
       const pinInput = autificationForm.querySelector(".password-input");
@@ -85,7 +88,9 @@ window.addEventListener("DOMContentLoaded", () => {
           overlay.classList.add("visible");
         });
 
-        overlay.onclick = () => {
+        closeBtn.onclick = () => hideOverlay();
+
+        function hideOverlay() {
           overlay.classList.remove("visible");
           if (overlay.classList.contains("show")) {
             document.body.style.overflowY = "scroll";
@@ -96,16 +101,17 @@ window.addEventListener("DOMContentLoaded", () => {
           autificationForm.reset();
           pinLabel.classList.remove("show");
           button.style.display = "flex";
+          if (button.getAttribute("button-text")) {
+            hidePreloaderAndEnabledButton(button);
+          }
           if (checkZone.classList.contains("check")) {
             checkZone.classList.remove("check");
           }
-        };
-      };
-      overlay.querySelector(".modal-window").onclick = (e) => {
-        e.stopPropagation();
+        }
       };
 
       button.onclick = (e) => {
+        setPreloaderInButton(button);
         let validate = true;
         e.preventDefault();
         if (!phoneInput.value) {
@@ -143,6 +149,7 @@ window.addEventListener("DOMContentLoaded", () => {
               if (response.status == 200) {
                 setInterval(timer, 1000);
                 button.style.display = "none";
+                hidePreloaderAndEnabledButton(button);
                 pinLabel.classList.add("show");
                 pinInput.oninput = () => {
                   const arrayPinInputValue = pinInput.value.split("");

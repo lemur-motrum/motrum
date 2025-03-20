@@ -410,23 +410,24 @@
                                     </div>
                                     <div class="change_item_container_value">
                                         <label class="vedor_label">
-                                            <select class="vendor_select" value="">
-                                                <option value="" disabled selected>Выберете производителя</option>
-                                                {% for vendor_item in vendor %}
-                                                    {% if item.product_new_cart_vendor %}
-                                                        {{ item.product_new_cart_vendor }}
-                                                    {% else %}
-                                                        {{ item.vendor.id }}
-                                                    {% endif %}
-                                                    <option {% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }} value="{{ vendor_item.id }}" {% if vendor_item.id == item.product_new_cart_vendor %}selected{% endif %}
-                                                            {% else %}
-                                                            value="{{ vendor_item.id }}"
-                                                            {% if vendor_item.id == item.vendor.id %}selected{% endif %}
-                                                            {% endif %}>
-                                                        {{ vendor_item.name }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                                                <button type="button"
+                                                        class="itc-select__toggle vendor_select__toggle_change"
+                                                        name="vendor"
+                                                        value="{{item.vendor.id}}"
+                                                        data-select="toggle"
+                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
+                                                <div class="itc-select__dropdown">
+                                                    <ul class="itc-select__options">
+                                                        {% for vendor_item in vendor %}
+                                                            <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
+                                                                data-select="option"
+                                                                data-value="{{ vendor_item.id }}"
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">

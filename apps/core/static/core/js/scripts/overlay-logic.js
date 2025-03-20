@@ -111,7 +111,6 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       button.onclick = (e) => {
-        setPreloaderInButton(button);
         let validate = true;
         e.preventDefault();
         if (!phoneInput.value) {
@@ -128,6 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (validate) {
+          setPreloaderInButton(button);
           const phone = phoneMask.unmaskedValue;
 
           const dataArr = {

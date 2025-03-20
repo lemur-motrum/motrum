@@ -132,7 +132,7 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     
-    get_manager_info()
+    get_status_order()
     # manager_all_bx = bx.get_all(
     #     "user.get",
     #     params={

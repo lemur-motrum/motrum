@@ -593,39 +593,48 @@ def get_status_order():
 
         not_view_status = ["COMPLETED", "CANCELED"]
         actual_order = Order.objects.exclude(
-            status__in=not_view_status, id_bitrix__isnull=True
-        ).values("id_bitrix")
+            status__in=not_view_status, id_bitrix=None,
+        ).values("id_bitrix").exclude(id_bitrix=None)
+        # actual_order = Order.objects.exclude(
+        #     status__in=not_view_status, id_bitrix__isnull=True,
+        # ).filter(id_bitrix=11702).values("id_bitrix")
+        print(actual_order)
         if actual_order.count() > 0:
             webhook = BITRIX_WEBHOOK
             bx = Bitrix(webhook)
             
             orders = [d["id_bitrix"] for d in actual_order]
-            
-            orders_bx = bx.get_by_ID("crm.deal.get", orders)
+            print(orders)
+            for orde in orders:
+                print(orde)
+                try:
+                    orders_bx = bx.get_by_ID("crm.deal.get", [orde])
+                    print(orders_bx)
+                    # if len(orders) == 1:
+                    #     orders_bx = {orders_bx["ID"]: orders_bx}
 
-            if len(orders) == 1:
-                orders_bx = {orders_bx["ID"]: orders_bx}
+                    # for order_bx in orders_bx.values():
+                    print("order_bx")
+                    id_bx = orders_bx["ID"]
+                    print("id_bx")
+                    status_bx = orders_bx["STAGE_ID"]
+                    order = Order.objects.filter(id_bitrix=id_bx).last()
 
-            for order_bx in orders_bx.values():
-
-                id_bx = order_bx["ID"]
-                status_bx = order_bx["STAGE_ID"]
-                order = Order.objects.filter(id_bitrix=id_bx).last()
-
-                if order:
-                    status = get_status_bx(status_bx)
-                    if status == "SHIPMENT_":
-                        if order.type_delivery == "Самовывоз":
-                            status = "SHIPMENT_PICKUP"
-                        else:
-                            status = "SHIPMENT_AUTO"
-                    
-                    if order.status != status:
-                        Notification.add_notification(order.id, "STATUS_ORDERING", None)
-
-                    order.status = status
-                    order.save()
-
+                    if order:
+                        status = get_status_bx(status_bx)
+                        if status == "SHIPMENT_":
+                            if order.type_delivery == "Самовывоз":
+                                status = "SHIPMENT_PICKUP"
+                            else:
+                                status = "SHIPMENT_AUTO"
+                        
+                        if order.status != status:
+                            Notification.add_notification(order.id, "STATUS_ORDERING", None)
+                        print(status)
+                        order.status = status
+                        order.save()
+                except:
+                    pass
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

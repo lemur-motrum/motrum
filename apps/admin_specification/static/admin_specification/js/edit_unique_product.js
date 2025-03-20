@@ -35,11 +35,12 @@ window.addEventListener("DOMContentLoaded", () => {
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
+      const select = changeFormWrapper.querySelector(".vendor_select");
       const supplierSelect = changeFormWrapper.querySelector(
         ".vendor_select__toggle_change"
       );
 
-      const options = supplierSelect.querySelectorAll("option");
+      const options = supplierSelect.querySelectorAll(".itc-select__option");
       options.forEach((el) => {
         if (el.selected && el.getAttribute("value")) {
           supplierSelect.setAttribute("value", el.getAttribute("value"));

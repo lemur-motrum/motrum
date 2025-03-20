@@ -256,6 +256,7 @@
                             <div title="Cохранить элемент" class="save_icon_container">
                                 <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
                             </div>
+                         
                             <div class="item_value">
                                 {% if item.product_new_cart %}
                                     {{ item.product_new_cart }}
@@ -389,6 +390,7 @@
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
+                       
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
@@ -625,7 +627,7 @@
                                     </div>
                                     <div class="change_item_container_value">
                                         <label class="vedor_label">
-                                            <div class="itc-select vendor_select" id="select-3">
+                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
                                                 <button type="button"
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
@@ -719,7 +721,7 @@
                                     <div class="comment false">Добавить комментарий</div>
                                 {% endif %}
                             </div>
-                            <div class="item_value"></div>
+                        
                             {% if item.price.rub_price_supplier == 0 %}
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">

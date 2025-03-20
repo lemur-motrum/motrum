@@ -151,7 +151,7 @@ def add_iek(request):
 def test(request):
     def background_task():
         # Долгосрочная фоновая задача
-        iek_api()
+        get_motrum_nomenclature()
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)

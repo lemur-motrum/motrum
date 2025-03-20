@@ -2,7 +2,9 @@
 {% block content %}
     {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
+    
     <div class="specification-container">
+        <a href="{% url "admin_specification:all_specifications" %}">назад</a>
         <h1 class="title">{{ title }} №{{ order.id }}</h1>
         <h2>
             {% if order.bill_name %}Счет №{{ order.bill_name }}{% endif %}
@@ -76,7 +78,7 @@
         <div class="comment_all">
             {% if specification.comment %}<p>Общий комментарий:{{ specification.comment }}</p>{% endif %}
         </div>
-        <div class="specification-container " style=" padding: 0;">
+        <!--<div class="specification-container " style=" padding: 0;">
             <div class="">
                 <div class="spetification_table">
                     <div style="position: sticky;
@@ -176,6 +178,6 @@
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 {% endblock content %}

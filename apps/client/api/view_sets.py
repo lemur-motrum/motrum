@@ -1937,6 +1937,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data_resp = {"result": "error", "error": f"info-error {info}"}
 
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
+        
         finally:
             if IS_TESTING:
                 pass

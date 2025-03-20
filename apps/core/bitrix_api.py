@@ -644,6 +644,7 @@ def add_info_order(request, order, type_save):
     try:
         webhook = BITRIX_WEBHOOK
         id_bitrix_order = order.id_bitrix
+        
         if id_bitrix_order != 0:
             print("add_info_order")
 
@@ -699,6 +700,7 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
+                    spes_file = "счет"
 
                 else:
 
@@ -708,6 +710,7 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
+                    spes_file = "счет-оферта"
 
                 # СЧЕТ  СДЕЛКИ
 
@@ -718,7 +721,10 @@ def add_info_order(request, order, type_save):
                     order.bill_date_stop.isoformat()
                 )
                 year = datetime.datetime.now().year
-                accountNumber = f"{order.bill_name}_{year}"
+                motrum_ooo = order.motrum_requisites.requisites.short_name_legal_entity
+                
+                 
+                accountNumber = f"{order.bill_name}_{year}_{spes_file}_{motrum_ooo}"
                 if order.bill_id_bx:
                     invoice = {
                         "title": order.bill_name,

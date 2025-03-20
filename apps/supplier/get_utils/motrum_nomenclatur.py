@@ -242,7 +242,6 @@ def get_or_add_vendor(vendor):
     if vendor_name == "AuCom Electronics":
         vendor_name = "AuCom"
         supplier_qs = Supplier.objects.get(slug="delta")
-
     elif vendor_name == "OptimusDrive":
         vendor_name = "Optimus Drive"
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
@@ -273,6 +272,8 @@ def get_or_add_vendor(vendor):
         supplier_qs = Supplier.objects.get(slug="optimus-drive")
     elif vendor_name == "Emas":
         supplier_qs = Supplier.objects.get(slug="emas")
+    elif vendor_name == "PromPower":
+        supplier_qs = Supplier.objects.get(slug="prompower")
     else:
         supplier_qs = Supplier.objects.get(slug="drugoj")
 
@@ -306,7 +307,7 @@ def add_stok_motrum_article(
         prod=product,
         defaults={
             "lot": lot,
-            "stock_supplier": 1,
+            "stock_supplier": 0,
         },
     )
 

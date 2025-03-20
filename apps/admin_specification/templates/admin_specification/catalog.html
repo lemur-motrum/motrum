@@ -631,16 +631,16 @@
                                                 <button type="button"
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
-                                                        value=""
+                                                        value="{{item.vendor.id}}"
                                                         data-select="toggle"
-                                                        data-index="-1">Производитель</button>
+                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
                                                 <div class="itc-select__dropdown">
                                                     <ul class="itc-select__options">
                                                         {% for vendor_item in vendor %}
-                                                            <li class="itc-select__option"
+                                                            <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
                                                                 data-select="option"
                                                                 data-value="{{ vendor_item.id }}"
-                                                                data-index="0">{{ vendor_item.name }}</li>
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
                                                         {% endfor %}
                                                     </ul>
                                                 </div>
@@ -852,16 +852,16 @@
                                                 <button type="button"
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
-                                                        value=""
+                                                        value="{{item.vendor.id}}"
                                                         data-select="toggle"
-                                                        data-index="-1">Производитель</button>
+                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
                                                 <div class="itc-select__dropdown">
                                                     <ul class="itc-select__options">
                                                         {% for vendor_item in vendor %}
-                                                            <li class="itc-select__option"
+                                                            <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
                                                                 data-select="option"
                                                                 data-value="{{ vendor_item.id }}"
-                                                                data-index="0">{{ vendor_item.name }}</li>
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
                                                         {% endfor %}
                                                     </ul>
                                                 </div>

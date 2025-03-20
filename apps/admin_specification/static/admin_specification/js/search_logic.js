@@ -81,8 +81,16 @@ window.addEventListener("DOMContentLoaded", () => {
       objData.counter = counter;
 
       if (searchInput.value.length > 2) {
-        overlay.classList.add("show");
-        overlay.classList.add("visible");
+        if (
+          overlay.classList.contains("show") &&
+          overlay.classList.contains("visible")
+        ) {
+          overlay.classList.add("show");
+          overlay.classList.add("visible");
+        } else {
+          overlay.classList.add("show");
+          overlay.classList.add("visible");
+        }
         openSearchWindow();
         closebtn.classList.add("show");
         const data = JSON.stringify(objData);
@@ -181,6 +189,8 @@ window.addEventListener("DOMContentLoaded", () => {
                     }
                   });
                 }
+              } else {
+                searchElemsField.innerHTML = "<div>Таких товаров нет</div>";
               }
             }
           })

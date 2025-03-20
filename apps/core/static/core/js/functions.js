@@ -210,5 +210,5 @@ export function setPreloaderInButton(button) {
 export function hidePreloaderAndEnabledButton(button) {
   button.innerHTML = "";
   button.textContent = button.getAttribute("button-text");
-  button.disabled = "true";
+  button.disabled = false;
 }

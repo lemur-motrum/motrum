@@ -24,7 +24,7 @@ window.addEventListener("DOMContentLoaded", () => {
         overwrite: "shift",
       };
 
-      let amountTime = 119;
+      let amountTime = 179;
       let errorsQuantity = 2;
 
       function timer() {
@@ -107,6 +107,8 @@ window.addEventListener("DOMContentLoaded", () => {
           if (checkZone.classList.contains("check")) {
             checkZone.classList.remove("check");
           }
+          amountTime = 179;
+          autificationForm.querySelector(".timer");
         }
       };
 

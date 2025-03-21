@@ -646,7 +646,7 @@ class CurrencyRate(models.Model):
 class Stock(models.Model):
     prod = models.OneToOneField(
         Product,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         # blank=True,
         null=True,
     )

@@ -42,7 +42,7 @@
     </div>
 </div>
 <div class="vector_container palett_vector_container">
-    <div class="solution_will_allow">
+    <div id="anchor" class="solution_will_allow">
         <div class="title">РЕШЕНИЕ ПОЗВОЛИТ</div>
         <ul>
             <li>исключить возможность получения травмы</li>
@@ -77,25 +77,27 @@
         </div>
     </div>
 </div>
-<div class="demo-form-container">
-    <div class="description_content">
-        <div class="title">ДЕМО ВЫЕЗД</div>
-        <div class="description">Бесплатная демонстрация работы робота на вашем предприятии в реальных условиях.</div>
-    </div>
-    <div class="demo_form">
-        <label>
-            <input type="text" class="name_input" placeholder="Ваше имя" />
-            <div class="error name_error"></div>
-        </label>
-        <label>
-            <input type="tel" class="phone_input" placeholder="Ваше телефон" />
-            <div class="error phone_error"></div>
-        </label>
-        <button class="btn">заказать демо выезд</button>
-    </div>
-    <div class="img_container">
-        <img src="{% static "core/images/solutions/solution_form_img.png" %}"
-             alt="img">
+<div  class="anchor_container">
+    <div class="demo-form-container">
+        <div class="description_content">
+            <div class="title">ДЕМО ВЫЕЗД</div>
+            <div class="description">Бесплатная демонстрация работы робота на вашем предприятии в реальных условиях.</div>
+        </div>
+        <div class="demo_form">
+            <label>
+                <input type="text" class="name_input" placeholder="Ваше имя" />
+                <div class="error name_error"></div>
+            </label>
+            <label>
+                <input type="tel" class="phone_input" placeholder="Ваше телефон" />
+                <div class="error phone_error"></div>
+            </label>
+            <button class="btn">заказать демо выезд</button>
+        </div>
+        <div class="img_container">
+            <img src="{% static "core/images/solutions/solution_form_img.png" %}"
+                 alt="img">
+        </div>
     </div>
 </div>
 <div class="chars">
@@ -152,12 +154,12 @@
             <li>Мобильность установки и гибкость перенастройки на другой продукт</li>
             <li>Безопасность для персонала: не требуется ограждений</li>
         </ul>
-        <div class="title-link">
+        <a href="#anchor" class="title-link">
             <div class="title-link-description">демо выезд</div>
             <div class="arrow-container">
                 <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
             </div>
-        </div>
+        </a>
     </div>
 </div>
 <div class="animate_chars_container">
@@ -237,12 +239,12 @@
                 грузами весом до 14 кг.
             </div>
         </div>
-        <div class="title-link">
+        <a href="#anchor" class="title-link">
             <div class="title-link-description">демо выезд</div>
             <div class="arrow-container">
                 <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
             </div>
-        </div>
+        </a>
     </div>
     {% comment %} <img class="palett_animate_scroll_up" src="{% static "core/images/solutions/palett_animate_up.png" %}" alt="img" /> {% endcomment %}
     <img class="palett_animate_scroll_up"

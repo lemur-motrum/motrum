@@ -338,7 +338,7 @@ class RequisitesAddress(models.Model):
     type_address_bx = models.CharField(max_length=100, choices=TYPE_ADDRESS, default=6)
     country = models.CharField(
         "Страна",
-        max_length=100,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -670,7 +670,7 @@ class Order(models.Model):
                 and self.status == "PROCESSING"
             ):
                 print("== PRE-PROCESSING and self.status == PROCESSING")
-                self.send_email_order_info(self, "PROCESSING")
+                # self.send_email_order_info(self, "PROCESSING")
 
         super().save(*args, **kwargs)
 
@@ -829,7 +829,7 @@ class OrderDocumentBill(models.Model):
         blank=True,
         null=True,
     )
-    from_index = models.CharField(max_length=100, choices=FROM_INDEX, default="-")
+    from_index = models.CharField(max_length=500, choices=FROM_INDEX, default="-")
 
     is_active = models.BooleanField("Активно", default=True)
     bill_name = models.PositiveIntegerField(

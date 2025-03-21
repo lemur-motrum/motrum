@@ -59,7 +59,7 @@ TYPE_DOCUMENT = (
 
 class Product(models.Model):
 
-    article = models.CharField("Артикул мотрум", max_length=100, blank=False)
+    article = models.CharField("Артикул мотрум", max_length=500, blank=False)
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Поставщик",
@@ -73,9 +73,9 @@ class Product(models.Model):
         null=True,
     )
 
-    article_supplier = models.CharField("Артикул поставщика", max_length=100)
+    article_supplier = models.CharField("Артикул поставщика", max_length=500)
     additional_article_supplier = models.CharField(
-        "Дополнительный артикул поставщика", max_length=100, blank=True, null=True
+        "Дополнительный артикул поставщика", max_length=500, blank=True, null=True
     )
     category_supplier_all = models.ForeignKey(
         SupplierCategoryProductAll,
@@ -314,8 +314,8 @@ def add_logs_created(sender, instance, created, **kwargs):
 
 
 class CategoryProduct(models.Model):
-    name = models.CharField("Название категории", max_length=100)
-    slug = models.SlugField(null=True, max_length=100)
+    name = models.CharField("Название категории", max_length=500)
+    slug = models.SlugField(null=True, max_length=500)
     article_name = models.CharField(
         "Артикул категории",
         max_length=25,
@@ -364,8 +364,8 @@ class CategoryProduct(models.Model):
 
 
 class GroupProduct(models.Model):
-    name = models.CharField("Название группы", max_length=100)
-    slug = models.SlugField(null=True, max_length=100)
+    name = models.CharField("Название группы", max_length=500)
+    slug = models.SlugField(null=True, max_length=500)
     category = models.ForeignKey(
         CategoryProduct,
         verbose_name="Категория Мотрум",
@@ -844,7 +844,7 @@ class Cart(models.Model):
         Client, verbose_name="Клиент", on_delete=models.PROTECT, blank=True, null=True
     )
     is_active = models.BooleanField("корзина сохранена", default=False)
-    session_key = models.CharField(max_length=100, blank=True, null=True)
+    session_key = models.CharField(max_length=500, blank=True, null=True)
     cart_admin = models.ForeignKey(
         AdminUser,
         on_delete=models.PROTECT,

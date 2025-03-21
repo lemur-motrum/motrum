@@ -42,14 +42,14 @@
                         {% endif %}
                     </div>
                     <div class="product_item">
-                        {% if product.ship_left %}
+                        {% if product.client_shipment %}
                             {{ product.ship_left }}
                         {% else %}
                             {{ product.quantity }}
                         {% endif %}
                     </div>
                     <div class="product_item">
-                        {% if product.ship_amount %}
+                        {% if product.client_shipment %}
                             {{ product.ship_amount|number_into_digits }}
                         {% else %}
                             {{ product.price_all|number_into_digits }}

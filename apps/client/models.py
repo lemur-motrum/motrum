@@ -670,16 +670,16 @@ class Order(models.Model):
                 and self.status == "PROCESSING"
             ):
                 print("== PRE-PROCESSING and self.status == PROCESSING")
-                # self.send_email_order_info(self, "PROCESSING")
+                self.send_email_order_info( "PROCESSING")
 
         super().save(*args, **kwargs)
 
-    def send_email_order_info(self, type):
+    def send_email_order_info(self, types):
         client = self.client
         need_email = False
         data = None
         if client and client.email:
-            if type == "PROCESSING":
+            if types == "PROCESSING":
                 need_email = True
                 html_message_template = "core/emails/email_get_order_to_client.html"
                 categ = CategoryProduct.objects.filter(is_send_email=True)

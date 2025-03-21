@@ -138,6 +138,11 @@ def get_motrum_nomenclature():
                                 product = Product.objects.filter(
                                     vendor=vendor_qs, article_supplier=article_supplier
                                 )
+                                if product.count() == 0 and vendor_qs.slug == "prompower":
+                                    product = Product.objects.filter(
+                                    vendor=vendor_qs, name=article_supplier
+                                )
+                                
                                 if product:
                                     product = product[0]
                                     if (

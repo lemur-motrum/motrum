@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    window.onscroll = () => {
+    document.onscroll = () => {
       if (overlay.classList.contains("show")) {
         const formPosition = form.getBoundingClientRect().top;
         console.log("formPosition", formPosition);

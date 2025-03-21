@@ -19,7 +19,8 @@
                 <div class="swiper-wrapper">
                     <div class="promoslider-one-elem swiper-slide">
                         <div class="text">
-                            Мы делаем технологический процесс производственных компаний высокопроизводительным, безопасным, исключающим брак, легко управляемым и прибыльным, за счет внедрения современных средств автоматизации.
+                            Помогаем промышленным предприятиям быть конкурентоспособными, внедряя передовые технологии автоматизации, 
+и превращать смелые идеи в надежные инженерные решения.
                         </div>
                     </div>
                 </div>
@@ -46,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="about_company_key_values_container">
+        {% comment %} <div class="about_company_key_values_container">
             <div class="up_elems_container">
                 <div class="elem">
                     <div class="title">УВАЖЕНИЕ</div>
@@ -74,7 +75,7 @@
                     <div class="content">Прозрачность в ведении бизнеса и соблюдения этических норм</div>
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
         <div class="motrum_in_numbers-container">
             <div class="description-container">
                 <div class="title">
@@ -136,13 +137,13 @@
             </div>
             <div class="squares_table">
                 <div class="square_table_elem">
-                    <img src="{% static "core/images/company_square_2.png" %}" alt="">
+                    <img src="{% static "core/images/company_square_1.png" %}" alt="">
                     <div class="linear_background"></div>
                     <div class="hidden_background"></div>
                     <div class="title">Лаборатории</div>
                     <div class="description">
-                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
-                        100+ единиц тестового оборудования.
+                        Более 30 единиц оборудования в лаборатории 
+                        100+ единиц тестового оборудования
                     </div>
                 </div>
                 <div class="square_table_elem">
@@ -151,8 +152,8 @@
                     <div class="hidden_background"></div>
                     <div class="title">ПРОИЗВОДСТВО</div>
                     <div class="description">
-                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
-                        100+ единиц тестового оборудования.
+                        250 кв.м производственных площадей
+                        50+ оборудования и станков
                     </div>
                 </div>
                 <div class="square_table_elem">
@@ -161,8 +162,9 @@
                     <div class="hidden_background"></div>
                     <div class="title">офис</div>
                     <div class="description">
-                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
-                        100+ единиц тестового оборудования.
+                        Комфортные рабочие места
+                        Комната приема пищи
+                        Удобная транспортная развязка
                     </div>
                 </div>
                 <div class="square_table_elem">
@@ -171,8 +173,7 @@
                     <div class="hidden_background"></div>
                     <div class="title">склад</div>
                     <div class="description">
-                        Более 30 единиц оборудования в лаборатории (2 робота, 12 камер технического зрения, 2 принтер аплекатора, 17 измерительных датчиков)
-                        100+ единиц тестового оборудования.
+                        15 млн. руб + оборудования на складе
                     </div>
                 </div>
             </div>
@@ -241,7 +242,7 @@
                     <div class="content_table">
                         <div class="elem">
                             <div class="number_container">{{project_in_numbers.tech_project}}+</div>
-                            <div class="description_container">установок с техническим зрением</div>
+                            <div class="description_container">линий маркировки «Честный знак»</div>
                         </div>
                         <div class="elem">
                             <div class="number_container">{{project_in_numbers.shkaf_upravleniya|number_space}}+</div>
@@ -249,7 +250,7 @@
                         </div>
                         <div class="elem">
                             <div class="number_container">{{project_in_numbers.honest_sign}}+</div>
-                            <div class="description_container">линий маркировки «Честный знак»</div>
+                            <div class="description_container">установок с техническим зрением</div>
                         </div>
                     </div>
                     <div class="marking_description_container">
@@ -322,13 +323,6 @@
             {% endif %}
             <div class="description_container">
                 <div class="description_elem">
-                    <div class="title">СЕМИНАРЫ</div>
-                    <div class="content">
-                        Компания «Мотрум» проводит для клиентов, обучающие семинары, что является отличной возможностью углубить свои знания и обсудить инновации. Участники получают полезную информацию и заводят профессиональные связи.
-                    </div>
-                </div>
-                <div class="description_elem">
-                    <div class="title">ОТНОШЕНИЯ С КЛИЕНТАМИ</div>
                     <div class="content">
                         Каждый клиент нашей компании уникален. «Мотрум» применяет индивидуальный подход к каждому из них, адаптируя продукцию под конкретные нужды. Наша цель не только удовлетворить потребности клиентов, но и превзойти их ожидания. 
                         <br>

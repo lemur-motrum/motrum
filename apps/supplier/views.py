@@ -131,10 +131,29 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-
+    filter_bx = {"PHONE": f"+79276892240"}
+    contact_bx = bx.get_all(
+        "crm.contact.list",
+        params={
+            "filter": filter_bx,
+            "select": [
+                "ID",
+                "NAME",
+                "LAST_NAME",
+                "EMAIL",
+                "PHONE",
+                "ASSIGNED_BY_ID",
+                "SECOND_NAME",
+                "POST",
+            ],
+        },
+    )
+    contact_bx = contact_bx[0]
+    print(contact_bx)
    
-   
-   
+    client_middle_name =  contact_bx['SECOND_NAME'] if contact_bx['SECOND_NAME'] != '' else None
+    print(client_middle_name)
+    print(type(client_middle_name))
    
    
    

@@ -1743,7 +1743,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
             return contact_bx
     else:
         if len(contact_bx) == 1:
-            save_info_client_in_bx(contact_bx,client)
+            save_info_client_in_bx(contact_bx[0],client)
             return ("old", contact_bx[0]["ID"])
         else:
             tasks = {
@@ -1765,15 +1765,15 @@ def add_or_get_contact_bx(bx, client, base_manager):
             
 
 def save_info_client_in_bx(client_bx_info,client):
-    
-    email =  client_bx_info['EMAIL']
-    if len(email) > 0:
-        email_nb = client_bx_info['EMAIL'][0]['VALUE']
-    else:
-        email_nb = None
+    if client_bx_info['EMAIL']:
+        email =  client_bx_info['EMAIL']
+        if len(email) > 0:
+            email_nb = client_bx_info['EMAIL'][0]['VALUE']
+        else:
+            email_nb = None
         
     if client_bx_info['ASSIGNED_BY_ID'] != "":
-        manager = AdminUser.objects.get(bitrix_id= int(client_bx_info['ASSIGNED_BY_ID'])) 
+        manager = AdminUser.objects.get(bitrix_id=int(client_bx_info['ASSIGNED_BY_ID'])) 
     else:
         manager = None  
     

@@ -1637,7 +1637,8 @@ def add_or_get_contact_bx(bx, client, base_manager):
         name = client.first_name
     else:
         name = "С сайта без имени"
-        
+    phone =   client.phone
+    
     phone = f"+{phone}"
     phone_st = [f"{phone}"]
     phone_arr = [{"VALUE": phone, "VALUE_TYPE": "WORK"}]

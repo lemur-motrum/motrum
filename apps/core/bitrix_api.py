@@ -996,7 +996,7 @@ def currency_check_bx():
         product = get_product_price_up()
 
         data_dict = {}
-      
+
         for carrency_item in carrency:
             data_curr = carrency_item["currency"]
             for item in carrency_item["order"]:
@@ -1063,9 +1063,13 @@ def get_order_carrency_up():
     data_old = in_three_days.strftime("%Y-%m-%d")
 
     for currency in currency_list:
+        print(currency)
         curr_name = currency.words_code
+        print(curr_name)
         old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
+        print(old_rate)
         now_rate = CurrencyRate.objects.get(currency=currency, date=now)
+        print(now_rate)
         old_rate_count = old_rate.vunit_rate
         new_rate_count = now_rate.vunit_rate
         difference_count = new_rate_count - old_rate_count
@@ -1121,20 +1125,20 @@ def get_product_price_up():
             if prod.product_price_catalog:
 
                 now_price = Price.objects.get(prod=prod.product).rub_price_supplier
-
-                difference_count = now_price - prod.product_price_catalog
-                count_percent = prod.product_price_catalog / 100 * 3
-                if difference_count > count_percent:
-                    percent_up = difference_count * 100 / prod.product_price_catalog
-                    percent_up = round(percent_up, 2)
-                    data_product = {
-                        "prod": prod.product.article_supplier,
-                        "prod_name": prod.product.name,
-                        "price_old": prod.product_price_catalog,
-                        "price_new": now_price,
-                        "percent_up": percent_up,
-                    }
-                    order_item_data["order_product"].append(data_product)
+                if now_price:
+                    difference_count = now_price - prod.product_price_catalog
+                    count_percent = prod.product_price_catalog / 100 * 3
+                    if difference_count > count_percent:
+                        percent_up = difference_count * 100 / prod.product_price_catalog
+                        percent_up = round(percent_up, 2)
+                        data_product = {
+                            "prod": prod.product.article_supplier,
+                            "prod_name": prod.product.name,
+                            "price_old": prod.product_price_catalog,
+                            "price_new": now_price,
+                            "percent_up": percent_up,
+                        }
+                        order_item_data["order_product"].append(data_product)
 
         if order_item_data["order_product"] != []:
 

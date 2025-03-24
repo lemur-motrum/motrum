@@ -1792,6 +1792,8 @@ def save_info_client_in_bx(client_bx_info,client):
         client.last_name = last_name
     if position:
         client.position = position
+    if email_nb:
+        client.email =  email_nb
         
     # client.middle_name =  client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
     # client.first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
@@ -1800,7 +1802,7 @@ def save_info_client_in_bx(client_bx_info,client):
     
     
     client.bitrix_id_client =  int(client_bx_info['ID'] )
-    client.email =  email_nb
+    
     client.manager =  manager
     client.save()
     
@@ -2211,7 +2213,7 @@ def add_new_order_web_not_info(order_id):
         tr = traceback.format_exc()
         error = "error"
         location = "Сохранение заказа с сайта клиента без инфы в битркис"
-        info = f" клиента без инфы  сделка {order} ошибка {e}{tr}"
+        info = f" клиента без инфы  сделка order{order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
         return ("error",info)
 

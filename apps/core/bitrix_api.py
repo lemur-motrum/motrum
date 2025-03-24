@@ -1779,14 +1779,27 @@ def save_info_client_in_bx(client_bx_info,client):
     else:
         manager = None  
     
+    middle_name = client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
+    first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
+    last_name = client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
+    position = client_bx_info['POST'] if client_bx_info['POST'] != '' else None
+    
+    if middle_name:
+        client.middle_name = middle_name
+    if first_name:
+        client.first_name = first_name
+    if last_name:
+        client.last_name = last_name
+    if position:
+        client.position = position
+        
+    # client.middle_name =  client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
+    # client.first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
+    # client.last_name =  client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
+    # client.position =  client_bx_info['POST'] if client_bx_info['POST'] != '' else None
     
     
-    client.middle_name =  client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
-    client.first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
-    client.last_name =  client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
-    client.position =  client_bx_info['POST'] if client_bx_info['POST'] != '' else None
     client.bitrix_id_client =  int(client_bx_info['ID'] )
-    
     client.email =  email_nb
     client.manager =  manager
     client.save()

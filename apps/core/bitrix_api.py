@@ -1631,7 +1631,11 @@ def serch_or_add_info_client(
 
 # получение обновление и создание контакта в битрикс - ответ айти битрикс контакта
 def add_or_get_contact_bx(bx, client, base_manager):
-    name = client.first_name
+    if client.first_name:
+        name = client.first_name
+    else:
+        name = ""
+        
     phone = f"+{phone}"
     phone_st = [f"{phone}"]
     phone_arr = [{"VALUE": phone, "VALUE_TYPE": "WORK"}]
@@ -1999,10 +2003,13 @@ def add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id, client_bx
         
     # сделка без инфы о клиенте 
     else:
-        
+        if client.first_name:
+            name = client.first_name
+        else:
+            name = ""
         tasks = {
             "fields": {
-                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {client.first_name}{client.phone}",
+                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {name}{client.phone}",
                 "TYPE_ID": "SALE",
                 "CATEGORY_ID": 8,
                 "STAGE_ID": "C8:NEW",

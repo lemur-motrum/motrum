@@ -63,24 +63,6 @@ a {
     &.show {
       display: flex;
     }
-    .close_btn {
-      position: absolute;
-      top: 2.5%;
-      right: 5%;
-      transform: rotate(45deg);
-      font-weight: 300;
-      font-size: 6rem;
-      cursor: pointer;
-      color: #fff;
-      transition: 0.6s;
-      &:hover {
-        color: #a4a4a4;
-      }
-      @media screen and(max-width:576px) {
-        top: 0%;
-        right: 3%;
-      }
-    }
     .modal-window {
       width: 23.75rem;
       background-color: #fff;
@@ -90,12 +72,27 @@ a {
       display: flex;
       flex-direction: column;
       gap: 0.813rem;
+      position: relative;
       @media screen and(max-width:576px) {
         width: 90%;
         height: auto;
         border-radius: 1.5rem;
         padding: 1.25rem;
         gap: 0.6rem;
+      }
+      .close_btn {
+        position: absolute;
+        top: 2.5%;
+        right: 5%;
+        transform: rotate(45deg);
+        font-weight: 300;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #95bad4;
+        transition: 0.6s;
+        &:hover {
+          color: #ff5b00;
+        }
       }
       .title {
         text-align: center;
@@ -441,24 +438,7 @@ a {
     &.visible {
       opacity: 1;
     }
-    .close_btn {
-      position: absolute;
-      top: 2.5%;
-      right: 5%;
-      transform: rotate(45deg);
-      font-weight: 300;
-      font-size: 6rem;
-      cursor: pointer;
-      color: #fff;
-      transition: 0.6s;
-      &:hover {
-        color: #a4a4a4;
-      }
-      // @media screen and (max-width: 576px) {
-      //   top: 0%;
-      //   left: 3%;
-      // }
-    }
+
     .modal_window {
       width: 23.75rem;
       height: auto;
@@ -470,9 +450,24 @@ a {
       align-items: center;
       background-color: #fff;
       border-radius: 2.5rem;
+      position: relative;
       @media screen and (max-width: 576px) {
         width: 90%;
         border-radius: 1.5rem;
+      }
+      .close_btn {
+        position: absolute;
+        top: 2.5%;
+        right: 5%;
+        transform: rotate(45deg);
+        font-weight: 300;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #95bad4;
+        transition: 0.6s;
+        &:hover {
+          color: #ff5b00;
+        }
       }
       .title {
         font-size: 2rem;
@@ -3876,24 +3871,7 @@ a {
         &.visible {
           opacity: 1;
         }
-        .close_btn {
-          position: absolute;
-          top: 2.5%;
-          right: 5%;
-          transform: rotate(45deg);
-          font-weight: 300;
-          font-size: 6rem;
-          cursor: pointer;
-          color: #fff;
-          transition: 0.6s;
-          &:hover {
-            color: #a4a4a4;
-          }
-          @media screen and (max-width: 576px) {
-            top: 0;
-            right: 3%;
-          }
-        }
+
         .modal_window {
           width: 23.75rem;
           height: auto;
@@ -3906,6 +3884,20 @@ a {
             width: 90%;
             border-radius: 1.5rem;
             padding: 1rem;
+          }
+          .close_btn {
+            position: absolute;
+            top: 2.5%;
+            right: 5%;
+            transform: rotate(45deg);
+            font-weight: 300;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #95bad4;
+            transition: 0.6s;
+            &:hover {
+              color: #ff5b00;
+            }
           }
           .title {
             text-align: center;
@@ -4217,6 +4209,7 @@ a {
       background-color: #ff5b00;
       @media screen and(max-width:576px) {
         height: 11.5rem;
+        border-radius: 1.5rem;
       }
       &:hover {
         .bg_img {
@@ -4443,6 +4436,9 @@ a {
           position: relative;
           width: 22.5rem;
           overflow: hidden;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+          }
           .description {
             position: absolute;
             top: 1.938rem;
@@ -4450,6 +4446,11 @@ a {
             font-size: 1.5rem;
             text-transform: uppercase;
             z-index: 3;
+            @media screen and (max-width: 576px) {
+              top: 1.25rem;
+              left: 1.25rem;
+              font-size: 1rem;
+            }
           }
           .img_container {
             position: absolute;
@@ -4457,6 +4458,11 @@ a {
             left: 2rem;
             width: 90%;
             z-index: 2;
+            @media screen and (max-width: 576px) {
+              bottom: -6%;
+              left: 5rem;
+              width: 60%;
+            }
             img {
               width: 100%;
               height: 100%;
@@ -4472,6 +4478,10 @@ a {
     margin-top: 3.75rem;
     display: flex;
     gap: 2.55rem;
+    @media screen and (max-width: 576px) {
+      flex-direction: column;
+      margin-top: 1.5rem;
+    }
     .solution_will_allow {
       border-radius: 2.5rem;
       border: 0.094rem solid #000;
@@ -4566,6 +4576,9 @@ a {
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      @media screen and(max-width:576px) {
+        gap: 1rem;
+      }
       .up {
         display: flex;
         position: relative;
@@ -4617,14 +4630,25 @@ a {
       .down {
         display: flex;
         gap: 1.313rem;
+        @media screen and (max-width: 576px) {
+          flex-direction: column;
+        }
         .description {
           width: 20.938rem;
           font-size: 1.5rem;
           font-weight: 300;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+            font-size: 0.75rem;
+          }
         }
         .img_container {
           width: 16.006rem;
           height: 6.25rem;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+            height: auto;
+          }
           img {
             width: 100%;
             height: 100%;
@@ -4856,22 +4880,40 @@ a {
   }
   .marking_aggregation_station_container {
     margin-top: 4.813rem;
+    @media screen and (max-width: 576px) {
+      margin-top: 1.5rem;
+    }
     .title {
       width: 34.125rem;
+      @media screen and (max-width: 576px) {
+        width: 100%;
+      }
     }
     .description {
       display: flex;
       justify-content: space-between;
       margin-top: 2.313rem;
+      @media screen and (max-width: 576px) {
+        flex-direction: column;
+        margin-top: 1rem;
+      }
       .left {
         display: flex;
         flex-direction: column;
         gap: 1.813rem;
+        @media screen and (max-width: 576px) {
+          gap: 0.5rem;
+        }
         .img_container {
           width: 27.125rem;
           height: 36.125rem;
           border-radius: 2.5rem;
           overflow: hidden;
+          @media screen and (max-width: 576px) {
+            border-radius: 1.5rem;
+            width: 100%;
+            height: auto;
+          }
           img {
             width: 100%;
             height: 100%;
@@ -4886,6 +4928,10 @@ a {
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
+            @media screen and (max-width: 576px) {
+              font-size: 1rem;
+              margin-bottom: 0.2rem;
+            }
           }
           .documentation_elem {
             display: flex;
@@ -4894,9 +4940,15 @@ a {
               font-size: 1.125rem;
               color: #95bad4;
               font-weight: 700;
+              @media screen and (max-width: 576px) {
+                font-size: 0.75rem;
+              }
             }
             span {
               font-size: 1.125rem;
+              @media screen and (max-width: 576px) {
+                font-size: 0.75rem;
+              }
             }
           }
         }
@@ -4906,19 +4958,32 @@ a {
         display: flex;
         flex-direction: column;
         gap: 2.125rem;
+        @media screen and (max-width: 576px) {
+          margin-top: 0.7rem;
+          width: 100%;
+        }
         .text_content {
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
+          @media screen and (max-width: 576px) {
+            gap: 0.75rem;
+          }
           .paragraph {
             font-size: 1.125rem;
             font-weight: 300;
+            @media screen and (max-width: 576px) {
+              font-size: 0.75rem;
+            }
           }
           .list {
             margin: 0;
             padding: 0;
             margin-top: 0.5rem;
             margin-left: 1.2rem;
+            @media screen and (max-width: 576px) {
+              margin-top: 0;
+            }
             li {
               font-size: 1.125rem;
               font-weight: 300;
@@ -4958,6 +5023,10 @@ a {
           gap: 1.708rem;
           cursor: pointer;
           color: #000;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+            height: 2.5rem;
+          }
           .title-link-description {
             color: #000;
             font-size: 1rem;
@@ -4990,6 +5059,9 @@ a {
   }
   .anchor_container {
     padding-top: 20.947rem;
+    @media screen and(max-width:576px) {
+      padding-top: 0;
+    }
     .demo-form-container {
       margin-top: -15rem;
       width: 100%;
@@ -5002,7 +5074,7 @@ a {
       align-items: flex-end;
       gap: 2.375rem;
       position: relative;
-      z-index: 900;
+      z-index: 89;
       @media screen and(max-width:576px) {
         margin-top: 0.8rem;
         flex-direction: column;
@@ -5734,7 +5806,7 @@ a {
     top: 0;
     left: 0;
     background-color: rgba($color: #000000, $alpha: 0.6);
-    z-index: 899;
+    z-index: 88;
     transition: 0.6s;
     opacity: 0;
     display: none;
@@ -8083,3 +8155,4 @@ a {
     }
   }
 }
+

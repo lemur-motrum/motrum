@@ -24,9 +24,12 @@ window.addEventListener("DOMContentLoaded", () => {
       filtersContainer.classList.add("show");
       burgerNavMenu.style.zIndex = -1;
     };
+
     closeBtn.onclick = () => {
       filtersContainer.classList.remove("show");
-      supplierContent.classList.remove("is_open");
+      if (supplierContent) {
+        supplierContent.classList.remove("is_open");
+      }
       if (supplierBtn) {
         supplierBtn.style.display = "flex";
       }

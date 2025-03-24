@@ -4849,20 +4849,6 @@ h1 {
   &.show {
     display: flex;
   }
-  .close_btn {
-    position: absolute;
-    top: 2.5%;
-    right: 5%;
-    transform: rotate(45deg);
-    font-weight: 300;
-    font-size: 6rem;
-    cursor: pointer;
-    color: #fff;
-    transition: 0.6s;
-    &:hover {
-      color: #a4a4a4;
-    }
-  }
   .modal_window {
     width: 23.75rem;
     // height: 18rem;
@@ -4875,6 +4861,23 @@ h1 {
     align-items: center;
     gap: 0.875rem;
     position: relative;
+    .close_btn {
+      position: absolute;
+      top: 2.5%;
+      right: 5%;
+      transform: rotate(45deg);
+      font-weight: 300;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #95bad4;
+      transition: 0.6s;
+      width: -webkit-max-content;
+      width: -moz-max-content;
+      width: max-content;
+      &:hover {
+        color: #ff5b00;
+      }
+    }
     .title {
       font-size: 2rem;
       font-weight: bold;

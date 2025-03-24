@@ -328,9 +328,7 @@ class CategoryProduct(models.Model):
     is_view_home_web = models.BooleanField(
         "Отображение на главной сайта", default=False
     )
-    is_send_email = models.BooleanField(
-        "Отображение в емаил рассылке", default=False
-    )
+    is_send_email = models.BooleanField("Отображение в емаил рассылке", default=False)
     article_home_web = models.PositiveIntegerField(
         "Очередность вывода на главную",
         blank=True,
@@ -350,17 +348,15 @@ class CategoryProduct(models.Model):
         slugish = translit.translify(slug_text)
         self.slug = slugify(slugish)
         super().save(*args, **kwargs)
-        
+
     def get_absolute_url(self):
-        
+
         return reverse(
             "product:group",
             kwargs={
                 "category": self.slug,
-               
             },
         )
-        
 
 
 class GroupProduct(models.Model):
@@ -499,7 +495,7 @@ class Price(models.Model):
                 self.price_motrum = self.price_motrum
             else:
                 self.price_motrum = price_motrum
-                
+
             self.sale = sale
         else:
             self.price_motrum = self.rub_price_supplier

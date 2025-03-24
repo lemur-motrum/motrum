@@ -24,6 +24,7 @@ drf_spectacular==0.28.0
 dadata==24.10.0
 smsru-api==0.1.7
 sorl-thumbnail
+django_resized
 
 djlint==1.36.4
 libsass==0.23.0

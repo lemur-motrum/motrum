@@ -43,6 +43,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, authentication_classes
 
+
 class ProductViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.AllowAny,)
     queryset = Product.objects.none()
@@ -247,20 +248,20 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count_all": count_all,
         }
         return Response(data_response, status=status.HTTP_200_OK)
-    
+
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
     def get_nomenclature(self, request, *args, **kwargs):
         print("get_nomenclature")
-        
+
         data = request.data
         try:
-            path,tr,e = save_nomenk_doc(data["file"])
+            path, tr, e = save_nomenk_doc(data["file"])
             print(path)
             if path == "ERROR":
-                
-                #сюда разбор фаила 
+
+                # сюда разбор фаила
                 data_resp = {"result": "error", "error": f"info-error {tr}{e}"}
                 return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
             else:

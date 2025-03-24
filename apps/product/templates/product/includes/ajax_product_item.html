@@ -8,7 +8,7 @@
             {% for productimage in productimage_set %}
                 {% if productimage.photo and productimage.hide == false %}
                     {% if loop.first %}
-                        <img src="{{ resizedImage }}" alt="img">
+                        <img src="{{ productimage.photo }}" alt="img" />
                     {% endif %}
                 {% else %}
                     <img src="/static/core/images/nophoto1.png" alt="img">

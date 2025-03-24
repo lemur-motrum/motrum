@@ -569,7 +569,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         print(data)
         try:
-
+            order_flag = None
             with transaction.atomic():
                 # data = {
                 #     "all_client_info": 0,
@@ -687,23 +687,25 @@ class OrderViewSet(viewsets.ModelViewSet):
                                     serializer.data, status=status.HTTP_201_CREATED
                                 )
                             else:
-
                                 if data["requisitesKpp"] != None:
+                                    order_flag = "add_new_order_web"
 
-                                    status_operation, info = add_new_order_web(order_id)
+                                    # status_operation, info = add_new_order_web(order_id)
                                 else:
-                                    status_operation, info = add_new_order_web_not_info(
-                                        order_id
-                                    )
-                                if status_operation == "ok":
-                                    return Response(
-                                        serializer.data, status=status.HTTP_201_CREATED
-                                    )
-                                else:
-                                    return Response(
-                                        info,
-                                        status=status.HTTP_400_BAD_REQUEST,
-                                    )
+                                    order_flag = "add_new_order_web_not_info"
+                                    # status_operation, info = add_new_order_web_not_info(
+                                    #     order_id
+                                    # )
+                                # if status_operation == "ok":
+                                #     return Response(
+                                #         serializer.data, status=status.HTTP_201_CREATED
+                                #     )
+                                    
+                                # else:
+                                #     return Response(
+                                #         info,
+                                #         status=status.HTTP_400_BAD_REQUEST,
+                                #     )
 
                         else:
                             return Response(
@@ -716,6 +718,24 @@ class OrderViewSet(viewsets.ModelViewSet):
                         cart.save()
                         return Response(None, status=status.HTTP_201_CREATED)
 
+            if order_flag:
+                if order_flag == "add_new_order_web":
+                        status_operation, info = add_new_order_web(order_id)
+                else:
+                    status_operation, info = add_new_order_web_not_info(
+                        order_id
+                    )
+                if status_operation == "ok":
+                    return Response(
+                        serializer.data, status=status.HTTP_201_CREATED
+                    )
+                    
+                else:
+                    return Response(
+                        info,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            
         except Exception as e:
             print(e)
             tr = traceback.format_exc()

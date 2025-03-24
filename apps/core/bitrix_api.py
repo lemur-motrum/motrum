@@ -1373,6 +1373,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
+        return ("ok", None)
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -1380,6 +1381,7 @@ def add_new_order_web(order_id):
         location = "Сохранение заказа с сайта в битркис"
         info = f" сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
+        return ("error", info)
 
 
 def serch_or_add_info_client(
@@ -1634,7 +1636,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
     if client.first_name:
         name = client.first_name
     else:
-        name = ""
+        name = "С сайта без имени"
         
     phone = f"+{phone}"
     phone_st = [f"{phone}"]
@@ -2186,6 +2188,7 @@ def add_new_order_web_not_info(order_id):
             order.id_bitrix = int(order_new_bx_id)
             order.save()
         
+        return ("ок",None)
         
 
     except Exception as e:
@@ -2194,6 +2197,7 @@ def add_new_order_web_not_info(order_id):
         location = "Сохранение заказа с сайта клиента без инфы в битркис"
         info = f" клиента без инфы  сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
+        return ("error",info)
 
 def get_manager_info():
     print(1111111)

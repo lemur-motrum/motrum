@@ -75,6 +75,7 @@ def get_id_bd_in_contact_order(bx,contsct_order_id_bx):
         try:
             contact_bd = Client.objects.get(bitrix_id_client=int(contact_bx_item['ID']))
             contact_bd_arr.append(contact_bd.id)
+            save_info_client_in_bx(contact_bx[0],contact_bd)
             # upd_client_info_in_bd(contact_bx_item,contact_bd)
             
         except:

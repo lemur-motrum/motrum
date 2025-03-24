@@ -1756,6 +1756,7 @@ def client_info_bitrix(data, company_adress):
         )
         
         if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "9":
+
             client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,

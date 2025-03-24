@@ -2189,7 +2189,7 @@ def add_new_order_web_not_info(order_id):
             order.id_bitrix = int(order_new_bx_id)
             order.save()
         
-        return ("ок",None)
+        return ("ok",None)
         
 
     except Exception as e:

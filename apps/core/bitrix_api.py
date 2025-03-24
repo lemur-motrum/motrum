@@ -1767,6 +1767,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
 def save_info_client_in_bx(client_bx_info,client):
     if "EMAIL" in client_bx_info:
         email =  client_bx_info['EMAIL']
+        print(email)
         if len(email) > 0:
             email_nb = client_bx_info['EMAIL'][0]['VALUE']
         else:

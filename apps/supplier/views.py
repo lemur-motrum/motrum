@@ -152,8 +152,13 @@ def add_iek(request):
     print(contact_bx)
    
     client_middle_name =  contact_bx['SECOND_NAME'] if contact_bx['SECOND_NAME'] != '' else None
-    print(client_middle_name)
-    print(type(client_middle_name))
+    if "EMAIL" in contact_bx:
+        email =  contact_bx['EMAIL']
+        print(email)
+        if len(email) > 0:
+            email_nb = contact_bx['EMAIL'][0]['VALUE']
+        else:
+            email_nb = None
    
    
    

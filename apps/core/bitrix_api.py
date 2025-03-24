@@ -1040,8 +1040,10 @@ def currency_check_bx():
                         text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
                         text = f"{text}{text_prod}"
                     value["text"] = f'{value["text"]}{text}'
-
-            save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            try:
+                save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            except:
+                pass
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -1150,17 +1152,22 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = BITRIX_WEBHOOK
-
-    print(webhook)
     bx = Bitrix(webhook)
-    data_order = {
-        "id": id_bitrix_order,
-        "fields": {
-            "UF_CRM_1734772618817": info,
-        },
-    }
-    orders_bx = bx.call("crm.deal.update", data_order)
-
+    try:
+        data_order = {
+            "id": id_bitrix_order,
+            "fields": {
+                "UF_CRM_1734772618817": info,
+            },
+        }
+        orders_bx = bx.call("crm.deal.update", data_order)
+        
+    except Exception as e:
+        tr = traceback.format_exc()
+        error = "error"
+        location = "Отправка в битрикс обновления цен "
+        info = f" Отправка в битрикс обновления цен{id_bitrix_order} {e}{tr}"
+        e = error_alert(error, location, info)
 
 # первичное полуние названий стадий в воронках
 def get_stage_info_bx():

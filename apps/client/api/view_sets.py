@@ -174,7 +174,6 @@ class ClientViewSet(viewsets.ModelViewSet):
                 
                 # создание новый юзер
                 if serializer.is_valid():
-                    print(serializer.data)
                     client = serializer.save()
                     if client.manager == None:
                         client.add_manager()

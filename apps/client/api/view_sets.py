@@ -1310,7 +1310,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         print(all_inn)
         print(DocumentShipment.objects.filter(order_id=172))
         orders = (
-            Order.objects.filter(requisites_id__in=all_inn)
+            Order.objects.filter( Q(requisites_id__in=all_inn) | Q(client=client))
+            # Q(requisites_id__in=all_inn) & Q(client=client)
             # Order.objects.filter(client=client)
             .select_related(
                 "specification",

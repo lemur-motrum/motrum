@@ -1749,7 +1749,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
             tasks = {
                 "fields": {
                     
-                    "NAME": f"{name}",
+                    "NAME": f"TECT {name}",
                     "SOURCE_ID": "146",
                     "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
                     "ASSIGNED_BY_ID": base_manager.bitrix_id,

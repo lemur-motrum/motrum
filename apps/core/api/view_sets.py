@@ -1,11 +1,12 @@
 import traceback
 
-from rest_framework import routers, serializers, viewsets, mixins, status
+from rest_framework import routers, serializers, viewsets, mixins, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.client.models import Client
 from apps.core.models import UpdatedCompanyBX24
+from apps.core.utils_web import send_email_message_html
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
 
@@ -38,7 +39,7 @@ class Bitrix24ViewSet(viewsets.ModelViewSet):
             e = error_alert(error, location, info)
 
 class FormWebViewSet(viewsets.ModelViewSet):
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.none()
     serializer_class = None
 
     http_method_names = ["get", "post", "put"]
@@ -46,12 +47,35 @@ class FormWebViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=["post"], url_path=r"send-form-callback")
     def send_form_callback(self, request, *args, **kwargs):
+        from django.template import loader
+
         data = request.data
-        data = {
-            "name":"Имя",
-            "phone":"телефон в формате 79999999999" 
-        }
-        if data:
+
+        name = data["name"]
+        phone = data["phone"]
+        url = data["url"]
+
+        # data = {
+        #     "name":"Имя",
+        #     "phone":"телефон в формате 79999999999"
+        # }
+
+        html_message = loader.render_to_string(
+            "core/emails/email_callback.html",
+            {
+                "name": name,
+                "phone": phone,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы обратной связи с сайта motrum.ru"
+        to_email = "pmn20@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)

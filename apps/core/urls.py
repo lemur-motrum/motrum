@@ -13,7 +13,7 @@ app_name = "core"
 
 router = routers.DefaultRouter()
 router.register(r"v1/core", view_sets.Bitrix24ViewSet)
-router.register(r"v1/core", view_sets.FormWebViewSet)
+router.register(r"v1/core/forms", view_sets.FormWebViewSet)
 
 
 urlpatterns = [

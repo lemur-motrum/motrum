@@ -75,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         setPreloaderInButton(submitBtn);
 
-        fetch("/api/v1/core/send-form-callback/", {
+        fetch("/api/v1/core/forms/send-form-callback/", {
           method: "POST",
           body: data,
           headers: {

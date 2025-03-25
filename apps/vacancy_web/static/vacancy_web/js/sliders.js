@@ -6,6 +6,9 @@ window.addEventListener("DOMContentLoaded", () => {
       ".vacancy_company_slider"
     );
     const learningSliderWrapper = wrapper.querySelector(".learnig_slider");
+
+    const recreationSliderWrapper = wrapper.querySelector(".recreation_slider");
+
     if (companySliderWrapper) {
       const slider = new Swiper(".vacancy_company_slider", {
         slidesPerView: "auto",
@@ -59,6 +62,47 @@ window.addEventListener("DOMContentLoaded", () => {
       const overlay = learningSliderWrapper.querySelector(
         ".learning_slider_overlay"
       );
+      const closeBtn = overlay.querySelector(".close_btn");
+
+      sliderElems.forEach((el, i) => {
+        if (window.innerWidth > 576) {
+          el.onclick = () => {
+            overlay.classList.add("show");
+            setTimeout(() => {
+              overlay.classList.add("visible");
+            }, 600);
+            slider1.activeIndex = i;
+            document.body.style.overflowY = "hidden";
+          };
+        }
+      });
+
+      closeBtn.onclick = () => {
+        overlay.classList.remove("visible");
+        setTimeout(() => {
+          overlay.classList.remove("show");
+        }, 600);
+        document.body.style.overflowY = "scroll";
+      };
+    }
+
+    if (recreationSliderWrapper) {
+      const slider = new Swiper(".recreation_slider", {
+        slidesPerView: "auto",
+      });
+
+      const slider1 = new Swiper(".recreation_slider_overlay_slider", {
+        slidesPerView: "auto",
+      });
+
+      const sliderElems = recreationSliderWrapper.querySelectorAll(
+        ".photo_recreation_elem_img_container"
+      );
+
+      const overlay = recreationSliderWrapper.querySelector(
+        ".recreation_slider_overlay"
+      );
+
       const closeBtn = overlay.querySelector(".close_btn");
 
       sliderElems.forEach((el, i) => {

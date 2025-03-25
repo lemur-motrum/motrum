@@ -291,7 +291,6 @@
   }
   .learing_container {
     margin-top: 6.375rem;
-
     .title {
       text-transform: uppercase;
       font-size: 3rem;
@@ -415,10 +414,112 @@
         font-size: 0.7rem;
       }
     }
+
+    @media screen and (max-width: 576px) {
+      margin-top: 3.5rem;
+    }
+  }
+  .sports_and_recreation_container {
+    margin-top: 5.125rem;
     margin-bottom: -8rem;
     @media screen and (max-width: 576px) {
       margin-top: 3.5rem;
       margin-bottom: -12rem;
+    }
+    .title {
+      font-size: 3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .recreation_slider {
+      margin-top: 1.875rem;
+      @media screen and (max-width: 576px) {
+        margin-top: 1rem;
+      }
+      .swiper-wrapper {
+        .photo_recreation_elem_img_container {
+          height: 16.5rem;
+          width: auto;
+          margin-left: 0.961rem;
+          overflow: hidden;
+          border-radius: 2.5rem;
+          @media screen and (max-width: 576px) {
+            height: 11.5rem;
+            margin-left: 0.5rem;
+            border-radius: 1.5rem;
+          }
+          &:nth-of-type(1) {
+            margin-left: 0;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+            object-fit: cover;
+          }
+        }
+      }
+      .recreation_slider_overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba($color: #000000, $alpha: 0.6);
+        z-index: 2000;
+        display: none;
+        opacity: 0;
+        transition: 0.6s;
+        &.show {
+          display: block;
+          @media screen and (max-width: 576px) {
+            display: none;
+          }
+        }
+        &.visible {
+          opacity: 1;
+        }
+        .close_btn {
+          position: absolute;
+          top: 1rem;
+          right: 2rem;
+          font-size: 4rem;
+          cursor: pointer;
+          color: lightgray;
+          transform: rotate(45deg);
+        }
+        .recreation_slider_overlay_slider {
+          width: 90%;
+          height: 80%;
+          overflow: hidden;
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+          .swiper-wrapper {
+            .swiper-slide {
+              height: 100%;
+              width: 100%;
+              overflow: hidden;
+              img {
+                width: 100%;
+                height: 100%;
+                -o-object-fit: contain;
+                object-fit: contain;
+              }
+            }
+          }
+        }
+      }
+    }
+    .description {
+      font-size: 1.5rem;
+      font-weight: 300;
+      width: 53.625rem;
+      margin-top: 1.813rem;
+      @media screen and (max-width: 576px) {
+        width: 100%;
+        font-size: 0.75rem;
+      }
     }
   }
   .vacancies_container {

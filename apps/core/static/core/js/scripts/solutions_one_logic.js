@@ -18,58 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
       slidesPerView: "auto",
     });
 
-    const formContainer = wrapper.querySelector(".demo-form-container");
-    if (formContainer) {
-      const nameInput = formContainer.querySelector(".name_input");
-      const nameError = formContainer.querySelector(".name_error");
-      const phoneInput = formContainer.querySelector(".phone_input");
-      const phoneError = formContainer.querySelector(".phone_error");
-      const submitBtn = formContainer.querySelector(".btn");
-
-      const phoneMask = IMask(phoneInput, maskOptions);
-
-      submitBtn.onclick = () => {
-        let validate = true;
-        if (!nameInput.value) {
-          showErrorValidation("Обязательное поле", nameError);
-          validate = false;
-        }
-        if (!phoneInput.value) {
-          showErrorValidation("Обязательное поле", phoneError);
-          validate = false;
-        }
-        if (phoneInput.value && phoneInput.value.length < 18) {
-          showErrorValidation("Некорректный номер телефона", phoneError);
-          validate = false;
-        }
-        if (validate) {
-          const dataObj = {
-            name: nameInput.value,
-            phone: phoneInput.value,
-          };
-          const data = JSON.stringify(dataObj);
-
-          setPreloaderInButton(submitBtn);
-
-          fetch("", {
-            method: "POST",
-            body: data,
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": csrfToken,
-            },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              // window.location.reload();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
-        }
-      };
-    }
-
     const palettScrollZoneContainer = wrapper.querySelector(
       ".palett_description"
     );
@@ -124,5 +72,78 @@ window.addEventListener("DOMContentLoaded", () => {
     //     }
     //   };
     // }
+  }
+
+  const formContainer = document.querySelector(".demo-form-container");
+  if (formContainer) {
+    const nameInput = formContainer.querySelector(".name_input");
+    const nameError = formContainer.querySelector(".name_error");
+    const phoneInput = formContainer.querySelector(".phone_input");
+    const phoneError = formContainer.querySelector(".phone_error");
+    const submitBtn = formContainer.querySelector(".btn");
+
+    const phoneMask = IMask(phoneInput, maskOptions);
+
+    submitBtn.onclick = () => {
+      let validate = true;
+      if (!nameInput.value) {
+        showErrorValidation("Обязательное поле", nameError);
+        validate = false;
+      }
+      if (!phoneInput.value) {
+        showErrorValidation("Обязательное поле", phoneError);
+        validate = false;
+      }
+      if (phoneInput.value && phoneInput.value.length < 18) {
+        showErrorValidation("Некорректный номер телефона", phoneError);
+        validate = false;
+      }
+
+      if (validate) {
+        const dataObj = {
+          name: nameInput.value,
+          phone: phoneMask.unmaskedValue,
+          type: submitBtn.getAttribute("btn-type-cobots")
+            ? submitBtn.getAttribute("btn-type-cobots")
+            : "",
+          url: window.location.href,
+        };
+        const data = JSON.stringify(dataObj);
+
+        setPreloaderInButton(submitBtn);
+
+        let endpoint;
+
+        if (submitBtn.getAttribute("btn-type-cobots")) {
+          endpoint = "/api/v1/core/forms/send-form-demo-visit/";
+        }
+
+        function resetInputs() {
+          phoneInput.value = "";
+          nameInput.value = "";
+        }
+
+        if (submitBtn.getAttribute(""))
+          fetch(endpoint, {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          }).then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              resetInputs();
+              hidePreloaderAndEnabledButton(submitBtn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          });
+      }
+    };
   }
 });

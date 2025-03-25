@@ -1,7 +1,12 @@
 from django.shortcuts import render
 
 from apps.core.models import PhotoEmoloeeInfoWeb
-from apps.vacancy_web.models import PhotoEducationInfoWeb, Vacancy, VacancyCategory
+from apps.vacancy_web.models import (
+    PhotoEducationInfoWeb,
+    PhotoSportsRecreationInfoWeb,
+    Vacancy,
+    VacancyCategory,
+)
 
 
 # Create your views here.
@@ -11,12 +16,15 @@ def vacancy(request):
     category_vacancy = VacancyCategory.objects.filter(is_view=True).order_by("article")
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
     photo_education = PhotoEducationInfoWeb.objects.all()
+    photo_recreation = PhotoSportsRecreationInfoWeb.objects.all()
+
     context = {
         "title": title,
         "vacancy": vacancy,
         "category_vacancy": category_vacancy,
         "photo_motrum": photo_motrum,
         "photo_education": photo_education,
+        "photo_recreation": photo_recreation,
     }
     return render(request, "vacancy_web/vacancy_all.html", context)
 

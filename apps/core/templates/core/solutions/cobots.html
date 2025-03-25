@@ -46,6 +46,27 @@
                 <div class="description">РЕШЕНИЕ ДЛЯ АВТОМАТИЧЕСКОЙ УПАКОВКИ</div>
             </a>
         </div>
+        <div class="demo-form-container">
+            <div class="description_content">
+                <div class="title">ДЕМО ВЫЕЗД</div>
+                <div class="description">Бесплатная демонстрация работы робота на вашем предприятии в реальных условиях.</div>
+            </div>
+            <div class="demo_form">
+                <label>
+                    <input type="text" class="name_input" placeholder="Ваше имя" />
+                    <div class="error name_error"></div>
+                </label>
+                <label>
+                    <input type="tel" class="phone_input" placeholder="Ваше телефон" />
+                    <div class="error phone_error"></div>
+                </label>
+                <button btn-type-cobots="all-cobots" class="btn">заказать демо выезд</button>
+            </div>
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/solution_form_img.png" %}"
+                     alt="img">
+            </div>
+        </div>
         {% include "core/includes/directions.html" %}
         {% include "core/includes/projects.html" %}
     </div>

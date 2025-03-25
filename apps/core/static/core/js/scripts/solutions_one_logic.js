@@ -123,26 +123,25 @@ window.addEventListener("DOMContentLoaded", () => {
           nameInput.value = "";
         }
 
-        if (submitBtn.getAttribute(""))
-          fetch(endpoint, {
-            method: "POST",
-            body: data,
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": csrfToken,
-            },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              resetInputs();
-              hidePreloaderAndEnabledButton(submitBtn);
-              successModal(
-                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
-              );
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+        fetch(endpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        }).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            resetInputs();
+            hidePreloaderAndEnabledButton(submitBtn);
+            successModal(
+              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+            );
+          } else {
+            setErrorModal();
+            throw new Error("Ошибка");
+          }
+        });
       }
     };
   }

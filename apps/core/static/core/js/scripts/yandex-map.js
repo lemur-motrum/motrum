@@ -89,7 +89,9 @@ window.addEventListener("DOMContentLoaded", () => {
       document.body.style.overflowY = "hidden";
     };
 
-    closeBtn.onclick = () => {
+    closeBtn.onclick = () => hideOverlay();
+
+    function hideOverlay() {
       contactsFormOverlay.classList.remove("visible");
       setTimeout(() => {
         contactsFormOverlay.classList.remove("show");
@@ -97,7 +99,7 @@ window.addEventListener("DOMContentLoaded", () => {
       resetInputs(modalWindow);
 
       document.body.style.overflowY = "auto";
-    };
+    }
 
     submitBtn.onclick = () => {
       let validate = true;
@@ -116,29 +118,33 @@ window.addEventListener("DOMContentLoaded", () => {
       if (validate) {
         const dataObj = {
           name: nameInput.value,
-          phone: phoneInput.value,
+          phone: mask.unmaskedValue,
           message: textArea.value ? textArea.value : "",
+          url: window.location.href,
         };
         const data = JSON.stringify(dataObj);
 
         setPreloaderInButton(submitBtn);
 
-        fetch("", {
+        fetch("/api/v1/core/forms/send-form-contact-us/", {
           method: "POST",
           body: data,
           headers: {
+            "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        })
-          .then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              return response.json();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          })
-          .then((response) => console.log(response));
+        }).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            hidePreloaderAndEnabledButton(submitBtn);
+            hideOverlay();
+            successModal(
+              "Спасибо за обращение, мы свяжемся с вами в ближайшее время"
+            );
+          } else {
+            setErrorModal();
+            throw new Error("Ошибка");
+          }
+        });
       }
     };
   }

@@ -7,6 +7,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -39,19 +40,25 @@ window.addEventListener("DOMContentLoaded", () => {
       return validate;
     }
 
+    function resetInputs() {
+      phoneInput.value = "";
+      nameInput.value = "";
+    }
+
     form.onsubmit = (e) => {
       let val = validate();
       e.preventDefault();
       if (val) {
         const dataObj = {
           name: nameInput.value,
-          phone: phoneInput.value,
+          phone: mask.unmaskedValue,
+          url: window.location.href,
         };
         const data = JSON.stringify(dataObj);
 
         setPreloaderInButton(btn);
 
-        fetch("", {
+        fetch("/api/v1/core/forms/send-form-calculate-project/", {
           method: "POST",
           body: data,
           headers: {
@@ -60,7 +67,11 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            resetInputs();
             hidePreloaderAndEnabledButton(btn);
+            successModal(
+              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+            );
           } else {
             setErrorModal();
           }

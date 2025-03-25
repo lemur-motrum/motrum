@@ -7,6 +7,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -112,6 +113,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const mask = IMask(phoneInput, maskOptions);
 
+      function resetInputs() {
+        phoneInput.value = "";
+        nameInput.value = "";
+      }
+
       submitBtn.onclick = () => {
         let validate = true;
         if (!nameInput.value) {
@@ -129,13 +135,14 @@ window.addEventListener("DOMContentLoaded", () => {
         if (validate) {
           const dataObj = {
             name: nameInput.value,
-            phone: phoneInput.value,
+            phone: mask.unmaskedValue,
+            url: window.location.href,
           };
 
           const data = JSON.stringify(dataObj);
           setPreloaderInButton(submitBtn);
 
-          fetch("", {
+          fetch("/api/v1/core/forms/send-form-company-consultation/", {
             method: "POST",
             body: data,
             headers: {
@@ -144,7 +151,11 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
-              // window.location.reload();
+              resetInputs();
+              hidePreloaderAndEnabledButton(submitBtn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
             } else {
               setErrorModal();
               throw new Error("Ошибка");

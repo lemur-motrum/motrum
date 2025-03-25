@@ -7,6 +7,7 @@ import {
 } from "/static/core/js/functions.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -68,12 +69,13 @@ window.addEventListener("DOMContentLoaded", () => {
         const dataObj = {
           name: nameInput.value,
           phone: phoneInput.value,
+          url: window.location,
         };
         const data = JSON.stringify(dataObj);
 
         setPreloaderInButton(submitBtn);
 
-        fetch("", {
+        fetch("/api/v1/core/send-form-callback/", {
           method: "POST",
           body: data,
           headers: {
@@ -84,6 +86,9 @@ window.addEventListener("DOMContentLoaded", () => {
           if (response.status >= 200 && response.status < 300) {
             closeOverlay();
             hidePreloaderAndEnabledButton(submitBtn);
+            successModal(
+              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+            );
           } else {
             setErrorModal();
           }

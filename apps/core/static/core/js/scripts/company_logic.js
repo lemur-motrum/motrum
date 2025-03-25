@@ -46,7 +46,9 @@ window.addEventListener("DOMContentLoaded", () => {
               overlay.classList.add("visible");
             }, 600);
             slider2.activeIndex = i;
-            document.body.style.overflowY = "hidden";
+            if (window.innerWidth > 576) {
+              document.body.style.overflowY = "hidden";
+            }
           };
         }
 
@@ -83,7 +85,9 @@ window.addEventListener("DOMContentLoaded", () => {
               overlay.classList.add("visible");
             }, 600);
             slider1.activeIndex = i;
-            document.body.style.overflowY = "hidden";
+            if (window.innerWidth > 576) {
+              document.body.style.overflowY = "hidden";
+            }
           };
         }
 

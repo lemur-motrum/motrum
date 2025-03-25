@@ -69,10 +69,10 @@ app.conf.beat_schedule = {
     #     'schedule': crontab(minute=40, hour=0),
     # },
     # ТАСКИ раз в неделю
-    "iek_individual": {
-        "task": "apps.supplier.tasks.add_iek_individual",
-        "schedule": crontab(minute=3, hour=0, day_of_week=1),
-    },
+    # "iek_individual": {
+    #     "task": "apps.supplier.tasks.add_iek_individual",
+    #     "schedule": crontab(minute=3, hour=0, day_of_week=1),
+    # },
     "vacancy_file_delite_week": {
         "task": "apps.core.tasks.vacancy_file_delite",
         "schedule": crontab(minute=22, hour=0, day_of_week=6),

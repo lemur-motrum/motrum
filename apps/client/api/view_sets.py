@@ -33,7 +33,6 @@ from apps.core.bitrix_api import (
     add_new_order_web,
     add_new_order_web_not_info,
     get_info_for_order_bitrix,
-    
     save_new_doc_bx,
     save_payment_order_bx,
     save_shipment_order_bx,
@@ -159,8 +158,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             else:
                 pin = 1111
                 cache.set(phone, pin, 180)
-            
-            
+
             return Response(pin_user, status=status.HTTP_200_OK)
 
         # сравнение пин и логин
@@ -171,10 +169,9 @@ class ClientViewSet(viewsets.ModelViewSet):
             if verify_pin:
                 print("@@@", verify_pin)
                 serializer = self.serializer_class(data=data, many=False)
-                
+
                 # создание новый юзер
                 if serializer.is_valid():
-                    print(serializer.data)
                     client = serializer.save()
                     if client.manager == None:
                         client.add_manager()
@@ -190,7 +187,7 @@ class ClientViewSet(viewsets.ModelViewSet):
                     # логин старого пользователя
                     if client.last_login:
                         login(request, client)
-                      
+
                         cart = Cart.objects.filter(client=client, is_active=False)
                         if cart.count() > 0:
                             cart = cart[0]
@@ -203,7 +200,7 @@ class ClientViewSet(viewsets.ModelViewSet):
                             else:
                                 old_cart_prod = ProductCart.objects.filter(
                                     cart=cart.id
-                                ).values_list("product_id",flat=True)
+                                ).values_list("product_id", flat=True)
                                 print(old_cart_prod)
                                 product_cart_no_user = ProductCart.objects.filter(
                                     cart=cart_id
@@ -219,11 +216,9 @@ class ClientViewSet(viewsets.ModelViewSet):
                                 response.status = status.HTTP_200_OK
                                 response.set_cookie("cart", cart.id, max_age=2629800)
                                 return response
-                        else:   
+                        else:
                             Cart.objects.filter(id=cart_id).update(client=client)
                             return Response(serializer.data, status=status.HTTP_200_OK)
-            
-            
 
                         # try:
                         #     cart = Cart.objects.get(client=client, is_active=False)
@@ -253,7 +248,7 @@ class ClientViewSet(viewsets.ModelViewSet):
                         # except Cart.DoesNotExist:
                         #     Cart.objects.filter(id=cart_id).update(client=client)
                         #     return Response(serializer.data, status=status.HTTP_200_OK)
-                
+
                     # логин нового пользоваеля
                     else:
 
@@ -402,34 +397,31 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             type_client = 1
         else:
             type_client = 3
-        
+
         first_name = None
         last_name = None
-        middle_name =  None
-        
-        if requisites['name']:
-            first_name = requisites['first_name']
-        
-        if requisites['surname']:
-            first_name = requisites['last_name']
-            
-        if requisites['patronymic']:
-            first_name = requisites['middle_name']
-        
-        
-        
+        middle_name = None
+
+        if requisites["name"]:
+            first_name = requisites["first_name"]
+
+        if requisites["surname"]:
+            first_name = requisites["last_name"]
+
+        if requisites["patronymic"]:
+            first_name = requisites["middle_name"]
+
         req = Requisites.objects.update_or_create(
             inn=requisites["inn"],
             defaults={
                 "legal_entity": requisites["legal_entity"],
                 "type_client": type_client,
-                "first_name":first_name,
-                "last_name":last_name,
-                "middle_name":middle_name,
-                
+                "first_name": first_name,
+                "last_name": last_name,
+                "middle_name": middle_name,
             },
         )
-        
+
         if type_client == 1:
             reqKpp = RequisitesOtherKpp.objects.update_or_create(
                 requisites=req[0],
@@ -577,7 +569,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         print(data)
         try:
-
+            order_flag = None
             with transaction.atomic():
                 # data = {
                 #     "all_client_info": 0,
@@ -617,7 +609,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 for product_cart in products_cart:
                     print(product_cart)
-                    if  product_cart.product.price and product_cart.product.price.rub_price_supplier == 0:
+                    if (
+                        product_cart.product.price
+                        and product_cart.product.price.rub_price_supplier == 0
+                    ):
                         all_info_product = False
 
                 # сохранение спецификации для заказа
@@ -684,33 +679,63 @@ class OrderViewSet(viewsets.ModelViewSet):
                             cart.is_active = True
                             cart.save()
                             serializer.save()
-                            print("serializer.data",serializer.data)
-                            print("serializer.data",serializer.data['id'])
-                            order_id = serializer.data['id']
+                            print("serializer.data", serializer.data)
+                            print("serializer.data", serializer.data["id"])
+                            order_id = serializer.data["id"]
                             if IS_TESTING:
-                                pass
+                                return Response(
+                                    serializer.data, status=status.HTTP_201_CREATED
+                                )
                             else:
-                                
                                 if data["requisitesKpp"] != None:
-                                    
-                                    add_new_order_web(order_id)
-                                else:
-                                    add_new_order_web_not_info(order_id)
+                                    order_flag = "add_new_order_web"
 
-                            return Response(
-                                serializer.data, status=status.HTTP_201_CREATED
-                            )
+                                    # status_operation, info = add_new_order_web(order_id)
+                                else:
+                                    order_flag = "add_new_order_web_not_info"
+                                    # status_operation, info = add_new_order_web_not_info(
+                                    #     order_id
+                                    # )
+                                # if status_operation == "ok":
+                                #     return Response(
+                                #         serializer.data, status=status.HTTP_201_CREATED
+                                #     )
+                                    
+                                # else:
+                                #     return Response(
+                                #         info,
+                                #         status=status.HTTP_400_BAD_REQUEST,
+                                #     )
+
                         else:
-                            print(serializer.errors)
                             return Response(
                                 serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST,
                             )
                     else:
+                        # эта часть не отрабатывает - так и надо костыль
                         cart.is_active = True
                         cart.save()
                         return Response(None, status=status.HTTP_201_CREATED)
 
+            if order_flag:
+                if order_flag == "add_new_order_web":
+                        status_operation, info = add_new_order_web(order_id)
+                else:
+                    status_operation, info = add_new_order_web_not_info(
+                        order_id
+                    )
+                if status_operation == "ok":
+                    return Response(
+                        serializer.data, status=status.HTTP_201_CREATED
+                    )
+                    
+                else:
+                    return Response(
+                        info,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            
         except Exception as e:
             print(e)
             tr = traceback.format_exc()
@@ -1016,7 +1041,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         try:
             import json
-            
 
             user = request.user
             data_get = request.data
@@ -1063,13 +1087,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order_products = after_save_order_products(products)
 
                 data_for_1c = create_info_request_order_1c(order, order_products)
-               
+
                 tr = traceback.format_exc()
                 error = "info_error_order"
                 location = "ИНФО НЕ ОШИБКА"
                 info = f"ИНФО НЕ ОШИБКА данные по заказу для отпарвки в 1с data_for_1c{data_for_1c}"
                 e = error_alert(error, location, info)
-                
+
                 type_save = request.COOKIES.get("type_save")
 
                 if IS_TESTING or user.username == "testadmin":
@@ -1096,7 +1120,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            
+
             tr = traceback.format_exc()
             error = "error"
             location = "Сохранение счета админам окт"
@@ -1306,7 +1330,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         print(all_inn)
         print(DocumentShipment.objects.filter(order_id=172))
         orders = (
-            Order.objects.filter(requisites_id__in=all_inn)
+            Order.objects.filter( Q(requisites_id__in=all_inn) | Q(client=client))
+            # Q(requisites_id__in=all_inn) & Q(client=client)
             # Order.objects.filter(client=client)
             .select_related(
                 "specification",
@@ -1627,11 +1652,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             q_object &= Q(specification__isnull=True)
         else:
             q_object &= Q(specification__isnull=False)
-       
+
         iframe = request.query_params.get("frame")
         bx_id_order = request.query_params.get("bx_id_order")
-      
-        
+
         if iframe == "True":
             q_object &= Q(id_bitrix=int(bx_id_order))
         else:
@@ -1869,12 +1893,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                     print(order_pdf)
             data_resp = {"result": "ok", "error": None}
-            
+
             error = "info_error_order"
             location = "OK INFO add_info_order_1c"
             info = f"OK INFO add_info_order_1c{data}"
             e = error_alert(error, location, info)
-            
+
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -1903,7 +1927,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
         data_payment = data["payment"]
-       
+
         try:
 
             for data_item in data_payment:
@@ -1917,8 +1941,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
                 order.bill_sum_paid = order.bill_sum_paid + amount_sum
                 order.save()
-                
-                
 
             data_resp = {"result": "ok", "error": None}
             error = "info_error_order"
@@ -1937,7 +1959,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data_resp = {"result": "error", "error": f"info-error {info}"}
 
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
-        
+
         finally:
             if IS_TESTING:
                 pass
@@ -1959,17 +1981,17 @@ class OrderViewSet(viewsets.ModelViewSet):
                     order=order, date=date
                 )
                 image_path = save_shipment_doc(data_item["pdf"], document_shipment)
-           
+
                 document_shipment.name = data_item["document_name"]
                 document_shipment.file = image_path
                 document_shipment.save()
             data_resp = {"result": "ok", "error": None}
-            
+
             error = "info_error_order"
             location = "shipment-info-1c"
             info = f"OK INFO shipment-info-1c  DATA из 1с -  {data}"
             e = error_alert(error, location, info)
-            
+
             return Response(data_resp, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)

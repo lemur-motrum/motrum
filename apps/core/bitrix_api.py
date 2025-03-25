@@ -75,6 +75,7 @@ def get_id_bd_in_contact_order(bx,contsct_order_id_bx):
         try:
             contact_bd = Client.objects.get(bitrix_id_client=int(contact_bx_item['ID']))
             contact_bd_arr.append(contact_bd.id)
+            save_info_client_in_bx(contact_bx[0],contact_bd)
             # upd_client_info_in_bd(contact_bx_item,contact_bd)
             
         except:
@@ -996,7 +997,7 @@ def currency_check_bx():
         product = get_product_price_up()
 
         data_dict = {}
-      
+
         for carrency_item in carrency:
             data_curr = carrency_item["currency"]
             for item in carrency_item["order"]:
@@ -1040,8 +1041,10 @@ def currency_check_bx():
                         text_prod = f"{prod['prod_name']} — цена была {prod['price_old']} руб., стала {prod['price_new']} руб. (повышение на {prod['percent_up']}%)"
                         text = f"{text}{text_prod}"
                     value["text"] = f'{value["text"]}{text}'
-
-            save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            try:
+                save_currency_check_bx(value["text"], value["bitrix_id_order"])
+            except:
+                pass
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -1063,9 +1066,13 @@ def get_order_carrency_up():
     data_old = in_three_days.strftime("%Y-%m-%d")
 
     for currency in currency_list:
+        print(currency)
         curr_name = currency.words_code
+        print(curr_name)
         old_rate = CurrencyRate.objects.get(currency=currency, date=data_old)
+        print(old_rate)
         now_rate = CurrencyRate.objects.get(currency=currency, date=now)
+        print(now_rate)
         old_rate_count = old_rate.vunit_rate
         new_rate_count = now_rate.vunit_rate
         difference_count = new_rate_count - old_rate_count
@@ -1121,20 +1128,20 @@ def get_product_price_up():
             if prod.product_price_catalog:
 
                 now_price = Price.objects.get(prod=prod.product).rub_price_supplier
-
-                difference_count = now_price - prod.product_price_catalog
-                count_percent = prod.product_price_catalog / 100 * 3
-                if difference_count > count_percent:
-                    percent_up = difference_count * 100 / prod.product_price_catalog
-                    percent_up = round(percent_up, 2)
-                    data_product = {
-                        "prod": prod.product.article_supplier,
-                        "prod_name": prod.product.name,
-                        "price_old": prod.product_price_catalog,
-                        "price_new": now_price,
-                        "percent_up": percent_up,
-                    }
-                    order_item_data["order_product"].append(data_product)
+                if now_price:
+                    difference_count = now_price - prod.product_price_catalog
+                    count_percent = prod.product_price_catalog / 100 * 3
+                    if difference_count > count_percent:
+                        percent_up = difference_count * 100 / prod.product_price_catalog
+                        percent_up = round(percent_up, 2)
+                        data_product = {
+                            "prod": prod.product.article_supplier,
+                            "prod_name": prod.product.name,
+                            "price_old": prod.product_price_catalog,
+                            "price_new": now_price,
+                            "percent_up": percent_up,
+                        }
+                        order_item_data["order_product"].append(data_product)
 
         if order_item_data["order_product"] != []:
 
@@ -1146,17 +1153,22 @@ def get_product_price_up():
 # для currency_check_bx отпарвка в битрикс данных в сделку
 def save_currency_check_bx(info, id_bitrix_order):
     webhook = BITRIX_WEBHOOK
-
-    print(webhook)
     bx = Bitrix(webhook)
-    data_order = {
-        "id": id_bitrix_order,
-        "fields": {
-            "UF_CRM_1734772618817": info,
-        },
-    }
-    orders_bx = bx.call("crm.deal.update", data_order)
-
+    try:
+        data_order = {
+            "id": id_bitrix_order,
+            "fields": {
+                "UF_CRM_1734772618817": info,
+            },
+        }
+        orders_bx = bx.call("crm.deal.update", data_order)
+        
+    except Exception as e:
+        tr = traceback.format_exc()
+        error = "error"
+        location = "Отправка в битрикс обновления цен "
+        info = f" Отправка в битрикс обновления цен{id_bitrix_order} {e}{tr}"
+        e = error_alert(error, location, info)
 
 # первичное полуние названий стадий в воронках
 def get_stage_info_bx():
@@ -1362,6 +1374,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
+        return ("ok", None)
 
     except Exception as e:
         tr = traceback.format_exc()
@@ -1369,6 +1382,7 @@ def add_new_order_web(order_id):
         location = "Сохранение заказа с сайта в битркис"
         info = f" сделка {order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
+        return ("error", info)
 
 
 def serch_or_add_info_client(
@@ -1620,7 +1634,12 @@ def serch_or_add_info_client(
 
 # получение обновление и создание контакта в битрикс - ответ айти битрикс контакта
 def add_or_get_contact_bx(bx, client, base_manager):
-    name = client.first_name
+    if client.first_name:
+        name = client.first_name
+    else:
+        name = "С сайта без имени"
+    phone =   client.phone
+    
     phone = f"+{phone}"
     phone_st = [f"{phone}"]
     phone_arr = [{"VALUE": phone, "VALUE_TYPE": "WORK"}]
@@ -1725,13 +1744,13 @@ def add_or_get_contact_bx(bx, client, base_manager):
             return contact_bx
     else:
         if len(contact_bx) == 1:
-            save_info_client_in_bx(contact_bx,client)
+            save_info_client_in_bx(contact_bx[0],client)
             return ("old", contact_bx[0]["ID"])
         else:
             tasks = {
                 "fields": {
                     
-                    "NAME": f"{name}",
+                    "NAME": f"TECT {name}",
                     "SOURCE_ID": "146",
                     "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
                     "ASSIGNED_BY_ID": base_manager.bitrix_id,
@@ -1747,27 +1766,44 @@ def add_or_get_contact_bx(bx, client, base_manager):
             
 
 def save_info_client_in_bx(client_bx_info,client):
+    email_nb = None
     
-    email =  client_bx_info['EMAIL']
-    if len(email) > 0:
-        email_nb = client_bx_info['EMAIL'][0]['VALUE']
-    else:
-        email_nb = None
+    if "EMAIL" in client_bx_info:
+        email =  client_bx_info['EMAIL']
+        print(email)
+        if email != None and len(email) > 0:
+            email_nb = client_bx_info['EMAIL'][0]['VALUE']
+        
         
     if client_bx_info['ASSIGNED_BY_ID'] != "":
-        manager = AdminUser.objects.get(bitrix_id= int(client_bx_info['ASSIGNED_BY_ID'])) 
+        manager = AdminUser.objects.get(bitrix_id=int(client_bx_info['ASSIGNED_BY_ID'])) 
     else:
         manager = None  
     
+    middle_name = client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
+    first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
+    last_name = client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
+    position = client_bx_info['POST'] if client_bx_info['POST'] != '' else None
+    
+    if middle_name:
+        client.middle_name = middle_name
+    if first_name:
+        client.first_name = first_name
+    if last_name:
+        client.last_name = last_name
+    if position:
+        client.position = position
+    if email_nb:
+        client.email =  email_nb
+        
+    # client.middle_name =  client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
+    # client.first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
+    # client.last_name =  client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
+    # client.position =  client_bx_info['POST'] if client_bx_info['POST'] != '' else None
     
     
-    client.middle_name =  client_bx_info['SECOND_NAME'] if client_bx_info['SECOND_NAME'] != '' else None
-    client.first_name =  client_bx_info['NAME'] if client_bx_info['NAME'] != '' else None
-    client.last_name =  client_bx_info['LAST_NAME'] if client_bx_info['LAST_NAME'] != '' else None
-    client.position =  client_bx_info['POST'] if client_bx_info['POST'] != '' else None
     client.bitrix_id_client =  int(client_bx_info['ID'] )
     
-    client.email =  email_nb
     client.manager =  manager
     client.save()
     
@@ -1988,10 +2024,13 @@ def add_new_order_bx(bx, req, company_bx_id, req_bx_id, acc_req_bx_id, client_bx
         
     # сделка без инфы о клиенте 
     else:
-        
+        if client.first_name:
+            name = client.first_name
+        else:
+            name = ""
         tasks = {
             "fields": {
-                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {client.first_name}{client.phone}",
+                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {name}{client.phone}",
                 "TYPE_ID": "SALE",
                 "CATEGORY_ID": 8,
                 "STAGE_ID": "C8:NEW",
@@ -2168,14 +2207,16 @@ def add_new_order_web_not_info(order_id):
             order.id_bitrix = int(order_new_bx_id)
             order.save()
         
+        return ("ok",None)
         
 
     except Exception as e:
         tr = traceback.format_exc()
         error = "error"
         location = "Сохранение заказа с сайта клиента без инфы в битркис"
-        info = f" клиента без инфы  сделка {order} ошибка {e}{tr}"
+        info = f" клиента без инфы  сделка order{order} ошибка {e}{tr}"
         e = error_alert(error, location, info)
+        return ("error",info)
 
 def get_manager_info():
     print(1111111)

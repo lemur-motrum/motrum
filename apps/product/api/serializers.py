@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from sorl.thumbnail import get_thumbnail
 
 from apps.client.models import Client
 from apps.product.models import (
@@ -79,6 +80,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         )
 
 
+
 class ProductSpesifSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -98,6 +100,7 @@ class ProductSearchSerializer(serializers.ModelSerializer):
             "article_supplier",
             "name",
         )
+    
 
 
 class ProductSerializer(serializers.ModelSerializer):

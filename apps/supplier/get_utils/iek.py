@@ -1275,15 +1275,22 @@ def update_prod_iek_in_okt():
                         else:
                             extra = False
                             price_supplier = price
+                        
+                        price_product = Price.objects.get(prod=product)
+                        price_product.price_supplier = price_supplier
+                        price_product.extra_price = extra
+                        price_product._change_reason = "Автоматическое"
+                        price_product.save()
                     else:
-                        extra = True
-                        price_supplier = 0
+                        pass
+                        # extra = True
+                        # price_supplier = 0
 
-                    price_product = Price.objects.get(prod=product)
-                    price_product.price_supplier = price_supplier
-                    price_product.extra_price = extra
-                    price_product._change_reason = "Автоматическое"
-                    price_product.save()
+                    # price_product = Price.objects.get(prod=product)
+                    # price_product.price_supplier = price_supplier
+                    # price_product.extra_price = extra
+                    # price_product._change_reason = "Автоматическое"
+                    # price_product.save()
 
     except Exception as e:
         print(e)

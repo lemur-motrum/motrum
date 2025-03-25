@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+    {% url 'core:detributer-certificate' as detributer_certificate_url %}
+    {% url 'core:certificate-of-conformity' as certificate_of_conformity_box_url %}
+    {% url 'core:sout' as sout_url %}
+    <div class="certificate_page_container">
+        {% if request.path == detributer_certificate_url %}
+            {% include "core/sertificates/detributer_certificate.html" %}
+        {% elif request.path == certificate_of_conformity_box_url %}
+            {% include "core/sertificates/certificate_of_conformity_box.html" %}
+        {% elif request.path == sout_url %}
+            {% include "core/sertificates/sout.html" %}
+        {% endif %}
+    </div>
+{% endblock content %}

@@ -100,7 +100,7 @@ def cart(request):
             # if discount_client is None:
             #     discount_client = 0
             clent_req_kpp = ClientRequisites.objects.filter(client=client)
-       
+
             if clent_req_kpp.count() > 0:
                 clent_req_kpp_arr = clent_req_kpp.values_list("requisitesotherkpp")
                 req_kpp = (
@@ -192,7 +192,7 @@ def cart(request):
         requisites = None
         client = None
         all_client_info = False
-        
+
     context = {
         "client": client,
         "product": product,
@@ -238,6 +238,12 @@ def solutions_one(request):
     print(234234)
     context = {"seo_test": seo_test, "projects": projects}
     return render(request, "core/solutions/solutions_one.html", context)
+
+
+def certificates_page(request):
+    print(123)
+    context = {"name": "Ruslan"}
+    return render(request, "core/sertificates/page.html", context)
 
 
 # ККОМПАНИЯ

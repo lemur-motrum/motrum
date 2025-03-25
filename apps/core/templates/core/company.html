@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-{% load number_space %}
+    {% load number_space %}
     <div class="about_container">
         <div class="promo-slider">
             <div class="motrum-slider-requsites">
@@ -19,8 +19,8 @@
                 <div class="swiper-wrapper">
                     <div class="promoslider-one-elem swiper-slide">
                         <div class="text">
-                            Помогаем промышленным предприятиям быть конкурентоспособными, внедряя передовые технологии автоматизации, 
-и превращать смелые идеи в надежные инженерные решения.
+                            Помогаем промышленным предприятиям быть конкурентоспособными, внедряя передовые технологии автоматизации,
+                            и превращать смелые идеи в надежные инженерные решения.
                         </div>
                     </div>
                 </div>
@@ -91,39 +91,40 @@
                         <span data-quantity="{{ motrum_in_numbers.year }}" class="quantity">0</span>
                     </div>
                     <div class="content">
-                        {{motrum_in_numbers.year}} лет на рынке
+                        {{ motrum_in_numbers.year }} лет на рынке
                         <br>
                         год основания – 2012
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="number_container">
-                        <span data-quantity="{{motrum_in_numbers.emploee_high}}" class="quantity">0</span>
+                        <span data-quantity="{{ motrum_in_numbers.emploee_high }}" class="quantity">0</span>
                     </div>
                     <div class="content">
-                        {{motrum_in_numbers.emploee_high}} высококвалифицированных
+                        {{ motrum_in_numbers.emploee_high }} высококвалифицированных
                         <br>
                         сотрудника
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="content short_content">
-                        {{motrum_in_numbers.profit}}  000 000 ₽
+                        {{ motrum_in_numbers.profit }}  000 000 ₽
                         <br>
                         оборот группы компаний
                     </div>
                     <div class="number_container long_number">
-                        <span data-quantity="{{motrum_in_numbers.profit}}" class="quantity">0</span>
+                        <span data-quantity="{{ motrum_in_numbers.profit }}" class="quantity">0</span>
                     </div>
                 </div>
                 <div class="dynamics_content-elem">
                     <div class="content short_content">
-                        {{motrum_in_numbers.emploee_engineer}}% сотрудников
+                        {{ motrum_in_numbers.emploee_engineer }}% сотрудников
                         <br>
                         – инженерский состав
                     </div>
                     <div class="number_container long_number">
-                        <span data-quantity="{{motrum_in_numbers.emploee_engineer}}" class="quantity">0</span>
+                        <span data-quantity="{{ motrum_in_numbers.emploee_engineer }}"
+                              class="quantity">0</span>
                     </div>
                 </div>
             </div>
@@ -142,7 +143,7 @@
                     <div class="hidden_background"></div>
                     <div class="title">Лаборатории</div>
                     <div class="description">
-                        Более 30 единиц оборудования в лаборатории 
+                        Более 30 единиц оборудования в лаборатории
                         100+ единиц тестового оборудования
                     </div>
                 </div>
@@ -172,9 +173,7 @@
                     <div class="linear_background"></div>
                     <div class="hidden_background"></div>
                     <div class="title">склад</div>
-                    <div class="description">
-                        15 млн. руб + оборудования на складе
-                    </div>
+                    <div class="description">15 млн. руб + оборудования на складе</div>
                 </div>
             </div>
         </div>
@@ -241,15 +240,15 @@
                     <div class="title">ПРОЕКТЫ КОМПЛЕКСНОЙ АВТОМАТИЗАЦИИ</div>
                     <div class="content_table">
                         <div class="elem">
-                            <div class="number_container">{{project_in_numbers.honest_sign}}+</div>
+                            <div class="number_container">{{ project_in_numbers.honest_sign }}+</div>
                             <div class="description_container">линий маркировки «Честный знак»</div>
                         </div>
                         <div class="elem">
-                            <div class="number_container">{{project_in_numbers.shkaf_upravleniya|number_space}}+</div>
+                            <div class="number_container">{{ project_in_numbers.shkaf_upravleniya|number_space }}+</div>
                             <div class="description_container">собрано шкафов управления</div>
                         </div>
                         <div class="elem">
-                            <div class="number_container">{{project_in_numbers.tech_project}}+</div>
+                            <div class="number_container">{{ project_in_numbers.tech_project }}+</div>
                             <div class="description_container">установок с техническим зрением</div>
                         </div>
                     </div>
@@ -261,11 +260,13 @@
                     </div>
                 </div>
                 <div class="map_img_container">
-                    <img src="{% static "core/images/map_one.png" %}" alt="map" />
+                    <img src="{% static "core/images/map_one.svg" %}" alt="map" />
                 </div>
                 <div class="absolute_elem">
-                    <div class="number_container">{{project_in_numbers.project_all}}+</div>
-                    <div class="description_container">более {{project_in_numbers.project_all}} реализованных проектов по всей России и СНГ</div>
+                    <div class="number_container">{{ project_in_numbers.project_all }}+</div>
+                    <div class="description_container">
+                        более {{ project_in_numbers.project_all }} реализованных проектов по всей России и СНГ
+                    </div>
                 </div>
             </div>
             <div class="down_content">
@@ -333,7 +334,7 @@
                 </div>
             </div>
         </div>
-        <div class="reviews_thanks_container">
+        {% comment %} <div class="reviews_thanks_container">
             {% if reviews|length > 0 %}
                 <div class="title">ОТЗЫВЫ И БЛАГОДАРНОСТИ</div>
                 <div class="reviews_table">
@@ -349,6 +350,30 @@
                     {% endfor %}
                 </div>
             {% endif %}
+        </div> {% endcomment %}
+        <div class="sertificates_container">
+            <div class="title">СЕРТИФИКАТЫ</div>
+            <div class="serificates_table">
+                <a href="{% url "core:detributer-certificate" %}"
+                   class="sertificates_link_container">
+                    <div class="description">
+                        Сертификаты
+                        <br>
+                        дистрибьютора
+                    </div>
+                </a>
+                <a href="{% url "core:certificate-of-conformity" %}"
+                   class="sertificates_link_container">
+                    <div class="description">
+                        Сертификаты
+                        <br>
+                        соответствия
+                    </div>
+                </a>
+                <a href="{% url "core:sout" %}" class="sertificates_link_container">
+                    <div class="description">СОУТ</div>
+                </a>
+            </div>
         </div>
         <div class="company_form_container">
             <div class="description_container">
@@ -367,7 +392,7 @@
                 <button class="submit_btn">оставить заявку</button>
             </div>
         </div>
-        <div class="employees_container">
+        {% comment %} <div class="employees_container">
             <div class="title">СОТРУДНИКИ МОТРУМ</div>
             <div class="employees_table">
                 <div class="table_elem">
@@ -418,6 +443,6 @@
                     </div>
                 </div>
             {% endif %}
-        </div>
+        </div> {% endcomment %}
     </div>
 {% endblock content %}

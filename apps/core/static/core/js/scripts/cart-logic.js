@@ -5,11 +5,13 @@ import {
   showErrorValidation,
   maskOptions,
   deleteCookie,
+  setPreloaderInButton,
 } from "/static/core/js/functions.js";
 
 import { ItcCustomSelect } from "/static/core/js/customSelect.js";
 
 import { setErrorModal } from "/static/core/js/error_modal.js";
+import { successModal } from "/static/core/js/sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 
@@ -374,6 +376,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (submitBtn) {
         const dataInfoValue = submitBtn.getAttribute("data-client-info");
         submitBtn.onclick = () => {
+          setPreloaderInButton(submitBtn);
           const cartId = getCookie("cart");
           const clientId = getCookie("client_id");
           let dataObj;
@@ -415,7 +418,13 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
               deleteCookie("cart", "/", window.location.hostname);
-              window.location.reload();
+              successModal(
+                "Спасибо за заказ, мы свяжемся с вами в ближайшее время"
+              );
+              setTimeout(() => {
+                window.location.href =
+                  window.location.origin + "/lk/my_orders/?page=1";
+              }, 200);
             } else {
               setErrorModal();
             }

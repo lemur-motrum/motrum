@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (val) {
         const dataObj = {
           name: nameInput.value,
-          phone: phoneInput.value,
+          phone: mask.unmaskedValue,
           url: window.location,
         };
         const data = JSON.stringify(dataObj);

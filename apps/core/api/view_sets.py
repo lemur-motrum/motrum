@@ -69,7 +69,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
             },
         )
 
-        subject = "Заявка с формы обратной связи с сайта motrum.ru"
+        subject = "Заявка с формы \"Обратный звонок\" с сайта motrum.ru"
         to_email = "pmn20@motrum.ru"
         # to_email = "lars1515@yandex.ru"
 
@@ -101,24 +101,70 @@ class FormWebViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=["post"], url_path=r"send-form-calculate-project")
     def send_form_calculate_project(self, request, *args, **kwargs):
+        from django.template import loader
+
         data = request.data
-        data = {
-            "name":"Имя",
-            "phone":"телефон в формате 79999999999" 
-        }
-        if data:
+
+        name = data["name"]
+        phone = data["phone"]
+        url = data["url"]
+
+        # data = {
+        #     "name":"Имя",
+        #     "phone":"телефон в формате 79999999999"
+        # }
+
+        html_message = loader.render_to_string(
+            "core/emails/email_calculate_project.html",
+            {
+                "name": name,
+                "phone": phone,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы \"Рассчитать проект\" с сайта motrum.ru"
+        to_email = "pmn20@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
         
     @action(detail=False, methods=["post"], url_path=r"send-form-company-consultation")
     def send_form_company_consultation(self, request, *args, **kwargs):
+        from django.template import loader
+
         data = request.data
-        data = {
-            "name":"Имя",
-            "phone":"телефон в формате 79999999999" 
-        }
-        if data:
+
+        name = data["name"]
+        phone = data["phone"]
+        url = data["url"]
+
+        # data = {
+        #     "name":"Имя",
+        #     "phone":"телефон в формате 79999999999"
+        # }
+
+        html_message = loader.render_to_string(
+            "core/emails/email_calculate_project.html",
+            {
+                "name": name,
+                "phone": phone,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы \"Нужна консультация\" с сайта motrum.ru"
+        to_email = "pmn20@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -138,14 +184,39 @@ class FormWebViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=["post"], url_path=r"send-form-contact-us")
     def send_form_contact_us(self, request, *args, **kwargs):
+        from django.template import loader
+
         data = request.data
-        data = {
-           
-            "name":"Имя",
-            "phone":"телефон в формате 79999999999",
-            "message":"Текст" 
-        }
-        if data:
+
+        name = data["name"]
+        phone = data["phone"]
+        message = data["message"]
+        url = data["url"]
+
+        # data = {
+        #
+        #     "name":"Имя",
+        #     "phone":"телефон в формате 79999999999",
+        #     "message":"Текст"
+        # }
+
+        html_message = loader.render_to_string(
+            "core/emails/email_contact_us.html",
+            {
+                "name": name,
+                "phone": phone,
+                "message": message,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка со страницы \"Контакты\" с сайта motrum.ru"
+        to_email = "pmn20@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)

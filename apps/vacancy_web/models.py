@@ -22,6 +22,21 @@ class PhotoEducationInfoWeb(models.Model):
     def __str__(self):
         return f"{self.image}"
 
+class PhotoSportsRecreationInfoWeb(models.Model):
+    image = models.ImageField(
+        "Картинка",
+        upload_to=get_file_path_company_web,
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Фото блок спорт и отдых"
+        verbose_name_plural = "Фото блок спорт и отдых"
+
+    def __str__(self):
+        return f"{self.image}"
 
 class VacancyCategory(models.Model):
     name = models.CharField("Название вакансии", max_length=200)

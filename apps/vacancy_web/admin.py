@@ -6,7 +6,7 @@ from apps.vacancy_web.models import (
     Vacancy,
     VacancyCategory,
     VacancyPrice,
-    WorkingConditions,
+    WorkingConditions, PhotoSportsRecreationInfoWeb,
 )
 from project.admin import website_admin
 
@@ -53,3 +53,4 @@ class VacancyWebAdmin(admin.ModelAdmin):
 website_admin.register(Vacancy, VacancyWebAdmin)
 website_admin.register(VacancyCategory, VacancyCategoryWebAdmin)
 website_admin.register(PhotoEducationInfoWeb)
+website_admin.register(PhotoSportsRecreationInfoWeb)

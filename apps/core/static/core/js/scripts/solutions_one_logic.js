@@ -133,6 +133,12 @@ window.addEventListener("DOMContentLoaded", () => {
         if (submitBtn.getAttribute("type-solution") == "shkaf") {
           endpoint = "/api/v1/core/forms/send-form-shkaf-upravleniya/";
         }
+        if (submitBtn.getAttribute("type-solution") == "packing") {
+          endpoint = "/api/v1/core/forms/send-form-cobots-packing";
+        }
+        if (submitBtn.getAttribute("type-solution") == "marking") {
+          endpoint = "/api/v1/core/forms/send-form-marking";
+        }
 
         function resetInputs() {
           phoneInput.value = "";

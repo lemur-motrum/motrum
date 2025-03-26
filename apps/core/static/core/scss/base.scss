@@ -3367,7 +3367,7 @@ a {
         }
         .itc-select {
           position: relative;
-          width: 13.938rem;
+          width: 30.938rem;
           @media screen and (max-width: 576px) {
             width: 100%;
           }
@@ -3386,13 +3386,14 @@ a {
           }
           .itc-select__toggle {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            padding: 0 1.5rem;
+            text-transform: lowercase;
             width: 100%;
             height: 3.563rem;
             padding: 0.5rem;
             box-sizing: border-box;
-            font-size: 0.65rem;
+            font-size: 1.125rem;
             font-weight: 300;
             background-color: #fff;
             border: 0.094rem solid #000;

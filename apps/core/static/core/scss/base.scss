@@ -2693,9 +2693,9 @@ a {
               position: absolute;
               bottom: 0.1rem;
               left: 0;
-              transition: .6s;
-              &.animate{
-                left:-5%
+              transition: 0.6s;
+              &.animate {
+                left: -5%;
               }
             }
             .rigth {
@@ -2704,11 +2704,10 @@ a {
               position: absolute;
               bottom: 0.9rem;
               right: 0rem;
-              transition: .6s;
-              &.animate{
-                right:-5%
+              transition: 0.6s;
+              &.animate {
+                right: -5%;
               }
-
             }
           }
           &.cobots-img-container {
@@ -2716,6 +2715,35 @@ a {
             height: 7.953rem;
             top: 0%;
             right: 0%;
+            .up {
+              position: absolute;
+              width: 4.623rem;
+              height: 3.377rem;
+              right: -9%;
+              top: 0.5rem;
+              z-index: 3;
+            }
+            .middle {
+              position: absolute;
+              width: 3.45rem;
+              height: 3.501rem;
+              top: 1.499rem;
+              right: 2.803rem;
+              z-index: 2;
+            }
+            .down {
+              position: absolute;
+              width: 5.625rem;
+              height: 2.25rem;
+              top: 4.688rem;
+              right: 2.753rem;
+              z-index: 1;
+              transition: 0.6s;
+              &.animate {
+                transform-origin: top;
+                transform: rotate(-10deg);
+              }
+            }
           }
           img {
             width: 100%;

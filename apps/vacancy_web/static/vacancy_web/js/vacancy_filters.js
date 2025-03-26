@@ -84,6 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
+        filterContainer.classList.add("show");
       };
     });
 
@@ -147,6 +148,9 @@ window.addEventListener("DOMContentLoaded", () => {
           loader.classList.add("hide");
           filtersElems.forEach((el) => (el.disabled = false));
           if (response.data.length > 0) {
+            if (response.data.length > 6) {
+              filterContainer.classList.add("show");
+            }
             catalogContainer.innerHTML = "";
             for (let i in response.data) {
               addAjaxCatalogItem(response.data[i]);

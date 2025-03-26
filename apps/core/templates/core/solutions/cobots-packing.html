@@ -1,0 +1,119 @@
+{% load static %}
+<div class="title_content">
+    <div class="bread_crumbs">
+        <a href="/">главная</a>
+        <a href="{% url "core:solutions" %}">решения</a>
+        <a href="{% url "core:cobots" %}">роботы</a>
+    </div>
+    <h1 class="title">РЕШЕНИЕ ДЛЯ автоматической упаковки</h1>
+</div>
+<div class="solution_one_slider">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide information_slide">
+            <div class="information_title">укладки групповой упаковки на паллет</div>
+            <div class="information_description">
+                Готовое решение на базе промышленного робота для захвата гофрокоробов и укладки на паллет с возможностью интеграции в существующую линию.
+            </div>
+        </div>
+        <div class="swiper-slide cobot_packing_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/cobots_packing_1.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+        <div class="swiper-slide cobot_packing_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/cobots_packing_2.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+        <div class="swiper-slide cobot_packing_slide">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/cobots_packing_3.png" %}"
+                     alt="img" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="vector_container palett_vector_container">
+    <div id="anchor" class="solution_will_allow">
+        <div class="title">ЭТО РЕШЕНИЕ</div>
+        <ul>
+            <li>точно и аккуратно выполняет укладку продукции</li>
+            <li>имеет удобный человеко-машинный интерфейс для оператора</li>
+            <li>безопасно для оператора</li>
+            <li>гибкое в перенастройке на другой продукт</li>
+        </ul>
+        <div class="img_container">
+            <img src="{% static "core/images/solutions/solution_!.png" %}" alt="img" />
+        </div>
+        <div class="arrow_container">
+            <img src="{% static "core/images/direction/arrow.png" %}" alt="arrow" />
+        </div>
+    </div>
+    <div class="rigth_vector_table">
+        <div class="up">
+            <div class="date">24/7</div>
+            <div class="description">
+                <span>работает без перерывов,
+                выходных и отпусков</span>
+            </div>
+            <div class="arrow_container">
+                <img src="{% static "core/images/direction/arrow.png" %}" alt="arrow" />
+            </div>
+        </div>
+        <div class="down">
+            <div class="description">
+                <span>быстрая окупаемость за
+                2 года</span>
+            </div>
+            <div class="payback">2</div>
+        </div>
+    </div>
+</div>
+<div class="cobots_packing_chars_container">
+    <div class="title">характеристики</div>
+    <div class="content">
+        <div class="chars_content">
+            <div class="chars_content_elem">
+                <div class="name">Грузоподъемность</div> <div class="descr">до 210 кг</div>
+            </div>
+            <div class="chars_content_elem">
+                <div class="name">Радиус действия</div> <div class="descr">до 3200 мм</div>
+            </div>
+            <div class="chars_content_elem">
+                <div class="name">Количество осей</div> <div class="descr">4/6</div>
+            </div>
+        </div>
+        <ul class="chars_list">
+            <li>Высокая скорость без потери точности</li>
+            <li>Увеличенный радиус действия</li>
+            <li>Высокая производительность</li>
+            <li>Заменяет операторов во всех сменах</li>
+        </ul>
+    </div>
+</div>
+<div class="anchor_container">
+    <div class="demo-form-container shkaf_uravlenia_form_container">
+        <div class="description_content">
+            <div class="title">НАПИШИТЕ НАМ</div>
+            <div class="description">
+                Мы предлагаем модель работы, в которой мы берем на себя сборку шкафа управления, а у вас есть возможность задействовать своих специалистов в более квалифицированной работе.
+                Тем самым увеличить вашу производительность, сфокусироваться на потребностях вашего клиента, совершенствовать ваш продукт.
+            </div>
+        </div>
+        <div class="demo_form">
+            <div class="inputs">
+                <label>
+                    <input type="text" class="name_input" placeholder="Ваше имя" />
+                    <div class="error name_error"></div>
+                </label>
+                <label>
+                    <input type="tel" class="phone_input" placeholder="Ваше телефон" />
+                    <div class="error phone_error"></div>
+                </label>
+            </div>
+            <button cobots-box="cobots-palett" class="btn">отправить</button>
+        </div>
+    </div>
+</div>

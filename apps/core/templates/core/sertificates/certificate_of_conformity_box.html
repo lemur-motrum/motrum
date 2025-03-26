@@ -1,7 +1,25 @@
+{% load static %}
 <div class="title_content">
     <div class="bread_crumbs">
         <a href="/">главная</a>
         <a href="{% url "core:about" %}">компания</a>
     </div>
     <h1 class="title">Сертификаты соответствия</h1>
+    <div class="cerificate_table">
+        <a class="cerificate_table_elem" href="{% static "/core/docs/conformity_box/certificate_of_conformity_box_1.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/conformity_box/certificate_of_conformity_box_1.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/conformity_box/certificate_of_conformity_box_2.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/conformity_box/certificate_of_conformity_box_2.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/conformity_box/certificate_of_conformity_box_3.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/conformity_box/certificate_of_conformity_box_3.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/conformity_box/certificate_of_conformity_box_4.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/conformity_box/certificate_of_conformity_box_4.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/conformity_box/certificate_of_conformity_box_5.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/conformity_box/certificate_of_conformity_box_5.jpg" %}" alt="img">
+        </a>
+    </div>
 </div>

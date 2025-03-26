@@ -130,6 +130,9 @@ window.addEventListener("DOMContentLoaded", () => {
         if (submitBtn.getAttribute("btn-type-cobots")) {
           endpoint = "/api/v1/core/forms/send-form-demo-visit/";
         }
+        if (submitBtn.getAttribute("type-solution") == "shkaf") {
+          endpoint = "/api/v1/core/forms/send-form-shkaf-upravleniya/";
+        }
 
         function resetInputs() {
           phoneInput.value = "";

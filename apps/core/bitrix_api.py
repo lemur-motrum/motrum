@@ -2295,4 +2295,55 @@ def get_manager_info():
         # except:
         #     pass
         
+def create_lead_from_form(data):
+    webhook = BITRIX_WEBHOOK
 
+    bx = Bitrix(webhook)
+
+    # params = {
+    #     'filter': {
+    #         "ENTITY_ID": "SOURCE"
+    #     }
+    #     # "entityTypeId": 2
+    # }
+
+    # result_request = bx.get_all("crm.status.list", params)
+    # result_request = bx.get_all("crm.lead.fields")
+
+    # params = {
+    #     "fields": {
+    #         "TITLE": "Заявка с сайта из раздела ",
+    #         "CATEGORY_ID": 0,
+    #         "SOURCE_ID": 146,
+    #         "SOURCE_DESCRIPTION": "Заявка со страницы"
+    #     },
+    #     "params": {
+    #         "REGISTER_SONET_EVENT": "Y"
+    #     }
+    # }
+
+    # result_request = bx.call("crm.deal.add", params)
+
+    params = {
+        "fields": {
+            "TITLE": "ТЕСТ! Заявка с сайта со страницы \"" + data['page'] + "\"",
+            "NAME": data['name'],
+            "PHONE": [
+                {
+                    "VALUE": data['phone'],
+                    "VALUE_TYPE": "WORK"
+                }
+            ],
+            "OPENED": "N",
+            "SOURCE_ID": "CALLBACK",
+            "ASSIGNED_BY_ID": data['manager_id'],
+            # "ASSIGNED_BY_ID": 174,
+        },
+        "params": {
+            "REGISTER_SONET_EVENT": "Y"
+        }
+    }
+
+    result_request = bx.call("crm.lead.add", params)
+
+    # print("Результат выполнения запроса в Б24: ", result_request)

@@ -82,19 +82,67 @@ class FormWebViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=["post"], url_path=r"send-form-demo-visit")
     def send_form_demo_visit(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.core.bitrix_api import create_lead_from_form
+
         data = request.data
+
+        name = data["name"]
+        phone = data["phone"]
+        type = data["type"]
+        url = data["url"]
+
+        if type == "cobots-palett":
+            page = "Решение для паллетизации"
+            manager_id = 28
+            is_cobots = True
+        elif type == "cobots-box":
+            page = "Решение для укладки в короб"
+            manager_id = 28
+            is_cobots = True
+        else:
+            page = "Общая страница коботов"
+            manager_id = 28
+            is_cobots = True
+
+        lead_data = {
+            "name": name,
+            "phone": phone,
+            "page": page,
+            "manager_id": manager_id,
+        }
+
+        # print(data)
         # type = cobots-palett
         # cobots-box
         # cobots-packing
         # marking
         # shkaf-upravleniya
 
-        data = {
-            "type":"страница с которой демо выезд ",
-            "name":"Имя",
-            "phone":"телефон в формате 79999999999" 
-        }
-        if data:
+        create_lead_from_form(lead_data)
+
+        # data = {
+        #     "type":"страница с которой демо выезд ",
+        #     "name":"Имя",
+        #     "phone":"телефон в формате 79999999999"
+        # }
+
+        html_message = loader.render_to_string(
+            "core/emails/email_demo_visit.html",
+            {
+                "name": name,
+                "phone": phone,
+                "page": page,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы \"Демо выезд\" со страницы \"Коботы\" с сайта motrum.ru"
+        to_email = "pmn4@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+        if data and sending_result:
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)

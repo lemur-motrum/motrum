@@ -146,6 +146,131 @@ class FormWebViewSet(viewsets.ModelViewSet):
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=["post"], url_path=r"send-form-cobots-packing")
+    def send_form_cobots_packing(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.core.bitrix_api import create_lead_from_form
+
+        data = request.data
+
+        name = data["name"]
+        phone = data["phone"]
+        page = "Решение для автоматической упаковки"
+        url = data["url"]
+
+        lead_data = {
+            "name": name,
+            "phone": phone,
+            "page": page,
+            "manager_id": 28,
+        }
+
+        create_lead_from_form(lead_data)
+
+        html_message = loader.render_to_string(
+            "core/emails/email_cobots_packing.html",
+            {
+                "name": name,
+                "phone": phone,
+                "page": page,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы со страницы коботов \"Решение для автоматической упаковки\" с сайта motrum.ru"
+        to_email = "pmn4@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+        if data and sending_result:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=["post"], url_path=r"send-form-marking")
+    def send_form_marking(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.core.bitrix_api import create_lead_from_form
+
+        data = request.data
+
+        name = data["name"]
+        phone = data["phone"]
+        page = "Маркировка"
+        url = data["url"]
+
+        lead_data = {
+            "name": name,
+            "phone": phone,
+            "page": page,
+            "manager_id": 124,
+        }
+
+        create_lead_from_form(lead_data)
+
+        html_message = loader.render_to_string(
+            "core/emails/email_marking.html",
+            {
+                "name": name,
+                "phone": phone,
+                "page": page,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы со страницы \"Маркировка\" с сайта motrum.ru"
+        to_email = "pmn36@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+        if data and sending_result:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    @action(detail=False, methods=["post"], url_path=r"send-form-shkaf-upravleniya")
+    def send_form_shkaf_upravleniya(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.core.bitrix_api import create_lead_from_form
+
+        data = request.data
+
+        name = data["name"]
+        phone = data["phone"]
+        page = "Сборка шкафов управления"
+        url = data["url"]
+
+        lead_data = {
+            "name": name,
+            "phone": phone,
+            "page": page,
+            "manager_id": 24,
+        }
+
+        create_lead_from_form(lead_data)
+
+        html_message = loader.render_to_string(
+            "core/emails/email_shkaf_upravleniya.html",
+            {
+                "name": name,
+                "phone": phone,
+                "page": page,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы со страницы \"Сборка шкафов управления\" с сайта motrum.ru"
+        to_email = "pmn12@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+        if data and sending_result:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)
         
     @action(detail=False, methods=["post"], url_path=r"send-form-calculate-project")
     def send_form_calculate_project(self, request, *args, **kwargs):

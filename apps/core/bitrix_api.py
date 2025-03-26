@@ -2326,7 +2326,7 @@ def create_lead_from_form(data):
 
     params = {
         "fields": {
-            "TITLE": "ТЕСТ! Заявка с сайта со страницы \"" + data['page'] + "\"",
+            "TITLE": "Заявка с сайта со страницы \"" + data['page'] + "\"",
             "NAME": data['name'],
             "PHONE": [
                 {

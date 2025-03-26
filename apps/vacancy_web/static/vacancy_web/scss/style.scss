@@ -563,8 +563,11 @@
         margin-top: 1rem;
       }
       .filter_container {
-        display: flex;
+        display: none;
         flex-direction: column;
+        &.show {
+          display: flex;
+        }
         @media screen and (max-width: 576px) {
           position: fixed;
           height: 100%;

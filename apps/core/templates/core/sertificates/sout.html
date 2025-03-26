@@ -1,7 +1,22 @@
+{% load static %}
 <div class="title_content">
     <div class="bread_crumbs">
         <a href="/">главная</a>
         <a href="{% url "core:about" %}">компания</a>
     </div>
-    <h1 class="title">соут</h1>
+    <h1 class="title">результаты соут</h1>
+    <div class="cerificate_table">
+        <a class="cerificate_table_elem" href="{% static "/core/docs/SOUT/sout_1.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/SOUT/sout_1.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/SOUT/sout_2.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/SOUT/sout_2.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/SOUT/sout_3.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/SOUT/sout_3.jpg" %}" alt="img">
+        </a>
+        <a class="cerificate_table_elem" href="{% static "/core/docs/SOUT/sout_4.pdf" %}" target="_blank">
+            <img src="{% static "/core/docs/SOUT/sout_4.jpg" %}" alt="img">
+        </a>
+    </div>
 </div>

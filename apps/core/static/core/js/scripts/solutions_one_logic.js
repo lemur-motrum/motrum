@@ -81,8 +81,21 @@ window.addEventListener("DOMContentLoaded", () => {
     const phoneInput = formContainer.querySelector(".phone_input");
     const phoneError = formContainer.querySelector(".phone_error");
     const submitBtn = formContainer.querySelector(".btn");
+    const overlay = document.querySelector(".anchor_overlay");
 
     const phoneMask = IMask(phoneInput, maskOptions);
+
+    function hideOverlay() {
+      if (
+        overlay.classList.contains("show") ||
+        overlay.classList.contains("visible")
+      ) {
+        overlay.classList.remove("visible");
+        setInterval(() => {
+          overlay.classList.remove("show");
+        }, 600);
+      }
+    }
 
     submitBtn.onclick = () => {
       let validate = true;
@@ -133,6 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
             resetInputs();
+            hideOverlay();
             hidePreloaderAndEnabledButton(submitBtn);
             successModal(
               "Спасибо за заявку, мы свяжемся с вами в ближайшее время"

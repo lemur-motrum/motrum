@@ -53,6 +53,7 @@
                     </div>
                 </div>
                 <div class="documentation_container">
+                    {% if product_document|length > 0 %}
                     <div class="documentation_title">Документация</div>
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
@@ -65,6 +66,7 @@
                         {% empty %}
                         {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="centered_container">
@@ -127,6 +129,7 @@
                 </div>
             </div>
             <div class="documentation_container_mob">
+                {% if product_document|length > 0 %}
                 <div class="documentation_title">Документация</div>
                 <div class="documentation_items">
                     {% for productdocument in product_document %}
@@ -139,6 +142,7 @@
                     {% empty %}
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
 {% endblock content %}

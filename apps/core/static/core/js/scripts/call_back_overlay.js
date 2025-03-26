@@ -14,6 +14,26 @@ const csrfToken = getCookie("csrftoken");
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".motrum-slider-requsites");
   if (wrapper) {
+    const videos = document.querySelectorAll(".slider_video");
+    if (videos.length > 0) {
+      const video1 = document.querySelector(".video_1");
+
+      video1.onclick = () => {
+        window.location.href = "/cobots/";
+      };
+      const video2 = document.querySelector(".video_2");
+
+      video2.onclick = () => {
+        window.location.href = "/marking/";
+      };
+
+      const video3 = document.querySelector(".video_3");
+
+      video3.onclick = () => {
+        window.location.href = "/solutions/";
+      };
+    }
+
     const phoneButton = wrapper.querySelector(".phone-button");
     const callBackOverlay = document.querySelector(".overlay_callback");
     const closeBtn = callBackOverlay.querySelector(".close_btn");
@@ -25,6 +45,17 @@ window.addEventListener("DOMContentLoaded", () => {
     const submitBtn = modalWindow.querySelector(".submit_btn");
 
     const mask = IMask(phoneInput, maskOptions);
+
+    const circlePhoneIcon = wrapper.querySelector(".circle");
+    const phoneIconImg = circlePhoneIcon.querySelector("img");
+
+    phoneButton.onmouseover = () => {
+      phoneIconImg.classList.add("rotate");
+    };
+
+    phoneButton.onmouseout = () => {
+      phoneIconImg.classList.remove("rotate");
+    };
 
     phoneButton.onclick = () => {
       callBackOverlay.classList.add("show");

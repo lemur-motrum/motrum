@@ -5,7 +5,7 @@
             <div class="circle">
                 <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}" />
             </div>
-            <button class="phone-button">Обратный звонок</button>
+            <button class="phone-button"> <span>Обратный <br> звонок</span></button>
         </div>
         <div class="motrum-slider-requisites-down-content">
             <a class="phone-link" href="tel:+78463004117">+7 (846) 300 41 17</a>
@@ -38,7 +38,7 @@
                             {% endautoescape %}
                         {% endif %}
                         {% if slider_elem.video_file %}
-                            <video playsinline loop autoplay muted>
+                            <video class="slider_video video_{{forloop.counter}}" playsinline loop autoplay muted>
                                 <source src="{{ slider_elem.video_file.url }}" type="video/mp4" />
                             </video>
                         {% endif %}

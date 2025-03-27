@@ -26,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
       overlay.classList.add("show");
       setTimeout(() => {
         overlay.classList.add("visible");
-      });
+      }, 300);
     }
 
     function closeOverlay() {

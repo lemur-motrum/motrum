@@ -9,13 +9,15 @@
       {% endif %}
     </div>
     <div class="description-container">
-      <div class="name-description">
-        <div class="title-name">{{ manager.first_name }}</div>
-        <div class="title-name">{{ manager.last_name }}</div>
+      <div class="front_description">
+        <div class="name-description">
+          <div class="title-name">{{ manager.first_name }}</div>
+          <div class="title-name">{{ manager.last_name }}</div>
+        </div>
+        <div class="description">Ваш персональный менеджер</div>
       </div>
-      <div class="description">Ваш персональный менеджер</div>
       <div class="links_container">
-        {% if manager.phone %}
+        {% if manager.phone != "" %}
           <a href="tel:+{{manager.phone}}">{{ phone_manager }}</a>
         {% endif %}
         <button class="open_overlay_btn">

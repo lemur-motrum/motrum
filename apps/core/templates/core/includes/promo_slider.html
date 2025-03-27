@@ -29,8 +29,9 @@
     <div class="motrum-promosilder-two">
         <div class="swiper-wrapper">
             {% for slider_elem in slider %}
-                {% if slider_elem.active %}
-                    <div class="promoslider-two-elem swiper-slide">
+            {% if slider_elem.active %}
+            <div class="promoslider-two-elem swiper-slide">
+                        <a href="{% if slider_elem.link %}{{slider_elem.link}} {% else %}{% endif %}" class="promoslider_link"></a>
                         {% if slider_elem.image_right %}<img src="{{ slider_elem.image_right.url }}" alt="image" />{% endif %}
                         {% if slider_elem.video %}
                             {% autoescape off %}
@@ -43,6 +44,7 @@
                             </video>
                         {% endif %}
                         <div class="promoslider-two-elem-description">
+                            {% if slider_elem.text_before_block %}<span class="up_text">{{ slider_elem.text_before_block|safe }}</span>{% endif %}
                             <div class="promoslider-two-elem-description-up">
                                 {% if slider_elem.text1 %}<span class="bold-text">{{ slider_elem.text1 }}</span>{% endif %}
                                 {% if slider_elem.text2 %}
@@ -58,6 +60,7 @@
                                     </div>
                                 {% endif %}
                                 {% if slider_elem.text4 %}<span class="bold-text">{{ slider_elem.text4 }}</span>{% endif %}
+                                {% if slider_elem.text_after_block %}<span class="small_text">{{ slider_elem.text_after_block }}</span>{% endif %}
                             </div>
                         </div>
                     </div>

@@ -73,7 +73,7 @@
                 <div class="product_article">Арткул: {{ product.article }}</div>
                 <div class="product_description">
                     {% if product.description %}
-                        {{ product.description }}
+                        {{ product.description|striptags }}
                     {% else %}
                         Описания пока нет
                     {% endif %}

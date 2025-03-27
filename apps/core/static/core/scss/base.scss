@@ -7808,6 +7808,10 @@ a {
           }
           .up_text {
             font-size: 0.875rem;
+            @media screen and (max-width: 576px) {
+              font-size: 0.6rem;
+              margin-bottom: -1.2rem;
+            }
           }
           .promoslider-two-elem-description-up {
             display: flex;

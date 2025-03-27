@@ -2381,3 +2381,32 @@ def create_lead_from_form(data):
     result_request = bx.call("crm.lead.add", params)
 
     # print("Результат выполнения запроса в Б24: ", result_request)
+
+def create_lead_from_equipment_selection(data):
+        webhook = BITRIX_WEBHOOK
+
+        bx = Bitrix(webhook)
+
+        params = {
+            "fields": {
+                "TITLE": "Заявка с сайта на подбор оборудования",
+                "NAME": data['name'],
+                "PHONE": [
+                    {
+                        "VALUE": data['phone'],
+                        "VALUE_TYPE": "WORK"
+                    }
+                ],
+                # "CATEGORY_ID": 8,
+                "COMMENTS": data['message'],
+                "OPENED": "N",
+                "SOURCE_ID": "CALLBACK",
+                "ASSIGNED_BY_ID": data['manager_id'],
+                # "ASSIGNED_BY_ID": 174,
+            },
+            "params": {
+                "REGISTER_SONET_EVENT": "Y"
+            }
+        }
+
+        result_request = bx.call("crm.lead.add", params)

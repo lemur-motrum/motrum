@@ -634,7 +634,7 @@ def get_status_order():
                             else:
                                 status = "SHIPMENT_AUTO"
                         
-                        if order.status != status:
+                        if order.status != status and order.client:
                             Notification.add_notification(order.id, "STATUS_ORDERING", None)
                         print(status)
                         error = "info_error_order"

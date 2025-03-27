@@ -22,7 +22,7 @@ class Notification(models.Model):
         max_length=100, choices=TYPE_NOTIFICATION, default="STATUS_ORDERING"
     )
     file = models.CharField(
-        max_length=5000, 
+        max_length=10000, 
         blank=True,
         null=True,
     )

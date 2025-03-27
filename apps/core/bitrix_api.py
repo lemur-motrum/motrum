@@ -1367,9 +1367,16 @@ def add_new_order_web(order_id):
         req_inn = order.requisites.inn
         acc_req = order.account_requisites
         req_kpp = order.account_requisites.requisitesKpp
-        adress_web = RequisitesAddress.objects.get(
+        adress_web = RequisitesAddress.objects.filter(
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
+        if adress_web.count == 0:
+            adress_web[0]
+        else:
+            adress_web = RequisitesAddress.objects.filter(
+            requisitesKpp=req_kpp, type_address_bx="6"
+        )
+        
 
         all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
             "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"
@@ -1390,11 +1397,11 @@ def add_new_order_web(order_id):
                 base_manager,
             )
         )
-        error = "error"
+        error = "info_error_order"
         location = "Сохранение заказа с сайта в  инфо"
         info = f" сделка {order} {req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id}"
         e = error_alert(error, location, info)
-
+        
         # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
         # сохранение заказа битркис
 

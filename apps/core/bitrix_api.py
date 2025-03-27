@@ -1258,7 +1258,7 @@ def get_stage_info_bx():
 def get_manager():
     try:
         webhook = BITRIX_WEBHOOK
-        print(errr)
+       
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",

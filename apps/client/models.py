@@ -683,8 +683,9 @@ class Order(models.Model):
                 need_email = True
                 html_message_template = "core/emails/email_get_order_to_client.html"
                 categ = CategoryProduct.objects.filter(is_send_email=True)
-                domian = DOMIAN[:-1]
                 print(DOMIAN)
+                domian = DOMIAN[:-1]
+                
                 data = {
                     "categ": categ,
                     "domian": domian,

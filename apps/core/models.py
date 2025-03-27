@@ -95,6 +95,8 @@ class SliderMain(models.Model):
         null=True,
     )
     text4 = models.CharField("Текст 2 строка", max_length=200, blank=True, null=True)
+    text_before_block = models.CharField("Текст перед блоком", max_length=200, blank=True, null=True)
+    text_after_block = models.CharField("Текст после текста на 2 строке", max_length=200, blank=True, null=True)
 
     image = models.ImageField(
         "Изображение левое",

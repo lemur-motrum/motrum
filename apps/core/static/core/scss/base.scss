@@ -2711,6 +2711,9 @@ a {
             transition: 0.6s;
             opacity: 0;
             font-weight: bold;
+            &.message_error{
+              top:98%;
+            }
             &.show {
               opacity: 1;
             }

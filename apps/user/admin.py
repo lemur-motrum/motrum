@@ -29,7 +29,8 @@ class AdminUserAdmin(admin.ModelAdmin):
                     "admin_type",
                     "password",
                     "is_active",
-                    "image"
+                    "image",
+                    "phone",
                 )
             },
         ),

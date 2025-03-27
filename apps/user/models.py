@@ -31,7 +31,7 @@ class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     middle_name = models.CharField("Отчество", max_length=50, null=True, blank=True)
     admin_type = models.CharField("Уровень доступа",max_length=100, choices=ADMIN_TYPE, default="ALL")
-    
+    phone = models.CharField("Номер телефона в формате 79277777777 - без плюса и доп знаков", max_length=40, null=True,)
     
     bitrix_id = models.PositiveIntegerField(
         "Номер менеджера битрикс",

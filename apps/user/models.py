@@ -30,9 +30,15 @@ class CustomUser(AbstractUser):
 class AdminUser(CustomUser):
     user = models.OneToOneField(CustomUser, parent_link=True, on_delete=models.CASCADE)
     middle_name = models.CharField("Отчество", max_length=50, null=True, blank=True)
-    admin_type = models.CharField("Уровень доступа",max_length=100, choices=ADMIN_TYPE, default="ALL")
-    phone = models.CharField("Номер телефона в формате 79277777777 - без плюса и доп знаков", max_length=40, null=True,)
-    
+    admin_type = models.CharField(
+        "Уровень доступа", max_length=100, choices=ADMIN_TYPE, default="ALL"
+    )
+    phone = models.CharField(
+        "Номер телефона в формате 79277777777 - без плюса и доп знаков",
+        max_length=40,
+        null=True,
+    )
+
     bitrix_id = models.PositiveIntegerField(
         "Номер менеджера битрикс",
         null=True,
@@ -51,7 +57,7 @@ class AdminUser(CustomUser):
         verbose_name_plural = "Администраторы"
 
     def save(self, *args, **kwargs):
-        all_user =  AdminUser.objects.all()
+        all_user = AdminUser.objects.all()
         if all_user.count() > 0:
             if self.id:
                 user = AdminUser.objects.get(id=self.id)
@@ -72,6 +78,7 @@ class AdminUser(CustomUser):
             #     self.set_password(self.password)
         else:
             pass
+
         super().save(*args, **kwargs)
 
     # def login_bitrix(self,data):
@@ -81,7 +88,9 @@ class AdminUser(CustomUser):
     def login_bitrix(cls, data, next_url, request):
         print(data)
         try:
-            admin = cls.objects.get(username=data["email_bitrix_manager"], password=data["token"])
+            admin = cls.objects.get(
+                username=data["email_bitrix_manager"], password=data["token"]
+            )
             is_groups_user = admin.groups.filter(
                 name__in=["Полный доступ", "Базовый доступ"]
             ).exists()

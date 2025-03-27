@@ -1255,21 +1255,40 @@ def get_manager():
 
         for manager in manager_all_bx:
             print(manager)
+            if "PERSONAL_MOBILE" in manager:
+                phone = manager["PERSONAL_MOBILE"]
+               
+                phone=re.sub(r"\D","", phone)
+                
+                if len(phone) == 11:
+                    phone = phone[1:]
+                    phone = f"7{phone}"
+                    
+                    
+                elif len(phone) == 0:
+                    phone = None
+                else:
+                    print(f"non 11 simbol {phone}")
+                    phone = None
+                    
             if "EMAIL" in manager:
                 # if manager["EMAIL"] != "":
                 try:
                     admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
                     admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.phone = phone
                     admin_okt.save()
                     photo_manager_bx(manager, admin_okt)
                 except AdminUser.DoesNotExist:
                     pass
+                
             elif "UF_USR_1656306737602" in manager:
                 try:
                     admin_okt = AdminUser.objects.get(
                         username=manager["UF_USR_1656306737602"]
                     )
                     admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.phone = phone
                     admin_okt.save()
                     photo_manager_bx(manager, admin_okt)
                 except AdminUser.DoesNotExist:

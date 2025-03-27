@@ -36,14 +36,12 @@ def catalog_all(request):
     print("catalog_all")
     # category = CategoryProduct.objects.all().order_by("article_name")
     category = (
-        CategoryProduct.objects
-        .prefetch_related(
+        CategoryProduct.objects.prefetch_related(
             Prefetch("product_set"),
         )
         .filter()
         .exclude(product__isnull=True)
         .order_by("article_name")
-        
     )
     print(category)
     vendors = Vendor.objects.filter(is_view_index_web=True)[0:4]
@@ -61,13 +59,21 @@ def catalog_all(request):
 def catalog_group(request, category):
     print("catalog_group")
     media_url = MEDIA_URL
-    group = GroupProduct.objects.filter(category__slug=category).order_by(
-        "article_name"
+    group = (
+        GroupProduct.objects.filter(category__slug=category)
+        .prefetch_related(
+            Prefetch("product_set"),
+        )
+        .exclude(product__isnull=True)
+        .order_by("article_name")
     )
 
     if len(group) > 0:
-        all_categories = CategoryProduct.objects.all()
         cat = CategoryProduct.objects.get(slug=category)
+        all_categories = CategoryProduct.objects.prefetch_related(
+            Prefetch("product_set"),
+        ).filter().exclude(product__isnull=True,).exclude(pk=cat.pk).order_by("article_name")
+        
 
         def get_another_category():
             current_cats = [
@@ -78,7 +84,8 @@ def catalog_group(request, category):
         context = {
             "category": cat,
             "group": group,
-            "another_categories": get_another_category(),
+            # "another_categories": get_another_category(),
+            "another_categories": all_categories,
             "title": cat.name,
         }
 
@@ -159,8 +166,17 @@ def products_items(request, category, group):
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 
-    all_groups = (
-        GroupProduct.objects.select_related("category").all().order_by("article_name")
+    # all_groups = (
+    #     GroupProduct.objects.select_related("category").all().order_by("article_name")
+    # )
+    another_groups = (
+        GroupProduct.objects.filter(category__slug=category)
+        .prefetch_related(
+            Prefetch("product_set"),
+        )
+        .exclude(product__isnull=True)
+        .exclude(pk=current_group.pk)
+        .order_by("article_name")
     )
 
     def get_another_groups():
@@ -171,12 +187,13 @@ def products_items(request, category, group):
             and group_elem.category.pk == current_category.pk
         ]
         return current_groups
-
+    
     context = {
         "current_category": current_category,
         "current_group": current_group,
         "product_vendor": product_vendor,
-        "another_groups": get_another_groups(),
+        # "another_groups": get_another_groups(),
+        "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,
     }

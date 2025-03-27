@@ -596,6 +596,10 @@ def get_status_order():
         actual_order = Order.objects.exclude(
             status__in=not_view_status, id_bitrix=None,
         ).values("id_bitrix").exclude(id_bitrix=None)
+        error = "info_error_order"
+        location = "Получение статусов битрикс24"
+        info = f"actual_order {actual_order}"
+        e = error_alert(error, location, info)
         # actual_order = Order.objects.exclude(
         #     status__in=not_view_status, id_bitrix__isnull=True,
         # ).filter(id_bitrix=11702).values("id_bitrix")
@@ -611,6 +615,7 @@ def get_status_order():
                 try:
                     orders_bx = bx.get_by_ID("crm.deal.get", [orde])
                     print(orders_bx)
+                    
                     # if len(orders) == 1:
                     #     orders_bx = {orders_bx["ID"]: orders_bx}
 
@@ -629,12 +634,21 @@ def get_status_order():
                             else:
                                 status = "SHIPMENT_AUTO"
                         
-                        if order.status != status:
+                        if order.status != status and order.client:
                             Notification.add_notification(order.id, "STATUS_ORDERING", None)
                         print(status)
+                        error = "info_error_order"
+                        location = "Получение статусов битрикс24"
+                        info = f"orders_bx {orde}{status} {orders_bx}"
+                        e = error_alert(error, location, info)
                         order.status = status
                         order.save()
                 except:
+                    tr = traceback.format_exc()
+                    error = "info_error_order"
+                    location = "Получение статусов битрикс24"
+                    info = f"except {orde} Тип ошибки:{e}{tr}"
+                    e = error_alert(error, location, info)
                     pass
     except Exception as e:
         print(e)
@@ -1244,7 +1258,7 @@ def get_stage_info_bx():
 def get_manager():
     try:
         webhook = BITRIX_WEBHOOK
-
+        print(errr)
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",
@@ -1303,6 +1317,7 @@ def get_manager():
         location = "Менеджеры битрикс"
         info = f" Получение Менеджеры битрикс в бд {e}{tr} webhook {webhook}"
         e = error_alert(error, location, info)
+        
         return False
 
 

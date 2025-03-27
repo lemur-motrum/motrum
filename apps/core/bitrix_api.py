@@ -1258,7 +1258,6 @@ def get_stage_info_bx():
 def get_manager():
     try:
         webhook = BITRIX_WEBHOOK
-       
         bx = Bitrix(webhook)
         manager_all_bx = bx.get_all(
             "user.get",
@@ -1266,19 +1265,15 @@ def get_manager():
                 # "entityTypeId": 2,
             },
         )
-
+        print("manager_all_bx",manager_all_bx)
         for manager in manager_all_bx:
-            print(manager)
+            # print(manager)
             if "PERSONAL_MOBILE" in manager:
                 phone = manager["PERSONAL_MOBILE"]
-               
                 phone=re.sub(r"\D","", phone)
-                
                 if len(phone) == 11:
                     phone = phone[1:]
                     phone = f"7{phone}"
-                    
-                    
                 elif len(phone) == 0:
                     phone = None
                 else:
@@ -1315,7 +1310,7 @@ def get_manager():
         print(e, tr)
         error = "error"
         location = "Менеджеры битрикс"
-        info = f" Получение Менеджеры битрикс в бд {e}{tr} webhook {webhook}"
+        info = f" Получение Менеджеры битрикс в бд {e}{tr}"
         e = error_alert(error, location, info)
         
         return False

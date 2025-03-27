@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from requests import request
 
+from apps.core.bitrix_api import get_manager
 from apps.user.forms import PasswordForm
 from apps.user.models import AdminUser, CustomUser, ManagerWebUser, Roles
 from project.admin import website_admin
@@ -35,6 +36,14 @@ class AdminUserAdmin(admin.ModelAdmin):
             },
         ),
     )
+    def save_model(self, request, obj, form, change):
+        if obj.pk:
+            get_manager()
+        else:
+            get_manager()
+        
+        super().save_model(request, obj, form, change)
+        
     def has_delete_permission(self, request, obj=None):
         return False
 

@@ -77,7 +77,7 @@ class AdminUser(CustomUser):
         else:
             pass
         
-        get_manager()
+        # get_manager()
         super().save(*args, **kwargs)
 
     # def login_bitrix(self,data):

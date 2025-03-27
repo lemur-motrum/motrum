@@ -118,7 +118,7 @@ from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
 from apps.vacancy_web.models import Vacancy
-from project.settings import MEDIA_ROOT, BITRIX_WEBHOOK
+from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK
 from fast_bitrix24 import Bitrix
 
 
@@ -131,34 +131,8 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    filter_bx = {"PHONE": f"+79276892240"}
-    contact_bx = bx.get_all(
-        "crm.contact.list",
-        params={
-            "filter": filter_bx,
-            "select": [
-                "ID",
-                "NAME",
-                "LAST_NAME",
-                "EMAIL",
-                "PHONE",
-                "ASSIGNED_BY_ID",
-                "SECOND_NAME",
-                "POST",
-            ],
-        },
-    )
-    contact_bx = contact_bx[0]
-    print(contact_bx)
-   
-    client_middle_name =  contact_bx['SECOND_NAME'] if contact_bx['SECOND_NAME'] != '' else None
-    if "EMAIL" in contact_bx:
-        email =  contact_bx['EMAIL']
-        print(email)
-        if len(email) > 0:
-            email_nb = contact_bx['EMAIL'][0]['VALUE']
-        else:
-            email_nb = None
+    print(DOMIAN)
+    domian = DOMIAN[:-1]
    
    
    

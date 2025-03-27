@@ -341,19 +341,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
-        
-    @action(detail=False, methods=["post"], url_path=r"send-form-manager")
-    def send_form_manager(self, request, *args, **kwargs):
-        data = request.data
-        data = {
-            "manager": "айди менеджера число"
-            # "name":"Имя",
-            # "phone":"телефон в формате 79999999999" 
-        }
-        if data:
-            return Response("ok", status=status.HTTP_200_OK)
-        else:
-            return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
         
     @action(detail=False, methods=["post"], url_path=r"send-form-contact-us")
     def send_form_contact_us(self, request, *args, **kwargs):
@@ -385,6 +373,88 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         subject = "Заявка со страницы \"Контакты\" с сайта motrum.ru"
         to_email = "pmn20@motrum.ru"
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
+    @action(detail=False, methods=["post"], url_path=r"send-form-personal-manager")
+    def send_form_personal_manager(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.user.models import AdminUser
+
+        data = request.data
+
+        client_id = data["clientId"]
+        manager_id = data["managerId"]
+        message = data["message"]
+        url = data["url"]
+
+        client = Client.objects.get(id=client_id)
+        client_phone = client.phone
+        client_name = client.first_name + " " + client.last_name
+
+        manager_email = AdminUser.objects.get(id=manager_id).email
+
+        html_message = loader.render_to_string(
+            "core/emails/email_personal_manager.html",
+            {
+                "client_name": client_name,
+                "client_phone": client_phone,
+                "message": message,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка с формы персональному менеджеру с сайта motrum.ru"
+        to_email = manager_email
+        # to_email = "lars1515@yandex.ru"
+
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+
+        if data and sending_result:
+            return Response("ok", status=status.HTTP_200_OK)
+        else:
+            return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=["post"], url_path=r"send-form-equipment-selection")
+    def send_form_equipment_selection(self, request, *args, **kwargs):
+        from django.template import loader
+        from apps.core.bitrix_api import create_lead_from_equipment_selection
+
+        data = request.data
+
+        name = data["name"]
+        phone = data["phone"]
+        message = data["message"]
+        url = data["url"]
+
+        lead_data = {
+            "name": name,
+            "phone": phone,
+            "message": message,
+            "manager_id": 24,
+        }
+
+        create_lead_from_equipment_selection(lead_data)
+
+        html_message = loader.render_to_string(
+            "core/emails/email_equipment_selection.html",
+            {
+                "name": name,
+                "phone": phone,
+                "message": message,
+                "url": url,
+            },
+        )
+
+        subject = "Заявка на подбор оборудования с сайта motrum.ru"
+        to_email = "pmn37@motrum.ru"
         # to_email = "lars1515@yandex.ru"
 
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)

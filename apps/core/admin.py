@@ -117,8 +117,12 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                         "article",
                         "name",
                         "active",
+                        "link",
                         "image",
                         ("image_right", "video", "video_file"),
+                        (
+                            "text_before_block",
+                        ),
                         (
                             "text1",
                             "text2",
@@ -126,6 +130,7 @@ class SliderMainAdminWeb(admin.ModelAdmin):
                         (
                             "text4",
                             "icon3",
+                            "text_after_block",
                         ),
                     ]
                 },

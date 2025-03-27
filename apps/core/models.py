@@ -90,18 +90,19 @@ class SliderMain(models.Model):
     icon3 = models.ImageField(
         "Изображение вторая строка текста",
         upload_to=get_file_path_slider_web,
-        max_length=255,
+        max_length=500,
         blank=True,
         null=True,
     )
     text4 = models.CharField("Текст 2 строка", max_length=200, blank=True, null=True)
+    
     text_before_block = models.CharField("Текст перед блоком", max_length=200, blank=True, null=True)
     text_after_block = models.CharField("Текст после текста на 2 строке", max_length=200, blank=True, null=True)
 
     image = models.ImageField(
         "Изображение левое",
         upload_to=get_file_path_slider_web,
-        max_length=255,
+        max_length=500,
         blank=True,
         null=True,
     )
@@ -115,12 +116,12 @@ class SliderMain(models.Model):
     image_right = models.ImageField(
         "Изображение правое",
         upload_to=get_file_path_slider_web,
-        max_length=255,
+        max_length=500,
         blank=True,
         null=True,
     )
     link = models.CharField(
-        "Ссылка для перехода", max_length=200, blank=True, null=True
+        "Ссылка для перехода", max_length=500, blank=True, null=True
     )
     product_promote = models.ForeignKey(
         "product.Product",

@@ -1270,15 +1270,23 @@ def get_manager():
             # print(manager)
             if "PERSONAL_MOBILE" in manager:
                 phone = manager["PERSONAL_MOBILE"]
+            elif "UF_USR_1655187255838" in manager and manager["UF_USR_1655187255838"] != "":
+                phone = manager["UF_USR_1655187255838"]
+            elif "WORK_PHONE" in manager and manager["WORK_PHONE"] != "":
+                phone = manager["WORK_PHONE"]
+            else:
+                phone = None
+                
+            if phone:    
                 phone=re.sub(r"\D","", phone)
                 if len(phone) == 11:
                     phone = phone[1:]
                     phone = f"7{phone}"
-                elif len(phone) == 0:
-                    phone = None
-                else:
-                    print(f"non 11 simbol {phone}")
-                    phone = None
+                # elif len(phone) == 0:
+                #     phone = None
+                # else:
+                #     print(f"non 11 simbol {phone}")
+                #     phone = None
                     
             if "EMAIL" in manager:
                 # if manager["EMAIL"] != "":
@@ -1401,7 +1409,7 @@ def add_new_order_web(order_id):
         location = "Сохранение заказа с сайта в  инфо"
         info = f" сделка {order} {req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id}"
         e = error_alert(error, location, info)
-        
+
         # ТЕСТ КОМПАНИЯ САЙТ (НЕ ИСПОЛЬЗОВАТЬ) 17826 65406 6850 4254
         # сохранение заказа битркис
 

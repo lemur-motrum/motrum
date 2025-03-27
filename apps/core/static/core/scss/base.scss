@@ -2486,10 +2486,17 @@ a {
     gap: 0.4rem;
     justify-content: center;
     align-items: center;
+    @media screen and(max-width:576px) {
+      width: 100%;
+      padding: 0 1.5rem;
+    }
     .title {
       font-size: 1.25rem;
       text-transform: uppercase;
       color: #fff;
+      @media screen and(max-width:576px) {
+        font-size: 1rem;
+      }
     }
     .open_overlay_btn {
       width: 60%;
@@ -2507,6 +2514,11 @@ a {
       &:hover {
         background-color: #ff5b00;
         color: #fff;
+      }
+      @media screen and (max-width: 576px) {
+        font-size: 0.75rem;
+        height: 1.5rem;
+        width: 100%;
       }
     }
   }
@@ -7543,6 +7555,7 @@ a {
     top: 2.971rem;
     display: flex;
     flex-direction: column;
+    z-index: 10;
     @media screen and (max-width: 576px) {
       right: 1.25rem;
       top: 1.068rem;
@@ -7671,6 +7684,7 @@ a {
       width: 100%;
       // height: 8rem;
     }
+
     .navigation {
       position: absolute;
       bottom: 2.3rem;
@@ -7678,6 +7692,7 @@ a {
       z-index: 10;
       display: flex;
       gap: 0.659rem;
+      z-index: 10;
       @media screen and(max-width:576px) {
         bottom: 1.068rem;
         right: 1.25rem;
@@ -7736,6 +7751,15 @@ a {
           width: 100%;
           height: 100%;
         }
+        .promoslider_link {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          z-index: 1;
+        }
         img {
           position: absolute;
           top: 0;
@@ -7782,6 +7806,9 @@ a {
             left: 3rem;
             bottom: 1.068rem;
           }
+          .up_text {
+            font-size: 0.875rem;
+          }
           .promoslider-two-elem-description-up {
             display: flex;
             align-items: center;
@@ -7826,6 +7853,7 @@ a {
             margin-top: -1.5rem;
             @media screen and (max-width: 576px) {
               gap: 0.6rem;
+              align-items: center;
             }
             .icon-container {
               width: 2.741rem;
@@ -7833,7 +7861,6 @@ a {
               @media screen and (max-width: 576px) {
                 width: 1.7rem;
                 height: 1.7rem;
-                margin-bottom: 1rem;
               }
               img {
                 width: 100%;
@@ -7856,6 +7883,13 @@ a {
               text-transform: uppercase;
               @media screen and (max-width: 576px) {
                 font-size: 1.2rem;
+              }
+            }
+            .small_text {
+              font-size: 0.875rem;
+              width: 5.625rem;
+              @media screen and (max-width: 576px) {
+                font-size: 0.55rem;
               }
             }
           }

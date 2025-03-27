@@ -34,7 +34,18 @@ from project.settings import MEDIA_ROOT, MEDIA_URL
 # все категории
 def catalog_all(request):
     print("catalog_all")
-    category = CategoryProduct.objects.all().order_by("article_name")
+    # category = CategoryProduct.objects.all().order_by("article_name")
+    category = (
+        CategoryProduct.objects
+        .prefetch_related(
+            Prefetch("product_set"),
+        )
+        .filter()
+        .exclude(product__isnull=True)
+        .order_by("article_name")
+        
+    )
+    print(category)
     vendors = Vendor.objects.filter(is_view_index_web=True)[0:4]
 
     context = {

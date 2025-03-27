@@ -36,8 +36,8 @@ class Notification(models.Model):
     
     @staticmethod
     def add_notification(order,type_notification,file):
-        request = RequestMiddleware(get_response=None)
-        request = request.thread_local.current_request
+        # request = RequestMiddleware(get_response=None)
+        # request = request.thread_local.current_request
 
         order = Order.objects.get(id=order)
         client = order.client

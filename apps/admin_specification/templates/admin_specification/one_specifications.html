@@ -5,7 +5,7 @@
     
     <div class="specification-container">
         <a href="{% url "admin_specification:all_specifications" %}">назад</a>
-        <h1 class="title">{{ title }} №{{ order.id }}</h1>
+        <h1 class="title">{{ title }} №{{ specification.id_bitrix }}</h1>
         <h2>
             {% if order.bill_name %}Счет №{{ order.bill_name }}{% endif %}
             {% if specification.number %}Спецификация №{{ specification.number }}{% endif %}

@@ -76,6 +76,7 @@ from apps.core.utils import (
     send_requests,
     vendor_delta_optimus_after_load,
 )
+from apps.notifications.models import Notification
 from apps.product.models import (
     CurrencyRate,
     GroupProduct,
@@ -131,36 +132,7 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    
-   
-   
-   
-   
-   
-   
-   
-   
-    manager_all_bx = bx.get_all(
-        "user.get",
-        params={
-            # "entityTypeId": 2,
-        },
-    )
-
-    for manager in manager_all_bx:
-            if "PERSONAL_MOBILE" in manager:
-                phone = manager["PERSONAL_MOBILE"]
-               
-                phone=re.sub(r"\D","", phone)
-                
-                if len(phone) == 11:
-                    phone = phone[1:]
-                    phone = f"7{phone}"
-                    print(phone)
-                elif len(phone) == 0:
-                    pass
-                else:
-                    print(f"non 11 simbol {phone}")
+    get_status_order()
 
     result = 1
     title = "TEST"

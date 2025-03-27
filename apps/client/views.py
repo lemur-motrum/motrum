@@ -1,5 +1,6 @@
 from functools import cache
 import random
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
@@ -35,6 +36,7 @@ def index(request):
 
 
 # МОИ ЗАКАЗЫ
+@login_required
 def my_orders(request):
     print(request)
     # current_user = request.user.id
@@ -52,6 +54,7 @@ def my_orders(request):
 
 
 # МОИ ДОКУМЕНТЫ
+@login_required
 def my_documents(request):
     current_user = request.user.id
     client = Client.objects.get(pk=current_user)
@@ -67,6 +70,7 @@ def my_documents(request):
 
 
 # МОИ РЕКВИЗИТЫ
+@login_required
 def my_details(request):
     # cookie = request.COOKIES.get("client_id")
     # client_id = int(cookie)
@@ -92,6 +96,7 @@ def my_details(request):
 
 
 # ПЕРСОНАЛЬНЫЕ ДАННЫЕ
+@login_required
 def my_contacts(request):
     cookie = request.COOKIES.get("client_id")
     client_id = int(cookie)
@@ -107,6 +112,7 @@ def my_contacts(request):
 
 
 # ЗАКАЗ ОТДЕЛЬНАЯ СТРАНИЦА
+@login_required
 def order_client_one(request, pk):
     order = Order.objects.get(pk=pk)
     is_final_price = False

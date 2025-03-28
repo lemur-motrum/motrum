@@ -1703,7 +1703,11 @@ def add_or_get_contact_bx(bx, client, base_manager):
             phone_new = {"VALUE": f"+{ph.phone}", "VALUE_TYPE": "WORK"}
             phone_arr.append(phone_new)
             phone_st.append(f"+{ph.phone}")
-    if client.email:
+            
+    if client.bitrix_id:
+        filter_bx = {"ID": client.bitrix_id}
+        
+    elif client.bitrix_id == None and client.email:
         all_info = True
         last_name = client.last_name
         middle_name = client.middle_name
@@ -1711,6 +1715,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
         email = client.email
         position = client.position
         filter_bx = {"NAME": name, "LAST_NAME": last_name, "PHONE": f"{phone}"}
+    
     else:
         all_info = False
         filter_bx = {"PHONE": f"{phone}"}

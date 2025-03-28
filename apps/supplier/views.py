@@ -132,7 +132,7 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    get_manager()
+    client = 
 
     result = 1
     title = "TEST"

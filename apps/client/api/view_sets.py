@@ -1128,7 +1128,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             order = Order.objects.get(specification_id=pk)
             if order.specification.file and order.client:
                 Notification.add_notification(
-                    order.id, "DOCUMENT_SPECIFICATION", order.specification.pdf
+                    order.id, "DOCUMENT_SPECIFICATION", order.specification.file
                 )
 
             for obj in products:

@@ -133,6 +133,27 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     
+    req_inn = 631600073368
+    # serch_or_add_info_client(
+    #             bx,
+    #             req_inn,
+    #             acc_req,
+    #             adress_web,
+    #             req,
+    #             client_bx_id,
+    #             req_kpp,
+    #             client,
+    #             base_manager,
+    #         )
+    # req_inn = 
+    req_bx = bx.get_all(
+        "crm.requisite.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": 4, "RQ_INN": req_inn},
+        },
+    )
+    print(req_bx)
+    print( len(req_bx))
 
     result = 1
     title = "TEST"

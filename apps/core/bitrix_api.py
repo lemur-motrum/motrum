@@ -1591,6 +1591,7 @@ def serch_or_add_info_client(
         adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id, is_adress)
 
         company_bx = _get_company_bx_in_req(company_id)
+        company_bx_id = company_bx["ID"]
         contract = req_bx[0]["UF_CRM_1736854096"]
         contract_date = req_bx[0]["UF_CRM_1737611994"]
         manager_company = company_bx["ASSIGNED_BY_ID"]
@@ -1619,6 +1620,8 @@ def serch_or_add_info_client(
             upd_req_bx(bx, int(req_bx_id), phone)
         chek_add_contact_company(bx, client_bx_id, company_id)
         acc_req_bx_id = _get_accountreq_bx_in_req(int(req_bx_id), acc_req)
+        
+        return (req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
 
     req_bx = bx.get_all(
         "crm.requisite.list",
@@ -1637,7 +1640,9 @@ def serch_or_add_info_client(
         # ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК
         if len(req_bx_arr) == 1:
             print("!!!ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК")
-            _upd_info_if_one_req()
+            
+            # (req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
+            req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id =  _upd_info_if_one_req()
 
         # НЕ СОВПАЛИ ДОП ДАННЫЕ
         else:
@@ -1661,7 +1666,7 @@ def serch_or_add_info_client(
         company_bx_arr, req_bx_arr = _serch_other_info_company(req_bx, req_kpp, req)
         print(company_bx_arr, req_bx_arr)
         if len(req_bx_arr) == 1:
-            _upd_info_if_one_req()
+            req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id =  _upd_info_if_one_req()
         else:
             # рек к компании которая совпадает
             if len(company_bx_arr) == 1:

@@ -631,7 +631,85 @@ class OrderViewSet(viewsets.ModelViewSet):
                 try:
 
                     order = Order.objects.get(cart_id=cart)
-                    pass
+                    if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
+                        data_order = {
+                            "client": client,
+                            "name": None,
+                            "specification": specification.id,
+                            "requisites": (
+                                requisites.id if data["requisitesKpp"] != None else None
+                            ),
+                            "account_requisites": (
+                                account_requisites.id
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            "status": "PRE-PROCESSING",
+                            "cart": cart.id,
+                            "bill_name": None,
+                            "bill_file": None,
+                            "bill_date_start": None,
+                            "bill_date_stop": None,
+                            "bill_sum": None,
+                            # "comment": data["comment"],
+                            "prepay_persent": (
+                                requisites.prepay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            "postpay_persent": (
+                                requisites.postpay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            # "motrum_requisites": motrum_requisites.id,
+                            "id_bitrix": None,
+                            "type_delivery": (
+                                type_delivery if data["requisitesKpp"] != None else None
+                            ),
+                            # "manager": admin_creator_id,
+                        }
+
+                        serializer = self.serializer_class(order, data=data_order, partial=True)
+                        
+                        if serializer.is_valid():
+                            print("serializer.is_valid(ORDER):")
+                            cart.is_active = True
+                            cart.save()
+                            serializer.save()
+                            print("serializer.data", serializer.data)
+                            print("serializer.data", serializer.data["id"])
+                            order_id = serializer.data["id"]
+                            if IS_TESTING:
+                                return Response(
+                                    serializer.data, status=status.HTTP_201_CREATED
+                                )
+                            else:
+                                if data["requisitesKpp"] != None:
+                                    order_flag = "add_new_order_web"
+
+                                    # status_operation, info = add_new_order_web(order_id)
+                                else:
+                                    order_flag = "add_new_order_web_not_info"
+                                    # status_operation, info = add_new_order_web_not_info(
+                                    #     order_id
+                                    # )
+                                # if status_operation == "ok":
+                                #     return Response(
+                                #         serializer.data, status=status.HTTP_201_CREATED
+                                #     )
+                                    
+                                # else:
+                                #     return Response(
+                                #         info,
+                                #         status=status.HTTP_400_BAD_REQUEST,
+                                #     )
+
+                        else:
+                            return Response(
+                                serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
                 except Order.DoesNotExist:
                     if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
                         data_order = {

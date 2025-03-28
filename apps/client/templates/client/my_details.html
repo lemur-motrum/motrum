@@ -64,7 +64,7 @@
                                                             <div class="error current_legal_adress_adress_one_error"></div>
                                                         </label>
                                                         <label>
-                                                            <input value="{{ adress.address2 }}"
+                                                            <input value="{% if adress.address2  %} {{ adress.address2 }}{% else %}{% endif %}"
                                                                    class="current_legal_adress_adress_two"
                                                                    type="text"
                                                                    placeholder="Адрес" />
@@ -73,7 +73,7 @@
                                                         <button class="change-legal-adress-button">Изменить</button>
                                                     </div>
                                                 </div>
-                                            {% elif adress.type_address_bx == "6" and "web-lk-adress" not in detail.requisitesaddress_set.all %}
+                                            {% elif adress.type_address_bx == "6" and forloop.first %}
                                                 <div class="address">
                                                     <div class="title">Юридический адрес</div>
                                                     <div class="legal_adress_form"
@@ -108,7 +108,7 @@
                                                             <div class="error current_legal_adress_adress_one_error"></div>
                                                         </label>
                                                         <label>
-                                                            <input value="{{ adress.address2 }}"
+                                                            <input value="{% if adress.address2  %} {{ adress.address2 }}{% else %}{% endif %}"
                                                                 class="current_legal_adress_adress_two"
                                                                 type="text"
                                                                 placeholder="Адрес" />

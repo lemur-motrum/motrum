@@ -1412,7 +1412,7 @@ def add_new_order_web(order_id):
         type_save, client_bx_id  = add_or_get_contact_bx(bx, client, base_manager)
         error = "error"
         location = "client_bx_id "
-        info = f" client_bx_id {order} client_bx_id {client_bx_id}"
+        info = f" client_bx_id {order} client_bx_id {client_bx_id} adress_web {adress_web}"
         e = error_alert(error, location, info)
         
         req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (

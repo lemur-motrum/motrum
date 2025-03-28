@@ -146,7 +146,9 @@
                                                         data-select="option"
                                                         data-value="{{ requisit.id }},{{ requisit.accountrequisit_id }}"
                                                         data-index="0">
-                                                        Юр.лицо - {{ requisit.requisites.legal_entity }}- Расчетный счет -{{ requisit.accountrequisit }}
+                                                        Юр.лицо - {{ requisit.requisites.legal_entity }} {% if  requisit.kpp %}
+                                                        КПП {{ requisit.kpp }}-
+                                                        {% endif %} Расчетный счет -{{ requisit.accountrequisit }}
                                                     </li>
                                                 {% endfor %}
                                             </ul>

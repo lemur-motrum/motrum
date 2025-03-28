@@ -1505,7 +1505,7 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
             # TODO:сохранять номер если все ок
             # specification_name = requisites.number_spec + 1
             # requisites.number_spec = specification_name
-
+            
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1514,11 +1514,31 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                 # "number": specification_name,
                 "tag_stop": True,
             }
-            print(data_specification)
-            date_delivery_all = None
-            serializer = serializer_class_specification(
+            
+            old_spesif = Specification.objects.filter(cart=cart.id)
+            if old_spesif:
+                old_spesif = old_spesif[0]
+                data_specification = {
+                # "cart": cart.id,
+                "admin_creator": None,
+                "id_bitrix": None,
+                "date_stop": data_stop,
+                # "number": specification_name,
+                "tag_stop": True,
+            }
+                serializer = serializer_class_specification(
+                old_spesif, data=data_specification, partial=True
+            )
+            else:
+                old_spesif = None
+                serializer = serializer_class_specification(
                 data=data_specification, partial=True
             )
+                
+            
+            print(data_specification)
+            date_delivery_all = None
+            
             if serializer.is_valid():
                 print("serializer.is_valid()")
                 # serializer._change_reason = "Клиент с сайта"
@@ -1584,11 +1604,21 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                         specification.save()
                     return ("ok", specification, 11111)
                 else:
+                    error = "error"
+                    location = "Сохранение спецификации в корзине сайта specification"
+                    info = f" ошибка specification"
+                    e = error_alert(error, location, info)
                     return ("error", None, None)
 
             else:
                 print("ERROE SER")
                 print(serializer.errors)
+                tr = traceback.format_exc()
+                error = "error"
+                location = "Сохранение спецификации в корзине сайта"
+                info = f" ошибка {e}{tr}{serializer.errors}"
+
+                e = error_alert(error, location, info)
                 return ("error", None, None)
     except Exception as e:
         print(e)

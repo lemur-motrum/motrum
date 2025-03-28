@@ -1548,11 +1548,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # формирование отдельных документов из сериализированных заказов
         documents = []
-        # print(serializer.data)
+        print(serializer.data)
         for order in serializer.data:
 
-            if order["specification_list"]["file"]:
-
+            # if order["specification_list"]["file"]:
+            if order["specification_list"]:
                 data_spesif = {
                     "type": 1,
                     "name": "спецификация",

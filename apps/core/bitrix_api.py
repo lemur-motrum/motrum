@@ -648,7 +648,7 @@ def get_status_order():
                     tr = traceback.format_exc()
                     error = "info_error_order"
                     location = "Получение статусов битрикс24"
-                    info = f"except {orde} Тип ошибки:{e}{tr}"
+                    info = f"except {orde} Тип ошибки:{tr}"
                     e = error_alert(error, location, info)
                     pass
     except Exception as e:

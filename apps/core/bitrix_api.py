@@ -1600,7 +1600,7 @@ def serch_or_add_info_client(
             contract_date,
             manager_company,
         )
-        id_compane_req_inn = f"{company_bx_id}{req_bx_id}"
+        id_compane_req_inn = f"{company_bx["ID"]}{req_bx_id}"
 
         data_upd = {
             "id_req_bx": int(id_compane_req_inn),
@@ -1950,13 +1950,13 @@ def add_adress_req_bx(bx, adress, type_id, req_id_bx, is_adress):
             "TYPE_ID": 9,
             "ENTITY_TYPE_ID": 8,
             "ENTITY_ID": req_id_bx,
-            "ADDRESS_1": adress.address1,
-            "ADDRESS_2": adress.address2,
-            "CITY": adress.city,
+            "ADDRESS_1": adress.address1 if adress.address1 else "",
+            "ADDRESS_2": adress.address2 if adress.address2 else "",
+            "CITY": adress.city if adress.city else "",
             "POSTAL_CODE": adress.post_code,
-            "PROVINCE": adress.region,
-            "REGION": adress.province,
-            "COUNTRY": adress.country,
+            "PROVINCE": adress.region  if adress.region else "",
+            "REGION": adress.province if adress.province else "",
+            "COUNTRY": adress.country if adress.country else "",
         }
     }
 

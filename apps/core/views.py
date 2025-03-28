@@ -236,7 +236,7 @@ def solutions_one(request):
     if url_name == "shkaf-upravleniya":
         cat_slug = "sborka-shu"
     elif url_name == "marking":
-        cat_slug = "markirovka-chestnyij-znak",
+        cat_slug = "markirovka-chestnyij-znak"
     else:
         cat_slug = "robototehnicheskie-yachejki"
     

@@ -222,6 +222,16 @@
         @media screen and (max-width: 576px) {
           gap: 0.5rem;
         }
+        .no_content_container {
+          font-size: 3rem;
+          font-weight: 700;
+          margin-left: 1.875rem;
+          margin-top: 1rem;
+          @media screen and (max-width: 576px) {
+            font-size: 1.5rem;
+            margin-left: 0;
+          }
+        }
         .document_item {
           height: 6.813rem;
           width: 100%;
@@ -598,6 +608,16 @@
         gap: 1rem;
         @media screen and (max-width: 576px) {
           gap: 0.5rem;
+        }
+        .no_content_container {
+          font-size: 3rem;
+          font-weight: 700;
+          margin-left: 1.875rem;
+          margin-top: 1rem;
+          @media screen and (max-width: 576px) {
+            font-size: 1.5rem;
+            margin-left: 0;
+          }
         }
         .order_item {
           width: 100%;

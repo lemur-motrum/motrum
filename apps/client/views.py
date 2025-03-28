@@ -47,7 +47,7 @@ def my_orders(request):
     # client = Client.objects.get(pk=current_user)
 
     context = {
-        "title": "Личный кабинет | мои заказы",
+        "meta_title": "Мои заказы | Личный кабинет",
     }
 
     return render(request, "client/my_orders.html", context)
@@ -64,7 +64,7 @@ def my_documents(request):
     # ).exclude(type_notification="STATUS_ORDERING").update(is_viewed=True)
 
     context = {
-        "title": "Личный кабинет | мои документы",
+        "meta_title": "Мои документы | Личный кабинет",
     }
     return render(request, "client/my_documents.html", context)
 
@@ -88,7 +88,7 @@ def my_details(request):
     )
 
     context = {
-        "title": "Личный кабинет | мои реквизиты",
+        "meta_title": "Мои реквизиты | Личный кабинет ",
         "details": requisites,
         "requisites": requisites,
     }
@@ -104,7 +104,7 @@ def my_contacts(request):
     client = Client.objects.get(pk=client_id)
     other_phone_client = PhoneClient.objects.filter(client=client)
     context = {
-        "title": "Личный кабинет | мои контакты",
+        "meta_title": "Мои контакты | Личный кабинет",
         "client": client,
         "other_phone_client": other_phone_client,
     }
@@ -150,9 +150,8 @@ def order_client_one(request, pk):
                         then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
                     ),
                 ),
-                
                 price_all_item=F("price_all"),
-                sum_full_price = Round(F("full_price") * F("quantity"))
+                sum_full_price=Round(F("full_price") * F("quantity")),
             )
         )
 
@@ -178,7 +177,6 @@ def order_client_one(request, pk):
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
                 sale_price_all=Round(F("price_one") * F("quantity")),
-              
                 full_price=Case(
                     When(
                         extra_discount=None,
@@ -190,25 +188,28 @@ def order_client_one(request, pk):
                     ),
                 ),
                 price_all_item=F("price_all"),
-                sum_full_price = Round(F("full_price") * F("quantity"))
+                sum_full_price=Round(F("full_price") * F("quantity")),
             )
         )
 
     total_full_price = product.aggregate(
         all_sum_sale_price=Sum("price_all_item"),
-        
         all_sum_full_price=Sum("sum_full_price"),
-        
-        
         all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
     )
-    total_full_price['all_sum_sale'] = abs(total_full_price['all_sum_sale'])
- 
+    total_full_price["all_sum_sale"] = abs(total_full_price["all_sum_sale"])
+
+    if order.id_bitrix:
+        num = order.id_bitrix
+    else:
+        num = ""
+
     context = {
         "order": order,
         "product": product,
         "is_final_price": is_final_price,
         "total_full_price": total_full_price,
+        "meta_title": f"Заказ {num} | Мотрум - автоматизация производства",
     }
 
     return render(request, "client/client_order_one.html", context)

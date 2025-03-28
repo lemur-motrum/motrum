@@ -25,6 +25,7 @@ def vacancy(request):
         "photo_motrum": photo_motrum,
         "photo_education": photo_education,
         "photo_recreation": photo_recreation,
+        "meta_title": f"{title} | Мотрум - автоматизация производства",
     }
     return render(request, "vacancy_web/vacancy_all.html", context)
 

@@ -1391,7 +1391,7 @@ def add_new_order_web(order_id):
         adress_web = RequisitesAddress.objects.filter(
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
-        if adress_web.count() == 0:
+        if adress_web.count() == 1:
             adress_web[0]
         else:
             adress_web = RequisitesAddress.objects.filter(

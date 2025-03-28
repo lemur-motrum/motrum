@@ -597,10 +597,10 @@ def get_status_order():
         actual_order = Order.objects.exclude(
             status__in=not_view_status, id_bitrix=None,
         ).values("id_bitrix").exclude(id_bitrix=None)
-        error = "info_error_order"
-        location = "Получение статусов битрикс24"
-        info = f"actual_order {actual_order}"
-        e = error_alert(error, location, info)
+        # error = "info_error_order"
+        # location = "Получение статусов битрикс24"
+        # info = f"actual_order {actual_order}"
+        # e = error_alert(error, location, info)
         # actual_order = Order.objects.exclude(
         #     status__in=not_view_status, id_bitrix__isnull=True,
         # ).filter(id_bitrix=11702).values("id_bitrix")
@@ -638,10 +638,10 @@ def get_status_order():
                         if order.status != status and order.client:
                             Notification.add_notification(order.id, "STATUS_ORDERING", None)
                         print(status)
-                        error = "info_error_order"
-                        location = "Получение статусов битрикс24"
-                        info = f"orders_bx {orde}{status} {orders_bx}"
-                        e = error_alert(error, location, info)
+                        # error = "info_error_order"
+                        # location = "Получение статусов битрикс24"
+                        # info = f"orders_bx {orde}{status} {orders_bx}"
+                        # e = error_alert(error, location, info)
                         order.status = status
                         order.save()
                 except:

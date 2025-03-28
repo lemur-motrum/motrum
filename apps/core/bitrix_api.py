@@ -1599,6 +1599,7 @@ def serch_or_add_info_client(
     # обновление инфы если есть точный реквизит
     def _upd_info_if_one_req():
         # проверка есть ли адресс + получение договора
+        req_bx_id = req_bx[0]["ID"]
         is_adress = _check_adress_in_web(req_bx[0]["ID"])
         print("is_adress", is_adress)
         adress_bx_id = add_adress_req_bx(bx, adress_web, 9, req_bx_id, is_adress)

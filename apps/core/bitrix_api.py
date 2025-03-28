@@ -1790,7 +1790,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
             print("contact_bx", contact_bx)
             client.bitrix_id_client = int(contact_bx[0]["ID"])
             client.save()
-            return contact_bx[0]["ID"]
+            return ("old", contact_bx[0]["ID"])
         
         else:
             tasks = {
@@ -1811,7 +1811,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
             client.bitrix_id_client = int(contact_bx)
             
             client.save()
-            return contact_bx
+            return ("new", contact_bx)
     else:
         if len(contact_bx) == 1:
             save_info_client_in_bx(contact_bx[0],client)

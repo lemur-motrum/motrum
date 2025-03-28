@@ -544,7 +544,7 @@ class RequisitesAddressViewSet(viewsets.ModelViewSet):
     queryset = RequisitesAddress.objects.all()
     serializer_class = RequisitesAddressSerializer
     http_method_names = ["get", "post", "patch", "put"]
-
+    
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()

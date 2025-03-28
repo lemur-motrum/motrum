@@ -73,50 +73,6 @@
                                                         <button class="change-legal-adress-button">Изменить</button>
                                                     </div>
                                                 </div>
-                                            {% elif adress.type_address_bx == "6" and forloop.first %}
-                                                <div class="address">
-                                                    <div class="title">Юридический адрес</div>
-                                                    <div class="legal_adress_form"
-                                                        data-country="{{ adress.country }}"
-                                                        data-address-id="{{ adress.id }}">
-                                                        <label>
-                                                            <input value="{{ adress.post_code }}"
-                                                                class="current_legal_adress_index"
-                                                                type="text"
-                                                                placeholder="Индекс" />
-                                                            <div class="error current_legal_adress_index_error"></div>
-                                                        </label>
-                                                        <label>
-                                                            <input value="{{ adress.region }}"
-                                                                class="current_legal_adress_region"
-                                                                type="text"
-                                                                placeholder="Регион" />
-                                                            <div class="error current_legal_adress_region_error"></div>
-                                                        </label>
-                                                        <label>
-                                                            <input value="{{ adress.city }}"
-                                                                class="current_legal_adress_city"
-                                                                type="text"
-                                                                placeholder="Город" />
-                                                            <div class="error current_legal_adress_city_error"></div>
-                                                        </label>
-                                                        <label>
-                                                            <input value="{{ adress.address1 }}"
-                                                                class="current_legal_adress_adress_one"
-                                                                type="text"
-                                                                placeholder="Адрес" />
-                                                            <div class="error current_legal_adress_adress_one_error"></div>
-                                                        </label>
-                                                        <label>
-                                                            <input value="{% if adress.address2  %} {{ adress.address2 }}{% else %}{% endif %}"
-                                                                class="current_legal_adress_adress_two"
-                                                                type="text"
-                                                                placeholder="Адрес" />
-                                                            <div class="error current_legal_adress_adress_two_error"></div>
-                                                        </label>
-                                                        <button class="change-legal-adress-button">Изменить</button>
-                                                    </div>
-                                                </div>
                                             {% endif %}
                                         {% endfor %}
                                     </div>

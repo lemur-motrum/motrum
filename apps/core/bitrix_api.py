@@ -1705,6 +1705,12 @@ def add_or_get_contact_bx(bx, client, base_manager):
             phone_st.append(f"+{ph.phone}")
             
     if client.bitrix_id_client :
+        all_info = True
+        last_name = client.last_name
+        middle_name = client.middle_name
+        phone = client.phone
+        email = client.email
+        position = client.position
         filter_bx = {"ID": client.bitrix_id_client}
         
     elif client.bitrix_id == None and client.email:

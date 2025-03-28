@@ -1393,7 +1393,7 @@ def add_new_order_web(order_id):
         else:
             adress_web = RequisitesAddress.objects.filter(
             requisitesKpp=req_kpp, type_address_bx="6"
-        )
+        )[0]
         
 
         all_rec_client = ClientRequisites.objects.filter(client=client).values_list(

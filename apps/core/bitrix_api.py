@@ -1392,7 +1392,7 @@ def add_new_order_web(order_id):
             requisitesKpp=req_kpp, type_address_bx="web-lk-adress"
         )
         if adress_web.count() == 1:
-            adress_web[0]
+            adress_web = adress_web[0]
         else:
             adress_web = RequisitesAddress.objects.filter(
                 requisitesKpp=req_kpp, type_address_bx="6"
@@ -1402,7 +1402,7 @@ def add_new_order_web(order_id):
                     requisitesKpp=req_kpp, type_address_bx="9"
                 )[0]
             else:
-                adress_web[0]
+                adress_web = adress_web[0]
 
         all_rec_client = ClientRequisites.objects.filter(client=client).values_list(
             "requisitesotherkpp__requisites", "requisitesotherkpp__id_bitrix"

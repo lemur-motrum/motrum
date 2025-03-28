@@ -1409,7 +1409,7 @@ def add_new_order_web(order_id):
         )
 
         # клиент битрикс
-        client_bx_id = add_or_get_contact_bx(bx, client, base_manager)
+        type_save, client_bx_id  = add_or_get_contact_bx(bx, client, base_manager)
         error = "error"
         location = "client_bx_id "
         info = f" client_bx_id {order} client_bx_id {client_bx_id}"

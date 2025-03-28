@@ -2299,11 +2299,14 @@ def save_info_bitrix_after_web(data, req):
         data_contract = None
     print(data)
     id_req_bx = data["req_bx_id"]
-    manager = AdminUser.objects.get(bitrix_id=int(data["manager"]))
+    manager = AdminUser.objects.filter(bitrix_id=int(data["manager"]))
     r = Requisites.objects.get(id=data["id_req"])
-    r.contract_date = data_contract
-    r.manager = manager
-    r.contract = data["contract"]
+    if data["contract"]:
+        r.contract = data["contract"]
+        r.contract_date = data_contract
+    if manager:
+        r.manager = manager[0]
+    
     r.id_bitrix = id_req_bx
     r.save()
     print(r)

@@ -1603,7 +1603,7 @@ def serch_or_add_info_client(
         id_compane_req_inn = f"{company_bx["ID"]}{req_bx_id}"
 
         data_upd = {
-            "id_req_bx": int(id_compane_req_inn),
+            "req_bx_id": int(id_compane_req_inn),
             "id_req": req.id,
             "contract_date": contract_date,
             "contract": contract,

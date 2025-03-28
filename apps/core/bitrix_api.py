@@ -2078,9 +2078,15 @@ def add_new_order_bx(
         company_bx = bx.get_by_ID("crm.company.get", [company_bx_id])
         print(company_bx)
         manager_company = company_bx["ASSIGNED_BY_ID"]
+        req_kpp = RequisitesOtherKpp.objects.filter(id_bitrix=req_bx_id)[0]
+        client = Client.objects.filter(bitrix_id_client = client_bx_id)[0]
+        if req_kpp.kpp:
+            SOURCE_DESCRIPTION = f"Заказ с сайта motrum.ru от ИНН {req.inn} КПП {req_kpp.kpp} тел.польз. +{client.phone} "
+        else:
+            SOURCE_DESCRIPTION = f"Заказ с сайта motrum.ru от ИНН {req.inn}  тел.польз. +{client.phone}"
         tasks = {
             "fields": {
-                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {req.legal_entity}{current_date}",
+                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {req.legal_entity} {current_date}",
                 # "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) {req.legal_entity}{current_date}",
                 "TYPE_ID": "SALE",
                 "CATEGORY_ID": 8,
@@ -2089,7 +2095,7 @@ def add_new_order_bx(
                 "COMPANY_ID": company_bx_id,
                 "ASSIGNED_BY_ID": manager_company,
                 "SOURCE_ID": "CALLBACK",
-                "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
+                "SOURCE_DESCRIPTION": f"Заказ с сайта motrum.ru от ИНН {req.inn} КПП",
                 "CONTACT_IDS": [client_bx_id],
                 "UF_CRM_1715001709654": "848",
             }

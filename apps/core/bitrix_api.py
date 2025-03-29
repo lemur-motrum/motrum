@@ -1655,7 +1655,7 @@ def serch_or_add_info_client(
         # ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК
         if len(req_bx_arr) == 1:
             print("!!!ТОЧНО ЭТОТ КОНКРЕТНЫЙ РЕК")
-            company_bx_id = company_bx_arr[0]
+            # company_bx_id = company_bx_arr[0]
             # (req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id)
             req, company_bx_id, client_bx_id, req_bx_id, acc_req_bx_id = (
                 _upd_info_if_one_req()

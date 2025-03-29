@@ -1571,7 +1571,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         for order in serializer.data:
 
             # if order["specification_list"]["file"]:
-            if  order["specification_list"] and "file"!= None in order["specification_list"]:
+            if  order["specification_list"] and "file" in order["specification_list"] and order["specification_list"]["file"]!= None:
                 data_spesif = {
                     "type": 1,
                     "name": "спецификация",

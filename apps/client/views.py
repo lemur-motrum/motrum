@@ -147,11 +147,12 @@ def order_client_one(request, pk):
                     ),
                     When(
                         extra_discount__isnull=False,
-                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
-                    ),
+                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100,2),
+                             
+                    ),   
                 ),
                 price_all_item=F("price_all"),
-                sum_full_price=Round(F("full_price") * F("quantity")),
+                sum_full_price=Round(F("full_price") * F("quantity"),2),
             )
         )
 
@@ -176,7 +177,7 @@ def order_client_one(request, pk):
             .annotate(
                 bill_name=F("specification__order__bill_name"),
                 sale_price=F("price_one"),
-                sale_price_all=Round(F("price_one") * F("quantity")),
+                sale_price_all=Round(F("price_one") * F("quantity"),2),
                 full_price=Case(
                     When(
                         extra_discount=None,
@@ -184,18 +185,18 @@ def order_client_one(request, pk):
                     ),
                     When(
                         extra_discount__isnull=False,
-                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100),
+                        then=Round(F("sale_price") / (100 - F("extra_discount")) * 100,2),
                     ),
                 ),
                 price_all_item=F("price_all"),
-                sum_full_price=Round(F("full_price") * F("quantity")),
+                sum_full_price=Round(F("full_price") * F("quantity"),2),
             )
         )
 
     total_full_price = product.aggregate(
         all_sum_sale_price=Sum("price_all_item"),
         all_sum_full_price=Sum("sum_full_price"),
-        all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price")),
+        all_sum_sale=Round(F("all_sum_sale_price") - F("all_sum_full_price"),2),
     )
     total_full_price["all_sum_sale"] = abs(total_full_price["all_sum_sale"])
 

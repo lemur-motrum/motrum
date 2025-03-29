@@ -212,12 +212,7 @@
                                            type="date"
                                            name="calendar"
                                            {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                           value="{% if item.date_delivery_bill  %}
-                                           {{ item.date_delivery_bill|date:"Y-m-d" }}
-                                           {% else %}
-                                           {{ item.date_delivery_first|date:"Y-m-d" }}
-                                           {% endif %}
-                                           ">
+                                           value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
@@ -370,12 +365,7 @@
                                                type="date"
                                                name="calendar"
                                                {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}
-                                           {{ item.date_delivery_bill|date:"Y-m-d" }}
-                                           {% else %}
-                                           {{ item.date_delivery_first|date:"Y-m-d" }}
-                                           {% endif %}
-                                           ">
+                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
@@ -593,12 +583,7 @@
                                                type="date"
                                                name="calendar"
                                                {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}
-                                           {{ item.date_delivery_bill|date:"Y-m-d" }}
-                                           {% else %}
-                                           {{ item.date_delivery_first|date:"Y-m-d" }}
-                                           {% endif %}
-                                           ">
+                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
@@ -814,12 +799,7 @@
                                                type="date"
                                                name="calendar"
                                                {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}
-                                           {{ item.date_delivery_bill|date:"Y-m-d" }}
-                                           {% else %}
-                                           {{ item.date_delivery_first|date:"Y-m-d" }}
-                                           {% endif %}
-                                           ">
+                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"

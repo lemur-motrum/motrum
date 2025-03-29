@@ -1676,7 +1676,11 @@ def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp,ClientRequisites
     from dateutil.parser import parse
-
+    error = "info_error_order"
+    location = "отправка client_info_bitrix "
+    info = f"отправка client_info_bitrix {data}{company_adress}"
+    e = error_alert(error, location, info)
+    
     if data["contract_date"]:
         data_contract = parse(data["contract_date"]).date()
         # data_contract = datetime.datetime.strptime(

@@ -36,13 +36,13 @@ class AdminUserAdmin(admin.ModelAdmin):
             },
         ),
     )
-    def save_model(self, request, obj, form, change):
-        if obj.pk:
-            get_manager()
-        else:
-            get_manager()
+    # def save_model(self, request, obj, form, change):
+    #     # if obj.pk:
+    #     #     get_manager()
+    #     # else:
+    #     #     get_manager()
         
-        super().save_model(request, obj, form, change)
+    #     super().save_model(request, obj, form, change)
         
     def has_delete_permission(self, request, obj=None):
         return False

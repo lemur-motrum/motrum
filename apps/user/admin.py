@@ -12,7 +12,7 @@ from project.admin import website_admin
 
 
 class AdminUserAdmin(admin.ModelAdmin):
-    list_display = ("username", "first_name", "last_name", "email", "admin_type","is_active")
+    list_display = ("username", "first_name", "last_name", "email", "admin_type","is_active","bitrix_id","phone",)
     form = PasswordForm
     readonly_fields = ("bitrix_id",)
     fieldsets = (

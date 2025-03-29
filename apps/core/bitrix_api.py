@@ -2095,7 +2095,7 @@ def add_new_order_bx(
                 "COMPANY_ID": company_bx_id,
                 "ASSIGNED_BY_ID": manager_company,
                 "SOURCE_ID": "CALLBACK",
-                "SOURCE_DESCRIPTION": f"Заказ с сайта motrum.ru от ИНН {req.inn} КПП",
+                "SOURCE_DESCRIPTION": SOURCE_DESCRIPTION,
                 "CONTACT_IDS": [client_bx_id],
                 "UF_CRM_1715001709654": "848",
             }

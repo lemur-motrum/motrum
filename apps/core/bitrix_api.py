@@ -648,11 +648,11 @@ def get_status_order():
                         # e = error_alert(error, location, info)
                         order.status = status
                         order.save()
-                except:
+                except Exception as e:
                     tr = traceback.format_exc()
                     error = "info_error_order"
-                    location = "Получение статусов битрикс24"
-                    info = f"except {orde} Тип ошибки:{tr}"
+                    location = "Конкретный Получение статусов битрикс24"
+                    info = f"except {orde} Тип ошибки:{tr} {e}"
                     e = error_alert(error, location, info)
                     pass
     except Exception as e:

@@ -45,7 +45,7 @@ class AdminUserAdmin(admin.ModelAdmin):
     #     super().save_model(request, obj, form, change)
         
     def has_delete_permission(self, request, obj=None):
-        return False
+        return True
 
 
 class ClientAdminWeb(admin.ModelAdmin):

@@ -1267,62 +1267,62 @@ def get_manager():
         )
         print("manager_all_bx", manager_all_bx)
         for manager in manager_all_bx:
-            if manager["ID"] == "102":
-                print(manager)
-                phone = None
+        
+            print(manager)
+            phone = None
 
-                if "PERSONAL_MOBILE" in manager:
-                    phone = manager["PERSONAL_MOBILE"]
-                if (
-                    "UF_USR_1655187255838" in manager
-                    and manager["UF_USR_1655187255838"] != ""
-                ):
-                    phone = manager["UF_USR_1655187255838"]
-                if "WORK_PHONE" in manager and manager["WORK_PHONE"] != "":
-                    phone = manager["WORK_PHONE"]
-                    print("WORK_PHONE", phone)
+            if "PERSONAL_MOBILE" in manager:
+                phone = manager["PERSONAL_MOBILE"]
+            if (
+                "UF_USR_1655187255838" in manager
+                and manager["UF_USR_1655187255838"] != ""
+            ):
+                phone = manager["UF_USR_1655187255838"]
+            if "WORK_PHONE" in manager and manager["WORK_PHONE"] != "":
+                phone = manager["WORK_PHONE"]
+                print("WORK_PHONE", phone)
 
-                print("phone1", phone)
-                if phone:
-                    phone = re.sub(r"\D", "", phone)
-                    if len(phone) == 11:
-                        phone = phone[1:]
-                        phone = f"7{phone}"
-                    # elif len(phone) == 0:
-                    #     phone = None
-                    # else:
-                    #     print(f"non 11 simbol {phone}")
-                    #     phone = None
-                print("phone", phone)
-                if "EMAIL" in manager and manager["EMAIL"] != "":
-                    print("EMAIL")
-                    # if manager["EMAIL"] != "":
-                    try:
-                        admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
-                        print("admin_okt", admin_okt)
-                        admin_okt.bitrix_id = manager["ID"]
-                        admin_okt.phone = phone
-                        admin_okt.save()
-                        photo_manager_bx(manager, admin_okt)
-                    except AdminUser.DoesNotExist:
-                        pass
+            print("phone1", phone)
+            if phone:
+                phone = re.sub(r"\D", "", phone)
+                if len(phone) == 11:
+                    phone = phone[1:]
+                    phone = f"7{phone}"
+                # elif len(phone) == 0:
+                #     phone = None
+                # else:
+                #     print(f"non 11 simbol {phone}")
+                #     phone = None
+            print("phone", phone)
+            if "EMAIL" in manager and manager["EMAIL"] != "":
+                print("EMAIL")
+                # if manager["EMAIL"] != "":
+                try:
+                    admin_okt = AdminUser.objects.get(username=manager["EMAIL"])
+                    print("admin_okt", admin_okt)
+                    admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.phone = phone
+                    admin_okt.save()
+                    photo_manager_bx(manager, admin_okt)
+                except AdminUser.DoesNotExist:
+                    pass
 
-                elif (
-                    "UF_USR_1656306737602" in manager
-                    and manager["UF_USR_1656306737602"] != ""
-                ):
-                    print("UF_USR_1656306737602")
-                    try:
-                        admin_okt = AdminUser.objects.get(
-                            username=manager["UF_USR_1656306737602"]
-                        )
-                        print("admin_okt", admin_okt)
-                        admin_okt.bitrix_id = manager["ID"]
-                        admin_okt.phone = phone
-                        admin_okt.save()
-                        photo_manager_bx(manager, admin_okt)
-                    except AdminUser.DoesNotExist:
-                        pass
+            elif (
+                "UF_USR_1656306737602" in manager
+                and manager["UF_USR_1656306737602"] != ""
+            ):
+                print("UF_USR_1656306737602")
+                try:
+                    admin_okt = AdminUser.objects.get(
+                        username=manager["UF_USR_1656306737602"]
+                    )
+                    print("admin_okt", admin_okt)
+                    admin_okt.bitrix_id = manager["ID"]
+                    admin_okt.phone = phone
+                    admin_okt.save()
+                    photo_manager_bx(manager, admin_okt)
+                except AdminUser.DoesNotExist:
+                    pass
 
         return True
     except Exception as e:

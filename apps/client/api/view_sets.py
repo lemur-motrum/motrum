@@ -462,13 +462,15 @@ class RequisitesViewSet(viewsets.ModelViewSet):
         adress_req = RequisitesAddress.objects.get_or_create(
             requisitesKpp=reqKpp[0],
             type_address_bx="web-lk-adress",
-            country=adress["legal_adress"]["country"],
-            region=adress["legal_adress"]["region"],
-            province=adress["legal_adress"]["province"],
-            post_code=adress["legal_adress"]["post_code"],
-            city=adress["legal_adress"]["city"],
-            address1=adress["legal_adress"]["legal_address1"],
-            address2=adress["legal_adress"]["legal_address2"],
+            defaults={
+                "country":adress["legal_adress"]["country"],
+                "region":adress["legal_adress"]["region"],
+                "province":adress["legal_adress"]["province"],
+                "post_code":adress["legal_adress"]["post_code"],
+                "city":adress["legal_adress"]["city"],
+                "address1":adress["legal_adress"]["legal_address1"],
+                "address2":adress["legal_adress"]["legal_address2"],
+            },
         )
 
         for account_req in account_requisites:

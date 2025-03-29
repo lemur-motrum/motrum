@@ -2130,7 +2130,7 @@ def add_new_order_bx(
                 "CURRENCY_ID": "RUB",
                 # "COMPANY_ID": company_bx_id,
                 "SOURCE_ID": "CALLBACK",
-                "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
+                "SOURCE_DESCRIPTION": f"Заказ с сайта motrum.ru тел.польз. +{client.phone}",
                 "CONTACT_IDS": [client_bx_id],
                 "UF_CRM_1715001709654": "848",
             }

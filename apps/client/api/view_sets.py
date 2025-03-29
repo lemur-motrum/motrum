@@ -459,7 +459,7 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             requisitesotherkpp=reqKpp[0],
         )
 
-        adress_req = RequisitesAddress.objects.get_or_create(
+        adress_req = RequisitesAddress.objects.update_or_create(
             requisitesKpp=reqKpp[0],
             type_address_bx="web-lk-adress",
             defaults={

@@ -1280,18 +1280,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         req_user_all = ClientRequisites.objects.filter(client=client)
         print(req_user_all)
         all_inn = []
-        all_inn2 =[]
+        all_innkpp =[]
         for req_user in req_user_all:
+            print(req_user)
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
             
             print(req_user.requisitesotherkpp.accountrequisites_set.all())
             for acc in req_user.requisitesotherkpp.accountrequisites_set.all():
-                print(acc)
-            if acc.id not in all_inn2:
-                all_inn2.append(acc.id)    
-        print("all_inn2",all_inn2)
+                if acc.requisitesKpp.id not in all_innkpp:
+                    all_innkpp.append(acc.requisitesKpp.id)    
+      
         print(req_user_all)
+        print("all_innkpp",all_innkpp)
         # сортировки
         sorting = "-notification_count"
         # direction = "ASC"
@@ -1415,11 +1416,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         # ordering = {k:v for k,v in ordering.items() if v is not None}
         # ordering = list(ordering.values())
         # lot = Lot.objects.all()
-        print(all_inn)
-        print(DocumentShipment.objects.filter(order_id=172))
+        
+     
         orders = (
-            # Order.objects.filter( Q(account_requisites_id__in=all_inn2) | Q(client=client))
-            Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
+            # all_innkpp
+            Order.objects.filter( Q(account_requisites__requisitesKpp_id__in=all_innkpp) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
             # Q(requisites_id__in=all_inn) & Q(client=client)
             # Order.objects.filter(client=client)
             .select_related(
@@ -1518,10 +1521,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         req_user_all = ClientRequisites.objects.filter(client=client)
 
         all_inn = []
+        all_innkpp =[]
         for req_user in req_user_all:
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
-
+            for acc in req_user.requisitesotherkpp.accountrequisites_set.all():
+                if acc.requisitesKpp.id not in all_innkpp:
+                    all_innkpp.append(acc.requisitesKpp.id)    
         # print(req_user_all)
 
         # сортировки
@@ -1537,7 +1543,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # заказы сериализировать
         orders = (
-            Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
+            Order.objects.filter( Q(account_requisites__requisitesKpp_id__in=all_innkpp) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
             # Order.objects.filter(requisites_id__in=all_inn)
             # Order.objects.filter(client=client)
             .select_related(

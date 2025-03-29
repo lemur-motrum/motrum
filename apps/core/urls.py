@@ -36,7 +36,7 @@ urlpatterns = [
     path("shkaf-upravleniya/", views.solutions_one, name="shkaf-upravleniya"),
     path(
         "contact/",
-        TemplateView.as_view(template_name="core/contact.html"),
+        views.contact_page,
         name="contact",
     ),  # контакты
     path("cart/", views.cart, name="cart"),  # корзина

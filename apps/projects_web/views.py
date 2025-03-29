@@ -35,6 +35,7 @@ def projects(request):
         "category_projects": category_projects,
         "client_category_projects": client_category_projects,
         "marking_category": marking_category,
+        "meta_title": "Проекты | Мотрум - автоматизация производства",
     }
     return render(request, "projects_web/projects_all.html", context)
 
@@ -92,5 +93,6 @@ def project(request, project):
         "client_category_project": client_category_project,
         "other_projects": other_project,
         "project_video": project_video,
+        "meta_title": f"{project_one.name} | Мотрум - автоматизация производства",
     }
     return render(request, "projects_web/project_one.html", context)

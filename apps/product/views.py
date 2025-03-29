@@ -50,6 +50,7 @@ def catalog_all(request):
         "category": category,
         "title": "Товары",
         "vendors": vendors,
+        "meta_title": "Товары | Мотрум - автоматизация производства",
     }
 
     return render(request, "product/product_catalog.html", context)
@@ -70,10 +71,17 @@ def catalog_group(request, category):
 
     if len(group) > 0:
         cat = CategoryProduct.objects.get(slug=category)
-        all_categories = CategoryProduct.objects.prefetch_related(
-            Prefetch("product_set"),
-        ).filter().exclude(product__isnull=True,).exclude(pk=cat.pk).order_by("article_name")
-        
+        all_categories = (
+            CategoryProduct.objects.prefetch_related(
+                Prefetch("product_set"),
+            )
+            .filter()
+            .exclude(
+                product__isnull=True,
+            )
+            .exclude(pk=cat.pk)
+            .order_by("article_name")
+        )
 
         def get_another_category():
             current_cats = [
@@ -87,6 +95,7 @@ def catalog_group(request, category):
             # "another_categories": get_another_category(),
             "another_categories": all_categories,
             "title": cat.name,
+            "meta_title": f"{cat.name} | Мотрум - автоматизация производства",
         }
 
         return render(request, "product/product_group.html", context)
@@ -187,7 +196,7 @@ def products_items(request, category, group):
             and group_elem.category.pk == current_category.pk
         ]
         return current_groups
-    
+
     context = {
         "current_category": current_category,
         "current_group": current_group,
@@ -196,6 +205,7 @@ def products_items(request, category, group):
         "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,
+        "meta_title": f"{current_group.name} | Мотрум - автоматизация производства",
     }
 
     return render(request, "product/catalog.html", context)
@@ -234,6 +244,7 @@ def product_one(request, category, group, article):
         "current_group": product.group,
         "title": product.name,
         "product_document": product_document,
+        "meta_title": f"{product.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/product_one.html", context)
 
@@ -279,6 +290,7 @@ def product_one_without_group(request, category, article):
         "current_category": current_category,
         "title": product.name,
         "product_document": product_document,
+        "meta_title": f"{product.name} | Мотрум - автоматизация производства",
         # "product_properties": product_properties,
         # "product_lot": product_lot,
     }
@@ -296,6 +308,7 @@ def brand_all(request):
 
     context = {
         "brands": brands,
+        "meta_title": "Продукты | Мотрум - автоматизация производства",
     }
 
     return render(request, "product/brand_all.html", context)
@@ -307,6 +320,7 @@ def brand_one(request, vendor):
 
     context = {
         "brand": brand,
+        "meta_title": f"{brand.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/brand_one.html", context)
 

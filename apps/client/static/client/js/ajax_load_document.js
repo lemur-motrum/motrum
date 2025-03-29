@@ -113,7 +113,12 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         })
         .then(function (data) {
-          endContent.classList.add("show");
+          if (data.data.length > 0) {
+            endContent.classList.add("show");
+          } else {
+            catalogContainer.innerHTML =
+              "<div class='no_content_container'>Документов пока нет</div>";
+          }
           smallLoader.classList.remove("show");
           lastPage = +data.count;
           const paginationArray = [];

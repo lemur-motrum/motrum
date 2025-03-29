@@ -3,6 +3,7 @@ import json
 from multiprocessing import context
 import os
 import random
+from wsgiref.util import request_uri
 from django.db.models import Prefetch
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.template import loader
@@ -75,6 +76,9 @@ def index(request):
         "slider": promo_slider,
         "vendors": vendors,
         "motrum_in_numbers": motrum_in_numbers,
+        "meta_title": "Мотрум - оборудование для автоматизации производства",
+        "meta_keywords": "оборудование для автоматизации производства",
+        "meta_description": "Наша компания предлагает широкий выбор оборудования для автоматизации производства.",
     }
     return render(request, "core/index.html", context)
 
@@ -204,16 +208,28 @@ def cart(request):
         "all_client_info": all_client_info,
         "type_delivery": type_delivery,
         # "account_requisites":account_requisites,
+        "meta_title": "Корзина | Мотрум - автоматизация производства",
     }
     print(context)
 
     return render(request, "core/cart.html", context)
 
 
+# Контакты
+def contact_page(request):
+    context = {
+        "meta_title": "Контакты | Мотрум - автоматизация производства",
+    }
+    return render(request, "core/contact.html", context)
+
+
 # РЕШЕНИЯ ОБЩАЯ
 def solutions_all(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-    context = {"projects": projects}
+    context = {
+        "projects": projects,
+        "meta_title": "Решения | Мотрум - автоматизация производства",
+    }
     return render(request, "core/solutions/solutions_all.html", context)
 
 
@@ -225,8 +241,10 @@ def cobots_all(request):
             "robototehnicheskie-yachejki",
         ]
     ).order_by("?")[0:3]
-
-    context = {"projects": projects}
+    context = {
+        "projects": projects,
+        "meta_title": "Коботы | Мотрум - автоматизация производства",
+    }
     return render(request, "core/solutions/cobots.html", context)
 
 
@@ -250,18 +268,46 @@ def solutions_one(request):
         seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)
     except SeoTextSolutions.DoesNotExist:
         seo_test = None
-   
-    context = {"seo_test": seo_test, "projects": projects}
+    print("234234", request.path_info)
+
+    if request.path_info == "/cobots-palett/":
+        meta_title = "Решение для палетизации"
+    elif request.path_info == "/cobots-box/":
+        meta_title = "Решение для укладки в короб"
+    elif request.path_info == "/cobots-packing/":
+        meta_title = "Решение для автоматической упаковки"
+    elif request.path_info == "/marking/":
+        meta_title = "Маркировка"
+    elif request.path_info == "/shkaf-upravleniya/":
+        meta_title = "Сборка шкафов управления"
+
+    context = {
+        "seo_test": seo_test,
+        "projects": projects,
+        "meta_title": f"{meta_title} | Мотрум - автоматизация производства",
+    }
     return render(request, "core/solutions/solutions_one.html", context)
 
 
+# сертификаты
+
+
 def certificates_page(request):
-    print(123)
-    context = {"name": "Ruslan"}
+
+    if request.path_info == "/company/detributer-certificate/":
+        meta_title = "Сертификаты дистрибьютора"
+    elif request.path_info == "/company/certificate-of-conformity/":
+        meta_title = "Сертификаты соответствия"
+    else:
+        meta_title = "Результаты СОУТ"
+
+    context = {
+        "meta_title": f"{meta_title} | Мотрум - автоматизация производства",
+    }
     return render(request, "core/sertificates/page.html", context)
 
 
-# ККОМПАНИЯ
+# КОМПАНИЯ
 def company(request):
     projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:2]
     motrum_in_numbers = CompanyInfoWeb.objects.all().last()
@@ -279,6 +325,7 @@ def company(request):
         "project_in_numbers": project_in_numbers,
         "photo_client": photo_client,
         "photo_motrum": photo_motrum,
+        "meta_title": "Компания Мотрум | Мотрум - автоматизация производства",
     }
 
     return render(request, "core/company.html", context)
@@ -293,7 +340,9 @@ def company_about(request):
 # политика конфиденциальности
 def privacy_policy(request):
 
-    context = {}
+    context = {
+        "meta_title": "Политика конфиденциальности | Мотрум - автоматизация производства",
+    }
     return render(request, "core/privacy_policy.html", context)
 
 

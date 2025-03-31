@@ -123,7 +123,6 @@ window.addEventListener("DOMContentLoaded", () => {
               showContentBtn.textContent = "подробнее";
             }
           };
-
           overlayLogic(vacancyItem);
         });
       }, 1);
@@ -162,7 +161,6 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         })
         .catch((error) => console.error(error));
-
       history.pushState({}, "", currentUrl);
     }
 
@@ -286,17 +284,6 @@ window.addEventListener("DOMContentLoaded", () => {
               setErrorModal();
             }
           });
-
-          //   response.text())
-          // .then((response) => {
-          //   overlay.classList.remove("visible");
-          //   setTimeout(() => {
-          //     overlay.classList.remove("show");
-          //   }, 600);
-          //   document.body.style.overflowY = "auto";
-          //   resetInputs(formContainer, fileLabelDescription);
-          // })
-          // .catch((error) => console.error(error));
         }
       };
     }

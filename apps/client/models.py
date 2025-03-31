@@ -68,6 +68,7 @@ class Client(CustomUser):
     def add_manager(self):
         if self.manager == None:
             base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
+            print(base_manager)
             self.manager = base_manager
             self.save()
 

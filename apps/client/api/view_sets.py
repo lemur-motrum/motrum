@@ -131,139 +131,148 @@ class ClientViewSet(viewsets.ModelViewSet):
     # РЕГИСТРАЦИЯ ИЛИ АВТОРИЗАЦИЯ
     @action(detail=False, methods=["post"], url_path=r"login")
     def create_or_login_users(self, request, *args, **kwargs):
-        data = request.data
-        # phone = data["phone"].replace(" ", "")
-        phone = re.sub(r"[^0-9+]+", r"", data["phone"])
-        # if "first_name" in data:
-        #     data["is_active"] = first_name
-        #     first_name  = data['name']
-        # else:
-        #     first_name = None
-        first_name = data["first_name"]
-        pin_user = data["pin"]
-        data["is_active"] = True
-        data["username"] = phone
-        data["first_name"] = first_name
-        cart_id = request.COOKIES.get("cart")
-        print(data)
-        # pin = _get_pin(4)
-        # pin = 1111
-        # cache.set(phone, pin, 120)
-        # первый шаг отправка пин
-        if pin_user == "":
-            if IS_PROD:
-                pin = _get_pin(4)
-                cache.set(phone, pin, 180)
-                send_pin_smsru(pin, phone)
-            else:
-                pin = 1111
-                cache.set(phone, pin, 180)
-
-            return Response(pin_user, status=status.HTTP_200_OK)
-
-        # сравнение пин и логин
-        else:
-            verify_pin = _verify_pin(phone, int(pin_user))
-            print("verify_pin", verify_pin)
-            # коды совпадают
-            if verify_pin:
-                print("@@@", verify_pin)
-                serializer = self.serializer_class(data=data, many=False)
-
-                # создание новый юзер
-                if serializer.is_valid():
-                    client = serializer.save()
-                    if client.manager == None:
-                        client.add_manager()
-
-                # старый юзер логин
+        try:
+            data = request.data
+            # phone = data["phone"].replace(" ", "")
+            phone = re.sub(r"[^0-9+]+", r"", data["phone"])
+            # if "first_name" in data:
+            #     data["is_active"] = first_name
+            #     first_name  = data['name']
+            # else:
+            #     first_name = None
+            first_name = data["first_name"]
+            pin_user = data["pin"]
+            data["is_active"] = True
+            data["username"] = phone
+            data["first_name"] = first_name
+            cart_id = request.COOKIES.get("cart")
+            print(data)
+            # pin = _get_pin(4)
+            # pin = 1111
+            # cache.set(phone, pin, 120)
+            # первый шаг отправка пин
+            if pin_user == "":
+                if IS_PROD:
+                    pin = _get_pin(4)
+                    cache.set(phone, pin, 180)
+                    send_pin_smsru(pin, phone)
                 else:
-                    print(serializer.data)
-                    client = Client.objects.get(username=phone)
-                    serializer = ClientSerializer(client, many=False)
+                    pin = 1111
+                    cache.set(phone, pin, 180)
 
-                # юзер логин
-                if client.is_active:
-                    # логин старого пользователя
-                    if client.last_login:
-                        login(request, client)
+                return Response(pin_user, status=status.HTTP_200_OK)
 
-                        cart = Cart.objects.filter(client=client, is_active=False)
-                        if cart.count() > 0:
-                            cart = cart[0]
-                            if cart_id is None:
-                                response = Response()
-                                response.data = serializer.data["id"]
-                                response.status = status.HTTP_200_OK
-                                response.set_cookie("cart", cart.id, max_age=2629800)
-                                return response
-                            else:
-                                old_cart_prod = ProductCart.objects.filter(
-                                    cart=cart.id
-                                ).values_list("product_id", flat=True)
-                                print(old_cart_prod)
-                                product_cart_no_user = ProductCart.objects.filter(
-                                    cart=cart_id
-                                )
-                                for products_no_user in product_cart_no_user:
-                                    if products_no_user.product.id not in old_cart_prod:
-                                        products_no_user.cart = cart
-                                        products_no_user.save()
+            # сравнение пин и логин
+            else:
+                verify_pin = _verify_pin(phone, int(pin_user))
+                print("verify_pin", verify_pin)
+                # коды совпадают
+                if verify_pin:
+                    print("@@@", verify_pin)
+                    serializer = self.serializer_class(data=data, many=False)
 
-                                product_cart_no_user.delete()
-                                response = Response()
-                                response.data = serializer.data["id"]
-                                response.status = status.HTTP_200_OK
-                                response.set_cookie("cart", cart.id, max_age=2629800)
-                                return response
-                        else:
-                            Cart.objects.filter(id=cart_id).update(client=client)
-                            return Response(serializer.data, status=status.HTTP_200_OK)
+                    # создание новый юзер
+                    if serializer.is_valid():
+                        client = serializer.save()
+                        if client.manager == None:
+                            client.add_manager()
 
-                        # try:
-                        #     cart = Cart.objects.get(client=client, is_active=False)
-                        #     if cart_id is None:
-                        #         response = Response()
-                        #         response.data = serializer.data["id"]
-                        #         response.status = status.HTTP_200_OK
-                        #         response.set_cookie("cart", cart.id, max_age=2629800)
-                        #         return response
-                        #     else:
-
-                        #         product_cart_no_user = ProductCart.objects.filter(
-                        #             cart=cart_id
-                        #         )
-                        #         for products_no_user in product_cart_no_user:
-                        #             products_no_user.cart = cart
-                        #             products_no_user.save()
-
-                        #         product_cart_no_user.delete()
-                        #         response = Response()
-                        #         response.data = serializer.data["id"]
-                        #         response.status = status.HTTP_200_OK
-                        #         response.set_cookie("cart", cart.id, max_age=2629800)
-                        #         return response
-                        #         # return Response(serializer.data, status=status.HTTP_200_OK)
-
-                        # except Cart.DoesNotExist:
-                        #     Cart.objects.filter(id=cart_id).update(client=client)
-                        #     return Response(serializer.data, status=status.HTTP_200_OK)
-
-                    # логин нового пользоваеля
+                    # старый юзер логин
                     else:
+                        client = Client.objects.get(username=phone)
+                        serializer = ClientSerializer(client, many=False)
 
-                        login(request, client)
-                        if cart_id:
-                            Cart.objects.filter(id=cart_id).update(client=client)
-                        return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    # юзер логин
+                    if client.is_active:
+                        # логин старого пользователя
+                        if client.last_login:
+                            login(request, client)
 
+                            cart = Cart.objects.filter(client=client, is_active=False)
+                            if cart.count() > 0:
+                                cart = cart[0]
+                                if cart_id is None:
+                                    response = Response()
+                                    response.data = serializer.data["id"]
+                                    response.status = status.HTTP_200_OK
+                                    response.set_cookie("cart", cart.id, max_age=2629800)
+                                    return response
+                                else:
+                                    old_cart_prod = ProductCart.objects.filter(
+                                        cart=cart.id
+                                    ).values_list("product_id", flat=True)
+                                    print(old_cart_prod)
+                                    product_cart_no_user = ProductCart.objects.filter(
+                                        cart=cart_id
+                                    )
+                                    for products_no_user in product_cart_no_user:
+                                        if products_no_user.product.id not in old_cart_prod:
+                                            products_no_user.cart = cart
+                                            products_no_user.save()
+
+                                    product_cart_no_user.delete()
+                                    response = Response()
+                                    response.data = serializer.data["id"]
+                                    response.status = status.HTTP_200_OK
+                                    response.set_cookie("cart", cart.id, max_age=2629800)
+                                    return response
+                            else:
+                                Cart.objects.filter(id=cart_id).update(client=client)
+                                return Response(serializer.data, status=status.HTTP_200_OK)
+
+                            # try:
+                            #     cart = Cart.objects.get(client=client, is_active=False)
+                            #     if cart_id is None:
+                            #         response = Response()
+                            #         response.data = serializer.data["id"]
+                            #         response.status = status.HTTP_200_OK
+                            #         response.set_cookie("cart", cart.id, max_age=2629800)
+                            #         return response
+                            #     else:
+
+                            #         product_cart_no_user = ProductCart.objects.filter(
+                            #             cart=cart_id
+                            #         )
+                            #         for products_no_user in product_cart_no_user:
+                            #             products_no_user.cart = cart
+                            #             products_no_user.save()
+
+                            #         product_cart_no_user.delete()
+                            #         response = Response()
+                            #         response.data = serializer.data["id"]
+                            #         response.status = status.HTTP_200_OK
+                            #         response.set_cookie("cart", cart.id, max_age=2629800)
+                            #         return response
+                            #         # return Response(serializer.data, status=status.HTTP_200_OK)
+
+                            # except Cart.DoesNotExist:
+                            #     Cart.objects.filter(id=cart_id).update(client=client)
+                            #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+                        # логин нового пользоваеля
+                        else:
+
+                            login(request, client)
+                            if cart_id:
+                                Cart.objects.filter(id=cart_id).update(client=client)
+                            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+                    else:
+                        return Response(serializer.data, status=status.HTTP_403_FORBIDDEN)
+
+                # коды не совпадают
                 else:
-                    return Response(serializer.data, status=status.HTTP_403_FORBIDDEN)
-
-            # коды не совпадают
-            else:
-                return Response(pin_user, status=status.HTTP_400_BAD_REQUEST)
-
+                    return Response(pin_user, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            print(tr)
+            error = "error"
+            location = "Логины пользователей"
+            info = f" ошибка {e}{tr}"
+            e = error_alert(error, location, info)
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)
+        
     @action(detail=False, methods=["post"], url_path=r"get-client-requisites")
     def get_client_requisites(self, request, *args, **kwargs):
         serializer_class = AccountRequisitesSerializer

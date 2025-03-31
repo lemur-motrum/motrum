@@ -181,7 +181,7 @@ class ClientViewSet(viewsets.ModelViewSet):
                     else:
                         error = "error"
                         location = "Логины пользователей2"
-                        info = f" ошибка {e}{tr}{serializer.errors}"
+                        info = f" ошибка {serializer.errors}"
                         e = error_alert(error, location, info)
                         
                         client = Client.objects.get(username=phone)

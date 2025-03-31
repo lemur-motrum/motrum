@@ -84,7 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
-        filterContainer.classList.add("show");
+        // filterContainer.classList.add("show");
       };
     });
 

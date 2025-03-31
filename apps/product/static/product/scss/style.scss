@@ -484,7 +484,7 @@
           padding-top: 3rem;
           box-sizing: border-box;
           gap: 1rem;
-          transition: 1s;
+          transition: 1s !important;
           &.show {
             left: 0rem;
             overflow-y: scroll;

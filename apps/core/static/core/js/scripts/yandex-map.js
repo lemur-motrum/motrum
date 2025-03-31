@@ -49,11 +49,7 @@ window.addEventListener("DOMContentLoaded", () => {
       myMap.controls.remove("fullscreenControl");
       myMap.controls.remove("taxiControl");
       myMap.controls.remove("rulerControl");
-
       myMap.geoObjects.add(myPlacemark);
-      if (window.innerWidth <= 576) {
-        myMap.controls.remove("zoomControl");
-      }
     });
 
     const contactsWrapper = wrapper.querySelector(".contacts-block");

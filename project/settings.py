@@ -37,8 +37,10 @@ ALLOWED_HOSTS = [
     "pmn.bitrix24.ru",
     "45.153.188.69",
     "test.motrum.ru",
+    "motrum.ru",
     "192.168.0.104",
     "192.168.0.110",
+    
 ]
 DOMIAN = os.environ.get("DOMIAN")
 
@@ -292,15 +294,17 @@ REST_FRAMEWORK = {
 
 NDS = 20
 
-if IS_TESTING:
-    BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK_TEST_SERVER")
-else:
+if IS_PROD: 
     BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+    BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"
+else:
+    BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK_TEST_SERVER")
+    BASE_MANAGER_FOR_BX = "support@lemurteam.ru"
+
     
-BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+# BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
+# BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"
+# BASE_MANAGER_FOR_BX = "steisysi@gmail.com"
 
 DADATA_TOKEN = os.environ.get("DADATA_TOKEN")
 DADATA_SECRET = os.environ.get("DADATA_SECRET")
-
-# BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"
-BASE_MANAGER_FOR_BX = "steisysi@gmail.com"

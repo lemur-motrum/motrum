@@ -1925,7 +1925,7 @@ def add_company_bx(bx, req, req_kpp, adress, base_manager):
 
     tasks = {
         "fields": {
-            "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) САЙТ{req.legal_entity}",
+            "TITLE": f"{req.legal_entity}",
             "COMPANY_TYPE": "CUSTOMER",
             "PHONE": (
                 [{"VALUE": req_kpp.tel, "VALUE_TYPE": "WORK"}] if req_kpp.tel else []
@@ -2090,7 +2090,7 @@ def add_new_order_bx(
             SOURCE_DESCRIPTION = f"Заказ с сайта motrum.ru от ИНН {req.inn}  тел.польз. +{client.phone}"
         tasks = {
             "fields": {
-                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {req.legal_entity} {current_date}",
+                "TITLE": f"Заказ сайт - {req.legal_entity} {current_date}",
                 # "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) {req.legal_entity}{current_date}",
                 "TYPE_ID": "SALE",
                 "CATEGORY_ID": 8,
@@ -2127,7 +2127,7 @@ def add_new_order_bx(
             name = ""
         tasks = {
             "fields": {
-                "TITLE": f"ТЕСТ (НЕ ИСПОЛЬЗОВАТЬ) Заказ сайт - {name}{client.phone}",
+                "TITLE": f"Заказ сайт - {name}{client.phone}",
                 "TYPE_ID": "SALE",
                 "CATEGORY_ID": 8,
                 "STAGE_ID": "C8:NEW",

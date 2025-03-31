@@ -105,7 +105,7 @@ class VacancyViewSet(viewsets.ModelViewSet):
             )
             
             to_manager = os.environ.get("EMAIL_HR")
-            test = send_email_message_and_file_alternative(subject, None, "anastasiashvechkova@yandex.ru", path_file, html_message )
+            test = send_email_message_and_file_alternative(subject, None, to_manager, path_file, html_message )
             print("test-email",test)
             
             

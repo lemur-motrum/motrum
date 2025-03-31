@@ -13,6 +13,9 @@ window.addEventListener("DOMContentLoaded", () => {
       thumbs: {
         swiper: promoSliderLeft,
       },
+      autoplay: {
+        delay: 10000,
+      },
       on: {
         slideChange: function (swiper) {
           let activeIndex = swiper.realIndex;

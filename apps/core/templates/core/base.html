@@ -12,8 +12,8 @@
       <!--css инклудить в общий -->
       {% include "core/includes/stylesheets.html" %}
       <title>{% if meta_title %}{{ meta_title }}{% else %}Мотрум - оборудование для автоматизации производства{% endif %}</title>
-      {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}"> {% endif %}
-      {% if meta_description %}<meta name="description" content="{{ meta_description }}">{% endif %}  
+      {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}" /> {% endif %}
+      {% if meta_description %}<meta name="description" content="{{ meta_description }}" />{% endif %}  
       <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
     </head>
     <body {% test_display %}>

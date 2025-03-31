@@ -3828,6 +3828,10 @@ a {
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            @media screen and(max-width:576px) {
+              padding: 0.5rem 0.75rem;
+              font-size: 0.85rem;
+            }
             &::after {
               flex-shrink: 0;
               width: 0.75rem;
@@ -3873,6 +3877,9 @@ a {
             .itc-select__option {
               padding: 0.5rem;
               font-size: 1rem;
+              @media screen and (max-width: 576px) {
+                font-size: 0.75rem;
+              }
               &.itc-select__option_selected {
                 display: flex;
                 justify-content: space-between;
@@ -4018,7 +4025,7 @@ a {
             box-sizing: border-box;
             border-radius: 2rem;
             border: 0.094rem solid black;
-            padding: 0 1.938rem;
+            padding: 0 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4629,6 +4636,16 @@ a {
         -webkit-filter: grayscale(1);
         -moz-filter: grayscale(1);
         -o-filter: grayscale(1);
+      }
+
+      @media screen and (max-width: 576px) {
+        .ymaps-2-1-79-zoom {
+          top: 15rem;
+          height: 10px !important;
+          .ymaps-2-1-79-zoom__scale {
+            display: none;
+          }
+        }
       }
     }
   }

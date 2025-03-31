@@ -58,6 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     phoneButton.onclick = () => {
+      ym(37794920, "reachGoal", "open_callback_overlay");
       callBackOverlay.classList.add("show");
       setTimeout(() => {
         callBackOverlay.classList.add("visible");
@@ -115,6 +116,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            ym(37794920, "reachGoal", "send_callback_form");
             closeOverlay();
             hidePreloaderAndEnabledButton(submitBtn);
             successModal(

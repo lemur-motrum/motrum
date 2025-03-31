@@ -67,6 +67,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            ym(37794920, "reachGoal", "send_form_calculate_project");
             resetInputs();
             hidePreloaderAndEnabledButton(btn);
             successModal(

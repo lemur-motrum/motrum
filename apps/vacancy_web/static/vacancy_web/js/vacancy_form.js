@@ -90,6 +90,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            ym(37794920, "reachGoal", "send_vacancy_form");
             clearInputs();
             successModal(
               "Спасибо за отклик, мы рассмотрим Ваше резюме и свяжемся с Вами"

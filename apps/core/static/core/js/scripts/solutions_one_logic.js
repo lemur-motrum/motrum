@@ -112,6 +112,27 @@ window.addEventListener("DOMContentLoaded", () => {
         validate = false;
       }
 
+      function yandexMetrika() {
+        if (submitBtn.getAttribute("btn-form-type") == "cobots_all") {
+          ym(37794920, "reachGoal", "send_all_cobots_form");
+        }
+        if (submitBtn.getAttribute("btn-form-type") == "palett") {
+          ym(37794920, "reachGoal", "send_form_palett");
+        }
+        if (submitBtn.getAttribute("btn-form-type") == "cobot-box") {
+          ym(37794920, "reachGoal", "send_form_cobot_box");
+        }
+        if (submitBtn.getAttribute("btn-form-type") == "cobot-packing") {
+          ym(37794920, "reachGoal", "send_form_cobot_packing");
+        }
+        if (submitBtn.getAttribute("btn-form-type") == "marking") {
+          ym(37794920, "reachGoal", "send_form_marking_orange_form");
+        }
+        if (submitBtn.getAttribute("btn-form-type") == "shkaf") {
+          ym(37794920, "reachGoal", "send_form_shkaf");
+        }
+      }
+
       if (validate) {
         const dataObj = {
           name: nameInput.value,
@@ -154,6 +175,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            yandexMetrika();
             resetInputs();
             hideOverlay();
             hidePreloaderAndEnabledButton(submitBtn);

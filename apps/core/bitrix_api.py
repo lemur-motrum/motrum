@@ -1056,8 +1056,12 @@ def currency_check_bx():
                     value["text"] = f'{value["text"]}{text}'
             try:
                 save_currency_check_bx(value["text"], value["bitrix_id_order"])
-            except:
-                pass
+            except Exception as e:
+                tr = traceback.format_exc()
+                error = "file_api_error"
+                location = " ИНДИВИДУАЛЬНАЯ отправка в б24 Критичные изменения цен и курса валют"
+                info = f"ИНДИВИДУАЛЬНАЯ bitrix_id_order={value["bitrix_id_order"]} отправка в б24 Критичные изменения цен и курса валют{tr}{e}"
+                e = error_alert(error, location, info)
 
     except Exception as e:
         tr = traceback.format_exc()

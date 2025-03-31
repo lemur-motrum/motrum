@@ -61,13 +61,12 @@ urlpatterns = [
         views.certificates_page,
         name="sout",
     ),
-    # path("cart", views.cart,name="cart"),
-    # path("/cart", include("apps.client.urls", namespace="cart")),
-    # проекты в app project_web namespace="project"
-    # каталог и товар  в app product
-    # личный кабинет   в  app client  namespace="lk"
-    # EMAILS
-    # EMAILS
-    # path("send_email_callback", views.email_callback, name="send_email_callback"),
-    # path("send_email_manager", views.email_manager, name="send_email_manager"),
+    path("robots.txt", views.robots_txt, name="robots_txt",),
+    # path(
+    #     "robots.txt",
+    #     TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+    # ),
+    
+    
+    
 ]

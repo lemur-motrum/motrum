@@ -10,7 +10,7 @@ from django.template import loader
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import OuterRef, Subquery
-
+from django.views.decorators.http import require_GET
 from apps import client
 from apps.client.models import (
     AccountRequisites,
@@ -41,7 +41,7 @@ from apps.core.utils_web import send_email_message, send_email_message_html
 from apps.projects_web.models import Project
 from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
-from project.settings import EMAIL_BACKEND
+from project.settings import EMAIL_BACKEND, IS_PROD
 from django.db.models import F
 from django.db.models.functions import Round
 
@@ -375,7 +375,30 @@ def add_admin_okt(request):
         context = {"text": "Ошибка. Обратитесь в тех.поддержку"}
         return render(request, "core/clean_page_notifications.html", context)
 
+@require_GET
+def robots_txt(request):
+    if IS_PROD:
+        lines = [
+            "User-Agent: *",
+            "Disallow: /",
+        ]
+        # lines = [
+        #     "Disallow: /admin/",
+        #     "Disallow: /website_admin/",
+        #     "Disallow: /okt/",
+        #     "Disallow: /add_admin_okt/",
+        #     "Disallow: /admin_specification/",
+        #     "Disallow: /api/",
+        #     "Disallow: /tinymce/",
+        #     "Disallow: /logs/",
+        # ]
+    else:
+        lines = [
+            "User-Agent: *",
+            "Disallow: /",
+        ]
 
+    return HttpResponse("\n".join(lines), content_type="text/plain")
 # EMAIL SEND
 # def email_callback(request):
 #     if request.method == "POST":

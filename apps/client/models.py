@@ -271,11 +271,11 @@ class RequisitesOtherKpp(models.Model):
     )
     legal_city = models.CharField(
         "Юридический адрес : город",
-        max_length=200,
+        max_length=1000,
     )
     legal_address = models.CharField(
         "Юридический адрес : адрес",
-        max_length=200,
+        max_length=1000,
     )
     postal_post_code = models.CharField(
         "Почтовый адрес :индекс",
@@ -283,11 +283,11 @@ class RequisitesOtherKpp(models.Model):
     )
     postal_city = models.CharField(
         "Почтовый адрес : город",
-        max_length=200,
+        max_length=1000,
     )
     postal_address = models.CharField(
         "Почтовый адрес : адрес",
-        max_length=200,
+        max_length=1000,
     )
     tel = models.CharField(
         "Телефон",

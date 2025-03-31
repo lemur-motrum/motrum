@@ -1,7 +1,10 @@
 {% extends "core/base_okt.html" %}
 {% load static %}
 {% block content %}
-    <div class="bx-btn"
+
+    <div {% if new_order_web != None %}{% else %}style="
+    display: none;
+"{% endif %} class="bx-btn"
          data-bx-id='{{ bitrix_id_order }}'
          data-cart-id='{{ cart }}'
          data-spesif-id='{{ spes }}'

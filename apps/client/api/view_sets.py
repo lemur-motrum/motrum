@@ -459,16 +459,18 @@ class RequisitesViewSet(viewsets.ModelViewSet):
             requisitesotherkpp=reqKpp[0],
         )
 
-        adress_req = RequisitesAddress.objects.get_or_create(
+        adress_req = RequisitesAddress.objects.update_or_create(
             requisitesKpp=reqKpp[0],
             type_address_bx="web-lk-adress",
-            country=adress["legal_adress"]["country"],
-            region=adress["legal_adress"]["region"],
-            province=adress["legal_adress"]["province"],
-            post_code=adress["legal_adress"]["post_code"],
-            city=adress["legal_adress"]["city"],
-            address1=adress["legal_adress"]["legal_address1"],
-            address2=adress["legal_adress"]["legal_address2"],
+            defaults={
+                "country":adress["legal_adress"]["country"],
+                "region":adress["legal_adress"]["region"],
+                "province":adress["legal_adress"]["province"],
+                "post_code":adress["legal_adress"]["post_code"],
+                "city":adress["legal_adress"]["city"],
+                "address1":adress["legal_adress"]["legal_address1"],
+                "address2":adress["legal_adress"]["legal_address2"],
+            },
         )
 
         for account_req in account_requisites:
@@ -544,7 +546,7 @@ class RequisitesAddressViewSet(viewsets.ModelViewSet):
     queryset = RequisitesAddress.objects.all()
     serializer_class = RequisitesAddressSerializer
     http_method_names = ["get", "post", "patch", "put"]
-
+    
 
 class AccountRequisitesViewSet(viewsets.ModelViewSet):
     queryset = AccountRequisites.objects.all()
@@ -631,7 +633,85 @@ class OrderViewSet(viewsets.ModelViewSet):
                 try:
 
                     order = Order.objects.get(cart_id=cart)
-                    pass
+                    if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
+                        data_order = {
+                            "client": client,
+                            "name": None,
+                            "specification": specification.id,
+                            "requisites": (
+                                requisites.id if data["requisitesKpp"] != None else None
+                            ),
+                            "account_requisites": (
+                                account_requisites.id
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            "status": "PRE-PROCESSING",
+                            "cart": cart.id,
+                            "bill_name": None,
+                            "bill_file": None,
+                            "bill_date_start": None,
+                            "bill_date_stop": None,
+                            "bill_sum": None,
+                            # "comment": data["comment"],
+                            "prepay_persent": (
+                                requisites.prepay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            "postpay_persent": (
+                                requisites.postpay_persent
+                                if data["requisitesKpp"] != None
+                                else None
+                            ),
+                            # "motrum_requisites": motrum_requisites.id,
+                            "id_bitrix": None,
+                            "type_delivery": (
+                                type_delivery if data["requisitesKpp"] != None else None
+                            ),
+                            # "manager": admin_creator_id,
+                        }
+
+                        serializer = self.serializer_class(order, data=data_order, partial=True)
+                        
+                        if serializer.is_valid():
+                            print("serializer.is_valid(ORDER):")
+                            cart.is_active = True
+                            cart.save()
+                            serializer.save()
+                            print("serializer.data", serializer.data)
+                            print("serializer.data", serializer.data["id"])
+                            order_id = serializer.data["id"]
+                            if IS_TESTING:
+                                return Response(
+                                    serializer.data, status=status.HTTP_201_CREATED
+                                )
+                            else:
+                                if data["requisitesKpp"] != None:
+                                    order_flag = "add_new_order_web"
+
+                                    # status_operation, info = add_new_order_web(order_id)
+                                else:
+                                    order_flag = "add_new_order_web_not_info"
+                                    # status_operation, info = add_new_order_web_not_info(
+                                    #     order_id
+                                    # )
+                                # if status_operation == "ok":
+                                #     return Response(
+                                #         serializer.data, status=status.HTTP_201_CREATED
+                                #     )
+                                    
+                                # else:
+                                #     return Response(
+                                #         info,
+                                #         status=status.HTTP_400_BAD_REQUEST,
+                                #     )
+
+                        else:
+                            return Response(
+                                serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
                 except Order.DoesNotExist:
                     if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
                         data_order = {
@@ -1050,7 +1130,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             order = Order.objects.get(specification_id=pk)
             if order.specification.file and order.client:
                 Notification.add_notification(
-                    order.id, "DOCUMENT_SPECIFICATION", order.specification.pdf
+                    order.id, "DOCUMENT_SPECIFICATION", order.specification.file
                 )
 
             for obj in products:
@@ -1198,12 +1278,21 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         client = Client.objects.get(pk=current_user)
         req_user_all = ClientRequisites.objects.filter(client=client)
+        print(req_user_all)
         all_inn = []
+        all_innkpp =[]
         for req_user in req_user_all:
+            print(req_user)
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
-
+            
+            print(req_user.requisitesotherkpp.accountrequisites_set.all())
+            for acc in req_user.requisitesotherkpp.accountrequisites_set.all():
+                if acc.requisitesKpp.id not in all_innkpp:
+                    all_innkpp.append(acc.requisitesKpp.id)    
+      
         print(req_user_all)
+        print("all_innkpp",all_innkpp)
         # сортировки
         sorting = "-notification_count"
         # direction = "ASC"
@@ -1327,10 +1416,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         # ordering = {k:v for k,v in ordering.items() if v is not None}
         # ordering = list(ordering.values())
         # lot = Lot.objects.all()
-        print(all_inn)
-        print(DocumentShipment.objects.filter(order_id=172))
+        
+     
         orders = (
-            Order.objects.filter( Q(requisites_id__in=all_inn) | Q(client=client))
+            # all_innkpp
+            Order.objects.filter( Q(account_requisites__requisitesKpp_id__in=all_innkpp) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
             # Q(requisites_id__in=all_inn) & Q(client=client)
             # Order.objects.filter(client=client)
             .select_related(
@@ -1429,10 +1521,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         req_user_all = ClientRequisites.objects.filter(client=client)
 
         all_inn = []
+        all_innkpp =[]
         for req_user in req_user_all:
             if req_user.requisitesotherkpp.requisites.id not in all_inn:
                 all_inn.append(req_user.requisitesotherkpp.requisites.id)
-
+            for acc in req_user.requisitesotherkpp.accountrequisites_set.all():
+                if acc.requisitesKpp.id not in all_innkpp:
+                    all_innkpp.append(acc.requisitesKpp.id)    
         # print(req_user_all)
 
         # сортировки
@@ -1448,7 +1543,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # заказы сериализировать
         orders = (
-            Order.objects.filter(requisites_id__in=all_inn)
+            Order.objects.filter( Q(account_requisites__requisitesKpp_id__in=all_innkpp) | Q(client=client))
+            # Order.objects.filter( Q(requisites_id__in=all_inn) & Q(client=client))
+            # Order.objects.filter(requisites_id__in=all_inn)
             # Order.objects.filter(client=client)
             .select_related(
                 "specification",
@@ -1470,11 +1567,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         # формирование отдельных документов из сериализированных заказов
         documents = []
-        # print(serializer.data)
+        print(serializer.data)
         for order in serializer.data:
 
-            if order["specification_list"]["file"]:
-
+            # if order["specification_list"]["file"]:
+            if  order["specification_list"] and "file" in order["specification_list"] and order["specification_list"]["file"]!= None:
                 data_spesif = {
                     "type": 1,
                     "name": "спецификация",

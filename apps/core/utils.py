@@ -1505,7 +1505,7 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
             # TODO:сохранять номер если все ок
             # specification_name = requisites.number_spec + 1
             # requisites.number_spec = specification_name
-
+            
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1514,11 +1514,31 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                 # "number": specification_name,
                 "tag_stop": True,
             }
-            print(data_specification)
-            date_delivery_all = None
-            serializer = serializer_class_specification(
+            
+            old_spesif = Specification.objects.filter(cart=cart.id)
+            if old_spesif:
+                old_spesif = old_spesif[0]
+                data_specification = {
+                # "cart": cart.id,
+                "admin_creator": None,
+                "id_bitrix": None,
+                "date_stop": data_stop,
+                # "number": specification_name,
+                "tag_stop": True,
+            }
+                serializer = serializer_class_specification(
+                old_spesif, data=data_specification, partial=True
+            )
+            else:
+                old_spesif = None
+                serializer = serializer_class_specification(
                 data=data_specification, partial=True
             )
+                
+            
+            print(data_specification)
+            date_delivery_all = None
+            
             if serializer.is_valid():
                 print("serializer.is_valid()")
                 # serializer._change_reason = "Клиент с сайта"
@@ -1584,11 +1604,21 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                         specification.save()
                     return ("ok", specification, 11111)
                 else:
+                    error = "error"
+                    location = "Сохранение спецификации в корзине сайта specification"
+                    info = f" ошибка specification"
+                    e = error_alert(error, location, info)
                     return ("error", None, None)
 
             else:
                 print("ERROE SER")
                 print(serializer.errors)
+                tr = traceback.format_exc()
+                error = "error"
+                location = "Сохранение спецификации в корзине сайта"
+                info = f" ошибка {e}{tr}{serializer.errors}"
+
+                e = error_alert(error, location, info)
                 return ("error", None, None)
     except Exception as e:
         print(e)
@@ -1646,7 +1676,11 @@ def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
     from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp,ClientRequisites
     from dateutil.parser import parse
-
+    error = "info_error_order"
+    location = "отправка client_info_bitrix "
+    info = f"отправка client_info_bitrix {data}{company_adress}"
+    e = error_alert(error, location, info)
+    
     if data["contract_date"]:
         data_contract = parse(data["contract_date"]).date()
         # data_contract = datetime.datetime.strptime(
@@ -1726,7 +1760,7 @@ def client_info_bitrix(data, company_adress):
                 requisitesKpp=client_req_kpp,
                 type_address_bx="web-lk-adress",
             )
-    
+    type_address_bx_9 = False
     for company_bx_adress in company_adress:
 
         if company_bx_adress["region"]:
@@ -1756,6 +1790,24 @@ def client_info_bitrix(data, company_adress):
         )
         
         if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "9":
+            client_req_kpp_address, client_req_kpp_created_address = (
+            RequisitesAddress.objects.update_or_create(
+                requisitesKpp=client_req_kpp,
+                type_address_bx="web-lk-adress",
+                defaults={
+                    "country": company_bx_adress["country"],
+                    "post_code": int(company_bx_adress["post_code"]),
+                    "region": company_bx_adress["province"],
+                    "province": company_bx_adress["region"],
+                    "city": company_bx_adress["city"],
+                    "address1": company_bx_adress["address1"],
+                    "address2": company_bx_adress["address2"],
+                },
+            )
+        )
+            type_address_bx_9 == True
+            
+        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "6" and type_address_bx_9 == False:
 
             client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
@@ -2269,11 +2321,14 @@ def save_info_bitrix_after_web(data, req):
         data_contract = None
     print(data)
     id_req_bx = data["req_bx_id"]
-    manager = AdminUser.objects.get(bitrix_id=int(data["manager"]))
+    manager = AdminUser.objects.filter(bitrix_id=int(data["manager"]))
     r = Requisites.objects.get(id=data["id_req"])
-    r.contract_date = data_contract
-    r.manager = manager
-    r.contract = data["contract"]
+    if data["contract"]:
+        r.contract = data["contract"]
+        r.contract_date = data_contract
+    if manager:
+        r.manager = manager[0]
+    
     r.id_bitrix = id_req_bx
     r.save()
     print(r)

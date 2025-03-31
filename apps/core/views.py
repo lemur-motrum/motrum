@@ -235,7 +235,12 @@ def solutions_all(request):
 
 # КОБОТЫ ОБЩАЯ
 def cobots_all(request):
-    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    # projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    projects = Project.objects.filter(is_view_home_web=True,
+        category_project__slug__in=[
+            "robototehnicheskie-yachejki",
+        ]
+    ).order_by("?")[0:3]
     context = {
         "projects": projects,
         "meta_title": "Коботы | Мотрум - автоматизация производства",
@@ -245,9 +250,19 @@ def cobots_all(request):
 
 # РЕШЕНИЕ ОДНО ОТЛЕЬЕНАЯ СТРАНИЦА
 def solutions_one(request):
-    print(111)
-    projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
-
+    url_name = request.resolver_match.url_name
+    if url_name == "shkaf-upravleniya":
+        cat_slug = "sborka-shu"
+    elif url_name == "marking":
+        cat_slug = "markirovka-chestnyij-znak"
+    else:
+        cat_slug = "robototehnicheskie-yachejki"
+    
+    # projects = Project.objects.filter(is_view_home_web=True).order_by("?")[0:3]
+    projects = Project.objects.filter(is_view_home_web=True,
+        category_project__slug=cat_slug
+    ).order_by("?")[0:3]
+    
     seo_test = None
     try:
         seo_test = SeoTextSolutions.objects.get(name_page=solutions_one)

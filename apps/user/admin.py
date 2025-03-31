@@ -12,7 +12,7 @@ from project.admin import website_admin
 
 
 class AdminUserAdmin(admin.ModelAdmin):
-    list_display = ("username", "first_name", "last_name", "email", "admin_type","is_active")
+    list_display = ("username", "first_name", "last_name", "email", "admin_type","is_active","bitrix_id","phone",)
     form = PasswordForm
     readonly_fields = ("bitrix_id",)
     fieldsets = (
@@ -36,16 +36,16 @@ class AdminUserAdmin(admin.ModelAdmin):
             },
         ),
     )
-    def save_model(self, request, obj, form, change):
-        if obj.pk:
-            get_manager()
-        else:
-            get_manager()
+    # def save_model(self, request, obj, form, change):
+    #     # if obj.pk:
+    #     #     get_manager()
+    #     # else:
+    #     #     get_manager()
         
-        super().save_model(request, obj, form, change)
+    #     super().save_model(request, obj, form, change)
         
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 class ClientAdminWeb(admin.ModelAdmin):

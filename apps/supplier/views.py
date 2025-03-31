@@ -132,7 +132,11 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-
+    
+    adress_web = RequisitesAddress.objects.filter(
+             type_address_bx="web-lk-adress"
+        )[0]
+    print(adress_web.address1)
 
     result = 1
     title = "TEST"

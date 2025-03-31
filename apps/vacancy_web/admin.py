@@ -1,4 +1,5 @@
 from django.contrib import admin
+from apps.core.models import PhotoEmoloeeInfoWeb
 from apps.vacancy_web.models import (
     PhotoEducationInfoWeb,
     RequirementsVacancy,
@@ -54,3 +55,4 @@ website_admin.register(Vacancy, VacancyWebAdmin)
 website_admin.register(VacancyCategory, VacancyCategoryWebAdmin)
 website_admin.register(PhotoEducationInfoWeb)
 website_admin.register(PhotoSportsRecreationInfoWeb)
+website_admin.register(PhotoEmoloeeInfoWeb)

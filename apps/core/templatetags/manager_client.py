@@ -24,7 +24,7 @@ def manager_client(context):
     
     client = None
     if context.request.path_info == "/marking/":
-        manager = AdminUser.objects.get(email="vitaly.myagchenkov@motrum.ru")
+        manager = AdminUser.objects.get(email="maksim.skitchenko@motrum.ru")
         phone_manager = get_phone_number(manager.phone)
         print(manager)
         if (

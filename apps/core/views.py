@@ -350,17 +350,17 @@ def csrf_failure(request, reason=""):
     return render(request, "core/error_pages/403csrf.html")
 
 
-def permission_denied(request, exception=None):
+def permission_denied(request, exception):
     print(403)
     return render(request, "core/error_pages/403.html", status=403)
 
 
-def page_not_found(request, exception=None):
+def page_not_found(request, exception):
     print(404)
     return render(request, "core/error_pages/404.html", status=404)
 
 
-def server_error(request, exception=None):
+def server_error(request):
     print(500)
     return render(request, "core/error_pages/500.html", status=500)
 
@@ -378,21 +378,20 @@ def add_admin_okt(request):
 @require_GET
 def robots_txt(request):
     if IS_PROD:
-        # lines = [
-        #     "User-Agent: *",
-        #     "Disallow: /",
-        # ]
         lines = [
             "User-Agent: *",
-            "Disallow: /admin/",
-            "Disallow: /website_admin/",
-            "Disallow: /okt/",
-            "Disallow: /add_admin_okt/",
-            "Disallow: /admin_specification/",
-            "Disallow: /api/",
-            "Disallow: /tinymce/",
-            "Disallow: /logs/",
+            "Disallow: /",
         ]
+        # lines = [
+        #     "Disallow: /admin/",
+        #     "Disallow: /website_admin/",
+        #     "Disallow: /okt/",
+        #     "Disallow: /add_admin_okt/",
+        #     "Disallow: /admin_specification/",
+        #     "Disallow: /api/",
+        #     "Disallow: /tinymce/",
+        #     "Disallow: /logs/",
+        # ]
     else:
         lines = [
             "User-Agent: *",

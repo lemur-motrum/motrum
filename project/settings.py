@@ -64,6 +64,7 @@ if IS_PROD:
     DEBUG = False
 else:
     DEBUG = True
+    
 
 
     

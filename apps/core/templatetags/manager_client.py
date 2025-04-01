@@ -21,7 +21,7 @@ def get_phone_number(numbers):
 
 @register.inclusion_tag("core/includes/manager.html", takes_context=True)
 def manager_client(context):
-    print(context.request.resolver_match.url_name)
+    
     client = None
     if context.request.path_info == "/marking/":
         manager = AdminUser.objects.get(email="vitaly.myagchenkov@motrum.ru")

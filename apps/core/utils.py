@@ -1857,7 +1857,7 @@ def send_requests(url, headers, data, auth):
     if auth == "1c":
         print("auth1c")
         payload = data
-        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+        url = os.environ.get("1S_URL")
         headers = {
            
         }

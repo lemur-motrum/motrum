@@ -1,5 +1,7 @@
 import threading
 
+from django.http import HttpResponsePermanentRedirect
+
 
 class RequestMiddleware:
 
@@ -19,3 +21,18 @@ class RequestMiddleware:
         # the view is called.
 
         return response
+    
+class WwwRedirectMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        host = request.get_host().partition(":")[0]
+        if host == "www.motrum.yuriyzhidkov.ru":
+            return HttpResponsePermanentRedirect("https://motrum.yuriyzhidkov.ru" + request.path)
+        elif host == "www.test.motrum.ru":
+            return HttpResponsePermanentRedirect("https://test.motrum.ru" + request.path)
+        elif host == "www.motrum.ru":
+            return HttpResponsePermanentRedirect("https://motrum.ru" + request.path)
+        else:
+            return self.get_response(request)

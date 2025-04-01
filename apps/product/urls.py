@@ -28,9 +28,6 @@ router.register(r"v1/cart", CartViewSet)
 
 urlpatterns = [
     path("", views.catalog_all, name="catalog"),
-    path("stock/",RedirectView.as_view(url='https://djangoproject.com')),
-    
-    
     path("<slug:category>", views.catalog_group, name="group"),
     path("<slug:category>/<slug:group>", views.products_items, name="products_items"),
     path(

@@ -58,10 +58,7 @@ from django.views.decorators.clickjacking import (
     xframe_options_sameorigin,
 )
 
-# def redidect_page(request):
-#     print(request)
-#     return redirect("product")
-    
+
 # ГЛАВНАЯ
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(

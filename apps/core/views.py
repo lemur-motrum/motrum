@@ -350,17 +350,17 @@ def csrf_failure(request, reason=""):
     return render(request, "core/error_pages/403csrf.html")
 
 
-def permission_denied(request, exception):
+def permission_denied(request, exception=None):
     print(403)
     return render(request, "core/error_pages/403.html", status=403)
 
 
-def page_not_found(request, exception):
+def page_not_found(request, exception=None):
     print(404)
     return render(request, "core/error_pages/404.html", status=404)
 
 
-def server_error(request):
+def server_error(request, exception=None):
     print(500)
     return render(request, "core/error_pages/500.html", status=500)
 

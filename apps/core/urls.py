@@ -69,11 +69,11 @@ urlpatterns = [
     path("product/view/56/", RedirectView.as_view(url='/brand/emas/?vendor=emas&page=1', permanent=True)),
     path("product/view/57/", RedirectView.as_view(url='/brand/oni/?vendor=oni&page=1', permanent=True)),
     path("product/view/58/", RedirectView.as_view(url='/brand/unimat/?vendor=unimat&page=1', permanent=True)),
-    path("product/view/59", RedirectView.as_view(url='/brand/skb-induktsiya/?vendor=skb-induktsiya&page=1', permanent=True)),
+    path("product/view/59/", RedirectView.as_view(url='/brand/skb-induktsiya/?vendor=skb-induktsiya&page=1', permanent=True)),
     path("product/view/60/", RedirectView.as_view(url='/brand/prompower/?vendor=prompower&page=1', permanent=True)),
     path("product/view/61/", RedirectView.as_view(url='/brand/omron/?vendor=omron&page=1', permanent=True)),
     path("product/view/62/", RedirectView.as_view(url='/brand/tbloc/?vendor=tbloc&page=1', permanent=True)),
-    path("news/view/44", RedirectView.as_view(url='/company/sout/', permanent=True)),
+    path("news/view/44/", RedirectView.as_view(url='/company/sout/', permanent=True)),
     # path(
     #     "robots.txt",
     #     TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),

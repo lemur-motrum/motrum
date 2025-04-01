@@ -28,8 +28,11 @@ class WwwRedirectMiddleware:
 
     def __call__(self, request):
         host = request.get_host().partition(":")[0]
+        print("host",host)
         if host == "www.motrum.yuriyzhidkov.ru":
             return HttpResponsePermanentRedirect("https://motrum.yuriyzhidkov.ru" + request.path)
+        elif host == "www.localhost":
+            return HttpResponsePermanentRedirect("http://localhost:8000" + request.path)
         elif host == "www.test.motrum.ru":
             return HttpResponsePermanentRedirect("https://test.motrum.ru" + request.path)
         elif host == "www.motrum.ru":

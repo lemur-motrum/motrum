@@ -9549,3 +9549,18 @@ a {
     }
   }
 }
+
+.politic_description {
+  width: 13.938rem;
+  font-size: 0.7rem;
+  @media screen and(max-width:576px) {
+    font-size: 0.5rem;
+  }
+  a {
+    cursor: pointer;
+    color: #95bad4;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

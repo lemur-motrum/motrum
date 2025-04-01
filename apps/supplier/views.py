@@ -133,8 +133,6 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     
-    
-
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

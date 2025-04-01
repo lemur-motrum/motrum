@@ -31,12 +31,16 @@ DJANGO_ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] dyugaev.beget.tech"
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
+    "www.localhost",
     "213.139.208.116",
+    "www.motrum.yuriyzhidkov.ru",
     "motrum.yuriyzhidkov.ru",
     "b24-j6zvwj.bitrix24.ru",
     "pmn.bitrix24.ru",
     "45.153.188.69",
     "test.motrum.ru",
+    "www.test.motrum.ru",
+    "www.motrum.ru",
     "motrum.ru",
     "192.168.0.104",
     "192.168.0.110",
@@ -116,6 +120,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "middlewares.middlewares.RequestMiddleware",
+    "middlewares.middlewares.WwwRedirectMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

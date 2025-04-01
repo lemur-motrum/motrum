@@ -5,7 +5,11 @@
             <div class="circle">
                 <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}" />
             </div>
-            <button class="phone-button"> <span>Обратный <br> звонок</span></button>
+            <button class="phone-button">
+                <span>Обратный
+                    <br>
+                звонок</span>
+            </button>
         </div>
         <div class="motrum-slider-requisites-down-content">
             <a class="phone-link" href="tel:+78463004117">8 (846) 300 41 17</a>
@@ -29,9 +33,10 @@
     <div class="motrum-promosilder-two">
         <div class="swiper-wrapper">
             {% for slider_elem in slider %}
-            {% if slider_elem.active %}
-            <div class="promoslider-two-elem swiper-slide">
-                        <a href="{% if slider_elem.link %}{{slider_elem.link}} {% else %}{% endif %}" class="promoslider_link"></a>
+                {% if slider_elem.active %}
+                    <div class="promoslider-two-elem swiper-slide">
+                        <a href="{% if slider_elem.link %}{{ slider_elem.link }} {% else %}{% endif %}"
+                           class="promoslider_link"></a>
                         {% if slider_elem.image_right %}<img src="{{ slider_elem.image_right.url }}" alt="image" />{% endif %}
                         {% if slider_elem.video %}
                             {% autoescape off %}
@@ -39,7 +44,11 @@
                             {% endautoescape %}
                         {% endif %}
                         {% if slider_elem.video_file %}
-                            <video class="slider_video video_{{forloop.counter}}" playsinline loop autoplay muted>
+                            <video class="slider_video video_{{ forloop.counter }}"
+                                   playsinline
+                                   loop
+                                   autoplay
+                                   muted>
                                 <source src="{{ slider_elem.video_file.url }}" type="video/mp4" />
                             </video>
                         {% endif %}

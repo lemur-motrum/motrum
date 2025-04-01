@@ -33,7 +33,9 @@ window.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           galleryWrapper.classList.add("visible");
         }, 600);
-        document.body.style.overflowY = "hidden";
+        if (window.innerWidth > 576) {
+          document.body.style.overflowY = "hidden";
+        }
         projectOneSliderGallery.realIndex = i;
       };
     });
@@ -42,7 +44,9 @@ window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         galleryWrapper.classList.remove("show");
       }, 600);
-      document.body.style.overflowY = "scroll";
+      if (window.innerWidth > 576) {
+        document.body.style.overflowY = "scroll";
+      }
     };
   }
 });

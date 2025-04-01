@@ -62,7 +62,11 @@
             <div class="down_content">
                 <div class="elem">
                     <div class="title">РУКОВОДСТВО</div>
-                    <div class="description">Демократический <br> стиль управления</div>
+                    <div class="description">
+                        Демократический
+                        <br>
+                        стиль управления
+                    </div>
                 </div>
                 <div class="elem">
                     <div class="title">ОБУЧЕНИЕ И ПОДДЕРЖКА</div>
@@ -98,42 +102,37 @@
             <div class="learnig_description">
                 Наши сотрудники проходят обучение по повышению квалификации:
                 <ul>
-                    <li>             Технические компетенции – курсы программирования PromPower, ONI, Omron;</li>
-                    <li>      Работа с промышленными роботами; </li>
-                    <li>       Менеджмент – программы MBA; </li>
-                    <li>       Тренинги по продажам; курсы по маркетингу, финансам, бухгалтерии.</li>
+                    <li>Технические компетенции – курсы программирования PromPower, ONI, Omron;</li>
+                    <li>Работа с промышленными роботами;</li>
+                    <li>Менеджмент – программы MBA;</li>
+                    <li>Тренинги по продажам; курсы по маркетингу, финансам, бухгалтерии.</li>
                 </ul>
-         
-         
             </div>
         </div>
-
         <div class="sports_and_recreation_container">
-            <div class="title">
-                спорт и отдых
-            </div>
+            <div class="title">спорт и отдых</div>
             {% if photo_recreation|length > 0 %}
-            <div class="recreation_slider">
-                <div class="swiper-wrapper">
-                    {% for photo_recreation_elem in photo_recreation %}
-                    <div class="swiper-slide photo_recreation_elem_img_container">
-                        <img src="{{ photo_recreation_elem.image.url }}" alt="img"/>
+                <div class="recreation_slider">
+                    <div class="swiper-wrapper">
+                        {% for photo_recreation_elem in photo_recreation %}
+                            <div class="swiper-slide photo_recreation_elem_img_container">
+                                <img src="{{ photo_recreation_elem.image.url }}" alt="img" />
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-                </div>
-                <div class="recreation_slider_overlay">
-                    <div class="close_btn">+</div>
-                    <div class="recreation_slider_overlay_slider">
-                        <div class="swiper-wrapper">
-                            {% for photo_recreation_elem in photo_recreation %}
-                                <div class="swiper-slide">
-                                    <img src="{{ photo_recreation_elem.image.url }}" alt="img">
-                                </div>
-                            {% endfor %}
+                    <div class="recreation_slider_overlay">
+                        <div class="close_btn">+</div>
+                        <div class="recreation_slider_overlay_slider">
+                            <div class="swiper-wrapper">
+                                {% for photo_recreation_elem in photo_recreation %}
+                                    <div class="swiper-slide">
+                                        <img src="{{ photo_recreation_elem.image.url }}" alt="img">
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
             <div class="description">
                 Вместе отдыхаем, занимаемся спортом и веселимся на корпоративах. Корпоративные мероприятия определяем по интересам большинства нашей команды.

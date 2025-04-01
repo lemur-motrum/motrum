@@ -417,6 +417,7 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
+              ym(37794920, "reachGoal", "add_order_in_site");
               deleteCookie("cart", "/", window.location.hostname);
               successModal(
                 "Спасибо за заказ, мы свяжемся с вами в ближайшее время"

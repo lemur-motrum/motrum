@@ -78,6 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     contactsWrapperBtn.onclick = () => {
+      ym(37794920, "reachGoal", "open_contacts_overlay");
       contactsFormOverlay.classList.add("show");
       setTimeout(() => {
         contactsFormOverlay.classList.add("visible");
@@ -131,6 +132,7 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            ym(37794920, "reachGoal", "send_contact_form");
             hidePreloaderAndEnabledButton(submitBtn);
             hideOverlay();
             successModal(

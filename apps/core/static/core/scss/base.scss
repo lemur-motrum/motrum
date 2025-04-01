@@ -6178,6 +6178,7 @@ a {
         border-radius: 1.5rem;
         gap: 0.8rem;
       }
+
       &.shkaf_uravlenia_form_container {
         height: auto;
         align-items: flex-start;
@@ -6194,6 +6195,46 @@ a {
         .demo_form {
           display: flex;
           flex-direction: column;
+          gap: 1.125rem;
+          align-items: flex-end;
+          margin-top: 1.3rem;
+          @media screen and(max-width:576px) {
+            align-items: flex-start;
+            margin-top: 0rem;
+          }
+          .inputs {
+            display: flex;
+            gap: 1.125rem;
+            @media screen and(max-width:576px) {
+              flex-direction: column;
+              width: 100%;
+            }
+          }
+          .btn {
+            width: 13.938rem;
+            height: 3.563rem;
+            @media screen and(max-width:576px) {
+              height: 2.5rem;
+              width: 100%;
+            }
+          }
+        }
+      }
+      &.other_form {
+        height: auto;
+        align-items: flex-end;
+        gap: 3.625rem;
+        @media screen and (max-width: 576px) {
+          gap: 1rem;
+        }
+        .description {
+          width: 30.875rem !important;
+          @media screen and(max-width:576px) {
+            width: 100% !important;
+          }
+        }
+        .demo_form {
+          display: flex;
           gap: 1.125rem;
           align-items: flex-end;
           margin-top: 1.3rem;

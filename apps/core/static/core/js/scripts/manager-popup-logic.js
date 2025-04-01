@@ -23,6 +23,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 3000);
 
     function openOverlay() {
+      document.querySelector("#client_id").getAttribute("data-user-id") !=
+      "None"
+        ? ym(37794920, "reachGoal", "open_manager_message_overlay")
+        : ym(37794920, "reachGoal", "open_manager_logout_popup");
       overlay.classList.add("show");
       setTimeout(() => {
         overlay.classList.add("visible");
@@ -103,6 +107,9 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            submitBtn.getAttribute("type-btn") == "no_manager"
+              ? ym(37794920, "reachGoal", "send_no_manager_form")
+              : ym(37794920, "reachGoal", "send_manager_message");
             closeOverlay();
             hidePreloaderAndEnabledButton(submitBtn);
             successModal(

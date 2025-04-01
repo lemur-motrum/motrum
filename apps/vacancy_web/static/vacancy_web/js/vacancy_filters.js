@@ -219,6 +219,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       submitBtn.onclick = () => {
+        ym(37794920, "reachGoal", "open_vacancy_popup");
         overlay.classList.add("show");
         setTimeout(() => {
           overlay.classList.add("visible");
@@ -275,6 +276,7 @@ window.addEventListener("DOMContentLoaded", () => {
             },
           }).then((response) => {
             if (response.status >= 200 && response.status < 300) {
+              ym(37794920, "reachGoal", "send_current_vacancy_form");
               closeOverlay();
               successModal(
                 `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`

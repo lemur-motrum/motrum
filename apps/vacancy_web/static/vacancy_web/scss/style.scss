@@ -430,6 +430,10 @@
       font-size: 3rem;
       font-weight: 700;
       text-transform: uppercase;
+      @media screen and (max-width: 576px) {
+        font-size: 1.25rem;
+        width: 100%;
+      }
     }
     .recreation_slider {
       margin-top: 1.875rem;

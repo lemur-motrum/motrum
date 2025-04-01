@@ -23,10 +23,26 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 3000);
 
     function openOverlay() {
-      document.querySelector("#client_id").getAttribute("data-user-id") !=
-      "None"
-        ? ym(37794920, "reachGoal", "open_manager_message_overlay")
-        : ym(37794920, "reachGoal", "open_manager_logout_popup");
+      if (
+        document.querySelector("#client_id").getAttribute("data-user-id") !=
+        "None"
+      ) {
+        ym(37794920, "reachGoal", "open_manager_message_overlay");
+      } else {
+        if (
+          window.location.pathname == "/cobots/" ||
+          window.location.pathname == "/cobots-palett/" ||
+          window.location.pathname == "/cobots-box/" ||
+          window.location.pathname == "/cobots-packing/"
+        ) {
+          ym(37794920, "reachGoal", "open-form-cobots");
+        } else if (window.location.pathname == "/marking/") {
+          ym(37794920, "reachGoal", "open-form-marking");
+        } else {
+          ym(37794920, "reachGoal", "open_manager_logout_popup");
+        }
+      }
+
       overlay.classList.add("show");
       setTimeout(() => {
         overlay.classList.add("visible");

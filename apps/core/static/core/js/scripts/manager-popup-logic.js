@@ -88,12 +88,27 @@ window.addEventListener("DOMContentLoaded", () => {
 
           endpoint = "/api/v1/core/forms/send-form-personal-manager/";
 
-          const dataObj = {
-            message: textArea.value,
-            url: window.location.href,
-            clientId: clientId,
-            managerId: managerId,
-          };
+          let dataObj;
+
+          if (clientId != "None") {
+            dataObj = {
+              message: textArea.value,
+              url: window.location.href,
+              clientId: clientId,
+              managerId: managerId,
+              clientName: "",
+              clientPhone: "",
+            };
+          } else {
+            dataObj = {
+              clientName: nameInput.value,
+              message: textArea.value ? textArea.value : "",
+              url: window.location.href,
+              clientId: 0,
+              clientPhone: phoneMask.unmaskedValue,
+              managerId: managerId,
+            };
+          }
 
           data = JSON.stringify(dataObj);
         }
@@ -107,9 +122,22 @@ window.addEventListener("DOMContentLoaded", () => {
           },
         }).then((response) => {
           if (response.status >= 200 && response.status < 300) {
-            submitBtn.getAttribute("type-btn") == "no_manager"
-              ? ym(37794920, "reachGoal", "send_no_manager_form")
-              : ym(37794920, "reachGoal", "send_manager_message");
+            if (submitBtn.getAttribute("type-btn") == "no_manager") {
+              ym(37794920, "reachGoal", "send_no_manager_form");
+            } else {
+              if (
+                window.location.pathname == "/cobots/" ||
+                window.location.pathname == "/cobots-palett/" ||
+                window.location.pathname == "/cobots-box/" ||
+                window.location.pathname == "/cobots-packing/"
+              ) {
+                ym(37794920, "reachGoal", "send-form-cobots");
+              } else if (window.location.pathname == "/marking/") {
+                ym(37794920, "reachGoal", "send-form-marking");
+              } else {
+                ym(37794920, "reachGoal", "send_manager_message");
+              }
+            }
             closeOverlay();
             hidePreloaderAndEnabledButton(submitBtn);
             successModal(

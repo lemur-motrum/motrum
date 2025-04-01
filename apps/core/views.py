@@ -378,20 +378,21 @@ def add_admin_okt(request):
 @require_GET
 def robots_txt(request):
     if IS_PROD:
+        # lines = [
+        #     "User-Agent: *",
+        #     "Disallow: /",
+        # ]
         lines = [
             "User-Agent: *",
-            "Disallow: /",
+            "Disallow: /admin/",
+            "Disallow: /website_admin/",
+            "Disallow: /okt/",
+            "Disallow: /add_admin_okt/",
+            "Disallow: /admin_specification/",
+            "Disallow: /api/",
+            "Disallow: /tinymce/",
+            "Disallow: /logs/",
         ]
-        # lines = [
-        #     "Disallow: /admin/",
-        #     "Disallow: /website_admin/",
-        #     "Disallow: /okt/",
-        #     "Disallow: /add_admin_okt/",
-        #     "Disallow: /admin_specification/",
-        #     "Disallow: /api/",
-        #     "Disallow: /tinymce/",
-        #     "Disallow: /logs/",
-        # ]
     else:
         lines = [
             "User-Agent: *",

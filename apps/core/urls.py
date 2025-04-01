@@ -2,7 +2,8 @@ from django.urls import include, path
 
 from apps import product
 from . import views
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
+
 
 
 from . import views
@@ -62,6 +63,8 @@ urlpatterns = [
         name="sout",
     ),
     path("robots.txt", views.robots_txt, name="robots_txt",),
+    
+    
     # path(
     #     "robots.txt",
     #     TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),

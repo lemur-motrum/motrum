@@ -21,24 +21,66 @@ def get_phone_number(numbers):
 
 @register.inclusion_tag("core/includes/manager.html", takes_context=True)
 def manager_client(context):
-    if context.request.user.is_authenticated and context.request.user.is_staff == False:
-        try:
+    print(context.request.resolver_match.url_name)
+    client = None
+    if context.request.path_info == "/marking/":
+        manager = AdminUser.objects.get(email="vitaly.myagchenkov@motrum.ru")
+        phone_manager = get_phone_number(manager.phone)
+        print(manager)
+        if (
+            context.request.user.is_authenticated
+            and context.request.user.is_staff == False
+        ):
             client = Client.objects.get(username=context.request.user)
-            manager = client.manager
-            phone_manager = get_phone_number(manager.phone)
 
-            return {
-                "is_need": True,
-                "user": context.request.user,
-                "manager": manager,
-                "phone_manager": phone_manager,
-            }
-        except Client.DoesNotExist:
+        return {
+            "is_need": True,
+            "user": client,
+            "manager": manager,
+            "phone_manager": phone_manager,
+        }
+    elif (
+        context.request.path_info == "/cobots/"
+        or context.request.path_info == "/cobots-palett/"
+        or context.request.path_info == "/cobots-box/"
+        or context.request.path_info == "/cobots-packing/"
+    ):
+        manager = AdminUser.objects.get(email="sergey.govorkov@motrum.ru")
+        phone_manager = get_phone_number(manager.phone)
+        print(manager)
+        if (
+            context.request.user.is_authenticated
+            and context.request.user.is_staff == False
+        ):
+            client = Client.objects.get(username=context.request.user)
+        return {
+            "is_need": True,
+            "user": client,
+            "manager": manager,
+            "phone_manager": phone_manager,
+        }
+    else:
+        if (
+            context.request.user.is_authenticated
+            and context.request.user.is_staff == False
+        ):
+            try:
+                client = Client.objects.get(username=context.request.user)
+                manager = client.manager
+                phone_manager = get_phone_number(manager.phone)
+
+                return {
+                    "is_need": True,
+                    "user": context.request.user,
+                    "manager": manager,
+                    "phone_manager": phone_manager,
+                }
+            except Client.DoesNotExist:
+                return {
+                    "is_need": False,
+                }
+
+        else:
             return {
                 "is_need": False,
             }
-
-    else:
-        return {
-            "is_need": False,
-        }

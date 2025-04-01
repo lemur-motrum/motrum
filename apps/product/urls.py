@@ -19,7 +19,7 @@ from rest_framework import routers
 from django.urls import re_path as url
 
 from .api.view_sets import ProductViewSet, CartViewSet
-
+from django.views.generic import RedirectView
 app_name = "product"
 
 router = routers.DefaultRouter()
@@ -28,6 +28,9 @@ router.register(r"v1/cart", CartViewSet)
 
 urlpatterns = [
     path("", views.catalog_all, name="catalog"),
+    path("stock/",RedirectView.as_view(url='https://djangoproject.com')),
+    
+    
     path("<slug:category>", views.catalog_group, name="group"),
     path("<slug:category>/<slug:group>", views.products_items, name="products_items"),
     path(

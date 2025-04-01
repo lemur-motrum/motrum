@@ -391,14 +391,19 @@ class FormWebViewSet(viewsets.ModelViewSet):
         data = request.data
 
         client_id = data["clientId"]
+        if client_id != 0:
+            client = Client.objects.get(id=client_id)
+            client_phone = client.phone
+            client_name = client.first_name + " " + client.last_name
+        else:
+            client_name = data["clientName"]
+            client_phone = data["clientPhone"]
+            
         manager_id = data["managerId"]
         message = data["message"]
         url = data["url"]
 
-        client = Client.objects.get(id=client_id)
-        client_phone = client.phone
-        client_name = client.first_name + " " + client.last_name
-
+        
         manager_email = AdminUser.objects.get(id=manager_id).email
 
         html_message = loader.render_to_string(

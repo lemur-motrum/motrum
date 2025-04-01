@@ -8,7 +8,7 @@ from django.db.models import Prefetch
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.template import loader
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.db.models import OuterRef, Subquery
 from django.views.decorators.http import require_GET
 from apps import client
@@ -58,7 +58,10 @@ from django.views.decorators.clickjacking import (
     xframe_options_sameorigin,
 )
 
-
+# def redidect_page(request):
+#     print(request)
+#     return redirect("product")
+    
 # ГЛАВНАЯ
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(

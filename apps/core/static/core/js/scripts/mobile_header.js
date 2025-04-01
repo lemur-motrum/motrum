@@ -1,4 +1,4 @@
-window.addEventListener("load", () => {
+window.addEventListener("DOMContentLoaded", () => {
   const headerWrapper = document.querySelector(".header");
   if (headerWrapper) {
     const burgerMenuNav = headerWrapper.querySelector(".burger_menu_nav");

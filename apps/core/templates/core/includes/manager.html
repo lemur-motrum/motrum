@@ -41,7 +41,7 @@
             <button manager-id="{{ manager.pk }}"
                     type-btn="manager_true"
                     class="submit_btn">отправить</button>
-                    {% include "core/includes/form_description.html" %}
+            {% include "core/includes/form_description.html" %}
           </div>
         {% else %}
           <div class="form_container">
@@ -60,7 +60,8 @@
             <button manager-id="{{ manager.pk }}"
                     type-btn="manager_true"
                     class="submit_btn">отправить</button>
-                    {% include "core/includes/form_description.html" %}
+            {% include "core/includes/form_description.html" %}
+          </div>
         {% endif %}
       {% else %}
         <div class="title">Напишите нам</div>

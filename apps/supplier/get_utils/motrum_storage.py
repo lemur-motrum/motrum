@@ -145,7 +145,7 @@ def get_motrum_storage(path):
             workbook = load_workbook(input_file)
             data_sheet = workbook.active
             print(data_sheet.max_row)
-            for index in range(2, data_sheet.max_row):
+            for index in range(2, data_sheet.max_row+1):
                 
                 article = data_sheet.cell(row=index, column=1).value
                 if article != "" :

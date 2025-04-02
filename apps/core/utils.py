@@ -2454,9 +2454,13 @@ def add_new_photo_adress_prompower():
                             # update_change_reason(image, "Автоматическое")
             
             article_suppliers = data_item["article"]
-            article = Product.objects.get(
-                                supplier=prompower,
-                                vendor=vendori,
-                                article_supplier=article_suppliers,
-                            )
-            save_document(None, article)
+            try:
+                article = Product.objects.get(
+                                    supplier=prompower,
+                                    vendor=vendori,
+                                    article_supplier=article_suppliers,
+                                )
+                save_document(None, article)
+            except:
+                print("Нет такого твоара",article_suppliers)
+                pass

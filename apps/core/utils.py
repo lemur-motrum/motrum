@@ -1,6 +1,7 @@
 # расчет цены
 
 import datetime
+import json
 import random
 import re
 import shutil
@@ -20,6 +21,7 @@ from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
+
 
 
 
@@ -2397,3 +2399,64 @@ def send_lemur_form(data,request):
             verify=False,
         )
 
+def add_new_photo_adress_prompower():
+    from apps.product.models import Product,ProductDocument
+    from apps.supplier.models import (
+    Supplier,
+    Vendor,
+)
+    prompower = Supplier.objects.get(slug="prompower")
+    base_adress = "https://prompower.ru"
+    vendori = Vendor.objects.get(slug="prompower") 
+    vendor_item = vendori
+    
+    url = "https://prompower.ru/api/prod/getProducts"
+    payload = json.dumps(
+            {
+                "email": os.environ.get("PROMPOWER_API_EMAIL"),
+                "key": os.environ.get("PROMPOWER_API_KEY"),
+            }
+        )
+    headers = {
+            "Content-type": "application/json",
+            "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
+        }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = response.json()
+
+    for data_item in data:
+        
+        if data_item["article"] != None:
+            def save_document(categ, product):
+                base_dir = "products"
+                path_name = "document_group"
+                base_dir_supplier = product.supplier.slug
+                base_dir_vendor = product.vendor.slug
+                doc_list = data_item["cad"]
+                if len(doc_list) > 0:
+                    # https://prompower.ru/catalog/CAD/Габаритный%20чертеж%20PD310-A428K.pdf
+                    for doc_item_individual in doc_list:
+                        if doc_item_individual["filename"] == "" or doc_item_individual["filename"] == None:
+                            print("doc_item_individual == None" ,product)
+                            img = f"{base_adress}/CAD/{doc_item_individual["filename"]}"
+                            # image = ProductDocument.objects.create(product=article)
+                            # update_change_reason(image, "Автоматическое")
+                            # image_path = get_file_path_add(image, img)
+                            
+                            # p = save_file_product(img, image_path)
+                            # image.photo = image_path
+                            # image.link = img
+                            # image.document = image_path
+                            # image.link = img
+                            # image.name = doc_item_individual["title"]
+                            # image.type_doc = "Other"
+                            # image.save()
+                            # update_change_reason(image, "Автоматическое")
+            
+            article_suppliers = data_item["article"]
+            article = Product.objects.get(
+                                supplier=prompower,
+                                vendor=vendori,
+                                article_supplier=article_suppliers,
+                            )
+            save_document(None, article)

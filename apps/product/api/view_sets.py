@@ -261,8 +261,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             print(path)
             if path == "ERROR":
 
-                # сюда разбор фаила
                 data_resp = {"result": "error", "error": f"info-error {tr}{e}"}
+                error = "file_api_error"
+                location = "Получение\сохранение данных складов 1с "
+                info = f"Получение\сохранение данных складов 1с . Тип ошибки:{e}{tr} DATA из 1с -  {data}"
+                e = error_alert(error, location, info)
                 return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
             else:
                 get_motrum_storage(path)

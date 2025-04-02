@@ -68,6 +68,7 @@ from apps.core.tasks import (
     update_currency_price,
 )
 from apps.core.utils import (
+    add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
     image_error_check,
@@ -132,10 +133,7 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    # DOMIAN="https://motrum.ru"
-    print(DOMIAN)
-    domian = DOMIAN[:-1]
-    print(domian)
+    add_new_photo_adress_prompower()
     
     result = 1
     title = "TEST"

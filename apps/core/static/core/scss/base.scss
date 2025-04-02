@@ -3381,6 +3381,33 @@ a {
       cursor: pointer;
       font-weight: 900;
     }
+    ul {
+      margin-top: 0.8rem;
+      margin-left: 1rem;
+      padding: 0;
+      @media screen and(max-width:576px) {
+        margin-top: 0.5rem;
+      }
+      li {
+        list-style: none;
+        position: relative;
+        &::before {
+          content: "";
+          position: absolute;
+          width: 0.625rem;
+          height: 0.625rem;
+          left: -0.845rem;
+          top: 0%;
+          transform: translateY(100%);
+          border-radius: 100%;
+          background-color: #95bad4;
+          @media screen and(max-width:576px) {
+            width: 0.45rem;
+            height: 0.45rem;
+          }
+        }
+      }
+    }
   }
 }
 .cart_container {
@@ -9216,6 +9243,7 @@ a {
     padding: 1.438rem 2.5rem;
     display: flex;
     gap: 3.375rem;
+    position: relative;
     @media screen and (max-width: 576px) {
       margin-top: 3.5rem;
       flex-direction: column;
@@ -9411,6 +9439,24 @@ a {
           height: 2.5rem;
           justify-content: center;
         }
+      }
+    }
+    .politic_description {
+      font-size: 0.6rem;
+      color: #fff;
+      width: 100%;
+      position: absolute;
+      bottom: 0.8rem;
+      left: 43.5rem;
+      @media screen and (max-width: 576px) {
+        position: relative;
+        left: 0;
+        bottom: -0.2rem;
+        font-size: 0.5rem;
+        text-align: center;
+      }
+      a {
+        color: #fff;
       }
     }
   }

@@ -30,8 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
         ym(37794920, "reachGoal", "open_manager_message_overlay");
       } else {
         if (
+          window.location.pathname == "/robots/" ||
           window.location.pathname == "/cobots/" ||
-          window.location.pathname == "/cobots-palett/" ||
           window.location.pathname == "/cobots-box/" ||
           window.location.pathname == "/cobots-packing/"
         ) {
@@ -142,8 +142,8 @@ window.addEventListener("DOMContentLoaded", () => {
               ym(37794920, "reachGoal", "send_no_manager_form");
             } else {
               if (
+                window.location.pathname == "/robots/" ||
                 window.location.pathname == "/cobots/" ||
-                window.location.pathname == "/cobots-palett/" ||
                 window.location.pathname == "/cobots-box/" ||
                 window.location.pathname == "/cobots-packing/"
               ) {

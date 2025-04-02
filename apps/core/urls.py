@@ -29,7 +29,7 @@ urlpatterns = [
     path("company/vacancy/", include("apps.vacancy_web.urls", namespace="vacancy")),
     # остальное по вакансии  в app vacancy_web
     path("solutions/", views.solutions_all, name="solutions"),
-    path("cobots/", views.cobots_all, name="cobots"),
+    path("robots/", views.cobots_all, name="cobots"),
     path("cobots-palett/", views.solutions_one, name="cobots-palett"),
     path("cobots-box/", views.solutions_one, name="cobots-box"),
     path("cobots-packing/", views.solutions_one, name="cobots-packing"),
@@ -65,6 +65,7 @@ urlpatterns = [
     path("robots.txt", views.robots_txt, name="robots_txt",),
     
     path("stock/", RedirectView.as_view(url='/product/', permanent=True)),
+    path("cobots/", RedirectView.as_view(url='/cobots-palett/', permanent=True)),
     path("product/view/63/", RedirectView.as_view(url='/brand/veda/?vendor=veda&page=1', permanent=True)),
     path("product/view/56/", RedirectView.as_view(url='/brand/emas/?vendor=emas&page=1', permanent=True)),
     path("product/view/57/", RedirectView.as_view(url='/brand/oni/?vendor=oni&page=1', permanent=True)),

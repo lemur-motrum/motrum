@@ -26,7 +26,7 @@ from requests.auth import HTTPBasicAuth
 from apps.specification.utils import crete_pdf_specification
 
 
-from project.settings import MEDIA_ROOT, NDS
+from project.settings import DOMIAN, MEDIA_ROOT, NDS
 from simple_history.utils import update_change_reason
 from django.utils.text import slugify
 from pytils import translit
@@ -2375,3 +2375,26 @@ def get_etim_prors_iek(prop_list,article):
 
             prop.save()
             update_change_reason(prop, "Автоматическое")
+
+
+# def send_lemur_form(data,request):
+    
+#     data = {
+#         "site": DOMIAN,
+#         "form":name-form,
+#         "name":Имя с формы,
+#         "email":Email с формы,
+#         "phone":phone  с формы,
+#         "message":message   с формы,
+#         "link":link * Ссылка с какой страницы пришло сообщение,
+#     }
+    
+#     response = requests.request(
+#             "POST",
+#             FORM_LEMUR,
+#             auth=auth,
+#             headers=headers,
+#             data=payload,
+#             allow_redirects=False,
+#             verify=False,
+#         )

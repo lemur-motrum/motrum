@@ -40,7 +40,7 @@ def manager_client(context):
             "phone_manager": phone_manager,
         }
     elif (
-        context.request.path_info == "/cobots/"
+        context.request.path_info == "/robots/"
         or context.request.path_info == "/cobots-palett/"
         or context.request.path_info == "/cobots-box/"
         or context.request.path_info == "/cobots-packing/"

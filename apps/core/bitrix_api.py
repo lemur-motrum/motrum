@@ -1842,7 +1842,7 @@ def add_or_get_contact_bx(bx, client, base_manager):
         else:
             tasks = {
                 "fields": {
-                    "NAME": f"TECT {name}",
+                    "NAME": f"{name}",
                     "SOURCE_ID": "146",
                     "SOURCE_DESCRIPTION": "Заказ с сайта motrum.ru",
                     "ASSIGNED_BY_ID": base_manager.bitrix_id,
@@ -2121,6 +2121,7 @@ def add_new_order_bx(
 
     # сделка без инфы о клиенте
     else:
+        base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
         if client.first_name:
             name = client.first_name
         else:
@@ -2133,6 +2134,7 @@ def add_new_order_bx(
                 "STAGE_ID": "C8:NEW",
                 "CURRENCY_ID": "RUB",
                 # "COMPANY_ID": company_bx_id,
+                "ASSIGNED_BY_ID": base_manager,
                 "SOURCE_ID": "CALLBACK",
                 "SOURCE_DESCRIPTION": f"Заказ с сайта motrum.ru тел.польз. +{client.phone}",
                 "CONTACT_IDS": [client_bx_id],

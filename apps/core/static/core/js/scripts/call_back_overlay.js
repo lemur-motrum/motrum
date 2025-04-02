@@ -14,25 +14,25 @@ const csrfToken = getCookie("csrftoken");
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".motrum-slider-requsites");
   if (wrapper) {
-    const videos = document.querySelectorAll(".slider_video");
-    if (videos.length > 0) {
-      const video1 = document.querySelector(".video_1");
+    // const videos = document.querySelectorAll(".slider_video");
+    // if (videos.length > 0) {
+    //   const video1 = document.querySelector(".video_1");
 
-      video1.onclick = () => {
-        window.location.href = "/cobots/";
-      };
-      const video2 = document.querySelector(".video_2");
+    //   video1.onclick = () => {
+    //     window.location.href = "/robots/";
+    //   };
+    //   const video2 = document.querySelector(".video_2");
 
-      video2.onclick = () => {
-        window.location.href = "/marking/";
-      };
+    //   video2.onclick = () => {
+    //     window.location.href = "/marking/";
+    //   };
 
-      const video3 = document.querySelector(".video_3");
+    //   const video3 = document.querySelector(".video_3");
 
-      video3.onclick = () => {
-        window.location.href = "/solutions/";
-      };
-    }
+    //   video3.onclick = () => {
+    //     window.location.href = "/solutions/";
+    //   };
+    // }
 
     const phoneButton = wrapper.querySelector(".phone-button");
     const callBackOverlay = document.querySelector(".overlay_callback");

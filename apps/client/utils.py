@@ -105,8 +105,10 @@ def crete_pdf_bill(
             motrum_info.counter_bill = bill_name
         else:
             type_bill = "Счет-оферта"
-            bill_name = motrum_info.counter_bill_offer + 1
-            motrum_info.counter_bill_offer = bill_name
+            bill_name = motrum_info.counter_bill + 1
+            motrum_info.counter_bill = bill_name
+            # bill_name = motrum_info.counter_bill_offer + 1
+            # motrum_info.counter_bill_offer = bill_name
 
         print(123)
         if type_save == "new":

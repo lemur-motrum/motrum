@@ -2028,7 +2028,8 @@ def create_info_request_order_1c(order, order_products):
         "invoice_options": {
             "id_bitrix": order.id_bitrix,
             "delivery": order.type_delivery.text_long,
-            "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
+            # "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
+            "type_invoice": "счет",
             "number_invoice": order.bill_name,
             "data_invoice": order.bill_date_start.isoformat(),
             "prepay_persent": order.requisites.prepay_persent,

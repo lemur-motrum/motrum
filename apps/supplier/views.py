@@ -132,6 +132,10 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
+    # DOMIAN="https://motrum.ru"
+    print(DOMIAN)
+    domian = DOMIAN[:-1]
+    print(domian)
     
     result = 1
     title = "TEST"

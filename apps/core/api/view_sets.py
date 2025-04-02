@@ -6,10 +6,11 @@ from rest_framework.response import Response
 
 from apps.client.models import Client
 from apps.core.models import UpdatedCompanyBX24
+from apps.core.utils import send_lemur_form
 from apps.core.utils_web import send_email_message_html
 from apps.logs.utils import error_alert
 from apps.notifications.models import Notification
-
+from project.settings import BASE_DIR, BASE_MANAGER_FOR_BX, DOMIAN
 
 class Bitrix24ViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -76,6 +77,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":subject,
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -143,6 +152,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":f"{subject} {page}",
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -184,6 +201,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":f"{subject} {page}",
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -225,6 +250,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":f"{subject}",
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -268,6 +301,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":f"{subject}",
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -303,6 +344,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":f"{subject}",
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -338,6 +387,14 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":subject,
+                "name": name,
+                "phone": phone,
+                "link": url,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -378,6 +435,15 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":subject,
+                "name": name,
+                "phone": phone,
+                "link": url,
+                "message":message,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -423,6 +489,15 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":subject,
+                "name": client_name,
+                "phone": client_phone,
+                "link": url,
+                "message":message,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)
@@ -465,6 +540,15 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
 
         if data and sending_result:
+            data_for_lemur = {
+                "site": DOMIAN,
+                "form":subject,
+                "name": name,
+                "phone": phone,
+                "link": url,
+                "message":message,
+            }
+            send_lemur_form(data_for_lemur,request)
             return Response("ok", status=status.HTTP_200_OK)
         else:
             return Response("error", status=status.HTTP_400_BAD_REQUEST)

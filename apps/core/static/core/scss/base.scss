@@ -3381,6 +3381,33 @@ a {
       cursor: pointer;
       font-weight: 900;
     }
+    ul {
+      margin-top: 0.8rem;
+      margin-left: 1rem;
+      padding: 0;
+      @media screen and(max-width:576px) {
+        margin-top: 0.5rem;
+      }
+      li {
+        list-style: none;
+        position: relative;
+        &::before {
+          content: "";
+          position: absolute;
+          width: 0.625rem;
+          height: 0.625rem;
+          left: -0.845rem;
+          top: 0%;
+          transform: translateY(100%);
+          border-radius: 100%;
+          background-color: #95bad4;
+          @media screen and(max-width:576px) {
+            width: 0.45rem;
+            height: 0.45rem;
+          }
+        }
+      }
+    }
   }
 }
 .cart_container {

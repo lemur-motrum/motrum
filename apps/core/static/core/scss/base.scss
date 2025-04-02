@@ -9216,6 +9216,7 @@ a {
     padding: 1.438rem 2.5rem;
     display: flex;
     gap: 3.375rem;
+    position: relative;
     @media screen and (max-width: 576px) {
       margin-top: 3.5rem;
       flex-direction: column;
@@ -9411,6 +9412,24 @@ a {
           height: 2.5rem;
           justify-content: center;
         }
+      }
+    }
+    .politic_description {
+      font-size: 0.6rem;
+      color: #fff;
+      width: 100%;
+      position: absolute;
+      bottom: 0.8rem;
+      left: 43rem;
+      @media screen and (max-width: 576px) {
+        position: relative;
+        left: 0;
+        bottom: -0.2rem;
+        font-size: 0.5rem;
+        text-align: center;
+      }
+      a {
+        color: #fff;
       }
     }
   }

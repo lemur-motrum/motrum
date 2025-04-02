@@ -12,7 +12,7 @@
                 <div class="contacts-block">
                     <div class="contact-elem">
                         <div class="contact-elem-title">Телефон</div>
-                        <a href="tel:+78462337814" class="contact-elem-descr">+7 (846) 233-78-14</a>
+                        <a onclick="ym(37794920,'reachGoal','click-phone')" href="tel:+78462337814" class="contact-elem-descr">8 (846) 233-78-14</a>
                     </div>
                     <div class="contact-elem">
                         <div class="contact-elem-title">АДРЕС</div>
@@ -42,6 +42,7 @@
                                 </label>
                                 <textarea class="modal_textarea" placeholder="Сообщение"></textarea>
                                 <button class="submit_btn">отправить</button>
+                                {% include "core/includes/form_description.html" %}
                             </div>
                         </div>
                     </div>

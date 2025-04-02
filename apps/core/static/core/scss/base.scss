@@ -5087,6 +5087,36 @@ a {
         object-fit: contain;
       }
     }
+    .politic_description {
+      font-size: 0.6rem;
+      color: #fff;
+      width: 100%;
+      position: absolute;
+      bottom: 0.7rem;
+      left: 43rem;
+      &.demo_form_politic_description {
+        left: 39.6rem;
+        @media screen and (max-width: 576px) {
+          left: 0;
+        }
+      }
+      &.other_politic_description {
+        left: 44.5rem;
+        @media screen and (max-width: 576px) {
+          left: 0;
+        }
+      }
+      @media screen and (max-width: 576px) {
+        position: relative;
+        left: 0;
+        bottom: 0;
+        font-size: 0.5rem;
+        text-align: center;
+      }
+      a {
+        color: #fff;
+      }
+    }
   }
 }
 .solution_one_container {
@@ -6459,6 +6489,36 @@ a {
           height: 100%;
           -o-object-fit: contain;
           object-fit: contain;
+        }
+      }
+      .politic_description {
+        font-size: 0.6rem;
+        color: #fff;
+        width: 100%;
+        position: absolute;
+        bottom: 0.7rem;
+        left: 43rem;
+        &.demo_form_politic_description {
+          left: 39.6rem;
+          @media screen and (max-width: 576px) {
+            left: 0;
+          }
+        }
+        &.other_politic_description {
+          left: 44.5rem;
+          @media screen and (max-width: 576px) {
+            left: 0;
+          }
+        }
+        @media screen and (max-width: 576px) {
+          position: relative;
+          left: 0;
+          bottom: 0;
+          font-size: 0.5rem;
+          text-align: center;
+        }
+        a {
+          color: #fff;
         }
       }
     }
@@ -9546,6 +9606,21 @@ a {
           }
         }
       }
+    }
+  }
+}
+
+.politic_description {
+  width: 13.938rem;
+  font-size: 0.7rem;
+  @media screen and(max-width:576px) {
+    font-size: 0.5rem;
+  }
+  a {
+    cursor: pointer;
+    color: #95bad4;
+    &:hover {
+      text-decoration: underline;
     }
   }
 }

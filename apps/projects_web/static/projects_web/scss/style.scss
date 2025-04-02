@@ -1013,7 +1013,7 @@
           margin-top: 2.063rem;
           margin-left: -2.688rem;
           width: 62.563rem;
-          height: 9.063rem;
+          height: 10.2rem;
           background-color: #ff5b00;
           border-radius: 2.5rem;
           padding: 1.625rem 2.688rem 1.25rem 2.688rem;
@@ -1021,6 +1021,7 @@
           display: flex;
           flex-direction: column;
           gap: 0.563rem;
+          position: relative;
           @media screen and(max-width:576px) {
             width: 100%;
             height: auto;
@@ -1188,6 +1189,24 @@
                   }
                 }
               }
+            }
+          }
+          .politic_description {
+            font-size: 0.6rem;
+            color: #fff;
+            width: 100%;
+            position: absolute;
+            bottom: 0.7rem;
+            left: 10.5rem;
+            @media screen and (max-width: 576px) {
+              position: relative;
+              left: 0;
+              bottom: 0;
+              font-size: 0.5rem;
+              text-align: center;
+            }
+            a {
+              color: #fff;
             }
           }
         }

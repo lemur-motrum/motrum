@@ -17,33 +17,62 @@
         <div class="description">Ваш персональный менеджер</div>
       </div>
       <div class="links_container">
-        {% if manager.phone != "" %}<a href="tel:+{{ manager.phone }}">{{ phone_manager }}</a>{% endif %}
-        <button class="open_overlay_btn">связаться с менеджером</button>
+        {% if manager.phone != "" %}
+          <a href="tel:+{% if roistat == True %}{{ phone_manager }}{% else %}{{ manager.phone }}{% endif %}">
+            {% if roistat == True %}
+              {{ frontend_num }}
+            {% else %}
+              {{ phone_manager }}
+            {% endif %}
+          </a>
+          {% endif %}
+          <button class="open_overlay_btn">связаться с менеджером</button>
+        </div>
       </div>
-    </div>
-  {% else %}
-    <div class="no_manager_container">
-      <div class="title">Подобрать оборудование</div>
-      <button class="open_overlay_btn">напишите нам</button>
-    </div>
-  {% endif %}
-  <div class="manager_callback_overlay">
-    <div class="modal_window">
-      <div class="close_btn">+</div>
-      {% if is_need == True %}
-        <div class="title">Сообщение менеджеру</div>
-        {% if user != None %}
-          <div class="form_container">
-            <label>
-              <textarea class="form_textarea" placeholder="Сообщение"></textarea>
-              <div class="error message_error"></div>
-            </label>
-            <button manager-id="{{ manager.pk }}"
-                    type-btn="manager_true"
-                    class="submit_btn">отправить</button>
-            {% include "core/includes/form_description.html" %}
-          </div>
+    {% else %}
+      <div class="no_manager_container">
+        <div class="title">Подобрать оборудование</div>
+        <button class="open_overlay_btn">напишите нам</button>
+      </div>
+    {% endif %}
+    <div class="manager_callback_overlay">
+      <div class="modal_window">
+        <div class="close_btn">+</div>
+        {% if is_need == True %}
+          <div class="title">Сообщение менеджеру</div>
+          {% if user != None %}
+            <div class="form_container">
+              <label>
+                <textarea class="form_textarea" placeholder="Сообщение"></textarea>
+                <div class="error message_error"></div>
+              </label>
+              <button manager-id="{{ manager.pk }}"
+                      type-btn="manager_true"
+                      class="submit_btn">отправить</button>
+              {% include "core/includes/form_description.html" %}
+            </div>
+          {% else %}
+            <div class="form_container">
+              <label>
+                <input class="name_input" type="text" placeholder="Ваше имя" />
+                <div class="error name_error"></div>
+              </label>
+              <label>
+                <input class="phone_input" type="tel" placeholder="Ваш телефон" />
+                <div class="error phone_error"></div>
+              </label>
+              <label>
+                <textarea class="form_textarea" placeholder="Сообщение"></textarea>
+                <div class="error message_error"></div>
+              </label>
+              <button manager-id="{{ manager.pk }}"
+                      type-btn="manager_true"
+                      class="submit_btn">отправить</button>
+              {% include "core/includes/form_description.html" %}
+            </div>
+          {% endif %}
         {% else %}
+          <div class="title">Напишите нам</div>
           <div class="form_container">
             <label>
               <input class="name_input" type="text" placeholder="Ваше имя" />
@@ -57,31 +86,10 @@
               <textarea class="form_textarea" placeholder="Сообщение"></textarea>
               <div class="error message_error"></div>
             </label>
-            <button manager-id="{{ manager.pk }}"
-                    type-btn="manager_true"
-                    class="submit_btn">отправить</button>
+            <button type-btn="no_manager" class="submit_btn">отправить</button>
             {% include "core/includes/form_description.html" %}
           </div>
         {% endif %}
-      {% else %}
-        <div class="title">Напишите нам</div>
-        <div class="form_container">
-          <label>
-            <input class="name_input" type="text" placeholder="Ваше имя" />
-            <div class="error name_error"></div>
-          </label>
-          <label>
-            <input class="phone_input" type="tel" placeholder="Ваш телефон" />
-            <div class="error phone_error"></div>
-          </label>
-          <label>
-            <textarea class="form_textarea" placeholder="Сообщение"></textarea>
-            <div class="error message_error"></div>
-          </label>
-          <button type-btn="no_manager" class="submit_btn">отправить</button>
-          {% include "core/includes/form_description.html" %}
-        </div>
-      {% endif %}
+      </div>
     </div>
   </div>
-</div>

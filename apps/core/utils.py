@@ -2423,10 +2423,26 @@ def add_new_photo_adress_prompower():
         }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = response.json()
-
+    # old_doc =ProductDocument.objects.filter(link__contains="https://prompower.ru/")
+    # for o_doc in old_doc:
+    #     url = o_doc.link
+    #     response = requests.get(url)
+    #     if response.status_code == 404:
+    #         o_doc.delete()
+       
+    
     for data_item in data:
         
         if data_item["article"] != None:
+            def del_doc(product):
+                directory = f"{MEDIA_ROOT}/products/prompower/prompower/{product.article_supplier}/document"
+                print(directory)
+                if not os.path.exists(directory):
+                    print("directory_NOT")
+                else:
+                    print("YES",product.article_supplier)
+                    delete_everything_in_folder(directory)
+                    
             def save_document(categ, product):
                 base_dir = "products"
                 path_name = "document_group"
@@ -2434,24 +2450,39 @@ def add_new_photo_adress_prompower():
                 base_dir_vendor = product.vendor.slug
                 doc_list = data_item["cad"]
                 if len(doc_list) > 0:
-                    # https://prompower.ru/catalog/CAD/Габаритный%20чертеж%20PD310-A428K.pdf
+                    print("doc_list",doc_list)
                     for doc_item_individual in doc_list:
-                        if doc_item_individual["filename"] == "" or doc_item_individual["filename"] == None:
+                        print("for")
+                        if doc_item_individual["filename"] != "" or doc_item_individual["filename"] != None:
                             print("doc_item_individual == None" ,product)
-                            img = f"{base_adress}/CAD/{doc_item_individual["filename"]}"
-                            # image = ProductDocument.objects.create(product=article)
-                            # update_change_reason(image, "Автоматическое")
-                            # image_path = get_file_path_add(image, img)
+                            img = f"{base_adress}/catalog/CAD/{doc_item_individual["filename"]}"
+                            image = ProductDocument.objects.create(product=article)
+                            update_change_reason(image, "Автоматическое")
+                            image_path = get_file_path_add(image, img)
+                            print(image_path)
+                            p = save_file_product(img, image_path)
+                            image.photo = image_path
+                            image.link = img
+                            image.document = image_path
+                            image.link = img
                             
-                            # p = save_file_product(img, image_path)
-                            # image.photo = image_path
-                            # image.link = img
-                            # image.document = image_path
-                            # image.link = img
-                            # image.name = doc_item_individual["title"]
-                            # image.type_doc = "Other"
-                            # image.save()
-                            # update_change_reason(image, "Автоматическое")
+                            if doc_item_individual["title"] == "" and doc_item_individual["title"] == None:
+                                name = doc_item_individual["filename"]
+                                images_last_list = name.split(".")
+                                name = images_last_list[0]
+                                print(name)
+                                image.name = name
+                            else:
+                                name = doc_item_individual["title"]
+                                print(name)
+                                image.name = name
+                            
+                            
+                            image.type_doc = "Other"
+                            image.save()
+                            print(image)
+                            print(image.document)
+                            update_change_reason(image, "Автоматическое")
             
             article_suppliers = data_item["article"]
             try:
@@ -2460,7 +2491,11 @@ def add_new_photo_adress_prompower():
                                     vendor=vendori,
                                     article_supplier=article_suppliers,
                                 )
+
+                
+                # del_doc(article)
                 save_document(None, article)
-            except:
-                print("Нет такого твоара",article_suppliers)
-                pass
+            except Exception as e:
+                print(e)
+                # print("Нет такого твоара",article_suppliers)
+              

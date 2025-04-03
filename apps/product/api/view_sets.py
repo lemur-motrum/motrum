@@ -281,7 +281,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
 
-
+    @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
+    def search_product_web(self, request, *args, **kwargs):
+        pass
+    
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer

@@ -68,6 +68,7 @@ def manager_client(context):
             "is_need": True,
             "user": client,
             "manager": manager,
+            "phone_manager": phone_manager,
             "frontend_num": frontend_num,
         }
     else:

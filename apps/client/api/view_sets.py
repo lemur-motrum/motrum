@@ -1662,7 +1662,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             if notification_set["file"] == doc_shipment["file"]:
                                 data_spesif["notification_set"].append(notification_set)
 
-                documents.append(data_act)
+                    documents.append(data_act)
 
         # сортировки для документов
         print(documents)

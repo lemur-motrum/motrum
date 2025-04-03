@@ -12,7 +12,7 @@ from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
 from django.db import IntegrityError, transaction
-
+from rest_framework.views import APIView
 # from regex import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -1936,12 +1936,15 @@ class OrderViewSet(viewsets.ModelViewSet):
                 vendor_str = data_sheet.cell(row=index, column=1).value
 
     # ОКТ 1С сроки поставки товаров ОКТ Б24
-
+    
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    @action(detail=False, methods=["post"], url_path=r"add-info-order-1c")
+    @action(detail=False, methods=["post"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path=r"add-info-order-1c")
     def add_info_order_1c(self, request, *args, **kwargs):
         print("add_info_order_1c")
+        print('user',request.user,  # `django.contrib.auth.User` instance.
+        'auth',str(request.auth),)
+        
         data = request.data
         pdf = None
         pdf_signed = None
@@ -2034,7 +2037,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # ОКТ 1С получение оплат ОКТ Б24
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    @action(detail=False, methods=["post", "put"], url_path=r"add-payment-info-1c")
+    @action(detail=False, methods=["post", "put"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path=r"add-payment-info-1c")
     def add_payment_order_1c(self, request, *args, **kwargs):
         data = request.data
         
@@ -2080,7 +2083,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # ОКТ 1С получение документов откгрузки ОКТ Б24
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    @action(detail=False, methods=["post"], url_path=r"shipment-info-1c")
+    @action(detail=False, methods=["post"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path=r"shipment-info-1c")
     def add_shipment_order_1c(self, request, *args, **kwargs):
         data = request.data
         

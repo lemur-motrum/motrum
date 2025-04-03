@@ -251,7 +251,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    @action(detail=False, methods=["post", "get"], url_path="get-1c-nomenclature")
+    @action(detail=False, methods=["post", "get"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path="get-1c-nomenclature")
     def get_nomenclature(self, request, *args, **kwargs):
         print("get_nomenclature")
 

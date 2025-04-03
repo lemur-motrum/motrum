@@ -121,6 +121,8 @@ MIDDLEWARE = [
     "middlewares.middlewares.RequestMiddleware",
     "middlewares.middlewares.WwwRedirectMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+   
+    
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -294,6 +296,13 @@ SPECTACULAR_SETTINGS = {
 REST_FRAMEWORK = {
     # ВАШИ НАСТРОЙКИ
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #         'rest_framework.permissions.IsAuthenticated',
+    #     ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework.authentication.BasicAuthentication',  # enables simple command line authentication
+        
+    # )
 }
 
 NDS = 20

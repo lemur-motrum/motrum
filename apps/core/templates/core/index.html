@@ -42,7 +42,7 @@
                             <div class="description">комплексный подход для наиболее востребованных запросов</div>
                      </div>
                      <div class="content-container">
-                            <div class="content-elem marking_content_elem">
+                            <a href="{% url "core:marking" %}" class="content-elem marking_content_elem">
                                    <div class="first_item_content">
                                           <div class="title">маркировка</div>
                                    </div>
@@ -55,7 +55,7 @@
                                                  <br>
                                                  Поставка программно-аппаратных
                                                  комплексов для решения задач
-                                                 по маркеровке и прослеживаемости продукции.
+                                                 по маркеровке и прослеживаемости <br> продукции.
                                           </div>
                                    </div>
                                    <div class="img-container marking-img-container">
@@ -63,8 +63,8 @@
                                           <img class="left" src="{% static "core/images/head_page_animate/marking_left.png" %}" alt="vector">
                                           <img class="rigth" src="{% static "core/images/head_page_animate/marking_rigth.png" %}" alt="vector">
                                    </div>
-                            </div>
-                            <div class="content-elem cobots_content_elem">
+                            </a>
+                            <a href="{% url "core:cobots-palett" %}" class="content-elem cobots_content_elem">
                                    <div class="first_item_content">
                                           <div class="title">КОЛЛАБОРАТИВНЫЕ РОБОТЫ</div>
                                    </div>
@@ -86,7 +86,7 @@
                                           <img class="middle" src="{% static "core/images/head_page_animate/cobots_midle.png" %}" alt="vector">
                                           <img class="down" src="{% static "core/images/head_page_animate/cobots_down.png" %}" alt="vector">
                                    </div>
-                            </div>
+                            </a>
                      </div>
               </div>
               {% include "core/includes/projects.html" %}

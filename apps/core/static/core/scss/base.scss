@@ -3046,11 +3046,12 @@ a {
       }
       .content-elem {
         width: 29.491rem;
-        height: 16.193rem;
         border-radius: 2.5rem;
         border: 0.094rem solid #000;
         position: relative;
         overflow: hidden;
+        color: #000;
+        height: auto;
         @media screen and (max-width: 576px) {
           width: 100%;
           height: auto;

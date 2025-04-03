@@ -26,7 +26,7 @@ def manager_client(context):
     if context.request.path_info == "/marking/":
         manager = AdminUser.objects.get(email="maksim.skitchenko@motrum.ru")
         phone_manager = get_phone_number(manager.phone)
-        print(manager)
+        phone_manager = 88463004117
         if (
             context.request.user.is_authenticated
             and context.request.user.is_staff == False
@@ -34,6 +34,7 @@ def manager_client(context):
             client = Client.objects.get(username=context.request.user)
 
         return {
+            "roistat":True,
             "is_need": True,
             "user": client,
             "manager": manager,
@@ -47,13 +48,15 @@ def manager_client(context):
     ):
         manager = AdminUser.objects.get(email="sergey.govorkov@motrum.ru")
         phone_manager = get_phone_number(manager.phone)
-        print(manager)
+        phone_manager = 88463004117
+       
         if (
             context.request.user.is_authenticated
             and context.request.user.is_staff == False
         ):
             client = Client.objects.get(username=context.request.user)
         return {
+            "roistat":True,
             "is_need": True,
             "user": client,
             "manager": manager,
@@ -70,6 +73,7 @@ def manager_client(context):
                 phone_manager = get_phone_number(manager.phone)
 
                 return {
+                    "roistat":False,
                     "is_need": True,
                     "user": context.request.user,
                     "manager": manager,
@@ -77,10 +81,12 @@ def manager_client(context):
                 }
             except Client.DoesNotExist:
                 return {
+                    
                     "is_need": False,
                 }
 
         else:
             return {
+                
                 "is_need": False,
             }

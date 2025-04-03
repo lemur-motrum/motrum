@@ -1,7 +1,7 @@
 import os
 import re
 import traceback
-
+from django.contrib.postgres.indexes import GinIndex
 from django.urls import reverse
 from django.utils import timezone
 from django.db import models
@@ -134,6 +134,7 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
+        
 
     def __str__(self):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"

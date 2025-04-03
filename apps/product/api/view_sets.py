@@ -42,7 +42,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, authentication_classes
-
+from django.contrib.postgres.search import SearchVector, SearchQuery
 
 class ProductViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.AllowAny,)
@@ -284,6 +284,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
     def search_product_web(self, request, *args, **kwargs):
         pass
+    
+    
     
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()

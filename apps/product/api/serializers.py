@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from sorl.thumbnail import get_thumbnail
 
+
 from apps.client.models import Client
 from apps.product.models import (
     Cart,
@@ -109,7 +110,7 @@ class ProductSerializer(serializers.ModelSerializer):
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
     productimage_set = ProductImageSerializer(read_only=False, many=True)
     url = serializers.CharField(source="get_absolute_url", read_only=True)
-
+    # image_small = serializers.SerializerMethodField()
     # max_price = serializers.SerializerMethodField()
     class Meta:
         model = Product
@@ -127,6 +128,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "productproperty_set",
             "productimage_set",
             "url",
+            # "image_small",
         )
 
     def to_representation(self, instance):
@@ -153,9 +155,16 @@ class ProductSerializer(serializers.ModelSerializer):
                     else:
                         price_discount = price - (price / 100 * float(discount))
                     data["price"]["rub_price_supplier"] = round(price_discount, 2)
+        if len(data["productimage_set"]) > 0:
+            print(data["productimage_set"][0])
+            # crop='center', quality=99
+            data["productimage_set"][0]["photo"]  = get_thumbnail(data["productimage_set"][0]["photo"], '200x200',format="PNG", ).url
 
         return data
-
+    
+    # def get_image_small(self, obj):
+    #     image_small = get_thumbnail(data["productimage_set"][0], '200x200', crop='center', quality=99).url
+    #     return image_small
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:

@@ -8271,6 +8271,22 @@ a {
             @media screen and (max-width: 576px) {
               width: 4.25rem;
             }
+            &.percent-block {
+              .quantity {
+                left: 33%;
+              }
+              .percent {
+                position: absolute;
+                top: 50%;
+                left: 73%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+                font-weight: bold;
+                @media screen and (max-width: 576px) {
+                  font-size: 1.5rem;
+                }
+              }
+            }
           }
           position: relative;
           .quantity {

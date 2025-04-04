@@ -71,6 +71,26 @@ def manager_client(context):
             "phone_manager": phone_manager,
             "frontend_num": frontend_num,
         }
+    elif (
+        context.request.path_info == "/shkaf-upravleniya/"
+    ):
+        manager = AdminUser.objects.get(email="ruslan.ovcharov@motrum.ru")
+        phone_manager = "78463004117"
+        frontend_num = get_phone_number(phone_manager, True)
+
+        if (
+            context.request.user.is_authenticated
+            and context.request.user.is_staff == False
+        ):
+            client = Client.objects.get(username=context.request.user)
+        return {
+            "roistat": True,
+            "is_need": True,
+            "user": client,
+            "manager": manager,
+            "phone_manager": phone_manager,
+            "frontend_num": frontend_num,
+        }
     else:
         if (
             context.request.user.is_authenticated

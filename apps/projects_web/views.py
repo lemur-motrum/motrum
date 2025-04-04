@@ -21,8 +21,13 @@ def projects(request):
     projects = Project.objects.all()
     category_projects = CategoryProject.objects.all().order_by("article")
     client_category_projects = ClientCategoryProject.objects.all().order_by("article")
-    marking_category = ClientCategoryProjectMarking.objects.all().order_by("article")
-
+    # marking_category = ClientCategoryProjectMarking.objects.all().order_by("article")
+    marking_category = ClientCategoryProjectMarking.objects.filter(
+        projectclientcategoryprojectmarking__isnull=False
+    ).distinct()
+    print(marking_category)
+    
+    
     # if request.get("category_project"):
     #     category_project_get = request.query_params.get("category_project")
     #     if category_project_get == "markirovka-chestnyij-znak":

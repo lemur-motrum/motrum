@@ -86,14 +86,16 @@ window.addEventListener("DOMContentLoaded", () => {
     const phoneMask = IMask(phoneInput, maskOptions);
 
     function hideOverlay() {
-      if (
-        overlay.classList.contains("show") ||
-        overlay.classList.contains("visible")
-      ) {
-        overlay.classList.remove("visible");
-        setInterval(() => {
-          overlay.classList.remove("show");
-        }, 600);
+      if(overlay){
+        if (
+          overlay.classList.contains("show") ||
+          overlay.classList.contains("visible")
+        ) {
+          overlay.classList.remove("visible");
+          setInterval(() => {
+            overlay.classList.remove("show");
+          }, 600);
+        }
       }
     }
 

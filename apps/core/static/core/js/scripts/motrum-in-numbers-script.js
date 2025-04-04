@@ -21,10 +21,10 @@ window.addEventListener("DOMContentLoaded", () => {
           posTop >= 0
         ) {
           const interval = setInterval(() => {
-            quantityContainer.textContent = +count;
+            quantityContainer.textContent = (+count).toLocaleString('ru');
             count += 1;
             if (count == +currentQuantity) {
-              quantityContainer.textContent = +count;
+              quantityContainer.textContent = (+count).toLocaleString('ru');
               if(numberPlusContainer){
                 numberPlusContainer.classList.add('show_plus')
               }

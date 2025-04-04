@@ -854,7 +854,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             d = json.loads(json_acceptable_string)
 
             serializer_class = OrderSerializer
-            order = Order.objects.get(id_bitrix=int(id_bitrix))
+            id_bitrix_serialazer = d["id_bitrix"]
+            order = Order.objects.get(id_bitrix=int(id_bitrix_serialazer))
             serializer = serializer_class(order, data=d, many=False)
             if serializer.is_valid():
                 order = serializer.save()

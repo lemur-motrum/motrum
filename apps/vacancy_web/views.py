@@ -14,9 +14,9 @@ def vacancy(request):
     title = "Карьера"
     vacancy = Vacancy.objects.filter(is_actual=True)
     category_vacancy = VacancyCategory.objects.filter(is_view=True).order_by("article")
-    photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
-    photo_education = PhotoEducationInfoWeb.objects.all()
-    photo_recreation = PhotoSportsRecreationInfoWeb.objects.all()
+    photo_motrum = PhotoEmoloeeInfoWeb.objects.all().order_by("article")
+    photo_education = PhotoEducationInfoWeb.objects.all().order_by("article")
+    photo_recreation = PhotoSportsRecreationInfoWeb.objects.all().order_by("article")
 
     context = {
         "title": title,

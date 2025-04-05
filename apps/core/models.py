@@ -466,6 +466,11 @@ class PhotoClientInfoWeb(models.Model):
         blank=True,
         null=True,
     )
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Фото блок клиенты"
@@ -480,6 +485,11 @@ class PhotoEmoloeeInfoWeb(models.Model):
         "Картинка",
         upload_to=get_file_path_company_web,
         max_length=500,
+        blank=True,
+        null=True,
+    )
+    article = models.PositiveIntegerField(
+        "Очередность",
         blank=True,
         null=True,
     )

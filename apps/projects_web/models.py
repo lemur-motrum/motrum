@@ -59,18 +59,21 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-        print(self.slug)
-        is_project = Project.objects.filter(name=self.name).exists()
-        if is_project and self.slug == None:
-            project_id = Project.objects.filter(name=self.name).count()
-            project_id = int(project_id) + 1
-            name = f"{self.name} {project_id}"
+            
+        if self.slug:
+            pass
         else:
-            name = self.name
+            is_project = Project.objects.filter(name=self.name).exists()
+            if is_project and self.slug == None:
+                project_id = Project.objects.filter(name=self.name).count()
+                project_id = int(project_id) + 1
+                name = f"{self.name} {project_id}"
+            else:
+                name = self.name
 
-        slug_text = name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+            slug_text = name
+            slugish = translit.translify(slug_text)
+            self.slug = slugify(slugish)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

@@ -1695,8 +1695,15 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
+                    response.set_cookie(
+                        "specificationId",
+                        0,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 else:
-
+                    
                     response = render(
                         request,
                         next_url,

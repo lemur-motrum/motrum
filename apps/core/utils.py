@@ -2491,9 +2491,7 @@ def add_new_photo_adress_prompower():
                                     vendor=vendori,
                                     article_supplier=article_suppliers,
                                 )
-
-                
-                # del_doc(article)
+                del_doc(article)
                 save_document(None, article)
             except Exception as e:
                 print(e)

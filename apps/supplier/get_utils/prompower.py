@@ -343,7 +343,7 @@ def prompower_api():
 
                             for doc_item_individual in doc_list:
 
-                                img = f"{base_adress}/{doc_item_individual["filename"]}"
+                                img = f"{base_adress}/catalog/CAD/{doc_item_individual["filename"]}"
                                 image = ProductDocument.objects.create(product=article)
                                 update_change_reason(image, "Автоматическое")
                                 image_path = get_file_path_add(image, img)
@@ -354,7 +354,7 @@ def prompower_api():
                                 image.document = image_path
                                 image.link = img
                                 image.name = doc_item_individual["title"]
-                                image.type_doc = "Models3d"
+                                image.type_doc = "Other"
                                 image.save()
                                 update_change_reason(image, "Автоматическое")
 

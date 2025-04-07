@@ -59,11 +59,12 @@ IS_TESTING = os.environ.get("IS_TESTING", "False").lower() in ("true", "1", "t")
 IS_WEB = os.environ.get("IS_WEB", "False").lower() in ("true", "1", "t")
 IS_TEST_SERVER = os.environ.get("IS_TEST_SERVER", "False").lower() in ("true", "1", "t")
 IS_PROD = os.environ.get("IS_PROD", "False").lower() in ("true", "1", "t")
+DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "t")
 
-if IS_PROD:
-    DEBUG = False
-else:
+if DEBUG:
     DEBUG = True
+else:
+    DEBUG = False
     
 
 

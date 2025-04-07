@@ -162,6 +162,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             .prefetch_related(
                 Prefetch("stock__lot"),
                 Prefetch("productproperty_set"),
+                Prefetch("productimage_set"),
+                Prefetch("productimage_set"),
             )
             .filter(q_object)
             .order_by(sorting)[count : count + count_last]

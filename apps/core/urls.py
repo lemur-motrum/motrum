@@ -75,10 +75,7 @@ urlpatterns = [
     path("product/view/61/", RedirectView.as_view(url='/brand/omron/?vendor=omron&page=1', permanent=True)),
     path("product/view/62/", RedirectView.as_view(url='/brand/tbloc/?vendor=tbloc&page=1', permanent=True)),
     path("news/view/44/", RedirectView.as_view(url='/company/sout/', permanent=True)),
-    # path(
-    #     "robots.txt",
-    #     TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
-    # ),
+ 
     
     
     

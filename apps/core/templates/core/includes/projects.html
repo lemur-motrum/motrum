@@ -1,4 +1,10 @@
 {% load static %}
+{% url "core:shkaf-upravleniya" as shkaff %}
+{% url "core:marking" as marking %}
+{% url "core:cobots" as robots %}
+{% url "core:cobots-palett" as pallet %}
+{% url "core:cobots-box" as cobots_box %}
+{% url "core:cobots-packing" as packing %}
 <div class="projects">
     <div class="title-container">
         <div class="title">Реализованные проекты</div>
@@ -7,7 +13,8 @@
             <br>
             различного масштаба
         </div>
-        <a href="{% url 'projects_web:projects' %}" class="title-link">
+        <a {% if request.get_full_path == shkaff %}href="{% url 'projects_web:projects' %}?page=1&category_project=sborka-shu"{% elif request.get_full_path == marking %}href="{% url 'projects_web:projects' %}?page=1&category_project=markirovka-chestnyij-znak"{% elif request.get_full_path == robots or request.get_full_path == pallet or request.get_full_path == cobots_box or request.get_full_path == packing %}href="{% url 'projects_web:projects' %}?page=1&category_project=robototehnicheskie-yachejki"{% else %}href="{% url 'projects_web:projects' %}"{% endif %}
+           class="title-link">
             <div class="title-link-description">весь каталог</div>
             <div class="arrow-container">
                 <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
@@ -24,7 +31,7 @@
             </div>
         </a>
     {% endfor %}
-    <a href="{% url 'projects_web:projects' %}"
+    <a {% if request.get_full_path == shkaff %}href="{% url 'projects_web:projects' %}?page=1&category_project=sborka-shu"{% elif request.get_full_path == marking %}href="{% url 'projects_web:projects' %}?page=1&category_project=markirovka-chestnyij-znak"{% elif request.get_full_path == robots or request.get_full_path == pallet or request.get_full_path == cobots_box or request.get_full_path == packing %}href="{% url 'projects_web:projects' %}?page=1&category_project=robototehnicheskie-yachejki"{% else %}href="{% url 'projects_web:projects' %}"{% endif %}
        class="title-link mobile-title-link">
         <div class="title-link-description">весь каталог</div>
         <div class="arrow-container">

@@ -93,13 +93,14 @@ class ProductSpesifSerializer(serializers.ModelSerializer):
 
 
 class ProductSearchSerializer(serializers.ModelSerializer):
-
+    url = serializers.CharField(source="get_absolute_url", read_only=True)
     class Meta:
         model = Product
         fields = (
             "id",
             "article_supplier",
             "name",
+            "url",
         )
     
 

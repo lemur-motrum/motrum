@@ -71,9 +71,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if request.query_params.get("search_text"):
             search_text = request.query_params.get("search_text")
+            if search_text == "":
+                search_text = None
         else:
             search_text = None
-            search_text="грибок кнопка"
             
         print("search_text",search_text)
 
@@ -313,7 +314,51 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
     def search_product_web(self, request, *args, **kwargs):
-        pass
+        data = request.data
+        count = data["count"]
+        count_last = data["count_last"]
+        search_input = data["search_text"]
+        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.split()
+
+        print(search_input)
+        # # вариант ищет каждое слово все рабоатет
+        queryset = Product.objects.filter(
+            Q(name__icontains=search_input[0])
+            # | Q(article__icontains=search_input[0])
+            | Q(article_supplier__icontains=search_input[0])
+            | Q(additional_article_supplier__icontains=search_input[0])
+        )
+        print(len(search_input))
+        # del search_input[0]
+        if len(search_input) > 1:
+            for search_item in search_input[1:]:
+                queryset = queryset.filter(
+                    Q(name__icontains=search_item)
+                    # | Q(article__icontains=search_item)
+                    | Q(article_supplier__icontains=search_item)
+                    | Q(additional_article_supplier__icontains=search_item)
+                )
+        else:
+            queryset = queryset[count : count + count_last]
+        queryset = queryset[count : count + count_last]
+        # стандатный варинт ищет целиокм
+        # queryset = Product.objects.filter(
+        #     Q(name__icontains=search_input)
+        #     | Q(article__icontains=search_input)
+        #     | Q(article_supplier__icontains=search_input)
+        #     | Q(additional_article_supplier__icontains=search_input)
+        # )
+        page_count = queryset.count()
+        count_all = count + page_count
+        serializer = ProductSearchSerializer(queryset, many=True)
+        data_response = {
+            "data": serializer.data,
+            "count": count,
+            "count_all": count_all,
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
+
 
 
 class CartViewSet(viewsets.ReadOnlyModelViewSet):

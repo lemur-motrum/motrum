@@ -9,7 +9,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc
+from apps.core.utils import get_file_path_add_more_doc, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -60,7 +60,8 @@ def catalog_all(request):
 def catalog_group(request, category):
     print("catalog_group")
     media_url = MEDIA_URL
-    
+    search_text = None
+
     group = (
         GroupProduct.objects.filter(category__slug=category)
         .prefetch_related(
@@ -69,7 +70,7 @@ def catalog_group(request, category):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-    print("group",group)
+    print("group", group)
     # товарфы в группе
     if len(group) > 0 and category != "search":
         cat = CategoryProduct.objects.get(slug=category)
@@ -113,21 +114,33 @@ def catalog_group(request, category):
             elif category == "all":
                 q_object &= Q(article__isnull=False)
             elif category == "search":
+                search_text = request.GET.get("search_text")
+                # search_text="грибок кнопка"
                 q_object &= Q(article__isnull=False)
+
             else:
                 q_object &= Q(category__slug=category)
 
-        product_vendor = (
+        queryset = (
             Product.objects.select_related(
                 "vendor",
                 "category",
-            )
-            .filter(q_object)
-            .order_by("vendor__name")
+            ).filter(q_object)
+            # .order_by("vendor__name")
+            # .distinct("vendor__name")
+            # .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+        )
+        if search_text and search_text != "":
+            print("search_text and search_text != """)
+            queryset = serch_products_web(search_text, queryset)
+            print(queryset)
+
+        product_vendor = (
+            queryset.order_by("vendor__name")
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-
+        print("product_vendor",product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:

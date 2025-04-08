@@ -98,6 +98,6 @@ app.conf.beat_schedule = {
     # обновить битые доки промповер
     "add_prompower_new_doc": {
         "task": "apps.supplier.tasks.add_prompower_new_doc",
-        "schedule": crontab(0, 0, day_of_month=8, month_of_year=4),
+        "schedule": crontab(0, 0, day_of_month=9, month_of_year=4),
     },
 }

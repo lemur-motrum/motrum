@@ -801,6 +801,11 @@ def create_specification(request):
                 ).values(
                     "date_delivery",
                 ),
+                date_delivery_cart=product_cart_prod.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery",
+                ),
                 sale_motrum=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_sale_motrum",
                 ),
@@ -925,7 +930,8 @@ def create_specification(request):
         "post_data_bx_id": post_data_bx_id,
     }
 
-    return render(request, "admin_specification/catalog.html", context)
+    # return render(request, "admin_specification/catalog.html", context)
+    return render(request, "admin_specification/catalog_copy_price.html", context)
 
 
 # рендер страницы со всеми спецификациями

@@ -14,6 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const priceInput = productItem.querySelector(".price-input");
       const saveBtn = productItem.querySelector(".save_icon_container");
       const priceContainer = productItem.querySelector(".price_once");
+      const deliveryDate = productItem.querySelector(".delivery_date")
       const motrumSaleContainer = productItem.querySelector(
         ".motrum_sale_persent"
       );
@@ -28,7 +29,9 @@ window.addEventListener("DOMContentLoaded", () => {
       changeBtn.onclick = () => {
         changeBtn.style.display = "none";
         saveBtn.classList.add("show");
+        deliveryDate.removeAttribute("disabled");
         if (changePriceInput) {
+
           changePriceInput.value = getReplacedInputValue(changePriceInput);
           priceContainer.style.display = "none";
           changePriceInput.classList.add("show");
@@ -50,7 +53,8 @@ window.addEventListener("DOMContentLoaded", () => {
       saveBtn.onclick = () => {
         const cartId = getCookie("cart");
         const csrfToken = getCookie("csrftoken");
-
+        const deliveryDate = productItem.querySelector(".delivery_date").value
+        console.log('deliveryDate',deliveryDate)
         const dataObj = {
           product: productId,
           product_price: changePriceInput
@@ -58,6 +62,7 @@ window.addEventListener("DOMContentLoaded", () => {
             : priceInput.value,
           cart: cartId,
           product_sale_motrum: changeMotrumSaleInput.value,
+          date_delivery:deliveryDate
         };
         const data = JSON.stringify(dataObj);
 

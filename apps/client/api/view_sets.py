@@ -970,6 +970,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             try:
+                product_cart = ProductCart.objects.filter(cart=cart).update(date_delivery=None)
                 data_order = {
                     "comment": data["comment"],
                     "name": id_bitrix,

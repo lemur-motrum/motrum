@@ -11,6 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
+from apps.supplier.models import Vendor
 from apps.core.utils import check_file_price_directory_exist, product_cart_in_file
 from apps.logs.utils import error_alert
 from apps.product.api.serializers import (
@@ -18,6 +19,7 @@ from apps.product.api.serializers import (
     ProductCartSerializer,
     ProductSearchSerializer,
     ProductSerializer,
+    VendorOktNewProdSerializer,
 )
 from apps.product.models import (
     Cart,
@@ -43,6 +45,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, authentication_classes
 from django.contrib.postgres.search import SearchVector, SearchQuery
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.AllowAny,)
@@ -253,7 +256,13 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    @action(detail=False, methods=["post", "get"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path="get-1c-nomenclature")
+    @action(
+        detail=False,
+        methods=["post", "get"],
+        authentication_classes=[BasicAuthentication],
+        permission_classes=[IsAuthenticated],
+        url_path="get-1c-nomenclature",
+    )
     def get_nomenclature(self, request, *args, **kwargs):
         print("get_nomenclature")
 
@@ -286,9 +295,27 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
     def search_product_web(self, request, *args, **kwargs):
         pass
-    
-    
-    
+
+    @action(detail=False, methods=["post", "get"], url_path=r"get-vendor")
+    def get_vendor(self, request, *args, **kwargs):
+        data = request.data
+        search_input = data["search_text"]
+        print("search_input", search_input)
+        queryset = Vendor.objects.all().order_by("name")
+        # стандатный варинт ищет целиокм
+        if search_input != "" or search_input != None:
+            queryset = Vendor.objects.filter(Q(name__icontains=search_input)).order_by(
+                "name"
+            )
+
+        print(queryset)
+        serializer = VendorOktNewProdSerializer(queryset, many=True)
+        data_response = {
+            "data": serializer.data,
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
+
+
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
@@ -619,15 +646,25 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         serializer_class = ProductCartSerializer
 
         data = request.data
+        print(data)
+        if data["date_delivery"] == "":
+            del data["date_delivery"]
+        else:
+            data["date_delivery"] = datetime.datetime.strptime(
+                data["date_delivery"], "%Y-%m-%d"
+            ).date()
+
         if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = None
+        print(data)
         serializer = serializer_class(queryset, data=data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # изменить количество товаров в корзине

@@ -309,6 +309,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             allCategoriesElem.classList.remove("active");
             elem.classList.add("active");
+            sliderWrapper.prepend(allCategoriesElem);
             sliderWrapper.prepend(elem);
             urlParams.set("category_project", slug);
             categoryProjectSlug = slug;

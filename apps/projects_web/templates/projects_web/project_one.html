@@ -84,7 +84,7 @@
             <div class="project_one_description_content">
                 <div class="project_one_description">
                     <div class="project_one_first_description">{{ project.text }}</div>
-                    {% for project_text in project.projecttextblock_set.all %}
+                    {% for project_text in prodject_text %}
                         <div class="project_one_paragraph">
                             {% if project_text.title %}<div class="project_one_description_title">{{ project_text.title }}</div>{% endif %}
                             {{ project_text.text|safe }}

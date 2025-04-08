@@ -10,7 +10,7 @@ from apps.vacancy_web.models import (
     WorkingConditions, PhotoSportsRecreationInfoWeb,
 )
 from project.admin import website_admin
-
+from django.utils.html import format_html
 
 # Register your models here.
 # class WorkingConditionsInlineWeb(admin.TabularInline):
@@ -50,9 +50,46 @@ class VacancyWebAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class PhotoEducationInfoWebWebAdmin(admin.ModelAdmin):
+    list_editable = ("article",)
+    list_display = ["image", "article", "image_tag",]
+
+    def image_tag(self, obj):
+        return format_html('<img src="{}" width="60" height="60" />'.format(obj.image.url))
+
+
+class PhotoSportsRecreationInfoWebWebWebAdmin(admin.ModelAdmin):
+    list_editable = ("article",)
+    list_display = [
+        "image",
+        "article",
+        "image_tag",
+    ]
+
+    def image_tag(self, obj):
+        return format_html(
+            '<img src="{}" width="60" height="60" />'.format(obj.image.url)
+        )
+
+
+class PhotoEmoloeeInfoWebWebAdmin(admin.ModelAdmin):
+    list_editable = ("article",)
+    list_display = [
+        "image",
+        "article",
+        "image_tag",
+    ]
+
+    def image_tag(self, obj):
+        return format_html(
+            '<img src="{}" width="60" height="60" />'.format(obj.image.url)
+        )
+
 
 website_admin.register(Vacancy, VacancyWebAdmin)
 website_admin.register(VacancyCategory, VacancyCategoryWebAdmin)
-website_admin.register(PhotoEducationInfoWeb)
-website_admin.register(PhotoSportsRecreationInfoWeb)
-website_admin.register(PhotoEmoloeeInfoWeb)
+website_admin.register(PhotoEducationInfoWeb, PhotoEducationInfoWebWebAdmin)
+website_admin.register(
+    PhotoSportsRecreationInfoWeb, PhotoSportsRecreationInfoWebWebWebAdmin
+)
+website_admin.register(PhotoEmoloeeInfoWeb, PhotoEmoloeeInfoWebWebAdmin)

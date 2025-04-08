@@ -10,19 +10,24 @@ from apps.projects_web.models import (
     ProjectClientCategoryProject,
     ProjectClientCategoryProjectMarking,
     ProjectImage,
+    ProjectTextBlock,
     ProjectVideo,
 )
 
 
-# Create your views here.
-# Create your views here.
+# Все проекты
 def projects(request):
 
     projects = Project.objects.all()
     category_projects = CategoryProject.objects.all().order_by("article")
     client_category_projects = ClientCategoryProject.objects.all().order_by("article")
-    marking_category = ClientCategoryProjectMarking.objects.all().order_by("article")
-
+    # marking_category = ClientCategoryProjectMarking.objects.all().order_by("article")
+    marking_category = ClientCategoryProjectMarking.objects.filter(
+        projectclientcategoryprojectmarking__isnull=False
+    ).distinct()
+    print(marking_category)
+    
+    
     # if request.get("category_project"):
     #     category_project_get = request.query_params.get("category_project")
     #     if category_project_get == "markirovka-chestnyij-znak":
@@ -39,9 +44,10 @@ def projects(request):
     }
     return render(request, "projects_web/projects_all.html", context)
 
-
+# Один проект
 def project(request, project):
     project_one = Project.objects.get(slug=project)
+    prodject_text = ProjectTextBlock.objects.filter(project=project_one).order_by("pk")
     project_image = ProjectImage.objects.filter(project=project_one)
     project_video = ProjectVideo.objects.filter(project=project_one)
     client_category_project = ProjectClientCategoryProject.objects.filter(
@@ -93,6 +99,7 @@ def project(request, project):
         "client_category_project": client_category_project,
         "other_projects": other_project,
         "project_video": project_video,
+        "prodject_text":prodject_text,
         "meta_title": f"{project_one.name} | Мотрум - автоматизация производства",
     }
     return render(request, "projects_web/project_one.html", context)

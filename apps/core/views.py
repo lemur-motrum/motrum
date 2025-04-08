@@ -313,8 +313,8 @@ def company(request):
     motrum_in_numbers = CompanyInfoWeb.objects.all().last()
     project_in_numbers = CompanyPrijectAutoInfoWeb.objects.all().last()
     reviews = ReviewsAutoInfoWeb.objects.filter().order_by("?")[0:3]
-    photo_client = PhotoClientInfoWeb.objects.all()
-    photo_motrum = PhotoEmoloeeInfoWeb.objects.all()
+    photo_client = PhotoClientInfoWeb.objects.all().order_by("article")
+    photo_motrum = PhotoEmoloeeInfoWeb.objects.all().order_by("article")
 
     print("dsadasdas", projects)
 

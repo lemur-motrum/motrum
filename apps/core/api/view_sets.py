@@ -78,7 +78,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":subject,
                 "name": name,
                 "phone": phone,
@@ -116,7 +116,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         lead_data = {
             "name": name,
-            "phone": phone,
+            "phone": f"+{phone}",
             "page": page,
             "manager_id": manager_id,
         }
@@ -153,7 +153,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":f"{subject} {page}",
                 "name": name,
                 "phone": phone,
@@ -178,7 +178,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         lead_data = {
             "name": name,
-            "phone": phone,
+            "phone": f"+{phone}",
             "page": page,
             "manager_id": 28,
         }
@@ -202,7 +202,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":f"{subject} {page}",
                 "name": name,
                 "phone": phone,
@@ -227,7 +227,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         lead_data = {
             "name": name,
-            "phone": phone,
+            "phone": f"+{phone}",
             "page": page,
             "manager_id": 124,
         }
@@ -251,7 +251,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":f"{subject}",
                 "name": name,
                 "phone": phone,
@@ -278,7 +278,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         lead_data = {
             "name": name,
-            "phone": phone,
+            "phone": f"+{phone}",
             "page": page,
             "manager_id": 24,
         }
@@ -302,7 +302,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":f"{subject}",
                 "name": name,
                 "phone": phone,
@@ -345,7 +345,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":f"{subject}",
                 "name": name,
                 "phone": phone,
@@ -388,7 +388,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":subject,
                 "name": name,
                 "phone": phone,
@@ -436,7 +436,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":subject,
                 "name": name,
                 "phone": phone,
@@ -490,7 +490,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":subject,
                 "name": client_name,
                 "phone": client_phone,
@@ -516,7 +516,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         lead_data = {
             "name": name,
-            "phone": phone,
+            "phone": f"+{phone}",
             "message": message,
             "manager_id": 24,
         }
@@ -541,7 +541,7 @@ class FormWebViewSet(viewsets.ModelViewSet):
 
         if data and sending_result:
             data_for_lemur = {
-                "site": DOMIAN,
+                "site": "motrum.ru",
                 "form":subject,
                 "name": name,
                 "phone": phone,

@@ -21,7 +21,7 @@ from apps.core.models import (
 from apps.product.admin import LotAdmin
 from apps.product.models import Lot
 from project.admin import website_admin
-
+from django.utils.html import format_html
 
 class CurrencyPercentAdmin(admin.ModelAdmin):
     # model = CurrencyPercent
@@ -64,7 +64,7 @@ class BaseInfoAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
 class BaseImageAdmin(admin.ModelAdmin):
     def has_add_permission(
         self,
@@ -223,6 +223,20 @@ class SeoTextSolutionsAdminWeb(admin.ModelAdmin):
     )
 
 
+class PhotoClientInfoWebWebAdmin(admin.ModelAdmin):
+    list_editable = ("article",)
+    list_display = [
+        "image",
+        "article",
+        "image_tag",
+    ]
+
+    def image_tag(self, obj):
+        return format_html(
+            '<img src="{}" width="60" height="60" />'.format(obj.image.url)
+        )
+
+
 # Register your models here.
 
 admin.site.register(BaseImage,BaseImageAdmin)
@@ -238,5 +252,4 @@ website_admin.register(IndexInfoWeb, IndexInfoWebAdminWeb)
 website_admin.register(CompanyInfoWeb, CompanyInfoWebAdminWeb)
 website_admin.register(CompanyPrijectAutoInfoWeb, CompanyPrijectAutoInfoWebAdminWeb)
 # website_admin.register(ReviewsAutoInfoWeb, ReviewsAutoInfoWebAdminWeb)
-website_admin.register(PhotoClientInfoWeb)
-
+website_admin.register(PhotoClientInfoWeb, PhotoClientInfoWebWebAdmin)

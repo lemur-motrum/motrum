@@ -11,6 +11,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function onScroll() {
       dynamicsElems.forEach((el) => {
+        const numberPlusContainer = el.querySelector(".plus_block");
         const quantityContainer = el.querySelector(".quantity");
         const currentQuantity = quantityContainer.getAttribute("data-quantity");
         let count = 0;
@@ -20,10 +21,13 @@ window.addEventListener("DOMContentLoaded", () => {
           posTop >= 0
         ) {
           const interval = setInterval(() => {
-            quantityContainer.textContent = +count;
+            quantityContainer.textContent = (+count).toLocaleString('ru');
             count += 1;
             if (count == +currentQuantity) {
-              quantityContainer.textContent = +count;
+              quantityContainer.textContent = (+count).toLocaleString('ru');
+              if(numberPlusContainer){
+                numberPlusContainer.classList.add('show_plus')
+              }
               clearInterval(interval);
             }
           }, 0.5);

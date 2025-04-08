@@ -472,7 +472,7 @@ def create_specification(request):
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")
-
+    
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
@@ -1695,8 +1695,15 @@ def bx_save_start_info(request):
                         samesite="None",
                         secure=True,
                     )
+                    response.set_cookie(
+                        "specificationId",
+                        0,
+                        max_age=2629800,
+                        samesite="None",
+                        secure=True,
+                    )
                 else:
-
+                    
                     response = render(
                         request,
                         next_url,

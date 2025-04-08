@@ -288,6 +288,9 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
         "crm.requisite.link.list",
         {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
     )
+    if len(req_bx_order) == 0: 
+        return (True, "Реквизиты", None)
+    
     print("req_bx_order", req_bx_order)
     req_bx_id = req_bx_order["REQUISITE_ID"]
     req_acc_bx_id = req_bx_order["BANK_DETAIL_ID"]

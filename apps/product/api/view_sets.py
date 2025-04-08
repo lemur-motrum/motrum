@@ -119,7 +119,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 q_object &= Q(category=None)
             elif category_get == "":
                 pass
-            if category_get == "search":
+            elif category_get == "search":
                 q_object &= Q(article__isnull=False)
             else:
                 q_object &= Q(category__id=category_get)

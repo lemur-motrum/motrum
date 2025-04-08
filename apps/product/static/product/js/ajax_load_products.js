@@ -27,6 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let priceTo;
     let sort;
     let maxValue;
+    let searchText = urlParams.get("search_text");
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -133,6 +134,7 @@ window.addEventListener("DOMContentLoaded", () => {
         pricefrom: priceFrom ? priceFrom : 0,
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
+        search_text: searchText ? searchText : "",
       };
 
       let params = new URLSearchParams(data);
@@ -223,6 +225,7 @@ window.addEventListener("DOMContentLoaded", () => {
     window.onload = () => {
       const pageGetParam = urlParams.get("page");
       const priceGetParam = urlParams.get("price");
+
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
         productCount = 10;

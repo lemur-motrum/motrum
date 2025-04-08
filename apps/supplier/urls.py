@@ -21,14 +21,14 @@ urlpatterns = [
         "save_emas_props/", views.save_emas_props, name="save_emas_props"
     ),  # характеристики и фото есмас из выгрузок первичное
     path(
-        "save_delta_optus_vendor/", views.add_vendor_delta_optimus_after_load, name="save_delta_optus_vendor"
-    ),  # вендоры из групп оптимус дельта первично 
-    
+        "save_delta_optus_vendor/",
+        views.add_vendor_delta_optimus_after_load,
+        name="save_delta_optus_vendor",
+    ),  # вендоры из групп оптимус дельта первично
     path("add_permission/", views.add_permission, name="add_permission"),  # Праздники
     path("add_holidays/", views.add_holidays, name="add_holidays"),  # права админа
     path("get_currency/", views.get_currency, name="get_currency"),
     path("add_stage_bx/", views.add_stage_bx, name="add_stage_bx"),
-   
     # url для автозаполнения
     url(
         r"^vendor-autocomplete/$",

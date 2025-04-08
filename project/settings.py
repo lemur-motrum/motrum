@@ -44,7 +44,6 @@ ALLOWED_HOSTS = [
     "motrum.ru",
     "192.168.0.104",
     "192.168.0.110",
-    
 ]
 DOMIAN = os.environ.get("DOMIAN")
 
@@ -122,8 +121,6 @@ MIDDLEWARE = [
     "middlewares.middlewares.RequestMiddleware",
     "middlewares.middlewares.WwwRedirectMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-   
-    
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -302,20 +299,19 @@ REST_FRAMEWORK = {
     #     ],
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
     #     'rest_framework.authentication.BasicAuthentication',  # enables simple command line authentication
-        
     # )
 }
 
 NDS = 20
 
-if IS_PROD: 
+if IS_PROD:
     BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
     BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"
 else:
     BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK_TEST_SERVER")
     BASE_MANAGER_FOR_BX = "support@lemurteam.ru"
 
-    
+
 # BITRIX_WEBHOOK = os.environ.get("BITRIX_WEBHOOK")
 # BASE_MANAGER_FOR_BX = "viktoria.bazarnova@motrum.ru"
 # BASE_MANAGER_FOR_BX = "steisysi@gmail.com"

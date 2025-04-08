@@ -93,13 +93,14 @@ class ProductSpesifSerializer(serializers.ModelSerializer):
 
 
 class ProductSearchSerializer(serializers.ModelSerializer):
-
+    url = serializers.CharField(source="get_absolute_url", read_only=True)
     class Meta:
         model = Product
         fields = (
             "id",
             "article_supplier",
             "name",
+            "url",
         )
     
 
@@ -155,9 +156,9 @@ class ProductSerializer(serializers.ModelSerializer):
                     else:
                         price_discount = price - (price / 100 * float(discount))
                     data["price"]["rub_price_supplier"] = round(price_discount, 2)
-        # if len(data["productimage_set"]) > 0:
-        #     # crop='center', quality=99
-        #     data["productimage_set"][0]["photo"]  = get_thumbnail(data["productimage_set"][0]["photo"], '200x200',format="PNG",quality=50 ).url
+        if len(data["productimage_set"]) > 0:
+            # crop='center', quality=99
+            data["productimage_set"][0]["photo"]  = get_thumbnail(data["productimage_set"][0]["photo"], '200x200',format="PNG",quality=50 ).url
 
         return data
     

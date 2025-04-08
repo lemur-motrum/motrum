@@ -23,8 +23,6 @@ from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
 
-
-
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -1507,7 +1505,7 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
             # TODO:сохранять номер если все ок
             # specification_name = requisites.number_spec + 1
             # requisites.number_spec = specification_name
-            
+
             data_specification = {
                 "cart": cart.id,
                 "admin_creator": None,
@@ -1516,31 +1514,30 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                 # "number": specification_name,
                 "tag_stop": True,
             }
-            
+
             old_spesif = Specification.objects.filter(cart=cart.id)
             if old_spesif:
                 old_spesif = old_spesif[0]
                 data_specification = {
-                # "cart": cart.id,
-                "admin_creator": None,
-                "id_bitrix": None,
-                "date_stop": data_stop,
-                # "number": specification_name,
-                "tag_stop": True,
-            }
+                    # "cart": cart.id,
+                    "admin_creator": None,
+                    "id_bitrix": None,
+                    "date_stop": data_stop,
+                    # "number": specification_name,
+                    "tag_stop": True,
+                }
                 serializer = serializer_class_specification(
-                old_spesif, data=data_specification, partial=True
-            )
+                    old_spesif, data=data_specification, partial=True
+                )
             else:
                 old_spesif = None
                 serializer = serializer_class_specification(
-                data=data_specification, partial=True
-            )
-                
-            
+                    data=data_specification, partial=True
+                )
+
             print(data_specification)
             date_delivery_all = None
-            
+
             if serializer.is_valid():
                 print("serializer.is_valid()")
                 # serializer._change_reason = "Клиент с сайта"
@@ -1676,13 +1673,19 @@ def save_order_web(request, data_order, all_info_requisites, all_info_product):
 
 def client_info_bitrix(data, company_adress):
     from apps.client.models import RequisitesAddress
-    from apps.client.models import AccountRequisites, Requisites, RequisitesOtherKpp,ClientRequisites
+    from apps.client.models import (
+        AccountRequisites,
+        Requisites,
+        RequisitesOtherKpp,
+        ClientRequisites,
+    )
     from dateutil.parser import parse
+
     error = "info_error_order"
     location = "отправка client_info_bitrix "
     info = f"отправка client_info_bitrix {data}{company_adress}"
     e = error_alert(error, location, info)
-    
+
     if data["contract_date"]:
         data_contract = parse(data["contract_date"]).date()
         # data_contract = datetime.datetime.strptime(
@@ -1690,33 +1693,32 @@ def client_info_bitrix(data, company_adress):
         # ).date()
     else:
         data_contract = None
-        
-    if len(data['contact_bd_arr']) > 0:
+
+    if len(data["contact_bd_arr"]) > 0:
         pass
     client_req, client_req_created = Requisites.objects.update_or_create(
         # id_bitrix=data["id_company"],
         inn=data["inn"],
         defaults={
-            "id_bitrix":data["req_id_bitrix"],
+            "id_bitrix": data["req_id_bitrix"],
             "legal_entity": data["legal_entity"],
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
             "first_name": data["first_name"],
             "last_name": data["last_name"],
             "middle_name": data["middle_name"],
-             # "contract": data["contract"],
+            # "contract": data["contract"],
             # "contract_date": data_contract,
             # "id_bitrix": data["id_bitrix"],
         },
         create_defaults={
-            "id_bitrix":data["req_id_bitrix"],
+            "id_bitrix": data["req_id_bitrix"],
             "legal_entity": data["legal_entity"],
             "inn": data["inn"],
             "contract": data["contract"],
             "contract_date": data_contract,
             "type_client": data["type_client"],
             "manager_id": int(data["manager"]),
-            
             "first_name": data["first_name"],
             "last_name": data["last_name"],
             "middle_name": data["middle_name"],
@@ -1752,16 +1754,19 @@ def client_info_bitrix(data, company_adress):
     print(
         "client_req_kpp, client_req_kpp_created", client_req_kpp, client_req_kpp_created
     )
-    
-    if len(data['contact_bd_arr']) > 0:
-        for contact_bd in data['contact_bd_arr']:
-            client_req_ty, client_req_created_ty = ClientRequisites.objects.update_or_create(client_id = int(contact_bd),requisitesotherkpp=client_req_kpp)
-           
-    
-    req_adress_web = RequisitesAddress.objects.filter(
-                requisitesKpp=client_req_kpp,
-                type_address_bx="web-lk-adress",
+
+    if len(data["contact_bd_arr"]) > 0:
+        for contact_bd in data["contact_bd_arr"]:
+            client_req_ty, client_req_created_ty = (
+                ClientRequisites.objects.update_or_create(
+                    client_id=int(contact_bd), requisitesotherkpp=client_req_kpp
+                )
             )
+
+    req_adress_web = RequisitesAddress.objects.filter(
+        requisitesKpp=client_req_kpp,
+        type_address_bx="web-lk-adress",
+    )
     type_address_bx_9 = False
     for company_bx_adress in company_adress:
 
@@ -1774,7 +1779,7 @@ def client_info_bitrix(data, company_adress):
             pass
         else:
             company_bx_adress["province"] == None
-        
+
         client_req_kpp_address, client_req_kpp_created_address = (
             RequisitesAddress.objects.update_or_create(
                 requisitesKpp=client_req_kpp,
@@ -1790,56 +1795,53 @@ def client_info_bitrix(data, company_adress):
                 },
             )
         )
-        
-        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "9":
+
+        if req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "9":
             client_req_kpp_address, client_req_kpp_created_address = (
-            RequisitesAddress.objects.update_or_create(
-                requisitesKpp=client_req_kpp,
-                type_address_bx="web-lk-adress",
-                defaults={
-                    "country": company_bx_adress["country"],
-                    "post_code": int(company_bx_adress["post_code"]),
-                    "region": company_bx_adress["province"],
-                    "province": company_bx_adress["region"],
-                    "city": company_bx_adress["city"],
-                    "address1": company_bx_adress["address1"],
-                    "address2": company_bx_adress["address2"],
-                },
+                RequisitesAddress.objects.update_or_create(
+                    requisitesKpp=client_req_kpp,
+                    type_address_bx="web-lk-adress",
+                    defaults={
+                        "country": company_bx_adress["country"],
+                        "post_code": int(company_bx_adress["post_code"]),
+                        "region": company_bx_adress["province"],
+                        "province": company_bx_adress["region"],
+                        "city": company_bx_adress["city"],
+                        "address1": company_bx_adress["address1"],
+                        "address2": company_bx_adress["address2"],
+                    },
+                )
             )
-        )
             type_address_bx_9 == True
-            
-        if  req_adress_web.count() == 0 and company_bx_adress["type_address_bx"] == "6" and type_address_bx_9 == False:
+
+        if (
+            req_adress_web.count() == 0
+            and company_bx_adress["type_address_bx"] == "6"
+            and type_address_bx_9 == False
+        ):
 
             client_req_kpp_address, client_req_kpp_created_address = (
-            RequisitesAddress.objects.update_or_create(
-                requisitesKpp=client_req_kpp,
-                type_address_bx="web-lk-adress",
-                defaults={
-                    "country": company_bx_adress["country"],
-                    "post_code": int(company_bx_adress["post_code"]),
-                    "region": company_bx_adress["province"],
-                    "province": company_bx_adress["region"],
-                    "city": company_bx_adress["city"],
-                    "address1": company_bx_adress["address1"],
-                    "address2": company_bx_adress["address2"],
-                },
+                RequisitesAddress.objects.update_or_create(
+                    requisitesKpp=client_req_kpp,
+                    type_address_bx="web-lk-adress",
+                    defaults={
+                        "country": company_bx_adress["country"],
+                        "post_code": int(company_bx_adress["post_code"]),
+                        "region": company_bx_adress["province"],
+                        "province": company_bx_adress["region"],
+                        "city": company_bx_adress["city"],
+                        "address1": company_bx_adress["address1"],
+                        "address2": company_bx_adress["address2"],
+                    },
+                )
             )
-        )
-            
-        
-            
-        
+
         print(
             "client_req_kpp_address, client_req_kpp_created_address",
             client_req_kpp_address,
             client_req_kpp_created_address,
         )
 
-    
-    
-        
-    
     acc_req, acc_req_created = AccountRequisites.objects.update_or_create(
         requisitesKpp=client_req_kpp,
         account_requisites=data["account_requisites"],
@@ -1860,15 +1862,12 @@ def send_requests(url, headers, data, auth):
         print("auth1c")
         payload = data
         url = os.environ.get("1S_URL")
-        headers = {
-           
-        }
+        headers = {}
         auth = HTTPBasicAuth(os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD"))
         import ssl
 
         paths = ssl.get_default_verify_paths()
         certifi1 = certifi.where()
-        
 
         response = requests.request(
             "POST",
@@ -1889,7 +1888,6 @@ def send_requests(url, headers, data, auth):
     else:
         response = requests.post(url, headers=headers, data=data, json=data)
 
-
     if response.status_code != 200:
         error = "error"
         location = "отправка requests"
@@ -1897,7 +1895,6 @@ def send_requests(url, headers, data, auth):
         e = error_alert(error, location, info)
 
     return response.status_code
-    
 
 
 def json_serial(obj):
@@ -2331,7 +2328,7 @@ def save_info_bitrix_after_web(data, req):
         r.contract_date = data_contract
     if manager:
         r.manager = manager[0]
-    
+
     r.id_bitrix = id_req_bx
     r.save()
     print(r)
@@ -2347,8 +2344,10 @@ def delete_everything_in_folder(folder_path):
 
 # save_props_etim
 
-def get_etim_prors_iek(prop_list,article):
+
+def get_etim_prors_iek(prop_list, article):
     from apps.product.models import ProductProperty
+
     for item_prop in prop_list:
         if len(item_prop) > 0:
             pass_item = False
@@ -2366,61 +2365,63 @@ def get_etim_prors_iek(prop_list,article):
                 unit_measure = item_prop["unit"]
                 if unit_measure != None:
                     name = f"{name} {unit_measure}"
-            
+
             prop = ProductProperty(
-                    product=article,
-                    name=name,
-                    value=value,
-                    hide=False,
-                    unit_measure=unit_measure,
-                )
+                product=article,
+                name=name,
+                value=value,
+                hide=False,
+                unit_measure=unit_measure,
+            )
 
             prop.save()
             update_change_reason(prop, "Автоматическое")
 
 
-def send_lemur_form(data,request):
-#     data = {
-#         "site": DOMIAN,
-#         "form":name-form,
-#         "name":Имя с формы,
-#         "email":Email с формы,
-#         "phone":phone  с формы,
-#         "message":message   с формы,
-#         "link":link * Ссылка с какой страницы пришло сообщение,
-#     }
+def send_lemur_form(data, request):
+    #     data = {
+    #         "site": DOMIAN,
+    #         "form":name-form,
+    #         "name":Имя с формы,
+    #         "email":Email с формы,
+    #         "phone":phone  с формы,
+    #         "message":message   с формы,
+    #         "link":link * Ссылка с какой страницы пришло сообщение,
+    #     }
     headers = {}
     response = requests.request(
-            "POST",
-            FORM_LEMUR,
-            headers=headers,
-            data=data,
-            allow_redirects=False,
-            verify=False,
-        )
+        "POST",
+        FORM_LEMUR,
+        headers=headers,
+        data=data,
+        allow_redirects=False,
+        verify=False,
+    )
+
 
 def add_new_photo_adress_prompower():
-    from apps.product.models import Product,ProductDocument
+    from apps.product.models import Product, ProductDocument
     from apps.supplier.models import (
-    Supplier,
-    Vendor,
-)
+        Supplier,
+        Vendor,
+    )
+
     prompower = Supplier.objects.get(slug="prompower")
     base_adress = "https://prompower.ru"
-    vendori = Vendor.objects.get(slug="prompower") 
+    vendori = Vendor.objects.get(slug="prompower")
     vendor_item = vendori
-    
+
     url = "https://prompower.ru/api/prod/getProducts"
     payload = json.dumps(
-            {
-                "email": os.environ.get("PROMPOWER_API_EMAIL"),
-                "key": os.environ.get("PROMPOWER_API_KEY"),
-            }
-        )
-    headers = {
-            "Content-type": "application/json",
-            "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
+        {
+            "email": os.environ.get("PROMPOWER_API_EMAIL"),
+            "key": os.environ.get("PROMPOWER_API_KEY"),
         }
+    )
+    headers = {
+        "Content-type": "application/json",
+        "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
+    }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = response.json()
     # old_doc =ProductDocument.objects.filter(link__contains="https://prompower.ru/")
@@ -2429,20 +2430,20 @@ def add_new_photo_adress_prompower():
     #     response = requests.get(url)
     #     if response.status_code == 404:
     #         o_doc.delete()
-       
-    
+
     for data_item in data:
-        
+
         if data_item["article"] != None:
+
             def del_doc(product):
                 directory = f"{MEDIA_ROOT}/products/prompower/prompower/{product.article_supplier}/document"
                 print(directory)
                 if not os.path.exists(directory):
                     print("directory_NOT")
                 else:
-                    print("YES",product.article_supplier)
+                    print("YES", product.article_supplier)
                     delete_everything_in_folder(directory)
-                    
+
             def save_document(categ, product):
                 base_dir = "products"
                 path_name = "document_group"
@@ -2450,11 +2451,14 @@ def add_new_photo_adress_prompower():
                 base_dir_vendor = product.vendor.slug
                 doc_list = data_item["cad"]
                 if len(doc_list) > 0:
-                    print("doc_list",doc_list)
+                    print("doc_list", doc_list)
                     for doc_item_individual in doc_list:
                         print("for")
-                        if doc_item_individual["filename"] != "" or doc_item_individual["filename"] != None:
-                            print("doc_item_individual == None" ,product)
+                        if (
+                            doc_item_individual["filename"] != ""
+                            or doc_item_individual["filename"] != None
+                        ):
+                            print("doc_item_individual == None", product)
                             img = f"{base_adress}/catalog/CAD/{doc_item_individual["filename"]}"
                             image = ProductDocument.objects.create(product=article)
                             update_change_reason(image, "Автоматическое")
@@ -2465,8 +2469,11 @@ def add_new_photo_adress_prompower():
                             image.link = img
                             image.document = image_path
                             image.link = img
-                            
-                            if doc_item_individual["title"] == "" and doc_item_individual["title"] == None:
+
+                            if (
+                                doc_item_individual["title"] == ""
+                                and doc_item_individual["title"] == None
+                            ):
                                 name = doc_item_individual["filename"]
                                 images_last_list = name.split(".")
                                 name = images_last_list[0]
@@ -2476,26 +2483,42 @@ def add_new_photo_adress_prompower():
                                 name = doc_item_individual["title"]
                                 print(name)
                                 image.name = name
-                            
-                            
+
                             image.type_doc = "Other"
                             image.save()
                             print(image)
                             print(image.document)
                             update_change_reason(image, "Автоматическое")
-            
+
             article_suppliers = data_item["article"]
             try:
                 article = Product.objects.get(
-                                    supplier=prompower,
-                                    vendor=vendori,
-                                    article_supplier=article_suppliers,
-                                )
-
-                
-                # del_doc(article)
+                    supplier=prompower,
+                    vendor=vendori,
+                    article_supplier=article_suppliers,
+                )
+                del_doc(article)
                 save_document(None, article)
             except Exception as e:
                 print(e)
                 # print("Нет такого твоара",article_suppliers)
-              
+
+
+def serch_products_web(search_text, queryset):
+    print("queryset1",queryset)
+    search_input = search_text
+    search_input = search_input.replace(".", "").replace(",", "")
+    search_input = search_input.split()
+    print("search_input",search_input)
+    queryset = queryset.filter(
+        Q(name__icontains=search_input[0])
+        | Q(article_supplier__icontains=search_input[0])
+    )
+    if len(search_input) > 1:
+        for search_item in search_input[1:]:
+            queryset = queryset.filter(
+                Q(name__icontains=search_item)
+                | Q(article_supplier__icontains=search_item)
+            )
+    print("queryset",queryset)
+    return queryset

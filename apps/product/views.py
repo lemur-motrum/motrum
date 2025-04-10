@@ -237,6 +237,13 @@ def product_one(request, category, group, article):
     )
     product_document = ProductDocument.objects.filter(product=product, hide=False)
     print("product_document", product_document)
+    id_ex = []
+    for product_docum in product_document:
+        dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
+        if not os.path.exists(dir_img):
+            id_ex.append(product_docum.id)
+
+    product_document = product_document.exclude(id__in=id_ex)
 
     context = {
         "product": product,
@@ -281,6 +288,13 @@ def product_one_without_group(request, category, article):
         .get(article=article)
     )
     product_document = ProductDocument.objects.filter(product=product, hide=False)
+    id_ex = []
+    for product_docum in product_document:
+        dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
+        if not os.path.exists(dir_img):
+            id_ex.append(product_docum.id)
+
+    product_document = product_document.exclude(id__in=id_ex)
     # product = Product.objects.get(article=article)
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)

@@ -1966,20 +1966,23 @@
   gap: 1.5rem;
   margin-top: 2.5rem;
   width: 100%;
+  align-items: center;
   @media screen and(max-width:576px) {
     flex-direction: column;
     gap: 0.5rem;
+    align-items: flex-start;
   }
   .search_title {
-    font-size: 3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     text-transform: uppercase;
+
     @media screen and(max-width:576px) {
-      font-size: 1.5rem;
+      font-size: 1rem;
     }
   }
   label {
-    width: 71.25rem;
+    width: 76.25rem;
     height: 3.563rem;
     position: relative;
     @media screen and(max-width:576px) {

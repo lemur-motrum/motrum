@@ -8,6 +8,7 @@
             <h1 class="title">Товары</h1>
         </div>
         {% include "core/includes/vendors.html" %}
+        {% include "product/includes/search_block.html" %}
         <div class="category_container">
             {% if category %}
                 {% for category_item in category %}

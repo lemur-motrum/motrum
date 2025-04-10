@@ -1,0 +1,20 @@
+<div class="site_search_container">
+    <div class="search_title">поиск</div>
+    <label>
+        <div class="close_btn">+</div>
+        <div class="search_btn">Поиск</div>
+        <input type="text" placeholder="Введите название или артикул" class="input_text">
+        <div class="search_elem_wrapper" search-elem="wrapper">
+            <div class="loader"></div>
+            <div class="search_elems_container" search-elem="container">
+                {% if search_list %}
+                    {% for search_elem in search_list %}
+                        {% include "product/includes/search_elem.html" with search_elem=search_elem %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </label>
+    <div class="search_site_overlay">
+    </div>
+</div>

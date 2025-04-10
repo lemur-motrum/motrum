@@ -42,6 +42,11 @@ def js_templates():
             "name": "vacancy-item",
             "template": "vacancy_web/includes/ajax_vacancy_item.html",
         },
+        {
+            "module": "search",
+            "name": "search-elem",
+            "template": "product/includes/ajax_search_elem.html",
+        },
     ]
 
     for template_item in template_list:

@@ -138,7 +138,7 @@ def add_iek(request):
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
-    return render(request, "core/error_pages/404.html", context)
+    return render(request, "supplier/supplier.html", context)
 
 
 # тестовая страница скриптов

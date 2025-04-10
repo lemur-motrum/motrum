@@ -769,6 +769,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
+
           getResult();
         }
 
@@ -1132,6 +1133,14 @@ window.addEventListener("DOMContentLoaded", () => {
               console.error(error);
             });
         };
+        if (discountInput.value) {
+          const currentPrice =
+            quantity.value *
+            ((getCurrentPrice(item.getAttribute("data-price")) *
+              (100 - +discountInput.value)) /
+              100);
+          getDigitsNumber(productTotalPrice, currentPrice);
+        }
       });
       getResult();
       if (saveButton) {

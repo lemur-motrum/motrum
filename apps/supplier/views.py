@@ -131,8 +131,8 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
     # add_new_photo_adress_prompower()
 
     result = 1

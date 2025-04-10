@@ -95,9 +95,9 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.counter_bill_new_year",
         "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
     },
-    # обновить битые доки промповер
-    "add_prompower_new_doc": {
-        "task": "apps.supplier.tasks.add_prompower_new_doc",
-        "schedule": crontab(0, 0, day_of_month=9, month_of_year=4),
-    },
+    # # обновить битые доки промповер
+    # "add_prompower_new_doc": {
+    #     "task": "apps.supplier.tasks.add_prompower_new_doc",
+    #     "schedule": crontab(0, 0, day_of_month=8, month_of_year=4),
+    # },
 }

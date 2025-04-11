@@ -57,7 +57,7 @@
                         <div class="documentation_title">Документация</div>
                         <div class="documentation_items">
                             {% for productdocument in product_document %}
-                                {% if productdocument.document.url %}
+                                {% if productdocument.document and productdocument.document.url %}
                                     <div class="documentation_item">
                                         <a target="_blank"
                                            class="documentation_link"
@@ -135,15 +135,19 @@
                     <div class="documentation_title">Документация</div>
                     <div class="documentation_items">
                         {% for productdocument in product_document %}
+                        {% if productdocument.document and productdocument.document.url %}
+                        
+                        
                             <div class="documentation_item">
                                 <a class="documentation_link"
                                    target="_blank"
                                    href="{{ productdocument.document.url }}">{{ productdocument.name }}</a>
-                                {% comment %} <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span> {% endcomment %}
+                                <span class="documentation_link_exe">({{ productdocument.extension|upper }}, {{ productdocument.document.size|filesizeformat }}) </span>
                             </div>
+                            {% endif %}
                         {% empty %}
                         {% endfor %}
-                    </div>
+                    </div> 
                 {% endif %}
             </div>
         </div>

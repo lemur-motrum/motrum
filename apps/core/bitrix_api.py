@@ -954,6 +954,10 @@ def save_payment_order_bx(data):
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)
+            error = "info_error_order"
+            location = "save_payment_order_bx"
+            info = f"OK SIGNAL BX после BX save_payment_order_bx{data_item["bitrix_id"]}bx orders_bx={orders_bx} data_order={data_order}"
+            e = error_alert(error, location, info)
 
         error = "info_error_order"
         location = "save_payment_order_bx"

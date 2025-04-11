@@ -131,14 +131,14 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
     # add_new_photo_adress_prompower()
 
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
-    return render(request, "core/error_pages/404.html", context)
+    return render(request, "supplier/supplier.html", context)
 
 
 # тестовая страница скриптов

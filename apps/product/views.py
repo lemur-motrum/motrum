@@ -9,7 +9,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc
+from apps.core.utils import get_file_path_add_more_doc, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -60,6 +60,8 @@ def catalog_all(request):
 def catalog_group(request, category):
     print("catalog_group")
     media_url = MEDIA_URL
+    search_text = None
+
     group = (
         GroupProduct.objects.filter(category__slug=category)
         .prefetch_related(
@@ -68,8 +70,9 @@ def catalog_group(request, category):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-
-    if len(group) > 0:
+    print("group", group)
+    # товарфы в группе
+    if len(group) > 0 and category != "search":
         cat = CategoryProduct.objects.get(slug=category)
         all_categories = (
             CategoryProduct.objects.prefetch_related(
@@ -95,52 +98,78 @@ def catalog_group(request, category):
             # "another_categories": get_another_category(),
             "another_categories": all_categories,
             "title": cat.name,
-            "meta_title": f"{cat.name} | Мотрум - автоматизация производства",
+            "meta_title": f"{cat.name}| Мотрум - автоматизация производства",
         }
 
         return render(request, "product/product_group.html", context)
+    # все твоары в категории или все твоары .товары без категории. товары поиска
     else:
-        # vendor = Vendor.objects.filter()
+
         q_object = Q()
         q_object &= Q(check_to_order=True, in_view_website=True)
 
         if category is not None:
-            # q_object &= Q(category__slug=category)
             if category == "other":
                 q_object &= Q(category=None)
             elif category == "all":
                 q_object &= Q(article__isnull=False)
+            elif category == "search":
+                search_text = request.GET.get("search_text")
+                # search_text="грибок кнопка"
+                q_object &= Q(article__isnull=False)
+
             else:
                 q_object &= Q(category__slug=category)
 
-        product_vendor = (
+        queryset = (
             Product.objects.select_related(
                 "vendor",
                 "category",
-            )
-            .filter(q_object)
-            .order_by("vendor__name")
+            ).filter(q_object)
+            # .order_by("vendor__name")
+            # .distinct("vendor__name")
+            # .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+        )
+        if search_text and search_text != "":
+            print("search_text and search_text != """)
+            queryset = serch_products_web(search_text, queryset)
+            print(queryset)
+
+        product_vendor = (
+            queryset.order_by("vendor__name")
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-
+        print("product_vendor",product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
             if category == "all":
-                current_category = {"name": "Все товары", "slug": category}
+                current_category = {
+                    "meta_title": f"Все товары | Мотрум - автоматизация производства",
+                    "name": "Все товары",
+                    "slug": category,
+                }
             elif category == "other":
                 current_category = {
+                    "meta_title": f"Товары без категории| Мотрум - автоматизация производства",
                     "name": "Товары без категории",
                     "slug": category,
                 }
+            elif category == "search":
+                search_text = request.GET.get("search_text")
+                name = f"Поиск: {search_text}"
+                current_category = {
+                    "meta_title": f"Поиск по товарам |Мотрум - автоматизация производства",
+                    "name": name,
+                    "slug": category,
+                }
             else:
-                pass
-                # !!!!!
-                # current_category = {
-                #     "name": "NONE",
-                #     "slug": category,
-                # }
+                current_category = {
+                    "meta_title": f"Мотрум - автоматизация производства",
+                    "name": "Все товары",
+                    "slug": category,
+                }
 
         context = {
             "current_category": current_category,
@@ -237,6 +266,13 @@ def product_one(request, category, group, article):
     )
     product_document = ProductDocument.objects.filter(product=product, hide=False)
     print("product_document", product_document)
+    id_ex = []
+    for product_docum in product_document:
+        dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
+        if not os.path.exists(dir_img):
+            id_ex.append(product_docum.id)
+
+    product_document = product_document.exclude(id__in=id_ex)
 
     context = {
         "product": product,
@@ -281,6 +317,13 @@ def product_one_without_group(request, category, article):
         .get(article=article)
     )
     product_document = ProductDocument.objects.filter(product=product, hide=False)
+    id_ex = []
+    for product_docum in product_document:
+        dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
+        if not os.path.exists(dir_img):
+            id_ex.append(product_docum.id)
+
+    product_document = product_document.exclude(id__in=id_ex)
     # product = Product.objects.get(article=article)
     # product_properties = ProductProperty.objects.filter(product=product.pk)
     # product_lot = Stock.objects.get(prod=product.pk)
@@ -295,6 +338,10 @@ def product_one_without_group(request, category, article):
         # "product_lot": product_lot,
     }
     return render(request, "product/product_one.html", context)
+
+
+def product_search(request):
+    pass
 
 
 # страница брендов общая

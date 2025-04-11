@@ -769,6 +769,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
+
           getResult();
         }
 
@@ -854,6 +855,7 @@ window.addEventListener("DOMContentLoaded", () => {
           } else {
             countQuantity++;
           }
+
           quantity.value = +countQuantity;
           const currentPrice = !discountInput.value
             ? +getCurrentPrice(item.getAttribute("data-price")) *
@@ -997,7 +999,11 @@ window.addEventListener("DOMContentLoaded", () => {
             quantity.value = countQuantity;
             minusButton.disabled = false;
             if (countQuantity <= 1) {
-              quantity.value = 1;
+              if (multiplicity) {
+                quantity.value = +multiplicity;
+              } else {
+                quantity.value = 1;
+              }
               minusButton.disabled = true;
               plusButton.disabled = false;
             } else {
@@ -1127,6 +1133,14 @@ window.addEventListener("DOMContentLoaded", () => {
               console.error(error);
             });
         };
+        if (discountInput.value) {
+          const currentPrice =
+            quantity.value *
+            ((getCurrentPrice(item.getAttribute("data-price")) *
+              (100 - +discountInput.value)) /
+              100);
+          getDigitsNumber(productTotalPrice, currentPrice);
+        }
       });
       getResult();
       if (saveButton) {

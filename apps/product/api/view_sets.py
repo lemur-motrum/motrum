@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
 from apps.supplier.models import Vendor
-from apps.core.utils import check_file_price_directory_exist, product_cart_in_file
+from apps.core.utils import check_file_price_directory_exist, product_cart_in_file, serch_products_web
 from apps.logs.utils import error_alert
 from apps.product.api.serializers import (
     CartSerializer,
@@ -71,6 +71,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
 
+        if request.query_params.get("search_text"):
+            search_text = request.query_params.get("search_text")
+            if search_text == "":
+                search_text = None
+        else:
+            search_text = None
+            
+        print("search_text",search_text)
+
         # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
@@ -91,6 +100,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True, in_view_website=True)
+        
 
         if vendor_get is not None:
             if "None" in vendor_get:
@@ -111,6 +121,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                 q_object &= Q(category=None)
             elif category_get == "":
                 pass
+            elif category_get == "search":
+                q_object &= Q(article__isnull=False)
             else:
                 q_object &= Q(category__id=category_get)
 
@@ -169,22 +181,32 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productimage_set"),
             )
             .filter(q_object)
-            .order_by(sorting)[count : count + count_last]
+            # .order_by(sorting)[count : count + count_last]
         )
-        # .order_by(ordering_filter)
+       
+        # поиск
+        print(queryset)
+        if search_text:
+            queryset = serch_products_web(search_text, queryset)
+            
+        
         # проверка есть ли еще данные для след запроса
-        queryset_next = Product.objects.filter(q_object)[
+        # queryset_next = Product.objects.filter(q_object)[
+        #     count + count_last : count + count_last + 1
+        # ].exists()
+        queryset_next = queryset[
             count + count_last : count + count_last + 1
         ].exists()
-
+        # prod_qs = Product.objects.filter(q_object)
+       
+        price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
+        page_count = queryset.count()
+        queryset = queryset.order_by(sorting)[count : count + count_last]
+        
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
-        prod_qs = Product.objects.filter(q_object)
-        price_max = prod_qs.aggregate(Max("price__rub_price_supplier", default=0))
-
-        page_count = prod_qs.count()
-
+        
         if page_count % 10 == 0:
             count = page_count / 10
         else:
@@ -294,26 +316,51 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
     def search_product_web(self, request, *args, **kwargs):
-        pass
-
-    @action(detail=False, methods=["post", "get"], url_path=r"get-vendor")
-    def get_vendor(self, request, *args, **kwargs):
         data = request.data
+        count = data["count"]
+        count_last = data["count_last"]
         search_input = data["search_text"]
-        print("search_input", search_input)
-        queryset = Vendor.objects.all().order_by("name")
-        # стандатный варинт ищет целиокм
-        if search_input != "" or search_input != None:
-            queryset = Vendor.objects.filter(Q(name__icontains=search_input)).order_by(
-                "name"
-            )
+        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.split()
 
-        print(queryset)
-        serializer = VendorOktNewProdSerializer(queryset, many=True)
+        print(search_input)
+        # # вариант ищет каждое слово все рабоатет
+        queryset = Product.objects.filter(
+            Q(name__icontains=search_input[0])
+            # | Q(article__icontains=search_input[0])
+            | Q(article_supplier__icontains=search_input[0])
+            | Q(additional_article_supplier__icontains=search_input[0])
+        )
+        print(len(search_input))
+        # del search_input[0]
+        if len(search_input) > 1:
+            for search_item in search_input[1:]:
+                queryset = queryset.filter(
+                    Q(name__icontains=search_item)
+                    # | Q(article__icontains=search_item)
+                    | Q(article_supplier__icontains=search_item)
+                    | Q(additional_article_supplier__icontains=search_item)
+                )
+        else:
+            queryset = queryset[count : count + count_last]
+        queryset = queryset[count : count + count_last]
+        # стандатный варинт ищет целиокм
+        # queryset = Product.objects.filter(
+        #     Q(name__icontains=search_input)
+        #     | Q(article__icontains=search_input)
+        #     | Q(article_supplier__icontains=search_input)
+        #     | Q(additional_article_supplier__icontains=search_input)
+        # )
+        page_count = queryset.count()
+        count_all = count + page_count
+        serializer = ProductSearchSerializer(queryset, many=True)
         data_response = {
             "data": serializer.data,
+            "count": count,
+            "count_all": count_all,
         }
         return Response(data_response, status=status.HTTP_200_OK)
+
 
 
 class CartViewSet(viewsets.ReadOnlyModelViewSet):

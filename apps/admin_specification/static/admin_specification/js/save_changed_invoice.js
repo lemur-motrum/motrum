@@ -55,6 +55,9 @@ window.addEventListener("DOMContentLoaded", () => {
           const nameProductNew = specificationItem.getAttribute(
             "data-product-name-new"
           );
+          const nameProductNewart = specificationItem.getAttribute(
+            "data-product-name-new"
+          );
           const itemPriceStatus = specificationItem.getAttribute(
             "data-price-exclusive"
           );

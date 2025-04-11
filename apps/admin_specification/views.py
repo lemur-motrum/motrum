@@ -476,6 +476,7 @@ def create_specification(request):
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
+        print("cart_qs",cart_qs)
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
 
@@ -924,7 +925,7 @@ def create_specification(request):
         "hard_upd": hard_upd,
         "post_data_bx_id": post_data_bx_id,
     }
-
+    print("context",context)
     return render(request, "admin_specification/catalog.html", context)
 
 

@@ -543,6 +543,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
           const nameProductNew = item.getAttribute("data-product-name-new");
+          const nameProductNewАrt = item.getAttribute("data-product-article-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
 

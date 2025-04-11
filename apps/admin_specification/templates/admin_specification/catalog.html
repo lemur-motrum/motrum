@@ -91,9 +91,9 @@
                                 Неизвестно
                             {% endif %}
                         </div>
-                        {% if item.price_cart  == 0 or item.price_cart  == None or item.is_prise is None %}
+                        {% if item.price_cart  == 0  or item.is_prise is None %}
                             <div class="item_value">
-                                <input disabled class="price-input"
+                                <input class="price-input"
                                        name="price-input-extra"
                                        type="text"
                                        placeholder="Введите цену по запросу"
@@ -112,7 +112,7 @@
                                     </button>
                                     <input class="input-quantity"
                                            type="text"
-                                           value="{% if item.stock.is_one_sale %}{{ item.quantity }}{% else %}{{ item.stock.order_multiplicity }}{% endif %}"
+                                           value="{{ item.quantity }}"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
                                            onkeypress='validate(event)'>
@@ -125,11 +125,27 @@
                             <div class="item_value input_totla-cost total_cost price">0</div>
                         {% else %}
                             <div class="item_value">
-                                <span class="price price_once">{{ item.price_cart }}</span>
+                                {% comment %} <span class="price price_once">{{ item.price_cart }}</span> {% endcomment %}
+                                {% if item.price_cart  == None %}
+                                    {% comment %} <span class="price price_once">{{ item.price_cart }}</span> {% endcomment %}
+                                   
+                                    <input class="price-input price price_once"
+                                       disabled
+                                       name="price-input-extra"
+                                       type="text"
+                                       placeholder="Введите цену по запросу"
+                                       maxlength="10"
+                                       value="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one }}{% else %}{% endif %}" />
+                                <label for="price-input-extra">
+                                {% else %}
+                                    <span class="price price_once">{{ item.price_cart }}</span>
+                                {% endif %}
                                 <input class="change_input_price" value="{{ item.price_cart }}" />
                                 {% if item.price_cart != item.actual_price %}
                                     {% if item.actual_price %}
                                         <span class="okt-price">Цена в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
+                                    {% elif item.price_cart  == None %}
+                                        <span class="okt-price">Цена по запросу</span>
                                     {% else %}
                                         <span class="okt-price">Цена по запросу</span>
                                     {% endif %}
@@ -143,7 +159,7 @@
                                     </button>
                                     <input class="input-quantity"
                                            type="text"
-                                           value="{% if item.stock.is_one_sale %}{{ item.quantity }}{% else %}{{ item.stock.order_multiplicity }}{% endif %}"
+                                           value="{{ item.quantity }}"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
                                            onkeypress='validate(event)'>
@@ -209,12 +225,14 @@
                             <label>
                                 {% if bill_upd %}
                                     <input class="delivery_date"
+                                            disabled
                                            type="date"
                                            name="calendar"
                                            {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                           value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
+                                           value="{% if item.date_delivery_cart|date %}{{ item.date_delivery_cart|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date"
+                                            disabled
                                            type="date"
                                            name="calendar"
                                            {% comment %} onfocus="this.showPicker()" {% endcomment %}

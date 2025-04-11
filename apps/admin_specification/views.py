@@ -930,8 +930,8 @@ def create_specification(request):
         "post_data_bx_id": post_data_bx_id,
     }
 
-    # return render(request, "admin_specification/catalog.html", context)
-    return render(request, "admin_specification/catalog_copy_price.html", context)
+    return render(request, "admin_specification/catalog.html", context)
+    # return render(request, "admin_specification/catalog_copy_price.html", context)
 
 
 # рендер страницы со всеми спецификациями

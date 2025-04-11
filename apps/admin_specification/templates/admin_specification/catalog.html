@@ -112,7 +112,7 @@
                                     </button>
                                     <input class="input-quantity"
                                            type="text"
-                                           value="{{ item.quantity }}"
+                                           value="{% if item.stock.is_one_sale %}{{ item.quantity }}{% else %}{{ item.stock.order_multiplicity }}{% endif %}"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
                                            onkeypress='validate(event)'>
@@ -159,7 +159,7 @@
                                     </button>
                                     <input class="input-quantity"
                                            type="text"
-                                           value="{{ item.quantity }}"
+                                           value="{% if item.stock.is_one_sale %}{{ item.quantity }}{% else %}{{ item.stock.order_multiplicity }}{% endif %}"
                                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                            maxlength="5"
                                            onkeypress='validate(event)'>

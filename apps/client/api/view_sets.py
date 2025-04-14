@@ -1265,6 +1265,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
+        
+        
         return Response(cart, status=status.HTTP_200_OK)
 
     # ОКТ получить список товаров для создания счета с датами псотавки НА УДАЛЕНИЕ

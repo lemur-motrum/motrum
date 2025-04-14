@@ -207,6 +207,7 @@
                         </div>
                         <div class="item_value">
                             <input class="discount-input"
+                            disabled
                                    type="text"
                                    name="price-input-discount"
                                    placeholder="% скидки"
@@ -236,7 +237,9 @@
                                            type="date"
                                            name="calendar"
                                            {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                           min="{{ current_date }}">
+                                           min="{{ current_date }}"
+                                           value="{% if item.date_delivery_cart %}{{ item.date_delivery_cart|date:"Y-m-d"}}{% endif %}"
+                                           >
                                     {% if item.date_delivery %}
                                         <br>
                                         <span class="">{{ item.date_delivery }}</span>
@@ -249,8 +252,12 @@
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                        <!--когда аптейдейт-->
-                        <div class="item_container added_item_container"
+                        <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->
+                        
+                     {% if product_new.product != None %}
+                   
+                            
+                       <div class="item_container added_item_container"
                              data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
                              data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"
                              data-product-pk="{% if item.product %}{{ item.product.id }} {% endif %}"
@@ -481,7 +488,8 @@
                                 </div>
                             </div>
                         </div>
-                    {% else %}
+                        {% endif %}
+                    
                         <!--когда новая спецификация-->
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"
@@ -615,6 +623,7 @@
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
+                                
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
@@ -687,6 +696,7 @@
                                             %
                                         </div>
                                     </div>
+                                    
                                     <div class="add_change_item_in_cart_container">
                                         <button class="add_new_item_in_cart">Изменить</button>
                                         <div class="add_new_item_in_cart_container_error"></div>
@@ -695,7 +705,8 @@
                                 </div>
                             </div>
                         </div>
-                    {% endif %}
+                    
+                {% endif %}
                 {% endfor %}
                 <!--товары без записи в бд при аплдете добавленные новые которых еще нет в спецификации-->
                 {% for item in product_new_more %}

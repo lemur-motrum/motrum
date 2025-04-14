@@ -1429,6 +1429,9 @@ def save_new_product_okt(product_new):
         product_stock.save()
 
         product_new.product = product
+        prod_cart = product_new.id_cart
+        prod_cart.product = product 
+        prod_cart.save()
         product_new.save()
 
     return product

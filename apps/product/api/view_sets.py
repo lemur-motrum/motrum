@@ -719,6 +719,10 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = None
         print(data)
+        if data["sale_client"] == "":
+            data["sale_client"] = None
+        else:
+            sale_client =  float(data["sale_client"])
         serializer = serializer_class(queryset, data=data, partial=True)
 
         if serializer.is_valid():

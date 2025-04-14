@@ -239,6 +239,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
+            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
@@ -324,10 +325,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
+            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
+           
         )
         print(len(search_input))
         # del search_input[0]
@@ -340,8 +343,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(additional_article_supplier__icontains=search_item)
                 )
         else:
-            queryset = queryset[count : count + count_last]
+            queryset = queryset.filter(in_view_website=True)
+        queryset = queryset.filter(in_view_website=True)
+        
         queryset = queryset[count : count + count_last]
+        print(queryset)
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)

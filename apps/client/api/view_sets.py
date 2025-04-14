@@ -1157,6 +1157,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 is_req = True
             else:
                 is_req = False
+                
+            # сохранение товара в окт нового
             order_products = after_save_order_products(products)
             order_pdf = order.create_bill(
                 request,
@@ -1178,7 +1180,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                     document_specification = None
                 data = {"pdf": pdf, "name_bill": order.bill_name}
 
-                # сохранение товара в окт нового
                 
                 data_for_1c = create_info_request_order_1c(order, order_products)
                 

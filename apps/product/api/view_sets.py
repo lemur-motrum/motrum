@@ -343,8 +343,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(additional_article_supplier__icontains=search_item)
                 )
         else:
-            queryset = queryset.filter(in_view_website=True)
-        queryset = queryset.filter(in_view_website=True)
+            queryset = queryset.filter(check_to_order=True, in_view_website=True)
+        queryset = queryset.filter(check_to_order=True, in_view_website=True)
         
         queryset = queryset[count : count + count_last]
         print(queryset)

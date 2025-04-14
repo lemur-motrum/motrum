@@ -597,7 +597,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: deliveryDate.value,
             text_delivery: createTextDateDelivery(),
             product_name_new: nameProductNew,
-            product_new_article: nameProductNew,
+            product_new_article: nameProductNewАrt,
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,

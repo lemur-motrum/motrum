@@ -91,7 +91,7 @@ class LogsAddProduct(models.Model):
 
     info = models.CharField(
         "Инфо",
-        max_length=4000,
+        max_length=20000,
         blank=True,
         null=True,
     )
@@ -119,7 +119,7 @@ class LogsInfoError(models.Model):
     )
     info = models.CharField(
         "Инфо о ошибке",
-        max_length=20000,
+        max_length=100000,
         blank=True,
         null=True,
     )
@@ -147,7 +147,7 @@ class LogsOrderError(models.Model):
     )
     info = models.CharField(
         "Инфо о ошибке",
-        max_length=20000,
+        max_length=200000,
         blank=True,
         null=True,
     )

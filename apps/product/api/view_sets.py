@@ -241,6 +241,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
+            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
@@ -257,9 +258,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(additional_article_supplier__icontains=search_item)
                 )
         else:
-            queryset = queryset[count : count + count_last]
-        queryset = queryset[count : count + count_last]
-        # стандатный варинт ищет целиокм
+            queryset = queryset.filter(check_to_order=True)
+        queryset = queryset.filter(check_to_order=True)
+        
+        queryset = queryset[count : count + count_last]# стандатный варинт ищет целиокм
+
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
         #     | Q(article__icontains=search_input)
@@ -326,10 +329,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
+            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
+           
         )
         print(len(search_input))
         # del search_input[0]
@@ -342,8 +347,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(additional_article_supplier__icontains=search_item)
                 )
         else:
-            queryset = queryset[count : count + count_last]
+            queryset = queryset.filter(check_to_order=True, in_view_website=True)
+        queryset = queryset.filter(check_to_order=True, in_view_website=True)
+        
         queryset = queryset[count : count + count_last]
+        print(queryset)
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
@@ -620,21 +628,27 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
         except ProductCart.DoesNotExist:
-            print(88888888888)
-            data["product_price"] = product_price
-            data["product_sale_motrum"] = product_sale_motrum
-            serializer = serializer_class(data=data, many=False)
-            if serializer.is_valid():
-                cart_product = serializer.save()
-                cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
-                data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(
-                    cart_id=kwargs["cart"], product=data["product"]
-                )
-                data["cart_prod"] = cart_prod.id
-                return Response(data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                product = queryset.get(product=data["product"])
+                data = {"status": "product_in_cart"}
+                return Response(data, status=status.HTTP_409_CONFLICT)
+            
+            except ProductCart.DoesNotExist:
+            
+                data["product_price"] = product_price
+                data["product_sale_motrum"] = product_sale_motrum
+                serializer = serializer_class(data=data, many=False)
+                if serializer.is_valid():
+                    cart_product = serializer.save()
+                    cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
+                    data["cart_len"] = cart_len
+                    cart_prod = ProductCart.objects.get(
+                        cart_id=kwargs["cart"], product=data["product"]
+                    )
+                    data["cart_prod"] = cart_prod.id
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # добавить товар не из  бд в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")
@@ -659,6 +673,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(data, status=status.HTTP_409_CONFLICT)
 
             except ProductCart.DoesNotExist:
+                
                 serializer = serializer_class(data=data, many=False)
                 if serializer.is_valid():
                     cart_product = serializer.save()

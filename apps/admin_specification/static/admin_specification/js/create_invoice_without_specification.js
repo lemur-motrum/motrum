@@ -53,6 +53,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const nameProductNew = specificationItem.getAttribute(
           "data-product-name-new"
         );
+        const nameProductNewАrt = specificationItem.getAttribute(
+          "data-product-article-new"
+        );
         const itemPriceStatus = specificationItem.getAttribute(
           "data-price-exclusive"
         );
@@ -115,7 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
           date_delivery: deliveryDate.value,
           text_delivery: createTextDateDelivery(),
           product_name_new: nameProductNew,
-          product_new_article: nameProductNew,
+          product_new_article: nameProductNewАrt,
           comment: commentItem ? commentItem : null,
           sale_motrum: saleMotrum ? saleMotrum.textContent : null,
           vendor: vendor ? vendor : null,

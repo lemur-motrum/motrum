@@ -403,6 +403,7 @@
                                     <div class="change_item_container_value">
                                         <label class="name_label">
                                             <input placeholder="Имя товара"
+                                            
                                                    class="new_item_container_name_input"
                                                    value="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                                                    type="text" />
@@ -410,6 +411,7 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
+                                            disabled 
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}" />
@@ -420,6 +422,7 @@
                                         <label class="vedor_label">
                                             <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
                                                 <button type="button"
+                                                disabled
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
                                                         value="{{item.vendor.id}}"
@@ -623,6 +626,7 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
+                                     
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{{ item.product_new_article }}" />
@@ -839,6 +843,7 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
+                                         
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{{ item.product_new_article }}" />

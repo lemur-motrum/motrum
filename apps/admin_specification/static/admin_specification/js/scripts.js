@@ -543,6 +543,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
           const nameProductNew = item.getAttribute("data-product-name-new");
+          const nameProductNewАrt = item.getAttribute("data-product-article-new");
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
 
@@ -596,7 +597,7 @@ window.addEventListener("DOMContentLoaded", () => {
             date_delivery: deliveryDate.value,
             text_delivery: createTextDateDelivery(),
             product_name_new: nameProductNew,
-            product_new_article: nameProductNew,
+            product_new_article: nameProductNewАrt,
             comment: commentItem ? commentItem : null,
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,

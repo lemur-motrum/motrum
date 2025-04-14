@@ -1024,9 +1024,11 @@ def save_specification(
     # сохранение продуктов для спецификации
     # перебор продуктов и сохранение
     total_amount = 0.00
+    print(products)
     for product_item in products:
+        print(product_item)
         # продукты которые есть в окт
-        if product_item["product_new_article"] == "":
+        if product_item["product_new_article"] == "" or product_item["product_new_article"] == None or product_item["product_new_article"] == "None":
 
             product = Product.objects.get(id=product_item["product_id"])
             price_data = float(product_item["price_one"])
@@ -1147,6 +1149,7 @@ def save_specification(
 
         # продукты без записи в окт
         else:
+            print("продукты без записи в окт",product_item)
 
             price_one = product_item["price_one"]
             price_one_original_new = price_one
@@ -1385,8 +1388,11 @@ def save_new_product_okt(product_new):
 
     if product_new.product:
         product_new_prod = product_new.product.id
-        product = Product.objects.get(vendor=vendor, id=product_new_prod)
+        product = Product.objects.get(id=product_new_prod)
+        
         product.name = product_new.product_new
+      
+        
         product.save()
 
     else:

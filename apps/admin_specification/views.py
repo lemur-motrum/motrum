@@ -12,7 +12,7 @@ from apps import specification, supplier
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
 from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
-from apps.core.utils import get_price_motrum, save_specification
+from apps.core.utils import check_delite_product_cart_in_upd_spes, get_price_motrum, save_specification
 from apps.product.models import (
     Cart,
     CategoryProduct,
@@ -814,7 +814,7 @@ def create_specification(request):
                     "product_price",
                 ),
                 price_motrum=Case(
-                    When(sale_motrum=None, then="actual_price"),
+                    When(sale_motrum=None, then="price_cart"),
                     When(
                         sale_motrum__isnull=False,
                         then=Round(
@@ -831,7 +831,7 @@ def create_specification(request):
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
                 #         ),
-            )
+            ).order_by("id_product_cart")
             # .order_by("id_product_cart")
         )
 
@@ -892,7 +892,7 @@ def create_specification(request):
             type_save = "счет + спецификация"
         else:
             title = f"Заказ {name_ord}: счет-оферта"
-            type_save = " счет-оферта"
+            type_save = "счет-оферта"
 
         # def product_cart_prod_update(product_cart_prod):
         #     for prod_cart in product_cart_prod:

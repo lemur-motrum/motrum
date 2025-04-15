@@ -39,6 +39,9 @@ window.addEventListener("DOMContentLoaded", () => {
       const supplierSelect = select.querySelector(
         ".vendor_select__toggle_change"
       );
+      const newProductError = changeFormWrapper.querySelector(
+        ".add_new_item_in_cart_container_error"
+      );
 
       const options = select.querySelectorAll(".itc-select__options");
 
@@ -190,9 +193,30 @@ window.addEventListener("DOMContentLoaded", () => {
           }).then((response) => {
             if (response.status == 200) {
               window.location.reload();
+            } else if  (response.status == 409) {
+              return response.json();
+              // showErrorValidation(
+              //   "Товар с таким артикулом в корзине уже есть ",
+              //   newProductError
+              // );
             } else {
               setErrorModal();
               throw new Error("Ошибка");
+            }
+          })
+          .then((response) => {
+            if (response.status == "product_in_okt") {
+              hidePreloaderAndEnabledButton(changeButton);
+              showErrorValidation(
+                "Данный товар уже есть в ОКТ",
+                newProductError
+              );
+            } else if (response.status == "product_in_cart") {
+              hidePreloaderAndEnabledButton(changeButton);
+              showErrorValidation(
+                "Товар с таким артикулом уже есть в корзине",
+                newProductError
+              );
             }
           });
         }

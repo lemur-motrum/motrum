@@ -233,7 +233,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     def search_product(self, request, *args, **kwargs):
         data = request.data
         count = data["count"]
-        count_last = data["count_last"]
+        count_last = int(data["count_last"])
+        print(count_last)
         search_input = data["search_text"]
         search_input = search_input.replace(".", "").replace(",", "")
         search_input = search_input.split()
@@ -260,8 +261,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             queryset = queryset.filter(check_to_order=True)
         queryset = queryset.filter(check_to_order=True)
+        if count_last > 0 :
+            queryset = queryset[count : count + count_last]
         
-        queryset = queryset[count : count + count_last]# стандатный варинт ищет целиокм
+        # стандатный варинт ищет целиокм
 
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
@@ -658,6 +661,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
+        product_new_article = product_new_article.strip()
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article
@@ -690,17 +694,36 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], url_path=r"upd-product-new")
     def upd_product_cart_new(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
+        print(pk)
         serializer_class = ProductCartSerializer
-
         data = request.data
-        serializer = serializer_class(queryset, data=data, partial=True)
+        cart_id = data["cart"]
+        product_new_article = data["product_new_article"]
+        product_new_article = product_new_article.strip()
+        try:
+            product_okt = Product.objects.get(
+                vendor_id=data["vendor"], article_supplier=product_new_article
+            )
+            data = {"status": "product_in_okt"}
+            return Response(data, status=status.HTTP_409_CONFLICT)
+        except Product.DoesNotExist:
+            try:
+                product_new_article = ProductCart.objects.exclude(id=queryset.id).get(
+                    cart_id=cart_id, product_new_article=product_new_article
+                )
+                
+                data = {"status": "product_in_cart"}
+                return Response(data, status=status.HTTP_409_CONFLICT)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
+            except ProductCart.DoesNotExist:
+                    serializer = serializer_class(queryset, data=data, partial=True)
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response(serializer.data, status=status.HTTP_200_OK)
+                    else:
+
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"], url_path=r"upd-product-cart")
     def upd_product_cart(self, request, pk=None, *args, **kwargs):

@@ -23,6 +23,7 @@ from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
 
+
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -1389,10 +1390,7 @@ def save_new_product_okt(product_new):
     if product_new.product:
         product_new_prod = product_new.product.id
         product = Product.objects.get(id=product_new_prod)
-        
         product.name = product_new.product_new
-      
-        
         product.save()
 
     else:
@@ -1430,7 +1428,8 @@ def save_new_product_okt(product_new):
 
         product_new.product = product
         prod_cart = product_new.id_cart
-        prod_cart.product = product 
+        prod_cart.product = product
+        prod_cart.product_price = product_new.price_one_original_new 
         prod_cart.save()
         product_new.save()
 
@@ -2531,3 +2530,10 @@ def serch_products_web(search_text, queryset):
             )
     print("queryset",queryset)
     return queryset
+
+
+def check_delite_product_cart_in_upd_spes(order,specification,cart):
+    from apps.product.models import ProductCart
+    
+    cart_prod = ProductCart.objects.filter(cart=cart)
+    print("cart_prod",cart_prod)

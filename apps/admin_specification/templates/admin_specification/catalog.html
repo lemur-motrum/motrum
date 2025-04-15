@@ -206,13 +206,14 @@
                             </div>
                         </div>
                         <div class="item_value">
+                        
                             <input class="discount-input"
                             disabled
                                    type="text"
                                    name="price-input-discount"
                                    placeholder="% скидки"
                                    maxlength="6"
-                                   value="{% if bill_upd and item.id_product_spesif %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{ item.sale_client }}{% endif %}{% endif %}" />
+                                   value="{% if bill_upd and item.id_product_spesif and item.sale_client == None %}{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}{% else %}{% if item.sale_client %}{{ item.sale_client }}{% endif %}{% endif %}" />
                         </div>
                         <div class="item_value">
                             <div>
@@ -253,8 +254,8 @@
                 {% for item in product_new %}
                     {% if update_spesif %}
                         <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->
-                        
-                        {% if product_new.product == None %}
+                      
+                        {% if item.product == None %}
                               
                         <div class="item_container added_item_container"
                                 data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
@@ -350,7 +351,9 @@
                                     </div>
                                     <div class="item_value total_cost price"></div>
                                 {% endif %}
+                                
                                 <div class="item_value">
+                               
                                     <div price-motrum="{% if item.price_motrum == 0 or item.price_motrum == None %}0{% else %}{{ item.price_motrum }}{% endif %}"
                                         class="price_motrum">
                                         {% if item.price_motrum == 0 or item.price_motrum == None or item.is_prise is None %}
@@ -490,7 +493,7 @@
                         {% endif %}
                         
                     {% else %}
-                    1111
+                
                         <!--когда новая спецификация-->
                         <div class="item_container added_item_container"
                              data-vendor="{{ item.vendor.id }}"

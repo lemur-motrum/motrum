@@ -8,6 +8,7 @@ import random
 import re
 from itertools import chain
 import traceback
+import unicodedata
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
@@ -850,6 +851,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
+            s = unicodedata.normalize('NFKD', s)
             json_acceptable_string = s.replace('"', "").replace("'", '"')
             d = json.loads(json_acceptable_string)
 

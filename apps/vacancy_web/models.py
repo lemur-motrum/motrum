@@ -110,7 +110,8 @@ class Vacancy(models.Model):
         blank=True,
         null=True,
     )
-    type_payments = models.CharField("Условия выплат", max_length=500)
+    type_payments = models.CharField("Условия выплат", max_length=500,blank=True,
+        null=True,)
     # text = models.TextField("Описание текстовое")
     text = tinymce_models.HTMLField(
         "Общее описание",

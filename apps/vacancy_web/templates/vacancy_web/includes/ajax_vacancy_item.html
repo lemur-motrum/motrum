@@ -16,7 +16,12 @@
                                           {% endif %}
                                           {% if last %}<span class="price_description">до <span class="price">{{ last }}</span> ₽</span>{% endif %}
                                           {% if fixed %}<span class="price_description"><span class="price">{{ fixed }}</span> ₽</span>{% endif %}
-                                          в месяц
+                                          
+                                          {% if first or last or fixed %}
+                                             в месяц   
+                                          {% endif %}
+                                                
+                                          
                                     </div>
                                     <div class="price_type_payments">{{ type_payments }}</div>
                               </div>

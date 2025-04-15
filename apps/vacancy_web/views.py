@@ -17,7 +17,7 @@ def vacancy(request):
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all().order_by("article")
     photo_education = PhotoEducationInfoWeb.objects.all().order_by("article")
     photo_recreation = PhotoSportsRecreationInfoWeb.objects.all().order_by("article")
-
+    print(category_vacancy)
     context = {
         "title": title,
         "vacancy": vacancy,
@@ -27,6 +27,7 @@ def vacancy(request):
         "photo_recreation": photo_recreation,
         "meta_title": f"{title} | Мотрум - автоматизация производства",
     }
+    print(context)
     return render(request, "vacancy_web/vacancy_all.html", context)
 
 

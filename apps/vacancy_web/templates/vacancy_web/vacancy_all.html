@@ -152,8 +152,8 @@
                         <div class="filter_title">Сфера</div>
                         <div class="filter_elems_container">
                             {% for category_vacancy_elem in category_vacancy %}
-                                {% if category_vacancy_elem.is_view %}
-                                    <button class="filter_elem" slug="{{ category_vacancy_elem.slug }}">{{ category_vacancy_elem.name }}</button>
+                                {% if category_vacancy_elem.vacancy_category__is_view %}
+                                    <button class="filter_elem" slug="{{ category_vacancy_elem.vacancy_category__slug }}">{{ category_vacancy_elem.vacancy_category__name }}</button>
                                 {% endif %}
                             {% endfor %}
                         </div>

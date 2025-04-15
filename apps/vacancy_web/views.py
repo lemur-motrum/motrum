@@ -13,11 +13,18 @@ from apps.vacancy_web.models import (
 def vacancy(request):
     title = "Карьера"
     vacancy = Vacancy.objects.filter(is_actual=True)
+
     category_vacancy = VacancyCategory.objects.filter(is_view=True).order_by("article")
+    category_vacancy = (
+        vacancy.filter()
+        .order_by("vacancy_category__name")
+        .distinct("vacancy_category__name")
+        .values("vacancy_category__name", "vacancy_category__slug", "vacancy_category__is_view", "vacancy_category__article")
+    )
     photo_motrum = PhotoEmoloeeInfoWeb.objects.all().order_by("article")
     photo_education = PhotoEducationInfoWeb.objects.all().order_by("article")
     photo_recreation = PhotoSportsRecreationInfoWeb.objects.all().order_by("article")
-    print(category_vacancy)
+
     context = {
         "title": title,
         "vacancy": vacancy,

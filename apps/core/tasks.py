@@ -15,7 +15,7 @@ from apps.specification.models import ProductSpecification, Specification
 from project.celery import app
 from django.db.models import Prefetch, OuterRef
 
-from project.settings import MEDIA_ROOT
+from project.settings import IS_TESTING, MEDIA_ROOT
 
 
 def old_get_currency(need_day):
@@ -347,7 +347,10 @@ def del_void_cart(self):
 )
 def get_status_order_bx(self):
     try:
-        get_status_order()
+        if IS_TESTING:
+            pass
+        else:
+            get_status_order()
     except Exception as exc:
         error = "file_api_error"
         location = f"получение в б24 статусов"
@@ -363,7 +366,10 @@ def get_status_order_bx(self):
 )
 def get_curr_price_check_bx(self):
     try:
-        currency_check_bx()
+        if IS_TESTING:
+            pass
+        else:
+            currency_check_bx()
     except Exception as exc:
         error = "file_api_error"
         location = f"отправка в б24 Критичные изменения цен и курса валют {exc}"
@@ -433,7 +439,10 @@ def nomenk_file_delite(self):
 )
 def get_manager_info_bx(self):
     try:
-        get_manager_info()
+        if IS_TESTING:
+            pass
+        else:
+            get_manager_info()
     except Exception as exc:
         error = "file_api_error"
         location = f"получение в б24 менеджеров клиентов"

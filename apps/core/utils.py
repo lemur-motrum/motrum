@@ -1390,7 +1390,7 @@ def save_new_product_okt(product_new):
     if product_new.product:
         product_new_prod = product_new.product.id
         product = Product.objects.get(id=product_new_prod)
-        product.name = product_new.product_new
+        # product.name = product_new.product_new
         product.save()
 
     else:

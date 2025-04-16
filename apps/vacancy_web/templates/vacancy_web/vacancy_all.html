@@ -146,7 +146,8 @@
             
             <div class="mobile_filter_button">Фильтр</div>
             <div class="vacancies_filter_container">
-                <div class="filter_container">
+               
+                <div class="filter_container {% if vacancy_list|length < 5 %}hide{% endif %}">
                     <div class="close_btn">+</div>
                     {% if category_vacancy|length > 0 %}
                         <div class="filter_title">Сфера</div>
@@ -160,7 +161,7 @@
                         <div class="canceled_btn">Сбросить</div>
                     {% endif %}
                 </div>
-                <div class="vacancies_wrapper" project-elem="wrapper">
+                <div class="vacancies_wrapper {% if vacancy_list|length < 5 %}max-width{% endif %}"  project-elem="wrapper">
                     <div class="loader"></div>
                     <div class="none_content">Вакансий нет</div>
                     <div class="vacancies_elems_container" project-elem="container">

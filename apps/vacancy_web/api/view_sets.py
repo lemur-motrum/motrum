@@ -43,7 +43,8 @@ class VacancyViewSet(viewsets.ModelViewSet):
             vacancy_category = None
 
         print(vacancy_category)
-        q_object = Q()
+        q_object = Q(is_actual=True)
+        q_object &= Q(vacancy_category__id__in=vacancy_category_get)
         if vacancy_category is not None:
             q_object &= Q(vacancy_category__id__in=vacancy_category_get)
         print(q_object)

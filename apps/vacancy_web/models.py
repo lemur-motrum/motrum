@@ -92,6 +92,13 @@ class Vacancy(models.Model):
     experience = models.CharField(
         "Опыт",
         max_length=200,
+        blank=True,
+        null=True,
+    )
+    busyness = models.CharField(
+        "Занятость",
+        max_length=200,
+        blank=True,
         null=True,
     )
     first = models.FloatField(

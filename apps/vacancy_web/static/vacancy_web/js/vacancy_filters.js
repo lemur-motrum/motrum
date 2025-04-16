@@ -23,6 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );
+    const catalogWrapper = wrapper.querySelector(".vacancies_wrapper");
     const filtersElems = wrapper.querySelectorAll(".filter_elem");
     const canceledBtn = wrapper.querySelector(".canceled_btn");
 
@@ -84,7 +85,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
-        // filterContainer.classList.add("show");
+        filterContainer.classList.add("show");
       };
     });
 
@@ -149,6 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
           if (response.data.length > 0) {
             if (response.data.length > 6) {
               filterContainer.classList.add("show");
+              catalogWrapper.classList.remove("max-width");
             }
             catalogContainer.innerHTML = "";
             for (let i in response.data) {

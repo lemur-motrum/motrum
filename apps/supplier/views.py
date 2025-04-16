@@ -76,6 +76,7 @@ from apps.core.utils import (
     save_file_product,
     send_requests,
     vendor_delta_optimus_after_load,
+    create_file_props_in_vendor_props,
 )
 from apps.notifications.models import Notification
 from apps.product.models import (
@@ -130,11 +131,11 @@ def add_iek(request):
     # import logging
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
-
+    
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     # add_new_photo_adress_prompower()
-
+    create_file_props_in_vendor_props()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

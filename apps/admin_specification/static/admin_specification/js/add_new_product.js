@@ -66,12 +66,13 @@ function addNewProductLogic(container) {
           }
         })
         .then((response) => {
-          smallLoader.classList.remove("show");
           if (response.data.length >= 9) {
+            smallLoader.classList.remove("show");
             response.data.forEach((el) => {
               searchElemsContainerWrapper.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
             });
           } else if (response.data.length > 0 && response.data.length < 9) {
+            smallLoader.classList.remove("show");
             response.data.forEach((el) => {
               searchElemsContainerWrapper.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
             });

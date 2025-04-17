@@ -195,13 +195,18 @@
                             </div>
                             <div class="">
                                 {% if item.sale_motrum != item.price.sale.percent %}
-                                    <span style=" color: #ff5b00 "> cкидка в OKT:
-                                        {% if item.price.sale %}
-                                            {{ item.price.sale.percent }} %
-                                        {% else %}
-                                            Нет
-                                        {% endif %}
-                                    </span>
+                                    {% if item.sale_motrum == 0 and item.price.sale.percent == None %}
+                                        
+                                    {% else %}
+                                        <span style=" color: #ff5b00 "> cкидка в OKT:
+                                            {% if item.price.sale %}
+                                                {{ item.price.sale.percent }} %
+                                            {% else %}
+                                                Нет
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                    
                                 {% endif %}
                             </div>
                         </div>
@@ -216,8 +221,8 @@
                                    <span style=" color: #ff5b00; font-weight: 300;
     font-size: 0.625rem;display: flex;
     justify-content: center; "> 
-                                   {% if bill_upd and item.id_product_spesif and item.old_extra_discount != item.sale_client %}
-                                       В счете:{{ item.old_extra_discount  }}
+                                   {% if bill_upd and item.id_product_spesif and item.old_extra_discount and item.old_extra_discount != item.sale_client %}
+                                       Был в счете:{{ item.old_extra_discount  }}
                                    {% endif %}
                                </span>
                                 </div>
@@ -259,10 +264,10 @@
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
                     {% if update_spesif %}
-                        <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->
+                        
                       
                         {% if item.product == None %}
-                              
+                        <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->     
                         <div class="item_container added_item_container"
                                 data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
                                 data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"

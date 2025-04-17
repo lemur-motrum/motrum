@@ -1430,6 +1430,9 @@ def save_new_product_okt(product_new):
         prod_cart = product_new.id_cart
         prod_cart.product = product
         prod_cart.product_price = product_new.price_one_original_new 
+        prod_cart.product_sale_motrum = product_new.sale_motrum 
+        prod_cart.sale_client = product_new.extra_discount 
+
         prod_cart.save()
         product_new.save()
 

@@ -1,5 +1,7 @@
 .devcontainer
 .idea/
+.vscode/* 
+**/.vscode/
 
 /media/
 /static/
@@ -8,6 +10,8 @@
 /motrumvenv/
 /apps/core/static/core/images/about_company.mp4
 /coolsite_cache/
+/.vscode/
+
 
 
 __pycache__/

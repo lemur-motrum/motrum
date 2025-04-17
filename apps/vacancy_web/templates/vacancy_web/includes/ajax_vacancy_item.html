@@ -6,7 +6,10 @@
                   <div class="vacancy_tilte_content">
                         <div class="title_content">
                               <div class="vacancy_name">{{ name }}</div>
-                              <div class="vacancy_exp">{{ experience }}</div>
+                              <div class="vacancy_title_content_descr">
+                                    <div class="vacancy_exp">{{ experience }}</div>
+                                    <div class="vacancy_busyness">{{ busyness }}</div>
+                              </div>
                               <div class="vacancy_price">
                                     <div class="price_container">
                                           {% if first %}
@@ -16,7 +19,12 @@
                                           {% endif %}
                                           {% if last %}<span class="price_description">до <span class="price">{{ last }}</span> ₽</span>{% endif %}
                                           {% if fixed %}<span class="price_description"><span class="price">{{ fixed }}</span> ₽</span>{% endif %}
-                                          в месяц
+                                          
+                                          {% if first or last or fixed %}
+                                             в месяц   
+                                          {% endif %}
+                                                
+                                          
                                     </div>
                                     <div class="price_type_payments">{{ type_payments }}</div>
                               </div>

@@ -138,26 +138,30 @@
                 Вместе отдыхаем, занимаемся спортом и веселимся на корпоративах. Корпоративные мероприятия определяем по интересам большинства нашей команды.
             </div>
         </div>
+        
         <div class="vacancies_container" id="vacancies_container">
+            
             <div class="title">ОТКРЫТЫЕ ВАКАНСИИ</div>
             <div class="description">Ознакомьтесь с вакансиями, которые открыты в нашей компании в данный момент</div>
+            
             <div class="mobile_filter_button">Фильтр</div>
             <div class="vacancies_filter_container">
-                <div class="filter_container">
+               
+                <div class="filter_container {% if vacancy_list|length < 5 %}hide{% endif %}">
                     <div class="close_btn">+</div>
                     {% if category_vacancy|length > 0 %}
                         <div class="filter_title">Сфера</div>
                         <div class="filter_elems_container">
                             {% for category_vacancy_elem in category_vacancy %}
-                                {% if category_vacancy_elem.is_view %}
-                                    <button class="filter_elem" slug="{{ category_vacancy_elem.slug }}">{{ category_vacancy_elem.name }}</button>
+                                {% if category_vacancy_elem.vacancy_category__is_view %}
+                                    <button class="filter_elem" slug="{{ category_vacancy_elem.vacancy_category__slug }}">{{ category_vacancy_elem.vacancy_category__name }}</button>
                                 {% endif %}
                             {% endfor %}
                         </div>
                         <div class="canceled_btn">Сбросить</div>
                     {% endif %}
                 </div>
-                <div class="vacancies_wrapper" project-elem="wrapper">
+                <div class="vacancies_wrapper {% if vacancy_list|length < 5 %}max-width{% endif %}"  project-elem="wrapper">
                     <div class="loader"></div>
                     <div class="none_content">Вакансий нет</div>
                     <div class="vacancies_elems_container" project-elem="container">

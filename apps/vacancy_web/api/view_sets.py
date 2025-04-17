@@ -43,7 +43,7 @@ class VacancyViewSet(viewsets.ModelViewSet):
             vacancy_category = None
 
         print(vacancy_category)
-        q_object = Q()
+        q_object = Q(is_actual=True)
         if vacancy_category is not None:
             q_object &= Q(vacancy_category__id__in=vacancy_category_get)
         print(q_object)
@@ -103,13 +103,13 @@ class VacancyViewSet(viewsets.ModelViewSet):
                     "vacancy": vacancy,
                 },
             )
-            
+
             to_manager = os.environ.get("EMAIL_HR")
-            test = send_email_message_and_file_alternative(subject, None, to_manager, path_file, html_message )
-            print("test-email",test)
-            
-            
-            
+            test = send_email_message_and_file_alternative(
+                subject, None, to_manager, path_file, html_message
+            )
+            print("test-email", test)
+
             return Response(data=None, status=status.HTTP_200_OK)
         except Exception as e:
 

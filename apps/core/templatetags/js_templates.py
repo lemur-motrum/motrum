@@ -33,6 +33,11 @@ def js_templates():
             "template": "admin_specification/include/ajax_specification_item.html",
         },
         {
+            "module": "admin-specif-search",
+            "name": "search-specification-item",
+            "template": "admin_specification/include/ajax_new_product_search_elem.html",
+        },
+        {
             "module": "invoice",
             "name": "invoice-item",
             "template": "admin_specification/include/ajax_invoice_item.html",

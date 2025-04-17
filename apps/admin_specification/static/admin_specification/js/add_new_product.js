@@ -17,6 +17,10 @@ function addNewProductLogic(container) {
     const searchInput = addNewProductContainer.querySelector(".search_input");
     const searchElemsContainer =
       addNewProductContainer.querySelector(".search_container");
+
+    const searchElemsContainerWrapper = searchElemsContainer.querySelector(
+      ".search_elems_contaner"
+    );
     const addProductContainer = addNewProductContainer.querySelector(
       ".add_product_container"
     );
@@ -29,9 +33,78 @@ function addNewProductLogic(container) {
     const deleteSearchButton = addNewProductContainer.querySelector(
       ".delete_search_details_btn"
     );
+    const loader = searchElemsContainer.querySelector(".loader");
+    const smallLoader = searchElemsContainer.querySelector(".small_loader");
+
+    let count = 0;
+    let countLast = 5;
+    let finish = false;
+
+    function getProducts() {
+      const objData = {
+        search_text: searchInput.value,
+        count: count,
+        count_last: countLast,
+      };
+      const data = JSON.stringify(objData);
+      fetch("/api/v1/product/search-product/", {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            loader.classList.add("hide");
+
+            return response.json();
+          } else {
+            setErrorModal();
+            throw new Error("Ошибка");
+          }
+        })
+        .then((response) => {
+          smallLoader.classList.remove("show");
+          if (response.data.length >= 9) {
+            response.data.forEach((el) => {
+              searchElemsContainerWrapper.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
+            });
+          } else if (response.data.length > 0 && response.data.length < 9) {
+            response.data.forEach((el) => {
+              searchElemsContainerWrapper.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
+            });
+          } else {
+            if (count == 0 && countLast == 5) {
+              searchElemsContainerWrapper.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
+            } else {
+              finish = true;
+              return;
+            }
+          }
+          count += 5;
+          countLast += 5;
+          searchProductLogic(searchElemsContainer);
+        });
+    }
+
+    searchElemsContainer.addEventListener("scroll", function () {
+      if (this.scrollHeight === this.scrollTop + this.clientHeight) {
+        if (!finish) {
+          if (
+            !smallLoader.classList.contains("show") &&
+            count != 0 &&
+            countLast != 5
+          ) {
+            getProducts();
+            smallLoader.classList.add("show");
+          }
+        }
+      }
+    });
 
     function closeSearchWindow() {
-      searchElemsContainer.innerHTML = "";
       searchElemsContainer.classList.remove("show");
       deleteSearchButton.classList.remove("show");
       addProductContainer.classList.remove("show");
@@ -40,97 +113,23 @@ function addNewProductLogic(container) {
     function openSearchWindow() {
       searchElemsContainer.classList.add("show");
       deleteSearchButton.classList.add("show");
-      searchElemsContainer.innerHTML = "<div class='small_loader'></div>";
       searchInput.classList.add("bordering");
     }
 
     searchInput.oninput = () => {
+      count = 0;
+      countLast = 5;
       if (searchInput.value.length >= 3) {
+        const currentValue = searchInput.value;
+        searchElemsContainerWrapper.innerHTML = "";
+        loader.classList.remove("hide");
         openSearchWindow();
-        const objData = {
-          search_text: searchInput.value,
-          count: 0,
-          count_last: 5,
-        };
-        const data = JSON.stringify(objData);
-        fetch("/api/v1/product/search-product/", {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((response) => {
-            if (response.status === 200) {
-              return response.json();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          })
-          .then((response) => {
-            searchElemsContainer.innerHTML = "";
-            if (response.data.length >= 9) {
-              response.data.forEach((el) => {
-                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
-              });
-              searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
-            } else if (response.data.length > 0 && response.data.length < 9) {
-              response.data.forEach((el) => {
-                searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
-              });
-            } else {
-              searchElemsContainer.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
-            }
-            // searchElemsContainer.onscroll = () => {
-            //   if (
-            //     searchElemsContainer.scrollHeight -
-            //       searchElemsContainer.scrollTop <=
-            //     searchElemsContainer.offsetHeight
-            //   ) {
-            //     objData["count"] += 10;
-            //     objData["count_last"] += 10;
-            //     const data = JSON.stringify(objData);
-            //     fetch("/api/v1/product/search-product/", {
-            //       method: "POST",
-            //       body: data,
-            //       headers: {
-            //         "Content-Type": "application/json",
-            //         "X-CSRFToken": csrfToken,
-            //       },
-            //     })
-            //       .then((response) => {
-            //         if (response.status === 200) {
-            //           return response.json();
-            //         } else {
-            //           setErrorModal();
-            //           throw new Error("Ошибка");
-            //         }
-            //       })
-            //       .then((response) => {
-            //         if (searchElemsContainer.querySelector(".small_loader")) {
-            //           searchElemsContainer
-            //             .querySelector(".small_loader")
-            //             .remove();
-            //         }
-            //         if (response.data.length >= 9) {
-            //           response.data.forEach((el) => {
-            //             searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Найти</span></div>`;
-            //           });
-            //           searchElemsContainer.innerHTML += `<div class="small_loader search"></div>`;
-            //         } else {
-            //           response.data.forEach((el) => {
-            //             searchElemsContainer.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Найти</span></div>`;
-            //           });
-            //         }
-            //         searchProductLogic(searchElemsContainer);
-            //       });
-            //   }
-            // };
 
-            searchProductLogic(searchElemsContainer);
-          });
+        setTimeout(() => {
+          if (currentValue == searchInput.value) {
+            getProducts();
+          }
+        }, 600);
       } else {
         closeSearchWindow();
       }
@@ -164,7 +163,7 @@ function addNewProductLogic(container) {
         quantity: 1,
       };
       addProductButton.textContent = "";
-      addProductButton.innerHTML = "<div class='small_loader'></div>";
+      // addProductButton.innerHTML = "<div class='small_loader'></div>";
       const data = JSON.stringify(objData);
       fetch(`/api/v1/cart/${cartId}/save-product/`, {
         method: "POST",

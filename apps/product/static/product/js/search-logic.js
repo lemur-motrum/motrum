@@ -13,55 +13,29 @@ window.addEventListener("DOMContentLoaded", () => {
     const searchInput = wrapper.querySelector(".input_text");
     const searchElemWrapper = wrapper.querySelector(".search_elem_wrapper");
     const loader = searchElemWrapper.querySelector(".loader");
+    const smallLoader = searchElemWrapper.querySelector(".small_loader");
     const searchElemContainer = searchElemWrapper.querySelector(
       '[search-elem="container"]'
     );
 
+    let count = 0;
+    let countLast = 5;
+    let finish = false;
+
     searchInput.oninput = () => {
       if (searchInput.value.length > 4) {
         const valueLength = searchInput.value.length;
+
         setTimeout(() => {
+          count = 0;
+          countLast = 5;
+          finish = false;
           if (valueLength == searchInput.value.length) {
-            const objData = {
-              search_text: searchInput.value,
-              count: 0,
-              count_last: 5,
-            };
-            const data = JSON.stringify(objData);
-
+            smallLoader.classList.remove("show");
             loader.classList.remove("hide");
-            openSearchOverlay();
 
-            fetch("/api/v1/product/search-product-web/", {
-              method: "POST",
-              body: data,
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken,
-              },
-            })
-              .then((response) => {
-                if (response.status === 200) {
-                  // searchInput.disabled = false;
-                  searchInput.focus();
-                  clearTimeout();
-                  loader.classList.add("hide");
-                  return response.json();
-                } else {
-                  setErrorModal();
-                }
-              })
-              .then((response) => {
-                if (response.data.length > 0) {
-                  for (let i in response.data) {
-                    addAjaxCatalogItem(response.data[i]);
-                  }
-                  searchElemsClasses(searchElemContainer);
-                } else {
-                  searchElemContainer.innerHTML =
-                    "<div class='no_search_elems'>Таких товаров нет</div>";
-                }
-              });
+            openSearchOverlay();
+            getProducts();
           }
         }, 600);
       } else {
@@ -69,12 +43,74 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
 
+    searchElemWrapper.addEventListener("scroll", function () {
+      if (this.scrollHeight === this.scrollTop + this.clientHeight) {
+        if (!finish) {
+          if (
+            !smallLoader.classList.contains("show") &&
+            count != 0 &&
+            countLast != 5
+          ) {
+            getProducts();
+            smallLoader.classList.add("show");
+          }
+        }
+      }
+    });
+
     closeBtn.onclick = () => {
       searchInput.value = "";
       searchInput.blur();
       closeSearchOverlay();
     };
     searchBtn.onclick = () => openSearchPage();
+
+    function getProducts() {
+      const objData = {
+        search_text: searchInput.value,
+        count: count,
+        count_last: countLast,
+      };
+      const data = JSON.stringify(objData);
+      fetch("/api/v1/product/search-product-web/", {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            // searchInput.disabled = false;
+            searchInput.focus();
+            clearTimeout();
+            loader.classList.add("hide");
+            smallLoader.classList.remove("show");
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
+        .then((response) => {
+          if (response.data.length > 0) {
+            for (let i in response.data) {
+              addAjaxCatalogItem(response.data[i]);
+            }
+            searchElemsClasses(searchElemContainer);
+            count += 5;
+            countLast += 5;
+          } else {
+            if (count == 0 && countLast == 5) {
+              searchElemContainer.innerHTML =
+                "<div class='no_search_elems'>Таких товаров нет</div>";
+            } else {
+              finish = true;
+              return;
+            }
+          }
+        });
+    }
 
     function showCloseBtn() {
       if (!closeBtn.classList.contains("show")) {
@@ -176,35 +212,8 @@ window.addEventListener("DOMContentLoaded", () => {
           searchElem.classList.remove("active");
         };
       });
-      let counterElems = 0;
 
       document.addEventListener("keyup", function (e) {
-        if (e.code == "ArrowDown") {
-          searchElems.forEach((el) => {
-            el.classList.remove("active");
-          });
-          if (counterElems > searchElems.length - 1) {
-            counterElems = 0;
-          } else {
-            counterElems += 1;
-          }
-          if (searchElems[counterElems - 1]) {
-            searchElems[counterElems - 1].classList.add("active");
-          }
-        }
-        if (e.code == "ArrowUp") {
-          searchElems.forEach((el) => {
-            el.classList.remove("active");
-          });
-          if (counterElems < 1) {
-            counterElems = searchElems.length;
-          } else {
-            counterElems -= 1;
-          }
-          if (searchElems[counterElems - 1]) {
-            searchElems[counterElems - 1].classList.add("active");
-          }
-        }
         if (e.code == "Enter") {
           let counter = 1;
           let url;
@@ -217,7 +226,6 @@ window.addEventListener("DOMContentLoaded", () => {
               counter = +1;
             }
           }
-
           if (counter == 0) {
             window.location.href = url;
           } else {

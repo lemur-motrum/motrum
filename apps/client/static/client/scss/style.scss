@@ -71,7 +71,10 @@
           font-weight: bold;
         }
         &.logout-user {
-          background-color: #ff5b00;
+          color: #ff5b00;
+          text-decoration: underline;
+          font-weight: bold;
+          border: None;
         }
         .global_cart_count {
           position: absolute;

@@ -70,6 +70,12 @@
         &.active {
           font-weight: bold;
         }
+        &.logout-user {
+          color: #ff5b00;
+          text-decoration: underline;
+          font-weight: bold;
+          border: None;
+        }
         .global_cart_count {
           position: absolute;
           top: 0.563rem;

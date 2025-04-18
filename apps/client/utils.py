@@ -19,6 +19,7 @@ from reportlab.lib.units import mm, cm, inch
 import num2words
 
 
+
 import reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -359,7 +360,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_bank)
-
+        story_no_sign.append(table_bank)
         # name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
@@ -368,6 +369,7 @@ def crete_pdf_bill(
             normal_style,
         )
         story.append(logo_supplier)
+        story_no_sign.append(logo_supplier)
         if is_contract:
             story.append(
                 Paragraph(
@@ -375,8 +377,20 @@ def crete_pdf_bill(
                     title_style_14,
                 )
             )
+            story_no_sign.append(
+                Paragraph(
+                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
+            )
         else:
             story.append(
+                Paragraph(
+                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
+            )
+            story_no_sign.append(
                 Paragraph(
                     f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
@@ -441,7 +455,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_info)
-
+        story_no_sign.append(table_info)
         data = [
             (
                 Paragraph("№ ", bold_style_center),
@@ -593,7 +607,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_product)
-
+        story_no_sign.append(table_product)
         if order.prepay_persent:
             if order.prepay_persent == 100:
                 info_payment = f" Способ оплаты: 100% предоплата."
@@ -682,7 +696,8 @@ def crete_pdf_bill(
             rowHeights=13,
         )
         story.append(final_table_all_prod)
-
+        story_no_sign.append(final_table_all_prod)
+        
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
         ).capitalize()
@@ -890,7 +905,7 @@ def crete_pdf_bill(
         )
 
         print(table_data_text_info)
-        story_no_sign = story.copy()
+        # story_no_sign = story.copy()
         story.append(table_data_text_info)
         story_no_sign.append(table_data_text_info2)
         

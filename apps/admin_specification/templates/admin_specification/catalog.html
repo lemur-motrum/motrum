@@ -263,10 +263,11 @@
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
                 {% for item in product_new %}
+                {{item}}
+                {{product_prod_in_cart}}111
                     {% if update_spesif %}
-                        
-                      
-                        {% if item.product == None %}
+                    {% comment %} item.product == None {% endcomment %}
+                        {% if  product_prod_in_cart == None %}
                         <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->     
                         <div class="item_container added_item_container"
                                 data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"

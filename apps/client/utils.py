@@ -39,7 +39,7 @@ from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, ListStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Paragraph,KeepInFrame
 from reportlab.platypus import ListFlowable, ListItem
 
 
@@ -158,6 +158,7 @@ def crete_pdf_bill(
         fileName_no_sign = os.path.join(directory, name_bill_no_signature)
 
         story = []
+        story_no_sign = []
 
         pdfmetrics.registerFont(TTFont("Roboto", "Roboto-Regular.ttf", "UTF-8"))
         pdfmetrics.registerFont(TTFont("Roboto-Bold", "Roboto-Bold.ttf", "UTF-8"))
@@ -171,7 +172,7 @@ def crete_pdf_bill(
             rightMargin=20,
             leftMargin=20,
             topMargin=40,
-            bottomMargin=40,
+            bottomMargin=50,
             title="Счет",
         )
         doc_2 = SimpleDocTemplate(
@@ -180,7 +181,7 @@ def crete_pdf_bill(
             rightMargin=20,
             leftMargin=20,
             topMargin=40,
-            bottomMargin=40,
+            bottomMargin=50,
             title="Счет",
         )
 
@@ -284,7 +285,7 @@ def crete_pdf_bill(
         )
 
         story.append(logo_motrum)
-
+        story_no_sign.append(logo_motrum)
         # тут вставки бик корпоратив
         data_bank = [
             (
@@ -691,21 +692,33 @@ def crete_pdf_bill(
         if len(total_amount_pens) < 2:
             total_amount_pens = f"{total_amount_pens}0"
         rub_word = rub_words(int(specifications.total_amount))
-
-        data_text_info = [
-            (
+        data_text_info =[]
+        # data_text_info = [
+        #     (
+        #         Paragraph(
+        #             f"Всего наименований {i}, на сумму {total_amount_str} руб.",
+        #             normal_style,
+        #         ),
+        #     ),
+        #     (
+        #         Paragraph(
+        #             f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
+        #             bold_style,
+        #         ),
+        #     ),
+        # ]
+        data_text_info.append((
                 Paragraph(
                     f"Всего наименований {i}, на сумму {total_amount_str} руб.",
                     normal_style,
                 ),
-            ),
-            (
+            ),)
+        data_text_info.append((
                 Paragraph(
                     f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
                     bold_style,
                 ),
-            ),
-        ]
+            ),)
 
         if is_contract:
             data_text_info.append(
@@ -851,21 +864,36 @@ def crete_pdf_bill(
             )
 
         table_data_text_info = Table(
-            data_text_info,
+            data_text_info, splitInRow=1,
         )
-        print(table_data_text_info)
+        table_data_text_info2 = Table(
+            data_text_info, splitInRow=1,
+        )
+
         table_data_text_info.setStyle(
             TableStyle(
-                [
+                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                 ]
             )
         )
-        story.append(table_data_text_info)
+        table_data_text_info2.setStyle(
+            TableStyle(
+                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
+                    ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+                    ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                ]
+            )
+        )
 
+        print(table_data_text_info)
         story_no_sign = story.copy()
+        story.append(table_data_text_info)
+        story_no_sign.append(table_data_text_info2)
+        
 
         name_image = request.build_absolute_uri(motrum_info.signature.url)
         signature_motrum = Paragraph(

@@ -892,6 +892,12 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    product_price_motrum = models.FloatField(
+        "Цена товара",
+        blank=True,
+        null=True,
+        default=None,
+    )
     product_sale_motrum = models.FloatField(
         "Скидка мотрум товара ",
         blank=True,

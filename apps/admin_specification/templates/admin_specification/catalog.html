@@ -180,6 +180,7 @@
                                     0
                                 {% endif %}
                             </div>
+                            {% comment %} <input class="change_price_motrum show" value=""> {% endcomment %}
                             <div class="">
                                 {% if item.sale_motrum %}
                                     скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span>
@@ -262,12 +263,10 @@
                     </div>
                 {% endfor %}
                 <!--товары без записи в бд уже есть в спецификации или нет-->
-                {% for item in product_new %}
-                {{item}}
-                {{product_prod_in_cart}}111
+                {% for item in product_new %}    
                     {% if update_spesif %}
                     {% comment %} item.product == None {% endcomment %}
-                        {% if  product_prod_in_cart == None %}
+                        {% if  item.product_prod_in_cart == None %}
                         <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->     
                         <div class="item_container added_item_container"
                                 data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"

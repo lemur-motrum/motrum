@@ -53,11 +53,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const filterButton = wrapper.querySelector(".mobile_filter_button");
     const filterContainer = wrapper.querySelector(".filter_container");
     filterButton.onclick = () => {
-      filterContainer.classList.add("show");
+      filterContainer.classList.add("show_mobile");
     };
     const closeBtn = filterContainer.querySelector(".close_btn");
     closeBtn.onclick = () => {
-      filterContainer.classList.remove("show");
+      filterContainer.classList.remove("show_mobile");
     };
 
     loadItems();
@@ -80,12 +80,13 @@ window.addEventListener("DOMContentLoaded", () => {
             ? urlParams.set("vacancy_category", filtersParamsArray.join(","))
             : urlParams.delete("vacancy_category");
         }
-        if (filterContainer.classList.contains("show")) {
-          filterContainer.classList.remove("show");
+        if (filterContainer.classList.contains("show_mobile")) {
+          filterContainer.classList.remove("show_mobile");
         }
         filtersElems.forEach((el) => (el.disabled = true));
         loadItems();
         filterContainer.classList.add("show");
+        filterContainer.classList.remove("hide");
       };
     });
 
@@ -97,8 +98,8 @@ window.addEventListener("DOMContentLoaded", () => {
       filtersParamsArray = [];
       urlParams.delete("vacancy_category");
       filtersElems.forEach((el) => (el.disabled = true));
-      if (filterContainer.classList.contains("show")) {
-        filterContainer.classList.remove("show");
+      if (filterContainer.classList.contains("show_mobile")) {
+        filterContainer.classList.remove("show_mobile");
       }
       loadItems();
     };

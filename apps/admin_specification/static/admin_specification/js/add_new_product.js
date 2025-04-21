@@ -486,7 +486,7 @@ function addNewProductLogic(container) {
         //   }
         // });
 
-        searchButton.onclick = () => {
+        searchProductItem.onclick = () => {
           cont.classList.remove("show");
           searchInput.classList.remove("bordering");
           const cartId = getCookie("cart");

@@ -2229,6 +2229,8 @@
           box-sizing: border-box;
           border-radius: 1.875rem;
           margin: 0 0.688rem;
+          cursor: pointer;
+          color: #000;
           @media screen and(max-width:576px) {
             height: 2rem;
             padding: 0 0.5rem;
@@ -2261,7 +2263,7 @@
             background-color: transparent;
             opacity: 0;
             transition: 0.6s;
-            a {
+            div {
               color: #ff5b00;
               font-size: 1.313rem;
               font-weight: 700;

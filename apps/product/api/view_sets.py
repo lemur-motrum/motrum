@@ -664,6 +664,27 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
         product_new_article = product_new_article.strip()
+        
+        if data["date_delivery"] == "":
+            del data["date_delivery"]
+        else:
+            data["date_delivery"] = datetime.datetime.strptime(
+                data["date_delivery"], "%Y-%m-%d"
+            ).date()
+            
+        if data["sale_client"] == "":
+            data["sale_client"] = None
+        else:
+            sale_client =  float(data["sale_client"])
+        
+        if data["product_new_sale_motrum"] == "":
+            data["product_new_sale_motrum"] = None
+            
+        if data["product_price_motrum"] == "":
+            data["product_price_motrum"] = None
+        
+        
+            
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article
@@ -702,6 +723,23 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
         product_new_article = product_new_article.strip()
+        data["product_new_article"] = product_new_article
+        
+        if data["date_delivery"] == "":
+            del data["date_delivery"]
+        else:
+            data["date_delivery"] = datetime.datetime.strptime(
+                data["date_delivery"], "%Y-%m-%d"
+            ).date()
+        
+        if data["sale_client"] == "":
+            data["sale_client"] = None
+            
+        if data["product_new_sale_motrum"] == "":
+            data["product_new_sale_motrum"] = None  
+            
+        if data["product_price_motrum"] == "":
+            data["product_price_motrum"] = None    
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article
@@ -743,6 +781,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
 
         if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = None
+        
         print(data)
         if data["sale_client"] == "":
             data["sale_client"] = None
@@ -750,6 +789,11 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
             sale_client =  float(data["sale_client"])
         serializer = serializer_class(queryset, data=data, partial=True)
 
+        if data["product_price_motrum"] == "":
+            data["product_price_motrum"] = None
+        else:
+            product_price_motrum =  float(data["product_price_motrum"])
+        
         if serializer.is_valid():
             serializer.save()
             print(serializer.data)
@@ -779,7 +823,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
 
         queryset = ProductCart.objects.get(pk=pk)
-        if queryset.product_new:
+        if queryset.product_new and queryset.product == None:
             try:
                 prod_spes = ProductSpecification.objects.get(
                     specification__cart=queryset.cart, product_new=queryset.product_new

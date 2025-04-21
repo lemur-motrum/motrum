@@ -841,6 +841,9 @@ def create_specification(request):
                 price_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_price",
                 ),
+                price_motrum_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "product_price_motrum",
+                ),
                 price_motrum=Case(
                     When(sale_motrum=None, then="price_cart"),
                     When(

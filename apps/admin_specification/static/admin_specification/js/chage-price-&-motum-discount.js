@@ -19,6 +19,13 @@ window.addEventListener("DOMContentLoaded", () => {
       const motrumSaleContainer = productItem.querySelector(
         ".motrum_sale_persent"
       );
+      const motrumPriceContainer = productItem.querySelector(".price_motrum");
+      const changeMotrumPriceInput= productItem.querySelector(
+        ".change_price_motrum"
+      );
+      const changeMotrumPriceLable= productItem.querySelector(
+        ".change_price_motrum_label"
+      );
       const changePriceInput = productItem.querySelector(".change_input_price");
       const changeMotrumSaleInput = productItem.querySelector(
         ".change-input-sale-percent-motrum"
@@ -39,6 +46,16 @@ window.addEventListener("DOMContentLoaded", () => {
           changePriceInput.classList.add("show");
           inputLogic(changePriceInput);
         }
+        if (changeMotrumPriceInput) {
+            changeMotrumPriceInput.value = getReplacedInputValue(changeMotrumPriceInput);
+          
+          
+          // motrumPriceContainer.style.display = "none";
+          changeMotrumPriceInput.classList.add("show");
+          changeMotrumPriceLable.classList.add("show");
+          inputLogic(changeMotrumPriceInput);
+        }
+        
         changeMotrumSaleInput.value = getReplacedInputValue(
           changeMotrumSaleInput
         );
@@ -65,7 +82,8 @@ window.addEventListener("DOMContentLoaded", () => {
           cart: cartId,
           product_sale_motrum: changeMotrumSaleInput.value,
           date_delivery:deliveryDate,
-          sale_client: discountInput.value
+          sale_client: discountInput.value,
+          product_price_motrum:changeMotrumPriceInput.value
         };
         const data = JSON.stringify(dataObj);
 

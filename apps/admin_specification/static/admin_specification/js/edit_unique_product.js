@@ -42,9 +42,33 @@ window.addEventListener("DOMContentLoaded", () => {
       const newProductError = changeFormWrapper.querySelector(
         ".add_new_item_in_cart_container_error"
       );
+      const deliveryDate = changeFormWrapper.querySelector(".new_item_container_calendar")
+      const discountInput = changeFormWrapper.querySelector(".discount-input")
+      discountInput.value = getCurrentPrice(discountInput.value);
 
       const options = select.querySelectorAll(".itc-select__options");
+      const changeMotrumPriceInput= changeFormWrapper.querySelector(
+        ".new_item_change_price_motrum"
+      );
+      changeMotrumPriceInput.value = getCurrentPrice(changeMotrumPriceInput.value);
 
+      changeMotrumPriceInput.addEventListener("input", function () {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+          changeMotrumPriceInput.value = currentValue;
+        if (changeMotrumPriceInput.value == ".") {
+          e.target.value = "";
+        }
+        if (changeMotrumPriceInput.value == "0") {
+          e.target.value = "";
+        }
+      })
+ 
       options.forEach((el) => {
         el.onclick = () => {
           setTimeout(() => {
@@ -181,6 +205,9 @@ window.addEventListener("DOMContentLoaded", () => {
               ? salePersentInput.value
               : null,
             vendor: supplierSelect.getAttribute("value"),
+            date_delivery:deliveryDate.value,
+            sale_client: discountInput.value,
+            product_price_motrum:changeMotrumPriceInput.value
           };
           const data = JSON.stringify(objData);
           fetch(`/api/v1/cart/${productId}/upd-product-new/`, {

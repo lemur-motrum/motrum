@@ -820,7 +820,7 @@ h1 {
               display: flex;
               flex-direction: column;
               input {
-                visibility: hidden;
+                // visibility: hidden;
                 border: none;
                 padding: 0.5rem;
                 height: auto;
@@ -1237,14 +1237,24 @@ h1 {
           }
           &.visible {
             opacity: 1;
+            z-index: 3;
           }
           .add_change_item_in_cart_container {
             position: absolute;
-            top: 50%;
+            top: 80%;
             right: 3rem;
             transform: translateY(-100%);
             margin-top: 1rem;
-
+            .new_item_container_calendar{
+              width: 100%;
+              height: 3.563rem;
+              border-radius: 1.875rem;
+              border: 0.094rem solid #000;
+              font-family: "Nunito", sans-serif;
+              font-weight: 700;
+              padding: 1rem;
+              box-sizing: border-box;
+            }
             .add_new_item_in_cart {
               cursor: pointer;
               width: 9rem;
@@ -1259,6 +1269,7 @@ h1 {
               border: none;
               text-transform: uppercase;
               color: #fff;
+              margin-top: 0.3rem;
               &:disabled,
               &[disabled] {
                 cursor: auto;
@@ -1315,6 +1326,7 @@ h1 {
               left: 2%;
               transition: 0.6s;
               opacity: 0;
+              margin-bottom: 0.1rem;
               &.show {
                 opacity: 1;
               }
@@ -1407,12 +1419,16 @@ h1 {
               display: flex;
               flex-direction: column;
               input {
-                visibility: hidden;
-                border: none;
+                // visibility: hidden;
+                position: relative;
                 padding: 0.5rem;
                 height: auto;
                 font-size: 0.813rem;
+                width: 100%;
                 box-sizing: border-box;
+                border: 0.094rem solid #000;
+                border-radius: 1.875rem;
+                font-family: "Nunito", sans-serif;
               }
               span {
                 font-size: 0.613rem;
@@ -1564,6 +1580,21 @@ h1 {
                 visibility: hidden;
               }
             }
+          }
+          .new_item_change_price_motrum_label{
+            font-size: 0.613rem;
+            color: #161616;
+          }
+          .new_item_change_price_motrum{
+            position: relative;
+            padding: 0.5rem;
+            height: auto;
+            font-size: 0.813rem;
+            width: 100%;
+            box-sizing: border-box;
+            border: 0.094rem solid #000;
+            border-radius: 1.875rem;
+            font-family: "Nunito", sans-serif;
           }
         }
       }
@@ -1994,6 +2025,20 @@ h1 {
           display: block;
         }
       }
+      .change_price_motrum_label {
+        position: relative;
+        left: -0.5rem;
+        border: none;
+        padding: 0.5rem;
+        font-size: 0.813rem;
+        box-sizing: border-box;
+       
+        
+        display: none;
+        &.show {
+          display: block;
+        }
+      }
       .change_price_motrum {
         position: relative;
         left: -0.5rem;
@@ -2038,7 +2083,7 @@ h1 {
           margin-top: -2rem;
           .add_new_item_in_cart_container {
             position: absolute;
-            top: 85%;
+            top: 150%;
             right: -3rem;
             transform: translateY(-50%);
             display: flex;
@@ -2285,16 +2330,20 @@ h1 {
             }
             &:nth-of-type(7) {
               width: 8%;
-              margin-left: 3.5rem;
+              margin-left: 1.5rem;
               display: flex;
               flex-direction: column;
               input {
-                visibility: hidden;
-                border: none;
+                // visibility: hidden;
+                position: relative;
                 padding: 0.5rem;
                 height: auto;
                 font-size: 0.813rem;
+                width: 100%;
                 box-sizing: border-box;
+                border: 0.094rem solid #000;
+                border-radius: 1.875rem;
+                font-family: "Nunito", sans-serif;
               }
               span {
                 font-size: 0.613rem;
@@ -2310,7 +2359,7 @@ h1 {
               margin-top: -2rem;
 
               input {
-                visibility: hidden;
+                // visibility: hidden;
                 width: 100%;
                 height: 3.563rem;
                 border-radius: 1.875rem;
@@ -2325,6 +2374,21 @@ h1 {
                 }
               }
             }
+          }
+          .new_item_change_price_motrum_label{
+            font-size: 0.613rem;
+            color: #161616;
+          }
+          .new_item_change_price_motrum{
+            position: relative;
+            padding: 0.5rem;
+            height: auto;
+            font-size: 0.813rem;
+            width: 100%;
+            box-sizing: border-box;
+            border: 0.094rem solid #000;
+            border-radius: 1.875rem;
+            font-family: "Nunito", sans-serif;
           }
         }
       }

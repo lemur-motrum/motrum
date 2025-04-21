@@ -220,6 +220,12 @@ function addNewProductLogic(container) {
       const motrumPrice = newItemContainer.querySelector(
         ".new_item_container_value_motrum_price"
       );
+      const changeMotrumPriceInput = newItemContainer.querySelector(
+        ".new_item_change_price_motrum"
+      );
+      const deliveryDate = newItemContainer.querySelector(".new_item_container_calendar")
+      const discountInput = newItemContainer.querySelector(".add_sale")
+
 
       function closeSelectDropdown(select) {
         const options = select.querySelectorAll(".itc-select__options");
@@ -240,11 +246,45 @@ function addNewProductLogic(container) {
           getDigitsNumber(
             motrumPrice,
             (priceOnceInput.value / 100) *
-              (100 - persentSaleInput.value) *
-              quantityInput.value
+            (100 - persentSaleInput.value) *
+            quantityInput.value
           );
         }
       }
+      discountInput.addEventListener("input", function () {
+        console.log("discountInput")
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+        discountInput.value = currentValue;
+        if (discountInput.value == ".") {
+          e.target.value = "";
+        }
+        if (discountInput.value == "0") {
+          e.target.value = "";
+        }
+      })
+      changeMotrumPriceInput.addEventListener("input", function () {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+          changeMotrumPriceInput.value = currentValue;
+        if (changeMotrumPriceInput.value == ".") {
+          e.target.value = "";
+        }
+        if (changeMotrumPriceInput.value == "0") {
+          e.target.value = "";
+        }
+      })
+
       persentSaleInput.addEventListener("input", function () {
         const currentValue = this.value
           .replace(",", ".")
@@ -297,6 +337,7 @@ function addNewProductLogic(container) {
       changeTotalCost(priceOnceInput, quantityInput);
       changeTotalCost(quantityInput, priceOnceInput);
       let validate = true;
+
       addNewItemInCartButton.onclick = () => {
         setPreloaderInButton(addNewItemInCartButton);
         function inputValidate(input) {
@@ -356,6 +397,9 @@ function addNewProductLogic(container) {
               : null,
             vendor: vendorSelectToggle.getAttribute("value"),
             supplier: supplierSelectToggle.getAttribute("value"),
+            date_delivery: deliveryDate.value,
+            sale_client: discountInput.value,
+            product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(dataObjNewProduct);
 

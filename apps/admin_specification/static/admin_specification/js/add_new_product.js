@@ -92,7 +92,7 @@ function addNewProductLogic(container) {
     }
 
     searchElemsContainer.addEventListener("scroll", function () {
-      if (this.scrollHeight === this.scrollTop + this.clientHeight) {
+      if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
         console.log("ff ff ff");
         if (!finish) {
           if (

@@ -746,7 +746,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
-    photo = models.ImageField("Изображение", upload_to=get_file_path_add, null=True)
+    photo = models.ImageField("Изображение", upload_to=get_file_path_add,max_length=500, null=True)
     # file = models.CharField("фаил в системе", max_length=100, null=True)
     link = models.CharField("Ссылка у поставщика", max_length=250)
     hide = models.BooleanField("Скрыть", default=False)

@@ -686,55 +686,76 @@
     .swiper-wrapper {
       .project_video_elem {
         height: 16.5rem;
-        width: auto;
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
         border-radius: 2.5rem;
         overflow: hidden;
         cursor: pointer;
         margin-right: 1rem;
+        position: relative;
+        display: flex;
         @media screen and(max-width:576px) {
           border-radius: 1.5rem;
           height: 9rem;
         }
         video {
-          width: 100%;
+          position: relative;
+          width: auto;
           height: 100%;
           -o-object-fit: cover;
           object-fit: cover;
+          top: 0;
+          left: 0;
         }
       }
       .project_one_title_image {
         height: 16.5rem;
-        width: auto;
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
         border-radius: 2.5rem;
         overflow: hidden;
         cursor: pointer;
+        display: flex;
+        position: relative;
         @media screen and(max-width:576px) {
           border-radius: 1.5rem;
           height: 9rem;
         }
         img {
-          width: 100%;
+          width: auto;
           height: 100%;
           -o-object-fit: cover;
           object-fit: cover;
+          position: relative;
+          top: 0;
+          left: 0;
         }
       }
       .project_one_img-container {
         height: 16.5rem;
-        width: auto;
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
         border-radius: 2.5rem;
         overflow: hidden;
         margin-left: 1rem;
         cursor: pointer;
+        display: flex;
+        position: relative;
         @media screen and(max-width:576px) {
           border-radius: 1.5rem;
           height: 9rem;
         }
         img {
-          width: 100%;
+          width: auto;
           height: 100%;
           -o-object-fit: cover;
           object-fit: cover;
+          position: relative;
+          top: 0;
+          left: 0;
         }
       }
     }

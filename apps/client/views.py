@@ -1,9 +1,12 @@
 from functools import cache
 import random
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Prefetch
+from django.contrib.auth import logout
+from django.shortcuts import redirect, render
 from django.db.models import Q, F, OrderBy, Case, When, Value
 from django.db.models.functions import Round
 from django.db.models import Sum
@@ -214,3 +217,16 @@ def order_client_one(request, pk):
     }
 
     return render(request, "client/client_order_one.html", context)
+
+# ПЕРСОНАЛЬНЫЕ ДАННЫЕ
+@login_required
+def user_logout(request):
+    
+    logout(request)
+    response = redirect(reverse("core:index"))
+    response.set_cookie("client_id", max_age=-1)
+    response.set_cookie("cart", max_age=-1)
+    context = {
+       
+    }
+    return response

@@ -485,7 +485,7 @@
           box-sizing: border-box;
           gap: 1rem;
           transition: 1s !important;
-          &.show {
+          &.show_mobile {
             left: 0rem;
             overflow-y: scroll;
           }
@@ -842,6 +842,7 @@
             text-transform: lowercase;
             cursor: pointer;
             transition: 0.6s;
+            color: #000;
             @media screen and (max-width: 576px) {
               font-size: 1rem;
             }

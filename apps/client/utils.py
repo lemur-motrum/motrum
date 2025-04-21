@@ -19,6 +19,7 @@ from reportlab.lib.units import mm, cm, inch
 import num2words
 
 
+
 import reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -39,7 +40,7 @@ from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, ListStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Paragraph,KeepInFrame
 from reportlab.platypus import ListFlowable, ListItem
 
 
@@ -158,6 +159,7 @@ def crete_pdf_bill(
         fileName_no_sign = os.path.join(directory, name_bill_no_signature)
 
         story = []
+        story_no_sign = []
 
         pdfmetrics.registerFont(TTFont("Roboto", "Roboto-Regular.ttf", "UTF-8"))
         pdfmetrics.registerFont(TTFont("Roboto-Bold", "Roboto-Bold.ttf", "UTF-8"))
@@ -171,7 +173,7 @@ def crete_pdf_bill(
             rightMargin=20,
             leftMargin=20,
             topMargin=40,
-            bottomMargin=40,
+            bottomMargin=50,
             title="Счет",
         )
         doc_2 = SimpleDocTemplate(
@@ -180,7 +182,7 @@ def crete_pdf_bill(
             rightMargin=20,
             leftMargin=20,
             topMargin=40,
-            bottomMargin=40,
+            bottomMargin=50,
             title="Счет",
         )
 
@@ -284,7 +286,7 @@ def crete_pdf_bill(
         )
 
         story.append(logo_motrum)
-
+        story_no_sign.append(logo_motrum)
         # тут вставки бик корпоратив
         data_bank = [
             (
@@ -358,7 +360,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_bank)
-
+        story_no_sign.append(table_bank)
         # name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
@@ -367,6 +369,7 @@ def crete_pdf_bill(
             normal_style,
         )
         story.append(logo_supplier)
+        story_no_sign.append(logo_supplier)
         if is_contract:
             story.append(
                 Paragraph(
@@ -374,8 +377,20 @@ def crete_pdf_bill(
                     title_style_14,
                 )
             )
+            story_no_sign.append(
+                Paragraph(
+                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
+            )
         else:
             story.append(
+                Paragraph(
+                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    title_style_14,
+                )
+            )
+            story_no_sign.append(
                 Paragraph(
                     f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
@@ -440,7 +455,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_info)
-
+        story_no_sign.append(table_info)
         data = [
             (
                 Paragraph("№ ", bold_style_center),
@@ -592,7 +607,7 @@ def crete_pdf_bill(
             )
         )
         story.append(table_product)
-
+        story_no_sign.append(table_product)
         if order.prepay_persent:
             if order.prepay_persent == 100:
                 info_payment = f" Способ оплаты: 100% предоплата."
@@ -681,7 +696,8 @@ def crete_pdf_bill(
             rowHeights=13,
         )
         story.append(final_table_all_prod)
-
+        story_no_sign.append(final_table_all_prod)
+        
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
         ).capitalize()
@@ -691,21 +707,33 @@ def crete_pdf_bill(
         if len(total_amount_pens) < 2:
             total_amount_pens = f"{total_amount_pens}0"
         rub_word = rub_words(int(specifications.total_amount))
-
-        data_text_info = [
-            (
+        data_text_info =[]
+        # data_text_info = [
+        #     (
+        #         Paragraph(
+        #             f"Всего наименований {i}, на сумму {total_amount_str} руб.",
+        #             normal_style,
+        #         ),
+        #     ),
+        #     (
+        #         Paragraph(
+        #             f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
+        #             bold_style,
+        #         ),
+        #     ),
+        # ]
+        data_text_info.append((
                 Paragraph(
                     f"Всего наименований {i}, на сумму {total_amount_str} руб.",
                     normal_style,
                 ),
-            ),
-            (
+            ),)
+        data_text_info.append((
                 Paragraph(
                     f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
                     bold_style,
                 ),
-            ),
-        ]
+            ),)
 
         if is_contract:
             data_text_info.append(
@@ -851,21 +879,36 @@ def crete_pdf_bill(
             )
 
         table_data_text_info = Table(
-            data_text_info,
+            data_text_info, splitInRow=1,
         )
-        print(table_data_text_info)
+        table_data_text_info2 = Table(
+            data_text_info, splitInRow=1,
+        )
+
         table_data_text_info.setStyle(
             TableStyle(
-                [
+                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                 ]
             )
         )
-        story.append(table_data_text_info)
+        table_data_text_info2.setStyle(
+            TableStyle(
+                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
+                    ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+                    ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                ]
+            )
+        )
 
-        story_no_sign = story.copy()
+        print(table_data_text_info)
+        # story_no_sign = story.copy()
+        story.append(table_data_text_info)
+        story_no_sign.append(table_data_text_info2)
+        
 
         name_image = request.build_absolute_uri(motrum_info.signature.url)
         signature_motrum = Paragraph(

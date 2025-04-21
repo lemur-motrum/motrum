@@ -80,6 +80,7 @@ function addNewProductLogic(container) {
             if (count == 0 && countLast == 5) {
               searchElemsContainerWrapper.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
             } else {
+              smallLoader.classList.remove("show");
               finish = true;
               return;
             }
@@ -92,6 +93,7 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight === this.scrollTop + this.clientHeight) {
+        console.log("ff ff ff");
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -120,6 +122,7 @@ function addNewProductLogic(container) {
     searchInput.oninput = () => {
       count = 0;
       countLast = 5;
+      finish = false;
       if (searchInput.value.length >= 3) {
         const currentValue = searchInput.value;
         searchElemsContainerWrapper.innerHTML = "";

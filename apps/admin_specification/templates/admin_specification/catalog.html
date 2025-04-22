@@ -192,8 +192,7 @@
                                         0
                                     {% endif %}
                             </div> {% endcomment %}
-                            <label class="change_price_motrum_label"for="change_price_motrum_hands">ручная цена мотрум за ед.</label>
-                            <input class="change_price_motrum" id="change_price_motrum_hands" value="{% if item.price_motrum_cart %}{{item.price_motrum_cart}}{% endif %}">
+                            
                             <div class="">
                                 {% if item.sale_motrum %}
                                     скидка <span class="motrum_sale_persent">{{ item.sale_motrum }}</span>
@@ -207,6 +206,7 @@
                                     %
                                 </span>
                             </div>
+                            
                             <div class="">
                                 {% if item.sale_motrum != item.price.sale.percent %}
                                     {% if item.sale_motrum == 0 and item.price.sale.percent == None %}
@@ -223,6 +223,8 @@
                                     
                                 {% endif %}
                             </div>
+                            <label class="change_price_motrum_label"for="change_price_motrum_hands">ручная цена мотрум за ед.</label>
+                            <input class="change_price_motrum" id="change_price_motrum_hands" value="{% if item.price_motrum_cart %}{{item.price_motrum_cart}}{% endif %}">
                         </div>
                         <div class="item_value">
                             <input class="discount-input"
@@ -442,7 +444,7 @@
                                             </label>
                                             <label class="article_label">
                                                 <input placeholder="Артикул товара"
-                                             
+                                                disabled
                                                        class="new_item_container_article_input"
                                                        type="text"
                                                        value="{{ item.product_new_article }}" />

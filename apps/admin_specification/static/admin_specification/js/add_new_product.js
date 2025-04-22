@@ -37,7 +37,7 @@ function addNewProductLogic(container) {
     const smallLoader = searchElemsContainer.querySelector(".small_loader");
 
     let count = 0;
-    let countLast = 5;
+    let countLast = 9;
     let finish = false;
 
     function getProducts() {
@@ -77,7 +77,8 @@ function addNewProductLogic(container) {
               searchElemsContainerWrapper.innerHTML += `<div product-id="${el.id}" class="product_search_item"><span class="name">${el.name}</span><span class="search_button">Добавить</span></div>`;
             });
           } else {
-            if (count == 0 && countLast == 5) {
+            if (count == 0 && countLast == 9) {
+              smallLoader.classList.remove("show");
               searchElemsContainerWrapper.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
             } else {
               smallLoader.classList.remove("show");
@@ -85,8 +86,8 @@ function addNewProductLogic(container) {
               return;
             }
           }
-          count += 5;
-          countLast += 5;
+          count += 9;
+          countLast += 9;
           searchProductLogic(searchElemsContainer);
         });
     }
@@ -98,7 +99,7 @@ function addNewProductLogic(container) {
           if (
             !smallLoader.classList.contains("show") &&
             count != 0 &&
-            countLast != 5
+            countLast != 9
           ) {
             getProducts();
             smallLoader.classList.add("show");
@@ -121,7 +122,7 @@ function addNewProductLogic(container) {
 
     searchInput.oninput = () => {
       count = 0;
-      countLast = 5;
+      countLast = 9;
       finish = false;
       if (searchInput.value.length >= 3) {
         const currentValue = searchInput.value;

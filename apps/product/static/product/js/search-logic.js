@@ -43,12 +43,9 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-
     searchElemWrapper.addEventListener("scroll", function () {
- 
-
-      if (this.scrollHeight == this.scrollTop + this.clientHeight) {
-        console.log("jr jr jr")
+      if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
+        console.log("jr jr jr");
 
         if (!finish) {
           if (

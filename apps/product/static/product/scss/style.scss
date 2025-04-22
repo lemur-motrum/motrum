@@ -2123,6 +2123,9 @@
       &.visible {
         opacity: 1;
       }
+      @media screen and (max-width: 576px) {
+        max-height: 8rem;
+      }
       .loader {
         overflow: hidden;
         font-size: 0.625rem;
@@ -2163,6 +2166,10 @@
           left: 0;
           bottom: 0;
           right: 0;
+        }
+        @media screen and (max-width: 576px) {
+          width: 6rem;
+          height: 6rem;
         }
         &.hide {
           display: none;

@@ -2141,7 +2141,7 @@ def add_new_order_bx(
                 "STAGE_ID": "C8:NEW",
                 "CURRENCY_ID": "RUB",
                 # "COMPANY_ID": company_bx_id,
-                "ASSIGNED_BY_ID": base_manager,
+                "ASSIGNED_BY_ID": base_manager.bitrix_id,
                 "SOURCE_ID": "CALLBACK",
                 "SOURCE_DESCRIPTION": f"Заказ с сайта motrum.ru тел.польз. +{client.phone}",
                 "CONTACT_IDS": [client_bx_id],

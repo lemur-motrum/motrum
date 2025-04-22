@@ -79,6 +79,7 @@ from apps.client.models import (
 )
 from apps.core.utils import (
     after_save_order_products,
+    check_delite_product_cart_in_upd_spes,
     client_info_bitrix,
     create_info_request_order_1c,
     create_info_request_order_bitrix,
@@ -1266,8 +1267,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     )
     def exit_order_admin(self, request, *args, **kwargs):
         cart_id = request.COOKIES.get("cart")
+        # specification = request.COOKIES.get("specificationId")
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
-        
+        # if specification and specification != 0 and specification != "":
+        #     check_delite_product_cart_in_upd_spes(specification,cart)
         
         return Response(cart, status=status.HTTP_200_OK)
 

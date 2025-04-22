@@ -25,6 +25,7 @@ from requests.auth import HTTPBasicAuth
 
 
 
+
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -2549,11 +2550,37 @@ def serch_products_web(search_text, queryset):
     return queryset
 
 
-def check_delite_product_cart_in_upd_spes(order,specification,cart):
+def check_delite_product_cart_in_upd_spes(specification,cart):
     from apps.product.models import ProductCart
+    from apps.specification.models import ProductSpecification
     
-    cart_prod = ProductCart.objects.filter(cart=cart)
+    cart_prod = ProductCart.objects.filter(cart=cart).values_list("id")
+    spes_prod = ProductSpecification.objects.filter(specification=specification,id_cart__in=cart_prod)
+    print(spes_prod)
+    
     print("cart_prod",cart_prod)
+    for spes_prod_item in spes_prod:
+        p = ProductCart(cart=spes_prod_item.specification.cart,
+                        product=spes_prod_item.product,
+                        product_price = spes_prod_item.price_one,
+                        product_price_motrum = spes_prod_item.price_one_motrum,
+                        product_sale_motrum= spes_prod_item.sale_motrum,
+                        sale_client=spes_prod_item.extra_discount,
+                        vendor=spes_prod_item.vendor,
+                        supplier =spes_prod_item.supplier,
+                        product_new=spes_prod_item.product_new,
+                        product_new_article=spes_prod_item.product_new_article,
+                        product_new_price=spes_prod_item.price_one_original_new,
+                        product_new_sale=spes_prod_item.extra_discount,
+                        product_new_sale_motrum=spes_prod_item.sale_motrum,
+                        quantity=spes_prod_item.quantity,
+                        comment=spes_prod_item.comment,
+                        date_delivery=spes_prod_item.date_shipment,
+                        )
+        print(p)
+        p._change_reason = "Автоматическое"
+        p.save()
+    
 
 def create_file_props_in_vendor_props():
     from apps.product.models import (

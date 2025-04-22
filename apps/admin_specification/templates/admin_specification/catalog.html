@@ -1263,117 +1263,116 @@
                     </div>
                     <button class="add_new_product">Добавить новый товар</button>
                 </div>
-                <div style="display:none" class="coment_all_spesif">
-                    <br>
-                    <textarea style="width: 400px;
-                                     height: 50px;
-                                     border-radius: 10px"
-                              class="comment-input-all"
-                              name="comment-input-name-all"
-                              placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
-                    <textarea style="width: 200px;
-                                     height: 50px;
-                                     border-radius: 10px"
-                              class="delivery-date-all-input-all"
-                              name="delivery-date-all-input-name-all"
-                              placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
-                </div>
-                <div class="submit-container">
-                    <div class="client">
-                        <label class="serch-client">
-                            <div class="client-prev">
-                                <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
-                                       type="text"
-                                       name="serch-client_input"
-                                       placeholder="Клиент"
-                                       value="{% if client_req %}{{ client_req.requisitesKpp.requisites.legal_entity }}{% endif %}">
-                            </div>
-                            <div class="clients"></div>
-                            <label class="select-client-requsits_label">
-                                <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
-                                        class="select-client-requsits"
-                                        {% if client_req %}value="{{ client_req.id }}"{% endif %}
-                                        name="client-requisit">
-                                    <option disabled>Расчетный счет юр.Лица</option>
-                                    {% if client_req %}
-                                        {% for recusits in client_req_all %}
-                                            <option class="client-option"
-                                                    {% if client_req.id == recusits.id %}selected{% endif %}
-                                                    value="{{ recusits.id }}">
-                                                {% if recusits.requisitesKpp.kpp %}КПП:{{ recusits.requisitesKpp.kpp }}{% endif %}
-                                                Р/c:{{ recusits.account_requisites }}
-                                            </option>
-                                        {% endfor %}
-                                    {% endif %}
-                                </select>
-                            </label>
-                            <div class="client-info">
-                                {% if client_req %}
-                                    <div>Предоплата: {{ client_req.requisitesKpp.requisites.prepay_persent }}%</div>
-                                    <div></div>
-                                {% endif %}
-                            </div>
-                        </label>
-                        <label class="bitrix-id-label">
-                            <input disabled
-                            {% comment %} {% if bill_upd or order.id_bitrix %}disabled{% endif %} {% endcomment %}
-                                   class="bitrix-input"
-                                   type="text"
-                                   onkeypress='validate(event)'
-                                   value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}"
-                                   placeholder="Номер сделки Б24" />
-                        </label>
+                <div class="submit_and_content_container">
+                    <div class="coment_all_spesif">
+                        <textarea 
+                                  class="comment-input-all"
+                                  name="comment-input-name-all"
+                                  placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
+                        {% comment %} <textarea style="width: 200px;
+                                         height: 50px;
+                                         border-radius: 10px"
+                                  class="delivery-date-all-input-all"
+                                  name="delivery-date-all-input-name-all"
+                                  placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea> {% endcomment %}
                     </div>
-                    <div class="motrum-info">
-                        <div>
-                            <select class="select_delevery" name='delevery-requisit' value="1">
-                                <option disabled selected>Способ доставки</option>
-                                {% for delivery in type_delivery %}
-                                    <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
-                                            value="{{ delivery.id }}">
-                                        {{ delivery.text }}
-                                        {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
+                    <div class="submit-container">
+                        <div class="client">
+                            <label class="serch-client">
+                                <div class="client-prev">
+                                    <input {% if bill_upd or order.id_bitrix %}disabled{% endif %}
+                                           type="text"
+                                           name="serch-client_input"
+                                           placeholder="Клиент"
+                                           value="{% if client_req %}{{ client_req.requisitesKpp.requisites.legal_entity }}{% endif %}">
+                                </div>
+                                <div class="clients"></div>
+                                <label class="select-client-requsits_label">
+                                    <select {% if bill_upd or order.id_bitrix %}disabled{% endif %}
+                                            class="select-client-requsits"
+                                            {% if client_req %}value="{{ client_req.id }}"{% endif %}
+                                            name="client-requisit">
+                                        <option disabled>Расчетный счет юр.Лица</option>
+                                        {% if client_req %}
+                                            {% for recusits in client_req_all %}
+                                                <option class="client-option"
+                                                        {% if client_req.id == recusits.id %}selected{% endif %}
+                                                        value="{{ recusits.id }}">
+                                                    {% if recusits.requisitesKpp.kpp %}КПП:{{ recusits.requisitesKpp.kpp }}{% endif %}
+                                                    Р/c:{{ recusits.account_requisites }}
+                                                </option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </label>
+                                <div class="client-info">
+                                    {% if client_req %}
+                                        <div>Предоплата: {{ client_req.requisitesKpp.requisites.prepay_persent }}%</div>
+                                        <div></div>
+                                    {% endif %}
+                                </div>
+                            </label>
+                            <label class="bitrix-id-label">
+                                <input disabled
+                                {% comment %} {% if bill_upd or order.id_bitrix %}disabled{% endif %} {% endcomment %}
+                                       class="bitrix-input"
+                                       type="text"
+                                       onkeypress='validate(event)'
+                                       value="{% if order and order.id_bitrix %}{{ order.id_bitrix }}{% endif %}"
+                                       placeholder="Номер сделки Б24" />
+                            </label>
+                        </div>
+                        <div class="motrum-info">
+                            <div>
+                                <select class="select_delevery" name='delevery-requisit' value="1">
+                                    <option disabled selected>Способ доставки</option>
+                                    {% for delivery in type_delivery %}
+                                        <option {% if order.type_delivery.id == delivery.id %}selected{% endif %}
+                                                value="{{ delivery.id }}">
+                                            {{ delivery.text }}
+                                            {% if delivery.company_delivery %}{{ delivery.company_delivery }}{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <select class="select_motrum_requisites"
+                                    id="motrum-select"
+                                    name="mortum_req"
+                                    value="1"
+                                    value="1">
+                                <option disabled selected>Юрлицо Motrum</option>
+                                {% for requisit in mortum_req %}
+                                    <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %}
+                                            data-requisites-id="{{ requisit.requisites.id }}"
+                                            data-account-requisites-id="{{ requisit.id }}"
+                                            value="{{ requisit.id }}">
+                                        {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <select class="select_motrum_requisites"
-                                id="motrum-select"
-                                name="mortum_req"
-                                value="1"
-                                value="1">
-                            <option disabled selected>Юрлицо Motrum</option>
-                            {% for requisit in mortum_req %}
-                                <option {% if order and requisit.id == order.motrum_requisites.id %}selected{% endif %}
-                                        data-requisites-id="{{ requisit.requisites.id }}"
-                                        data-account-requisites-id="{{ requisit.id }}"
-                                        value="{{ requisit.id }}">
-                                    {{ requisit.requisites.short_name_legal_entity }}- Расчетный счет -{{ requisit.account_requisites }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="button_specification-wrapper">
-                        {% if bill_upd %}
-                            <div class="save_upd_bill-wrapper">
-                                <button class="save_upd_bill">Сохранить изменения</button>
-                                <div class="save_upd_bill-error"></div>
-                            </div>
-                            <button class="exit_button">Выйти без изменений</button>
-                        {% else %}
-                            <div class="save_button-wrapper "style=" display: none; ">
-                                <button class="save_button">Сохранить спецификацию</button>
-                                <div class="error"></div>
-                            </div>
-                            <div class="save_invoice_button-wrapper">
-                                <button class="save_button">Сохранить заказ</button>
-                                <div class="error"></div>
-                            </div>
-                            {% if specification %}
+                        <div class="button_specification-wrapper">
+                            {% if bill_upd %}
+                                <div class="save_upd_bill-wrapper">
+                                    <button class="save_upd_bill">Сохранить изменения</button>
+                                    <div class="save_upd_bill-error"></div>
+                                </div>
+                                <button class="exit_button">Выйти без изменений</button>
                             {% else %}
+                                <div class="save_button-wrapper "style=" display: none; ">
+                                    <button class="save_button">Сохранить спецификацию</button>
+                                    <div class="error"></div>
+                                </div>
+                                <div class="save_invoice_button-wrapper">
+                                    <button class="save_button">Сохранить заказ</button>
+                                    <div class="error"></div>
+                                </div>
+                                {% if specification %}
+                                {% else %}
+                                {% endif %}
+                                <button class="exit_button">Выйти без изменений</button>
                             {% endif %}
-                            <button class="exit_button">Выйти без изменений</button>
-                        {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

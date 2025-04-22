@@ -739,7 +739,10 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
             data["product_new_sale_motrum"] = None  
             
         if data["product_price_motrum"] == "":
-            data["product_price_motrum"] = None    
+            data["product_price_motrum"] = None  
+              
+        if data["product_price_motrum"]:
+            data["product_new_sale_motrum"] = None 
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article
@@ -780,20 +783,23 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
             ).date()
 
         if data["product_sale_motrum"] == "":
-            data["product_sale_motrum"] = None
+            data["product_sale_motrum"] = 0
         
         print(data)
         if data["sale_client"] == "":
             data["sale_client"] = None
         else:
             sale_client =  float(data["sale_client"])
-        serializer = serializer_class(queryset, data=data, partial=True)
+            
+        
 
         if data["product_price_motrum"] == "":
             data["product_price_motrum"] = None
-        else:
-            product_price_motrum =  float(data["product_price_motrum"])
-        
+      
+        if data["product_price_motrum"]: 
+            data["product_sale_motrum"] = 0      
+            
+        serializer = serializer_class(queryset, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             print(serializer.data)

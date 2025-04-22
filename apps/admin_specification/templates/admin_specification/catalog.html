@@ -737,7 +737,7 @@
                                        name="price-input-discount"
                                        placeholder="% скидки"
                                        maxlength="6"
-                                       value="{% if item.old_extra_discount %}{{ item.old_extra_discount }}{% endif %}" />
+                                       value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
                             </div>
                             <div class="item_value">
                                 <div>
@@ -750,6 +750,7 @@
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
+                                    
                                         <input class="delivery_date"
                                         disabled
                                                type="date"
@@ -762,6 +763,7 @@
                                                type="date"
                                                name="calendar"
                                                {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                               value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% endif %}"
                                                min="{{ current_date }}">
                                     {% endif %}
                                 </label>
@@ -853,6 +855,14 @@
                                         <span>% скидки</span> {% endcomment %}
                                     </div>
                                     <div class="add_change_item_in_cart_container">
+                                        <label class="new_item_container_value_calendar_label">
+                                            <input class="new_item_container_calendar"
+                                                   type="date"
+                                                   value="{% if item.date_delivery %}{{item.date_delivery|date:"Y-m-d"}}{% endif %}"
+                                                   {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                                   min="{{ current_date }}" />
+                                            <div class="error"></div>
+                                        </label>
                                         <button class="add_new_item_in_cart">Изменить</button>
                                         <div class="add_new_item_in_cart_container_error"></div>
                                     </div>

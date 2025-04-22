@@ -73,7 +73,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const cartId = getCookie("cart");
         const csrfToken = getCookie("csrftoken");
         const deliveryDate = productItem.querySelector(".delivery_date").value
-        console.log('deliveryDate',deliveryDate)
+        if(changePriceInput.value){
         const dataObj = {
           product: productId,
           product_price: changePriceInput
@@ -102,6 +102,9 @@ window.addEventListener("DOMContentLoaded", () => {
             throw new Error("Ошибка");
           }
         });
+      }else{
+        changePriceInput.style.border = "1px solid red";
+      }
       };
     });
   }

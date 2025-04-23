@@ -121,7 +121,7 @@ from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
 from apps.vacancy_web.models import Vacancy
-from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK
+from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK,BASE_MANAGER_FOR_BX
 from fast_bitrix24 import Bitrix
 
 
@@ -134,8 +134,10 @@ def add_iek(request):
     
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    # add_new_photo_adress_prompower()
-    create_file_props_in_vendor_props()
+    # orders_bx = bx.get_by_ID("crm.deal.get", [12422])
+    # print(orders_bx)
+    base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
+    print(base_manager.bitrix_id)
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

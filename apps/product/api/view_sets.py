@@ -247,6 +247,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
+            | Q(description__icontains=search_input[0])
         )
         print(len(search_input))
         # del search_input[0]
@@ -257,13 +258,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                     # | Q(article__icontains=search_item)
                     | Q(article_supplier__icontains=search_item)
                     | Q(additional_article_supplier__icontains=search_item)
+                    | Q(description__icontains=search_input)
                 )
         else:
-            queryset = queryset.filter(check_to_order=True)
-        queryset = queryset.filter(check_to_order=True)
-        if count_last > 0 :
-            queryset = queryset[count : count + count_last]
+            queryset = queryset.filter(check_to_order=True).order_by("name")
+        queryset = queryset.filter(check_to_order=True).order_by("name")
         
+        queryset = queryset[count  : count_last ]
         # стандатный варинт ищет целиокм
 
         # queryset = Product.objects.filter(
@@ -352,10 +353,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(description__icontains=search_item)
                 )
         else:
-            queryset = queryset.filter(check_to_order=True, in_view_website=True)
-        queryset = queryset.filter(check_to_order=True, in_view_website=True)
+            queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
         
-        queryset = queryset[count : count + count_last]
+        queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
+        
+        queryset = queryset[count  : count_last ]
         print(queryset)
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(

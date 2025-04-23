@@ -19,12 +19,7 @@
                                           {% endif %}
                                           {% if last %}<span class="price_description">до <span class="price">{{ last }}</span> ₽</span>{% endif %}
                                           {% if fixed %}<span class="price_description"><span class="price">{{ fixed }}</span> ₽</span>{% endif %}
-                                          
-                                          {% if first or last or fixed %}
-                                             в месяц   
-                                          {% endif %}
-                                                
-                                          
+                                          {% if first or last or fixed %}в месяц{% endif %}
                                     </div>
                                     <div class="price_type_payments">{{ type_payments }}</div>
                               </div>
@@ -88,14 +83,15 @@
                                     </label>
                                     <textarea class="vacancy_textarea" placeholder="Ваше сообщение"></textarea>
                                     <button class="submit_btn">Отправить</button>
-                                    <div class="politic_description">Нажимая на кнопку, вы даёте согласие на
+                                    <div class="politic_description">
+                                          Нажимая на кнопку, вы даёте согласие на
                                           обработку персональных данных в
                                           соответствии с <a target="_blank" href="/privacy-policy/">политикой
-                                              конфиденциальности</a>
-                                      </div>
+                                    конфиденциальности</a>
                               </div>
                         </div>
                   </div>
             </div>
       </div>
+</div>
 </div>

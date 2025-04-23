@@ -635,7 +635,7 @@ def get_status_order():
                     if order:
                         status = get_status_bx(status_bx)
                         if status == "SHIPMENT_":
-                            if order.type_delivery == "Самовывоз":
+                            if order.type_delivery and order.type_delivery.text == "Самовывоз":
                                 status = "SHIPMENT_PICKUP"
                             else:
                                 status = "SHIPMENT_AUTO"
@@ -1372,7 +1372,7 @@ def _status_to_order_replace(name_status, id_bx):
             order = Order.objects.filter(id_bitrix=id_bx).last()
             if status == "SHIPMENT_":
                 if order:
-                    if order.type_delivery == "Самовывоз":
+                    if order.type_delivery and order.type_delivery.text == "Самовывоз":
                         status = "SHIPMENT_PICKUP"
                     else:
                         status = "SHIPMENT_AUTO"

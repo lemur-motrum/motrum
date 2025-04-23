@@ -134,10 +134,8 @@ def add_iek(request):
     
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    # orders_bx = bx.get_by_ID("crm.deal.get", [12422])
-    # print(orders_bx)
-    base_manager = AdminUser.objects.get(email=BASE_MANAGER_FOR_BX)
-    print(base_manager.bitrix_id)
+   
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

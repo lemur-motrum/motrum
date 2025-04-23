@@ -111,6 +111,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
         order_id_bx = orders_bx["ID"]
         company = orders_bx["COMPANY_ID"]
         name_order_bx = orders_bx["TITLE"]
+        # получение контакта битркис
         contsct_order_id_bx = get_contact_order(bx, order_id_bx)
         if company == "0":
             error_text = "К сделке не прикреплена компания"
@@ -147,7 +148,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     error_text = f"Менеджер компании не внесен в окт"
                     context = {"error": error_text}
                     return (next_url, context, True)
-
+            # получение реквизитов к сделке
             req_error, place, data_company = get_req_info_bx(
                 bs_id_order, manager, company, contsct_order_id_bx
             )
@@ -189,6 +190,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
                 client_req, acc_req = client_info_bitrix(
                     data_company["data_commpany"], data_company["company_adress"]
                 )
+                
                 status_okt = _status_to_order_replace(
                     data["order"]["status"], bs_id_order
                 )
@@ -211,11 +213,11 @@ def get_info_for_order_bitrix(bs_id_order, request):
                     "adress_document": adress_document.id,
                 }
                 serializer_class = OrderSerializer
-                try:
+                try:#если заказ уже обрабатывался менеджером или с сайта. открывать ли выбор типа изменения решает жс
                     order = Order.objects.get(id_bitrix=bs_id_order)
                     cart = order.cart
                     data_order["cart"] = cart.id
-                    new_order_web = order.bill_name
+                    new_order_web = order.bill_name#для заказа с сайта что бы сразу открыл без вбора типа изменения 
                     serializer = serializer_class(order, data=data_order, many=False)
                     next_url = "admin_specification/bx_start.html"
                     context = {
@@ -233,7 +235,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
 
                     return (next_url, context, False)
 
-                except Order.DoesNotExist:
+                except Order.DoesNotExist: # новый заказ
                     data["order"]["manager"] = manager
                     cart = Cart.create_cart_admin(None, manager)
                     data_order["cart"] = cart.id
@@ -316,10 +318,11 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
     elif len(adress_bx) == 0:
         return (True, "Адреса", None)
     elif adress_item_bx == False:
+        # если у компании нет ни адреса в битрикс ни полученного из сайта
         return (True, "Адрес юридический", None)
     else:
 
-        # значение реквизитов
+        # получение значение реквизитов
         req_bx = bx.call(
             "crm.requisite.get",
             {"id": int(req_bx_id)},
@@ -373,6 +376,8 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
 
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
+        
+        # получение данных из адресов
         adress_type = None
         company_adress_all = []
         for adress in adress_bx:
@@ -463,7 +468,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
             "contact_bd_arr": contact_bd_arr,
             "adress_type": adress_type,
             "id_bitrix": id_req,
-            "req_id_bitrix": f"{company}{inn}",
+            "req_id_bitrix": f"{company}{inn}",#для поддержки правильного в окт рек состоит из айди компании и инн конкретного реквизита
             "id_company": f"{company}",
             "manager": manager.id,
             # "legal_entity_motrum": 'ООО ПНМ "Мотрум"',

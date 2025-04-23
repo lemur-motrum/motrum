@@ -317,7 +317,7 @@ class IndexInfoWeb(models.Model):
     shkaf_upravleniya = models.SmallIntegerField(
         "изготовлено шкафов         управления"
     )
-    installation = models.SmallIntegerField("запущенных установок")
+    installation = models.SmallIntegerField("запущенных систем  маркировки «Честный знак»")
 
     class Meta:
         verbose_name = "Мотрум в цифрах главной страницы"

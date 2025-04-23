@@ -3294,128 +3294,186 @@ a {
       }
     }
     .dynamics_content-container {
-      display: grid;
-      grid-template-columns: 33.2rem 22.2rem;
-      row-gap: 1.844rem;
-      -moz-column-gap: 3.746rem;
-      column-gap: 3.746rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.844rem;
+      width: 74%;
+      // -moz-column-gap: 3.746rem;
+      // column-gap: 3.746rem;
       @media screen and (max-width: 576px) {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
+        width: 100%;
       }
-      .dynamics_content-elem {
+      .dynamics_content_flex {
         display: flex;
-        @media screen and (max-width: 576px) {
-          width: 100%;
-        }
-        .number_container {
-          flex-shrink: 0;
-          width: 5.5rem;
-          height: 5.5rem;
-          border: 0.094rem solid #000;
-          border-radius: 100%;
-          @media screen and (max-width: 576px) {
-            width: 3.5rem;
-            height: 3.5rem;
-          }
-          &.long_number {
-            width: 11.25rem;
-            border-radius: 4.375rem;
-            @media screen and (max-width: 576px) {
-              width: 5.25rem;
-            }
-            &.plus_block {
-              &.show_plus {
-                .quantity {
-                  left: 45%;
-                }
-                .plus {
-                  display: block;
-                }
-              }
-              .plus {
-                display: none;
-                position: absolute;
-                top: 47%;
-                left: 77%;
-                transform: translate(-50%, -50%);
-                font-size: 3rem;
-                font-weight: bold;
+        justify-content: space-between;
+        &:nth-of-type(1) {
+          .dynamics_content-elem {
+            &:nth-of-type(1) {
+              .number_container {
+                width: 11.25rem !important;
+                // width: 5.5rem !important;
+                height: 5.5rem !important;
+                border-radius: 4.375rem !important;
                 @media screen and (max-width: 576px) {
-                  font-size: 1.5rem;
-                }
-                &.show {
-                  display: block;
+                  width: 3.5rem;
+                  height: 3.5rem;
                 }
               }
-            }
-          }
-          &.extra_long_number {
-            width: 13.25rem;
-            border-radius: 4.375rem;
-            @media screen and (max-width: 576px) {
-              width: 7.25rem;
-            }
-            &.plus_block {
-              &.show_plus {
-                .quantity {
-                  left: 45%;
-                }
-                .plus {
-                  display: block;
-                }
-              }
-              .plus {
-                display: none;
-                position: absolute;
-                top: 47%;
-                left: 82%;
-                transform: translate(-50%, -50%);
-                font-size: 3rem;
-                font-weight: bold;
-                @media screen and (max-width: 576px) {
-                  font-size: 1.5rem;
-                }
-                &.show {
-                  display: block;
-                }
+              .content {
+                width: 16.787rem !important;
+                text-align: left !important;
               }
             }
-          }
-          position: relative;
-          .quantity {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            font-weight: bold;
-            @media screen and (max-width: 576px) {
-              font-size: 1.5rem;
+            &:nth-of-type(2) {
+              .content {
+                width: 18.5rem !important;
+                text-align: left !important;
+              }
             }
           }
         }
-        .content {
-          width: 18.634rem;
-          height: 5.5rem;
-          padding: 1.438rem 1.875rem;
-          border: 0.094rem solid #000;
-          border-radius: 2.5rem;
-          box-sizing: border-box;
-          font-size: 1.125rem;
-          font-weight: 300;
-          @media screen and (max-width: 576px) {
-            height: 3.5rem;
-            font-size: 0.75rem;
-            padding: 0.75rem 1rem;
-            width: 13.8rem;
+        &:nth-of-type(2) {
+          .dynamics_content-elem {
+            &:nth-of-type(1) {
+              .number_container {
+                width: 13.25rem !important;
+              }
+              .content {
+                width: 15.787rem !important;
+                text-align: right !important;
+              }
+            }
+            &:nth-of-type(2) {
+              .content {
+                width: 18.787rem !important;
+              }
+            }
           }
-          &.short_content {
-            width: 16.787rem;
-            text-align: right;
+        }
+        .dynamics_content-elem {
+          display: flex;
+          @media screen and (max-width: 576px) {
+            width: 100%;
+          }
+          &:nth-of-type(2) {
+            .number_container {
+              width: 11.25rem !important;
+              @media screen and (max-width: 576px) {
+                width: 5.25rem;
+              }
+            }
+          }
+          .number_container {
+            flex-shrink: 0;
+            width: 5.5rem;
+            height: 5.5rem;
+            border: 0.094rem solid #000;
+            border-radius: 100%;
             @media screen and (max-width: 576px) {
-              width: 13rem;
+              width: 3.5rem;
+              height: 3.5rem;
+            }
+            &.long_number {
+              width: 11.25rem;
+              border-radius: 4.375rem;
+              @media screen and (max-width: 576px) {
+                width: 5.25rem;
+              }
+              &.plus_block {
+                &.show_plus {
+                  .quantity {
+                    left: 45%;
+                  }
+                  .plus {
+                    display: block;
+                  }
+                }
+                .plus {
+                  display: none;
+                  position: absolute;
+                  top: 47%;
+                  left: 77%;
+                  transform: translate(-50%, -50%);
+                  font-size: 3rem;
+                  font-weight: bold;
+                  @media screen and (max-width: 576px) {
+                    font-size: 1.5rem;
+                  }
+                  &.show {
+                    display: block;
+                  }
+                }
+              }
+            }
+            &.extra_long_number {
+              width: 13.25rem;
+              border-radius: 4.375rem;
+              @media screen and (max-width: 576px) {
+                width: 7.25rem;
+              }
+              &.plus_block {
+                &.show_plus {
+                  .quantity {
+                    left: 45%;
+                  }
+                  .plus {
+                    display: block;
+                  }
+                }
+                .plus {
+                  display: none;
+                  position: absolute;
+                  top: 47%;
+                  left: 82%;
+                  transform: translate(-50%, -50%);
+                  font-size: 3rem;
+                  font-weight: bold;
+                  @media screen and (max-width: 576px) {
+                    font-size: 1.5rem;
+                  }
+                  &.show {
+                    display: block;
+                  }
+                }
+              }
+            }
+            position: relative;
+            .quantity {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 3rem;
+              font-weight: bold;
+              @media screen and (max-width: 576px) {
+                font-size: 1.5rem;
+              }
+            }
+          }
+          .content {
+            width: 18.634rem;
+            height: 5.5rem;
+            padding: 1.438rem 1.875rem;
+            border: 0.094rem solid #000;
+            border-radius: 2.5rem;
+            box-sizing: border-box;
+            font-size: 1.125rem;
+            font-weight: 300;
+            @media screen and (max-width: 576px) {
+              height: 3.5rem;
+              font-size: 0.75rem;
+              padding: 0.75rem 1rem;
+              width: 13.8rem;
+            }
+            &.short_content {
+              width: 16.787rem;
+              text-align: right;
+              @media screen and (max-width: 576px) {
+                width: 13rem;
+              }
             }
           }
         }

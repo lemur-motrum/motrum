@@ -235,8 +235,8 @@
                                    maxlength="6"
                                    value="{% if item.sale_client %}{{item.sale_client}}{% endif %}" />
                                    <span style=" color: #ff5b00; font-weight: 300;
-    font-size: 0.625rem;display: flex;
-    justify-content: center; "> 
+                                        font-size: 0.625rem;display: flex;
+                                        justify-content: center; "> 
                                    {% if bill_upd and item.id_product_spesif and item.old_extra_discount and item.old_extra_discount != item.sale_client %}
                                        Была в счете:{{ item.old_extra_discount  }}
                                    {% endif %}

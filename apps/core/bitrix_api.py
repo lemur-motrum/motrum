@@ -635,7 +635,7 @@ def get_status_order():
                     if order:
                         status = get_status_bx(status_bx)
                         if status == "SHIPMENT_":
-                            if order.type_delivery == "Самовывоз":
+                            if order.type_delivery and order.type_delivery.text == "Самовывоз":
                                 status = "SHIPMENT_PICKUP"
                             else:
                                 status = "SHIPMENT_AUTO"

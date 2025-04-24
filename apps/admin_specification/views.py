@@ -1634,14 +1634,9 @@ def history_admin(request, pk):
         **extra_kwargs,
     )
 
-    # context = {
-    #         "title": "dsdfsd",
+   
 
-    #     }
-
-    # return render(request, "admin_specification/history_admin.html", context)
-
-
+# исторические записи для счета
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def history_admin_bill(request, pk):
     from simple_history.template_utils import HistoricalRecordContextHelper
@@ -1689,7 +1684,12 @@ def bx_start_page(request):
 @csrf_exempt
 # @permission_required("specification.add_specification", login_url="/user/login_admin/")
 def bx_save_start_info(request):
-
+    """
+    обязательно куки для битркис должны быть с параметрами
+        samesite="None",
+        secure=True,
+    """
+    # запрос идет постом если залогинен и не был на сранице с товарами в этой вкладке
     if "POST" in request.method:
         if request.user.is_authenticated:
             post_data = request.POST
@@ -1697,15 +1697,15 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
-
+            
+            # получение инфо о заказе из битрикса по айдишке
             if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
                 next_url, context, error = get_info_for_order_bitrix(
                     post_data_bx_id, request
                 )
-                print(context)
-                print(next_url, context, error)
+
             if error:
-                print("ERR")
+                print("ERROR")
                 response = render(
                     request,
                     "admin_specification/error.html",
@@ -1809,6 +1809,7 @@ def bx_save_start_info(request):
             return response
 
     else:
+        # запрос идет гетом если залогинился в этой странице или был на вкладке товаров окт и берет из кук bitrix_id_order
 
         post_data = request.POST
         post_data_bx_place = post_data.get("PLACEMENT")
@@ -1819,6 +1820,7 @@ def bx_save_start_info(request):
         else:
             post_data_bx_id = request.COOKIES.get("bitrix_id_order")
 
+        # получение инфо о заказе из битрикса по айдишке
         if post_data_bx_id:
             next_url, context, error = get_info_for_order_bitrix(
                 post_data_bx_id, request
@@ -1924,456 +1926,3 @@ def bitrix_product(request):
     return render(request, "admin_specification/bitrix_product.html", context)
 
 
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def update_order(request):
-#     pass
-
-
-# # Вьюха для сохранения спецификации
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def save_specification_view_admin(request):
-#     from apps.specification.models import ProductSpecification, Specification
-
-#     received_data = json.loads(request.body)
-
-#     # сохранение спецификации
-#     save_specification(received_data, request)
-
-#     out = {"status": "ok", "data": received_data}
-#     return JsonResponse(out)
-
-
-# # Вьюха для редактирования актуальной спецификации и для актуализации недействительной
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def update_specification(request):
-#     if request.method == "POST":
-#         id_specification = json.loads(request.body)
-#         current_id = id_specification["specification_id"]
-
-#         products = []
-
-#         current_specification = Specification.objects.filter(pk=current_id)[0]
-
-#         get_products = ProductSpecification.objects.filter(
-#             specification=current_specification.pk
-#         )
-
-#         for product in get_products:
-#             product_id = product.product.pk
-#             product_pk = product.pk
-#             product_name = product.product.name
-#             product_prices = Price.objects.get(prod=product_id)
-#             product_price = product_prices.rub_price_supplier
-#             product_quantity = product.quantity
-#             product_totla_cost = int(product_quantity) * float(product_price)
-#             product_id_motrum = product.product.article
-#             product_id_suppler = product.product.article_supplier
-#             specification_id = current_specification.pk
-
-#             product_individual_sale = product.extra_discount
-
-#             product_price = str(product_price).replace(",", ".")
-
-#             if (
-#                 product_individual_sale != "0"
-#                 and product_individual_sale != ""
-#                 and product_individual_sale != None
-#             ):
-#                 product_price_extra_old_before = product.price_one / (
-#                     1 - float(product_individual_sale) / 100
-#                 )
-
-#             else:
-#                 product_price_extra_old_before = product.price_one
-
-#             product_price_extra_old = str(product_price_extra_old_before).replace(
-#                 ",", "."
-#             )
-#             product_totla_cost = str(product_totla_cost).replace(",", ".")
-#             product_multiplicity_item = Stock.objects.get(prod=product_id)
-#             if product_multiplicity_item.is_one_sale == True:
-#                 product_multiplicity = 1
-#             else:
-#                 product_multiplicity = Stock.objects.get(
-#                     prod=product_id
-#                 ).order_multiplicity
-#             discount_item = get_price_motrum(
-#                 product.product.category_supplier,
-#                 product.product.group_supplier,
-#                 product.product.vendor,
-#                 product_prices.rub_price_supplier,
-#                 product.product.category_supplier_all,
-#                 product.product.supplier,
-#             )[1]
-#             if discount_item == None:
-#                 discount = None
-#             else:
-#                 discount = discount_item.percent
-
-#             data_old = current_specification.date.strftime("%m.%d.%Y")
-
-#             product_item = {
-#                 "discount": discount,
-#                 "id": product_id,
-#                 "idMotrum": product_id_motrum,
-#                 "idSaler": product_id_suppler,
-#                 "name": product_name,
-#                 "price": product_price,
-#                 "quantity": product_quantity,
-#                 "totalCost": product_totla_cost,
-#                 "productSpecificationId": product_pk,
-#                 "specificationId": specification_id,
-#                 "multiplicity": product_multiplicity,
-#                 "product_price_extra_old": product_price_extra_old,
-#                 "data_old": data_old,
-#                 "product_individual_sale": product_individual_sale,
-#             }
-
-#             products.append(product_item)
-
-#     current_products = json.dumps(products)
-
-#     out = {
-#         "status": "ok",
-#         "products": current_products,
-#     }
-#     return JsonResponse(out)
-
-# def load_products(request):
-#     data = json.loads(request.body)
-#     cat = data["category"]
-#     gr = data["group"]
-#     page_num = data["pageNum"]
-
-#     if page_num == "":
-#         start_point = 9
-#     else:
-#         start_point = int(page_num) * 9
-
-#     endpoint_product = start_point + 9
-
-#     if gr == "" and cat == "":
-#         product_list = (
-#             Product.objects.prefetch_related(
-#                 "supplier",
-#                 "vendor",
-#                 "category_supplier_all",
-#                 "group_supplier",
-#                 "category_supplier",
-#                 "category",
-#                 "group",
-#                 "price",
-#                 "stock",
-#             )
-#             .all()
-#             .order_by("pk")
-#         )
-#     elif gr == "":
-#         product_list = (
-#             Product.objects.prefetch_related(
-#                 "supplier",
-#                 "vendor",
-#                 "category_supplier_all",
-#                 "group_supplier",
-#                 "category_supplier",
-#                 "category",
-#                 "group",
-#                 "price",
-#                 "stock",
-#             )
-#             .filter(category=cat)
-#             .order_by("pk")
-#         )
-#     else:
-#         product_list = (
-#             Product.objects.select_related(
-#                 "supplier",
-#                 "vendor",
-#                 "category",
-#                 "group",
-#             )
-#             .filter(category=cat, group=gr)
-#             .order_by("pk")
-#         )
-
-#     items = product_list[start_point:endpoint_product]
-
-#     products = []
-
-#     for product_elem in items:
-
-
-#         try:
-#             price_all = Price.objects.get(prod=product_elem.pk)
-#             price = price_all.rub_price_supplier
-#             price_suppler = price_all.price_motrum
-
-#             discount = get_price_motrum(
-#             product_elem.category_supplier,
-#             product_elem.group_supplier,
-#             product_elem.vendor,
-#             price,
-#             product_elem.category_supplier_all,
-#         )[1].percent
-#         except Price.DoesNotExist:
-#             price_all = None
-#             price = None
-#             price_suppler = 0
-#             discount = None
-
-#         chars = ProductProperty.objects.filter(product=product_elem.pk)
-#         try:
-#             stock_item =  Stock.objects.get(prod=product_elem.pk)
-#             lotname = stock_item.lot.name_shorts
-
-#             if stock_item.is_one_sale == True:
-#                 product_multiplicity = 1
-#             else:
-#                 product_multiplicity = Stock.objects.get(
-#                     prod=product_elem.pk
-#                 ).order_multiplicity
-
-#         except:
-#             stock_item =  None
-#             lotname = None
-#             product_multiplicity = 1
-
-
-#         name = product_elem.name
-#         pk = product_elem.pk
-#         article = product_elem.article
-#         saler_article = product_elem.article_supplier
-
-
-#         characteristics = []
-#         for char in chars:
-#             characteristics.append(char.value)
-
-
-#         product = {
-#             "name": name,
-#             "lot": lotname,
-#             "pk": pk,
-#             "article": article,
-#             "saler_article": saler_article,
-#             "price": price,
-#             "chars": characteristics,
-#             "price_suppler": price_suppler,
-#             "discount": discount,
-#             "multiplicity": product_multiplicity,
-#         }
-#         products.append(product)
-
-#     current_products = json.dumps(products)
-#     out = {"status": "ok", "products": current_products}
-#     return JsonResponse(out, safe=False)
-
-
-# def update_specification(request):
-#     if request.method == "POST":
-#         id_specification = json.loads(request.body)
-#         current_id = id_specification["specification_id"]
-
-#         products = []
-
-#         current_specification = Specification.objects.filter(pk=current_id)[0]
-
-#         get_products = ProductSpecification.objects.filter(
-#             specification=current_specification.pk
-#         )
-
-#         for product in get_products:
-#             product_id = product.product.pk
-#             product_pk = product.pk
-#             product_name = product.product.name
-#             product_prices = Price.objects.get(prod=product_id)
-#             product_price = product_prices.rub_price_supplier
-#             product_quantity = product.quantity
-#             product_totla_cost = int(product_quantity) * float(product_price)
-#             product_id_motrum = product.product.article
-#             product_id_suppler = product.product.article_supplier
-
-#             # suppelier = Product.objects.filter(pk=product_id)[0].supplier
-#             # discount = Discount.objects.filter(supplier=suppelier)[0].percent
-#             specification_id = current_specification.pk
-
-#             product_price = str(product_price).replace(",", ".")
-#             product_totla_cost = str(product_totla_cost).replace(",", ".")
-#             product_multiplicity_item = Stock.objects.get(prod=product_id)
-#             if product_multiplicity_item.is_one_sale == True:
-#                 product_multiplicity = 1
-#             else:
-#                 product_multiplicity = Stock.objects.get(
-#                     prod=product_id
-#                 ).order_multiplicity
-#             discount = get_price_motrum(
-#                 product.product.category_supplier,
-#                 product.product.group_supplier,
-#                 product.product.vendor,
-#                 product_prices.rub_price_supplier,
-#                 product.product.category_supplier_all,
-#             )[1].percent
-
-#             product_item = {
-#                 "discount": discount,
-#                 "id": product_id,
-#                 "idMotrum": product_id_motrum,
-#                 "idSaler": product_id_suppler,
-#                 "name": product_name,
-#                 "price": product_price,
-#                 "quantity": product_quantity,
-#                 "totalCost": product_totla_cost,
-#                 "productSpecificationId": product_pk,
-#                 "specificationId": specification_id,
-#                 "multiplicity": product_multiplicity,
-#             }
-
-#             products.append(product_item)
-
-#     current_products = json.dumps(products)
-
-#     out = {
-#         "status": "ok",
-#         "products": current_products,
-#     }
-#     return JsonResponse(out)
-
-
-# рендер страницы корзины до переверстки
-# @permission_required("specification.add_specification", login_url="/user/login_admin/")
-# def create_specification(request):
-#     cart = request.COOKIES.get("cart")
-#     # если есть корзина
-#     if cart != None:
-
-#         cart_qs = Cart.objects.get(id=cart)
-#         discount_client = 0
-#         if cart_qs.client:
-#             discount_client = Client.objects.filter(id=cart_qs.client.id)
-
-#         product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
-#             "product__id"
-#         )
-
-#         product_cart = ProductCart.objects.filter(cart=cart)
-#         # изменение спецификации
-#         try:
-#             specification = Specification.objects.get(cart=cart)
-
-#             product_specification = ProductSpecification.objects.filter(
-#                 specification=specification
-#             )
-#             mortum_req = BaseInfo.objects.all().prefetch_related(
-#                 Prefetch("BaseInfoAccountRequisites"),
-
-#             )
-#         # новая спецификация
-#         except Specification.DoesNotExist:
-#             specification = None
-#             product_specification = ProductSpecification.objects.filter(
-#                 specification=specification
-#             )
-#             mortum_req = BaseInfoAccountRequisites.objects.all().select_related("requisites")
-
-#         prefetch_queryset_property = ProductProperty.objects.filter(
-#             product__in=product_cart_list
-#         )
-
-#         # продукты которые есть в окт в корзине
-#         product = (
-#             Product.objects.filter(id__in=product_cart_list)
-#             .select_related(
-#                 "supplier",
-#                 "vendor",
-#                 "category",
-#                 "group",
-#                 "price",
-#                 "stock",
-#                 "category_supplier_all",
-#                 "group_supplier",
-#                 "category_supplier",
-#                 # "stock__lot",
-#             )
-#             .prefetch_related(
-#                 Prefetch("stock__lot"),
-#                 Prefetch("productproperty_set"),
-#                 Prefetch("price__sale"),
-#             )
-#             .annotate(
-#                 quantity=product_cart.filter(product=OuterRef("pk")).values(
-#                     "quantity",
-#                 ),
-#                 id_product_cart=product_cart.filter(product=OuterRef("pk")).values(
-#                     "id",
-#                 ),
-#                 id_product_spesif=product_specification.filter(
-#                     product=OuterRef("pk")
-#                 ).values(
-#                     "id",
-#                 ),
-#                 comment=product_specification.filter(
-#                     product=OuterRef("pk")
-#                 ).values(
-#                     "comment",
-#                 ),
-#             )
-#         )
-
-#         id_specification = request.COOKIES.get("specificationId")
-#         if id_specification:
-#             # product_new = ProductCart.objects.filter(cart=cart,product=None,)
-#             product_new = ProductSpecification.objects.filter(
-#                 specification=specification,
-#                 product=None,
-#             ).annotate(
-#                 id_product_cart=product_cart.filter(
-#                     product_new=OuterRef("product_new")
-#                 ).values(
-#                     "id",
-#                 ),
-#             )
-#             product_new_value_id = product_new.values_list("id_product_cart")
-#             product_new_more = ProductCart.objects.filter(
-#                 cart=cart, product=None
-#             ).exclude(id__in=product_new_value_id)
-#             update_spesif = True
-
-#         else:
-#             product_new = ProductCart.objects.filter(cart=cart, product=None)
-#             product_new_more = None
-#             update_spesif = False
-
-#         if id_specification:
-#             title = f"Cпецификация № {id_specification}"
-#         else:
-#             title = "Новая спецификация"
-
-
-#     # корзины нет
-#     else:
-#         mortum_req = None
-#         title = "Новая спецификация"
-#         product = None
-#         product_new = None
-#         cart = None
-#         update_spesif = False
-#         product_new_more = None
-#         specification = None
-#         order = None
-
-#     current_date = datetime.date.today().isoformat()
-
-#     context = {
-#         "title": title,
-#         "product": product,
-#         "product_new": product_new,
-#         "cart": cart,
-#         "request": request,
-#         "current_date": current_date,
-#         "update_spesif": update_spesif,
-#         "product_new_more": product_new_more,
-#         "specification" : specification,
-#         "mortum_req":mortum_req,
-#         "order":order
-#     }
-#     return render(request, "admin_specification/catalog.html", context)

@@ -71,6 +71,8 @@ def index(request):
     vendors = Vendor.objects.filter(is_view_index_web=True).order_by("article")[0:4]
 
     motrum_in_numbers = IndexInfoWeb.objects.all().last()
+    motrum_in_numbers2 = CompanyInfoWeb.objects.all().last()
+    project_in_numbers = CompanyPrijectAutoInfoWeb.objects.all().last()
 
     context = {
         "categories": categories,
@@ -78,6 +80,8 @@ def index(request):
         "slider": promo_slider,
         "vendors": vendors,
         "motrum_in_numbers": motrum_in_numbers,
+        "motrum_in_numbers2": motrum_in_numbers2,
+        "project_in_numbers": project_in_numbers,
         "meta_title": "Мотрум - оборудование для автоматизации производства",
         "meta_keywords": "оборудование для автоматизации производства",
         "meta_description": "Наша компания предлагает широкий выбор оборудования для автоматизации производства.",

@@ -585,10 +585,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
-        print(data)
         try:
-            order_flag = None
+            #order_flag - тип сохранения в битркис - со всеми данными или нет если нулл останется- ошибка сохранения
+            order_flag = None 
             with transaction.atomic():
+                # такая data приходит
                 # data = {
                 #     "all_client_info": 0,
                 #     "client": 33,
@@ -597,11 +598,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                 #     "account_requisites": None,
                 #     "type_delivery": None,
                 # }
-                print(data)
                 cart = int(data["cart"])
                 cart = Cart.objects.get(id=data["cart"])
                 client = cart.client
-                # extra_discount = client.percent
                 extra_discount = None
 
                 products_cart = ProductCart.objects.filter(cart_id=cart)
@@ -625,8 +624,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     )
                     account_requisites_id = account_requisites.id
 
+                # не используется но будет - рудимент надо или нет привлекать менеджера в заказ в зависимости от заполненности инфо о товарах заказа
                 for product_cart in products_cart:
-                    print(product_cart)
                     if (
                         product_cart.product.price
                         and product_cart.product.price.rub_price_supplier == 0
@@ -637,17 +636,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 status_save_spes, specification, specification_name = save_spesif_web(
                     cart, products_cart, extra_discount, requisites
                 )
-                print(
-                    " status_save_spes, specification, specification_name",
-                    status_save_spes,
-                    specification,
-                    specification_name,
-                )
+                
                 if status_save_spes == "ok" and specification_name:
                     status_order = "PRE-PROCESSING"
 
                 try:
-
+                    #заказов  с сайта с готовым ордером не бывает - этот кусок для стабильности работы 
                     order = Order.objects.get(cart_id=cart)
                     if data["requisitesKpp"] != None or data["requisitesKpp"] == None:
                         data_order = {
@@ -669,7 +663,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "bill_date_start": None,
                             "bill_date_stop": None,
                             "bill_sum": None,
-                            # "comment": data["comment"],
                             "prepay_persent": (
                                 requisites.prepay_persent
                                 if data["requisitesKpp"] != None
@@ -680,12 +673,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                                 if data["requisitesKpp"] != None
                                 else None
                             ),
-                            # "motrum_requisites": motrum_requisites.id,
+                            
                             "id_bitrix": None,
                             "type_delivery": (
                                 type_delivery if data["requisitesKpp"] != None else None
                             ),
-                            # "manager": admin_creator_id,
+                            
                         }
 
                         serializer = self.serializer_class(order, data=data_order, partial=True)
@@ -705,23 +698,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                             else:
                                 if data["requisitesKpp"] != None:
                                     order_flag = "add_new_order_web"
-
-                                    # status_operation, info = add_new_order_web(order_id)
                                 else:
                                     order_flag = "add_new_order_web_not_info"
-                                    # status_operation, info = add_new_order_web_not_info(
-                                    #     order_id
-                                    # )
-                                # if status_operation == "ok":
-                                #     return Response(
-                                #         serializer.data, status=status.HTTP_201_CREATED
-                                #     )
                                     
-                                # else:
-                                #     return Response(
-                                #         info,
-                                #         status=status.HTTP_400_BAD_REQUEST,
-                                #     )
 
                         else:
                             return Response(
@@ -749,7 +728,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "bill_date_start": None,
                             "bill_date_stop": None,
                             "bill_sum": None,
-                            # "comment": data["comment"],
+                            
                             "prepay_persent": (
                                 requisites.prepay_persent
                                 if data["requisitesKpp"] != None
@@ -760,23 +739,20 @@ class OrderViewSet(viewsets.ModelViewSet):
                                 if data["requisitesKpp"] != None
                                 else None
                             ),
-                            # "motrum_requisites": motrum_requisites.id,
+                            
                             "id_bitrix": None,
                             "type_delivery": (
                                 type_delivery if data["requisitesKpp"] != None else None
                             ),
-                            # "manager": admin_creator_id,
+                            
                         }
 
                         serializer = self.serializer_class(data=data_order, many=False)
 
                         if serializer.is_valid():
-                            print("serializer.is_valid(ORDER):")
                             cart.is_active = True
                             cart.save()
                             serializer.save()
-                            print("serializer.data", serializer.data)
-                            print("serializer.data", serializer.data["id"])
                             order_id = serializer.data["id"]
                             if IS_TESTING:
                                 return Response(
@@ -785,23 +761,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                             else:
                                 if data["requisitesKpp"] != None:
                                     order_flag = "add_new_order_web"
-
-                                    # status_operation, info = add_new_order_web(order_id)
                                 else:
                                     order_flag = "add_new_order_web_not_info"
-                                    # status_operation, info = add_new_order_web_not_info(
-                                    #     order_id
-                                    # )
-                                # if status_operation == "ok":
-                                #     return Response(
-                                #         serializer.data, status=status.HTTP_201_CREATED
-                                #     )
                                     
-                                # else:
-                                #     return Response(
-                                #         info,
-                                #         status=status.HTTP_400_BAD_REQUEST,
-                                #     )
 
                         else:
                             return Response(
@@ -809,14 +771,17 @@ class OrderViewSet(viewsets.ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST,
                             )
                     else:
-                        # эта часть не отрабатывает - так и надо костыль
+                        # эта часть не отрабатывает - так и надо костыль - все данные в ифе берутся 
                         cart.is_active = True
                         cart.save()
                         return Response(None, status=status.HTTP_201_CREATED)
 
             if order_flag:
+                # сохранение еслие сть все данные для создания сделки в битрикс
                 if order_flag == "add_new_order_web":
                         status_operation, info = add_new_order_web(order_id)
+                        
+                # сохранение если данных не достаточно
                 else:
                     status_operation, info = add_new_order_web_not_info(
                         order_id
@@ -837,7 +802,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             tr = traceback.format_exc()
             print(tr)
             error = "error"
-            location = "Сохранение спецификации админам окт"
+            location = "Сохранение заказа с сайта"
             info = f" ошибка {e}{tr}"
             e = error_alert(error, location, info)
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
@@ -847,8 +812,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     def order_bitrix(self, request, *args, **kwargs):
         try:
             import ast
-
-            print("def order_bitrix")
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
@@ -930,41 +893,27 @@ class OrderViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print(e)
             #   добавление в козину удаленного товара при сохранении спецификации из апдейта
-            if data["id_specification"] != None:
-                product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
-                    "product__id"
-                )
+            # if data["id_specification"] != None:
+            #     product_cart_list = ProductCart.objects.filter(cart=cart).values_list(
+            #         "product__id"
+            #     )
 
-                product_spes_list = ProductSpecification.objects.filter(
-                    specification_id=data["id_specification"]
-                ).exclude(product_id__in=product_cart_list)
+            #     product_spes_list = ProductSpecification.objects.filter(
+            #         specification_id=data["id_specification"]
+            #     ).exclude(product_id__in=product_cart_list)
 
-                if product_spes_list:
-                    for product_spes_l in product_spes_list:
-                        if product_spes_l.product:
-                            new = ProductCart(
-                                cart=cart,
-                                product=product_spes_l.product,
-                                quantity=product_spes_l.quantity,
-                            )
-                            new.save()
+            #     if product_spes_list:
+            #         for product_spes_l in product_spes_list:
+            #             if product_spes_l.product:
+            #                 new = ProductCart(
+            #                     cart=cart,
+            #                     product=product_spes_l.product,
+            #                     quantity=product_spes_l.quantity,
+            #                 )
+            #                 new.save()
 
-                        # elif product_spes_l.product_new_article:
-                        #     new = ProductCart(
-                        #         cart=cart,
-                        #         product_new=product_spes_l.product_new,
-                        #         product_new_article=product_spes_l.product_new_article,
-                        #         product_new_price=product_spes_l.product_new_price,
-                        #         vendor=product_spes_l.vendor,
-                        #         product_new_sale=product_spes_l.product_new_sale,
-                        #         product_new_sale_motrum=product_spes_l.product_new_sale_motrum,
-                        #         comment=product_spes_l.comment,
-                        #         quantity=product_spes_l.quantity,
-
-                        #     )
-                        #     new.save()
-                        else:
-                            pass
+            #             else:
+            #                 pass
             tr = traceback.format_exc()
             error = "error"
             location = "Сохранение спецификации админам окт"
@@ -1040,7 +989,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # сохранение заказа в корзины отложенные без документов для дальнейшего использования
+    # НЕ ИСПОЛЬЗУЕТСЯ сохранение заказа в корзины отложенные без документов для дальнейшего использования
     @action(detail=False, methods=["post"], url_path=r"add-order-no-spec-admin")
     def add_order_no_spec_admin(self, request, *args, **kwargs):
         data = request.data
@@ -1127,7 +1076,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # создание счета к заказу
+    # ОКТ создание счета к заказу - отпарвка 1с после и битркис
     @action(
         detail=True,
         methods=[
@@ -1147,6 +1096,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             post_update = data_get["post_update"]
             products = data_get["products"]
             order = Order.objects.get(specification_id=pk)
+            # увеломление о наличии документа спецификации для пользователя сайта
             if order.specification.file and order.client:
                 Notification.add_notification(
                     order.id, "DOCUMENT_SPECIFICATION", order.specification.file
@@ -1164,6 +1114,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 
             # сохранение товара в окт нового
             order_products = after_save_order_products(products)
+
+            # создание пдф счетов
             order_pdf = order.create_bill(
                 request,
                 is_req,
@@ -1210,7 +1162,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                     json_data = json.dumps(data_for_1c)
                     url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
                     headers = {"Content-type": "application/json"}
+                    # отправка в 1с
                     response = send_requests(url, headers, json_data, "1c")
+                    # отправка в битрикс
                     add_info_order(request, order, type_save)
 
                 return Response(data, status=status.HTTP_200_OK)
@@ -1241,7 +1195,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         print("test1s", data)
         return Response(data, status=status.HTTP_200_OK)
 
-    # ОКТ изменение спецификации дмин специф
+    # НЕ ИСПОЛЬЗУЕТСЯ ОКТ изменение спецификации дмин специф
     @action(
         detail=True,
         methods=[
@@ -1274,7 +1228,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         
         return Response(cart, status=status.HTTP_200_OK)
 
-    # ОКТ получить список товаров для создания счета с датами псотавки НА УДАЛЕНИЕ
+    # ОКТ получить список товаров для создания счета с датами псотавки 
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
 
@@ -1290,6 +1244,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # САЙТ страница мои заказов  аякс загрузка
     @action(detail=False, url_path="load-ajax-order-list")
     def load_ajax_order_list(self, request):
+        # закоменченное в этой функции не удалаять!
         from django.db.models.functions import Length
 
         current_count = int(request.query_params.get("count"))
@@ -1362,7 +1317,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     output_field=IntegerField(),
                 )
 
-        # ОСТАТКИ СОРТИРОВКИ ПО НЕСКОЛЬКИМ ПОЛЯЬ ОДНОВРЕМЕННО НЕ УДАЛЯТЬ
+        # ОСТАТКИ СЛОЖНОЙ СОРТИРОВКИ ПО НЕСКОЛЬКИМ ПОЛЯм ОДНОВРЕМЕННО НЕ УДАЛЯТЬ
         # if request.query_params.get("sortDate"):
         #     date_get = request.query_params.get("sortDate")
         # else:
@@ -1505,6 +1460,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         # [count : count + count_last]
         serializer = serializer_class(orders_sorting, many=True)
         data = serializer.data
+        
         # прочитать уведомления только выведенные ордеры
         for data_order in data:
             if int(data_order["notification_count"]) > 0:
@@ -1535,6 +1491,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     # САЙТ страница мои документы аякс загрузка
     @action(detail=False, url_path="load-ajax-document-list")
     def load_ajax_document_list(self, request):
+        # закоменченное в этой функции не удалаять!
+        
         current_count = int(request.query_params.get("count"))
         page_get = request.query_params.get("page")
         count_last = 10
@@ -1750,6 +1708,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         detail=False, methods=["post", "get"], url_path=r"load-ajax-specification-list"
     )
     def load_ajax_specification_list(self, request, *args, **kwargs):
+        # закоменченное в этой функции не удалаять!
+        
         count = int(request.query_params.get("count"))
         count_last = 10
         page_get = request.query_params.get("page")
@@ -1839,7 +1799,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data=data_response, status=status.HTTP_200_OK)
 
-    # ОКТ добавление оплаты открыть получить отстаок суммы
+    # НЕ ИСПОЛЬЗУЕТСЯ ОКТ добавление оплаты открыть получить отстаок суммы
     @action(detail=True, methods=["get"], url_path=r"get-payment")
     def get_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1853,7 +1813,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # ОКТ сохранение суммы оплаты счета
+    # НЕ ИСПОЛЬЗУЕТСЯ ОКТ сохранение суммы оплаты счета
     @action(detail=True, methods=["post"], url_path=r"save-payment")
     def save_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.get(id=pk)
@@ -1881,7 +1841,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         else:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
-    # ОКТ получение суммы уже оплаченной при открытии модалки внесения оплаты
+    # НЕ ИСПОЛЬЗУЕТСЯ ОКТ получение суммы уже оплаченной при открытии модалки внесения оплаты
     @action(detail=True, methods=["get"], url_path=r"view-payment")
     def view_payment(self, request, pk=None, *args, **kwargs):
         order = Order.objects.filter(id=pk)
@@ -1910,7 +1870,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    # добавить дату завершения
+    # НЕ ИСПОЛЬЗУЕТСЯ добавить дату завершения вручную
     @action(detail=True, methods=["post"], url_path=r"status-order-bitrix")
     def date_completed(self, request, pk=None, *args, **kwargs):
         data = request.data
@@ -1927,7 +1887,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = {}
         return Response(data, status=status.HTTP_200_OK)
 
-    # заполнение корзины из кп
+    # заполнение корзины из фаила кп
     @action(detail=True, methods=["post"], url_path=r"add-file-dowlad")
     def add_file_dowlad(self, request, pk=None, *args, **kwargs):
         pass
@@ -1944,8 +1904,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             if row_level == 1:
                 vendor_str = data_sheet.cell(row=index, column=1).value
 
+
     # ОКТ 1С сроки поставки товаров ОКТ Б24
-    
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
     @action(detail=False, methods=["post"],authentication_classes =[BasicAuthentication],permission_classes=[IsAuthenticated], url_path=r"add-info-order-1c")
@@ -1987,10 +1947,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                         prod.date_shipment = date_shipment
 
-                if order_products_item["reserve"]:
+                if order_products_item["reserve"] or order_products_item["reserve"] == 0:
                     prod.reserve = int(order_products_item["reserve"])
 
-                if order_products_item["client_shipment"]:
+                if order_products_item["client_shipment"] or order_products_item["client_shipment"] == 0:
                     prod.client_shipment = int(order_products_item["client_shipment"])
 
                 prod.save()
@@ -2132,7 +2092,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             else:
                 save_shipment_order_bx(data)
 
-
+# НЕ ИСПОЛЬЗУЮТСЯ
 class EmailsViewSet(viewsets.ModelViewSet):
     queryset = EmailsCallBack.objects.none()
     serializer_class = EmailsCallBackSerializer

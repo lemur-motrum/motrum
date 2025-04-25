@@ -6,6 +6,7 @@ from apps.supplier.get_utils.prompower import prompower_api
 from apps.supplier.get_utils.veda import veda_api
 from project.celery import app
 from celery.exceptions import MaxRetriesExceededError, Reject, Retry
+from project.settings import IS_TESTING
 
 
 @app.task(
@@ -14,7 +15,10 @@ from celery.exceptions import MaxRetriesExceededError, Reject, Retry
 )
 def add_iek(self):
     try:
-        iek_api()
+        if IS_TESTING:
+            pass
+        else:
+            iek_api()
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -51,7 +55,10 @@ def add_iek_individual(self):
 )
 def add_veda(self):
     try:
-        veda_api()
+        if IS_TESTING:
+            pass
+        else:
+            veda_api()
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"
@@ -68,7 +75,10 @@ def add_veda(self):
 )
 def add_prompower(self):
     try:
-        prompower_api()
+        if IS_TESTING:
+            pass
+        else:
+            prompower_api()
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             error = "file_api_error"

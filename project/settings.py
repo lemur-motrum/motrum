@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "www.localhost",
     "213.139.208.116",
+    "90.156.171.134",
     "www.motrum.yuriyzhidkov.ru",
     "motrum.yuriyzhidkov.ru",
     "b24-j6zvwj.bitrix24.ru",

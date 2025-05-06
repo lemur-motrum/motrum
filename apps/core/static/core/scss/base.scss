@@ -3309,6 +3309,10 @@ a {
       .dynamics_content_flex {
         display: flex;
         justify-content: space-between;
+        @media screen and (max-width: 576px) {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
         &:nth-of-type(1) {
           .dynamics_content-elem {
             &:nth-of-type(1) {
@@ -3318,8 +3322,8 @@ a {
                 height: 5.5rem !important;
                 border-radius: 4.375rem !important;
                 @media screen and (max-width: 576px) {
-                  width: 3.5rem;
-                  height: 3.5rem;
+                  width: 3.5rem !important;
+                  height: 3.5rem !important;
                 }
               }
               .content {
@@ -3340,6 +3344,9 @@ a {
             &:nth-of-type(1) {
               .number_container {
                 width: 13.25rem !important;
+                @media screen and (max-width: 576px) {
+                  width: 7.25rem !important;
+                }
               }
               .content {
                 width: 15.787rem !important;
@@ -3380,7 +3387,7 @@ a {
               width: 11.25rem;
               border-radius: 4.375rem;
               @media screen and (max-width: 576px) {
-                width: 5.25rem;
+                width: 3.5rem !important;
               }
               &.plus_block {
                 &.show_plus {
@@ -3412,7 +3419,7 @@ a {
               width: 13.25rem;
               border-radius: 4.375rem;
               @media screen and (max-width: 576px) {
-                width: 7.25rem;
+                width: 7.25rem !important;
               }
               &.plus_block {
                 &.show_plus {
@@ -3472,7 +3479,7 @@ a {
               width: 16.787rem;
               text-align: right;
               @media screen and (max-width: 576px) {
-                width: 13rem;
+                width: 13rem !important;
               }
             }
           }

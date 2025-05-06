@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "www.localhost",
-    "213.139.208.116",
+ 
     "90.156.171.134",
     "www.motrum.yuriyzhidkov.ru",
     "motrum.yuriyzhidkov.ru",

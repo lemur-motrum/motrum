@@ -1,3 +1,4 @@
+from apps.supplier.models import Vendor
 from rest_framework import serializers
 from sorl.thumbnail import get_thumbnail
 
@@ -102,6 +103,11 @@ class ProductSearchSerializer(serializers.ModelSerializer):
             "name",
             "url",
         )
+    
+class VendorSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = "__all__"
     
 
 

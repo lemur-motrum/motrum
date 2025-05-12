@@ -5,7 +5,7 @@
     {% include "admin_specification/include/header.html" %}
     <div order={{ order }} class="specification-container okt_cart_container">
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
-        {% if product or product_new %}
+        {% if product or product_new or product_new_more %}
             <div class="spetification_table">
                 <div class="spetification_titles">
                     <div class="title_item">товар</div>

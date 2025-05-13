@@ -100,7 +100,7 @@ def crete_pdf_bill(
         #     date_now = transform_date(datetime.date.today().isoformat())
         #     date_name_dot = datetime.datetime.today().strftime("%d.%m.%Y")
 
-        if order.requisites.contract:
+        if order.requisites.contract or specifications.total_amount > 99999.99:
             type_bill = "Счет"
             bill_name = motrum_info.counter_bill + 1
             motrum_info.counter_bill = bill_name
@@ -111,7 +111,8 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-        print(123)
+        print("type_bill",type_bill)
+        print("*******************************")
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
             motrum_info.save()
@@ -124,7 +125,10 @@ def crete_pdf_bill(
         else:
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
-        print(2222)
+        print("name_bill_text",name_bill_text)
+        print("*******************************")
+        
+        
         older_doc = OrderDocumentBill.objects.filter(
             order=order,
             bill_name=bill_name,
@@ -370,7 +374,7 @@ def crete_pdf_bill(
         )
         story.append(logo_supplier)
         story_no_sign.append(logo_supplier)
-        if is_contract:
+        if is_contract or specifications.total_amount > 99999.99:
             story.append(
                 Paragraph(
                     f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
@@ -735,7 +739,7 @@ def crete_pdf_bill(
                 ),
             ),)
 
-        if is_contract:
+        if is_contract or specifications.total_amount > 99999.99:
             data_text_info.append(
                 (
                     Paragraph(

@@ -4,13 +4,13 @@ window.addEventListener("DOMContentLoaded", () => {
     const dynamicContentContainer = container.querySelector(
       ".dynamics_content-container"
     );
-    const dynamicsElems = dynamicContentContainer.querySelectorAll(
+    const dynamicsElements = dynamicContentContainer.querySelectorAll(
       ".dynamics_content-elem"
     );
     window.addEventListener("scroll", onScroll);
 
     function onScroll() {
-      dynamicsElems.forEach((el) => {
+      dynamicsElements.forEach((el) => {
         const numberPlusContainer = el.querySelector(".plus_block");
         const quantityContainer = el.querySelector(".quantity");
         const currentQuantity = quantityContainer.getAttribute("data-quantity");

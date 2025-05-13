@@ -16,21 +16,28 @@ window.addEventListener("DOMContentLoaded", () => {
         const currentQuantity = quantityContainer.getAttribute("data-quantity");
         let count = 0;
         const posTop = container.getBoundingClientRect().top;
+        const intervalTime = 1500 / +currentQuantity;
         if (
           posTop + container.clientHeight <= window.innerHeight &&
           posTop >= 0
         ) {
           const interval = setInterval(() => {
-            quantityContainer.textContent = (+count).toLocaleString('ru');
-            count += 1;
-            if (count == +currentQuantity) {
-              quantityContainer.textContent = (+count).toLocaleString('ru');
-              if(numberPlusContainer){
-                numberPlusContainer.classList.add('show_plus')
+            quantityContainer.textContent = (+count).toLocaleString("ru");
+            if (+currentQuantity > 500) {
+              count += Math.ceil(+currentQuantity / 499);
+            } else {
+              count += 1;
+            }
+            if (count >= +currentQuantity) {
+              quantityContainer.textContent = (+currentQuantity).toLocaleString(
+                "ru"
+              );
+              if (numberPlusContainer) {
+                numberPlusContainer.classList.add("show_plus");
               }
               clearInterval(interval);
             }
-          }, 0.5);
+          }, intervalTime);
           window.removeEventListener("scroll", onScroll);
         }
       });

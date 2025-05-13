@@ -42,6 +42,7 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, ListStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph,KeepInFrame
 from reportlab.platypus import ListFlowable, ListItem
+from reportlab.platypus import Frame, PageBreak
 
 
 def crete_pdf_bill(
@@ -966,8 +967,111 @@ def crete_pdf_bill(
                 ]
             )
         )
-        story.append(table_signature)
 
+        # Получаем высоту таблицы
+        available_width = doc.width - doc.leftMargin - doc.rightMargin
+        table_height = table_signature.wrap(available_width, doc.height)[1]
+        print("table_height в пунктах:", table_height)
+        print("table_height в см:", table_height / 28.346456692913385)
+        
+        # Выводим размеры страницы
+        print("\nA4 размеры:")
+        print("Ширина страницы:", doc.width / 28.346456692913385, "см")
+        print("Высота страницы:", doc.height / 28.346456692913385, "см")
+        print("Верхний отступ:", doc.topMargin / 28.346456692913385, "см")
+        print("Нижний отступ:", doc.bottomMargin / 28.346456692913385, "см")
+        print("Левый отступ:", doc.leftMargin / 28.346456692913385, "см")
+        print("Правый отступ:", doc.rightMargin / 28.346456692913385, "см")
+        
+        # Считаем общую высоту всех элементов
+        total_height = 0
+        for element in story:
+            if hasattr(element, 'wrap'):
+                w, h = element.wrap(available_width, doc.height)
+                total_height += h
+        print("\nВысота контента:")
+        print("total_height в пунктах:", total_height)
+        print("total_height в см:", total_height / 28.346456692913385)
+        
+        # Оставшееся место = высота страницы - использованная высота
+        remaining_height = doc.height - total_height
+        print("\nОставшееся место:")
+        print("remaining_height в пунктах:", remaining_height)
+        print("remaining_height в см:", remaining_height / 28.346456692913385)
+        
+        print("\nПроверка условий:")
+        print("table_height/2 в см:", (table_height / 2) / 28.346456692913385)
+        print("remaining_height/3 в см:", (remaining_height / 3) / 28.346456692913385)
+        print("remaining_height/2 в см:", (remaining_height / 2) / 28.346456692913385)
+        
+        table_height_2 = table_height / 2
+        table_height_3 = table_height / 3
+        remaining_height_min_3 = remaining_height / 3
+        remaining_height_min_2 = remaining_height / 2
+        print("table_height_2",table_height_2)
+        print("table_height_3",table_height_3)
+        print("remaining_height /2 в см:", (remaining_height / 2) / 28.346456692913385)
+        print("remaining_height_min_3",remaining_height_min_3)
+        print("remaining_height_min_3 /2 в см:", (remaining_height_min_3) / 28.346456692913385)
+        print("remaining_height_min_2",remaining_height_min_2)  
+        print("remaining_height_min_2 /2 в см:", (remaining_height_min_2) / 28.346456692913385)
+        # Если таблица занимает меньше половины оставшегося места
+        if table_height_2 > remaining_height_min_3 and table_height_2 < remaining_height_min_2:
+            print("remaining_height / 3",remaining_height_min_3)
+            press_motrum = Paragraph(
+            f'М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
+            normal_style,
+        )
+
+            data_signature = [
+                (
+                    Paragraph("Руководитель:", bold_style),
+                    signature_motrum,
+                    signature_motrum_name,
+                ),
+                (
+                    Paragraph("Бухгалтер:", bold_style),
+                    signature_motrum,
+                    signature_motrum_name,
+                ),
+                (
+                    None,
+                    press_motrum,
+                    Paragraph(
+                        f"{name_admin}", normal_style_right
+                    ),
+                ),
+            ]
+
+            table_signature = Table(
+                data_signature, colWidths=[3 * cm, 5 * cm, 7 * cm, 7 * cm], hAlign="LEFT"
+            )
+            # Уменьшаем отступы в таблице
+            table_signature.setStyle(
+                TableStyle(
+                    [
+                        ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
+                        ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+                        ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                        ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+                        ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
+                    ]
+                )
+            )
+            
+            # Уменьшаем отступы в параграфах
+            for row in data_signature:
+                for cell in row:
+                    if isinstance(cell, Paragraph):
+                        cell.style.spaceBefore = 0
+                        cell.style.spaceAfter = 0
+
+        story.append(table_signature)
+        
+        # Создаем PDF
         pdf = doc
         pdf = pdf.build(story, canvasmaker=MyCanvas)
 
@@ -1035,8 +1139,50 @@ def crete_pdf_bill(
             )
         )
 
-        story_no_sign.append(table_signature)
+        # Получаем высоту таблицы для версии без подписи
+        table_height = table_signature.wrap(available_width, doc_2.height)[1]
+        print("table_height no sign", table_height)
+        
+        # Получаем текущую позицию на странице для версии без подписи
+        current_y = doc_2.height - doc_2.topMargin
+        for element in story_no_sign:
+            if hasattr(element, 'wrap'):
+                w, h = element.wrap(available_width, doc_2.height)
+                current_y -= h
+        print("current_y no sign", current_y)
+        
+        # Получаем оставшееся место на странице
+        remaining_height = current_y - doc_2.bottomMargin
+        print("remaining_height no sign", remaining_height)
+        
+        # Если таблица занимает меньше половины оставшегося места
+        if table_height < remaining_height / 2:
+            # Уменьшаем отступы в таблице
+            table_signature.setStyle(
+                TableStyle(
+                    [
+                        ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
+                        ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+                        ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                        ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+                        ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
+                    ]
+                )
+            )
+            
+            # Уменьшаем отступы в параграфах
+            for row in data_signature:
+                for cell in row:
+                    if isinstance(cell, Paragraph):
+                        cell.style.spaceBefore = 0
+                        cell.style.spaceAfter = 0
 
+        story_no_sign.append(table_signature)
+        
+        # Создаем PDF
         pdf_no_sign = doc_2
         pdf_no_sign = pdf_no_sign.build(story_no_sign, canvasmaker=MyCanvas)
 
@@ -1063,28 +1209,3 @@ def crete_pdf_bill(
         e = error_alert(error, location, info)
 
 
-# if type_save == "new":
-#             if order.requisites.contract:
-#                 bill_name = motrum_info.counter_bill + 1
-#                 name_bill_text = f"Счет № {bill_name}"
-#                 motrum_info.counter_bill =  bill_name
-#             else:
-#                 bill_name = motrum_info.counter_bill_offer + 1
-#                 name_bill_text = f"Счет-оферта № {bill_name}"
-#                 motrum_info.counter_bill_offer = bill_name
-
-#         elif type_save == "update":
-#             bill_name = order.bill_name
-
-#         elif type_save == "hard_update":
-#             if order.requisites.contract:
-#                 bill_name = motrum_info.counter_bill + 1
-
-#                 name_bill_text = f"Счет № {bill_name}"
-#                 motrum_info.counter_bill =  bill_name
-#             else:
-#                 bill_name = motrum_info.counter_bill_offer + 1
-#                 name_bill_text = f"Счет-оферта № {bill_name}"
-#                 motrum_info.counter_bill_offer = bill_name
-#         else:
-#             bill_name = order.bill_name

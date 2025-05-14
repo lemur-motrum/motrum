@@ -148,11 +148,12 @@
                 </span>
               </a>
             {% elif request.user.is_staff %}
-              <div class="cart-elem enter-in-site">
+              <div class="cart-elem out-work-elem" title="ВЫХОД ИЗ РАБОЧЕГО АККАУНТА">
                 <div class="img-container">
-                  <img src="{% static "core/images/header_account.png" %}" alt="img">
+                    <a href="{% url "user:logout_clear_info" %}">
+                    <img src="{% static "core/images/header_account.png" %}" alt="img"></a>
                 </div>
-              </div>
+            </div>
             {% else %}
               <a href={% url "core:cart" %} class="cart-elem">
                 <div class="img-container">

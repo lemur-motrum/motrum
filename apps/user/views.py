@@ -240,4 +240,16 @@ def logout_clear_info(request):
         samesite="None",
         secure=True,
     )
+    response.set_cookie(
+        "specificationId",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "cart",
+        max_age=-1,
+        samesite="None",
+        secure=True,
+    )
     return response

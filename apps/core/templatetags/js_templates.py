@@ -52,6 +52,11 @@ def js_templates():
             "name": "search-elem",
             "template": "product/includes/ajax_search_elem.html",
         },
+        {
+            "module": "search-supplier",
+            "name": "search-supplier-item",
+            "template": "admin_specification/include/ajax_search_suplier_elem.html",
+        },
     ]
 
     for template_item in template_list:

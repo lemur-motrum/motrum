@@ -211,13 +211,17 @@
                                     <input class="delivery_date"
                                            type="date"
                                            name="calendar"
-                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                           value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
+                                           {% comment %}
+                                           onfocus="this.showPicker()"
+                                           {% endcomment %}
+                                           value="{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                 {% else %}
                                     <input class="delivery_date"
                                            type="date"
                                            name="calendar"
-                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                           {% comment %}
+                                           onfocus="this.showPicker()"
+                                           {% endcomment %}
                                            min="{{ current_date }}">
                                     {% if item.date_delivery %}
                                         <br>
@@ -251,7 +255,6 @@
                             <div title="Cохранить элемент" class="save_icon_container">
                                 <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
                             </div>
-                         
                             <div class="item_value">
                                 {% if item.product_new_cart %}
                                     {{ item.product_new_cart }}
@@ -364,13 +367,17 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
+                                               value="{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
                                                min="{{ current_date }}">
                                         {% if item.date_delivery %}
                                             <br>
@@ -380,12 +387,10 @@
                                 </label>
                             </div>
                             <div class="change_item_container_wrapper">
-                       
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
                                             <input placeholder="Имя товара"
-                                            
                                                    class="new_item_container_name_input"
                                                    value="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
                                                    type="text" />
@@ -393,7 +398,7 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
-                                            disabled 
+                                                   disabled
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}" />
@@ -401,25 +406,43 @@
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
-                                        <label class="vedor_label">
-                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                                        <label class="vendor_label">
+                                            {% comment %} <div class="itc-select vendor_select "
+                                                 id="vendor_toggle_select-{{ forloop.counter }}">
                                                 <button type="button"
-                                                disabled
+                                                        disabled
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
-                                                        value="{{item.vendor.id}}"
+                                                        value="{{ item.vendor.id }}"
                                                         data-select="toggle"
-                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
+                                                        data-index="1">
+                                                    {% for vendor_item in vendor %}
+                                                        {% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}
+                                                    {% endfor %}
+                                                </button>
                                                 <div class="itc-select__dropdown">
                                                     <ul class="itc-select__options">
                                                         {% for vendor_item in vendor %}
                                                             <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
                                                                 data-select="option"
                                                                 data-value="{{ vendor_item.id }}"
-                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">
+                                                                {{ vendor_item.name }}
+                                                            </li>
                                                         {% endfor %}
                                                     </ul>
                                                 </div>
+                                            </div> {% endcomment %}
+                                            <input class="vendor_input" value="{{item.vendor.id}}" type="text" placeholder="Производитель" />
+                                            <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                                                <div class="loader"></div>
+                                                <div class="search_elems" search-supplier-elem="container">
+                                                    {% for search_supplier_elem in search_supplier_list %}
+                                                        {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small_loader"></div>
+                                                <div class="none_content">Таких поставщиков нет</div>
                                             </div>
                                         </label>
                                     </div>
@@ -585,13 +608,17 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
+                                               value="{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
                                                min="{{ current_date }}">
                                     {% endif %}
                                 </label>
@@ -608,7 +635,6 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
-                                     
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{{ item.product_new_article }}" />
@@ -616,24 +642,42 @@
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
-                                        <label class="vedor_label">
-                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                                        <label class="vendor_label">
+                                            {% comment %} <div class="itc-select vendor_select "
+                                                 id="vendor_toggle_select-{{ forloop.counter }}">
                                                 <button type="button"
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
-                                                        value="{{item.vendor.id}}"
+                                                        value="{{ item.vendor.id }}"
                                                         data-select="toggle"
-                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
+                                                        data-index="1">
+                                                    {% for vendor_item in vendor %}
+                                                        {% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}
+                                                    {% endfor %}
+                                                </button>
                                                 <div class="itc-select__dropdown">
                                                     <ul class="itc-select__options">
                                                         {% for vendor_item in vendor %}
                                                             <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
                                                                 data-select="option"
                                                                 data-value="{{ vendor_item.id }}"
-                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">
+                                                                {{ vendor_item.name }}
+                                                            </li>
                                                         {% endfor %}
                                                     </ul>
                                                 </div>
+                                            </div> {% endcomment %}
+                                            <input class="vendor_input" value="{{item.vendor.name}}" vendor_value="{{item.vendor.id}}" type="text" placeholder="Производитель" />
+                                            <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                                                <div class="loader"></div>
+                                                <div class="search_elems" search-supplier-elem="container">
+                                                    {% for search_supplier_elem in search_supplier_list %}
+                                                        {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small_loader"></div>
+                                                <div class="none_content">Таких поставщиков нет</div>
                                             </div>
                                         </label>
                                     </div>
@@ -802,13 +846,17 @@
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
-                                               value="{% if item.date_delivery_bill  %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
+                                               value="{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
                                                type="date"
                                                name="calendar"
-                                               {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                               {% comment %}
+                                               onfocus="this.showPicker()"
+                                               {% endcomment %}
                                                min="{{ current_date }}">
                                     {% endif %}
                                 </label>
@@ -825,7 +873,6 @@
                                         </label>
                                         <label class="article_label">
                                             <input placeholder="Артикул товара"
-                                         
                                                    class="new_item_container_article_input"
                                                    type="text"
                                                    value="{{ item.product_new_article }}" />
@@ -833,24 +880,42 @@
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
-                                        <label class="vedor_label">
-                                            <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                                        <label class="vendor_label">
+                                            {% comment %} <div class="itc-select vendor_select "
+                                                 id="vendor_toggle_select-{{ forloop.counter }}">
                                                 <button type="button"
                                                         class="itc-select__toggle vendor_select__toggle_change"
                                                         name="vendor"
-                                                        value="{{item.vendor.id}}"
+                                                        value="{{ item.vendor.id }}"
                                                         data-select="toggle"
-                                                        data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
+                                                        data-index="1">
+                                                    {% for vendor_item in vendor %}
+                                                        {% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}
+                                                    {% endfor %}
+                                                </button>
                                                 <div class="itc-select__dropdown">
                                                     <ul class="itc-select__options">
                                                         {% for vendor_item in vendor %}
                                                             <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}"
                                                                 data-select="option"
                                                                 data-value="{{ vendor_item.id }}"
-                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
+                                                                data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">
+                                                                {{ vendor_item.name }}
+                                                            </li>
                                                         {% endfor %}
                                                     </ul>
                                                 </div>
+                                            </div> {% endcomment %}
+                                            <input class="vendor_input" value="{{item.vendor.name}}" type="text" placeholder="Производитель" />
+                                            <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                                                <div class="loader"></div>
+                                                <div class="search_elems" search-supplier-elem="container">
+                                                    {% for search_supplier_elem in search_supplier_list %}
+                                                        {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small_loader"></div>
+                                                <div class="none_content">Таких поставщиков нет</div>
                                             </div>
                                         </label>
                                     </div>
@@ -934,24 +999,27 @@
                                         </div>
                                     </div>
                                 </label>
-                                <label class="vedor_label">
-                                    <div class="itc-select vendor_select" id="select-2">
-                                        <button type="button"
-                                                class="itc-select__toggle vendor_select__toggle"
-                                                name="vendor"
-                                                value=""
-                                                data-select="toggle"
-                                                data-index="-1">Производитель</button>
+                                <label class="vendor_label">
+                                    {% comment %} <div class="itc-select vendor_select" id="select-2">
+                                        <button type="button" class="itc-select__toggle vendor_select__toggle" name="vendor" value="" data-select="toggle" data-index="-1">Производитель!!</button>
                                         <div class="itc-select__dropdown">
                                             <ul class="itc-select__options">
                                                 {% for vendor_item in vendor %}
-                                                    <li class="itc-select__option"
-                                                        data-select="option"
-                                                        data-value="{{ vendor_item.id }}"
-                                                        data-index="0">{{ vendor_item.name }}</li>
+                                                    <li class="itc-select__option" data-select="option" data-value="{{ vendor_item.id }}" data-index="0">{{ vendor_item.name }}</li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
+                                    </div> {% endcomment %}
+                                    <input class="vendor_input" type="text" placeholder="Производитель" />
+                                    <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                                        <div class="loader"></div>
+                                        <div class="search_elems" search-supplier-elem="container">
+                                            {% for search_supplier_elem in search_supplier_list %}
+                                                {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="small_loader"></div>
+                                        <div class="none_content">Таких поставщиков нет</div>
                                     </div>
                                 </label>
                             </div>
@@ -986,7 +1054,9 @@
                                 <label class="new_item_container_value_calendar_label">
                                     <input class="new_item_container_calendar"
                                            type="date"
-                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                           {% comment %}
+                                           onfocus="this.showPicker()"
+                                           {% endcomment %}
                                            min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>
@@ -1040,16 +1110,11 @@
                 </div>
                 <div class="submit_and_content_container">
                     <div class="coment_all_spesif">
-                        <textarea 
-                                  class="comment-input-all"
+                        <textarea class="comment-input-all"
                                   name="comment-input-name-all"
                                   placeholder="Комментарий к всему заказу">{% if specification.comment %}{{ specification.comment }}{% endif %}</textarea>
-                        {% comment %} <textarea style="width: 200px;
-                                         height: 50px;
-                                         border-radius: 10px"
-                                  class="delivery-date-all-input-all"
-                                  name="delivery-date-all-input-name-all"
-                                  placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea> {% endcomment %}
+                        {% comment %} <textarea style="width: 200px; height: 50px; border-radius: 10px" class="delivery-date-all-input-all" name="delivery-date-all-input-name-all" placeholder="Срок поставки для документа спецификации">{% if specification.date_delivery %}{{ specification.date_delivery }}{% endif %}</textarea>
+                        {% endcomment %}
                     </div>
                     <div class="submit-container">
                         <div class="client">
@@ -1089,7 +1154,9 @@
                             </label>
                             <label class="bitrix-id-label">
                                 <input disabled
-                                {% comment %} {% if bill_upd or order.id_bitrix %}disabled{% endif %} {% endcomment %}
+                                       {% comment %}
+                                       {% if bill_upd or order.id_bitrix %}disabled{% endif %}
+                                       {% endcomment %}
                                        class="bitrix-input"
                                        type="text"
                                        onkeypress='validate(event)'
@@ -1183,7 +1250,7 @@
                                             <ul class="itc-select__options">
                                                 {% for supplier_item in supplier %}
                                                     <li class="itc-select__option"
-                                                       data-select="option"
+                                                        data-select="option"
                                                         data-value="{{ supplier_item.id }}"
                                                         data-index="0">{{ supplier_item.name }}</li>
                                                 {% endfor %}
@@ -1191,8 +1258,8 @@
                                         </div>
                                     </div>
                                 </label>
-                                <label class="vedor_label">
-                                    <div class="itc-select vendor_select" id="select-2">
+                                <label class="vendor_label">
+                                    {% comment %} <div class="itc-select vendor_select" id="select-2">
                                         <button type="button"
                                                 class="itc-select__toggle vendor_select__toggle"
                                                 name="vendor"
@@ -1203,12 +1270,23 @@
                                             <ul class="itc-select__options">
                                                 {% for vendor_item in vendor %}
                                                     <li class="itc-select__option"
-                                                       data-select="option"
+                                                        data-select="option"
                                                         data-value="{{ vendor_item.id }}"
                                                         data-index="0">{{ vendor_item.name }}</li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
+                                    </div> {% endcomment %}
+                                    <input class="vendor_input" type="text" placeholder="Производитель" />
+                                    <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                                        <div class="loader"></div>
+                                        <div class="search_elems" search-supplier-elem="container">
+                                            {% for search_supplier_elem in search_supplier_list %}
+                                                {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="small_loader"></div>
+                                        <div class="none_content">Таких поставщиков нет</div>
                                     </div>
                                 </label>
                             </div>
@@ -1243,7 +1321,9 @@
                                 <label class="new_item_container_value_calendar_label">
                                     <input class="new_item_container_calendar"
                                            type="date"
-                                           {% comment %} onfocus="this.showPicker()" {% endcomment %}
+                                           {% comment %}
+                                           onfocus="this.showPicker()"
+                                           {% endcomment %}
                                            min="{{ current_date }}" />
                                     <div class="error"></div>
                                 </label>

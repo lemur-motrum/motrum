@@ -206,10 +206,8 @@ function addNewProductLogic(container) {
       const newProductError = newItemContainer.querySelector(
         ".add_new_item_in_cart_container_error"
       );
-      const vendorSelect = newItemContainer.querySelector(".vendor_select");
-      const vendorSelectToggle = vendorSelect.querySelector(
-        ".vendor_select__toggle"
-      );
+      const vendorInput = newItemContainer.querySelector(".vendor_input");
+
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
       const supplierSelectToggle = supplierSelect.querySelector(
         ".supplier_select__toggle"
@@ -237,7 +235,6 @@ function addNewProductLogic(container) {
         });
       }
       closeSelectDropdown(supplierSelect);
-      closeSelectDropdown(vendorSelect);
 
       function changePercent() {
         if (priceOnceInput.value && quantityInput.value) {
@@ -314,9 +311,9 @@ function addNewProductLogic(container) {
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
 
-        if (!vendorSelectToggle.getAttribute("value")) {
+        if (!vendorInput.getAttribute("vendor_value")) {
           validate = false;
-          vendorSelectToggle.style.borderColor = "red";
+          vendorInput.style.borderColor = "red";
         } else {
           validate = true;
         }
@@ -333,7 +330,7 @@ function addNewProductLogic(container) {
           articleInput.value &&
           priceOnceInput.value &&
           quantityInput.value &&
-          vendorSelect.getAttribute("value")
+          vendorInput.getAttribute("vendor_value")
         ) {
           validate = true;
         }
@@ -358,7 +355,7 @@ function addNewProductLogic(container) {
             product_new_sale: addPersentSaleInput.value
               ? addPersentSaleInput.value
               : null,
-            vendor: vendorSelectToggle.getAttribute("value"),
+            vendor: vendorInput.getAttribute("vendor_value"),
             supplier: supplierSelectToggle.getAttribute("value"),
           };
           const data = JSON.stringify(dataObjNewProduct);
@@ -416,79 +413,6 @@ function addNewProductLogic(container) {
         };
         const searchButton = searchProductItem.querySelector(".search_button");
         const productId = searchProductItem.getAttribute("product-id");
-
-        // document.addEventListener("keyup", function (e) {
-        //   console.log(counterElems);
-        //   if (e.code == "ArrowUp") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems > searchProductItems.length - 1) {
-        //       counterElems = 0;
-        //     } else {
-        //       counterElems += 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "ArrowDown") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems < 1) {
-        //       counterElems = searchProductItems.length;
-        //     } else {
-        //       counterElems -= 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "Enter") {
-        //     if (searchInput.value) {
-        //       const productId = document
-        //         .querySelector(".search_container")
-        //         .querySelector(".active")
-        //         .getAttribute("product-id");
-        //       closeSearchWindow();
-        //       cont.classList.remove("show");
-        //       searchInput.classList.remove("bordering");
-        //       const cartId = getCookie("cart");
-        //       const objData = {
-        //         cart: cartId,
-        //         product: productId,
-        //         quantity: 1,
-        //       };
-        //       const data = JSON.stringify(objData);
-        //       fetch(`/api/v1/cart/${cartId}/save-product/`, {
-        //         method: "POST",
-        //         body: data,
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //           "X-CSRFToken": csrfToken,
-        //         },
-        //       }).then((response) => {
-        //         if (response.status == 200) {
-        //           window.location.reload();
-        //         } else if (response.status == 409) {
-        //           addProductButton.innerHTML = "";
-        //           addProductButton.textContent = "Добавить этот товар";
-        //           showErrorValidation("Этот товар уже в корзине", error);
-        //         } else {
-        //           setErrorModal();
-        //           throw new Error("Ошибка");
-        //         }
-        //       });
-        //     }
-        //   }
-        // });
 
         searchProductItem.onclick = () => {
           cont.classList.remove("show");

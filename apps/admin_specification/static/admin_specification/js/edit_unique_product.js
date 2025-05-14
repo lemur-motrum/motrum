@@ -35,20 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
-      const select = changeFormWrapper.querySelector(".vendor_select");
-      const supplierSelect = select.querySelector(
-        ".vendor_select__toggle_change"
-      );
-
-      const options = select.querySelectorAll(".itc-select__options");
-
-      options.forEach((el) => {
-        el.onclick = () => {
-          setTimeout(() => {
-            select.classList.remove("itc-select_show");
-          });
-        };
-      });
+      const vendorInput = changeFormWrapper.querySelector(".vendor_input");
 
       const priceOneInput = changeFormWrapper.querySelector(".price_input");
       priceOneInput.value = getCurrentPrice(priceOneInput.value);
@@ -155,16 +142,16 @@ window.addEventListener("DOMContentLoaded", () => {
         validate(articleInput);
         validate(priceOneInput);
         validate(quantityInput);
-        if (!supplierSelect.getAttribute("value")) {
+        if (!vendorInput.getAttribute("vendor_value")) {
           setPreloaderInButton(changeButton);
-          supplierSelect.style.border = "0.063rem solid red";
+          vendorInput.style.border = "0.063rem solid red";
         }
         if (
           nameInput.value &&
           articleInput.value &&
           priceOneInput.value &&
           quantityInput.value &&
-          supplierSelect.getAttribute("value")
+          vendorInput.getAttribute("vendor_value")
         ) {
           const cartId = getCookie("cart");
           const objData = {
@@ -177,7 +164,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_sale_motrum: salePersentInput.value
               ? salePersentInput.value
               : null,
-            vendor: supplierSelect.getAttribute("value"),
+            vendor: vendorInput.getAttribute("vendor_value"),
           };
           const data = JSON.stringify(objData);
           fetch(`/api/v1/cart/${productId}/upd-product-new/`, {

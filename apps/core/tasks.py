@@ -4,6 +4,7 @@ from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 from apps.core.bitrix_api import currency_check_bx, get_manager_info, get_status_order
+from apps.core.utils_web import up_int_skafy
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
@@ -458,12 +459,12 @@ def get_manager_info_bx(self):
     bind=True,
     max_retries=1,
 )
-def up_int_skafy(self):
+def up_int_task_skafy(self):
     try:
         if IS_TESTING:
             pass
         else:
-          pass
+            up_int_skafy()
     except Exception as exc:
         error = "file_api_error"
         location = f"автосчет шкафов цправления на сайте"

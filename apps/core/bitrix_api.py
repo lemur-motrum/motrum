@@ -600,32 +600,21 @@ def get_status_order():
 
         not_view_status = ["COMPLETED", "CANCELED"]
         actual_order = (
-            Order.objects.exclude(
-                status__in=not_view_status,
-                id_bitrix=None,
-            )
-            .values("id_bitrix")
+            Order.objects.exclude(status__in=not_view_status)
             .exclude(id_bitrix=None)
+            .values("id_bitrix")
         )
-        # error = "info_error_order"
-        # location = "Получение статусов битрикс24"
-        # info = f"actual_order {actual_order}"
-        # e = error_alert(error, location, info)
-        # actual_order = Order.objects.exclude(
-        #     status__in=not_view_status, id_bitrix__isnull=True,
-        # ).filter(id_bitrix=11702).values("id_bitrix")
-        print(actual_order)
+
         if actual_order.count() > 0:
             webhook = BITRIX_WEBHOOK
             bx = Bitrix(webhook)
 
             orders = [d["id_bitrix"] for d in actual_order]
-            print(orders)
             for orde in orders:
-                print(orde)
+                
                 try:
                     orders_bx = bx.get_by_ID("crm.deal.get", [orde])
-                    print(orders_bx)
+                    # print(orders_bx)
 
                     # if len(orders) == 1:
                     #     orders_bx = {orders_bx["ID"]: orders_bx}
@@ -636,7 +625,7 @@ def get_status_order():
                     print("id_bx")
                     status_bx = orders_bx["STAGE_ID"]
                     order = Order.objects.filter(id_bitrix=id_bx).last()
-
+                    print("order",order)
                     if order:
                         status = get_status_bx(status_bx)
                         if status == "SHIPMENT_":
@@ -662,9 +651,11 @@ def get_status_order():
                     location = "Конкретный Получение статусов битрикс24"
                     info = f"except {orde} Тип ошибки:{tr} {e}"
                     e = error_alert(error, location, info)
+                    print(orde,"ERROR")
                     pass
+                
     except Exception as e:
-        print(e)
+        print("all_e", e)
         tr = traceback.format_exc()
         error = "file_api_error"
         location = "Получение статусов битрикс24"

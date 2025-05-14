@@ -52,6 +52,7 @@ from apps.core.utils_web import (
     send_email_message,
     get_file_path_company_web,
     send_pin_smsru,
+    up_int_skafy,
 )
 from apps.logs.utils import error_alert
 from dal import autocomplete
@@ -134,7 +135,7 @@ def add_iek(request):
     
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    get_status_order()
+    up_int_skafy()
 
     result = 1
     title = "TEST"

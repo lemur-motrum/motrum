@@ -453,3 +453,19 @@ def get_manager_info_bx(self):
         info = f"получение в б24 менеджеров клиентов{exc}"
         e = error_alert(error, location, info)
 
+# автосчет шкафов цправления на сайте
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def up_int_skafy(self):
+    try:
+        if IS_TESTING:
+            pass
+        else:
+          pass
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"автосчет шкафов цправления на сайте"
+        info = f"автосчет шкафов цправления на сайте{exc}"
+        e = error_alert(error, location, info)

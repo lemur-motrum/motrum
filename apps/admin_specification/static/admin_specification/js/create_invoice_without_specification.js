@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
       'textarea[name="delivery-date-all-input-name-all"]'
     );
 
-    const products = [];
+    
 
     const bitrixInput = document.querySelector(".bitrix-input");
     const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
@@ -35,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationWrapepr.querySelectorAll(".item_container");
 
     button.onclick = () => {
+      const products = [];
       let validate = true;
       const clientRequsits = document
         .querySelector("[name='client-requisit']")

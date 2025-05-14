@@ -884,17 +884,17 @@ def crete_pdf_bill(
             )
 
         table_data_text_info = Table(
-            data_text_info, splitInRow=1,
+            data_text_info, splitInRow=1, hAlign="LEFT"
         )
         table_data_text_info2 = Table(
-            data_text_info, splitInRow=1,
+            data_text_info, splitInRow=1, hAlign="LEFT"
         )
 
         table_data_text_info.setStyle(
             TableStyle(
                 [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-                    ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                    # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                 ]
             )
@@ -903,7 +903,7 @@ def crete_pdf_bill(
             TableStyle(
                 [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-                    ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                    # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                 ]
             )
@@ -969,57 +969,52 @@ def crete_pdf_bill(
         )
 
         # Получаем высоту таблицы
-        available_width = doc.width - doc.leftMargin - doc.rightMargin
-        table_height = table_signature.wrap(available_width, doc.height)[1]
-        print("table_height в пунктах:", table_height)
-        print("table_height в см:", table_height / 28.346456692913385)
+        available_width = doc.width - doc.topMargin - doc.rightMargin
+        available_height = doc.height - doc.bottomMargin - doc.topMargin
+        table_height = table_signature.wrap(available_width, available_height)[1]
+
         
-        # Выводим размеры страницы
-        print("\nA4 размеры:")
-        print("Ширина страницы:", doc.width / 28.346456692913385, "см")
-        print("Высота страницы:", doc.height / 28.346456692913385, "см")
-        print("Верхний отступ:", doc.topMargin / 28.346456692913385, "см")
-        print("Нижний отступ:", doc.bottomMargin / 28.346456692913385, "см")
-        print("Левый отступ:", doc.leftMargin / 28.346456692913385, "см")
-        print("Правый отступ:", doc.rightMargin / 28.346456692913385, "см")
-        
-        # Считаем общую высоту всех элементов
-        total_height = 0
+        # Считаем общую кумулятивную высоту всех элементов в story
+        cumulative_height_of_story = 0
         for element in story:
             if hasattr(element, 'wrap'):
-                w, h = element.wrap(available_width, doc.height)
-                total_height += h
-        print("\nВысота контента:")
-        print("total_height в пунктах:", total_height)
-        print("total_height в см:", total_height / 28.346456692913385)
+                # Предполагается, что doc.height здесь - это максимальная высота,
+                # которую элемент МОГ БЫ занять. wrap вернет реальную высоту элемента.
+                _w, h = element.wrap(available_width, available_height)
+                cumulative_height_of_story += h
+
+        # Теперь вычисляем, какая часть последней страницы занята этим cumulative_height_of_story
+        if cumulative_height_of_story == 0:
+            height_used_on_final_page_of_story = 0
+        else:
+            # Если кумулятивная высота точно равна N страницам, то последняя страница полная.
+            if cumulative_height_of_story % available_height == 0 and cumulative_height_of_story > 0:
+                height_used_on_final_page_of_story = available_height
+            else:
+                # Иначе это остаток на последней странице.
+                height_used_on_final_page_of_story = cumulative_height_of_story % available_height
         
-        # Оставшееся место = высота страницы - использованная высота
-        remaining_height = doc.height - total_height
-        print("\nОставшееся место:")
-        print("remaining_height в пунктах:", remaining_height)
-        print("remaining_height в см:", remaining_height / 28.346456692913385)
-        
-        print("\nПроверка условий:")
-        print("table_height/2 в см:", (table_height / 2) / 28.346456692913385)
-        print("remaining_height/3 в см:", (remaining_height / 3) / 28.346456692913385)
-        print("remaining_height/2 в см:", (remaining_height / 2) / 28.346456692913385)
-        
-        table_height_2 = table_height / 2
+        # total_height теперь представляет высоту, использованную на ПОСЛЕДНЕЙ странице,
+        # где заканчивается текущий 'story'.
+        total_height = height_used_on_final_page_of_story
+
+        # Оставшееся место = высота страницы - использованная высота на этой последней странице
+        remaining_height = available_height - total_height
+
+    
         table_height_3 = table_height / 3
-        remaining_height_min_3 = remaining_height / 3
-        remaining_height_min_2 = remaining_height / 2
-        print("table_height_2",table_height_2)
-        print("table_height_3",table_height_3)
-        print("remaining_height /2 в см:", (remaining_height / 2) / 28.346456692913385)
-        print("remaining_height_min_3",remaining_height_min_3)
-        print("remaining_height_min_3 /2 в см:", (remaining_height_min_3) / 28.346456692913385)
-        print("remaining_height_min_2",remaining_height_min_2)  
-        print("remaining_height_min_2 /2 в см:", (remaining_height_min_2) / 28.346456692913385)
+        table_height_23 = table_height_3 * 2
+        print("remaining_height", remaining_height)
+        print("table_height_23", table_height_23)
         # Если таблица занимает меньше половины оставшегося места
-        if table_height_2 > remaining_height_min_3 and table_height_2 < remaining_height_min_2:
-            print("remaining_height / 3",remaining_height_min_3)
+        if table_height_23 > remaining_height :
+            print("66666666666666666666666666666666666666666666666666")
+            signature_motrum = Paragraph(
+                f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
+                normal_style,
+            )
             press_motrum = Paragraph(
-            f'М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
+            f'<br /><br /><br /><br />М.П.<img width="90" height="90" src="{name_image_press}" valign="middle"/>',
             normal_style,
         )
 
@@ -1056,8 +1051,7 @@ def crete_pdf_bill(
                         ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                         ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
                         ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
-                        ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
-                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
+                       
                     ]
                 )
             )
@@ -1155,30 +1149,30 @@ def crete_pdf_bill(
         remaining_height = current_y - doc_2.bottomMargin
         print("remaining_height no sign", remaining_height)
         
-        # Если таблица занимает меньше половины оставшегося места
-        if table_height < remaining_height / 2:
-            # Уменьшаем отступы в таблице
-            table_signature.setStyle(
-                TableStyle(
-                    [
-                        ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
-                        ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-                        ("ALIGN", (0, 0), (0, -1), "RIGHT"),
-                        ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
-                        ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
-                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
-                        ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
-                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
-                    ]
-                )
-            )
+        # # Если таблица занимает меньше половины оставшегося места
+        # if table_height < remaining_height / 2:
+        #     # Уменьшаем отступы в таблице
+        #     table_signature.setStyle(
+        #         TableStyle(
+        #             [
+        #                 ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
+        #                 ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+        #                 ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+        #                 ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+        #                 ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+        #                 ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+        #                 ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
+        #                 ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
+        #             ]
+        #         )
+        #     )
             
-            # Уменьшаем отступы в параграфах
-            for row in data_signature:
-                for cell in row:
-                    if isinstance(cell, Paragraph):
-                        cell.style.spaceBefore = 0
-                        cell.style.spaceAfter = 0
+        #     # Уменьшаем отступы в параграфах
+        #     for row in data_signature:
+        #         for cell in row:
+        #             if isinstance(cell, Paragraph):
+        #                 cell.style.spaceBefore = 0
+        #                 cell.style.spaceAfter = 0
 
         story_no_sign.append(table_signature)
         

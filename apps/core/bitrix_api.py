@@ -11,6 +11,8 @@ from fast_bitrix24 import Bitrix
 from django.http import HttpResponseRedirect
 from jsonschema import RefResolutionError
 from requests import Response
+from fast_bitrix24.server_response import ErrorInServerResponseException
+
 
 
 from apps.client.api.serializers import OrderSerializer
@@ -649,14 +651,27 @@ def get_status_order():
                         # e = error_alert(error, location, info)
                         order.status = status
                         order.save()
-                except Exception as e:
+                except ErrorInServerResponseException as e:
+                    error = e.args[0]
+                    for k, v in error.items():
+                        print(k,v)
+                        if "error_description" in v and v["error_description"] == "Not found":
+                            print("Not found")
+                            j = Order.objects.filter(id_bitrix=orde).update(status="CANCELED")
+                            print("Обновлено записей:", j)
+                            
                     tr = traceback.format_exc()
-                    error = "info_error_order"
-                    location = "Конкретный Получение статусов битрикс24"
+                    error = "file_api_error"
+                    location = "Конкретный Получение статусов битрикс24 fast_bitrix24:"
                     info = f"except {orde} Тип ошибки:{tr} {e}"
                     e = error_alert(error, location, info)
-                    print(orde,"ERROR")
-                    pass
+
+                except Exception as e:
+                    tr = traceback.format_exc()
+                    error = "file_api_error"
+                    location = "Конкретный Получение статусов битрикс24 Другая ошибка:"
+                    info = f"except {orde} Тип ошибки:{tr} {e}"
+                    e = error_alert(error, location, info)
                 
     except Exception as e:
         print("all_e", e)

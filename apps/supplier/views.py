@@ -124,6 +124,7 @@ from apps.user.views import login_bitrix
 from apps.vacancy_web.models import Vacancy
 from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK, BASE_MANAGER_FOR_BX
 from fast_bitrix24 import Bitrix
+from fast_bitrix24.server_response import ErrorInServerResponseException
 
 
 # тестовая страница скриптов
@@ -135,8 +136,7 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-
-  
+    
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

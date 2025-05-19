@@ -5,6 +5,8 @@ from middlewares.middlewares import RequestMiddleware
 from apps.client.models import Client, Order
 from apps.core.utils_web import send_email_message_html
 from django.template import loader
+
+from project.settings import IS_TESTING
 # Create your models here.
 
 TYPE_NOTIFICATION = (
@@ -38,16 +40,18 @@ class Notification(models.Model):
     def add_notification(order,type_notification,file):
         # request = RequestMiddleware(get_response=None)
         # request = request.thread_local.current_request
-
-        order = Order.objects.get(id=order)
-        client = order.client
-        if client:
-            Notification.objects.create(
-                order=order,
-                client=client,
-                file=file,
-                type_notification=type_notification,
-            )
+        if IS_TESTING:
+            pass
+        else:
+            order = Order.objects.get(id=order)
+            client = order.client
+            if client:
+                Notification.objects.create(
+                    order=order,
+                    client=client,
+                    file=file,
+                    type_notification=type_notification,
+                    )
         # name_notification =  None
         # link = ""
         # for name_notifications in TYPE_NOTIFICATION:

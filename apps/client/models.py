@@ -24,7 +24,7 @@ from apps.specification.utils import get_document_bill_path, get_shipment_doc_pa
 from apps.supplier.models import Discount
 from apps.user.models import AdminUser, CustomUser
 from middlewares.middlewares import RequestMiddleware
-from project.settings import BASE_DIR, BASE_MANAGER_FOR_BX, DOMIAN
+from project.settings import BASE_DIR, BASE_MANAGER_FOR_BX, DOMIAN, IS_TESTING
 
 
 # клиент на сайте
@@ -702,10 +702,13 @@ class Order(models.Model):
             print(html_message)
 
             to_email = client.email
-            test = send_email_message_and_file_alternative(
-                subject, None, to_email, None, html_message
-            )
-            print("test-email", test)
+            if IS_TESTING:
+                pass
+            else:
+                test = send_email_message_and_file_alternative(
+                    subject, None, to_email, None, html_message
+                )
+            
 
     # создание документов счета
     def create_bill(
@@ -752,8 +755,10 @@ class Order(models.Model):
             self.bill_file_no_signature = file_path_no_sign
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
-
-            Notification.add_notification(self.id, "DOCUMENT_BILL", pdf_file)
+            if IS_TESTING:
+                pass
+            else:
+                Notification.add_notification(self.id, "DOCUMENT_BILL", pdf_file)
             self._change_reason = "Ручное"
             self.save()
 
@@ -941,7 +946,7 @@ class DocumentShipment(models.Model):
     # history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def save(self, *args, **kwargs):
         from apps.notifications.models import Notification
-
+        
         if self.order.client:
             Notification.add_notification(self.order.id, "DOCUMENT_ACT", self.file)
 

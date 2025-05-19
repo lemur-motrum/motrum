@@ -399,6 +399,8 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 not_web_adrees = True
                 adress_type = 9
                 legal_post_code = adress["POSTAL_CODE"]
+                if legal_post_code == None:
+                    return (True, "Индекс в адрес бенефициара не указан", None)
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
 
@@ -428,6 +430,8 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
                     adress_type = 6
                     legal_post_code = adress["POSTAL_CODE"]
+                    if legal_post_code == None:
+                        return (True, "Индекс в адрес юридический не указан", None)
                     bx_city = adress["CITY"]
                     bx_city_post = adress["CITY"]
 

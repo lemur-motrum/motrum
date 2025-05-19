@@ -122,7 +122,7 @@ from simple_history.utils import update_change_reason
 
 from apps.user.views import login_bitrix
 from apps.vacancy_web.models import Vacancy
-from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK,BASE_MANAGER_FOR_BX
+from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK, BASE_MANAGER_FOR_BX
 from fast_bitrix24 import Bitrix
 
 
@@ -132,11 +132,11 @@ def add_iek(request):
     # import logging
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
-    
+
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    up_int_skafy()
 
+  
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
@@ -147,7 +147,8 @@ def add_iek(request):
 def test(request):
     def background_task():
         # Долгосрочная фоновая задача
-        get_motrum_nomenclature()
+        pass
+        # get_motrum_nomenclature()
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)

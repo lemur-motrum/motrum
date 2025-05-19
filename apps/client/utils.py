@@ -19,7 +19,6 @@ from reportlab.lib.units import mm, cm, inch
 import num2words
 
 
-
 import reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -40,7 +39,7 @@ from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, ListStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph,KeepInFrame
+from reportlab.platypus import SimpleDocTemplate, Paragraph, KeepInFrame
 from reportlab.platypus import ListFlowable, ListItem
 from reportlab.platypus import Frame, PageBreak
 
@@ -112,7 +111,7 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-        print("type_bill",type_bill)
+        print("type_bill", type_bill)
         print("*******************************")
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
@@ -126,10 +125,9 @@ def crete_pdf_bill(
         else:
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
-        print("name_bill_text",name_bill_text)
+        print("name_bill_text", name_bill_text)
         print("*******************************")
-        
-        
+
         older_doc = OrderDocumentBill.objects.filter(
             order=order,
             bill_name=bill_name,
@@ -702,7 +700,7 @@ def crete_pdf_bill(
         )
         story.append(final_table_all_prod)
         story_no_sign.append(final_table_all_prod)
-        
+
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
         ).capitalize()
@@ -712,7 +710,7 @@ def crete_pdf_bill(
         if len(total_amount_pens) < 2:
             total_amount_pens = f"{total_amount_pens}0"
         rub_word = rub_words(int(specifications.total_amount))
-        data_text_info =[]
+        data_text_info = []
         # data_text_info = [
         #     (
         #         Paragraph(
@@ -727,18 +725,22 @@ def crete_pdf_bill(
         #         ),
         #     ),
         # ]
-        data_text_info.append((
+        data_text_info.append(
+            (
                 Paragraph(
                     f"Всего наименований {i}, на сумму {total_amount_str} руб.",
                     normal_style,
                 ),
-            ),)
-        data_text_info.append((
+            ),
+        )
+        data_text_info.append(
+            (
                 Paragraph(
                     f"{total_amount_word} {rub_word} {total_amount_pens} копеек",
                     bold_style,
                 ),
-            ),)
+            ),
+        )
 
         if is_contract or specifications.total_amount > 99999.99:
             data_text_info.append(
@@ -883,16 +885,13 @@ def crete_pdf_bill(
                 )
             )
 
-        table_data_text_info = Table(
-            data_text_info, splitInRow=1, hAlign="LEFT"
-        )
-        table_data_text_info2 = Table(
-            data_text_info, splitInRow=1, hAlign="LEFT"
-        )
+        table_data_text_info = Table(data_text_info, splitInRow=1, hAlign="LEFT")
+        table_data_text_info2 = Table(data_text_info, splitInRow=1, hAlign="LEFT")
 
         table_data_text_info.setStyle(
             TableStyle(
-                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
+                [
+                    ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
@@ -901,7 +900,8 @@ def crete_pdf_bill(
         )
         table_data_text_info2.setStyle(
             TableStyle(
-                [   ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
+                [
+                    ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
@@ -913,7 +913,6 @@ def crete_pdf_bill(
         # story_no_sign = story.copy()
         story.append(table_data_text_info)
         story_no_sign.append(table_data_text_info2)
-        
 
         name_image = request.build_absolute_uri(motrum_info.signature.url)
         signature_motrum = Paragraph(
@@ -973,11 +972,10 @@ def crete_pdf_bill(
         available_height = doc.height - doc.bottomMargin - doc.topMargin
         table_height = table_signature.wrap(available_width, available_height)[1]
 
-        
         # Считаем общую кумулятивную высоту всех элементов в story
         cumulative_height_of_story = 0
         for element in story:
-            if hasattr(element, 'wrap'):
+            if hasattr(element, "wrap"):
                 # Предполагается, что doc.height здесь - это максимальная высота,
                 # которую элемент МОГ БЫ занять. wrap вернет реальную высоту элемента.
                 _w, h = element.wrap(available_width, available_height)
@@ -988,12 +986,17 @@ def crete_pdf_bill(
             height_used_on_final_page_of_story = 0
         else:
             # Если кумулятивная высота точно равна N страницам, то последняя страница полная.
-            if cumulative_height_of_story % available_height == 0 and cumulative_height_of_story > 0:
+            if (
+                cumulative_height_of_story % available_height == 0
+                and cumulative_height_of_story > 0
+            ):
                 height_used_on_final_page_of_story = available_height
             else:
                 # Иначе это остаток на последней странице.
-                height_used_on_final_page_of_story = cumulative_height_of_story % available_height
-        
+                height_used_on_final_page_of_story = (
+                    cumulative_height_of_story % available_height
+                )
+
         # total_height теперь представляет высоту, использованную на ПОСЛЕДНЕЙ странице,
         # где заканчивается текущий 'story'.
         total_height = height_used_on_final_page_of_story
@@ -1001,22 +1004,21 @@ def crete_pdf_bill(
         # Оставшееся место = высота страницы - использованная высота на этой последней странице
         remaining_height = available_height - total_height
 
-    
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
         print("remaining_height", remaining_height)
         print("table_height_23", table_height_23)
         # Если таблица занимает меньше половины оставшегося места
-        if table_height_23 > remaining_height :
+        if table_height_23 > remaining_height:
             print("66666666666666666666666666666666666666666666666666")
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,
             )
             press_motrum = Paragraph(
-            f'<br /><br /><br /><br />М.П.<img width="90" height="90" src="{name_image_press}" valign="middle"/>',
-            normal_style,
-        )
+                f'<br /><br /><br /><br />М.П.<img width="90" height="90" src="{name_image_press}" valign="middle"/>',
+                normal_style,
+            )
 
             data_signature = [
                 (
@@ -1032,14 +1034,14 @@ def crete_pdf_bill(
                 (
                     None,
                     press_motrum,
-                    Paragraph(
-                        f"{name_admin}", normal_style_right
-                    ),
+                    Paragraph(f"{name_admin}", normal_style_right),
                 ),
             ]
 
             table_signature = Table(
-                data_signature, colWidths=[3 * cm, 5 * cm, 7 * cm, 7 * cm], hAlign="LEFT"
+                data_signature,
+                colWidths=[3 * cm, 5 * cm, 7 * cm, 7 * cm],
+                hAlign="LEFT",
             )
             # Уменьшаем отступы в таблице
             table_signature.setStyle(
@@ -1051,11 +1053,10 @@ def crete_pdf_bill(
                         ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
                         ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
                         ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
-                       
                     ]
                 )
             )
-            
+
             # Уменьшаем отступы в параграфах
             for row in data_signature:
                 for cell in row:
@@ -1064,7 +1065,7 @@ def crete_pdf_bill(
                         cell.style.spaceAfter = 0
 
         story.append(table_signature)
-        
+
         # Создаем PDF
         pdf = doc
         pdf = pdf.build(story, canvasmaker=MyCanvas)
@@ -1133,49 +1134,128 @@ def crete_pdf_bill(
             )
         )
 
-        # Получаем высоту таблицы для версии без подписи
-        table_height = table_signature.wrap(available_width, doc_2.height)[1]
-        print("table_height no sign", table_height)
         
-        # Получаем текущую позицию на странице для версии без подписи
-        current_y = doc_2.height - doc_2.topMargin
+        # Получаем высоту таблицы
+        available_width = doc_2.width - doc_2.topMargin - doc_2.rightMargin
+        available_height = doc_2.height - doc_2.bottomMargin - doc_2.topMargin
+        table_height = table_signature.wrap(available_width, available_height)[1]
+
+        # Считаем общую кумулятивную высоту всех элементов в story
+        cumulative_height_of_story = 0
         for element in story_no_sign:
-            if hasattr(element, 'wrap'):
-                w, h = element.wrap(available_width, doc_2.height)
-                current_y -= h
-        print("current_y no sign", current_y)
-        
-        # Получаем оставшееся место на странице
-        remaining_height = current_y - doc_2.bottomMargin
-        print("remaining_height no sign", remaining_height)
-        
-        # # Если таблица занимает меньше половины оставшегося места
-        # if table_height < remaining_height / 2:
-        #     # Уменьшаем отступы в таблице
-        #     table_signature.setStyle(
-        #         TableStyle(
-        #             [
-        #                 ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
-        #                 ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-        #                 ("ALIGN", (0, 0), (0, -1), "RIGHT"),
-        #                 ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
-        #                 ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
-        #                 ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
-        #                 ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
-        #                 ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
-        #             ]
-        #         )
-        #     )
+            if hasattr(element, "wrap"):
+                # Предполагается, что doc.height здесь - это максимальная высота,
+                # которую элемент МОГ БЫ занять. wrap вернет реальную высоту элемента.
+                _w, h = element.wrap(available_width, available_height)
+                cumulative_height_of_story += h
+
+        # Теперь вычисляем, какая часть последней страницы занята этим cumulative_height_of_story
+        if cumulative_height_of_story == 0:
+            height_used_on_final_page_of_story = 0
+        else:
+            # Если кумулятивная высота точно равна N страницам, то последняя страница полная.
+            if (
+                cumulative_height_of_story % available_height == 0
+                and cumulative_height_of_story > 0
+            ):
+                height_used_on_final_page_of_story = available_height
+            else:
+                # Иначе это остаток на последней странице.
+                height_used_on_final_page_of_story = (
+                    cumulative_height_of_story % available_height
+                )
+
+        # total_height теперь представляет высоту, использованную на ПОСЛЕДНЕЙ странице,
+        # где заканчивается текущий 'story'.
+        total_height = height_used_on_final_page_of_story
+
+        # Оставшееся место = высота страницы - использованная высота на этой последней странице
+        remaining_height = available_height - total_height
+
+        table_height_3 = table_height / 3
+        table_height_23 = table_height_3 * 2
+        print("remaining_height", remaining_height)
+        print("table_height_23", table_height_23)
+        # Если таблица занимает меньше половины оставшегося места
+        if table_height_23 > remaining_height:
+            print("66666666666666666666666666666666666666666666666666")
+            signature_motrum = Paragraph(
+                f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
+                normal_style,
+            )
+            press_motrum = Paragraph(
+                f'<br /><br /><br /><br />М.П.<img width="90" height="90" src="{name_image_press}" valign="middle"/>',
+                normal_style,
+            )
+
+            data_signature = [
+            (
+                Paragraph(f"<br />Руководитель:", bold_style),
+                Paragraph(f"________________________________", normal_style_centre),
+                Paragraph(
+                    f"__________________________________________________________",
+                    normal_style_centre,
+                ),
+            ),
+            (
+                None,
+                Paragraph(f"   подпись           ", normal_style_centre),
+                Paragraph(f"       расшифровка подписи      ", normal_style_centre),
+            ),
+            (
+                Paragraph("Бухгалтер:", bold_style),
+                Paragraph(f"________________________________", normal_style_centre),
+                Paragraph(
+                    f"__________________________________________________________",
+                    normal_style_centre,
+                ),
+            ),
+            (
+                None,
+                Paragraph(f"   подпись           ", normal_style_centre),
+                Paragraph(f"       расшифровка подписи      ", normal_style_centre),
+            ),
+            (
+                Paragraph(f"<br /><br />МП.", normal_style_right),
+                None,
+                Paragraph(
+                    f"{name_admin}", normal_style_right
+                ),
+            ),
             
-        #     # Уменьшаем отступы в параграфах
-        #     for row in data_signature:
-        #         for cell in row:
-        #             if isinstance(cell, Paragraph):
-        #                 cell.style.spaceBefore = 0
-        #                 cell.style.spaceAfter = 0
+        ]
+
+            table_signature = Table(
+                data_signature,
+                colWidths=[3 * cm, 5 * cm, 7 * cm, 7 * cm],
+                hAlign="LEFT",
+            )
+            # Уменьшаем отступы в таблице
+            table_signature.setStyle(
+                TableStyle(
+                    [
+                        ("LINEABOVE", (0, 0), (-1, 0), 2, colors.black),
+                        ("FONT", (0, 0), (-1, -1), "Roboto", 7),
+                        ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+                        ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+                    ]
+                )
+            )
+
+            # Уменьшаем отступы в параграфах
+            for row in data_signature:
+                for cell in row:
+                    if isinstance(cell, Paragraph):
+                        cell.style.spaceBefore = 0
+                        cell.style.spaceAfter = 0
+        
+        
+        
 
         story_no_sign.append(table_signature)
-        
+
         # Создаем PDF
         pdf_no_sign = doc_2
         pdf_no_sign = pdf_no_sign.build(story_no_sign, canvasmaker=MyCanvas)
@@ -1185,7 +1265,7 @@ def crete_pdf_bill(
             "bill",
             name_bill_no_signature,
         )
-       
+
         return (
             file_path,
             bill_name,
@@ -1201,5 +1281,3 @@ def crete_pdf_bill(
         location = "Сохранение пдф счета "
         info = f"Сохранение пдф счета  ошибка {e}{tr}"
         e = error_alert(error, location, info)
-
-

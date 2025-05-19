@@ -3,7 +3,7 @@
    search-elem-id="{{ id }}"
    search-elem="search-elem"
    data-url="{{ url }}">
-  <div class="search_elem_name">{{ name }}</div>
+  <div class="search_elem_name">{{ name }} {% if description and name.length < 50 %}{{description}}{% endif %}</div>
   <button class="product_link">
     <div>Перейти</div>
   </button>

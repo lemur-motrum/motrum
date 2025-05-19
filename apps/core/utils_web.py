@@ -5,6 +5,7 @@ import random
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 import requests
+
 import smsru_api
 
 from django.http import HttpResponse
@@ -399,3 +400,21 @@ def get_product_item_data(
             "sale_motrum": sale_motrum,
         }
     return product_item_data
+
+
+# автосчет шкафов цправления на сайте
+def up_int_skafy():
+    from apps.core.models import CompanyPrijectAutoInfoWeb, IndexInfoWeb
+    
+    
+    companu_skaf = CompanyPrijectAutoInfoWeb.objects.last()
+    main_skaf = IndexInfoWeb.objects.last()
+
+    main_skaf.shkaf_upravleniya = main_skaf.shkaf_upravleniya  + 2
+    main_skaf.save()
+
+    companu_skaf.shkaf_upravleniya = companu_skaf.shkaf_upravleniya + 2
+    companu_skaf.save()
+
+
+

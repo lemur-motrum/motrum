@@ -102,7 +102,13 @@ class ProductSearchSerializer(serializers.ModelSerializer):
             "article_supplier",
             "name",
             "url",
+            "description",
         )
+    
+class VendorSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = "__all__"
     
 
 

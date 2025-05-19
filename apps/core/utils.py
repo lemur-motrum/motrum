@@ -969,7 +969,7 @@ def save_specification(
     date_delivery_all = received_data["date_delivery"]
     products = received_data["products"]
     id_cart = received_data["id_cart"]
-
+    print("products",products)
     # первичное создание/взятие спецификации
     try:
         specification = Specification.objects.get(id=id_specification)
@@ -1812,7 +1812,7 @@ def client_info_bitrix(data, company_adress):
                 type_address_bx=company_bx_adress["type_address_bx"],
                 defaults={
                     "country": company_bx_adress["country"],
-                    "post_code": int(company_bx_adress["post_code"]),
+                    "post_code": company_bx_adress["post_code"],
                     "region": company_bx_adress["province"],
                     "province": company_bx_adress["region"],
                     "city": company_bx_adress["city"],
@@ -1829,7 +1829,7 @@ def client_info_bitrix(data, company_adress):
                     type_address_bx="web-lk-adress",
                     defaults={
                         "country": company_bx_adress["country"],
-                        "post_code": int(company_bx_adress["post_code"]),
+                        "post_code": company_bx_adress["post_code"],
                         "region": company_bx_adress["province"],
                         "province": company_bx_adress["region"],
                         "city": company_bx_adress["city"],
@@ -1852,7 +1852,7 @@ def client_info_bitrix(data, company_adress):
                     type_address_bx="web-lk-adress",
                     defaults={
                         "country": company_bx_adress["country"],
-                        "post_code": int(company_bx_adress["post_code"]),
+                        "post_code": company_bx_adress["post_code"],
                         "region": company_bx_adress["province"],
                         "province": company_bx_adress["region"],
                         "city": company_bx_adress["city"],

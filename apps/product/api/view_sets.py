@@ -6,6 +6,7 @@ from django.db.models import Max
 from django.db.models import Prefetch
 from unicodedata import category
 from django.forms import CharField
+from apps.supplier.models import Vendor
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,7 +20,7 @@ from apps.product.api.serializers import (
     ProductCartSerializer,
     ProductSearchSerializer,
     ProductSerializer,
-    VendorOktNewProdSerializer,
+    VendorSearchSerializer,
 )
 from apps.product.models import (
     Cart,
@@ -369,6 +370,34 @@ class ProductViewSet(viewsets.ModelViewSet):
         page_count = queryset.count()
         count_all = count + page_count
         serializer = ProductSearchSerializer(queryset, many=True)
+        data_response = {
+            "data": serializer.data,
+            "count": count,
+            "count_all": count_all,
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post", "get"], url_path=r"search-vendor")
+    def search_vendor(self, request, *args, **kwargs):
+        data = request.data
+        print(data)
+        count = int(data["count"])
+        count_last = int(data["count_last"])
+        search_input = data["search_text"]
+        # search_input = search_input.replace(".", "").replace(",", "")
+        # search_input = search_input.split()
+
+        
+        # стандатный варинт ищет целиокм
+        queryset = Vendor.objects.filter(
+             Q(name__icontains=search_input)
+        )
+        print(queryset)
+    
+        page_count = queryset.count()
+
+        count_all = count + page_count
+        serializer = VendorSearchSerializer(queryset, many=True)
         data_response = {
             "data": serializer.data,
             "count": count,

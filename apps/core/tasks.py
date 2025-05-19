@@ -4,6 +4,7 @@ from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree, ElementInclude
 from apps.core.bitrix_api import currency_check_bx, get_manager_info, get_status_order
+from apps.core.utils_web import up_int_skafy
 from simple_history.utils import update_change_reason
 
 from apps.client.models import Order
@@ -402,8 +403,10 @@ def image_error_check_in(self):
 def vacancy_file_delite(self):
     try:
         folder_path = f"{MEDIA_ROOT}/documents/vacancy"
-
-        delete_everything_in_folder(folder_path)
+        if IS_TESTING:
+            pass
+        else:
+            delete_everything_in_folder(folder_path)
 
     except Exception as exc:
         error = "file_api_error"
@@ -421,8 +424,10 @@ def vacancy_file_delite(self):
 def nomenk_file_delite(self):
     try:
         folder_path = f"{MEDIA_ROOT}/ones/nomenk"
-
-        delete_everything_in_folder(folder_path)
+        if IS_TESTING:
+            pass
+        else:
+            delete_everything_in_folder(folder_path)
 
     except Exception as exc:
         error = "file_api_error"
@@ -449,3 +454,19 @@ def get_manager_info_bx(self):
         info = f"получение в б24 менеджеров клиентов{exc}"
         e = error_alert(error, location, info)
 
+# автосчет шкафов цправления на сайте
+@app.task(
+    bind=True,
+    max_retries=1,
+)
+def up_int_task_skafy(self):
+    try:
+        if IS_TESTING:
+            pass
+        else:
+            up_int_skafy()
+    except Exception as exc:
+        error = "file_api_error"
+        location = f"автосчет шкафов цправления на сайте"
+        info = f"автосчет шкафов цправления на сайте{exc}"
+        e = error_alert(error, location, info)

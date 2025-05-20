@@ -3,6 +3,7 @@
 .vscode/* 
 **/.vscode/
 /.vscode/settings.json
+vscode/settings.json
 
 /media/
 /static/

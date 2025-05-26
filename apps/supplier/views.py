@@ -99,6 +99,7 @@ from apps.supplier.get_utils.iek import (
     update_prod_iek_get_okt,
     update_prod_iek_in_okt,
 )
+from apps.supplier.get_utils.instart import pars_instart_xlsx
 from apps.supplier.get_utils.motrum_nomenclatur import (
     get_motrum_nomenclature,
     nomek_test_2,
@@ -134,9 +135,10 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    pars_instart_xlsx()
+  
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

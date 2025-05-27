@@ -19,6 +19,7 @@ from apps.supplier.get_utils.emas import (
     add_group_emas,
     add_props_emas_product,
 )
+from apps.supplier.get_utils.instart import get_instart_file
 from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
 
 # Register your models here.
@@ -75,6 +76,7 @@ class SupplierAdmin(admin.ModelAdmin):
                 or obj.slug == "optimus-drive"
                 or obj.slug == "emas"
                 or obj.slug == "avangard"
+                or obj.slug == "instart"
             ):
                 return fields_add
 
@@ -93,6 +95,8 @@ class SupplierAdmin(admin.ModelAdmin):
 
         if obj.file:
             new_file = obj.file
+            print(0000000000000)
+            print(obj.file)
 
             if new_file != old_file:
                 if old_supplier.slug == "delta":
@@ -126,6 +130,16 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
+                
+                if old_supplier.slug == "instart":
+
+                    def new_task():
+                        get_instart_file(new_file)
+
+                    daemon_thread = threading.Thread(target=new_task)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                    
     def get_readonly_fields(self, request, obj=None):
         if obj:
             

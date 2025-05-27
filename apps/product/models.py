@@ -769,13 +769,13 @@ class ProductDocument(models.Model):
         on_delete=models.CASCADE,
     )
     document = models.FileField(
-        "Документ", upload_to=get_file_path_add, max_length=255, null=True
+        "Документ", upload_to=get_file_path_add, max_length=1000, null=True
     )
     type_doc = models.CharField(
         "Тип документации", max_length=100, choices=TYPE_DOCUMENT, default="Other"
     )
-    name = models.CharField("Название документа", max_length=255, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=255, null=True)
+    name = models.CharField("Название документа", max_length=1000, null=True)
+    link = models.CharField("Ссылка у поставщика", max_length=1000, null=True)
     hide = models.BooleanField("Скрыть", default=False)
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))

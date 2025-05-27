@@ -865,6 +865,28 @@ def get_file_price_path_add(instance, filename):
         )
 
         return file
+    elif instance.slug == "instart":
+        print("INSTART")
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        print(file)
+
+        return file
 
 
 # проверка заполненны ли поля продукта если нет добавить значение

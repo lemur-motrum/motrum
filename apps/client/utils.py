@@ -422,7 +422,7 @@ def crete_pdf_bill(
             # клиент ип
             info_client = f"{client_info.legal_entity}, ИНН {client_info.inn}, ОГРНИП {client_info_req_kpp.ogrn}, {client_info_req_kpp.legal_post_code}, {client_info_req_kpp.legal_city} {client_info_req_kpp.legal_address}"
 
-        if client_info_req_kpp.tel:
+        if client_info_req_kpp.tel and client_info_req_kpp.tel != "":
             info_client = f"{info_client}, тел.: {client_info_req_kpp.tel}"
 
         data_info.append(

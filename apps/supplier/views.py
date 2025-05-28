@@ -136,7 +136,27 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
+    bs_id_order = 12020
+    req_bx_order = bx.call(
+        "crm.requisite.link.list",
+        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
+    )
+    req_bx_id = req_bx_order["REQUISITE_ID"]
+    req_bx = bx.call(
+            "crm.requisite.get",
+            {"id": int(req_bx_id)},
+        )
+    print(req_bx)
+    for k, v in req_bx.items():
+        tel = v["RQ_PHONE"]
+        if tel == "" or tel == None or tel == "None":
+            tel = None
+        
+        print("tel=",tel)
+        print(type(tel))
     
+
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

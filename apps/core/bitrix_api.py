@@ -374,6 +374,8 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
 
             inn = v["RQ_INN"]
             tel = v["RQ_PHONE"]
+            if tel == "" or tel == None or tel == "None":
+                tel = None
             id_req = int(v["ID"])
 
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
@@ -553,8 +555,8 @@ def order_info_check(company_info, order_info):
     if company_info["postal_address"] == "":
         not_info.append("Почтовый адрес : адрес")
 
-    if company_info["tel"] == "":
-        not_info.append("Телефон")
+    # if company_info["tel"] == "":
+    #     not_info.append("Телефон")
 
     if company_info["account_requisites"] == "":
         not_info.append("Расчётный счёт")

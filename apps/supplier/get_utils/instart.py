@@ -218,54 +218,59 @@ def pars_instart_xlsx(file_path):
                         _save_document_instart(product, doc_4, "Certificates", "Cертификат")
                         _save_document_instart(product, doc_5, "Models3d", "3d модель")
                     print("after doc")
-                    # пропсы товара
-                    ip = sheet[f"X{index}"].value
-                    ip = ip.split("-")
-                    ip = ip[1].strip()
-
-                    props = {
-                        "Мощность, кВт(общепромыш-ленный режим (G))": sheet[f"E{index}"].value,
-                        "Мощность, кВт(насосный режим (P))": sheet[f"F{index}"].value,
-                        "Входной ток, А(общепромыш-ленный режим (G))": sheet[f"G{index}"].value,
-                        "Входной ток, А(насосный режим (P))": sheet[f"H{index}"].value,
-                        "Номинальный выходной ток": sheet[f"I{index}"].value,
-                        "Напряжение, В": sheet[f"J{index}"].value,
-                        "Макс.вых-ое напр-ие": sheet[f"K{index}"].value,
-                        "С встроенными тормозными сопротивлениями": sheet[f"L{index}"].value,
-                        "фильтр ЭМС": sheet[f"M{index}"].value,
-                        "Для кабеля. м.": sheet[f"N{index}"].value,
-                        "Сопротивление, Ом": sheet[f"O{index}"].value,
-                        "Номинальный ток, А": sheet[f"P{index}"].value,
-                        "Пиковый ток, А": sheet[f"Q{index}"].value,
-                        "Комплексная защита двигателя от перегрузки": sheet[f"V{index}"].value,
-                        "Внутренний байпас": sheet[f"W{index}"].value,
-                        "Степень защиты (IP)": ip,
-                        "Поддержка протокола PROFINET IO": sheet[f"Y{index}"].value,
-                        "Макс. частота на выходе": sheet[f"Z{index}"].value,
-                        "Поддержка протокола TCP": sheet[f"AA{index}"].value,
-                        "Поддержка протокола MODBUS": sheet[f"AB{index}"].value,
-                        "Поддержка протокола PROFIBUS": sheet[f"AC{index}"].value,
-                        "Количество цифров. входов": sheet[f"AD{index}"].value,
-                        "Количество аналог. выходов": sheet[f"AE{index}"].value,
-                        "Количество аналог. входов": sheet[f"AF{index}"].value,
-                        "Количество цифров. выходов": sheet[f"AG{index}"].value,
-                        "Количество вход. фаз": sheet[f"AH{index}"].value,
-                        "Количество выход. фаз": sheet[f"AI{index}"].value,
-                        "Количество HW-интерфейсов RS-485": sheet[f"AJ{index}"].value,
-                        "Импульсные входы": sheet[f"AK{index}"].value,
-                        "Импульсные выходы": sheet[f"AL{index}"].value,
-                        "Частота сети": sheet[f"AM{index}"].value,
-                        "Рабочая температура": sheet[f"AN{index}"].value,
-                        "Cтрана производства": sheet[f"AO{index}"].value,
-                        "Вес, кг": sheet[f"AP{index}"].value,
-                        "Длина, м": sheet[f"AQ{index}"].value,
-                        "Ширина, м": sheet[f"AR{index}"].value,
-                        "Высота, м": sheet[f"AS{index}"].value,
-                        "Объем, м3": sheet[f"AT{index}"].value,
-                    }
                     
-                    _save_prop_instart(product,props)
-                    print("after prop")
+                    # пропсы товара
+                    props = ProductProperty.objects.filter(
+                                product=product
+                            ).exists()
+                    if props == False:
+                        ip = sheet[f"X{index}"].value
+                        ip = ip.split("-")
+                        ip = ip[1].strip()
+
+                        props = {
+                            "Мощность, кВт(общепромыш-ленный режим (G))": sheet[f"E{index}"].value,
+                            "Мощность, кВт(насосный режим (P))": sheet[f"F{index}"].value,
+                            "Входной ток, А(общепромыш-ленный режим (G))": sheet[f"G{index}"].value,
+                            "Входной ток, А(насосный режим (P))": sheet[f"H{index}"].value,
+                            "Номинальный выходной ток": sheet[f"I{index}"].value,
+                            "Напряжение, В": sheet[f"J{index}"].value,
+                            "Макс.вых-ое напр-ие": sheet[f"K{index}"].value,
+                            "С встроенными тормозными сопротивлениями": sheet[f"L{index}"].value,
+                            "фильтр ЭМС": sheet[f"M{index}"].value,
+                            "Для кабеля. м.": sheet[f"N{index}"].value,
+                            "Сопротивление, Ом": sheet[f"O{index}"].value,
+                            "Номинальный ток, А": sheet[f"P{index}"].value,
+                            "Пиковый ток, А": sheet[f"Q{index}"].value,
+                            "Комплексная защита двигателя от перегрузки": sheet[f"V{index}"].value,
+                            "Внутренний байпас": sheet[f"W{index}"].value,
+                            "Степень защиты (IP)": ip,
+                            "Поддержка протокола PROFINET IO": sheet[f"Y{index}"].value,
+                            "Макс. частота на выходе": sheet[f"Z{index}"].value,
+                            "Поддержка протокола TCP": sheet[f"AA{index}"].value,
+                            "Поддержка протокола MODBUS": sheet[f"AB{index}"].value,
+                            "Поддержка протокола PROFIBUS": sheet[f"AC{index}"].value,
+                            "Количество цифров. входов": sheet[f"AD{index}"].value,
+                            "Количество аналог. выходов": sheet[f"AE{index}"].value,
+                            "Количество аналог. входов": sheet[f"AF{index}"].value,
+                            "Количество цифров. выходов": sheet[f"AG{index}"].value,
+                            "Количество вход. фаз": sheet[f"AH{index}"].value,
+                            "Количество выход. фаз": sheet[f"AI{index}"].value,
+                            "Количество HW-интерфейсов RS-485": sheet[f"AJ{index}"].value,
+                            "Импульсные входы": sheet[f"AK{index}"].value,
+                            "Импульсные выходы": sheet[f"AL{index}"].value,
+                            "Частота сети": sheet[f"AM{index}"].value,
+                            "Рабочая температура": sheet[f"AN{index}"].value,
+                            "Cтрана производства": sheet[f"AO{index}"].value,
+                            "Вес, кг": sheet[f"AP{index}"].value,
+                            "Длина, м": sheet[f"AQ{index}"].value,
+                            "Ширина, м": sheet[f"AR{index}"].value,
+                            "Высота, м": sheet[f"AS{index}"].value,
+                            "Объем, м3": sheet[f"AT{index}"].value,
+                        }
+                        
+                        _save_prop_instart(product,props)
+                        print("after prop")
             except Exception as e:
                 print("ERROR ",article_supplier)
                 print(e)

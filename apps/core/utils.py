@@ -1026,6 +1026,7 @@ def save_specification(
     # сохранение продуктов для спецификации
     # перебор продуктов и сохранение
     total_amount = 0.00
+    total_amount_motrum = 0.00
     print(products)
     for product_item in products:
         print(product_item)
@@ -1152,6 +1153,7 @@ def save_specification(
             product_spes.save()
 
             total_amount = total_amount + price_all
+            total_amount_motrum = total_amount_motrum + price_all_motrum
 
         # продукты без записи в окт
         else:
@@ -1241,13 +1243,19 @@ def save_specification(
             product_spes.save()
 
             total_amount = total_amount + price_all
+            total_amount_motrum = total_amount_motrum + price_all_motrum
 
     # обновить спецификацию пдф
     total_amount = round(total_amount, 2)
+    total_amount_motrum = round(total_amount_motrum, 2)
+    
+    marginality =  ((total_amount - total_amount_motrum) / total_amount) * 100
+    marginality =  round(marginality, 2)
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
     specification.id_bitrix = id_bitrix
+    specification.marginality = marginality
     specification._change_reason = "Ручное"
 
     specification.save()
@@ -2655,6 +2663,7 @@ def create_file_props_in_vendor_props():
                             val_u_i = '|| '.join(val_u)
                             row["Единица измерения"] = val_u_i
                 writer_nomenk.writerow(row)        
+
 def email_manager_after_new_order_site(order):
     try:
         from django.template import loader

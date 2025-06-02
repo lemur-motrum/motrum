@@ -638,6 +638,11 @@ class Order(models.Model):
     act_file = models.FileField(
         "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
     )
+    marginality = models.FloatField(
+        "Маржинальность заказа в %",
+        blank=True,
+        null=True,
+    )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
@@ -755,6 +760,8 @@ class Order(models.Model):
             self.bill_file_no_signature = file_path_no_sign
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
+            self.marginality = self.specification.marginality
+            
             if IS_TESTING:
                 pass
             else:

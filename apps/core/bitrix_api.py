@@ -2341,7 +2341,6 @@ def add_new_order_web_not_info(order_id):
 
 
 def get_manager_info():
-    print(1111111)
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     current_date = datetime.date.today()
@@ -2353,18 +2352,14 @@ def get_manager_info():
         # requisitesotherkpp__requisites__id_bitrix__isnull=False,
     ).distinct("client")
     # .distinct("requisitesotherkpp")
-    print(client)
     for clien in client:
 
         inn = clien.requisitesotherkpp.requisites.inn
         req_id_bitrix_and_inn = clien.requisitesotherkpp.requisites.id_bitrix
         req_id_bitrix = req_id_bitrix_and_inn.replace(inn, "")
         client_bx_id = clien.client.bitrix_id_client
-        print(client_bx_id)
         try:
-            print(9999)
             contact_bx = bx.get_by_ID("crm.contact.get", [client_bx_id])
-            print(contact_bx)
             manager = AdminUser.objects.filter(bitrix_id=contact_bx["ASSIGNED_BY_ID"])
             if manager.count() == 0:
                 error = "error"

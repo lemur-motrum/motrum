@@ -20,6 +20,7 @@ from django.db.models import Q
 from apps import supplier
 from apps.core.models import Currency, CurrencyPercent, Vat
 
+from apps.core.utils_web import send_email_message_html
 from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
@@ -2654,4 +2655,30 @@ def create_file_props_in_vendor_props():
                             val_u_i = '|| '.join(val_u)
                             row["Единица измерения"] = val_u_i
                 writer_nomenk.writerow(row)        
+def email_manager_after_new_order_site(order):
+    try:
+        from django.template import loader
+        id_bitrix = order.id_bitrix
+        manager_client = order.manager.email
+        phone_client = order.client.phone
+        url_bitrix_deal = f'https://pmn.bitrix24.ru/crm/deal/details/{id_bitrix}/'
+        html_message = loader.render_to_string(
+            "core/emails/email_manager_neworder.html",
+            {
+                "id_bitrix": id_bitrix,
+                "url_bitrix_deal": url_bitrix_deal,
+                "phone": phone_client,
+            },
+        )
+        subject = "Новый заказа с сайта"
+        to_email = manager_client
         
+        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
+   
+    except Exception as e:  
+        tr = traceback.format_exc()
+        error = "error"
+        location = "Отправка оповещения менеджеру после создания заказа с сайта"
+        info = f"order.id = {order.id} {e}{tr}"
+        e = error_alert(error, location, info)
+        return ("error", info)     

@@ -72,6 +72,7 @@ from apps.core.utils import (
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
+    email_manager_after_new_order_site,
     image_error_check,
     product_cart_in_file,
     save_file_product,
@@ -137,25 +138,10 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     bs_id_order = 12020
-    req_bx_order = bx.call(
-        "crm.requisite.link.list",
-        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
-    )
-    req_bx_id = req_bx_order["REQUISITE_ID"]
-    req_bx = bx.call(
-            "crm.requisite.get",
-            {"id": int(req_bx_id)},
-        )
-    print(req_bx)
-    for k, v in req_bx.items():
-        tel = v["RQ_PHONE"]
-        if tel == "" or tel == None or tel == "None":
-            tel = None
-        
-        print("tel=",tel)
-        print(type(tel))
-    
-
+    order = Order.objects.get(id_bitrix=12020)
+    orders_bx = bx.get_by_ID("crm.deal.fields", [bs_id_order])
+    print(orders_bx)
+    # UF_CRM_1747900569834 = маржинальность
 
     result = 1
     title = "TEST"

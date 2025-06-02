@@ -104,7 +104,7 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
     get_motrum_nomenclature,
     nomek_test_2,
 )
-from apps.supplier.get_utils.innovert import get_innovert_xml
+from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
@@ -139,6 +139,7 @@ def add_iek(request):
     # webhook = BITRIX_WEBHOOK
     # bx = Bitrix(webhook)
     get_innovert_xml()
+    save_stock_innovert()
   
     result = 1
     title = "TEST"

@@ -2,7 +2,7 @@ from itertools import product
 import os
 import traceback
 from apps.core.models import Currency, Vat
-from apps.core.utils import create_article_motrum, get_file_path_add, save_file_product
+from apps.core.utils import create_article_motrum, get_file_path_add, save_file_product, save_update_product_attr
 from apps.logs.utils import error_alert
 from apps.product.models import (
     Lot,
@@ -24,9 +24,11 @@ import requests
 from bs4 import BeautifulSoup
 from django.utils.text import slugify
 from pytils import translit
-
+import openpyxl as openxl
 from project.settings import NDS
 from simple_history.utils import update_change_reason
+import random
+import xlrd
 
 
 def get_innovert_xml():
@@ -177,77 +179,89 @@ def get_innovert_xml():
                                 group_supplier,
                                 category_supplier_all,
                             ) = _category_items_get(item_categoryId, vendor)
+                            # ОТКЛЮЧИТЬ ПОИСК ПО ТОВАРАМ ПОСЛЕ ПЕРВОГО ПРОХОДА
                             # поиск по товарам до интеграции
-                            # try:
-                            #     product = Product.objects.get(
-                            #         vendor=vendor,
-                            #         article_supplier=article,
-                            #     )
-                            #     _innovert_product_upd(
-                            #         product,
-                            #         supplier=supplier,
-                            #         category_supplier=category_supplier,
-                            #         group_supplier=group_supplier,
-                            #         category_supplier_all=category_supplier_all,
-                            #         description=description,
-                            #         name=name,
-                            #     )
-                            # except Product.DoesNotExist:
-                            #     try:
-                            #         product = Product.objects.get(
-                            #             supplier=supplier,
-                            #             vendor=vendor,
-                            #             article_supplier=article,
-                            #         )
-                            #         _innovert_product_upd(
-                            #             product,
-                            #             supplier=supplier,
-                            #             vendor=vendor,
-                            #             category_supplier=category_supplier,
-                            #             group_supplier=group_supplier,
-                            #             category_supplier_all=category_supplier_all,
-                            #             description=description,
-                            #             name=name,
-                            #         )
-                            #     except Product.DoesNotExist:
-                            #         new_article = create_article_motrum(supplier.id)
-                            #         product = Product(
-                            #             article=new_article,
-                            #             article_supplier=article,
-                            #             supplier=supplier,
-                            #             vendor=vendor,
-                            #             category_supplier=category_supplier,
-                            #             group_supplier=group_supplier,
-                            #             category_supplier_all=category_supplier_all,
-                            #             description=description,
-                            #             name=name,
-                            #         )
-                            #         product.save()
-                            #         update_change_reason(product, "Автоматическое")
+                            try:
+                                product = Product.objects.get(
+                                    vendor=vendor,
+                                    article_supplier=article,
+                                )
+                                _innovert_product_upd(
+                                    product,
+                                    supplier=supplier,
+                                    category_supplier=category_supplier,
+                                    group_supplier=group_supplier,
+                                    category_supplier_all=category_supplier_all,
+                                    description=description,
+                                    name=name,
+                                )
+                            except Product.DoesNotExist:
+                                try:
+                                    product = Product.objects.get(
+                                        supplier=supplier,
+                                        vendor=vendor,
+                                        article_supplier=article,
+                                    )
+                                    save_update_product_attr(
+                                            product,
+                                            supplier,
+                                            vendor,
+                                            None,
+                                            category_supplier_all,
+                                            group_supplier,
+                                            category_supplier,
+                                            description,
+                                            name,
+                                        )
+                                    # _innovert_product_upd(
+                                    #     product,
+                                    #     supplier=supplier,
+                                    #     vendor=vendor,
+                                    #     category_supplier=category_supplier,
+                                    #     group_supplier=group_supplier,
+                                    #     category_supplier_all=category_supplier_all,
+                                    #     description=description,
+                                    #     name=name,
+                                    # )
+                                except Product.DoesNotExist:
+                                    new_article = create_article_motrum(supplier.id)
+                                    product = Product(
+                                        article=new_article,
+                                        article_supplier=article,
+                                        supplier=supplier,
+                                        vendor=vendor,
+                                        category_supplier=category_supplier,
+                                        group_supplier=group_supplier,
+                                        category_supplier_all=category_supplier_all,
+                                        description=description,
+                                        name=name,
+                                    )
+                                    product.save()
+                                    update_change_reason(product, "Автоматическое")
 
-                            # # цены
-                            # price = item.find("price")
-                            # if price:
-                            #     price_supplier = price.text
-                            #     price_supplier = float(price_supplier)
-                            #     extra = False
-                            # else:
-                            #     price_supplier = None
-                            #     extra = True
-                            # try:
-                            #     price_product = Price.objects.get(prod=product)
+                            # цены
+                            price = item.find("price")
+                            if price:
+                                price_supplier = price.text
+                                price_supplier = float(price_supplier)
+                                extra = False
+                            else:
+                                price_supplier = None
+                                extra = True
+                            try:
+                                price_product = Price.objects.get(prod=product)
 
-                            # except Price.DoesNotExist:
-                            #     price_product = Price(prod=product)
-                            #     price_product.currency = currency
-                            #     price_product.vat = vat
-                            #     price_product.vat_include = True
+                            except Price.DoesNotExist:
+                                price_product = Price(prod=product)
+                                price_product.currency = currency
+                                price_product.vat = vat
+                                price_product.vat_include = True
                                 
-                            # finally:
-                            #     price_product.price_supplier = price_supplier
-                            #     price_product.extra_price = extra
-                            #     price_product._change_reason = "Автоматическое"
-                            #     price_product.save()
+                            finally:
+                                price_product.price_supplier = price_supplier
+                                price_product.extra_price = extra
+                                price_product._change_reason = "Автоматическое"
+                                price_product.save()
                                 
 
                             # # картинкки товара
@@ -258,7 +272,7 @@ def get_innovert_xml():
                             # if image == False and imgs:
                             #     _save_image_innovert(product, imgs)
 
-                            # # пропсы товара
+                            # пропсы товара
                             # props = ProductProperty.objects.filter(
                             #     product=product
                             # ).exists()
@@ -269,10 +283,23 @@ def get_innovert_xml():
                             #     _save_prop_innovert(
                             #         product, props, weight, country_of_origin
                             #     )
+                            
+                            # остатки
+                            try:
+                                stock_prod = Stock.objects.get(prod=product)
+                            except Stock.DoesNotExist:
+                                stock_supplier = None
 
-                        else:
-                            print()
-                            # continue  # barcode =  item.find('barcode').text #additional_article_supplier
+                                stock_prod = Stock(
+                                    prod=product,
+                                    lot=lot_item,
+                                    stock_supplier=stock_supplier,
+                                )
+                                stock_prod._change_reason = "Автоматическое"
+                                stock_prod.save()
+
+
+                        
                     except Exception as e:
                         print(e)
                         tr = traceback.format_exc()
@@ -375,3 +402,116 @@ def _save_prop_innovert(product, props, weight, country_of_origin):
             )
             property_product.save()
             update_change_reason(property_product, "Автоматическое")
+
+
+def save_stock_innovert():
+    
+    try:
+        vat = Vat.objects.get(name=NDS)
+        currency = Currency.objects.get(words_code="RUB")
+        
+        supplier = Supplier.objects.get(slug="promsiteh")
+        urls_xls = os.environ.get("PRST_XLS")
+        urls_xls_arr = urls_xls.split(", ")
+        lot_item = Lot.objects.get(name="штука")
+        
+        for url in urls_xls_arr:
+            response = requests.get(url)
+            # Сохраняем временный файл
+            temp_file = f"/tmp/innovert_stock_{random.randint(1000, 9999)}.xls"
+            with open(temp_file, 'wb') as f:
+                f.write(response.content)
+            
+            try:
+                excel_doc = xlrd.open_workbook(temp_file)
+                sheet = excel_doc.sheet_by_index(0)
+                
+                # Получаем названия столбцов из первой строки
+                headers = sheet.row_values(0)
+                print(headers)
+                headers_stock_all = [header for header in headers if str(header) == "Остаток"]
+                print(headers_stock_all)
+                
+                # Получаем индексы из оригинального списка
+                column_indices = {header: idx for idx, header in enumerate(headers)}
+                # print("Индексы всех столбцов:", column_indices)
+                
+                # Получаем индексы нужных столбцов
+                id_article_column = column_indices.get("Артикул") 
+                id_stock_column = column_indices.get("Остаток")
+                id_vendor_column = column_indices.get("Параметр: Бренд")
+                print("Индекс столбца Артикул:", id_article_column)
+                print("Индекс столбца Остаток:", id_stock_column)
+                
+                for row_idx in range(1, sheet.nrows):
+                    row = sheet.row_values(row_idx)
+                    try:
+                        article = row[id_article_column] if id_article_column is not None else None
+                        stock = row[id_stock_column] if id_stock_column is not None else None
+                        vendor = row[id_vendor_column] if id_vendor_column is not None else None
+                        
+                        print(f"Строка {row_idx}:")
+                        print(f"Артикул: {article}")
+                        print(f"Остаток: {stock}")
+                        print(f"Бренд: {vendor}")
+                        print("-" * 50)
+                        
+                        if vendor and article:
+                            if stock == 0 or stock == 0.00:
+                                stock = 0
+                            else:
+                                stock = int(stock)
+                            
+                            try:
+                                vendor = _vengor_get_create_innovert(vendor, currency, vat)
+                                product = Product.objects.get(
+                                            supplier=supplier,
+                                            vendor=vendor,
+                                            article_supplier=article,
+                                        )
+                                stock_prod = Stock.objects.get(prod=product)
+                                stock_prod.stock_supplier = stock
+                                stock_prod.save()
+                                
+                            except Product.DoesNotExist:
+                                print(e)
+                                tr = traceback.format_exc()
+                                print(tr)
+                                error = "file_error"
+                                location = f"Такого твоара нет   {row_idx}:{url} {article}{tr}"
+                                continue
+                        else:
+                            error = "file_error"
+                            location = f"Разбор фаилов innovert Ошибка в строке {row_idx}{url}{article}{vendor}{stock}"
+                            try:
+                                product = Product.objects.get(
+                                            supplier=supplier,
+                                            article_supplier=article,
+                                        )
+                                stock_prod = Stock.objects.get(prod=product)
+                                stock_prod.stock_supplier = stock
+                                stock_prod.save()
+                            except Exception as e:
+                                print(e)
+                                tr = traceback.format_exc()
+                                print(tr)
+                                error = "file_error"
+                                location = f"Разбор фаилов innovert Бренд нет  {row_idx}:{url}{e}{tr}"
+                                
+                    except Exception as e:
+                        print(e)
+                        tr = traceback.format_exc()
+                        print(tr)
+                        error = "file_error"
+                        location = f"Разбор фаилов innovert Бренд нет  {row_idx}:{url}{e}{tr}"
+                        continue
+            finally:
+                # Удаляем временный файл
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        print(tr)
+        error = "file_error"
+        location = "Разбор фаилов innovert xls остатки"

@@ -44,7 +44,7 @@ def add_file_emas(new_file, obj):
         excel_doc = openxl.open(filename=file_path, data_only=True)
         sheetnames = excel_doc.sheetnames  # Получение списка листов книги
         sheet = excel_doc[sheetnames[0]]
-
+        
         first = 0
         # разбираем строки
         for index in range(sheet.min_row, sheet.max_row + 1):

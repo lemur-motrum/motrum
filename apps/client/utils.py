@@ -616,7 +616,7 @@ def crete_pdf_bill(
                 info_payment = f" Способ оплаты: 100% предоплата."
 
             else:
-                info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
+                info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% {client_info.postpay_persent_text}."
 
         else:
             info_payment = ""

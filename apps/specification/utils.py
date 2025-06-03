@@ -415,7 +415,7 @@ def crete_pdf_specification(
             else:
                 story.append(
                     Paragraph(
-                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
+                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% {requisites.postpay_persent_text}",
                         normal_style,
                     )
                 )

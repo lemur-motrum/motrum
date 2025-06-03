@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from apps.client.models import AccountRequisites, Client, Requisites, RequisitesOtherKpp
 from project.admin import website_admin
 from django.template.loader import get_template
+from django.db import models
 
 # Register your models here.
 
@@ -48,16 +49,47 @@ class RequisitesOtherKppAdminInline(admin.TabularInline):
 
 
 class RequisitesAdmin(admin.ModelAdmin):
-    list_display = ["legal_entity", "client"]
+    list_display = ["legal_entity","inn",]
     inlines = (RequisitesOtherKppAdminInline,)
-    exclude = ["discount","client",]
-    readonly_fields = ["id_bitrix", "client", "manager", "legal_entity", "inn", "type_client", "first_name", "last_name", "middle_name"]
+    exclude = [
+        "discount",
+        "client",
+        "id_bitrix",
+    ]
+    readonly_fields = [
+        
+        "manager",
+        "legal_entity",
+        "inn",
+        "type_client",
+        "first_name",
+        "last_name",
+        "middle_name",
+    ]
+    fields = (
+        "type_payment",
+        "prepay_persent",
+        "postpay_persent",
+        "postpay_persent_text",
+        "legal_entity",
+        "inn",
+        "type_client",
+        "first_name",
+        "last_name",
+        "middle_name",
+        "manager",
+        
+    )
+    formfield_overrides = {
+        models.CharField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 4, 'cols': 80})},
+    }
     # fields = 'legal_entity'
     search_help_text = "Поиск может осуществляться по: ИНН и названию Юр лица "
     search_fields = [
         "legal_entity",
         "inn",
     ]
+
     def has_delete_permission(self, request, obj=None):
         return False
 

@@ -177,6 +177,13 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
+    postpay_persent_text = models.CharField(
+        "Текст после процента постоплаты",
+        max_length=1000,
+        blank=True,
+        null=True,
+        default="в течении 5 дней с момента отгрузки со склада Поставщика"
+    )
     manager = models.ForeignKey(
         AdminUser,
         verbose_name="Менеджер в битрикс",

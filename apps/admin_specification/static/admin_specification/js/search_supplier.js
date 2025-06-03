@@ -9,6 +9,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
     vendorLabels.forEach((vendorLabel) => {
       const vendorSearchInput = vendorLabel.querySelector(".vendor_input");
+      const vendorSearchElemsContainerWrapper = vendorLabel.querySelector(
+        ".vendor_input_elems_container_wrapper"
+      );
       const vendorSearchElemsContainer = vendorLabel.querySelector(
         ".vendor_input_elems_container"
       );
@@ -36,6 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
         noneContent.classList.remove("show");
         if (vendorSearchInput.value.length) {
           vendorSearchInput.classList.add("inputed");
+          vendorSearchElemsContainerWrapper.classList.add("show");
           vendorSearchElemsContainer.classList.add("show");
           setTimeout(() => {
             count = 0;
@@ -46,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }, 600);
         } else {
+          vendorSearchElemsContainerWrapper.classList.remove("show");
           vendorSearchElemsContainer.classList.remove("show");
           vendorSearchInput.classList.remove("inputed");
         }

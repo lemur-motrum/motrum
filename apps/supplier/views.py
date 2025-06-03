@@ -139,9 +139,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     bs_id_order = 12020
     order = Order.objects.get(id_bitrix=12020)
-    orders_bx = bx.get_by_ID("crm.deal.fields", [bs_id_order])
-    print(orders_bx)
-    # UF_CRM_1747900569834 = маржинальность
+    
 
     result = 1
     title = "TEST"

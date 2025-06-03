@@ -710,7 +710,7 @@ def add_info_order(request, order, type_save):
                         "OPPORTUNITY": order.bill_sum,
                         "UF_CRM_1734772155723": order.bill_sum_paid,
                         "UF_CRM_1734772173389": order_debt,
-                        "UF_CRM_1747900569834":order.marginality,
+                        # "UF_CRM_1747900569834":order.marginality,
                     },
                 }
                 orders_bx = bx.call("crm.deal.update", data_order)

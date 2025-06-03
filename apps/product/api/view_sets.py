@@ -423,10 +423,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             category_id = None
         
         if "gr" in data and data["gr"] != "":
-            groupe_id = int(data["gr"])
-            q_object |= Q(group_id=groupe_id)
+            group_id = int(data["gr"])
+           
         else:
-            groupe_id = None
+            group_id = None
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
       
@@ -459,10 +459,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         q_object = Q(check_to_order=True)
         if category_id:
-            q_object |= Q(category_id=True)
-        if groupe_id:
-            q_object |= Q(category_id=True)
+            q_object &= Q(category_id=category_id)
+        if group_id:
+            q_object &= Q(group_id=group_id)
         
+        print(q_object)
         queryset = queryset.filter(q_object).order_by("name")
         
         queryset = queryset[count  : count_last ]

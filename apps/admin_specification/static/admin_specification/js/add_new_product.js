@@ -15,6 +15,9 @@ function addNewProductLogic(container) {
       ".add_new_product_container"
     );
     const searchInput = addNewProductContainer.querySelector(".search_input");
+    const searchElemWrapepr = addNewProductContainer.querySelector(
+      ".search_container_wrapper"
+    );
     const searchElemsContainer =
       addNewProductContainer.querySelector(".search_container");
 
@@ -80,6 +83,8 @@ function addNewProductLogic(container) {
             if (count == 0 && countLast == 9) {
               smallLoader.classList.remove("show");
               searchElemsContainerWrapper.innerHTML += `<div class="product_search_item_none">Таких товаров нет, попробуйте добавить новый товар</div>`;
+              searchElemWrapepr.classList.add("none_content");
+              deleteSearchButton.classList.add("none_content");
             } else {
               smallLoader.classList.remove("show");
               finish = true;
@@ -101,20 +106,28 @@ function addNewProductLogic(container) {
             count != 0 &&
             countLast != 9
           ) {
-            getProducts();
             smallLoader.classList.add("show");
+            setTimeout(() => {
+              getProducts();
+            }, 400);
           }
         }
       }
     });
 
     function closeSearchWindow() {
+      searchElemWrapepr.classList.remove("none_content");
+      searchElemWrapepr.classList.remove("show");
+      deleteSearchButton.classList.remove("none_content");
       searchElemsContainer.classList.remove("show");
       deleteSearchButton.classList.remove("show");
       addProductContainer.classList.remove("show");
       searchInput.classList.remove("bordering");
     }
     function openSearchWindow() {
+      deleteSearchButton.classList.remove("none_content");
+      searchElemWrapepr.classList.remove("none_content");
+      searchElemWrapepr.classList.add("show");
       searchElemsContainer.classList.add("show");
       deleteSearchButton.classList.add("show");
       searchInput.classList.add("bordering");

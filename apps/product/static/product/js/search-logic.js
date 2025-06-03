@@ -11,6 +11,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const closeBtn = wrapper.querySelector(".close_btn");
     const searchBtn = wrapper.querySelector(".search_btn");
     const searchInput = wrapper.querySelector(".input_text");
+    const searchBlockWrapper = wrapper.querySelector(".search_block_wrapper");
     const searchElemWrapper = wrapper.querySelector(".search_elem_wrapper");
     const loader = searchElemWrapper.querySelector(".loader");
     const smallLoader = searchElemWrapper.querySelector(".small_loader");
@@ -45,8 +46,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     searchElemWrapper.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("jr jr jr");
-
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -154,18 +153,22 @@ window.addEventListener("DOMContentLoaded", () => {
       if (searchElemWrapper.classList.contains("show")) {
         searchInput.classList.remove("inputed");
         searchElemWrapper.classList.remove("visible");
+        searchBlockWrapper.classList.remove("visible");
         setTimeout(() => {
           searchElemWrapper.classList.remove("show");
+          searchBlockWrapper.classList.remove("show");
         }, 600);
       }
     }
 
     function openSearchElemWrapper() {
       if (!searchElemWrapper.classList.contains("show")) {
+        searchBlockWrapper.classList.add("show");
         searchElemWrapper.classList.add("show");
         setTimeout(() => {
           searchInput.classList.add("inputed");
           searchElemWrapper.classList.add("visible");
+          searchBlockWrapper.classList.add("visible");
         }, 600);
       }
     }

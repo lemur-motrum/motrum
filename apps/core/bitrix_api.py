@@ -745,6 +745,14 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
+                    document_specification_nosign = f"{MEDIA_ROOT}/{ order.specification.file_no_signature}"
+                    orders_bx = save_file_bx(
+                        bx,
+                        document_specification_nosign,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1748864769142",
+                    )
                     spes_file = "счет"
 
                 else:
@@ -754,6 +762,12 @@ def add_info_order(request, order, type_save):
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
+                    )
+                    orders_bx = remove_file_bx(
+                        bx,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1748864769142",
                     )
                     spes_file = "счет-оферта"
 

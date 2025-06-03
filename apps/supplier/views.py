@@ -43,6 +43,7 @@ from apps.core.bitrix_api import (
     get_status_order,
     get_upd_clirnt_manager,
     remove_file_bx,
+    save_file_bx,
     save_new_doc_bx,
     save_payment_order_bx,
     save_shipment_order_bx,
@@ -137,25 +138,13 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     bs_id_order = 12020
-    req_bx_order = bx.call(
-        "crm.requisite.link.list",
-        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
-    )
-    req_bx_id = req_bx_order["REQUISITE_ID"]
-    req_bx = bx.call(
-            "crm.requisite.get",
-            {"id": int(req_bx_id)},
-        )
-    print(req_bx)
-    for k, v in req_bx.items():
-        tel = v["RQ_PHONE"]
-        if tel == "" or tel == None or tel == "None":
-            tel = None
-        
-        print("tel=",tel)
-        print(type(tel))
-    
-
+    order = Order.objects.get(id=3)
+    print(bs_id_order)
+    bs_id_order = order.id_bitrix
+    # orders_bx = bx.get_by_ID("crm.deal.fields", [bs_id_order])
+    orders_bx = bx.get_by_ID("crm.deal.get", [bs_id_order])
+    print(orders_bx)
+   
 
     result = 1
     title = "TEST"

@@ -403,7 +403,79 @@ class ProductViewSet(viewsets.ModelViewSet):
         }
         return Response(data_response, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post", "get"], url_path=r"search-product-okt-categ")
+    def search_product_okt_categ(self, request, *args, **kwargs):
+        data = request.data
+        count = data["count"]
+        count_last = data["count_last"]
+        search_input = data["search_text"]
+        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.split()
+        
+        # q_object = Q(name__icontains=search_input[0])
+        # q_object |= Q(article_supplier__icontains=search_input[0])
+        # q_object |= Q(additional_article_supplier__icontains=search_input[0])
+        # q_object |= Q(description__icontains=search_input[0])
+        
+        if "cat" in data and data["cat"] != "" :
+            category_id = int(data["cat"])
+        else:
+            category_id = None
+        
+        if "gr" in data and data["gr"] != "":
+            groupe_id = int(data["gr"])
+            q_object |= Q(group_id=groupe_id)
+        else:
+            groupe_id = None
+        print(search_input)
+        # # вариант ищет каждое слово все рабоатет
+      
+        
+        
+        
+        
+        queryset = Product.objects.filter(
+            
+            Q(name__icontains=search_input[0])
+            # | Q(article__icontains=search_input[0])
+            | Q(article_supplier__icontains=search_input[0])
+            | Q(additional_article_supplier__icontains=search_input[0])
+            | Q(description__icontains=search_input[0])
+        )
+        print(len(search_input))
+        # del search_input[0]
+        if len(search_input) > 1:
+            for search_item in search_input[1:]:
+           
+                queryset = queryset.filter(
+                    Q(name__icontains=search_item)
+                    # | Q(article__icontains=search_item)
+                    | Q(article_supplier__icontains=search_item)
+                    | Q(additional_article_supplier__icontains=search_item)
+                    | Q(description__icontains=search_input)
+                )
+        else:
+            queryset = queryset.filter(check_to_order=True).order_by("name")
+        
+        q_object = Q(check_to_order=True)
+        if category_id:
+            q_object |= Q(category_id=True)
+        if groupe_id:
+            q_object |= Q(category_id=True)
+        
+        queryset = queryset.filter(q_object).order_by("name")
+        
+        queryset = queryset[count  : count_last ]
 
+        page_count = queryset.count()
+        count_all = count + page_count
+        serializer = ProductSearchSerializer(queryset, many=True)
+        data_response = {
+            "data": serializer.data,
+            "count": count,
+            "count_all": count_all,
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
 
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()

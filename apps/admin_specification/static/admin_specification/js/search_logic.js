@@ -76,6 +76,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const param = new URLSearchParams(window.location.search).get(
         "search_input"
       );
+      finish = true;
       if (param) {
         window.location.href = window.location.pathname;
       } else {

@@ -26,7 +26,6 @@ window.addEventListener("DOMContentLoaded", () => {
     searchInput.oninput = () => {
       if (searchInput.value.length > 4) {
         const valueLength = searchInput.value.length;
-
         setTimeout(() => {
           count = 0;
           countLast = 5;
@@ -34,7 +33,6 @@ window.addEventListener("DOMContentLoaded", () => {
           if (valueLength == searchInput.value.length) {
             smallLoader.classList.remove("show");
             loader.classList.remove("hide");
-
             openSearchOverlay();
             getProducts();
           }
@@ -61,9 +59,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     closeBtn.onclick = () => {
       searchInput.value = "";
+      finish = true;
       searchInput.blur();
       closeSearchOverlay();
     };
+
     searchBtn.onclick = () => openSearchPage();
 
     function getProducts() {

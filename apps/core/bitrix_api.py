@@ -962,13 +962,13 @@ def save_payment_order_bx(data):
         for data_item in data_payment:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
             id_bitrix_order = order.id_bitrix
-            order_debt = order.bill_sum - order.bill_sum_paid
+            # order_debt = order.bill_sum - order.bill_sum_paid
 
             data_order = {
                 "id": id_bitrix_order,
                 "fields": {
                     "UF_CRM_1734772155723": order.bill_sum_paid,
-                    "UF_CRM_1734772173389": order_debt,
+                    # "UF_CRM_1734772173389": order_debt, считает сам битрикс можно ен отправлять бывыют баги - Значение поля Задолженность должно быть строкой в формате ЦЕНА|ВАЛЮТА<br>
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)

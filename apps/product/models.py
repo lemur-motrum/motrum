@@ -120,14 +120,12 @@ class Product(models.Model):
     name = models.CharField("Название товара", max_length=600)
     slug = models.SlugField(null=True, max_length=600)
     data_create = models.DateField(default=timezone.now, verbose_name="Дата добавления")
-    # data_update = models.DateField(default=timezone.now, verbose_name="Дата обновления")
     data_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     check_to_order = models.BooleanField("Доступность к заказу", default=True)
     promote = models.BooleanField("Продвижение на главной в слайдере", default=False)
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
     add_in_nomenclature = models.BooleanField("Загружен из номенклатуры", default=False)
-    # in_auto_sale = models.BooleanField("Разрешить применять скидки автоматичсеки", default=False)
     in_view_website = models.BooleanField("Видимость на сайте", default=True)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 

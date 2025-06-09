@@ -63,6 +63,11 @@ class Specification(models.Model):
         blank=True,
         null=True,
     )
+    marginality = models.FloatField(
+        "Маржинальность заказа в %",
+        blank=True,
+        null=True,
+    )
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:

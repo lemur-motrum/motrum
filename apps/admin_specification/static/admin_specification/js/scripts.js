@@ -491,28 +491,43 @@ window.addEventListener("DOMContentLoaded", () => {
       function getResult() {
         let margSum = 0;
         let sum = 0;
+        let sumMotrum = 0;
         const allElems = spetificationTable.querySelectorAll(".total_cost");
         const allElemsMarginaliry =
           spetificationTable.querySelectorAll(".marginality");
         const allMarginalityPercent = spetificationTable.querySelector(
           ".marginality_prcent_value"
         );
+        const allMotrumSum = spetificationTable.querySelectorAll(
+          ".price_motrum"
+        );
+        console.log(allMotrumSum)
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
           );
         }
-
+        
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
+        console.log(allMotrumSum.length)
+        for (let i = 0; i < allMotrumSum.length; i++) {
+          console.log("allMotrumSum[i].textContent",allMotrumSum[i].textContent)
+          sumMotrum += new NumberParser("ru").parse(allMotrumSum[i].textContent);
+        }
+        console.log("sumMotrum1",sumMotrum)
         getDigitsNumber(valueContainer, +sum);
-        getDigitsNumber(marginality, +margSum);
+        // getDigitsNumber(marginality, +margSum);
+        getDigitsNumber(marginality, +sumMotrum);
+        console.log("sum",sum)
+        console.log("sumMotrum",sumMotrum)
         allMarginalityPercent.textContent = isNaN(
-          ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
+          ((1 - (+sumMotrum / +sum)) * 100).toFixed(2)
+          // ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
         )
           ? 0
-          : ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2);
+          : ((1 - (+sumMotrum / +sum)) * 100).toFixed(2);
       }
 
       function saveSpecification(elems) {

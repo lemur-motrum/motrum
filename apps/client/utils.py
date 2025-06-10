@@ -580,32 +580,33 @@ def crete_pdf_bill(
         table_product = Table(
             data,
             colWidths=[
+                0.7 * cm,
+                8 * cm,
+                2.6 * cm,
                 1 * cm,
-                6 * cm,
-                3 * cm,
-                1.5 * cm,
-                1 * cm,
-                2.5 * cm,
-                2.5 * cm,
+                1* cm,
+                2 * cm,
+                2 * cm,
                 2 * cm,
             ],
             repeatRows=2,
         )
+        # 0.3 + 0.3
         table_product.setStyle(
             TableStyle(
                 [
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
-                    # ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
                     ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
                     ("BOX", (0, 0), (-1, -1), 2, colors.black),
                     ("BOX", (0, 0), (-1, 1), 2, colors.black),
                     ("BOX", (-1, 1), (0, 0), 2, colors.red),
-                    # ('BOX',(-2,-1),(-1,1),2,colors.red),
                     ("BOX", (-1, 0), (-1, -1), 2, colors.black),
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                    # ('LINEABOVE',(0,2),(-1,2),2,colors.black)
-                    # ('LINEABOVE',(0,-2),(-1,2),2,colors.black)
+                    ("TOPPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем верхний отступ
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем нижний отступ
+                    ("LEFTPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем левый отступ
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем правый отступ
                 ]
             )
         )
@@ -687,13 +688,13 @@ def crete_pdf_bill(
         final_table_all_prod = Table(
             final_table_all,
             colWidths=[
-                6 * cm,
-                1 * cm,
+                7.8 * cm,
+                0.2 * cm,
                 2.5 * cm,
                 0 * cm,
                 3 * cm,
-                2.5 * cm,
-                2.5 * cm,
+                2 * cm,
+                2 * cm,
                 2 * cm,
             ],
             rowHeights=13,

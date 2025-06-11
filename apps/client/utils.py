@@ -368,7 +368,7 @@ def crete_pdf_bill(
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
         logo_supplier = Paragraph(
-            f'<br></br><br></br><br></br><br></br><br></br><br></br><img width="555" height="55"  src="{name_image_logo_supplier}" /><br></br>',
+            f'<br></br><br></br><br></br><br></br><img width="555" height="55"  src="{name_image_logo_supplier}" /><br></br>',
             normal_style,
         )
         story.append(logo_supplier)
@@ -688,17 +688,18 @@ def crete_pdf_bill(
         final_table_all_prod = Table(
             final_table_all,
             colWidths=[
-                7.8 * cm,
-                0.2 * cm,
-                2.5 * cm,
+                10.1 * cm,#Условия оплаты
                 0 * cm,
-                3 * cm,
+                0 * cm,
+                0.2 * cm,
+                3 * cm,#Итого
                 2 * cm,
-                2 * cm,
+                2 * cm,#сумма
                 2 * cm,
             ],
-            rowHeights=13,
+            rowHeights=[20, 13, 13, 13],  # Добавляем отступ для первой строки
         )
+        
         story.append(final_table_all_prod)
         story_no_sign.append(final_table_all_prod)
 
@@ -747,7 +748,7 @@ def crete_pdf_bill(
             data_text_info.append(
                 (
                     Paragraph(
-                        f"<br></br><br></br>Оплата данного счета означает согласие с условиями поставки товара.",
+                        f"<br></br>Оплата данного счета означает согласие с условиями поставки товара.",
                         normal_style,
                     ),
                 )
@@ -787,7 +788,7 @@ def crete_pdf_bill(
             data_text_info.append(
                 (
                     Paragraph(
-                        f"<br></br><br></br>1. Оплата данного счет-оферты означает полное и безоговорочное согласие (акцепт) с условиями поставки товара по наименованию, ассортименту, количеству и цене. Срок действия счета 3 банковских дня.",
+                        f"<br></br>1. Оплата данного счет-оферты означает полное и безоговорочное согласие (акцепт) с условиями поставки товара по наименованию, ассортименту, количеству и цене. Срок действия счета 3 банковских дня.",
                         normal_style,
                     ),
                 )
@@ -894,8 +895,11 @@ def crete_pdf_bill(
                 [
                     ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-                    # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
                 ]
             )
         )
@@ -904,14 +908,16 @@ def crete_pdf_bill(
                 [
                     ("LINEABOVE", (0, 0), (-1, 0), 2, colors.transparent),
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
-                    # ("ALIGN", (0, 0), (0, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),  # Убираем верхний отступ
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Убираем нижний отступ
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),  # Убираем левый отступ
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 0),  # Убираем правый отступ
                 ]
             )
         )
 
-        print(table_data_text_info)
-        # story_no_sign = story.copy()
+        
         story.append(table_data_text_info)
         story_no_sign.append(table_data_text_info2)
 

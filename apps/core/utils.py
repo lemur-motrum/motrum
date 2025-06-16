@@ -1217,6 +1217,10 @@ def save_specification(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
+                
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
 
             product_spes.save()
 
@@ -1307,6 +1311,11 @@ def save_specification(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
+            
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
 
             product_spes.save()
 

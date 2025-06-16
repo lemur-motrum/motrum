@@ -2542,18 +2542,19 @@ h1 {
             font-size: 0.813rem;
           }
           &.change-input-sale-percent-motrum {
-            position: relative;
-            border: none;
-            padding: 0.5rem;
-            height: auto;
-            font-size: 0.813rem;
+            display: none;
             width: 3rem;
             height: 1.5rem;
-            box-sizing: border-box;
-            border: 0.063rem solid black;
-            border-radius: 0.313rem;
-            display: none;
             left: 0;
+            padding: 0.5rem!important;
+            font-size: 0.813rem!important;
+            font-weight: 700;
+
+            box-sizing: border-box!important;
+            border: 0.094rem solid #000!important;
+            border-radius: 1.875rem!important;
+            height: 1.5rem!important;
+            color: #ff5b00!important;
             &.show {
               display: inline-block;
             }
@@ -2574,16 +2575,18 @@ h1 {
         }
       }
       .change_input_price {
-        position: relative;
-        left: -0.5rem;
-        border: none;
-        padding: 0.5rem;
-        font-size: 0.813rem;
-        width: 16%;
-        box-sizing: border-box;
-        border: 0.063rem solid black;
-        border-radius: 0.313rem;
-        height: 1.5rem;
+        position: relative!important;
+        left: -0.5rem!important;
+       
+        padding: 0.5rem!important;
+        font-size: 0.813rem!important;
+        font-weight: 700;
+
+        box-sizing: border-box!important;
+        border: 0.094rem solid #000!important;
+        border-radius: 1.875rem!important;
+        height: 1.5rem!important;
+        color: #ff5b00!important;
         display: none;
         &.show {
           display: block;
@@ -2603,16 +2606,18 @@ h1 {
         }
       }
       .change_price_motrum {
-        position: relative;
-        left: -0.5rem;
-        border: none;
-        padding: 0.5rem;
-        font-size: 0.813rem;
-        width: 16%;
-        box-sizing: border-box;
-        border: 0.063rem solid black;
-        border-radius: 0.313rem;
-        height: 1.5rem;
+        position: relative!important;
+        left: -0.5rem!important;
+       
+        padding: 0.5rem!important;
+        font-size: 0.813rem!important;
+        font-weight: 700;
+
+        box-sizing: border-box!important;
+        border: 0.094rem solid #000!important;
+        border-radius: 1.875rem!important;
+        height: 1.5rem!important;
+        color: #ff5b00!important;
         display: none;
         &.show {
           display: block;

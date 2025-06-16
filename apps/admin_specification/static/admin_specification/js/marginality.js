@@ -41,32 +41,32 @@ export function getMarginality(wrapper) {
           //   (+quantityInput.value * priceMotrum) -
           // 100;
         } 
-        else if(discountInput.value){
+        else if(discountInput.value != 0 & discountInput.value != ""){
           totalCost =
             +quantityInput.value *
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
-            console.log("marginalityPercentValue",marginalityPercentValue)
-            console.log("totalCost",totalCost)
+            console.log("marginalityPercentValue discountInput",marginalityPercentValue)
+            console.log("totalCost discountInput",totalCost)
           // (clientPrice * +quantityInput.value * 100) /
           //   (+quantityInput.value * priceMotrum) -
           // 100;
         }
-        else if(marjinInput.value){
+        else if(marjinInput.value != 0 & marjinInput.value != ""){
           totalCost =
             +quantityInput.value *
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
-            console.log("marginalityPercentValue",marginalityPercentValue)
-            console.log("totalCost",totalCost)
+            console.log("marginalityPercentValue marjinInput",marginalityPercentValue)
+            console.log("totalCost marjinInput",totalCost)
           // (clientPrice * +quantityInput.value * 100) /
           //   (+quantityInput.value * priceMotrum) -
           // 100;
         }
         else {
-          
+         console.log("============================") 
         }
       }
       const marginalityContainer = item.querySelector(".marginality");

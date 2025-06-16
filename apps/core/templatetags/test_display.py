@@ -10,6 +10,15 @@ def test_display(context):
     pass
     if IS_TESTING:
         text = 'style=background-color:bisque;'
+        request = context["request"]
+        if request.user.id:
+            if request.user.is_staff:
+                user = AdminUser.objects.get(id=request.user.id)
+                if user.username == "superadmin":
+                    pass
+                else:
+                    text = f"{text} style=display:none;"
+                    return text
         return text
     else:
         pass

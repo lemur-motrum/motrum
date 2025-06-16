@@ -207,7 +207,7 @@ def prompower_api():
         for data_item in data:
 
             try:
-                if data_item["article"] != None and data_item["article"] == "PPS1G0612":
+                if data_item["article"] != None:
                     # основная инфа
                     article_suppliers = data_item["article"]
                     name = data_item["title"]
@@ -482,7 +482,7 @@ def prompower_api():
             finally:
                 continue
 
-    # add_category_groupe()
-    # add_category()
+    add_category_groupe()
+    add_category()
     add_products()
     

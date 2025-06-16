@@ -905,11 +905,18 @@ class ProductCart(models.Model):
         default=None,
     )
     sale_client = models.FloatField(
-        "Скидка клиента из парсинга фаила",
+        "Скидка клиента",
         blank=True,
         null=True,
         default=None,
     )
+    sale_marja = models.FloatField(
+        "Маржа",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -957,7 +964,7 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
-
+   
     quantity = models.IntegerField(
         "количество товара",
         blank=True,

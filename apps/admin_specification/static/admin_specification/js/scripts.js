@@ -752,7 +752,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const inputPrice = item.querySelector(".price-input");
         const discountInput = item.querySelector(".discount-input");
+        const marjaInput = item.querySelector(".marja-input");
         const productPrice = item.getAttribute("data-price");
+        const productPriceMotrum = item.getAttribute("data-price-motrum");
         const productPriceContainer = item.querySelector(".price_once");
         const productTotalPrice = item.querySelector(".total_cost");
         const itemPriceOnce = item.querySelector(".price_once");
@@ -818,6 +820,36 @@ window.addEventListener("DOMContentLoaded", () => {
           }, 1500);
         }
 
+        function updateSaleProduct() {
+          setTimeout(() => {
+            const dataObj = {
+              sale_client: discountInput.value ? discountInput.value : 0,
+              sale_marja:  marjaInput.value ? marjaInput.value : 0,
+            };
+            const data = JSON.stringify(dataObj);
+            fetch(`/api/v1/cart/${productID}/update-product/`, {
+              // изменила метод
+              method: "POST",
+              body: data,
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+            })
+              .then((response) => {
+                if (response.status == 200) {
+                  console.log(
+                    `Товар с id ${productID}, скидку накинули `
+                  );
+                }
+              })
+              .catch((error) => {
+                setErrorModal();
+                console.error(error);
+              });
+          }, 1500);
+        }
+
         const multiplicity = item.getAttribute("data-multiplicity");
 
         quantity.addEventListener("keyup", function () {
@@ -864,7 +896,28 @@ window.addEventListener("DOMContentLoaded", () => {
             updateProduct();
           }
         });
+        // сохранении скидки по инпуту 
+        discountInput.addEventListener("keyup", function () {
+          if(discountInput.value !== 0 & discountInput.value !== "" & discountInput.value !== 0.0){
+            marjaInput.disabled = true;
+            marjaInput.value = null
+          } else {
+            
+            marjaInput.disabled = false;
+          }
+          updateSaleProduct()
+        })
 
+        marjaInput.addEventListener("keyup", function () {
+          if(marjaInput.value !== 0 & marjaInput.value !== "" & marjaInput.value !== 0.0){
+            discountInput.disabled = true;
+            discountInput.value = null
+          } else {
+            discountInput.disabled = false;
+          }
+          updateSaleProduct()
+        })
+        console.log("917")
         plusButton.onclick = () => {
           if (multiplicity) {
             countQuantity += +multiplicity;
@@ -942,7 +995,7 @@ window.addEventListener("DOMContentLoaded", () => {
           updateProduct();
           getResult();
         };
-
+        console.log("995")
         if (inputPrice) {
           const totalPrice = item.querySelector(".input_totla-cost");
           const quantity = item.querySelector(".input-quantity");
@@ -961,6 +1014,7 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
             getMarginality(spetificationTable);
+            console.log("1014")
             getResult();
           };
 
@@ -995,6 +1049,7 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getMarginality(spetificationTable);
+            console.log("1048")
             getResult();
           };
 
@@ -1032,6 +1087,7 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getMarginality(spetificationTable);
+            console.log("1085")
             getResult();
           };
 
@@ -1074,12 +1130,14 @@ window.addEventListener("DOMContentLoaded", () => {
             // changeDateInOrder(spetificationTable);
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
+            console.log("1127")
             getResult();
           });
 
           const allPrice = inputPrice.value * countQuantity;
           getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {
+            console.log("discountInput")
             if (discountInput.value >= 100) {
               discountInput.value == 100;
             }
@@ -1098,13 +1156,33 @@ window.addEventListener("DOMContentLoaded", () => {
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
+            console.log("1152")
             getResult();
           };
+          // marjaInput.onkeyup = () => {
+          //   console.log("marjaInput")
+          //   let curentPrice;
+            
+          //   curentPrice = (
+          //     (+getCurrentPrice(item.getAttribute("data-price-motrum")) *
+          //       (100 - +marjaInput.value)) /
+          //     100
+          //   ).toFixed(2);
+            
+
+          //   inputPrice.value = curentPrice;
+          //   const allPrice = inputPrice.value * countQuantity;
+          //   getDigitsNumber(productTotalPrice, allPrice);
+          //   getMarginality(spetificationTable);
+          //   console.log("1169")
+          //   getResult();
+          // };
           if (saveButton) {
             saveButton.onclick = () => saveSpecification();
           }
         } else {
           getMarginality(spetificationTable);
+          console.log("1176")
           getResult();
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
@@ -1121,12 +1199,43 @@ window.addEventListener("DOMContentLoaded", () => {
               ).toFixed(2);
             }
 
+            
+            
             getDigitsNumber(productPriceContainer, curentPrice);
             const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
+            console.log("1198")
             getResult();
           };
+          marjaInput.onkeyup = () => {
+            console.log("marjaInput")
+            
+            let curentPrice;
+            if (marjaInput.value == "-") {
+              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+            } else {
+              // (цена мотрум за ед  / ((100 - %маржи) / 100))
+              console.log(productPriceMotrum)
+              curentPrice = (
+                (+getCurrentPrice(productPriceMotrum) *
+                  (100 + +marjaInput.value)) /
+                100
+              ).toFixed(2);
+              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2); 
+              console.log(curentPrice)
+            }
+
+            
+            console.log("curentPrice",curentPrice)
+            getDigitsNumber(productPriceContainer, curentPrice);
+            const allPrice = (curentPrice * countQuantity).toFixed(2);
+            getDigitsNumber(productTotalPrice, allPrice);
+            getMarginality(spetificationTable);
+            console.log("1231")
+            getResult();
+          };
+
           if (saveButton) {
             saveButton.onclick = () => saveSpecification(productItems);
           }
@@ -1158,6 +1267,7 @@ window.addEventListener("DOMContentLoaded", () => {
           getDigitsNumber(productTotalPrice, currentPrice);
         }
       });
+      console.log("getResult1231")
       getResult();
       if (saveButton) {
         saveButton.onclick = () => saveSpecification(productItems);

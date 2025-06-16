@@ -2360,6 +2360,62 @@ h1 {
           }
         }
         &:nth-of-type(11) {
+          width: 5.875rem;
+          margin-left: 1.5rem;
+          position: relative;
+          .marja-input {
+            width: 100%;
+            height: 3.563rem;
+            border: 0.094rem solid #000;
+            border-radius: 1.875rem;
+            font-family: "Nunito", sans-serif;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #ff5b00;
+            &::-webkit-input-placeholder {
+              color: #d9d4d5;
+            }
+            &::-moz-placeholder {
+              color: #d9d4d5;
+            }
+            &:-ms-input-placeholder {
+              color: #d9d4d5;
+            }
+            &::-ms-input-placeholder {
+              color: #d9d4d5;
+            }
+            &::placeholder {
+              color: #d9d4d5;
+            }
+            &:focus {
+              &::-webkit-input-placeholder {
+                color: transparent;
+              }
+              &::-moz-placeholder {
+                color: transparent;
+              }
+              &:-ms-input-placeholder {
+                color: transparent;
+              }
+              &::-ms-input-placeholder {
+                color: transparent;
+              }
+              &::placeholder {
+                color: transparent;
+              }
+            }
+          }
+          label {
+            position: absolute;
+            top: 19%;
+            right: 23%;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #ff5b00;
+          }
+        }
+        &:nth-of-type(12) {
           width: 7.438rem;
           margin-left: 1.313rem;
           display: flex;
@@ -2376,7 +2432,7 @@ h1 {
             }
           }
         }
-        &:nth-of-type(12) {
+        &:nth-of-type(13) {
           width: 8.813rem;
           margin-left: 0.813rem;
           .delivery_date {
@@ -2506,6 +2562,15 @@ h1 {
         label {
           font-size: 0.613rem;
           // color: #a4a4a4;
+        }
+      }
+      .change_input_price_title {
+        font-size: 1.125rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: none;
+        &.show {
+          display: block;
         }
       }
       .change_input_price {

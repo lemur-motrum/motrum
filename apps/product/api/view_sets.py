@@ -772,23 +772,23 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         product_new_article = data["product_new_article"]
         product_new_article = product_new_article.strip()
         
-        if data["date_delivery"] == "":
-            del data["date_delivery"]
-        else:
-            data["date_delivery"] = datetime.datetime.strptime(
-                data["date_delivery"], "%Y-%m-%d"
-            ).date()
+        # if data["date_delivery"] == "":
+        #     del data["date_delivery"]
+        # else:
+        #     data["date_delivery"] = datetime.datetime.strptime(
+        #         data["date_delivery"], "%Y-%m-%d"
+        #     ).date()
             
-        if data["sale_client"] == "":
-            data["sale_client"] = None
-        else:
-            sale_client =  float(data["sale_client"])
+        # if data["sale_client"] == "":
+        #     data["sale_client"] = None
+        # else:
+        #     sale_client =  float(data["sale_client"])
         
-        if data["product_new_sale_motrum"] == "":
-            data["product_new_sale_motrum"] = None
+        # if data["product_new_sale_motrum"] == "":
+        #     data["product_new_sale_motrum"] = None
             
-        if data["product_price_motrum"] == "":
-            data["product_price_motrum"] = None
+        # if data["product_price_motrum"] == "":
+        #     data["product_price_motrum"] = None
         
         
             

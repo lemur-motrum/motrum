@@ -42,6 +42,8 @@ window.addEventListener("DOMContentLoaded", () => {
         if (changePriceInput) {
 
           changePriceInput.value = getReplacedInputValue(changePriceInput);
+          const motrumPriceContainerTitle = productItem.querySelector(".change_input_price_title");
+          motrumPriceContainerTitle.classList.add("show");
           priceContainer.style.display = "none";
           changePriceInput.classList.add("show");
           inputLogic(changePriceInput);
@@ -51,6 +53,7 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           // motrumPriceContainer.style.display = "none";
+          motrumPriceContainer.style.display = "none";
           changeMotrumPriceInput.classList.add("show");
           changeMotrumPriceLable.classList.add("show");
           inputLogic(changeMotrumPriceInput);

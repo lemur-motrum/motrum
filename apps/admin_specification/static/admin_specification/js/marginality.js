@@ -10,6 +10,7 @@ export function getMarginality(wrapper) {
     spetificationItems.forEach((item) => {
       const quantityInput = item.querySelector(".input-quantity");
       const discountInput = item.querySelector(".discount-input");
+      const marjinInput = item.querySelector(".marja-input");
       const priceMotrum = new NumberParser("ru").parse(
         item.querySelector(".price_motrum").textContent
       );
@@ -23,7 +24,7 @@ export function getMarginality(wrapper) {
 
       let marginalityPercentValue;
       let totalCost;
-      if (!discountInput.value) {
+      if (!discountInput.value & !marjinInput.value) {
         totalCost = +quantityInput.value * priceOne;
         marginalityPercentValue =
           ((clientPrice - priceMotrum) / clientPrice) * 100;
@@ -39,19 +40,42 @@ export function getMarginality(wrapper) {
           // (100 * clientPrice * +quantityInput.value) /
           //   (+quantityInput.value * priceMotrum) -
           // 100;
-        } else {
+        } 
+        else if(discountInput.value){
           totalCost =
             +quantityInput.value *
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
+            console.log("marginalityPercentValue",marginalityPercentValue)
+            console.log("totalCost",totalCost)
           // (clientPrice * +quantityInput.value * 100) /
           //   (+quantityInput.value * priceMotrum) -
           // 100;
         }
+        else if(marjinInput.value){
+          totalCost =
+            +quantityInput.value *
+            ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
+          marginalityPercentValue =
+            ((clientPrice - priceMotrum) / clientPrice) * 100;
+            console.log("marginalityPercentValue",marginalityPercentValue)
+            console.log("totalCost",totalCost)
+          // (clientPrice * +quantityInput.value * 100) /
+          //   (+quantityInput.value * priceMotrum) -
+          // 100;
+        }
+        else {
+          
+        }
       }
       const marginalityContainer = item.querySelector(".marginality");
       const marginality = totalCost - priceMotrum;
+
+
+      console.log("totalCost",totalCost)
+      console.log("priceMotrum",priceMotrum)
+      console.log("marginality",marginality)
 
       marginalityPercentContainer.textContent = isNaN(marginalityPercentValue)
         ? "0,00"

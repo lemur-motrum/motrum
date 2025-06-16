@@ -99,7 +99,7 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("ff ff ff");
+        
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -255,101 +255,101 @@ function addNewProductLogic(container) {
       }
       closeSelectDropdown(supplierSelect);
 
-      function changePercent() {
-        if (priceOnceInput.value && quantityInput.value) {
-          getDigitsNumber(
-            motrumPrice,
-            (priceOnceInput.value / 100) *
-            (100 - persentSaleInput.value) *
-            quantityInput.value
-          );
-        }
-      }
-      discountInput.addEventListener("input", function () {
-        console.log("discountInput")
-        const currentValue = this.value
-          .replace(",", ".")
-          .replace(/[^.\d]+/g, "")
-          .replace(/^([^\.]*\.)|\./g, "$1")
-          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-            return a + b + c.slice(0, 2);
-          });
-        discountInput.value = currentValue;
-        if (discountInput.value == ".") {
-          e.target.value = "";
-        }
-        if (discountInput.value == "0") {
-          e.target.value = "";
-        }
-      })
-      changeMotrumPriceInput.addEventListener("input", function () {
-        const currentValue = this.value
-          .replace(",", ".")
-          .replace(/[^.\d]+/g, "")
-          .replace(/^([^\.]*\.)|\./g, "$1")
-          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-            return a + b + c.slice(0, 2);
-          });
-          changeMotrumPriceInput.value = currentValue;
-        if (changeMotrumPriceInput.value == ".") {
-          e.target.value = "";
-        }
-        if (changeMotrumPriceInput.value == "0") {
-          e.target.value = "";
-        }
-      })
+      // function changePercent() {
+      //   if (priceOnceInput.value && quantityInput.value) {
+      //     getDigitsNumber(
+      //       motrumPrice,
+      //       (priceOnceInput.value / 100) *
+      //       (100 - persentSaleInput.value) *
+      //       quantityInput.value
+      //     );
+      //   }
+      // }
+      // discountInput.addEventListener("input", function () {
+      //   console.log("discountInput")
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //   discountInput.value = currentValue;
+      //   if (discountInput.value == ".") {
+      //     e.target.value = "";
+      //   }
+      //   if (discountInput.value == "0") {
+      //     e.target.value = "";
+      //   }
+      // })
+      // changeMotrumPriceInput.addEventListener("input", function () {
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //     changeMotrumPriceInput.value = currentValue;
+      //   if (changeMotrumPriceInput.value == ".") {
+      //     e.target.value = "";
+      //   }
+      //   if (changeMotrumPriceInput.value == "0") {
+      //     e.target.value = "";
+      //   }
+      // })
 
-      persentSaleInput.addEventListener("input", function () {
-        const currentValue = this.value
-          .replace(",", ".")
-          .replace(/[^.\d.-]+/g, "")
-          .replace(/^([^\.]*\.)|\./g, "$1")
-          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-            return a + b + c.slice(0, 2);
-          });
-        persentSaleInput.value = currentValue;
-        if (+persentSaleInput.value > 99.99) {
-          persentSaleInput.value = 99.99;
-        }
-        if (+persentSaleInput.value < -99.99) {
-          persentSaleInput.value = -99.99;
-        }
-        if (
-          persentSaleInput.value.length > 1 &&
-          persentSaleInput.value.at(-1) === "-"
-        ) {
-          persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
-        }
-        if (persentSaleInput.value == ".") {
-          persentSaleInput.target.value = "";
-        }
-        if (persentSaleInput.value == "0") {
-          persentSaleInput.target.value = "";
-        }
-        changePercent();
-      });
+      // persentSaleInput.addEventListener("input", function () {
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d.-]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //   persentSaleInput.value = currentValue;
+      //   if (+persentSaleInput.value > 99.99) {
+      //     persentSaleInput.value = 99.99;
+      //   }
+      //   if (+persentSaleInput.value < -99.99) {
+      //     persentSaleInput.value = -99.99;
+      //   }
+      //   if (
+      //     persentSaleInput.value.length > 1 &&
+      //     persentSaleInput.value.at(-1) === "-"
+      //   ) {
+      //     persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
+      //   }
+      //   if (persentSaleInput.value == ".") {
+      //     persentSaleInput.target.value = "";
+      //   }
+      //   if (persentSaleInput.value == "0") {
+      //     persentSaleInput.target.value = "";
+      //   }
+      //   changePercent();
+      // });
 
-      function changeTotalCost(input1, input2) {
-        input1.addEventListener("input", function (e) {
-          const currentValue = this.value
-            .replace(",", ".")
-            .replace(/[^.\d.-]+/g, "")
-            .replace(/^([^\.]*\.)|\./g, "$1")
-            .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-              return a + b + c.slice(0, 2);
-            });
-          input1.value = currentValue;
-          if (input2.value) {
-            getDigitsNumber(
-              newItemContainerTotalCost,
-              +input1.value * +input2.value
-            );
-          }
-          changePercent();
-        });
-      }
-      changeTotalCost(priceOnceInput, quantityInput);
-      changeTotalCost(quantityInput, priceOnceInput);
+      // function changeTotalCost(input1, input2) {
+      //   input1.addEventListener("input", function (e) {
+      //     const currentValue = this.value
+      //       .replace(",", ".")
+      //       .replace(/[^.\d.-]+/g, "")
+      //       .replace(/^([^\.]*\.)|\./g, "$1")
+      //       .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //         return a + b + c.slice(0, 2);
+      //       });
+      //     input1.value = currentValue;
+      //     if (input2.value) {
+      //       getDigitsNumber(
+      //         newItemContainerTotalCost,
+      //         +input1.value * +input2.value
+      //       );
+      //     }
+      //     changePercent();
+      //   });
+      // }
+      // changeTotalCost(priceOnceInput, quantityInput);
+      // changeTotalCost(quantityInput, priceOnceInput);
       let validate = true;
 
       addNewItemInCartButton.onclick = () => {
@@ -362,8 +362,8 @@ function addNewProductLogic(container) {
         }
         inputValidate(nameInput);
         inputValidate(articleInput);
-        inputValidate(priceOnceInput);
-        inputValidate(quantityInput);
+        // inputValidate(priceOnceInput);
+        // inputValidate(quantityInput);
 
         if (!vendorInput.getAttribute("vendor_value")) {
           validate = false;
@@ -382,8 +382,8 @@ function addNewProductLogic(container) {
         if (
           nameInput.value &&
           articleInput.value &&
-          priceOnceInput.value &&
-          quantityInput.value &&
+          // priceOnceInput.value &&
+          // quantityInput.value &&
           vendorInput.getAttribute("vendor_value")
         ) {
           validate = true;
@@ -400,20 +400,22 @@ function addNewProductLogic(container) {
             product: null,
             product_new: nameInput.value,
             product_new_article: articleInput.value,
-            product_new_price: +priceOnceInput.value,
+            product_new_price: 0,
+            // product_new_price: +priceOnceInput.value,
             cart: +cartId,
-            quantity: +quantityInput.value,
-            product_new_sale_motrum: persentSaleInput.value
-              ? persentSaleInput.value
-              : null,
-            product_new_sale: addPersentSaleInput.value
-              ? addPersentSaleInput.value
-              : null,
+            quantity: 1,
+            // quantity: +quantityInput.value,
+            // product_new_sale_motrum: persentSaleInput.value
+            //   ? persentSaleInput.value
+            //   : null,
+            // product_new_sale: addPersentSaleInput.value
+            //   ? addPersentSaleInput.value
+            //   : null,
             vendor: vendorInput.getAttribute("vendor_value"),
             supplier: supplierSelectToggle.getAttribute("value"),
-            date_delivery: deliveryDate.value,
-            sale_client: discountInput.value,
-            product_price_motrum: changeMotrumPriceInput.value
+            // date_delivery: deliveryDate.value,
+            // sale_client: discountInput.value,
+            // product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(dataObjNewProduct);
 

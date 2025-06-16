@@ -73,6 +73,7 @@ from apps.core.utils import (
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
+    email_manager_after_new_order_site,
     image_error_check,
     product_cart_in_file,
     save_file_product,

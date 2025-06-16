@@ -236,13 +236,15 @@ def get_category_prompower(supplier, vendor, category_name):
         SupplierCategoryProductAll,
         SupplierGroupProduct,
     )
-
+    print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
             supplier=supplier, vendor=vendor, article_name=category_name
         )
+        
         groupe = category_all.group_supplier
         categ = category_all.category_supplier
+        print(" try:1",category_all,groupe,categ)
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
@@ -263,7 +265,9 @@ def get_category_prompower(supplier, vendor, category_name):
                 category_all = None
                 groupe = None
                 categ = None
-
+                
+    ("return get_category_prompower",category_all, groupe, categ)
+    
     return (category_all, groupe, categ)
 
 
@@ -926,6 +930,70 @@ def save_update_product_attr(
             product.name = name
         if product.name == None or product.name == "":
             product.name = name
+
+        product._change_reason = "Автоматическое"
+        product.save()
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "обновление товаров"
+        info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+    # update_change_reason(product, "Автоматическое")
+
+# проверка заполненны ли поля продукта если нет добавить значение
+def save_update_product_attr_all(
+    product,
+    supplier,
+    vendor,
+    additional_article_supplier,
+    category_supplier_all,
+    group_supplier,
+    category_supplier,
+    description,
+    name,
+):
+
+    try:
+
+        if product.supplier == None or product.supplier == "":
+            product.supplier = supplier
+
+        if product.vendor == None or product.vendor == "":
+            product.vendor = vendor
+        
+
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
+
+        if category_supplier_all:
+            product.category_supplier_all = category_supplier_all
+        
+
+        if group_supplier:
+            product.group_supplier = group_supplier
+       
+
+        if category_supplier:
+            product.category_supplier = category_supplier
+        
+
+        if product.description == None or product.description == "":
+            product.description = description
+        
+
+        if product.name == None or product.name == "":
+            product.name = name
+        
 
         product._change_reason = "Автоматическое"
         product.save()

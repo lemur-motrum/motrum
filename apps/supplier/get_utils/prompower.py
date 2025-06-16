@@ -5,7 +5,7 @@ import requests
 import json
 from simple_history.utils import update_change_reason
 from apps import supplier
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, NDS
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -14,6 +14,7 @@ from apps.core.utils import (
     get_file_path_add,
     save_file_product,
     save_update_product_attr,
+    save_update_product_attr_all,
 )
 from apps.logs.utils import error_alert
 from apps.product.models import (
@@ -206,7 +207,7 @@ def prompower_api():
         for data_item in data:
 
             try:
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PPS1G0612":
                     # основная инфа
                     article_suppliers = data_item["article"]
                     name = data_item["title"]
@@ -223,7 +224,7 @@ def prompower_api():
                             categ = None
                     else:
                         categ = None
-
+                    print("categ",categ)
                     # цены
                     price_supplier = int(data_item["price"])
                     vat_include = True
@@ -360,7 +361,7 @@ def prompower_api():
 
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
-                        price_supplier = price_supplier + (price_supplier / 100 * 20)
+                        price_supplier = price_supplier + (price_supplier / 100 * NDS)
                         try:
                             # если товар есть в бд
                             article = Product.objects.get(
@@ -397,7 +398,7 @@ def prompower_api():
                             if doc == False:
                                 save_document(categ, article)
 
-                            save_update_product_attr(
+                            save_update_product_attr_all(
                                 article,
                                 supplier,
                                 vendori,
@@ -481,7 +482,7 @@ def prompower_api():
             finally:
                 continue
 
-    add_category_groupe()
-    add_category()
+    # add_category_groupe()
+    # add_category()
     add_products()
     

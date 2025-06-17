@@ -33,6 +33,7 @@ from apps.core.models import Currency, StageDealBx, UpdatedCompanyBX24
 from apps.core.utils import (
     client_info_bitrix,
     create_info_request_order_bitrix,
+    email_manager_after_new_order_site,
     save_file_product,
     save_info_bitrix_after_web,
 )
@@ -1470,6 +1471,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
+        email_manager_after_new_order_site(order)
         return ("ok", None)
 
     except Exception as e:
@@ -2323,12 +2325,14 @@ def add_new_order_web_not_info(order_id):
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
+            email_manager_after_new_order_site(order)
         elif type_save == "old":
             order_new_bx_id = add_new_order_bx(
                 bx, None, None, None, None, client_bx_id, client
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
+            email_manager_after_new_order_site(order)
 
         return ("ok", None)
 

@@ -139,7 +139,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     bs_id_order = 12020
     order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    
 
     result = 1
     title = "TEST"

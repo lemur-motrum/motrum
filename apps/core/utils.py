@@ -2759,6 +2759,7 @@ def email_manager_after_new_order_site(order):
         subject = "Новый заказа с сайта"
         to_email = manager_client
         
+        print(to_email)
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
    
     except Exception as e:  

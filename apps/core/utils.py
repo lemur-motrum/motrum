@@ -1715,6 +1715,9 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
 
                 e = error_alert(error, location, info)
                 return ("error", None, None)
+
+            
+    
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

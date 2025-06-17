@@ -583,6 +583,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"add_order")
     def add_order(self, request, *args, **kwargs):
         data = request.data
+        error = "info_error_order"
+        location = "ИНФО О ЗАКАЗЕ С САЙТА ПЕРВОЕ"
+        info = f"ИНФО О ЗАКАЗЕ С САЙТА ПЕРВОЕ request.data {request.data}"
+        e = error_alert(error, location, info)
         try:
             #order_flag - тип сохранения в битркис - со всеми данными или нет если нулл останется- ошибка сохранения
             order_flag = None 
@@ -785,6 +789,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                         order_id
                     )
                 if status_operation == "ok":
+                    error = "info_error_order"
+                    location = "ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС ОК"
+                    info = f"ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС ОК order_id{order_id}"
+                    e = error_alert(error, location, info)
                     return Response(
                         serializer.data, status=status.HTTP_201_CREATED
                     )

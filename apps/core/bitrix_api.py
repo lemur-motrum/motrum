@@ -2133,6 +2133,10 @@ def add_new_order_bx(
         }
         order_new_bx_id = bx.call("crm.deal.add", tasks)
         print("order_new_bx_id", order_new_bx_id)
+        error = "info_error_order"
+        location = "ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС"
+        info = f"ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС сделка с инфой о клиенте tasks{tasks}"
+        e = error_alert(error, location, info)
         task_req = {
             "fields": {
                 "ENTITY_TYPE_ID": 2,
@@ -2170,6 +2174,10 @@ def add_new_order_bx(
         }
         order_new_bx_id = bx.call("crm.deal.add", tasks)
         print("order_new_bx_id", order_new_bx_id)
+        error = "info_error_order"
+        location = "ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС"
+        info = f"ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС сделка без инфы о клиенте tasks{tasks}"
+        e = error_alert(error, location, info)
     return order_new_bx_id
 
 

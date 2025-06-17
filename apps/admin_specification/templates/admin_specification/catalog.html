@@ -77,6 +77,7 @@
                                 <div class="stock_item">
                                     Motrum: <span class="motrum_unit">{{ item.stock.stock_motrum }}</span>
                                     {% if item.stock.stock_motrum_reserve %}
+                                    <br>
                                         Motrum резерв: <span class="motrum_unit_reserve">{{ item.stock.stock_motrum_reserve }}</span>
                                     {% endif %}
                                 </div>
@@ -260,13 +261,13 @@
                                 <label>
                                     {% if bill_upd %}
                                         <input class="delivery_date"
-                                               disabled
+                                               {% comment %} disabled {% endcomment %}
                                                type="date"
                                                name="calendar"
                                                value="{% if item.date_delivery_cart|date %}{{ item.date_delivery_cart|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
                                     {% else %}
                                         <input class="delivery_date"
-                                               disabled
+                                               {% comment %} disabled {% endcomment %}
                                                type="date"
                                                name="calendar"
                                                min="{{ current_date }}"

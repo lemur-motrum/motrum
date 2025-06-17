@@ -754,6 +754,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const inputPrice = item.querySelector(".price-input");
         const discountInput = item.querySelector(".discount-input");
         const marjaInput = item.querySelector(".marja-input");
+        const dataInput = item.querySelector(".delivery_date");
         const productPrice = item.getAttribute("data-price");
         const productPriceMotrum = item.getAttribute("data-price-motrum");
         const productPriceContainer = item.querySelector(".price_once");
@@ -853,6 +854,34 @@ window.addEventListener("DOMContentLoaded", () => {
               });
           }, 1500);
         }
+        function updateDateProduct() {
+          setTimeout(() => {
+            const dataObj = {
+              date_delivery: dataInput.value ? dataInput.value : 0,
+            };
+            const data = JSON.stringify(dataObj);
+            fetch(`/api/v1/cart/${productID}/update-product/`, {
+              // изменила метод
+              method: "POST",
+              body: data,
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+            })
+              .then((response) => {
+                if (response.status == 200) {
+                  console.log(
+                    `Товар с id ${productID}, дату добавили`
+                  );
+                }
+              })
+              .catch((error) => {
+                setErrorModal();
+                console.error(error);
+              });
+          }, 1500);
+        }
 
         const multiplicity = item.getAttribute("data-multiplicity");
 
@@ -921,7 +950,34 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           updateSaleProduct()
         })
-        
+        dataInput.addEventListener("change", function () {
+          if(dataInput.value !== 0 & dataInput.value !== ""){
+            function isValidDateFormat(dateString) {
+              if (typeof dateString !== 'string') {
+                return false;
+              }
+              const regex = /^\d{4}-\d{2}-\d{2}$/;
+              if (!regex.test(dateString)) {
+                return false;
+              }
+              try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                  return false;
+                }
+                return date.toISOString().slice(0, 10) === dateString;
+              } catch (e) {
+                return false;
+              }
+            }
+            let isValidDate = isValidDateFormat(dataInput.value)
+            if (isValidDate){
+              updateDateProduct()
+            }
+          }
+
+
+        })
         console.log("917")
         plusButton.onclick = () => {
           if (multiplicity) {

@@ -16,6 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const priceContainer = productItem.querySelector(".price_once");
       const deliveryDate = productItem.querySelector(".delivery_date")
       const discountInput = productItem.querySelector(".discount-input")
+      const marjaInput = productItem.querySelector(".marja-input")
       const motrumSaleContainer = productItem.querySelector(
         ".motrum_sale_persent"
       );
@@ -38,7 +39,8 @@ window.addEventListener("DOMContentLoaded", () => {
         changeBtn.style.display = "none";
         saveBtn.classList.add("show");
         deliveryDate.removeAttribute("disabled");
-        discountInput.removeAttribute("disabled");
+        discountInput.setAttribute("disabled", "");
+        marjaInput.setAttribute("disabled", "");
         if (changePriceInput) {
 
           changePriceInput.value = getReplacedInputValue(changePriceInput);

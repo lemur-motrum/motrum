@@ -519,7 +519,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("sumMotrum1",sumMotrum)
         getDigitsNumber(valueContainer, +sum);
         // getDigitsNumber(marginality, +margSum);
-        getDigitsNumber(marginality, +sumMotrum);
+        getDigitsNumber(marginality, +margSum);
         console.log("sum",sum)
         console.log("sumMotrum",sumMotrum)
         allMarginalityPercent.textContent = isNaN(

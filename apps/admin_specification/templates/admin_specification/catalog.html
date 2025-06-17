@@ -222,7 +222,7 @@
                             </div>
                             <div class="item_value">
                                 <input class="discount-input"
-                                      
+                                {% if item.sale_marja %}disabled{% endif %}
                                        type="text"
                                        name="price-input-discount"
                                        placeholder="% скидки"
@@ -240,7 +240,7 @@
                             </div>
                             <div class="item_value">
                                 <input class="marja-input"
-                                       
+                                {% if item.sale_client %}disabled{% endif %}
                                        type="text"
                                        name="marja-input-discount"
                                        placeholder="% маржа"

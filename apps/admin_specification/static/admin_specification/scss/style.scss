@@ -2099,7 +2099,7 @@ h1 {
 
       .item_conainer-delete_btn {
         position: absolute;
-        right: 1rem;
+        right: 0.5rem;
         top: 0.2rem;
         font-size: 1.5rem;
         transform: rotate(45deg);
@@ -2113,7 +2113,7 @@ h1 {
         width: 0.6rem;
         height: 0.6rem;
         position: absolute;
-        right: 1.1rem;
+        right: 0.6rem;
         top: 2.5rem;
         opacity: 0;
         // z-index: 3;
@@ -2130,9 +2130,10 @@ h1 {
         width: 0.8rem;
         height: 0.8rem;
         position: absolute;
-        right: 1.1rem;
+        right: 0.4rem;
         top: 2.5rem;
         opacity: 0;
+        color: gray;
         z-index: 3;
         transition: 0.3s;
         cursor: pointer;
@@ -2234,6 +2235,8 @@ h1 {
                 color: transparent;
               }
             }
+            &:disabled {
+              background: #f1eded;}
           }
         }
         &:nth-of-type(7) {
@@ -2348,7 +2351,10 @@ h1 {
               &::placeholder {
                 color: transparent;
               }
+             
             }
+            &:disabled {
+              background: #f1eded;}
           }
           label {
             position: absolute;
@@ -2405,6 +2411,8 @@ h1 {
                 color: transparent;
               }
             }
+            &:disabled {
+              background: #f1eded;}
           }
           label {
             position: absolute;
@@ -2448,6 +2456,8 @@ h1 {
               width: 1.125rem;
               height: 1.25rem;
             }
+            &:disabled {
+              background: #f1eded;}
           }
         }
 

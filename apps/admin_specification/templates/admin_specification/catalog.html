@@ -245,7 +245,7 @@
                                        name="marja-input-discount"
                                        placeholder="% маржа"
                                        maxlength="6"
-                                       value="0" />
+                                       value="{% if item.sale_marja %}{{ item.sale_marja }}{% endif %}" />
                                 
                             </div>
                             <div class="item_value">

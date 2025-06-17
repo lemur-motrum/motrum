@@ -858,6 +858,9 @@ def create_specification(request):
                 sale_client=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "sale_client",
                 ),
+                sale_marja=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "sale_marja",
+                ),
                 # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,

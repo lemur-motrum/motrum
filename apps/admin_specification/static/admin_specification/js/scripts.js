@@ -519,9 +519,10 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("sumMotrum1",sumMotrum)
         getDigitsNumber(valueContainer, +sum);
         // getDigitsNumber(marginality, +margSum);
-        getDigitsNumber(marginality, +sumMotrum);
+        getDigitsNumber(marginality, +margSum);
         console.log("sum",sum)
         console.log("sumMotrum",sumMotrum)
+        console.log("margSum",margSum)
         allMarginalityPercent.textContent = isNaN(
           ((1 - (+sumMotrum / +sum)) * 100).toFixed(2)
           // ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
@@ -768,6 +769,9 @@ window.addEventListener("DOMContentLoaded", () => {
         if (discountInput) {
           discountInput.value = getCurrentPrice(discountInput.value);
         }
+        if (marjaInput) {
+          marjaInput.value = getCurrentPrice(marjaInput.value);
+        }
         if (inputPrice) {
           getDigitsNumber(
             productTotalPrice,
@@ -917,6 +921,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           updateSaleProduct()
         })
+        
         console.log("917")
         plusButton.onclick = () => {
           if (multiplicity) {
@@ -1212,7 +1217,7 @@ window.addEventListener("DOMContentLoaded", () => {
             console.log("marjaInput")
             
             let curentPrice;
-            if (marjaInput.value == "-") {
+            if (marjaInput.value == "-" || marjaInput.value == "") {
               curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
             } else {
               // (цена мотрум за ед  / ((100 - %маржи) / 100))

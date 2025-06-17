@@ -15,6 +15,7 @@ export function getMarginality(wrapper) {
         item.querySelector(".price_motrum").textContent
       );
       const priceOne = +getCurrentPrice(item.getAttribute("data-price"));
+      const priceOneMotrum = +getCurrentPrice(item.getAttribute("data-price-motrum"));
       const marginalityPercentContainer = item.querySelector(
         ".marginality-persent"
       );
@@ -54,19 +55,20 @@ export function getMarginality(wrapper) {
           // 100;
         }
         else if(marjinInput.value != 0 & marjinInput.value != ""){
-          totalCost =
-            +quantityInput.value *
-            ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
+          const marjinValue = +marjinInput.value;
+          const marjinCoefficient = (100 + marjinValue) / 100;
+          const priceWithMarjin = priceOneMotrum * marjinCoefficient;
+          totalCost = +quantityInput.value * priceWithMarjin;
+          
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
-            console.log("marginalityPercentValue marjinInput",marginalityPercentValue)
-            console.log("totalCost marjinInput",totalCost)
-          // (clientPrice * +quantityInput.value * 100) /
-          //   (+quantityInput.value * priceMotrum) -
-          // 100;
+            
         }
         else {
          console.log("============================") 
+         totalCost = +quantityInput.value * priceOne;
+         marginalityPercentValue =
+            ((clientPrice - priceMotrum) / clientPrice) * 100;
         }
       }
       const marginalityContainer = item.querySelector(".marginality");

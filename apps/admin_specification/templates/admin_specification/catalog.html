@@ -1065,8 +1065,10 @@
                             </div>
                         {% endif %}
                     {% endfor %}
-                    <div class="new_item_container_wrapper">
+                    {% include "admin_specification/include/item_in_cart/new_product_add.html" %}
+                    <!--<div class="new_item_container_wrapper">
                         <div>
+
                             <div class="new_item_container">
                                 <div class="new_item_container_value">
                                     <label class="name_label">
@@ -1177,7 +1179,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="price_description">
                         <div>
                             <div>Маржа:</div>
@@ -1328,7 +1330,8 @@
                 </div>
             {% else %}
                 <div class="no_content_container">
-                    <div class="new_item_container_wrapper">
+                    {% include "admin_specification/include/item_in_cart/new_product_add.html" %}
+                    <!--<div class="new_item_container_wrapper">
                         <div>
                             <div class="new_item_container">
                                 <div class="new_item_container_value">
@@ -1440,7 +1443,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="add_new_product_container">
                         <div class="search_label_container">
                             <label class="search_label">

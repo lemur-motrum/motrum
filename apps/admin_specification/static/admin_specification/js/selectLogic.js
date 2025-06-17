@@ -7,6 +7,9 @@ window.addEventListener("DOMContentLoaded", () => {
   if (document.querySelector("#select-2")) {
     const select2 = new ItcCustomSelect("#select-2");
   }
+  // if (document.querySelector("#select-4")) {
+  //   const select4 = new ItcCustomSelect("#select-4");
+  // }
 
   const select3 = new ItcCustomSelect("#select-3");
 

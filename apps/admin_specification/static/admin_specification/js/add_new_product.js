@@ -225,6 +225,7 @@ function addNewProductLogic(container) {
       const supplierSelectToggle = supplierSelect.querySelector(
         ".supplier_select__toggle"
       );
+      const lotInput = newItemContainer.querySelector(".vendor_input");
 
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
@@ -393,7 +394,7 @@ function addNewProductLogic(container) {
           addNewItemInCartButton.innerHTML = "";
           addNewItemInCartButton.textContent = "Добавить товар";
         }
-
+        console.log("validate",validate)
         if (validate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {
@@ -418,40 +419,40 @@ function addNewProductLogic(container) {
             // product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(dataObjNewProduct);
-
-          fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
-            method: "POST",
-            body: data,
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": csrfToken,
-            },
-          })
-            .then((response) => {
-              if (response.status === 200 || response.status === 201) {
-                window.location.reload();
-              } else if (response.status === 409) {
-                return response.json();
-              } else {
-                setErrorModal();
-                throw new Error("Ошибка");
-              }
-            })
-            .then((response) => {
-              if (response.status == "product_in_okt") {
-                hidePreloaderAndEnabledButton(addNewItemInCartButton);
-                showErrorValidation(
-                  "Данный товар уже есть в ОКТ",
-                  newProductError
-                );
-              } else if (response.status == "product_in_cart") {
-                hidePreloaderAndEnabledButton(addNewItemInCartButton);
-                showErrorValidation(
-                  "Товар с таким артикулом уже есть в корзине",
-                  newProductError
-                );
-              }
-            });
+          console.log(dataObjNewProduct)
+          // fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
+          //   method: "POST",
+          //   body: data,
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //     "X-CSRFToken": csrfToken,
+          //   },
+          // })
+          //   .then((response) => {
+          //     if (response.status === 200 || response.status === 201) {
+          //       window.location.reload();
+          //     } else if (response.status === 409) {
+          //       return response.json();
+          //     } else {
+          //       setErrorModal();
+          //       throw new Error("Ошибка");
+          //     }
+          //   })
+          //   .then((response) => {
+          //     if (response.status == "product_in_okt") {
+          //       hidePreloaderAndEnabledButton(addNewItemInCartButton);
+          //       showErrorValidation(
+          //         "Данный товар уже есть в ОКТ",
+          //         newProductError
+          //       );
+          //     } else if (response.status == "product_in_cart") {
+          //       hidePreloaderAndEnabledButton(addNewItemInCartButton);
+          //       showErrorValidation(
+          //         "Товар с таким артикулом уже есть в корзине",
+          //         newProductError
+          //       );
+          //     }
+          //   });
         }
       };
     }

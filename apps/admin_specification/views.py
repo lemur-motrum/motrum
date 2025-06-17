@@ -941,6 +941,7 @@ def create_specification(request):
     type_delivery = TypeDelivery.objects.filter(actual=True)
     supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
+    lot = Lot.objects.all().order_by("-name")
     context = {
         "title": title,
         "product": product,
@@ -963,6 +964,7 @@ def create_specification(request):
         "type_save_cookee": type_save_cookee,
         "hard_upd": hard_upd,
         "post_data_bx_id": post_data_bx_id,
+        "lot":lot,
     }
     print("context",context)
     return render(request, "admin_specification/catalog.html", context)

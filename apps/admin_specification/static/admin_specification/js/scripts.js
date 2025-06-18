@@ -488,6 +488,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
 
+      // функция ставит значения в блок итого
       function getResult() {
         let margSum = 0;
         let sum = 0;
@@ -498,40 +499,51 @@ window.addEventListener("DOMContentLoaded", () => {
         const allMarginalityPercent = spetificationTable.querySelector(
           ".marginality_prcent_value"
         );
-        const allMotrumSum = spetificationTable.querySelectorAll(
-          ".price_motrum"
-        );
-        console.log(allMotrumSum)
+        const allMotrumSum =
+          spetificationTable.querySelectorAll(".price_motrum");
+        console.log(allMotrumSum);
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
           );
         }
-        
+
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
-        console.log(allMotrumSum.length)
+        console.log(allMotrumSum.length);
         for (let i = 0; i < allMotrumSum.length; i++) {
-          console.log("allMotrumSum[i].textContent",allMotrumSum[i].textContent)
-          sumMotrum += new NumberParser("ru").parse(allMotrumSum[i].textContent);
+          console.log(
+            "allMotrumSum[i].textContent",
+            allMotrumSum[i].textContent
+          );
+          sumMotrum += new NumberParser("ru").parse(
+            allMotrumSum[i].textContent
+          );
         }
-        console.log("sumMotrum1",sumMotrum)
+        console.log("sumMotrum1", sumMotrum);
+        // ставить занчение в итого
         getDigitsNumber(valueContainer, +sum);
-        // getDigitsNumber(marginality, +margSum);
+        // ставить занчение в сумму общей маржи за все товары
         getDigitsNumber(marginality, +margSum);
-        console.log("sum",sum)
-        console.log("sumMotrum",sumMotrum)
-        console.log("margSum",margSum)
+
+        console.log("sum", sum);
+        console.log("sumMotrum", sumMotrum);
+        console.log("margSum", margSum);
+
+        // ставить занчение в процент маржи всех товаров
         allMarginalityPercent.textContent = isNaN(
-          ((1 - (+sumMotrum / +sum)) * 100).toFixed(2)
+          ((1 - +sumMotrum / +sum) * 100).toFixed(2)
           // ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
         )
           ? 0
-          : ((1 - (+sumMotrum / +sum)) * 100).toFixed(2);
+          : ((1 - +sumMotrum / +sum) * 100).toFixed(2);
       }
-
+      //  НЕ ВЫЗЫЫВЕТЬСЯ ЕЕ ПЕРЕБИВЕТ - create_invoice_without_specification.js
+      // в этой функции тольуо первичная отправка на первый эндпоинт без остальных
+      // старая и не имеет актуальных изменений
       function saveSpecification(elems) {
+        console.log("saveSpecification(elems)")
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
@@ -541,6 +553,13 @@ window.addEventListener("DOMContentLoaded", () => {
         const dateDeliveryAll = document.querySelector(
           'textarea[name="delivery-date-all-input-name-all"]'
         ).value;
+        const marginality = document.querySelector(".marginality_value");
+        const marginality_sum = marginality.textContent;
+        const marginalityValue = document.querySelector(
+          ".marginality_prcent_value"
+        );
+        const marginality_percent = marginalityValue.textContent;
+
         let validate = true;
         const products = [];
         const motrumRequsits = document
@@ -559,7 +578,9 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
           const nameProductNew = item.getAttribute("data-product-name-new");
-          const nameProductNewАrt = item.getAttribute("data-product-article-new");
+          const nameProductNewАrt = item.getAttribute(
+            "data-product-article-new"
+          );
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
 
@@ -702,6 +723,8 @@ window.addEventListener("DOMContentLoaded", () => {
             type_delivery: deliveryRequsits,
             type_save: "specification",
             post_update: false,
+            marginality_sum: +marginality_sum,
+            marginality: +marginality_percent,
           };
 
           const data = JSON.stringify(dataObj);
@@ -766,13 +789,14 @@ window.addEventListener("DOMContentLoaded", () => {
         let countQuantity = +quantity.value;
         const productID = item.getAttribute("data-id");
         const productCartID = item.getAttribute("data-product-id-cart");
-
+        console.log(item.querySelector(".price_once").textContent);
         if (discountInput) {
           discountInput.value = getCurrentPrice(discountInput.value);
         }
         if (marjaInput) {
           marjaInput.value = getCurrentPrice(marjaInput.value);
         }
+        // вставка значений в цена продажи при загрузке страницы
         if (inputPrice) {
           getDigitsNumber(
             productTotalPrice,
@@ -780,16 +804,27 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         }
         if (itemPriceOnce) {
-          if (discountInput) {
+          console.log(item.querySelector(".price_once").textContent);
+          if (discountInput.value) {
+            console.log("discountInput");
             getDigitsNumber(
               itemPriceOnce,
               (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
                 100
             );
+          } else if (marjaInput.value) {
+            getDigitsNumber(
+              itemPriceOnce,
+              (
+                +getCurrentPrice(productPriceMotrum) /
+                ((100 - +marjaInput.value) / 100)
+              ).toFixed(2)
+            );
           } else {
             const currnetPriceOne = +getCurrentPrice(itemPriceOnce.textContent);
             getDigitsNumber(itemPriceOnce, currnetPriceOne);
           }
+          console.log(item.querySelector(".price_once").textContent);
           const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
           getDigitsNumber(productTotalPrice, currentPrice);
 
@@ -829,7 +864,7 @@ window.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             const dataObj = {
               sale_client: discountInput.value ? discountInput.value : 0,
-              sale_marja:  marjaInput.value ? marjaInput.value : 0,
+              sale_marja: marjaInput.value ? marjaInput.value : 0,
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
@@ -843,9 +878,7 @@ window.addEventListener("DOMContentLoaded", () => {
             })
               .then((response) => {
                 if (response.status == 200) {
-                  console.log(
-                    `Товар с id ${productID}, скидку накинули `
-                  );
+                  console.log(`Товар с id ${productID}, скидку накинули `);
                 }
               })
               .catch((error) => {
@@ -871,9 +904,7 @@ window.addEventListener("DOMContentLoaded", () => {
             })
               .then((response) => {
                 if (response.status == 200) {
-                  console.log(
-                    `Товар с id ${productID}, дату добавили`
-                  );
+                  console.log(`Товар с id ${productID}, дату добавили`);
                 }
               })
               .catch((error) => {
@@ -882,7 +913,7 @@ window.addEventListener("DOMContentLoaded", () => {
               });
           }, 1500);
         }
-
+        console.log(item.querySelector(".price_once").textContent);
         const multiplicity = item.getAttribute("data-multiplicity");
 
         quantity.addEventListener("keyup", function () {
@@ -929,31 +960,40 @@ window.addEventListener("DOMContentLoaded", () => {
             updateProduct();
           }
         });
-        // сохранении скидки по инпуту 
+        console.log(item.querySelector(".price_once").textContent);
+        // сохранении скидки по инпуту
         discountInput.addEventListener("keyup", function () {
-          if(discountInput.value !== 0 & discountInput.value !== "" & discountInput.value !== 0.0){
+          if (
+            (discountInput.value !== 0) &
+            (discountInput.value !== "") &
+            (discountInput.value !== 0.0)
+          ) {
             marjaInput.disabled = true;
-            marjaInput.value = null
+            marjaInput.value = null;
           } else {
-            
             marjaInput.disabled = false;
           }
-          updateSaleProduct()
-        })
+          updateSaleProduct();
+        });
 
         marjaInput.addEventListener("keyup", function () {
-          if(marjaInput.value !== 0 & marjaInput.value !== "" & marjaInput.value !== 0.0){
+          if (
+            (marjaInput.value !== 0) &
+            (marjaInput.value !== "") &
+            (marjaInput.value !== 0.0)
+          ) {
             discountInput.disabled = true;
-            discountInput.value = null
+            discountInput.value = null;
           } else {
             discountInput.disabled = false;
           }
-          updateSaleProduct()
-        })
+          updateSaleProduct();
+        });
+
         dataInput.addEventListener("change", function () {
-          if(dataInput.value !== 0 & dataInput.value !== ""){
+          if ((dataInput.value !== 0) & (dataInput.value !== "")) {
             function isValidDateFormat(dateString) {
-              if (typeof dateString !== 'string') {
+              if (typeof dateString !== "string") {
                 return false;
               }
               const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -970,15 +1010,13 @@ window.addEventListener("DOMContentLoaded", () => {
                 return false;
               }
             }
-            let isValidDate = isValidDateFormat(dataInput.value)
-            if (isValidDate){
-              updateDateProduct()
+            let isValidDate = isValidDateFormat(dataInput.value);
+            if (isValidDate) {
+              updateDateProduct();
             }
           }
-
-
-        })
-        console.log("917")
+        });
+        console.log("917");
         plusButton.onclick = () => {
           if (multiplicity) {
             countQuantity += +multiplicity;
@@ -1056,7 +1094,8 @@ window.addEventListener("DOMContentLoaded", () => {
           updateProduct();
           getResult();
         };
-        console.log("995")
+        console.log("995");
+        console.log(item.querySelector(".price_once").textContent);
         if (inputPrice) {
           const totalPrice = item.querySelector(".input_totla-cost");
           const quantity = item.querySelector(".input-quantity");
@@ -1075,7 +1114,7 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             changeDateInOrder(spetificationTable);
             getMarginality(spetificationTable);
-            console.log("1014")
+            console.log("1014");
             getResult();
           };
 
@@ -1110,7 +1149,7 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getMarginality(spetificationTable);
-            console.log("1048")
+            console.log("1048");
             getResult();
           };
 
@@ -1148,7 +1187,7 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
             getMarginality(spetificationTable);
-            console.log("1085")
+            console.log("1085");
             getResult();
           };
 
@@ -1191,14 +1230,14 @@ window.addEventListener("DOMContentLoaded", () => {
             // changeDateInOrder(spetificationTable);
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
-            console.log("1127")
+            console.log("1127");
             getResult();
           });
 
           const allPrice = inputPrice.value * countQuantity;
           getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
           discountInput.onkeyup = () => {
-            console.log("discountInput")
+            console.log("discountInput");
             if (discountInput.value >= 100) {
               discountInput.value == 100;
             }
@@ -1217,33 +1256,47 @@ window.addEventListener("DOMContentLoaded", () => {
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
-            console.log("1152")
+            console.log("1152");
             getResult();
           };
-          // marjaInput.onkeyup = () => {
-          //   console.log("marjaInput")
-          //   let curentPrice;
-            
-          //   curentPrice = (
-          //     (+getCurrentPrice(item.getAttribute("data-price-motrum")) *
-          //       (100 - +marjaInput.value)) /
-          //     100
-          //   ).toFixed(2);
-            
+          marjaInput.onkeyup = () => {
+            console.log("marjaInput");
 
-          //   inputPrice.value = curentPrice;
-          //   const allPrice = inputPrice.value * countQuantity;
-          //   getDigitsNumber(productTotalPrice, allPrice);
-          //   getMarginality(spetificationTable);
-          //   console.log("1169")
-          //   getResult();
-          // };
+            let curentPrice;
+            if (marjaInput.value == "-" || marjaInput.value == "") {
+              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+            } else {
+              // (цена мотрум за ед  / ((100 - %маржи) / 100))
+              console.log(productPriceMotrum);
+              // curentPrice = (
+              //   (+getCurrentPrice(productPriceMotrum) *
+              //     (100 + +marjaInput.value)) /
+              //   100
+              // ).toFixed(2);
+              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2);
+              curentPrice = (
+                +getCurrentPrice(productPriceMotrum) /
+                ((100 - +marjaInput.value) / 100)
+              ).toFixed(2);
+              console.log(curentPrice);
+            }
+
+            console.log("curentPrice", curentPrice);
+            getDigitsNumber(productPriceContainer, curentPrice);
+            const allPrice = (curentPrice * countQuantity).toFixed(2);
+            getDigitsNumber(productTotalPrice, allPrice);
+            getMarginality(spetificationTable);
+            console.log("1231");
+            getResult();
+          };
+
           if (saveButton) {
+            console.log("1292")
             saveButton.onclick = () => saveSpecification();
           }
         } else {
           getMarginality(spetificationTable);
-          console.log("1176")
+          console.log("1176");
           getResult();
           discountInput.onkeyup = () => {
             if (discountInput.value >= 100) {
@@ -1260,40 +1313,41 @@ window.addEventListener("DOMContentLoaded", () => {
               ).toFixed(2);
             }
 
-            
-            
             getDigitsNumber(productPriceContainer, curentPrice);
             const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
-            console.log("1198")
+            console.log("1198");
             getResult();
           };
           marjaInput.onkeyup = () => {
-            console.log("marjaInput")
-            
+            console.log("marjaInput");
+
             let curentPrice;
             if (marjaInput.value == "-" || marjaInput.value == "") {
               curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
             } else {
               // (цена мотрум за ед  / ((100 - %маржи) / 100))
-              console.log(productPriceMotrum)
+              console.log(productPriceMotrum);
+              // curentPrice = (
+              //   (+getCurrentPrice(productPriceMotrum) *
+              //     (100 + +marjaInput.value)) /
+              //   100
+              // ).toFixed(2);
+              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2);
               curentPrice = (
-                (+getCurrentPrice(productPriceMotrum) *
-                  (100 + +marjaInput.value)) /
-                100
+                +getCurrentPrice(productPriceMotrum) /
+                ((100 - +marjaInput.value) / 100)
               ).toFixed(2);
-              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2); 
-              console.log(curentPrice)
+              console.log(curentPrice);
             }
 
-            
-            console.log("curentPrice",curentPrice)
+            console.log("curentPrice", curentPrice);
             getDigitsNumber(productPriceContainer, curentPrice);
             const allPrice = (curentPrice * countQuantity).toFixed(2);
             getDigitsNumber(productTotalPrice, allPrice);
             getMarginality(spetificationTable);
-            console.log("1231")
+            console.log("1231");
             getResult();
           };
 
@@ -1319,18 +1373,30 @@ window.addEventListener("DOMContentLoaded", () => {
               console.error(error);
             });
         };
-        if (discountInput.value) {
-          const currentPrice =
-            quantity.value *
-            ((getCurrentPrice(item.getAttribute("data-price")) *
-              (100 - +discountInput.value)) /
-              100);
+        // if (discountInput.value) {
+        //   console.log(1350)
+        //   const currentPrice =
+        //     quantity.value *
+        //     ((getCurrentPrice(item.getAttribute("data-price")) *
+        //       (100 - +discountInput.value)) /
+        //       100);
+        //   getDigitsNumber(productTotalPrice, currentPrice);
+        // }
+        if (marjaInput.value) {
+          console.log(1359);
+          console.log(productPriceMotrum);
+          const currentPrice = (
+            +getCurrentPrice(productPriceMotrum) /
+            ((100 - +marjaInput.value) / 100)
+          ).toFixed(2);
+          console.log(currentPrice);
           getDigitsNumber(productTotalPrice, currentPrice);
         }
       });
-      console.log("getResult1231")
+      console.log("getResult1231");
       getResult();
       if (saveButton) {
+        console.log("1396")
         saveButton.onclick = () => saveSpecification(productItems);
       }
       exitButton.onclick = () => exitSpecification(productItems);

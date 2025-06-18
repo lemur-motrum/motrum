@@ -3,46 +3,34 @@
     <div class="new_item_container">
       <div class="new_item_container_value">
         <label class="name_label">
-          <input
-            placeholder="Имя товара"
-            class="new_item_container_name_input"
-            type="text"
-          />
+          <input placeholder="Имя товара"
+                 class="new_item_container_name_input"
+                 type="text" />
           <div class="error"></div>
         </label>
         <label class="article_label">
-          <input
-            placeholder="Артикул товара"
-            class="new_item_container_article_input"
-            type="text"
-          />
+          <input placeholder="Артикул товара"
+                 class="new_item_container_article_input"
+                 type="text" />
           <div class="error"></div>
         </label>
       </div>
       <div class="new_item_container_value">
         <label class="supplier_label">
           <div class="itc-select supplier_select" id="select-1">
-            <button
-              type="button"
-              class="itc-select__toggle supplier_select__toggle"
-              name="supplier"
-              value=""
-              data-select="toggle"
-              data-index="-1"
-            >
-              Поставщик
-            </button>
+            <button type="button"
+                    class="itc-select__toggle supplier_select__toggle"
+                    name="supplier"
+                    value=""
+                    data-select="toggle"
+                    data-index="-1">Поставщик</button>
             <div class="itc-select__dropdown">
               <ul class="itc-select__options">
                 {% for supplier_item in supplier %}
-                <li
-                  class="itc-select__option"
-                  data-select="option"
-                  data-value="{{ supplier_item.id }}"
-                  data-index="0"
-                >
-                  {{ supplier_item.name }}
-                </li>
+                  <li class="itc-select__option"
+                      data-select="option"
+                      data-value="{{ supplier_item.id }}"
+                      data-index="0">{{ supplier_item.name }}</li>
                 {% endfor %}
               </ul>
             </div>
@@ -51,16 +39,15 @@
         <label class="vendor_label">
           <input class="vendor_input" type="text" placeholder="Производитель" />
           <div class="vendor_input_elems_container_wrapper">
-            <div
-              class="vendor_input_elems_container"
-              search-supplier-elem="wrapper"
-            >
+            <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
               <div class="loader"></div>
               <div class="search_elems" search-supplier-elem="container">
-                {% for search_supplier_elem in search_supplier_list %} {%
-                include
-                "admin_specification/include/ajax_search_suplier_elem.html" with
-                search_supplier_elem=search_supplier_elem %} {% endfor %}
+                {% for search_supplier_elem in search_supplier_list %}
+                  {%
+                  include
+                  "admin_specification/include/ajax_search_suplier_elem.html" with
+                  search_supplier_elem=search_supplier_elem %}
+                {% endfor %}
               </div>
               <div class="small_loader"></div>
               <div class="none_content">Таких поставщиков нет</div>
@@ -70,25 +57,13 @@
         {% comment %}
         <label class="vedor_label">
           <div class="itc-select vendor_select" id="select-2">
-            <button
-              type="button"
-              class="itc-select__toggle vendor_select__toggle"
-              name="vendor"
-              value=""
-              data-select="toggle"
-              data-index="-1"
-            >
+            <button type="button" class="itc-select__toggle vendor_select__toggle" name="vendor" value="" data-select="toggle" data-index="-1">
               Производитель
             </button>
             <div class="itc-select__dropdown">
               <ul class="itc-select__options">
                 {% for vendor_item in vendor %}
-                <li
-                  class="itc-select__option"
-                  data-select="option"
-                  data-value="{{ vendor_item.id }}"
-                  data-index="0"
-                >
+                <li class="itc-select__option" data-select="option" data-value="{{ vendor_item.id }}" data-index="0">
                   {{ vendor_item.name }}
                 </li>
                 {% endfor %}
@@ -100,33 +75,25 @@
       </div>
       <div class="new_item_container_value">
         <label class="lot_label">
-            {% comment %} <div class="itc-select lot_select" id="select-4">
-              <button
-                type="button"
-                class="itc-select__toggle lot_select__toggle"
-                name="lot"
-                value=""
-                data-select="toggle"
-                data-index="-4"
-              >
-                Единица измерения
-              </button>
-              <div class="itc-select__dropdown">
-                <ul class="itc-select__options">
-                  {% for lot_item in lot %}
-                  <li
-                    class="itc-select__option"
-                    data-select="option"
-                    data-value="{{ lot_item.id }}"
-                    data-index="0"
-                  >
-                    {{ lot_item.name }}
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div> {% endcomment %}
-          </label>
+          <div class="itc-select lot_select" id="select-4">
+            <button type="button"
+                    class="itc-select__toggle lot_select__toggle"
+                    name="lot"
+                    value=""
+                    data-select="toggle"
+                    data-index="-4">Единица измерения</button>
+            <div class="itc-select__dropdown">
+              <ul class="itc-select__options">
+                {% for lot_item in lot %}
+                  <li class="itc-select__option"
+                      data-select="option"
+                      data-value="{{ lot_item.id }}"
+                      data-index="0">{{ lot_item.name }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </label>
         {% comment %}
         <label class="price_once_label">
           <input placeholder="цена за 1шт" type="text" class="price_input" />
@@ -155,16 +122,8 @@
           <input class="persent_sale" type="text" placeholder="%" />
           %
         </div>
-        <label
-          class="new_item_change_price_motrum_label"
-          for="new_item_change_price_motrum_hands"
-          >ручная цена мотрум за ед.</label
-        >
-        <input
-          class="new_item_change_price_motrum"
-          id="new_item_change_price_motrum_hands"
-          value="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% endif %}"
-        />
+        <label class="new_item_change_price_motrum_label" for="new_item_change_price_motrum_hands">ручная цена мотрум за ед.</label>
+        <input class="new_item_change_price_motrum" id="new_item_change_price_motrum_hands" value="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% endif %}" />
         {% endcomment %}
       </div>
       <div class="new_item_container_value">
@@ -174,11 +133,7 @@
       <div class="new_item_container_value">
         {% comment %}
         <label class="new_item_container_value_calendar_label">
-          <input
-            class="new_item_container_calendar"
-            type="date"
-            min="{{ current_date }}"
-          />
+          <input class="new_item_container_calendar" type="date" min="{{ current_date }}" />
           <div class="error"></div>
         </label>
         {% endcomment %}

@@ -1779,6 +1779,9 @@ h1 {
               }
             }
             &:nth-of-type(2) {
+              display: flex;
+              flex-direction: column;
+              gap: 0.2rem;
               width: 6.813rem;
               font-weight: 300;
               margin-left: 0.938rem;
@@ -1989,6 +1992,9 @@ h1 {
             &:nth-of-type(3) {
               width: 7.375rem;
               margin-left: 1rem;
+              display: flex;
+              flex-direction: column;
+              gap: 0.2rem;
               input {
                 position: relative;
                 border: none;
@@ -2000,6 +2006,7 @@ h1 {
                 border: 0.094rem solid #000;
                 border-radius: 1.875rem;
                 font-family: "Nunito", sans-serif;
+                height: 1.5rem !important;
               }
             }
             &:nth-of-type(4) {

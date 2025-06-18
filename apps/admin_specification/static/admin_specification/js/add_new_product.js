@@ -225,8 +225,10 @@ function addNewProductLogic(container) {
       const supplierSelectToggle = supplierSelect.querySelector(
         ".supplier_select__toggle"
       );
-      const lotInput = newItemContainer.querySelector(".vendor_input");
-
+      const lotSelect = newItemContainer.querySelector(".lot_select");
+      const lotSelectToggle = lotSelect.querySelector(
+        ".lot_select__toggle"
+      );
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
       );
@@ -255,6 +257,7 @@ function addNewProductLogic(container) {
         });
       }
       closeSelectDropdown(supplierSelect);
+      closeSelectDropdown(lotSelect);
 
       // function changePercent() {
       //   if (priceOnceInput.value && quantityInput.value) {
@@ -370,25 +373,36 @@ function addNewProductLogic(container) {
           validate = false;
           vendorInput.style.borderColor = "red";
         } else {
-          validate = true;
+          // validate = true;
         }
 
         if (!supplierSelectToggle.getAttribute("value")) {
           validate = false;
           supplierSelectToggle.style.borderColor = "red";
         } else {
-          validate = true;
+          // validate = true;
         }
+
+        if (!lotSelectToggle.getAttribute("value")) {
+          validate = false;
+          lotSelectToggle.style.borderColor = "red";
+        } else {
+          // validate = true;
+        }
+        
 
         if (
           nameInput.value &&
           articleInput.value &&
           // priceOnceInput.value &&
           // quantityInput.value &&
+          supplierSelectToggle.getAttribute("value") &&
+          lotSelectToggle.getAttribute("value") &&
           vendorInput.getAttribute("vendor_value")
         ) {
           validate = true;
         }
+        console.log("validate1",validate)
         if (validate == false) {
           addNewItemInCartButton.disabled = false;
           addNewItemInCartButton.innerHTML = "";
@@ -405,6 +419,7 @@ function addNewProductLogic(container) {
             // product_new_price: +priceOnceInput.value,
             cart: +cartId,
             quantity: 1,
+            lot:lotSelectToggle.getAttribute("value"),
             // quantity: +quantityInput.value,
             // product_new_sale_motrum: persentSaleInput.value
             //   ? persentSaleInput.value
@@ -420,39 +435,39 @@ function addNewProductLogic(container) {
           };
           const data = JSON.stringify(dataObjNewProduct);
           console.log(dataObjNewProduct)
-          // fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
-          //   method: "POST",
-          //   body: data,
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //     "X-CSRFToken": csrfToken,
-          //   },
-          // })
-          //   .then((response) => {
-          //     if (response.status === 200 || response.status === 201) {
-          //       window.location.reload();
-          //     } else if (response.status === 409) {
-          //       return response.json();
-          //     } else {
-          //       setErrorModal();
-          //       throw new Error("Ошибка");
-          //     }
-          //   })
-          //   .then((response) => {
-          //     if (response.status == "product_in_okt") {
-          //       hidePreloaderAndEnabledButton(addNewItemInCartButton);
-          //       showErrorValidation(
-          //         "Данный товар уже есть в ОКТ",
-          //         newProductError
-          //       );
-          //     } else if (response.status == "product_in_cart") {
-          //       hidePreloaderAndEnabledButton(addNewItemInCartButton);
-          //       showErrorValidation(
-          //         "Товар с таким артикулом уже есть в корзине",
-          //         newProductError
-          //       );
-          //     }
-          //   });
+          fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
+            method: "POST",
+            body: data,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+          })
+            .then((response) => {
+              if (response.status === 200 || response.status === 201) {
+                window.location.reload();
+              } else if (response.status === 409) {
+                return response.json();
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .then((response) => {
+              if (response.status == "product_in_okt") {
+                hidePreloaderAndEnabledButton(addNewItemInCartButton);
+                showErrorValidation(
+                  "Данный товар уже есть в ОКТ",
+                  newProductError
+                );
+              } else if (response.status == "product_in_cart") {
+                hidePreloaderAndEnabledButton(addNewItemInCartButton);
+                showErrorValidation(
+                  "Товар с таким артикулом уже есть в корзине",
+                  newProductError
+                );
+              }
+            });
         }
       };
     }

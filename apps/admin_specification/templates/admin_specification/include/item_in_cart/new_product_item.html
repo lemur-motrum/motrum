@@ -1,0 +1,318 @@
+{% load static %}
+<!-- новый товар -->
+<div class="item_container added_item_container"
+     data-vendor="{{ item.vendor.id }}"
+     data-supplier="{{ item.supplier.id }}"
+     data-product-pk=""
+     data-price-motrum="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% else %}{{ item.price_motrum }} {% endif %}"
+     data-product-name-new="{{ item.product_new }}"
+     data-product-id-cart="{{ item.id }}"
+     data-product-article-new="{{ item.product_new_article }}"
+     data-id="{{ item.id }}"
+     data-price="{{ item.product_new_price }}"
+     data-price-exclusive="1"
+     data-product-specification-id=""
+     data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
+    <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
+    <div title="Редактировать элемент" class="change_icon_container">
+        <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+    </div>
+    <div title="Cохранить элемент" class="save_icon_container">
+        <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
+    </div>
+    <div class="item_value">
+        {{ item.product_new }}
+        <br>
+        <div class="article">Арт. {{ item.product_new_article }}</div>
+        {% if item.comment %}
+            <div class="comment true">Посмотреть комментарий</div>
+        {% else %}
+            <div class="comment false">Добавить комментарий</div>
+        {% endif %}
+    </div>
+    <!--ПУстой див остатков-->
+    <div class="item_value"></div>
+    {% if item.product_price == 0 %}
+        <div class="item_value input_quantity quantity">
+            <div class="input-container">
+                <button class="minus-button">
+                    <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                         alt="img" />
+                </button>
+                <input class="input-quantity"
+                       type="text"
+                       value="{{ item.quantity }}"
+                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                       maxlength="5"
+                       onkeypress='validate(event)'>
+                <button class="plus-button">
+                    <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                         alt="img" />
+                </button>
+            </div>
+        </div>
+        <div class="item_value">
+            <input class="price-input"
+                   name="price-input-extra"
+                   type="text"
+                   placeholder="Введите цену по запросу"
+                   maxlength="10" />
+            <label for="price-input-extra">
+                {% if item.product_price_extra_old %}{{ item.data_old }} - {{ item.product_price_extra_old }}{% endif %}
+            </label>
+        </div>
+        <div class="item_value input_totla-cost total_cost price">0</div>
+    {% else %}
+        <div class="item_value price price_once">{{ item.product_new_price }}</div>
+        <div class="item_value input_quantity quantity">
+            <div class="input-container">
+                <button class="minus-button">
+                    <img src="{% static "admin_specification/images/minus_btn.svg" %}"
+                         alt="img" />
+                </button>
+                <input class="input-quantity"
+                       type="text"
+                       value="{{ item.quantity }}"
+                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                       maxlength="5"
+                       onkeypress='validate(event)'>
+                <button class="plus-button">
+                    <img src="{% static "admin_specification/images/plus_btn.svg" %}"
+                         alt="img" />
+                </button>
+            </div>
+        </div>
+        <div class="item_value total_cost price"></div>
+    {% endif %}
+
+
+    <!--прайс мотрум-->
+    <div class="item_value">
+        <div class="price_motrum"
+             price-motrum="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% else %}{% if item.price_motrum %}{{ item.price_motrum }}{% else %}0{% endif %}{% endif %}">
+            {% if item.product_price_motrum %}
+                {{ item.product_price_motrum }}
+            {% else %}
+                {% if item.price_motrum %}
+                    {{ item.price_motrum }}
+                {% else %}
+                    0
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="">
+            {% if item.product_new_sale_motrum %}
+                скидка на прайс <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="item_value">
+        <input class="discount-input"
+                {% if item.sale_marja %}disabled{% endif %}
+               
+               type="text"
+               name="price-input-discount"
+               placeholder="% скидки"
+               maxlength="6"
+               value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
+    </div>
+    <div class="item_value">
+            <input class="marja-input"
+                   {% if item.sale_client %}disabled{% endif %}
+                   type="text"
+                   name="marja-input-discount"
+                   placeholder="% маржа"
+                   maxlength="6"
+                   value="{% if item.sale_marja %}{{ item.sale_marja }}{% endif %}" />
+        </div>
+    <div class="item_value">
+        <div>
+            <span class="marginality">0</span> ₽
+        </div>
+        <div>
+            / <span class="marginality-persent">0</span> %
+        </div>
+    </div>
+    <div class="item_value">
+        <label>
+            {% if bill_upd %}
+                <input class="delivery_date"
+                       {% comment %}
+                           disabled
+                           {% endcomment %}
+                       type="date"
+                       name="calendar"
+                       value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
+            {% else %}
+                <input class="delivery_date"
+                       {% comment %}
+                           disabled
+                           {% endcomment %}
+                       type="date"
+                       name="calendar"
+                       value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% endif %}"
+                       min="{{ current_date }}">
+            {% endif %}
+        </label>
+    </div>
+<!-- изменениеновый товар -->
+    <div class="change_item_container_wrapper">
+        
+        <div class="change_item_container">
+            <div class="change_item_container_value">
+                <label class="name_label">
+                    <input placeholder="Имя товара"
+                           class="new_item_container_name_input"
+                           type="text"
+                           value="{{ item.product_new }}" />
+                    <div class="error"></div>
+                </label>
+                <label class="article_label">
+                    <input placeholder="Артикул товара"
+                           class="new_item_container_article_input"
+                           type="text"
+                           value="{{ item.product_new_article }}" />
+                    <div class="error"></div>
+                </label>
+            </div>
+            <div class="change_item_container_value">
+                <label class="supplier_label">
+                    <div class="itc-select supplier_select" id="select-1">
+                        <button type="button"
+                                class="itc-select__toggle supplier_select__toggle"
+                                name="supplier"
+                                value="{{ item.supplier.id }}"
+                            
+                                data-select="toggle"
+                                data-index="-1">{{ item.supplier.name }}</button>
+                        <div class="itc-select__dropdown">
+                        <ul class="itc-select__options">
+                            {% for supplier_item in supplier %}
+                            <li class="itc-select__option {% if supplier_item.id == item.supplier.id %} itc-select__option_selected
+                                {% endif %}"
+                                data-select="option"
+                                data-value="{{ supplier_item.id }}"
+                                
+                                data-index="0">{{ supplier_item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="vendor_label">
+                    <input class="vendor_input"
+                           value="{{ item.vendor.name }}"
+                           vendor_value="{{ item.vendor.id }}"
+                           type="text"
+                           placeholder="Производитель" />
+                    <div class="vendor_input_elems_container_wrapper">
+                        <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
+                            <div class="loader"></div>
+                            <div class="search_elems" search-supplier-elem="container">
+                                {% for search_supplier_elem in search_supplier_list %}
+                                    {% include "admin_specification/include/ajax_search_suplier_elem.html" with search_supplier_elem=search_supplier_elem %}
+                                {% endfor %}
+                            </div>
+                            <div class="small_loader"></div>
+                            <div class="none_content">Таких поставщиков нет</div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            {% comment %} <div class="change_item_container_value">
+            <label class="vedor_label">
+                <div class="itc-select vendor_select " id="vendor_toggle_select-{{forloop.counter}}">
+                    <button type="button" class="itc-select__toggle vendor_select__toggle_change" name="vendor" value="{{item.vendor.id}}" data-select="toggle" data-index="1"> {% for vendor_item in vendor %}{% if item.vendor.id == vendor_item.id %}{{ vendor_item.name }}{% endif %}{% endfor %}</button>
+                    <div class="itc-select__dropdown">
+                        <ul class="itc-select__options">
+                            {% for vendor_item in vendor %}
+                                <li class="itc-select__option {% if item.vendor.id == vendor_item.id %}itc-select__option_selected{% endif %}" data-select="option" data-value="{{ vendor_item.id }}" data-index="{% if item.vendor.id == vendor_item.id %}1{% else %}0{% endif %}">{{ vendor_item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </label>
+            </div> {% endcomment %}
+            <div class="change_item_container_value">
+                <div class="change_input_price_title">ПРАЙС</div>
+                <label class="price_once_label">
+                    <input placeholder="цена за 1шт"
+                           type="text"
+                           class="price_input"
+                           value="{{ item.product_new_price }}" />
+                    <div class="error"></div>
+                </label>
+            </div>
+            <div class="change_item_container_value">
+                {% comment %} <label class="quantity_label">
+                    <input placeholder="Количество"
+                           type="text"
+                           class="quantity_input"
+                           value="{{ item.quantity }}" />
+                    <div class="error"></div>
+                </label> {% endcomment %}
+                <label class="lot_label">
+          <div class="itc-select lot_select" id="select-4">
+            <button type="button"
+                    class="itc-select__toggle lot_select__toggle"
+                    name="lot"
+                    value="{{ item.lot.id }}"
+                    data-select="toggle"
+                    data-index="-4">{{ item.lot.name }}</button>
+            <div class="itc-select__dropdown">
+              <ul class="itc-select__options">
+                {% for lot_item in lot %}
+                  <li class="itc-select__option"
+                      data-select="option"
+                      data-value="{{ lot_item.id }}"
+                      data-index="0">{{ lot_item.name }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </label>
+            </div>
+            <div class="change_item_container_value">
+                <div class="change_item_container_value_total_cost">0</div>
+            </div>
+            <div class="change_item_container_value">
+                <div class="change_item_container_value_motrum_price">0</div>
+                <div>
+                    скидка на прайс
+                    <input class="persent_sale"
+                           type="text"
+                           placeholder="%"
+                           value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
+                    %
+                </div>
+                <label class="new_item_change_price_motrum_label"
+                       for="new_item_change_price_motrum_hands">или цена закупки за ед.</label>
+                <input class="new_item_change_price_motrum"
+                       id="new_item_change_price_motrum_hands"
+                       value="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% endif %}">
+            </div>
+            <div class="new_item_container_value">
+                {% comment %} <input class="discount-input"
+                       type="text"
+                       name="price-input-discount"
+                       placeholder="% скидки"
+                       maxlength="6"
+                       value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" /> {% endcomment %}
+            </div>
+        
+            <div class="add_change_item_in_cart_container">
+                <label class="new_item_container_value_calendar_label">
+                    <input class="new_item_container_calendar"
+                           type="date"
+                           value="{% if item.date_delivery %}{{ item.date_delivery|date:"Y-m-d" }}{% endif %}"
+                           min="{{ current_date }}" />
+                    <div class="error"></div>
+                </label>
+                <button class="add_new_item_in_cart">Изменить</button>
+                <div class="add_new_item_in_cart_container_error"></div>
+            </div>
+            <div class="close-btn">+</div>
+        </div>
+    </div>
+</div>

@@ -4,6 +4,7 @@ import {
   getCurrentPrice,
 } from "/static/core/js/functions.js";
 
+// ставит маржинальность в конкретных товарх корзина окт
 export function getMarginality(wrapper) {
   if (wrapper) {
     const spetificationItems = wrapper.querySelectorAll(".item_container");
@@ -25,7 +26,10 @@ export function getMarginality(wrapper) {
 
       let marginalityPercentValue;
       let totalCost;
+      console.log("++++++++++++++++++++++++++++++++++++++++") 
+      console.log(item.querySelector(".price_once").textContent) 
       if (!discountInput.value & !marjinInput.value) {
+        console.log("!discountInput.value & !marjinInput.value")
         totalCost = +quantityInput.value * priceOne;
         marginalityPercentValue =
           ((clientPrice - priceMotrum) / clientPrice) * 100;
@@ -35,6 +39,7 @@ export function getMarginality(wrapper) {
         // 100;
       } else {
         if (discountInput.value == "-") {
+          console.log("discountInput.value == ")
           totalCost = +quantityInput.value * priceOne;
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
@@ -43,6 +48,7 @@ export function getMarginality(wrapper) {
           // 100;
         } 
         else if(discountInput.value != 0 & discountInput.value != ""){
+          console.log("discountInput.value != 0 & discountInput.value !=")
           totalCost =
             +quantityInput.value *
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
@@ -55,11 +61,16 @@ export function getMarginality(wrapper) {
           // 100;
         }
         else if(marjinInput.value != 0 & marjinInput.value != ""){
+          console.log("marjinInput.value != 0 & marjinInput.value != ")
           const marjinValue = +marjinInput.value;
-          const marjinCoefficient = (100 + marjinValue) / 100;
-          const priceWithMarjin = priceOneMotrum * marjinCoefficient;
-          totalCost = +quantityInput.value * priceWithMarjin;
-          
+          // const marjinCoefficient = (100 + marjinValue) / 100;
+          // const priceWithMarjin = priceOneMotrum * marjinCoefficient;
+          // // totalCost = +quantityInput.value * priceWithMarjin;
+          // totalCost =
+          //   +quantityInput.value *
+          //   ((priceOneMotrum / 100) * (100 - marjinCoefficient)).toFixed(2);
+          let oneProduct = (priceOneMotrum/ ((100 - +marjinInput.value)/100))
+          totalCost = (+quantityInput.value *oneProduct).toFixed(2);
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
             
@@ -82,7 +93,7 @@ export function getMarginality(wrapper) {
       marginalityPercentContainer.textContent = isNaN(marginalityPercentValue)
         ? "0,00"
         : marginalityPercentValue.toFixed(2);
-      getDigitsNumber(marginalityContainer, marginality);
+       getDigitsNumber(marginalityContainer, marginality);
     });
   }
 }

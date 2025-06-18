@@ -839,8 +839,8 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 data["date_delivery"], "%Y-%m-%d"
             ).date()
         
-        if data["sale_client"] == "":
-            data["sale_client"] = None
+        # if data["sale_client"] == "":
+        #     data["sale_client"] = None
             
         if data["product_new_sale_motrum"] == "":
             data["product_new_sale_motrum"] = None  

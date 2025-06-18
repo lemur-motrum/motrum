@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
       'textarea[name="delivery-date-all-input-name-all"]'
     );
 
-    
+
 
     const bitrixInput = document.querySelector(".bitrix-input");
     const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
@@ -35,8 +35,19 @@ window.addEventListener("DOMContentLoaded", () => {
       specificationWrapepr.querySelectorAll(".item_container");
 
     button.onclick = () => {
+      console.log("saveSpecification(elems)")
       const products = [];
       let validate = true;
+      const marginality =
+        document.querySelector(".marginality_value");
+      const marginality_sum = marginality.textContent
+      const marginalityValue =
+        document.querySelector(".marginality_prcent_value");
+      const marginality_percent = marginalityValue.textContent
+
+      console.log("marginality_sum", marginality, marginality_sum)
+      console.log("marginalityValue", marginalityValue, marginality_percent)
+
       const clientRequsits = document
         .querySelector("[name='client-requisit']")
         .getAttribute("value");
@@ -63,8 +74,13 @@ window.addEventListener("DOMContentLoaded", () => {
         const itemPrice = specificationItem.getAttribute("data-price");
         const extraDiscount =
           specificationItem.querySelector(".discount-input");
+        const marjaItem =
+          specificationItem.querySelector(".marja-input");
         const productSpecificationId = specificationItem.getAttribute(
           "data-product-specification-id"
+        );
+        const motrumPrice = specificationItem.getAttribute(
+          "data-price-motrum"
         );
         const deliveryDate = specificationItem.querySelector(".delivery_date");
 
@@ -72,6 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const commentItem = specificationItem.getAttribute("data-comment-item");
 
         const inputPrice = specificationItem.querySelector(".price-input");
+        const textPrice = specificationItem.querySelector(".price_once");
         const saleMotrum = specificationItem.querySelector(
           ".motrum_sale_persent"
         );
@@ -116,12 +133,15 @@ window.addEventListener("DOMContentLoaded", () => {
             ? productSpecificationId
             : null,
           extra_discount: extraDiscount.value,
+          marja_motrum:  marjaItem.value,
           date_delivery: deliveryDate.value,
           text_delivery: createTextDateDelivery(),
           product_name_new: nameProductNew,
           product_new_article: nameProductNewАrt,
           comment: commentItem ? commentItem : null,
+          price_motrum:+getCurrentPrice(motrumPrice),
           sale_motrum: saleMotrum ? saleMotrum.textContent : null,
+          
           vendor: vendor ? vendor : null,
           supplier: supplier ? supplier : null,
           id_cart: productCartId,
@@ -134,6 +154,16 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         }
 
+        if (itemPrice) {
+          console.log(itemPrice)
+          console.log("inputPrice.value", itemPrice)
+          if (!itemPrice || itemPrice == 0.00 || itemPrice == "0,00" || itemPrice == "0") {
+
+            console.log(" if inputPrice 22222222222222")
+            validate = false;
+            textPrice.style.color = "red";
+          }
+        }
         if (inputPrice) {
           if (!inputPrice.value) {
             validate = false;
@@ -183,6 +213,8 @@ window.addEventListener("DOMContentLoaded", () => {
           type_delivery: deliveryRequsits,
           type_save: "bill",
           post_update: false,
+          marginality_sum: +marginality_sum,
+          marginality: +marginality_percent,
         };
 
         const data = JSON.stringify(dataObj);
@@ -264,7 +296,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   post_update: false,
                 };
                 const data = JSON.stringify(dataObj);
-                
+
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,
                   {

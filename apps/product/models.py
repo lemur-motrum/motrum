@@ -977,6 +977,12 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    lot = models.ForeignKey(
+        "Lot",
+        verbose_name="Единица измерения",
+        on_delete=models.PROTECT, blank=True,
+        null=True,
+    )
     date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
 

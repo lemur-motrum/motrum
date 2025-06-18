@@ -29,23 +29,33 @@ window.addEventListener("DOMContentLoaded", () => {
       const changeFormWrapper = newProduct.querySelector(
         ".change_item_container"
       );
+      
       const nameInput = changeFormWrapper.querySelector(
         ".new_item_container_name_input"
       );
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
+      const motrumPriceContainerTitle = changeFormWrapper.querySelector(".change_input_price_title");
+      motrumPriceContainerTitle.classList.add("show");
       // const select = changeFormWrapper.querySelector(".vendor_select");
       // const supplierSelect = select.querySelector(
       //   ".vendor_select__toggle_change"
       // );
       const vendorInput = changeFormWrapper.querySelector(".vendor_input");
+      const supplierSelectToggle = changeFormWrapper.querySelector(
+        ".supplier_select__toggle"
+      );
+      const lotSelect = changeFormWrapper.querySelector(".lot_select");
+      const lotSelectToggle = lotSelect.querySelector(
+        ".lot_select__toggle"
+      );
       const newProductError = changeFormWrapper.querySelector(
         ".add_new_item_in_cart_container_error"
       );
       const deliveryDate = changeFormWrapper.querySelector(".new_item_container_calendar")
       const discountInput = changeFormWrapper.querySelector(".discount-input")
-      discountInput.value = getCurrentPrice(discountInput.value);
+      // discountInput.value = getCurrentPrice(discountInput.value);
 
       // const options = select.querySelectorAll(".itc-select__options");
       const changeMotrumPriceInput= changeFormWrapper.querySelector(
@@ -84,10 +94,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const totalCostValue = changeFormWrapper.querySelector(
         ".change_item_container_value_total_cost"
       );
-      getDigitsNumber(
-        totalCostValue,
-        priceOneInput.value * quantityInput.value
-      );
+      // getDigitsNumber(
+      //   totalCostValue,
+      //   priceOneInput.value * quantityInput.value
+      // );
       const saleValue = changeFormWrapper.querySelector(
         ".change_item_container_value_motrum_price"
       );
@@ -112,7 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }, 600);
       };
       inputValidation(priceOneInput);
-      inputValidationQuantity(quantityInput);
+      // inputValidationQuantity(quantityInput);
 
       function changePercent() {
         if (priceOneInput.value && quantityInput.value) {
@@ -124,7 +134,7 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         }
       }
-      changePercent();
+      // changePercent();
       salePersentInput.addEventListener("input", function () {
         const currentValue = this.value
           .replace(",", ".")
@@ -149,7 +159,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (salePersentInput.value == ".") {
           salePersentInput.target.value = "";
         }
-        changePercent();
+        // changePercent();
       });
 
       function changeTotalCost(input1, input2) {
@@ -165,11 +175,11 @@ window.addEventListener("DOMContentLoaded", () => {
           if (input2.value) {
             getDigitsNumber(totalCostValue, +input1.value * +input2.value);
           }
-          changePercent();
+          // changePercent();
         });
       }
-      changeTotalCost(priceOneInput, quantityInput);
-      changeTotalCost(quantityInput, priceOneInput);
+      // changeTotalCost(priceOneInput, quantityInput);
+      // changeTotalCost(quantityInput, priceOneInput);
 
       changeButton.onclick = () => {
         setPreloaderInButton(changeButton);
@@ -182,7 +192,7 @@ window.addEventListener("DOMContentLoaded", () => {
         validate(nameInput);
         validate(articleInput);
         validate(priceOneInput);
-        validate(quantityInput);
+        // validate(quantityInput);
         if (!vendorInput.getAttribute("vendor_value")) {
           setPreloaderInButton(changeButton);
           vendorInput.style.border = "0.063rem solid red";
@@ -191,7 +201,7 @@ window.addEventListener("DOMContentLoaded", () => {
           nameInput.value &&
           articleInput.value &&
           priceOneInput.value &&
-          quantityInput.value &&
+          // quantityInput.value &&
           vendorInput.getAttribute("vendor_value")
         ) {
           const cartId = getCookie("cart");
@@ -201,14 +211,16 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_article: articleInput.value,
             product_new_price: +priceOneInput.value,
             cart: +cartId,
-            quantity: +quantityInput.value,
+            // quantity: +quantityInput.value,
             product_new_sale_motrum: salePersentInput.value
               ? salePersentInput.value
               : null,
             vendor: vendorInput.getAttribute("vendor_value"),
+            supplier: supplierSelectToggle.getAttribute("value"),
+            lot: lotSelectToggle.getAttribute("value"),
             date_delivery:deliveryDate.value,
-            sale_client: discountInput.value,
-            product_price_motrum:changeMotrumPriceInput.value
+            // sale_client: discountInput.value,
+            product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(objData);
           fetch(`/api/v1/cart/${productId}/upd-product-new/`, {

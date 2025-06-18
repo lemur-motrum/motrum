@@ -1200,7 +1200,7 @@ def save_specification(
                 motrum_sale = 0.00
                 
             price_one = float(product_item["price_one"])
-            price_one_original_new = price_one
+            
             price_one_motrum = float(product_item["price_motrum"])
             # если есть доп скидка работать с ценой прайс
             if (
@@ -1269,7 +1269,8 @@ def save_specification(
                 product_spes.extra_discount = product_item["extra_discount"]
             else:
                 product_spes.extra_discount = None
-
+                
+            price_one_original_new = price_one
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = currency
             product_spes.quantity = product_item["quantity"]

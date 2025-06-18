@@ -213,7 +213,7 @@ window.addEventListener("DOMContentLoaded", () => {
           type_delivery: deliveryRequsits,
           type_save: "bill",
           post_update: false,
-          marginality_sum: +marginality_sum,
+          marginality_sum: +getCurrentPrice(marginality_sum),
           marginality: +marginality_percent,
         };
 

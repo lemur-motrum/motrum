@@ -263,9 +263,12 @@ def crete_pdf_bill(
                 alignment=TA_RIGHT,
             )
         )
+        styles.add(ParagraphStyle(name="Roboto-leading", fontName="Roboto", fontSize=7, leading=7))
+        styles.add(ParagraphStyle(name="Roboto-8-leading", fontName="Roboto", fontSize=6, leading=6))
 
         bold_style = styles["Roboto-Bold"]
         normal_style = styles["Roboto"]
+        normal_style_leading = styles["Roboto-leading"]
         normal_style_centre = styles["Roboto-centre"]
 
         normal_style_left = styles["Roboto-left"]
@@ -274,6 +277,7 @@ def crete_pdf_bill(
         normal_style_6_right = styles["Roboto-Center-Gray-6-right"]
         bold_style_center = styles["Roboto-Bold-Center"]
         normal_style_8 = styles["Roboto-8"]
+        normal_style_8_leading = styles["Roboto-8-leading"]
         title_style_14 = styles["Roboto-Title"]
         bold_left_style = styles["Roboto-Bold-left"]
 
@@ -295,36 +299,36 @@ def crete_pdf_bill(
             (
                 Paragraph(
                     f"{motrum_info_req.bank}",
-                    normal_style,
+                    normal_style_leading,
                 ),
-                Paragraph("БИК", normal_style),
-                Paragraph(f"{motrum_info_req.bic}", normal_style),
+                Paragraph("БИК", normal_style_leading),
+                Paragraph(f"{motrum_info_req.bic}", normal_style_leading),
             ),
             (
                 None,
-                Paragraph("Сч. №", normal_style),
-                Paragraph(f"{motrum_info_req.kpp}", normal_style),
+                Paragraph("Сч. №", normal_style_leading),
+                Paragraph(f"{motrum_info_req.kpp}", normal_style_leading),
             ),
             (
-                Paragraph("Банк получателя", normal_style_8),
+                Paragraph("Банк получателя", normal_style_8_leading),
                 None,
                 None,
             ),
             (
                 Paragraph(
                     f"ИНН {motrum_info.inn} &nbsp &nbsp &nbsp  KПП {motrum_info.kpp} ",
-                    normal_style,
+                    normal_style_leading,
                 ),
-                Paragraph("Сч. №", normal_style),
-                Paragraph(f"{motrum_info_req.account_requisites}", normal_style),
+                Paragraph("Сч. №", normal_style_leading),
+                Paragraph(f"{motrum_info_req.account_requisites}", normal_style_leading),
             ),
             (
-                Paragraph(f"{motrum_info.full_name_legal_entity}", normal_style),
+                Paragraph(f"{motrum_info.full_name_legal_entity}", normal_style_leading),
                 None,
                 None,
             ),
             (
-                Paragraph("Получатель", normal_style_8),
+                Paragraph("Получатель", normal_style_8_leading),
                 None,
                 None,
             ),
@@ -336,7 +340,7 @@ def crete_pdf_bill(
                 2 * cm,
                 7 * cm,
             ],
-            rowHeights=0.5 * cm,
+            rowHeights=0.4 * cm,
             hAlign="LEFT",
         )
         table_bank.setStyle(
@@ -350,6 +354,12 @@ def crete_pdf_bill(
                     ("BOX", (2, 0), (-1, -1), 0.25, colors.black),
                     # ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                     # Уменьшаем отступы:
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 1),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 1),
+                    
                     # # ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
                     # ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
                     # ("BOX", (0, 0), (-1, -1), 2, colors.black),
@@ -362,13 +372,14 @@ def crete_pdf_bill(
                 ]
             )
         )
+        
         story.append(table_bank)
         story_no_sign.append(table_bank)
         # name_image_logo_supplier = f"{MEDIA_ROOT}/documents/supplier.png"
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
         logo_supplier = Paragraph(
-            f'<br></br><br></br><br></br><br></br><img width="555" height="55"  src="{name_image_logo_supplier}" /><br></br>',
+            f'<br></br><img width="555" height="65"  src="{name_image_logo_supplier}" /><br></br>',
             normal_style,
         )
         story.append(logo_supplier)

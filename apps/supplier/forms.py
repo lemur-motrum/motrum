@@ -22,9 +22,9 @@ class DiscountForm(forms.ModelForm):
         queryset=Vendor.objects.all(),
         required=False,
         label="Производитель",
-        # widget=autocomplete.ModelSelect2(
-        #     url="supplier:vendor-autocomplete", forward=["supplier"]
-        # ),
+        widget=autocomplete.ModelSelect2(
+            url="supplier:vendor-autocomplete",
+        ),
     )
     category_supplier = forms.ModelChoiceField(
         queryset=SupplierCategoryProduct.objects.all(),
@@ -58,7 +58,7 @@ class DiscountForm(forms.ModelForm):
         required=False,
         label="Промо группа",
         widget=autocomplete.ModelSelect2(
-            url="supplier:promo-group_catalog-autocomplete", forward=["supplier"]
+            url="supplier:promo-group_catalog-autocomplete", forward=["supplier","vendor"]
         ),
     )
 

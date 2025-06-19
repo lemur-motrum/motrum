@@ -272,7 +272,11 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
         vendor = self.forwarded.get("vendor", None)
         if vendor:
             qs = qs.filter(vendor=vendor)
-
+            
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
         return qs
 
 
@@ -388,13 +392,37 @@ class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         qs = SupplierPromoGroupe.objects.all()
-        category_catalog = self.forwarded.get("supplier", None)
-        if category_catalog:
-            qs = qs.filter(supplier=category_catalog)
+        supplier = self.forwarded.get("supplier", None)
+        if supplier:
+            qs = qs.filter(supplier=supplier)
 
+        vendor = self.forwarded.get("vendor", None)
+        
+        if vendor:
+            qs = qs.filter(vendor=vendor)
         if self.q:
             qs = qs.filter(
                 Q(name__icontains=self.q)
             )
         return qs
+    
+class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = SupplierPromoGroupe.objects.all()
+        supplier = self.forwarded.get("supplier", None)
+        if supplier:
+            qs = qs.filter(supplier=supplier)
+
+        vendor = self.forwarded.get("vendor", None)
+        print("vendor",vendor)
+        if vendor:
+            qs = qs.filter(vendor=vendor)
+            
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
+        return qs
+
 

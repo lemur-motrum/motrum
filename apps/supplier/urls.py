@@ -61,4 +61,9 @@ urlpatterns = [
         PromoGroupeAutocomplete.as_view(),
         name="promo-group_catalog-autocomplete",
     ),
+    url(
+        r"^promo-group_catalog-autocomplete_product/$",
+        PromoGroupeAutocomplete.as_view(),
+        name="promo-group_catalog-autocomplete_product",
+    ),
 ]

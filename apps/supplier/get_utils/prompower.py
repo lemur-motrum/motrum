@@ -216,6 +216,7 @@ def prompower_api():
                     promo_groupe_okt = SupplierPromoGroupe.objects.get_or_create(
                         name=promo_groupe,
                         supplier=prompower,
+                        vendor=vendori,
                     )
                     print("promo_groupe_okt",promo_groupe_okt[0])
 

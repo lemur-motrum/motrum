@@ -491,6 +491,6 @@ def prompower_api():
             finally:
                 continue
 
-    # add_category_groupe()
-    # add_category()
+    add_category_groupe()
+    add_category()
     add_products()

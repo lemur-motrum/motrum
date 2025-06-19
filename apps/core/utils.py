@@ -50,7 +50,7 @@ def create_slug(name, arr_other_name):
 
 # цена мотрум со скидкой
 def get_price_motrum(
-    item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier
+    item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier,promo_groupe
 ):
     from apps.supplier.models import (
         Discount,
@@ -64,9 +64,21 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
+    # промо группа
+    if promo_groupe and percent == 0:
+        discount_promo_groupe = Discount.objects.filter(
+            promo_groupe=promo_groupe.id,
+            is_tag_pre_sale=False,
+        )
 
+        if discount_promo_groupe:
+            percent = get_percent(discount_promo_groupe)
+            sale = discount_promo_groupe
+
+    
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all=all_item_group.id,
             is_tag_pre_sale=False,
         )
@@ -80,6 +92,7 @@ def get_price_motrum(
     if item_group and percent == 0:
 
         discount_group = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
             group_supplier=item_group.id,
             is_tag_pre_sale=False,
@@ -95,6 +108,7 @@ def get_price_motrum(
     if item_category and percent == 0:
 
         discount_categ = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
             group_supplier__isnull=True,
             category_supplier=item_category.id,
@@ -112,6 +126,7 @@ def get_price_motrum(
             group_supplier__isnull=True,
             category_supplier__isnull=True,
             category_supplier_all__isnull=True,
+            promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
         # скидка по всем вендору
@@ -127,6 +142,7 @@ def get_price_motrum(
             group_supplier__isnull=True,
             category_supplier__isnull=True,
             category_supplier_all__isnull=True,
+            promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
         # скидка по всем вендору
@@ -135,13 +151,14 @@ def get_price_motrum(
             sale = discount_all
         # нет скидки
     if rub_price_supplier:
-
+        print(sale)
+        print(percent)
         motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
         # обрезать цены
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-
+    print(motrum_price)
     return motrum_price, sale[0]
 
 
@@ -174,17 +191,30 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
 
 
 # получение комплектности и расчет штук
-def get_lot(lot, stock_supplier, lot_complect):
+def get_lot(lot, stock_supplier, lot_complect,stock_supplier_unit,force_stock_supplier_unit):
     from apps.product.models import Lot
-
-    if lot == "base" or lot == "штука":
-        lots = Lot.objects.get(name_shorts="шт")
-        lot_stock = stock_supplier
-        lot_complect = 1
+    if lot_complect == None:
+            lot_complect = 1
     else:
-        lots = Lot.objects.get(name=lot)
-        lot_stock = stock_supplier * lot_complect
         lot_complect = lot_complect
+        
+    if lot == "base" or lot == "штука":
+        print("lot == base or lot == штука:")
+        lots = Lot.objects.get(name_shorts="шт")
+        
+        # lot_stock = stock_supplier
+        
+        
+    else:
+        print("lot != штука:")
+        lots = Lot.objects.get(name=lot)
+        # lot_stock = stock_supplier * lot_complect
+        
+    lot_stock = stock_supplier * lot_complect 
+    print("force_stock_supplier_unit",force_stock_supplier_unit)
+    if force_stock_supplier_unit:
+        lot_stock = stock_supplier_unit
+    print("get_lot",lots, lot_stock, lot_complect)
     return (lots, lot_stock, lot_complect)
 
 
@@ -953,10 +983,16 @@ def save_update_product_attr_all(
     category_supplier,
     description,
     name,
+    promo_groupe,
 ):
 
     try:
-
+        print(promo_groupe,"promo_groupe")
+        if promo_groupe:
+            print(promo_groupe,"promo_groupe24")
+            product.promo_groupe = promo_groupe
+            print("product.promo_groupe",product.promo_groupe)
+            
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
 

@@ -376,9 +376,15 @@ class SupplierCategoryProductAll(models.Model):
             daemon_thread.setDaemon(True)
             daemon_thread.start()
 
-
-
-
+class SupplierPromoGroupe(models.Model):
+    name = models.CharField("Название промогруппы", max_length=150)
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+    )
+    def __str__(self):
+        return f"{self.name}"
 class Discount(models.Model):
     supplier = models.ForeignKey(
         Supplier,
@@ -415,6 +421,16 @@ class Discount(models.Model):
         blank=True,
         null=True,
     )
+    
+    promo_groupe = models.ForeignKey(
+        "SupplierPromoGroupe",
+        verbose_name="Промо группа",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    
+    
     percent = models.FloatField(
         "Процент скидки",
         blank=True,
@@ -449,7 +465,11 @@ class Discount(models.Model):
         from apps.product.models import Price
 
         # обновление цен товаров связанной группы
-        if self.category_supplier_all:
+        if self.promo_groupe:
+            price = Price.objects.filter(
+                prod__promo_groupe=self.promo_groupe
+            )
+        elif self.category_supplier_all:
             price = Price.objects.filter(
                 prod__category_supplier_all=self.category_supplier_all
             )

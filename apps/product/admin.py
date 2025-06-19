@@ -650,14 +650,23 @@ class ProductAdmin(SimpleHistoryAdmin):
                 product_blank_dict = {
                     k: v for k, v in product_item.items() if v == None
                 }
+                
 
                 for item_dict in product_blank_dict:
+                    print(product_item.get('supplier_id'))
                     verbose_name = Model._meta.get_field(item_dict).verbose_name
+                    supplier_id = product_item.get('supplier_id') 
+                    if supplier_id and supplier_id == 1  and  verbose_name == "Промо группа":
+                            item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
+                            product_blank_local = f"{product_blank_local}{item_one}"
                     if (
                         verbose_name != "Подгруппа категории товара от поставщиков"
                         and verbose_name != "Группа товара от поставщиков"
                         and verbose_name != "Группа Мотрум"
                         and verbose_name != "Дополнительный артикул поставщика"
+                        and  verbose_name != "Промо группа"
+                        
+                        
                     ):
                         if verbose_name == "Категория Мотрум":
                             item_one = f"<li font-size: 0.6rem>Группировка Motrum</li>"
@@ -667,6 +676,10 @@ class ProductAdmin(SimpleHistoryAdmin):
                             )
                         else:
                             item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
+                            
+                        # if product_item.get('supplier_id') == 1  and  verbose_name == "Промо группа":
+                        #     item_one = f"<li font-size: 0.6rem>{verbose_name}</li>"
+            
                         product_blank_local = f"{product_blank_local}{item_one}"
 
             product_blank = f"{product_blank}{product_blank_local}"

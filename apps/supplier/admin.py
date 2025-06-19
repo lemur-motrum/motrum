@@ -399,20 +399,25 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
 class DiscountAdmin(admin.ModelAdmin):
     form = DiscountForm
     list_display = (
+        "percent",
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
-        "percent",
+        "promo_groupe",
         "is_tag_pre_sale",
+        
+        
     )
     fields = (
+        
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
+        "promo_groupe",
         "percent",
         "is_tag_pre_sale",
     )

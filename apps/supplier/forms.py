@@ -8,6 +8,7 @@ from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 
@@ -46,10 +47,18 @@ class DiscountForm(forms.ModelForm):
     category_supplier_all = forms.ModelChoiceField(
         queryset=SupplierCategoryProductAll.objects.all(),
         required=False,
-        label="Категория приходящая поставщика",
+        label="Подгруппа",
         widget=autocomplete.ModelSelect2(
             url="supplier:category-all-autocomplete",
             forward=["supplier", "vendor", "category_supplier", "group_supplier"],
+        ),
+    )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete", forward=["supplier"]
         ),
     )
 

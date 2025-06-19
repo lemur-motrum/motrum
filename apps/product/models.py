@@ -31,6 +31,7 @@ from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 from pytils import translit
@@ -109,6 +110,13 @@ class Product(models.Model):
     group = models.ForeignKey(
         "GroupProduct",
         verbose_name="Группа Мотрум",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    promo_groupe = models.ForeignKey(
+        SupplierPromoGroupe,
+        verbose_name="Промо группа",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -453,8 +461,9 @@ class Price(models.Model):
     def __str__(self):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args,force_price_motrum=False, **kwargs):
         print("SAVE PRICE")
+        print("force_price_motrum",force_price_motrum)
         # если 0 цена или экстра прайс проставить нули и теги
         if (
             self.price_supplier == 0
@@ -488,14 +497,25 @@ class Price(models.Model):
                 self.rub_price_supplier,
                 self.prod.category_supplier_all,
                 self.prod.supplier,
+                self.prod.promo_groupe,
             )
 
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
-            if self.price_motrum:
+            print("price_motrum",price_motrum)
+            print("sale",sale)
+            if force_price_motrum:
+                print("self.price_motrum")
                 self.price_motrum = self.price_motrum
             else:
+                print("price_motrum")
                 self.price_motrum = price_motrum
+            # if self.price_motrum:
+            #     print("self.price_motrum")
+            #     self.price_motrum = self.price_motrum
+            # else:
+            #     print("price_motrum")
+            #     self.price_motrum = price_motrum
 
             self.sale = sale
         else:
@@ -538,6 +558,7 @@ class Price(models.Model):
         rub_price_supplier = self.rub_price_supplier
         all_item_group = self.prod.category_supplier_all
         supplier = self.prod.supplier
+        promo_groupe = self.promo_groupe
 
         motrum_price = rub_price_supplier
         percent = 0
@@ -547,9 +568,21 @@ class Price(models.Model):
         def get_percent(item):
             for i in item:
                 return i.percent
+        if promo_groupe and percent == 0:
+            discount_promo_groupe = Discount.objects.filter(
+                promo_groupe=promo_groupe.id,
+                is_tag_pre_sale=False,
+            )
 
+            if discount_promo_groupe:
+                percent = get_percent(discount_promo_groupe)
+                sale = discount_promo_groupe
+
+    
+    
         if all_item_group and percent == 0:
             discount_all_group = Discount.objects.filter(
+                promo_groupe__isnull=True,
                 category_supplier_all=all_item_group.id,
                 is_tag_pre_sale=False,
             )
@@ -563,6 +596,7 @@ class Price(models.Model):
         if item_group and percent == 0:
 
             discount_group = Discount.objects.filter(
+                promo_groupe__isnull=True,
                 category_supplier_all__isnull=True,
                 group_supplier=item_group.id,
                 is_tag_pre_sale=False,
@@ -578,6 +612,7 @@ class Price(models.Model):
         if item_category and percent == 0:
 
             discount_categ = Discount.objects.filter(
+                promo_groupe__isnull=True,
                 category_supplier_all__isnull=True,
                 group_supplier__isnull=True,
                 category_supplier=item_category.id,
@@ -596,6 +631,7 @@ class Price(models.Model):
                 category_supplier__isnull=True,
                 category_supplier_all__isnull=True,
                 is_tag_pre_sale=False,
+                promo_groupe__isnull=True,
             )
             # скидка по всем вендору
             if discount_all:
@@ -611,6 +647,7 @@ class Price(models.Model):
                 category_supplier__isnull=True,
                 category_supplier_all__isnull=True,
                 is_tag_pre_sale=False,
+                promo_groupe__isnull=True,
             )
             # скидка по всем вендору
             if discount_all:
@@ -697,7 +734,13 @@ class Stock(models.Model):
     def __str__(self):
         return f"{self.stock_supplier} {self.stock_supplier}"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args,force_stock_supplier_unit=False, **kwargs):
+        print(self.lot_complect,"self.lot_complect")
+        print(self.order_multiplicity,"self.order_multiplicity")
+        print(self.stock_supplier_unit,"self.stock_supplier_unit")
+        print(self.stock_supplier,"self.stock_supplier")
+        print(force_stock_supplier_unit,"self.force_stock_supplier_unit")
+        
         if self.lot_complect == 0:
             self.lot_complect = 1
 
@@ -707,16 +750,16 @@ class Stock(models.Model):
         print(self.stock_supplier_unit)  # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
 
-            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
+            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect,self.stock_supplier_unit,force_stock_supplier_unit)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
-
+        print(self.stock_supplier_unit)
         if self.stock_supplier != None and self.stock_supplier != 0:
-
-            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect)
+            print(" if self.stock_supplier != None and self.stock_supplier != 0:")
+            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect,self.stock_supplier_unit,force_stock_supplier_unit)
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
-
+        print(self.stock_supplier_unit)
         super().save(*args, **kwargs)
 
 

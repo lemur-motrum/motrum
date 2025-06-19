@@ -1,5 +1,6 @@
 import csv
 import datetime
+import json
 from locale import LC_ALL, setlocale
 import os
 import random
@@ -73,6 +74,7 @@ from apps.core.utils import (
     create_time_stop_specification,
     delete_everything_in_folder,
     email_manager_after_new_order_site,
+    get_category_prompower,
     image_error_check,
     product_cart_in_file,
     save_file_product,
@@ -108,7 +110,7 @@ from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import prompower_api
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import Supplier, SupplierCategoryProductAll, Vendor
+from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -139,8 +141,11 @@ def add_iek(request):
     bx = Bitrix(webhook)
     bs_id_order = 12020
     order = Order.objects.get(id_bitrix=12020)
+    prompower_api()
     
-
+    
+    
+    
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
@@ -377,3 +382,19 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
+    
+
+class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = SupplierPromoGroupe.objects.all()
+        category_catalog = self.forwarded.get("supplier", None)
+        if category_catalog:
+            qs = qs.filter(supplier=category_catalog)
+
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
+        return qs
+

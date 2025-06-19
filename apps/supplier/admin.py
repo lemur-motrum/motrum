@@ -28,6 +28,7 @@ from .models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 from django.utils.html import mark_safe
@@ -395,24 +396,57 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class SupplierPromoGroupeAdmin(admin.ModelAdmin):
+    show_facets = admin.ShowFacets.ALWAYS
+    list_filter = [
+        "supplier",
+        "vendor",
+        
+    ]
+    
+    list_display = (
+        "name",
+        "supplier",
+        "vendor",
+    )
+    list_display_links = [
+        "name",
+    ]
+    fields = (
+        "supplier",
+        "vendor",
+        "name",
+    )
+
+
+
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 class DiscountAdmin(admin.ModelAdmin):
     form = DiscountForm
     list_display = (
+        "percent",
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
-        "percent",
+        "promo_groupe",
         "is_tag_pre_sale",
+        
+        
     )
     fields = (
+        
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
+        "promo_groupe",
         "percent",
         "is_tag_pre_sale",
     )
@@ -489,11 +523,11 @@ class VendorWebAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Vendor, SupplierVendor)
 admin.site.register(SupplierCategoryProductAll, SupplierCategoryProductAllAdmin)
 admin.site.register(Discount, DiscountAdmin)
 admin.site.register(SupplierCategoryProduct, SupplierCategoryProductAdmin)
 admin.site.register(SupplierGroupProduct, SupplierGroupProductAdmin)
+admin.site.register(SupplierPromoGroupe, SupplierPromoGroupeAdmin)
 website_admin.register(Vendor, VendorWebAdmin)

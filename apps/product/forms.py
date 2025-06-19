@@ -19,6 +19,7 @@ from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 
@@ -80,6 +81,14 @@ class ProductForm(forms.ModelForm):
             forward=["supplier", "vendor", "category_supplier", "group_supplier"],
         ),
     )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor",]
+        ),
+    )
 
     class Meta:
         model = Product
@@ -110,6 +119,7 @@ class DocumentForm(forms.ModelForm):
 
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
+    
     category = forms.ModelChoiceField(
         queryset=CategoryProduct.objects.all(),
         label="Категория Motrum",
@@ -194,6 +204,14 @@ class ProductChangeForm(forms.ModelForm):
         queryset=Vendor.objects.all(),
         label="Производитель",
         widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor",]
+        ),
     )
 
     class Meta:
@@ -323,6 +341,14 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
             url="product:category_supplier_all-autocomplete",
             forward=["supplier", "vendor", "category_supplier", "group_supplier"],
             attrs={"class": "form-control"},
+        ),
+    )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor"]
         ),
     )
 

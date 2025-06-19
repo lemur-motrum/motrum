@@ -52,7 +52,7 @@ def create_slug(name, arr_other_name):
 
 # цена мотрум со скидкой
 def get_price_motrum(
-    item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier
+    item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier,promo_groupe
 ):
     from apps.supplier.models import (
         Discount,
@@ -66,9 +66,21 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
+    # промо группа
+    if promo_groupe and percent == 0:
+        discount_promo_groupe = Discount.objects.filter(
+            promo_groupe=promo_groupe.id,
+            is_tag_pre_sale=False,
+        )
 
+        if discount_promo_groupe:
+            percent = get_percent(discount_promo_groupe)
+            sale = discount_promo_groupe
+
+    
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all=all_item_group.id,
             is_tag_pre_sale=False,
         )
@@ -82,6 +94,7 @@ def get_price_motrum(
     if item_group and percent == 0:
 
         discount_group = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
             group_supplier=item_group.id,
             is_tag_pre_sale=False,
@@ -97,6 +110,7 @@ def get_price_motrum(
     if item_category and percent == 0:
 
         discount_categ = Discount.objects.filter(
+            promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
             group_supplier__isnull=True,
             category_supplier=item_category.id,
@@ -114,6 +128,7 @@ def get_price_motrum(
             group_supplier__isnull=True,
             category_supplier__isnull=True,
             category_supplier_all__isnull=True,
+            promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
         # скидка по всем вендору
@@ -129,6 +144,7 @@ def get_price_motrum(
             group_supplier__isnull=True,
             category_supplier__isnull=True,
             category_supplier_all__isnull=True,
+            promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
         # скидка по всем вендору
@@ -137,13 +153,14 @@ def get_price_motrum(
             sale = discount_all
         # нет скидки
     if rub_price_supplier:
-
+        print(sale)
+        print(percent)
         motrum_price = rub_price_supplier - (rub_price_supplier / 100 * float(percent))
         # обрезать цены
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-
+    print(motrum_price)
     return motrum_price, sale[0]
 
 
@@ -176,17 +193,30 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
 
 
 # получение комплектности и расчет штук
-def get_lot(lot, stock_supplier, lot_complect):
+def get_lot(lot, stock_supplier, lot_complect,stock_supplier_unit,force_stock_supplier_unit):
     from apps.product.models import Lot
-
-    if lot == "base" or lot == "штука":
-        lots = Lot.objects.get(name_shorts="шт")
-        lot_stock = stock_supplier
-        lot_complect = 1
+    if lot_complect == None:
+            lot_complect = 1
     else:
-        lots = Lot.objects.get(name=lot)
-        lot_stock = stock_supplier * lot_complect
         lot_complect = lot_complect
+        
+    if lot == "base" or lot == "штука":
+        print("lot == base or lot == штука:")
+        lots = Lot.objects.get(name_shorts="шт")
+        
+        # lot_stock = stock_supplier
+        
+        
+    else:
+        print("lot != штука:")
+        lots = Lot.objects.get(name=lot)
+        # lot_stock = stock_supplier * lot_complect
+        
+    lot_stock = stock_supplier * lot_complect 
+    print("force_stock_supplier_unit",force_stock_supplier_unit)
+    if force_stock_supplier_unit:
+        lot_stock = stock_supplier_unit
+    print("get_lot",lots, lot_stock, lot_complect)
     return (lots, lot_stock, lot_complect)
 
 
@@ -238,13 +268,15 @@ def get_category_prompower(supplier, vendor, category_name):
         SupplierCategoryProductAll,
         SupplierGroupProduct,
     )
-
+    print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
             supplier=supplier, vendor=vendor, article_name=category_name
         )
+        
         groupe = category_all.group_supplier
         categ = category_all.category_supplier
+        print(" try:1",category_all,groupe,categ)
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
@@ -265,7 +297,9 @@ def get_category_prompower(supplier, vendor, category_name):
                 category_all = None
                 groupe = None
                 categ = None
-
+                
+    ("return get_category_prompower",category_all, groupe, categ)
+    
     return (category_all, groupe, categ)
 
 
@@ -940,6 +974,76 @@ def save_update_product_attr(
         e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")
 
+# проверка заполненны ли поля продукта если нет добавить значение
+def save_update_product_attr_all(
+    product,
+    supplier,
+    vendor,
+    additional_article_supplier,
+    category_supplier_all,
+    group_supplier,
+    category_supplier,
+    description,
+    name,
+    promo_groupe,
+):
+
+    try:
+        print(promo_groupe,"promo_groupe")
+        if promo_groupe:
+            print(promo_groupe,"promo_groupe24")
+            product.promo_groupe = promo_groupe
+            print("product.promo_groupe",product.promo_groupe)
+            
+        if product.supplier == None or product.supplier == "":
+            product.supplier = supplier
+
+        if product.vendor == None or product.vendor == "":
+            product.vendor = vendor
+        
+
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
+        if (
+            product.additional_article_supplier == None
+            or product.additional_article_supplier == ""
+        ):
+            product.additional_article_supplier = additional_article_supplier
+
+        if category_supplier_all:
+            product.category_supplier_all = category_supplier_all
+        
+
+        if group_supplier:
+            product.group_supplier = group_supplier
+       
+
+        if category_supplier:
+            product.category_supplier = category_supplier
+        
+
+        if product.description == None or product.description == "":
+            product.description = description
+        
+
+        if product.name == None or product.name == "":
+            product.name = name
+        
+
+        product._change_reason = "Автоматическое"
+        product.save()
+    except Exception as e:
+        print(e)
+        tr = traceback.format_exc()
+        error = "file_api_error"
+        location = "обновление товаров"
+        info = f"ошибка при чтении товара артикул ИЗ ФУНКЦИИ save_update_product_attr: {name}. Тип ошибки:{e}{tr}"
+        e = error_alert(error, location, info)
+    # update_change_reason(product, "Автоматическое")
+
 
 def save_specification(
     received_data,
@@ -1578,6 +1682,10 @@ def save_specification_before_upd_marja_okt(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
+                
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
 
             product_spes.save()
 
@@ -1668,6 +1776,11 @@ def save_specification_before_upd_marja_okt(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
+            
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
 
             product_spes.save()
 
@@ -2081,6 +2194,9 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
 
                 e = error_alert(error, location, info)
                 return ("error", None, None)
+
+            
+    
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -3157,6 +3273,7 @@ def email_manager_after_new_order_site(order):
         subject = "Новый заказа с сайта"
         to_email = manager_client
         
+        print(to_email)
         sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
    
     except Exception as e:  

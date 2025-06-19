@@ -23,6 +23,7 @@ export class ItcCustomSelect {
       items.push(`<li class="itc-select__option${selectedClass}" data-select="option"
         data-value="${option[0]}" data-index="${index}">${option[1]}</li>`);
     });
+    console.log(9999999999)
     return `<button type="button" class="itc-select__toggle" name="${name}"
       value="${selectedValue}" data-select="toggle" data-index="${selectedIndex}">
       ${selectedContent}</button><div class="itc-select__dropdown">

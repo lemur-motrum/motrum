@@ -111,22 +111,20 @@ window.addEventListener("DOMContentLoaded", () => {
             "X-CSRFToken": csrfToken,
             "Content-Type": "application/json",
           },
-        }).then((response) => {
-          if (response.status == 200) {
-            document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-            document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-            document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-            document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-
-            // deleteCookie("key", "/", window.location.hostname);
-            // deleteCookie("specificationId", "/", window.location.hostname);
-            // deleteCookie("cart", "/", window.location.hostname);
-            window.location.href = "/admin_specification/all_specifications/";
-          } else {
-            setErrorModal();
-            throw new Error("Ошибка");
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              window.location.href = "/admin_specification/all_specifications/";
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          })
+          .catch((error) => console.error(error));
       };
     }
   }

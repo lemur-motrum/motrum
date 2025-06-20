@@ -160,7 +160,8 @@ window.addEventListener("DOMContentLoaded", () => {
           });
           urlParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {

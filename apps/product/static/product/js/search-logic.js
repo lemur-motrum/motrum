@@ -84,7 +84,6 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => {
           if (response.status === 200) {
-            // searchInput.disabled = false;
             searchInput.focus();
             clearTimeout();
             loader.classList.add("hide");
@@ -111,7 +110,8 @@ window.addEventListener("DOMContentLoaded", () => {
               return;
             }
           }
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     function showCloseBtn() {

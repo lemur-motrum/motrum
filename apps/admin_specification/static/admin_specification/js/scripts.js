@@ -63,170 +63,6 @@ function catalogLogic(elems) {
       ".add-specification-button"
     );
     const countQuantityZone = buttonContainer.querySelector("input");
-    const productMultiplicityQuantity = catalogItem.getAttribute(
-      "data-order-multiplicity"
-    );
-
-    let countQuantity = +countQuantityZone.value;
-
-    // countQuantityZone.addEventListener("keyup", function () {
-    //   if (productMultiplicityQuantity) {
-    //     let val = parseInt(this.value) || 0;
-    //     while (val % +productMultiplicityQuantity) {
-    //       val++;
-    //       if (val % +productMultiplicityQuantity == 0) {
-    //         break;
-    //       }
-    //     }
-    //     this.value = val;
-    //     countQuantity = +val;
-    //   } else {
-    //     countQuantity = +countQuantityZone.value;
-    //   }
-
-    //   if (countQuantity >= 99999) {
-    //     countQuantityZone.value = productMultiplicityQuantity
-    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
-    //       : 99999;
-    //     minusButton.disabled = false;
-    //     plusButton.disabled = true;
-    //     addSpecificationButton.disabled = false;
-    //   } else if (countQuantity <= 0) {
-    //     countQuantityZone.value = 0;
-    //     plusButton.disabled = false;
-    //     addSpecificationButton.disabled = true;
-    //   } else {
-    //     minusButton.disabled = false;
-    //     plusButton.disabled = false;
-    //     addSpecificationButton.disabled = false;
-    //   }
-    // });
-
-    // plusButton.onclick = () => {
-    //   if (productMultiplicityQuantity) {
-    //     countQuantity += +productMultiplicityQuantity;
-    //   } else {
-    //     countQuantity++;
-    //   }
-    //   countQuantityZone.value = +countQuantity;
-    //   minusButton.disabled = false;
-    //   addSpecificationButton.disabled = false;
-    //   if (countQuantity >= 99999) {
-    //     countQuantityZone.value = productMultiplicityQuantity
-    //       ? getClosestInteger(99999, +productMultiplicityQuantity)
-    //       : 99999;
-    //     plusButton.disabled = true;
-    //     minusButton.disabled = false;
-    //   } else {
-    //     plusButton.disabled = false;
-    //     minusButton.disabled = false;
-    //   }
-    // };
-    // minusButton.onclick = () => {
-    //   if (productMultiplicityQuantity) {
-    //     countQuantity -= +productMultiplicityQuantity;
-    //   } else {
-    //     countQuantity--;
-    //   }
-    //   countQuantityZone.value = countQuantity;
-    //   minusButton.disabled = false;
-    //   if (countQuantity <= 0) {
-    //     countQuantityZone.value = 0;
-    //     minusButton.disabled = true;
-    //     plusButton.disabled = false;
-    //     addSpecificationButton.disabled = true;
-    //   } else {
-    //     minusButton.disabled = false;
-    //     plusButton.disabled = false;
-    //     addSpecificationButton.disabled = false;
-    //   }
-    // };
-    // addSpecificationButton.onclick = () => {
-    //   if (!getCookie("cart")) {
-    //     fetch("/api/v1/cart/add-cart/", {
-    //       method: "GET",
-    //       headers: {
-    //         "X-CSRFToken": csrfToken,
-    //       },
-    //     })
-    //       .then((response) => response.json())
-    //       .then((cart_id) => {
-    //         if (cart_id) {
-    //           const dataObj = {
-    //             product: +productId,
-    //             cart: +cart_id,
-    //             quantity: countQuantityZone.value,
-    //           };
-
-    //           const data = JSON.stringify(dataObj);
-    //           fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-    //             method: "POST",
-    //             body: data,
-    //             headers: {
-    //               "Content-Type": "application/json",
-    //               "X-CSRFToken": csrfToken,
-    //             },
-    //           })
-    //             .then((response) => {
-    //               if (response.status == 200) {
-    //                 return response.json();
-    //               } else {
-    //                 setErrorModal();
-    //                 throw new Error("Ошибка");
-    //               }
-    //             })
-    //             .then(
-    //               (response) =>
-    //                 (document.querySelector(
-    //                   ".admin_specification_cart_length"
-    //                 ).textContent = response.cart_len)
-    //             )
-    //             .catch((error) => {
-    //               setErrorModal();
-    //               console.error(error);
-    //             });
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         setErrorModal();
-    //         console.error(error);
-    //       });
-    //   } else {
-    //     const cart_id = getCookie("cart");
-    //     const dataObj = {
-    //       product: +productId,
-    //       cart: +cart_id,
-    //       quantity: +countQuantityZone.value,
-    //     };
-    //     const data = JSON.stringify(dataObj);
-    //     fetch(`/api/v1/cart/${cart_id}/save-product/`, {
-    //       method: "POST",
-    //       body: data,
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "X-CSRFToken": csrfToken,
-    //       },
-    //     })
-    //       .then((response) => {
-    //         if (response.status == 200) {
-    //           return response.json();
-    //         } else {
-    //           setErrorModal();
-    //           throw new Error("Ошибка");
-    //         }
-    //       })
-    //       .then(
-    //         (response) =>
-    //           (document.querySelector(
-    //             ".admin_specification_cart_length"
-    //           ).textContent = response.cart_len)
-    //       )
-    //       .catch((error) => {
-    //         setErrorModal();
-    //         console.error(error);
-    //       });
-    //   }
-    // };
   });
 }
 
@@ -461,7 +297,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 buttonsLogic(allProducts);
                 setCurrentPriceCataloItem(catalogItems);
               }
-            });
+            })
+            .catch((error) => console.error(error));
         };
       }
       setCurrentPriceCataloItem(catalogItems);
@@ -498,36 +335,38 @@ window.addEventListener("DOMContentLoaded", () => {
         const allMarginalityPercent = spetificationTable.querySelector(
           ".marginality_prcent_value"
         );
-        const allMotrumSum = spetificationTable.querySelectorAll(
-          ".price_motrum"
-        );
-        console.log(allMotrumSum)
+        const allMotrumSum =
+          spetificationTable.querySelectorAll(".price_motrum");
+        console.log(allMotrumSum);
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
           );
         }
-        
+
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
-        console.log(allMotrumSum.length)
+        console.log(allMotrumSum.length);
         for (let i = 0; i < allMotrumSum.length; i++) {
-          console.log("allMotrumSum[i].textContent",allMotrumSum[i].textContent)
-          sumMotrum += new NumberParser("ru").parse(allMotrumSum[i].textContent);
+          console.log(
+            "allMotrumSum[i].textContent",
+            allMotrumSum[i].textContent
+          );
+          sumMotrum += new NumberParser("ru").parse(
+            allMotrumSum[i].textContent
+          );
         }
-        console.log("sumMotrum1",sumMotrum)
+        console.log("sumMotrum1", sumMotrum);
         getDigitsNumber(valueContainer, +sum);
-        // getDigitsNumber(marginality, +margSum);
         getDigitsNumber(marginality, +sumMotrum);
-        console.log("sum",sum)
-        console.log("sumMotrum",sumMotrum)
+        console.log("sum", sum);
+        console.log("sumMotrum", sumMotrum);
         allMarginalityPercent.textContent = isNaN(
-          ((1 - (+sumMotrum / +sum)) * 100).toFixed(2)
-          // ((+sum / (+sum - +margSum)) * 100 - 100).toFixed(2)
+          ((1 - +sumMotrum / +sum) * 100).toFixed(2)
         )
           ? 0
-          : ((1 - (+sumMotrum / +sum)) * 100).toFixed(2);
+          : ((1 - +sumMotrum / +sum) * 100).toFixed(2);
       }
 
       function saveSpecification(elems) {
@@ -558,7 +397,9 @@ window.addEventListener("DOMContentLoaded", () => {
           const itemQuantity = item.querySelector(".input-quantity").value;
           const itemID = item.getAttribute("data-product-pk");
           const nameProductNew = item.getAttribute("data-product-name-new");
-          const nameProductNewАrt = item.getAttribute("data-product-article-new");
+          const nameProductNewАrt = item.getAttribute(
+            "data-product-article-new"
+          );
           const itemPriceStatus = item.getAttribute("data-price-exclusive");
           const itemPrice = item.getAttribute("data-price");
 
@@ -745,7 +586,8 @@ window.addEventListener("DOMContentLoaded", () => {
             document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
             window.location.href = "/admin_specification/all_specifications/";
-          });
+          })
+          .catch((error) => console.error(error));
       }
 
       productItems.forEach((item, i) => {
@@ -1071,7 +913,6 @@ window.addEventListener("DOMContentLoaded", () => {
             editMotrumPrice(spetificationTable);
             getMarginality(spetificationTable);
             updateProduct();
-            // changeDateInOrder(spetificationTable);
             const allPrice = inputPrice.value * countQuantity;
             getDigitsNumber(productTotalPrice, allPrice);
             getResult();
@@ -1216,7 +1057,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((response) => {
             window.location.href =
               "/admin_specification/current_specification/";
-          });
+          })
+          .catch((error) => console.error(error));
       };
     });
     //
@@ -1242,13 +1084,15 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status == 200) {
-            window.location.reload();
-          } else {
-            setErrorModal();
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              window.location.reload();
+            } else {
+              setErrorModal();
+            }
+          })
+          .catch((error) => console.error(error));
       };
     });
     overdueSpecifications.forEach((item) => {
@@ -1276,7 +1120,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .then((response) => {
             window.location.href =
               "/admin_specification/current_specification/";
-          });
+          })
+          .catch((error) => console.error(error));
       };
     });
     //
@@ -1441,7 +1286,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 "<div class='none'>Клинтов нет</div>";
               searchClientInput.setAttribute("client-id", "");
             }
-          });
+          })
+          .catch((error) => console.error(error));
       } else {
         clientsContainer.classList.remove("show");
         saveButtonContainer.classList.remove("show");
@@ -1487,7 +1333,8 @@ window.addEventListener("DOMContentLoaded", () => {
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
           document.location.href =
             "/admin_specification/current_specification/";
-        });
+        })
+        .catch((error) => console.error(error));
     } else {
       BxUpd.onclick = () => {
         document.cookie = `type_save=update; path=/; SameSite=None; Secure`;
@@ -1506,7 +1353,8 @@ window.addEventListener("DOMContentLoaded", () => {
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
             document.location.href =
               "/admin_specification/current_specification/";
-          });
+          })
+          .catch((error) => console.error(error));
       };
       BxHardUpd.onclick = () => {
         document.cookie = `type_save=hard_update; path=/; SameSite=None; Secure`;
@@ -1525,7 +1373,8 @@ window.addEventListener("DOMContentLoaded", () => {
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
             document.location.href =
               "/admin_specification/current_specification/";
-          });
+          })
+          .catch((error) => console.error(error));
       };
     }
   }
@@ -1548,7 +1397,6 @@ window.addEventListener("DOMContentLoaded", () => {
 function changeSelect(select) {
   if (select) {
     const clientOptions = select.querySelectorAll("option");
-
     clientOptions.forEach((el) => {
       if (el.selected) {
         select.setAttribute("value", el.getAttribute("value"));

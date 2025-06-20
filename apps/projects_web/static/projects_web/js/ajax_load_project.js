@@ -188,7 +188,8 @@ window.addEventListener("DOMContentLoaded", () => {
             getActivePaginationElem();
           }
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {

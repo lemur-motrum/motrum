@@ -168,7 +168,6 @@ function addNewProductLogic(container) {
         quantity: 1,
       };
       addProductButton.textContent = "";
-      // addProductButton.innerHTML = "<div class='small_loader'></div>";
       const data = JSON.stringify(objData);
       fetch(`/api/v1/cart/${cartId}/save-product/`, {
         method: "POST",
@@ -395,7 +394,8 @@ function addNewProductLogic(container) {
                   newProductError
                 );
               }
-            });
+            })
+            .catch((error) => console.error(error));
         }
       };
     }
@@ -417,79 +417,6 @@ function addNewProductLogic(container) {
         const searchButton = searchProductItem.querySelector(".search_button");
         const productId = searchProductItem.getAttribute("product-id");
 
-        // document.addEventListener("keyup", function (e) {
-        //   console.log(counterElems);
-        //   if (e.code == "ArrowUp") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems > searchProductItems.length - 1) {
-        //       counterElems = 0;
-        //     } else {
-        //       counterElems += 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "ArrowDown") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems < 1) {
-        //       counterElems = searchProductItems.length;
-        //     } else {
-        //       counterElems -= 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "Enter") {
-        //     if (searchInput.value) {
-        //       const productId = document
-        //         .querySelector(".search_container")
-        //         .querySelector(".active")
-        //         .getAttribute("product-id");
-        //       closeSearchWindow();
-        //       cont.classList.remove("show");
-        //       searchInput.classList.remove("bordering");
-        //       const cartId = getCookie("cart");
-        //       const objData = {
-        //         cart: cartId,
-        //         product: productId,
-        //         quantity: 1,
-        //       };
-        //       const data = JSON.stringify(objData);
-        //       fetch(`/api/v1/cart/${cartId}/save-product/`, {
-        //         method: "POST",
-        //         body: data,
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //           "X-CSRFToken": csrfToken,
-        //         },
-        //       }).then((response) => {
-        //         if (response.status == 200) {
-        //           window.location.reload();
-        //         } else if (response.status == 409) {
-        //           addProductButton.innerHTML = "";
-        //           addProductButton.textContent = "Добавить этот товар";
-        //           showErrorValidation("Этот товар уже в корзине", error);
-        //         } else {
-        //           setErrorModal();
-        //           throw new Error("Ошибка");
-        //         }
-        //       });
-        //     }
-        //   }
-        // });
-
         searchProductItem.onclick = () => {
           cont.classList.remove("show");
           searchInput.classList.remove("bordering");
@@ -507,18 +434,20 @@ function addNewProductLogic(container) {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
-            } else if (response.status == 409) {
-              addProductButton.innerHTML = "";
-              addProductButton.textContent = "Добавить этот товар";
-              showErrorValidation("Этот товар уже в корзине", error);
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              } else if (response.status == 409) {
+                addProductButton.innerHTML = "";
+                addProductButton.textContent = "Добавить этот товар";
+                showErrorValidation("Этот товар уже в корзине", error);
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .catch((error) => console.error(error));
         };
       });
     }

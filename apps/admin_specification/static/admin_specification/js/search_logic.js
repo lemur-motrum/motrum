@@ -101,8 +101,9 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) =>
-          response.json().then((response) => {
+        })
+          .then((response) => response.json())
+          .then((response) => {
             if (response.status == "ok") {
               loader.classList.add("remove");
               const products = JSON.parse(response.products);
@@ -194,7 +195,7 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             }
           })
-        );
+          .catch((error) => console.error(error));
       } else {
         setTimeout(() => {
           overlay.classList.remove("show");

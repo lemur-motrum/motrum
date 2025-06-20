@@ -70,9 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
               post_code: indexInput.value,
               city: cityInput.value ? cityInput.value : null,
               address1: addresOneInput.value,
-              address2: addressTwoInput.value
-                ? addressTwoInput.value
-                : null,
+              address2: addressTwoInput.value ? addressTwoInput.value : null,
             };
             const data = JSON.stringify(dataObj);
 
@@ -83,13 +81,15 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken,
               },
-            }).then((response) => {
-              if (response.status >= 200 && response.status < 300) {
-                window.location.reload();
-              } else {
-                setErrorModal();
-              }
-            });
+            })
+              .then((response) => {
+                if (response.status >= 200 && response.status < 300) {
+                  window.location.reload();
+                } else {
+                  setErrorModal();
+                }
+              })
+              .catch((error) => console.error(error));
           }
         };
       });
@@ -197,14 +197,16 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken,
               },
-            }).then((response) => {
-              if (response.status >= 200 && response.status < 300) {
-                window.location.reload();
-              } else {
-                setErrorModal();
-                throw new Error("Ошибка");
-              }
-            });
+            })
+              .then((response) => {
+                if (response.status >= 200 && response.status < 300) {
+                  window.location.reload();
+                } else {
+                  setErrorModal();
+                  throw new Error("Ошибка");
+                }
+              })
+              .catch((error) => console.error(error));
           }
         };
       });
@@ -311,14 +313,16 @@ window.addEventListener("DOMContentLoaded", () => {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              window.location.reload();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                window.location.reload();
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .catch((error) => console.error(error));
         }
       };
     });

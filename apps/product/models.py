@@ -197,7 +197,9 @@ class Product(models.Model):
         #     location = "Перед продукт сейв"
         #     info = f"Перед продукт сейв  {self}// {line.strip()}..{"".join(traceback.format_stack())}"
         #     print(info)
-        #     e = error_alert(error, location, info)    
+        #     e = error_alert(error, location, info)
+        need_for_promo_work = True 
+        print(need_for_promo_work)   
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки

@@ -12,10 +12,10 @@
      data-product-specification-id="{{ item.id }}">
     <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
     <div title="Редактировать элемент" class="change_icon_container">
-        <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+        <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" loading="lazy" />
     </div>
     <div title="Cохранить элемент" class="save_icon_container">
-        <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
+        <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" loading="lazy" />
     </div>
     <div class="item_value">
         {% if item.product_new_cart %}

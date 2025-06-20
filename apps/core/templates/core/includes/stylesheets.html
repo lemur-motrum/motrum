@@ -1,8 +1,6 @@
 {% load sass_tags %}
 {% load static %}
-<!--cdn-->
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{% load js_version %}
 <!--project  -->
-<link href="{% sass_src 'core/scss/style.scss' %}?ver={% now 'u' %}"
+<link href="{% sass_src 'core/scss/style.scss' %}?ver={% js_version %}"
       rel="stylesheet" />

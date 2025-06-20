@@ -5566,7 +5566,7 @@ a {
           .img_container {
             position: absolute;
             bottom: -3%;
-            left: 2rem;
+            left: 3rem;
             width: 90%;
             z-index: 2;
             @media screen and (max-width: 576px) {
@@ -5581,6 +5581,10 @@ a {
               object-fit: contain;
             }
           }
+          &:nth-of-type(4) {
+            .img_container {
+              left: 1rem;
+            }}
         }
       }
     }

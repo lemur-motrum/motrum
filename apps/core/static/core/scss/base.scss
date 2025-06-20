@@ -5482,6 +5482,7 @@ a {
           @media screen and (max-width: 576px) {
             width: 100%;
           }
+
           .description {
             position: absolute;
             top: 1.938rem;
@@ -5498,7 +5499,7 @@ a {
           .img_container {
             position: absolute;
             bottom: -3%;
-            left: 2rem;
+            left: 3rem;
             width: 90%;
             z-index: 2;
             @media screen and (max-width: 576px) {
@@ -5511,6 +5512,13 @@ a {
               height: 100%;
               -o-object-fit: contain;
               object-fit: contain;
+            }
+          }
+          &:nth-of-type(3) {
+          }
+          &:nth-of-type(4) {
+            .img_container {
+              left: 1rem;
             }
           }
         }

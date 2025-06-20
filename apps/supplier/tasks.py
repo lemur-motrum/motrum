@@ -16,7 +16,7 @@ from project.settings import IS_TESTING
 def add_iek(self):
     try:
         if IS_TESTING:
-            pass
+            iek_api()
         else:
             iek_api()
     except Exception as exc:
@@ -56,7 +56,7 @@ def add_iek_individual(self):
 def add_veda(self):
     try:
         if IS_TESTING:
-            pass
+            veda_api()
         else:
             veda_api()
     except Exception as exc:

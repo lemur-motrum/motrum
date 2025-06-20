@@ -175,7 +175,7 @@ class SupplierCategoryProduct(models.Model):
                     product_one.group = self.group_catalog
 
                 product_one._change_reason = "Автоматическое"
-                product_one.save()
+                product_one.save(update_fields=['category', 'group', '_change_reason'])
                 # update_change_reason(product_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)

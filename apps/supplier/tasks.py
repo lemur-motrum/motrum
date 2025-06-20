@@ -76,7 +76,7 @@ def add_veda(self):
 def add_prompower(self):
     try:
         if IS_TESTING:
-            pass
+            prompower_api()
         else:
             prompower_api()
     except Exception as exc:

@@ -988,10 +988,7 @@ def save_update_product_attr_all(
 
     try:
         print(promo_groupe,"promo_groupe")
-        if promo_groupe:
-            print(promo_groupe,"promo_groupe24")
-            product.promo_groupe = promo_groupe
-            print("product.promo_groupe",product.promo_groupe)
+       
             
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
@@ -1030,6 +1027,10 @@ def save_update_product_attr_all(
         if product.name == None or product.name == "":
             product.name = name
         
+        if promo_groupe:
+            print(promo_groupe,"promo_groupe24")
+            product.promo_groupe = promo_groupe
+            print("product.promo_groupe",product.promo_groupe)
 
         product._change_reason = "Автоматическое"
         product.save()
@@ -2067,6 +2068,7 @@ def after_save_order_products(products):
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
+            # "promo_group": prod.product.promo_group,
         }
 
         order_products.append(data_prod_to_1c)

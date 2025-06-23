@@ -52,7 +52,13 @@ def create_slug(name, arr_other_name):
 
 # цена мотрум со скидкой
 def get_price_motrum(
-    item_category, item_group, vendors, rub_price_supplier, all_item_group, supplier,promo_groupe
+    item_category,
+    item_group,
+    vendors,
+    rub_price_supplier,
+    all_item_group,
+    supplier,
+    promo_groupe,
 ):
     from apps.supplier.models import (
         Discount,
@@ -66,6 +72,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
+
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -77,7 +84,6 @@ def get_price_motrum(
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
 
-    
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
@@ -193,30 +199,33 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
 
 
 # получение комплектности и расчет штук
-def get_lot(lot, stock_supplier, lot_complect,stock_supplier_unit,force_stock_supplier_unit):
+def get_lot(
+    lot, stock_supplier, lot_complect, stock_supplier_unit, force_stock_supplier_unit
+):
     from apps.product.models import Lot
+
     if lot_complect == None:
-            lot_complect = 1
+        lot_complect = 1
     else:
         lot_complect = lot_complect
-        
+
     if lot == "base" or lot == "штука":
         print("lot == base or lot == штука:")
         lots = Lot.objects.get(name_shorts="шт")
-        
+
         # lot_stock = stock_supplier
-        
-        
+
     else:
         print("lot != штука:")
         lots = Lot.objects.get(name=lot)
         # lot_stock = stock_supplier * lot_complect
-        
-    lot_stock = stock_supplier * lot_complect 
-    print("force_stock_supplier_unit",force_stock_supplier_unit)
+    print("lot_complect", lot_complect)
+    lot_stock = stock_supplier * lot_complect
+    print("lot_stock", lot_stock)
+    print("force_stock_supplier_unit", force_stock_supplier_unit)
     if force_stock_supplier_unit:
         lot_stock = stock_supplier_unit
-    print("get_lot",lots, lot_stock, lot_complect)
+    print("get_lot", lots, lot_stock, lot_complect)
     return (lots, lot_stock, lot_complect)
 
 
@@ -268,15 +277,16 @@ def get_category_prompower(supplier, vendor, category_name):
         SupplierCategoryProductAll,
         SupplierGroupProduct,
     )
+
     print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
             supplier=supplier, vendor=vendor, article_name=category_name
         )
-        
+
         groupe = category_all.group_supplier
         categ = category_all.category_supplier
-        print(" try:1",category_all,groupe,categ)
+        print(" try:1", category_all, groupe, categ)
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
@@ -297,9 +307,52 @@ def get_category_prompower(supplier, vendor, category_name):
                 category_all = None
                 groupe = None
                 categ = None
-                
-    ("return get_category_prompower",category_all, groupe, categ)
-    
+
+    ("return get_category_prompower", category_all, groupe, categ)
+
+    return (category_all, groupe, categ)
+
+
+# категории поставщика промповер для товара
+def get_category_unimat(supplier, vendor, category_name):
+    from apps.supplier.models import (
+        SupplierCategoryProduct,
+        SupplierCategoryProductAll,
+        SupplierGroupProduct,
+    )
+
+    print(category_name)
+    try:
+        category_all = SupplierCategoryProductAll.objects.get(
+            supplier=supplier,  article_name=category_name
+        )
+
+        groupe = category_all.group_supplier
+        categ = category_all.category_supplier
+        print(" try:1", category_all, groupe, categ)
+    except SupplierCategoryProductAll.DoesNotExist:
+        try:
+            groupe = SupplierGroupProduct.objects.get(
+                supplier=supplier,  article_name=category_name
+            )
+            category_all = None
+
+            categ = groupe.category_supplier
+        except SupplierGroupProduct.DoesNotExist:
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    supplier=supplier, article_name=category_name
+                )
+                category_all = None
+                groupe = None
+
+            except SupplierGroupProduct.DoesNotExist:
+                category_all = None
+                groupe = None
+                categ = None
+
+    ("return get_category_prompower", category_all, groupe, categ)
+
     return (category_all, groupe, categ)
 
 
@@ -974,6 +1027,7 @@ def save_update_product_attr(
         e = error_alert(error, location, info)
     # update_change_reason(product, "Автоматическое")
 
+
 # проверка заполненны ли поля продукта если нет добавить значение
 def save_update_product_attr_all(
     product,
@@ -989,15 +1043,27 @@ def save_update_product_attr_all(
 ):
 
     try:
-        print(promo_groupe,"promo_groupe")
-       
-            
+        print( "save_update_product_attr_all")
+
+        print(
+            product,
+            supplier,
+            vendor,
+            additional_article_supplier,
+            category_supplier_all,
+            group_supplier,
+            category_supplier,
+            description,
+            name,
+            promo_groupe,
+        )
+        print(promo_groupe, "promo_groupe")
+
         if product.supplier == None or product.supplier == "":
             product.supplier = supplier
 
         if product.vendor == None or product.vendor == "":
             product.vendor = vendor
-        
 
         if (
             product.additional_article_supplier == None
@@ -1012,27 +1078,23 @@ def save_update_product_attr_all(
 
         if category_supplier_all:
             product.category_supplier_all = category_supplier_all
-        
 
         if group_supplier:
             product.group_supplier = group_supplier
-       
 
         if category_supplier:
             product.category_supplier = category_supplier
-        
 
         if product.description == None or product.description == "":
             product.description = description
-        
 
         if product.name == None or product.name == "":
             product.name = name
-        
+
         if promo_groupe:
-            print(promo_groupe,"promo_groupe24")
+            print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
-            print("product.promo_groupe",product.promo_groupe)
+            print("product.promo_groupe", product.promo_groupe)
 
         product._change_reason = "Автоматическое"
         product.save()
@@ -1075,7 +1137,7 @@ def save_specification(
     date_delivery_all = received_data["date_delivery"]
     products = received_data["products"]
     id_cart = received_data["id_cart"]
-    print("products",products)
+    print("products", products)
     # первичное создание/взятие спецификации
     try:
         specification = Specification.objects.get(id=id_specification)
@@ -1683,7 +1745,7 @@ def save_specification_before_upd_marja_okt(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
-                
+
             item_comm = product_item["comment"]
             if item_comm != "" and item_comm != None:
                 product_spes.text_delivery = item_comm
@@ -1777,11 +1839,10 @@ def save_specification_before_upd_marja_okt(
             text_delivery = product_item["text_delivery"]
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
-            
+
             item_comm = product_item["comment"]
             if item_comm != "" and item_comm != None:
                 product_spes.text_delivery = item_comm
-                
 
             product_spes.save()
 
@@ -1791,9 +1852,9 @@ def save_specification_before_upd_marja_okt(
     # обновить спецификацию пдф
     total_amount = round(total_amount, 2)
     total_amount_motrum = round(total_amount_motrum, 2)
-    
-    marginality =  ((total_amount - total_amount_motrum) / total_amount) * 100
-    marginality =  round(marginality, 2)
+
+    marginality = ((total_amount - total_amount_motrum) / total_amount) * 100
+    marginality = round(marginality, 2)
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
@@ -2196,8 +2257,6 @@ def save_spesif_web(cart, products_cart, extra_discount, requisites):
                 e = error_alert(error, location, info)
                 return ("error", None, None)
 
-            
-    
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -2501,6 +2560,12 @@ def after_save_order_products(products):
             vendor = prod.product.vendor.name
         else:
             vendor = None
+
+        if prod.product.promo_groupe:
+            promo = prod.product.promo_groupe.name
+        else:
+            promo = ""
+
         data_prod_to_1c = {
             "vendor": vendor,
             "article": prod.product.article_supplier,
@@ -2511,7 +2576,7 @@ def after_save_order_products(products):
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
-            # "promo_group": prod.product.promo_group,
+            "promo_group": promo,
         }
 
         order_products.append(data_prod_to_1c)
@@ -3157,7 +3222,7 @@ def create_file_props_in_vendor_props():
     ]
 
     props = []
-    
+
     all_product_supplier = Product.objects.filter(supplier__slug="iek")
     i = 0
 
@@ -3170,8 +3235,8 @@ def create_file_props_in_vendor_props():
             val_c = val_i.get("count")
             if val_c:
                 print(val_c)
-                val_i["count"] = val_c + 1 
-                
+                val_i["count"] = val_c + 1
+
             if val_v:
                 if value not in val_v:
                     val_v.append(value)
@@ -3209,16 +3274,15 @@ def create_file_props_in_vendor_props():
     for prod in all_product_supplier:
         i += 1
         props_prod = ProductProperty.objects.filter(product=prod)
-        if props_prod.count() > 0 :
+        if props_prod.count() > 0:
             for prop_prod in props_prod:
                 print(prop_prod)
                 name = if_name(prop_prod.name, prop_prod.value, prop_prod.unit_measure)
 
     print(props)
 
-    
     props_count = len(props)
-    print("props_count",props_count)
+    print("props_count", props_count)
     with open(path_iek, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
@@ -3233,14 +3297,14 @@ def create_file_props_in_vendor_props():
                 row["Единица измерения"] = "Единица измерения"
 
                 writer_nomenk.writerow(row)
-            
+
             print(i)
             prop = props[i]
             print(prop)
             for key, value in prop.items():
                 print(key, value)
                 # Глубина (мм) [{'value': ['69.6']}, {'unit_measure': [None]}]
-                
+
                 row["Название характеристики"] = key
                 for val_i in value:
                     val_v = val_i.get("value")
@@ -3249,21 +3313,23 @@ def create_file_props_in_vendor_props():
                     if val_c:
                         row["Частота упоминания"] = val_c
                     if val_v:
-                        val_v_i = '|| '.join(val_v)
+                        val_v_i = "|| ".join(val_v)
                         row["Варианты значений"] = val_v_i
                     if val_u:
                         if val_u != [None]:
-                            val_u_i = '|| '.join(val_u)
+                            val_u_i = "|| ".join(val_u)
                             row["Единица измерения"] = val_u_i
-                writer_nomenk.writerow(row)        
+                writer_nomenk.writerow(row)
+
 
 def email_manager_after_new_order_site(order):
     try:
         from django.template import loader
+
         id_bitrix = order.id_bitrix
         manager_client = order.manager.email
         phone_client = order.client.phone
-        url_bitrix_deal = f'https://pmn.bitrix24.ru/crm/deal/details/{id_bitrix}/'
+        url_bitrix_deal = f"https://pmn.bitrix24.ru/crm/deal/details/{id_bitrix}/"
         html_message = loader.render_to_string(
             "core/emails/email_manager_neworder.html",
             {
@@ -3274,14 +3340,16 @@ def email_manager_after_new_order_site(order):
         )
         subject = "Новый заказа с сайта"
         to_email = manager_client
-        
+
         print(to_email)
-        sending_result = send_email_message_html(subject, None, to_email, html_message=html_message)
-   
-    except Exception as e:  
+        sending_result = send_email_message_html(
+            subject, None, to_email, html_message=html_message
+        )
+
+    except Exception as e:
         tr = traceback.format_exc()
         error = "error"
         location = "Отправка оповещения менеджеру после создания заказа с сайта"
         info = f"order.id = {order.id} {e}{tr}"
         e = error_alert(error, location, info)
-        return ("error", info)     
+        return ("error", info)

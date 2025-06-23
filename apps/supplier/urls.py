@@ -30,6 +30,11 @@ urlpatterns = [
     path("add_holidays/", views.add_holidays, name="add_holidays"),  # права админа
     path("get_currency/", views.get_currency, name="get_currency"),
     path("add_stage_bx/", views.add_stage_bx, name="add_stage_bx"),
+    path("prompower_prod_for_1c/", views.prompower_prod_for_1c, name="prompower_prod_for_1c"),
+    path("unimat_prod_for_1c/", views.unimat_prod_for_1c, name="unimat_prod_for_1c"),
+    
+    
+    
     # url для автозаполнения
     url(
         r"^vendor-autocomplete/$",

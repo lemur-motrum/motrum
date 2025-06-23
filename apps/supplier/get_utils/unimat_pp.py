@@ -45,7 +45,6 @@ def unimat_prompower_api():
         if vendors_item.slug == "unimat":
             vendoris = vendors_item
 
-  
     # добавление товаров
     def add_products():
         url = "https://prompower.ru/api/prod/getUnimatProducts"
@@ -71,14 +70,13 @@ def unimat_prompower_api():
         vendori = Vendor.objects.get(slug="unimat")
         vendor_item = vendori
 
-
         i = 0
         for data_item in data:
-           
+
             try:
                 i += 1
                 if data_item["article"] != None:
-                    print("!!!!!!!!!!!!!!!!number",i)
+                    print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
                     print(article_suppliers)
@@ -90,25 +88,22 @@ def unimat_prompower_api():
                         supplier=prompower,
                         vendor=vendori,
                     )
-                    print("promo_groupe_okt",promo_groupe_okt[0])
+                    print("promo_groupe_okt", promo_groupe_okt[0])
                     categ = None
                     need_doc = False
-                    if "categoryId" in data_item and data_item["categoryId"]!= 35:
+                    if "categoryId" in data_item and data_item["categoryId"] != 35:
                         category_all = data_item["categoryId"]
-                        categ = get_category_unimat(
-                                prompower, vendori, category_all
-                            )
+                        categ = get_category_unimat(prompower, vendori, category_all)
                         need_doc = True
                     else:
                         if "category" in data_item:
                             categ_new = SupplierCategoryProduct.objects.get_or_create(
-                            supplier=prompower,
-                            vendor=vendoris,
-                            name=data_item["category"],
-                        )
+                                supplier=prompower,
+                                vendor=vendoris,
+                                name=data_item["category"],
+                            )
                             categ = (None, None, categ_new[0])
-                 
-                    
+
                     # цены
                     price_supplier = int(data_item["price"])
                     vat_include = True
@@ -245,7 +240,7 @@ def unimat_prompower_api():
                     if price_supplier != "0":
                         price_supplier = price_supplier + (price_supplier / 100 * NDS)
                         try:
-                            print( 111111111111111111111111111111111)
+                            print(111111111111111111111111111111111)
                             # если товар есть в бд
                             article = Product.objects.get(
                                 # supplier=prompower,
@@ -297,7 +292,7 @@ def unimat_prompower_api():
 
                         except Product.DoesNotExist:
                             try:
-                                print( 22222222222222222222222222222222222)
+                                print(22222222222222222222222222222222222)
                                 # если товар есть в бд
                                 article = Product.objects.get(
                                     # supplier=prompower,
@@ -348,10 +343,8 @@ def unimat_prompower_api():
                                     promo_groupe_okt[0],
                                 )
 
-                                
-                            
                             except Product.DoesNotExist:
-                                print( 3333333333333333333333333333333333333333)
+                                print(3333333333333333333333333333333333333333)
                                 # если товара нет в бд
                                 new_article = create_article_motrum(prompower.id)
                                 article = Product(
@@ -368,8 +361,8 @@ def unimat_prompower_api():
                                 )
                                 article.save()
                                 update_change_reason(article, "Автоматическое")
-                                if IS_PROD or IS_TESTING :
-                                
+                                if IS_PROD or IS_TESTING:
+
                                     save_image(article)
                                     # if need_doc:
                                     #     save_document(categ, article)
@@ -381,7 +374,9 @@ def unimat_prompower_api():
                                             value=prop["value"],
                                         )
                                         property_product.save()
-                                        update_change_reason(property_product, "Автоматическое")
+                                        update_change_reason(
+                                            property_product, "Автоматическое"
+                                        )
 
                         # цены товара
                         try:
@@ -416,11 +411,11 @@ def unimat_prompower_api():
                             stock_prod._change_reason = "Автоматическое"
                             stock_prod.save()
                             # update_change_reason(stock_prod, "Автоматическое")
-                            
+
                         article.promo_groupe = promo_groupe_okt[0]
                         article._change_reason = "Автоматическое"
                         article.save()
-                        
+
             except Exception as e:
                 print(e)
                 tr = traceback.format_exc()
@@ -429,8 +424,54 @@ def unimat_prompower_api():
                 location = "Загрузка фаилов Prompower"
                 info = f"ошибка при чтении товара артикул: {data_item["article"]}. Тип ошибки:{e}{tr}"
                 e = error_alert(error, location, info)
-            
+
             finally:
                 continue
 
     add_products()
+
+
+def export_unimat_prod_for_1c():
+    import openpyxl as openxl
+    from project.settings import MEDIA_ROOT
+    import os
+
+    prompower = Supplier.objects.get(slug="prompower")
+    vendori = Vendor.objects.get(slug="unimat")
+
+    products = Product.objects.filter(
+        supplier=prompower,
+        vendor=vendori,
+    )
+    title = ["Артикул мотрум", "Артикул поставщика", "Название", "Промо группа"]
+
+    wb = openxl.Workbook()
+    ws = wb.active
+    ws.append(title)
+
+    for product in products:
+        article_motrum = getattr(product, "article", "")
+        article_vendor = getattr(product, "article_supplier", "")
+        name = getattr(product, "name", "")
+        promo_groupe = getattr(product.promo_groupe, "name", "") if product.promo_groupe else ""
+        ws.append([article_motrum, article_vendor, name, promo_groupe])
+
+    file_path = os.path.join(MEDIA_ROOT, "unimat.xlsx")
+    wb.save(file_path)
+
+
+# def export_unimat_prod_for_1c():
+#     prompower = Supplier.objects.get(slug="prompower")
+#     vendori = Vendor.objects.get(slug="unimat")
+
+#     products = Product.objects.get(
+#         supplier=prompower,
+#         vendor=vendori,
+#     )
+#     title = ["Артикул мотрум","Артикул псотавщика","Название","Промо группа"]
+#     for product in product:
+#         article_vendor = product.article_supplier
+#         article_motrum = product.article_motrum
+#         name =  product.name
+#         promo_groupe = product.promo_groupe
+    

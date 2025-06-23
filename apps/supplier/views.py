@@ -56,7 +56,7 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
-from apps.supplier.get_utils.unimat_pp import unimat_prompower_api
+from apps.supplier.get_utils.unimat_pp import export_unimat_prod_for_1c, unimat_prompower_api
 from dal import autocomplete
 from django.db.models import Q
 
@@ -108,7 +108,7 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
     nomek_test_2,
 )
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
-from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, prompower_api
 
 from apps.supplier.get_utils.veda import veda_api
 from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
@@ -142,7 +142,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     bs_id_order = 12020
     order = Order.objects.get(id_bitrix=12020)
-    unimat_prompower_api()
+    export_prompower_prod_for_1c()
     
     
     
@@ -151,8 +151,33 @@ def add_iek(request):
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+def prompower_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        export_prompower_prod_for_1c()
 
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+def unimat_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        export_unimat_prod_for_1c()
+        # get_motrum_nomenclature()
 
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
 # тестовая страница скриптов
 def test(request):
     def background_task():

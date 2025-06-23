@@ -499,3 +499,33 @@ def prompower_api():
     add_category_groupe()
     add_category()
     add_products()
+
+
+
+def export_prompower_prod_for_1c():
+    import openpyxl as openxl
+    from project.settings import MEDIA_ROOT
+    import os
+
+    prompower = Supplier.objects.get(slug="prompower")
+    vendori = Vendor.objects.get(slug="prompower")
+
+    products = Product.objects.filter(
+        supplier=prompower,
+        vendor=vendori,
+    )
+    title = ["Артикул мотрум", "Артикул поставщика", "Название", "Промо группа"]
+
+    wb = openxl.Workbook()
+    ws = wb.active
+    ws.append(title)
+
+    for product in products:
+        article_motrum = getattr(product, "article", "")
+        article_vendor = getattr(product, "article_supplier", "")
+        name = getattr(product, "name", "")
+        promo_groupe = getattr(product.promo_groupe, "name", "") if product.promo_groupe else ""
+        ws.append([article_motrum, article_vendor, name, promo_groupe])
+
+    file_path = os.path.join(MEDIA_ROOT, "prompower.xlsx")
+    wb.save(file_path)

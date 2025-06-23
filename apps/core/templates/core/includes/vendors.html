@@ -5,7 +5,7 @@
             <a href="{% url "core:brand_one" vendor.slug %}?vendor={{ vendor.slug }}"
                class="vendor-container">
                 <div class="vendor-img-container">
-                    {% if vendor.img %}<img src="{{ vendor.img.url }}" alt="img">{% endif %}
+                    {% if vendor.img %}<img src="{{ vendor.img.url }}" alt="img" loading="lazy">{% endif %}
                 </div>
                 <div class="vendor-name-container">
                     <div class="vendor-name">
@@ -22,7 +22,9 @@
     <a href="{% url "core:brand" %}" class="all-brands-btn">
         <div class="all-brands-btn-content">все бренды</div>
         <div class="arrow-container">
-            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+            <img src="{% static "core/images/direction/arrow.png" %}"
+                 alt="vector"
+                 loading="lazy">
         </div>
     </a>
 </div>

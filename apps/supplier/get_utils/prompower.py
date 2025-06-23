@@ -480,9 +480,11 @@ def prompower_api():
                             stock_prod._change_reason = "Автоматическое"
                             stock_prod.save()
                             # update_change_reason(stock_prod, "Автоматическое")
+                            
                         article.promo_groupe = promo_groupe_okt[0]
+                        article._change_reason = "Автоматическое"
                         article.save()
-                        update_change_reason(article, "Автоматическое")
+                        
             except Exception as e:
                 print(e)
                 tr = traceback.format_exc()

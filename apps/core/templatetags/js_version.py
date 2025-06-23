@@ -1,4 +1,4 @@
-from django import template
+from django import VERSION, template
 from project.settings import IS_TESTING
 import random
 
@@ -10,5 +10,5 @@ def js_version():
     if IS_TESTING:
         ver = random.randint(0, 3124567)
     else:
-        ver = "1.1"
+        ver = VERSION
     return ver

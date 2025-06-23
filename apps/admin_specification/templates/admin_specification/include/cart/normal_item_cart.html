@@ -12,10 +12,10 @@
      data-multiplicity="{% if item.stock.is_one_sale %}1{% else %}{{ item.stock.order_multiplicity }}{% endif %}">
     <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
     <div title="Редактировать элемент" class="change_icon_container">
-        <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" loading="lazy" />
+        <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
     </div>
     <div title="Cохранить элемент" class="save_icon_container">
-        <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" loading="lazy" />
+        <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon"/>
     </div>
     <div class="item_value">
         {{ item.name }}

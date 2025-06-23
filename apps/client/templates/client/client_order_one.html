@@ -30,9 +30,9 @@
                              order-multiplicity="{{ product_item.product.stock.order_multiplicity }}">
                             <div class="img-contaner">
                                 {% for productimage in product_item.product.productimage_set.all %}
-                                    {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="ing" loading="lazy">{% endif %}
+                                    {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="ing" >{% endif %}
                                 {% empty %}
-                                    <img src="{% static "core/images/nophoto1.png" %}" alt="img" loading="lazy">
+                                    <img src="{% static "core/images/nophoto1.png" %}" alt="img">
                                 {% endfor %}
                             </div>
                             <div class="product_item_description_container">

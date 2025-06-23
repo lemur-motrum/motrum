@@ -15,13 +15,13 @@
                             <a href="{% url "product:catalog" %}" class="title-link">
                                    <div class="title-link-description">весь каталог</div>
                                    <div class="arrow-container">
-                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector" loading="lazy" />
+                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector"  />
                                    </div>
                             </a>
                      </div>
                      {% for category in categories %}
                             <a class="category-elem" href="{% url "product:group" category.slug %}">
-                                   <img src="{{ category.image.url }}" alt="img" loading="lazy" />
+                                   <img src="{{ category.image.url }}" alt="img"  />
                                    <div class="background-container"></div>
                                    <div class="hover_container"></div>
                                    <span class="name">{{ category.name }}</span>
@@ -31,7 +31,7 @@
                             <a href="{% url "product:catalog" %}" class="title-link">
                                    <div class="title-link-description">весь каталог</div>
                                    <div class="arrow-container">
-                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector" loading="lazy" />
+                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector"  />
                                    </div>
                             </a>
                      </div>
@@ -59,9 +59,9 @@
                                           </div>
                                    </div>
                                    <div class="img-container marking-img-container">
-                                          <img class="static" src="{% static "core/images/head_page_animate/marking_static.png" %}" alt="vector" loading="lazy"/>
-                                          <img class="left" src="{% static "core/images/head_page_animate/marking_left.png" %}" alt="vector" loading="lazy"/>
-                                          <img class="rigth" src="{% static "core/images/head_page_animate/marking_rigth.png" %}" alt="vector" loading="lazy"/>
+                                          <img class="static" src="{% static "core/images/head_page_animate/marking_static.png" %}" alt="vector" />
+                                          <img class="left" src="{% static "core/images/head_page_animate/marking_left.png" %}" alt="vector" />
+                                          <img class="rigth" src="{% static "core/images/head_page_animate/marking_rigth.png" %}" alt="vector" />
                                    </div>
                             </a>
                             <a href="{% url "core:cobots-palett" %}" class="content-elem cobots_content_elem">
@@ -82,9 +82,9 @@
                                           </div>
                                    </div>
                                    <div class="img-container cobots-img-container">
-                                          <img class="up" src="{% static "core/images/head_page_animate/cobots_up.png" %}" alt="vector" loading="lazy"/>
-                                          <img class="middle" src="{% static "core/images/head_page_animate/cobots_midle.png" %}" alt="vector" loading="lazy"/>
-                                          <img class="down" src="{% static "core/images/head_page_animate/cobots_down.png" %}" alt="vector" loading="lazy"/>
+                                          <img class="up" src="{% static "core/images/head_page_animate/cobots_up.png" %}" alt="vector" />
+                                          <img class="middle" src="{% static "core/images/head_page_animate/cobots_midle.png" %}" alt="vector" />
+                                          <img class="down" src="{% static "core/images/head_page_animate/cobots_down.png" %}" alt="vector" />
                                    </div>
                             </a>
                      </div>

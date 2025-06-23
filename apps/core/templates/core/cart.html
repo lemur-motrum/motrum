@@ -21,9 +21,9 @@
                             <a href="{{ product_item.get_absolute_url }}">
                                 <div class="img-contaner">
                                     {% for productimage in product_item.productimage_set.all %}
-                                        {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="img" loading="lazy">{% endif %}
+                                        {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="img" >{% endif %}
                                     {% empty %}
-                                        <img src="{% static "core/images/nophoto1.png" %}" alt="img" loading="lazy" />
+                                        <img src="{% static "core/images/nophoto1.png" %}" alt="img" />
                                     {% endfor %}
                                 </div>
                             </a>
@@ -71,7 +71,7 @@
                                         <div class="cart_buttons_container">
                                             <div class="quantity-buttons">
                                                 <button class="minus-button">
-                                                    <img src={% static "core/images/minus.png" %} alt="icon" loading="lazy" />
+                                                    <img src={% static "core/images/minus.png" %} alt="icon" />
                                                 </button>
                                                 <input class="quantity"
                                                        type="number"
@@ -80,7 +80,7 @@
                                                        maxlength="3"
                                                        onkeypress='validate(event)'>
                                                 <button class="plus-button">
-                                                    <img src="{% static "core/images/plus.png" %}" alt="icon" loading="lazy" />
+                                                    <img src="{% static "core/images/plus.png" %}" alt="icon" />
                                                 </button>
                                             </div>
                                             <div class="price">
@@ -92,7 +92,7 @@
                                             </div>
                                         </div>
                                         <button class="delete_cart_button">
-                                            <img src="{% static "core/images/delete_cart_btn.png" %}" alt="icon" loading="lazy" />
+                                            <img src="{% static "core/images/delete_cart_btn.png" %}" alt="icon" />
                                         </button>
                                     </div>
                                 </div>

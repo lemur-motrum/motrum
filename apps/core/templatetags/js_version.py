@@ -12,5 +12,4 @@ def js_version():
         ver = "1.1"
     else:
         ver = "1.1"
-
     return ver

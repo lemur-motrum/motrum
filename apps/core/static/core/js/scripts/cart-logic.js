@@ -125,15 +125,17 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken,
               },
-            }).then((response) => {
-              if (response.status >= 200 && response.status < 300) {
-                console.log(
-                  `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
-                );
-              } else {
-                setErrorModal();
-              }
-            });
+            })
+              .then((response) => {
+                if (response.status >= 200 && response.status < 300) {
+                  console.log(
+                    `Товар с id ${productId}, успешно изменен на количество ${inputCount.value}`
+                  );
+                } else {
+                  setErrorModal();
+                }
+              })
+              .catch((error) => console.error(error));
           }, 1500);
         }
 
@@ -204,13 +206,15 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              window.location.reload();
-            } else {
-              setErrorModal();
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                window.location.reload();
+              } else {
+                setErrorModal();
+              }
+            })
+            .catch((error) => console.error(error));
         };
       });
 
@@ -346,7 +350,8 @@ window.addEventListener("DOMContentLoaded", () => {
                     .catch((error) => console.error(error));
                 }
               };
-            });
+            })
+            .catch((error) => console.error(error));
         }
       };
     }
@@ -414,21 +419,23 @@ window.addEventListener("DOMContentLoaded", () => {
               "X-CSRFToken": csrfToken,
               "Content-Type": "application/json",
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              ym(37794920, "reachGoal", "add_order_in_site");
-              deleteCookie("cart", "/", window.location.hostname);
-              successModal(
-                "Спасибо за заказ, мы свяжемся с вами в ближайшее время"
-              );
-              setTimeout(() => {
-                window.location.href =
-                  window.location.origin + "/lk/my_orders/?page=1";
-              }, 200);
-            } else {
-              setErrorModal();
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                ym(37794920, "reachGoal", "add_order_in_site");
+                deleteCookie("cart", "/", window.location.hostname);
+                successModal(
+                  "Спасибо за заказ, мы свяжемся с вами в ближайшее время"
+                );
+                setTimeout(() => {
+                  window.location.href =
+                    window.location.origin + "/lk/my_orders/?page=1";
+                }, 200);
+              } else {
+                setErrorModal();
+              }
+            })
+            .catch((error) => console.error(error));
         };
       }
     }

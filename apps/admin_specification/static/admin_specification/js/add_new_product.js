@@ -181,7 +181,6 @@ function addNewProductLogic(container) {
         quantity: 1,
       };
       addProductButton.textContent = "";
-      // addProductButton.innerHTML = "<div class='small_loader'></div>";
       const data = JSON.stringify(objData);
       fetch(`/api/v1/cart/${cartId}/save-product/`, {
         method: "POST",
@@ -467,7 +466,8 @@ function addNewProductLogic(container) {
                   newProductError
                 );
               }
-            });
+            })
+            .catch((error) => console.error(error));
         }
       };
     }
@@ -506,18 +506,20 @@ function addNewProductLogic(container) {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
-            } else if (response.status == 409) {
-              addProductButton.innerHTML = "";
-              addProductButton.textContent = "Добавить этот товар";
-              showErrorValidation("Этот товар уже в корзине", error);
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              } else if (response.status == 409) {
+                addProductButton.innerHTML = "";
+                addProductButton.textContent = "Добавить этот товар";
+                showErrorValidation("Этот товар уже в корзине", error);
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .catch((error) => console.error(error));
         };
       });
     }

@@ -33,10 +33,6 @@ export function getMarginality(wrapper) {
         totalCost = +quantityInput.value * priceOne;
         marginalityPercentValue =
           ((clientPrice - priceMotrum) / clientPrice) * 100;
-
-        // (100 * clientPrice * +quantityInput.value) /
-        //   (+quantityInput.value * priceMotrum) -
-        // 100;
       } else {
         if (discountInput.value == "-") {
           console.log("discountInput.value == ")

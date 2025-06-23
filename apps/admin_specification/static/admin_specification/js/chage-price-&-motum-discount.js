@@ -99,14 +99,16 @@ window.addEventListener("DOMContentLoaded", () => {
             "X-CSRFToken": csrfToken,
           },
           body: data,
-        }).then((response) => {
-          if (response.status == 200) {
-            window.location.reload();
-          } else {
-            setErrorModal();
-            throw new Error("Ошибка");
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              window.location.reload();
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          })
+          .catch((error) => console.error(error));
       }else{
         changePriceInput.style.border = "1px solid red";
       }

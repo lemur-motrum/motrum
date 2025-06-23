@@ -230,19 +230,20 @@ window.addEventListener("DOMContentLoaded", () => {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
             } else if  (response.status == 409) {
               return response.json();
               // showErrorValidation(
               //   "Товар с таким артикулом в корзине уже есть ",
               //   newProductError
               // );
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
           })
           .then((response) => {
             if (response.status == "product_in_okt") {
@@ -258,7 +259,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 newProductError
               );
             }
-          });
+            })
+            .catch((error) => console.error(error));
         }
       };
     });

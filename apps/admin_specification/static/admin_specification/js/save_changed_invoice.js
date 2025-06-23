@@ -27,8 +27,6 @@ window.addEventListener("DOMContentLoaded", () => {
         'textarea[name="delivery-date-all-input-name-all"]'
       );
 
-      
-
       const bitrixInput = document.querySelector(".bitrix-input");
       const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
       const specificationWrapepr = document.querySelector(
@@ -210,9 +208,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                 document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                 document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                // deleteCookie("key", "/", window.location.hostname);
-                // deleteCookie("specificationId", "/", window.location.hostname);
-                // deleteCookie("cart", "/", window.location.hostname);
                 return response.json();
               } else {
                 throw new Error("Ошибка");
@@ -257,16 +252,20 @@ window.addEventListener("DOMContentLoaded", () => {
                         "Content-Type": "application/json",
                       },
                     }
-                  ).then((response3) => {
-                    if (response3.status == 200 || response2.status == 201) {
-                      window.location.href =
-                        "/admin_specification/all_specifications/";
-                    } else {
-                      setErrorModal();
-                    }
-                  });
-                });
-            });
+                  )
+                    .then((response3) => {
+                      if (response3.status == 200 || response2.status == 201) {
+                        window.location.href =
+                          "/admin_specification/all_specifications/";
+                      } else {
+                        setErrorModal();
+                      }
+                    })
+                    .catch((error) => console.error(error));
+                })
+                .catch((error) => console.error(error));
+            })
+            .catch((error) => console.error(error));
         }
       };
     }

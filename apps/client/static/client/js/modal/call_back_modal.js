@@ -30,6 +30,7 @@ if (btn) {
       .then((data) => {
         console.log(data);
         window.location.reload();
-      });
+      })
+      .catch((error) => console.error(error));
   });
 }

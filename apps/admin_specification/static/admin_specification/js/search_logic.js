@@ -121,100 +121,139 @@ window.addEventListener("DOMContentLoaded", () => {
         overlay.classList.add("show");
         setTimeout(() => {
           overlay.classList.add("visible");
-        }, 600);
-      }
-    }
+        } else {
+          overlay.classList.add("show");
+          overlay.classList.add("visible");
+        }
+        openSearchWindow();
+        closebtn.classList.add("show");
+        const data = JSON.stringify(objData);
+        fetch(searchEndpoint, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.status == "ok") {
+              loader.classList.add("remove");
+              const products = JSON.parse(response.products);
+              searchElemsField.innerHTML = "";
+              products.forEach((product) => {
+                searchElemsField.innerHTML += `<div class="product">
+                          <span class="name">${product.fields.name}</span>
+                          <span class="search_button">Найти</span>
+                          </div>`;
+              });
+              const searchProducts =
+                searchElemsField.querySelectorAll(".product");
+              if (searchProducts.length > 0) {
+                searchProduct(searchProducts);
+                if (products.length == 0) {
+                  searchElemsField.innerHTML = "<div>Таких товаров нет</div>";
+                } else {
+                  let counterElems = 0;
+                  searchProducts.forEach((el, i) => {
+                    el.onmouseover = () => {
+                      searchProducts.forEach((el) =>
+                        el.classList.remove("active")
+                      );
+                      el.classList.add("active");
+                      counterElems = i + 1;
+                    };
+                    el.onmouseout = () => {
+                      el.classList.remove("active");
+                      counterElems = 0;
+                    };
+                  });
 
-    function closeOverlay() {
-      if (overlay.classList.contains("show")) {
-        overlay.classList.remove("visible");
+                  document.addEventListener("keyup", function (e) {
+                    console.log(counterElems);
+                    if (e.code == "ArrowDown") {
+                      searchProducts.forEach((el) => {
+                        el.classList.remove("active");
+                      });
+                      if (counterElems > searchProducts.length - 1) {
+                        counterElems = 0;
+                      } else {
+                        counterElems += 1;
+                      }
+                      if (searchProducts[counterElems - 1]) {
+                        searchProducts[counterElems - 1].classList.add(
+                          "active"
+                        );
+                        const name =
+                          searchProducts[counterElems - 1].querySelector(
+                            ".name"
+                          );
+                        searchInput.value = name.textContent;
+                      }
+                    }
+                    if (e.code == "ArrowUp") {
+                      searchProducts.forEach((el) => {
+                        el.classList.remove("active");
+                      });
+                      if (counterElems < 1) {
+                        counterElems = searchProducts.length;
+                      } else {
+                        counterElems -= 1;
+                      }
+                      if (searchProducts[counterElems - 1]) {
+                        searchProducts[counterElems - 1].classList.add(
+                          "active"
+                        );
+                        const name =
+                          searchProducts[counterElems - 1].querySelector(
+                            ".name"
+                          );
+                        searchInput.value = name.textContent;
+                      }
+                    }
+                    if (e.code == "Enter") {
+                      if (searchInput.value) {
+                        closeSearchWindow();
+                        urlParams.set("search_input", searchInput.value.trim());
+                        history.pushState({}, "", currentUrl);
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 300);
+                      }
+                    }
+                  });
+                }
+              } else {
+                searchElemsField.innerHTML = "<div>Таких товаров нет</div>";
+              }
+            }
+          })
+          .catch((error) => console.error(error));
+      } else {
         setTimeout(() => {
           overlay.classList.remove("show");
-        }, 600);
+        }, 200);
+        overlay.classList.remove("visible");
+        closebtn.classList.remove("show");
+        start = 0;
+        counter = 7;
+        objData.start = start;
+        objData.counter = counter;
+        closeSearchWindow();
       }
-    }
-
-    function closeSearchOverlay() {
-      closeOverlay();
-      closeSearchElemWrapper();
-      closebtn.classList.remove("show");
-      loader.classList.remove("remove");
-    }
-
-    function getProducts() {
-      const data = {
-        search_text: searchInput.value,
-        count: count,
-        count_last: countLast,
-        cat: category ? category : "",
-        gr: group ? group : "",
+      closebtn.onclick = () => {
+        closeSearchWindow();
+        closebtn.classList.remove("show");
+        urlParams.delete("search_input");
+        searchInput.value = "";
+        start = 0;
+        counter = 7;
+        objData.start = start;
+        objData.counter = counter;
+        history.pushState({}, "", currentUrl);
+        window.location.reload();
       };
-      fetch("/api/v1/product/search-product-okt-categ/", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            smallLoader.classList.remove("show");
-            loader.classList.add("remove");
-            console.log(finish);
-            return response.json();
-          } else {
-            setErrorModal();
-          }
-        })
-        .then((response) => {
-          if (response.data.length > 0) {
-            for (let i in response.data) {
-              addAjaxCatalogItem(response.data[i]);
-            }
-            count += 9;
-            countLast += 9;
-            clickOnTheProduct(
-              wrapper.querySelector(".search_elem_fields_container")
-            );
-          } else {
-            if (count == 0 && countLast == 9) {
-              searchElemContainer.innerHTML =
-                "<div class='no_search_elems'>Таких товаров нет</div>";
-            } else {
-              finish = true;
-              return;
-            }
-          }
-        });
-    }
-
-    function clickOnTheProduct(block) {
-      const searchElems = block.querySelectorAll(".product");
-      searchElems.forEach((searchElem) => {
-        const name = searchElem.querySelector(".name");
-        searchElem.onclick = () => {
-          window.location.href = `?search_input=${name.textContent}`;
-        };
-      });
-    }
-
-    function renderCatalogItem(productData) {
-      let ajaxTemplateWrapper = document.querySelector(
-        '[template-elem="wrapper"]'
-      );
-      let ajaxCatalogElementTemplate = ajaxTemplateWrapper.querySelector(
-        '[okt-search-elem="okt-search-elem"]'
-      ).innerText;
-      return nunjucks.renderString(ajaxCatalogElementTemplate, productData);
-    }
-
-    function addAjaxCatalogItem(ajaxElemData) {
-      let renderCatalogItemHtml = renderCatalogItem(ajaxElemData);
-      searchElemContainer.insertAdjacentHTML(
-        "beforeend",
-        renderCatalogItemHtml
-      );
-    }
+    });
   }
 });

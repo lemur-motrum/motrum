@@ -127,7 +127,6 @@ window.addEventListener("DOMContentLoaded", () => {
           paginationLastElem.textContent = `${lastPage}`;
 
           for (let i in data.data) {
-            // data.data[i]["bill_sum"] = data.data[i]["bill_sum"].toFixed(2);
             addAjaxCatalogItem(data.data[i]);
           }
           if (data.next) {
@@ -164,7 +163,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
           urlParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {

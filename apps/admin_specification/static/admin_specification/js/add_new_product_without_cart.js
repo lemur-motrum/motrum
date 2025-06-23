@@ -48,7 +48,8 @@ window.addEventListener("DOMContentLoaded", () => {
               });
             }
             cartId = getCookie("cart");
-          });
+          })
+          .catch((error) => console.error(error));
       } else {
         overlay.classList.add("show");
         inputValidation(priceInput);

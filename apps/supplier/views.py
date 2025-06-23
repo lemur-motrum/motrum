@@ -56,6 +56,7 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
+from apps.supplier.get_utils.unimat_pp import unimat_prompower_api
 from dal import autocomplete
 from django.db.models import Q
 
@@ -141,7 +142,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     bs_id_order = 12020
     order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    unimat_prompower_api()
     
     
     

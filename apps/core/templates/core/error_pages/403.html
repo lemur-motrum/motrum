@@ -151,20 +151,20 @@
               <div class="cart-elem out-work-elem" title="ВЫХОД ИЗ РАБОЧЕГО АККАУНТА">
                 <div class="img-container">
                     <a href="{% url "user:logout_clear_info" %}">
-                    <img src="{% static "core/images/header_account.png" %}" alt="img"></a>
+                    <img src="{% static "core/images/header_account.png" %}" alt="img" /></a>
                 </div>
             </div>
             {% else %}
               <a href={% url "core:cart" %} class="cart-elem">
                 <div class="img-container">
-                  <img src={% static "core/images/header_bascet.png" %} />
+                  <img src={% static "core/images/header_bascet.png" %} alt="img" />
                 </div>
                 <span class="global_cart_count cart-count">
                   {% if count_cart %}{{ count_cart }}{% endif %}
                 </span>
               </a>
               <div class="cart-elem enter-in-site">
-                <img src="{% static "core/images/header_account.png" %}" alt="img">
+                <img src="{% static "core/images/header_account.png" %}" alt="img" />
               </div>
             {% endif %}
           </div>

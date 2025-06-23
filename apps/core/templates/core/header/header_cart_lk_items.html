@@ -28,7 +28,7 @@
     <div class="cart-elem out-work-elem" title="ВЫХОД ИЗ РАБОЧЕГО АККАУНТА">
         <div class="img-container">
             <a href="{% url "user:logout_clear_info" %}">
-            <img src="{% static "core/images/header_account.png" %}" alt="img"></a>
+            <img src="{% static "core/images/header_account.png" %}" alt="img" ></a>
         </div>
     </div>
 {% else %}
@@ -41,6 +41,6 @@
         </span>
     </a>
     <div class="cart-elem enter-in-site">
-        <img src="{% static "core/images/header_account.png" %}" alt="img">
+        <img src="{% static "core/images/header_account.png" %}" alt="img" >
     </div>
 {% endif %}

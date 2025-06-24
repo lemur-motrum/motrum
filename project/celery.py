@@ -48,7 +48,7 @@ app.conf.beat_schedule = {
     # # получение апи товаров иек
     "add_iek": {
         "task": "apps.supplier.tasks.add_iek",
-        "schedule": crontab(minute=40, hour=0),
+        "schedule": crontab(minute=00, hour=12),
     },
     # получение апи товаров веда
     "add_veda": {
@@ -58,12 +58,12 @@ app.conf.beat_schedule = {
     # получение апи товаров промповер
     "add_prompower": {
         "task": "apps.supplier.tasks.add_prompower",
-        "schedule": crontab(minute=00, hour=2),
+        "schedule": crontab(minute=00, hour=11),
     },
     # получение апи товаров промповер
     "add_unimat": {
         "task": "apps.supplier.tasks.add_unimat",
-        "schedule": crontab(minute=45, hour=2),
+        "schedule": crontab(minute=45, hour=11),
     },
     # 'specification_stop': {
     #     'task': 'apps.specification.tasks.specification_date_stop',

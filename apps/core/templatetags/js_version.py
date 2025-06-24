@@ -1,5 +1,5 @@
-from django import VERSION, template
-from project.settings import IS_TESTING
+from django import template
+from project.settings import IS_TESTING,VERSION
 import random
 
 register = template.Library()

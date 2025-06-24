@@ -5,19 +5,23 @@
 <header class="header">
   <div class="logo-container">
     {% if request.get_full_path == index_url %}
-      <img src={% static "core/images/logo.png" %} alt="logo" />
+      <img src={% static "core/images/logo.png" %} alt="logo" loading="lazy" />
     {% else %}
       <a class="navbar_menu_item_link" href="/">
-        <img src={% static "core/images/logo.png" %} alt="logo" />
+        <img src={% static "core/images/logo.png" %} alt="logo" loading="lazy" />
       </a>
     {% endif %}
   </div>
   <div class="fixed-logo-container">
     {% if request.get_full_path == index_url %}
-      <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+      <img src="{% static "core/images/fixed-menu-logo.png" %}"
+           alt="logo"
+           loading="lazy" />
     {% else %}
       <a class="navbar_menu_item_link" href="/">
-        <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+        <img src="{% static "core/images/fixed-menu-logo.png" %}"
+             alt="logo"
+             loading="lazy" />
       </a>
     {% endif %}
   </div>

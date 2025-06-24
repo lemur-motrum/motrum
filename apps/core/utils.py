@@ -61,7 +61,14 @@ def get_price_motrum(
     from apps.supplier.models import (
         Discount,
     )
-
+    print(item_category,
+    item_group,
+    vendors,
+    rub_price_supplier,
+    all_item_group,
+    supplier,
+    promo_groupe,
+    )
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -70,7 +77,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
-
+    print("promo_groupe",promo_groupe)
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -81,7 +88,7 @@ def get_price_motrum(
         if discount_promo_groupe:
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
-
+    print("discount_promo_groupe",discount_promo_groupe)
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
@@ -164,7 +171,7 @@ def get_price_motrum(
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    print(motrum_price)
+    print("motrum_price",motrum_price)
     return motrum_price, sale[0]
 
 

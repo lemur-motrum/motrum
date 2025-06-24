@@ -498,6 +498,7 @@ class Price(models.Model):
 
         # получить скидки
         if self.in_auto_sale:
+            print("self.prod.promo_groupe,", self.prod.promo_groupe)
             price_motrum_all = get_price_motrum(
                 self.prod.category_supplier,
                 self.prod.group_supplier,

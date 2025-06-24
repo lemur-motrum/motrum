@@ -57,7 +57,7 @@ def crete_pdf_bill(
 
     try:
         print("crete_pdf_bill")
-        print(type_save)
+   
         directory = check_spesc_directory_exist(
             "bill",
         )
@@ -78,7 +78,7 @@ def crete_pdf_bill(
         product_specification = ProductSpecification.objects.filter(
             specification=specification
         ).order_by("id")
-        print(type_delivery)
+
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
 
         order = Order.objects.get(specification=specification)
@@ -111,8 +111,7 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-        print("type_bill", type_bill)
-        print("*******************************")
+
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
             motrum_info.save()
@@ -125,8 +124,7 @@ def crete_pdf_bill(
         else:
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
-        print("name_bill_text", name_bill_text)
-        print("*******************************")
+
 
         older_doc = OrderDocumentBill.objects.filter(
             order=order,
@@ -135,19 +133,17 @@ def crete_pdf_bill(
             bill_date_start=datetime.datetime.today(),
         )
         if older_doc:
-            print(1, older_doc)
+
             older_doc_ver = older_doc.last()
-            print(2, older_doc_ver)
+
             version = older_doc_ver.version + 1
-            print(2, older_doc_ver)
+     
             text_version = f"_{version}"
         else:
-            print(2, older_doc)
+
             version = 1
             text_version = ""
-        print(older_doc)
-        print(version)
-        print(text_version)
+
         name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
         name_bill_to_fullname_nosign = (
             f"{name_bill_text} от {date_now} без печати{text_version}"
@@ -379,7 +375,7 @@ def crete_pdf_bill(
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
         logo_supplier = Paragraph(
-            f'<br></br><br></br><img width="555" height="25"  src="{name_image_logo_supplier}" /><br></br>',
+            f'<br></br><br></br><img width="550" height="25"  src="{name_image_logo_supplier}" /><br></br>',
             normal_style,
         )
         story.append(logo_supplier)
@@ -501,7 +497,7 @@ def crete_pdf_bill(
         total_product_quantity = 0
         for product in product_specification:
             i += 1
-            print(i, product)
+      
             try:
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
@@ -648,18 +644,18 @@ def crete_pdf_bill(
             "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace(".", ",")
         )
         final_table_all = []
-        final_table_all.append(
-            (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            )
-        )
+        # final_table_all.append(
+        #     (
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #     )
+        # )
         final_table_all.append(
             (
                 Paragraph(info_payment, normal_style),
@@ -702,16 +698,27 @@ def crete_pdf_bill(
         final_table_all_prod = Table(
             final_table_all,
             colWidths=[
-                10.1 * cm,#Условия оплаты
+                7 * cm,  # уменьшили ширину
                 0 * cm,
                 0 * cm,
-                0.2 * cm,
-                3 * cm,#Итого
+                0 * cm,
+                3 * cm,
                 2 * cm,
-                2 * cm,#сумма
+                2 * cm,
                 2 * cm,
             ],
-            rowHeights=[20, 13, 13, 13],  # Добавляем отступ для первой строки
+            splitByRow=0,  # запрещаем разбивку таблицы между страницами
+        )
+        final_table_all_prod.setStyle(
+            TableStyle(
+                [
+                    ("TOPPADDING", (0, 0), (-1, 0), 1.25), #Только первая строка (индекс 0)
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),  # Уменьшаем верхний отступ
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),  # Уменьшаем нижний отступ
+                    ("LEFTPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем левый отступ
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем правый отступ
+                ]
+            )
         )
         
         story.append(final_table_all_prod)
@@ -1027,11 +1034,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+   
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+      
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,
@@ -1096,9 +1102,7 @@ def crete_pdf_bill(
             "bill",
             name_bill,
         )
-        print(file_path)
 
-        print(333333333333333333)
 
         data_signature = [
             (
@@ -1195,11 +1199,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,

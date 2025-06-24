@@ -2143,12 +2143,19 @@ def after_save_order_products(products):
             promo = prod.product.promo_groupe.name
         else:
             promo = ""
+        
+        product_name_str =  prod.product.name
+                
+        # if vendor and  prod.product.vendor.slug == "prompower" and prod.product.description:
+        #     product_name_str = prod.product.description
 
         data_prod_to_1c = {
             "vendor": vendor,
             "article": prod.product.article_supplier,
             "article_motrum": prod.product.article,
             "name": prod.product.name,
+            # "name": product_name_str,
+            
             "price_one": prod.price_one,
             "quantity": prod.quantity,
             "price_all": prod.price_all,

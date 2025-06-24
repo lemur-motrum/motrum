@@ -1135,7 +1135,7 @@ def iek_api():
             # нет свойств
             pass
     
-    #TODO! вернуть !!!!
+    
     all_categ_iek("ddp", None)
     true_categ = SupplierCategoryProductAll.objects.filter(
                             supplier=supplier,is_correct = True,is_need = True

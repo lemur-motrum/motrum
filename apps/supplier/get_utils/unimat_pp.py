@@ -248,7 +248,7 @@ def unimat_prompower_api():
                                 article_supplier=article_suppliers,
                             )
                             article.supplier = prompower
-                            if IS_PROD or IS_TESTING:
+                            if IS_PROD:
                                 # если у товара не было совсем дококв из пропсов
                                 props = ProductProperty.objects.filter(
                                     product=article
@@ -301,7 +301,7 @@ def unimat_prompower_api():
                                 )
                                 article.supplier = prompower
                                 # article.save()
-                                if IS_PROD or IS_TESTING:
+                                if IS_PROD:
                                     # если у товара не было совсем дококв из пропсов
                                     props = ProductProperty.objects.filter(
                                         product=article
@@ -361,7 +361,7 @@ def unimat_prompower_api():
                                 )
                                 article.save()
                                 update_change_reason(article, "Автоматическое")
-                                if IS_PROD or IS_TESTING:
+                                if IS_PROD:
 
                                     save_image(article)
                                     # if need_doc:

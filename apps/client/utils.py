@@ -503,12 +503,19 @@ def crete_pdf_bill(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
+                product_name_str = product.product.name
+                
+                if product.product.vendor.slug == "prompower" and product.product.description:
+                    product_name_str = product.product.description
+                    # if product.product.name not in product.product.description:
+                    #     product_name_str = f"{product.product.name} {product_name_str}"
+                
                 if product.product.in_view_website:
                     product_name = (
-                        f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
+                        f'<a href="{link}" color="blue">{str(product_name_str)}</a>'
                     )
                 else:
-                    product_name = f"{str(product.product.name)}"
+                    product_name = f"{str(product_name_str)}"
 
                 product_name = (Paragraph(product_name, normal_style_left),)
                 product_code = product.product.article_supplier

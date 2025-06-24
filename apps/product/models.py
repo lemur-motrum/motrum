@@ -508,7 +508,10 @@ class Price(models.Model):
 
         # получить скидки
         if self.in_auto_sale:
-            price_motrum_all = get_price_motrum(
+            print("self.prod.promo_groupe,", self.prod.promo_groupe)
+            if self.prod.vendor.slug == "unimat":
+                print("unimat")
+                price_motrum_all = get_price_motrum(
                 self.prod.category_supplier,
                 self.prod.group_supplier,
                 self.prod.vendor,
@@ -516,7 +519,19 @@ class Price(models.Model):
                 self.prod.category_supplier_all,
                 self.prod.supplier,
                 self.prod.promo_groupe,
+                True,
             )
+            else:
+                print("None unimat")
+                price_motrum_all = get_price_motrum(
+                    self.prod.category_supplier,
+                    self.prod.group_supplier,
+                    self.prod.vendor,
+                    self.rub_price_supplier,
+                    self.prod.category_supplier_all,
+                    self.prod.supplier,
+                    self.prod.promo_groupe,
+                )
 
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]

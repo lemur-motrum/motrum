@@ -59,11 +59,20 @@ def get_price_motrum(
     all_item_group,
     supplier,
     promo_groupe,
+    is_need_vendor_serch=False
 ):
     from apps.supplier.models import (
         Discount,
     )
-
+    print(item_category,
+    item_group,
+    vendors,
+    rub_price_supplier,
+    all_item_group,
+    supplier,
+    promo_groupe,
+    is_need_vendor_serch
+    )
     motrum_price = rub_price_supplier
     percent = 0
     sale = [None]
@@ -72,7 +81,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
-
+    
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -83,13 +92,16 @@ def get_price_motrum(
         if discount_promo_groupe:
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
-
+    
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
             category_supplier_all=all_item_group.id,
             is_tag_pre_sale=False,
         )
+        if is_need_vendor_serch and discount_all_group:
+            discount_all_group = discount_all_group.filter(
+            vendor=vendors)
 
         if discount_all_group:
             percent = get_percent(discount_all_group)
@@ -98,13 +110,18 @@ def get_price_motrum(
         # скидка по группе
 
     if item_group and percent == 0:
-
+        print(item_group,"item_group")
         discount_group = Discount.objects.filter(
             promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
             group_supplier=item_group.id,
             is_tag_pre_sale=False,
         )
+        if is_need_vendor_serch and discount_group:
+            print(discount_group,"discount_group")
+            discount_group = discount_group.filter(
+            vendor=vendors)
+            
 
         if discount_group:
             percent = get_percent(discount_group)
@@ -122,6 +139,9 @@ def get_price_motrum(
             category_supplier=item_category.id,
             is_tag_pre_sale=False,
         )
+        if is_need_vendor_serch and discount_categ:
+            discount_categ = discount_categ.filter(
+            vendor=vendors)
 
         if discount_categ:
             percent = get_percent(discount_categ)
@@ -137,6 +157,7 @@ def get_price_motrum(
             promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
+        
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
@@ -166,7 +187,7 @@ def get_price_motrum(
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    print(motrum_price)
+    print("motrum_price",motrum_price)
     return motrum_price, sale[0]
 
 

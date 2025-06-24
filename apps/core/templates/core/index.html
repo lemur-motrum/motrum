@@ -15,13 +15,15 @@
                             <a href="{% url "product:catalog" %}" class="title-link">
                                    <div class="title-link-description">весь каталог</div>
                                    <div class="arrow-container">
-                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                                          <img src="{% static "core/images/direction/arrow.png" %}"
+                                               alt="vector"
+                                               loading="lazy" />
                                    </div>
                             </a>
                      </div>
                      {% for category in categories %}
                             <a class="category-elem" href="{% url "product:group" category.slug %}">
-                                   <img src="{{ category.image.url }}" alt="img">
+                                   <img src="{{ category.image.url }}" alt="img" loading="lazy" />
                                    <div class="background-container"></div>
                                    <div class="hover_container"></div>
                                    <span class="name">{{ category.name }}</span>
@@ -31,7 +33,9 @@
                             <a href="{% url "product:catalog" %}" class="title-link">
                                    <div class="title-link-description">весь каталог</div>
                                    <div class="arrow-container">
-                                          <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                                          <img src="{% static "core/images/direction/arrow.png" %}"
+                                               alt="vector"
+                                               loading="lazy" />
                                    </div>
                             </a>
                      </div>
@@ -42,7 +46,8 @@
                             <div class="description">комплексный подход для наиболее востребованных запросов</div>
                      </div>
                      <div class="content-container">
-                            <a href="{% url "core:marking" %}" class="content-elem marking_content_elem">
+                            <a href="{% url "core:marking" %}"
+                               class="content-elem marking_content_elem">
                                    <div class="first_item_content">
                                           <div class="title">маркировка</div>
                                    </div>
@@ -55,16 +60,34 @@
                                                  <br>
                                                  Поставка программно-аппаратных
                                                  комплексов для решения задач
-                                                 по маркировке и прослеживаемости <br> продукции.
+                                                 по маркировке и прослеживаемости
+                                                 <br>
+                                                 продукции.
                                           </div>
                                    </div>
                                    <div class="img-container marking-img-container">
-                                          <img class="static" src="{% static "core/images/head_page_animate/marking_static.png" %}" alt="vector">
-                                          <img class="left" src="{% static "core/images/head_page_animate/marking_left.png" %}" alt="vector">
-                                          <img class="rigth" src="{% static "core/images/head_page_animate/marking_rigth.png" %}" alt="vector">
+                                          <img class="static"
+                                              
+                                               src="{% static "core/images/head_page_animate/marking_static.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
+                                          <img class="left"
+                                              
+                                               src="{% static "core/images/head_page_animate/marking_left.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
+                                          <img class="rigth"
+                                              
+                                               src="{% static "core/images/head_page_animate/marking_rigth.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
                                    </div>
                             </a>
-                            <a href="{% url "core:cobots-palett" %}" class="content-elem cobots_content_elem">
+                            <a href="{% url "core:cobots-palett" %}"
+                               class="content-elem cobots_content_elem">
                                    <div class="first_item_content">
                                           <div class="title">КОЛЛАБОРАТИВНЫЕ РОБОТЫ</div>
                                    </div>
@@ -82,9 +105,24 @@
                                           </div>
                                    </div>
                                    <div class="img-container cobots-img-container">
-                                          <img class="up" src="{% static "core/images/head_page_animate/cobots_up.png" %}" alt="vector">
-                                          <img class="middle" src="{% static "core/images/head_page_animate/cobots_midle.png" %}" alt="vector">
-                                          <img class="down" src="{% static "core/images/head_page_animate/cobots_down.png" %}" alt="vector">
+                                          <img class="up"
+                                              
+                                               src="{% static "core/images/head_page_animate/cobots_up.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
+                                          <img class="middle"
+                                              
+                                               src="{% static "core/images/head_page_animate/cobots_midle.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
+                                          <img class="down"
+                                              
+                                               src="{% static "core/images/head_page_animate/cobots_down.png" %}"
+                                              
+                                               alt="vector"
+                                               loading="lazy" />
                                    </div>
                             </a>
                      </div>
@@ -105,7 +143,6 @@
                                    <div class="dynamics_content-elem">
                                           <div class="number_container plus_block">
                                                  <span data-quantity="{{ motrum_in_numbers2.year }}" class="quantity">0</span>
-                                              
                                           </div>
                                           <div class="content short_content">
                                                  {{ motrum_in_numbers2.year }} лет на рынке
@@ -115,13 +152,12 @@
                                    </div>
                                    <div class="dynamics_content-elem">
                                           <div class="number_container long_number">
-                                                 <span data-quantity="{{ motrum_in_numbers.tech_project }}"
-                                                       class="quantity">0</span>
+                                                 <span data-quantity="{{ motrum_in_numbers.tech_project }}" class="quantity">0</span>
                                           </div>
                                           <div class="content">
-                                          реализовано проектов
+                                                 реализовано проектов
                                                  <br>
-                                          технического зрения
+                                                 технического зрения
                                           </div>
                                    </div>
                             </div>
@@ -133,9 +169,8 @@
                                                  управления
                                           </div>
                                           <div class="number_container extra_long_number">
-                                                 <span data-quantity="{{motrum_in_numbers.shkaf_upravleniya}}"
+                                                 <span data-quantity="{{ motrum_in_numbers.shkaf_upravleniya }}"
                                                        class="quantity">0</span>
-                                                 {% comment %} <span class="plus">+</span> {% endcomment %}
                                           </div>
                                    </div>
                                    <div class="dynamics_content-elem">

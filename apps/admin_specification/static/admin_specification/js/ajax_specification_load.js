@@ -225,7 +225,8 @@ window.addEventListener("DOMContentLoaded", () => {
           completeOrder(specificationContainer);
           currentUrl.searchParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {

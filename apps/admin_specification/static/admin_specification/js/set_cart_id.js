@@ -24,18 +24,17 @@ window.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json; charset=UTF-8",
           "X-CSRFToken": csrfToken,
         },
-      }).then((response) => {
-        if (response.status == 200) {
-          // document.cookie = `type_save=new; path=/; SameSite=None; Secure`;
-          // setCookie("type_save", "new", { path: "/",});
-
-          console.log("ok");
-          document.location.reload();
-        } else {
-          setErrorModal();
-          throw new Error("Ошибка");
-        }
-      });
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            console.log("ok");
+            document.location.reload();
+          } else {
+            setErrorModal();
+            throw new Error("Ошибка");
+          }
+        })
+        .catch((error) => console.error(error));
     }
   }
 });

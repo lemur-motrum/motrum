@@ -21,57 +21,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const palettScrollZoneContainer = wrapper.querySelector(
       ".palett_description"
     );
-
-    // анимация при скролле
-    // if (palettScrollZoneContainer) {
-    //   const tab = document.querySelector(".chars_table");
-    //   const palettAnimateElem = palettScrollZoneContainer.querySelector(
-    //     ".palett_animate_scroll_up"
-    //   );
-    //   let deltaY = 0;
-    //   let lastKnownScrollPosition = 0;
-    //   let rotationValue = 0;
-    //   document.onscroll = () => {
-    //     let ticking = false;
-    //     if (!ticking) {
-    //       window.requestAnimationFrame(() => {
-    //         deltaY = window.scrollY - lastKnownScrollPosition;
-    //         lastKnownScrollPosition = window.scrollY;
-    //         ticking = false;
-    //       });
-    //       ticking = true;
-    //     }
-
-    //     let charsScrollTop = tab.getBoundingClientRect().top;
-    //     let scrollPosY = palettScrollZoneContainer.getBoundingClientRect().top;
-
-    //     // let translateValue = -deltaY * -5;
-
-    //     if (deltaY > 0) {
-    //       rotationValue += -deltaY * 5;
-    //       if (rotationValue <= -45) {
-    //         rotationValue = -45;
-    //       } else {
-    //         if (rotationValue >= 0) {
-    //           rotationValue = 0;
-    //         }
-    //       }
-    //     } else {
-    //       rotationValue -= deltaY * 5;
-    //       if (rotationValue <= -45) {
-    //         rotationValue = -45;
-    //       } else {
-    //         if (rotationValue >= 0) {
-    //           rotationValue = 0;
-    //         }
-    //       }
-    //     }
-
-    //     if (scrollPosY < 200) {
-    //       palettAnimateElem.style.transform = `rotate(${rotationValue}deg)`;
-    //     }
-    //   };
-    // }
   }
 
   const formContainer = document.querySelector(".demo-form-container");
@@ -86,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const phoneMask = IMask(phoneInput, maskOptions);
 
     function hideOverlay() {
-      if(overlay){
+      if (overlay) {
         if (
           overlay.classList.contains("show") ||
           overlay.classList.contains("visible")
@@ -175,20 +124,22 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            yandexMetrika();
-            resetInputs();
-            hideOverlay();
-            hidePreloaderAndEnabledButton(submitBtn);
-            successModal(
-              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
-            );
-          } else {
-            setErrorModal();
-            throw new Error("Ошибка");
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              yandexMetrika();
+              resetInputs();
+              hideOverlay();
+              hidePreloaderAndEnabledButton(submitBtn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
+            } else {
+              setErrorModal();
+              throw new Error("Ошибка");
+            }
+          })
+          .catch((error) => console.error(error));
       }
     };
   }

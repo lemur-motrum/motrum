@@ -191,13 +191,7 @@ class Product(models.Model):
             location = "Обновление слагов"
             info = f"Обновление слагов"
             e = error_alert(error, location, info)
-        # for line in traceback.format_stack():
-        #     print(line.strip())    
-        #     error = "file_error"
-        #     location = "Перед продукт сейв"
-        #     info = f"Перед продукт сейв  {self}// {line.strip()}..{"".join(traceback.format_stack())}"
-        #     print(info)
-        #     e = error_alert(error, location, info)
+
         need_for_promo_work = True 
         print(need_for_promo_work)   
         super().save(*args, **kwargs)

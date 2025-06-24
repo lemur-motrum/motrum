@@ -6,14 +6,18 @@
             {% if productimage.photo and productimage.hide == false %}
                 {% if loop.first %}
                     {% thumbnail productimage.photo "400" format="PNG" as im %}
-                        <img src="{{ im }}" loading="lazy" alt="img">
+                        <img src="{{ im }}" loading="lazy" alt="img" loading="lazy" />
                     {% endthumbnail %}
                 {% endif %}
             {% else %}
-                <img src="{% static "core/images/nophoto1.png" %}" alt="no_photo_img">
+                <img src="{% static "core/images/nophoto1.png" %}"
+                     alt="no_photo_img"
+                     loading="lazy" />
             {% endif %}
         {% endfor %}
     {% else %}
-        <img src="{% static "core/images/nophoto1.png" %}" alt="no_photo_img">
+        <img src="{% static "core/images/nophoto1.png" %}"
+             alt="no_photo_img"
+             loading="lazy" />
     {% endif %}
 </div>

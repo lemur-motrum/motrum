@@ -81,7 +81,7 @@
                     <div class="swiper-wrapper">
                         {% for photo_education_elem in photo_education %}
                             <div class="swiper-slide photo_education_elem_img_container">
-                                <img src="{{ photo_education_elem.image.url }}" alt="img">
+                                <img src="{{ photo_education_elem.image.url }}" alt="img" loading="lazy" />
                             </div>
                         {% endfor %}
                     </div>
@@ -91,7 +91,7 @@
                             <div class="swiper-wrapper">
                                 {% for photo_education_elem in photo_education %}
                                     <div class="swiper-slide">
-                                        <img src="{{ photo_education_elem.image.url }}" alt="img">
+                                        <img src="{{ photo_education_elem.image.url }}" alt="img" loading="lazy" />
                                     </div>
                                 {% endfor %}
                             </div>
@@ -116,7 +116,7 @@
                     <div class="swiper-wrapper">
                         {% for photo_recreation_elem in photo_recreation %}
                             <div class="swiper-slide photo_recreation_elem_img_container">
-                                <img src="{{ photo_recreation_elem.image.url }}" alt="img" />
+                                <img src="{{ photo_recreation_elem.image.url }}" alt="img" loading="lazy" />
                             </div>
                         {% endfor %}
                     </div>
@@ -126,7 +126,7 @@
                             <div class="swiper-wrapper">
                                 {% for photo_recreation_elem in photo_recreation %}
                                     <div class="swiper-slide">
-                                        <img src="{{ photo_recreation_elem.image.url }}" alt="img">
+                                        <img src="{{ photo_recreation_elem.image.url }}" alt="img" loading="lazy" />
                                     </div>
                                 {% endfor %}
                             </div>
@@ -197,7 +197,9 @@
                     <div class="container">
                         <label class="file_label">
                             <div class="img_container">
-                                <img src="{% static "vacancy_web/img/Line.png" %}" alt="">
+                                <img src="{% static "vacancy_web/img/Line.png" %}"
+                                     alt="img"
+                                     loading="lazy" />
                             </div>
                             <div class="file_description">
                                 Прикрепить

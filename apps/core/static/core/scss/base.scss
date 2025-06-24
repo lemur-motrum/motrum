@@ -1953,6 +1953,7 @@ a {
       display: flex;
       gap: 3rem;
       margin-bottom: 0.3rem;
+      margin: 0;
       @media screen and (max-width: 576px) {
         gap: 0.5rem;
         width: 100%;

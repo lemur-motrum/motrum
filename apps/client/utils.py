@@ -338,7 +338,7 @@ def crete_pdf_bill(
             colWidths=[
                 9 * cm,
                 2 * cm,
-                7 * cm,
+                8.3 * cm,
             ],
             rowHeights=0.4 * cm,
             hAlign="LEFT",
@@ -379,7 +379,7 @@ def crete_pdf_bill(
         name_image_logo_supplier = request.build_absolute_uri(document_info.vendors.url)
 
         logo_supplier = Paragraph(
-            f'<br></br><img width="555" height="65"  src="{name_image_logo_supplier}" /><br></br>',
+            f'<br></br><br></br><img width="555" height="25"  src="{name_image_logo_supplier}" /><br></br>',
             normal_style,
         )
         story.append(logo_supplier)
@@ -387,26 +387,26 @@ def crete_pdf_bill(
         if is_contract or specifications.total_amount > 99999.99:
             story.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"<br></br>Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"<br></br>Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
         else:
             story.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"<br></br>Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"<br></br>Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
@@ -464,6 +464,8 @@ def crete_pdf_bill(
                     ("FONT", (0, 0), (-1, -1), "Roboto", 7),
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
                     ("GRID", (0, 0), (-1, -1), 0.25, colors.transparent),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
                     # ("TOPPADDING", (0, 0), (-1, 0), 1, )
                 ]
             )
@@ -601,6 +603,7 @@ def crete_pdf_bill(
                 2 * cm,
             ],
             repeatRows=2,
+            
         )
         # 0.3 + 0.3
         table_product.setStyle(
@@ -614,10 +617,10 @@ def crete_pdf_bill(
                     ("BOX", (-1, 1), (0, 0), 2, colors.red),
                     ("BOX", (-1, 0), (-1, -1), 2, colors.black),
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем верхний отступ
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем нижний отступ
-                    ("LEFTPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем левый отступ
-                    ("RIGHTPADDING", (0, 0), (-1, -1), 2),  # Уменьшаем правый отступ
+                    ("TOPPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем верхний отступ
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем нижний отступ
+                    ("LEFTPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем левый отступ
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 1.25),  # Уменьшаем правый отступ
                 ]
             )
         )

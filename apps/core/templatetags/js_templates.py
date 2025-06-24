@@ -52,6 +52,11 @@ def js_templates():
             "name": "search-elem",
             "template": "product/includes/ajax_search_elem.html",
         },
+        {
+            "module": "okt-search",
+            "name": "okt-search-elem",
+            "template": "admin_specification/include/ajax_okt_searh_elem.html",
+        },
     ]
 
     for template_item in template_list:

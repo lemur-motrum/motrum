@@ -359,9 +359,10 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         console.log("sumMotrum1", sumMotrum);
         getDigitsNumber(valueContainer, +sum);
-        getDigitsNumber(marginality, +sumMotrum);
-        console.log("sum", sum);
-        console.log("sumMotrum", sumMotrum);
+        // getDigitsNumber(marginality, +margSum);
+        getDigitsNumber(marginality, +margSum);
+        console.log("sum",sum)
+        console.log("sumMotrum",sumMotrum)
         allMarginalityPercent.textContent = isNaN(
           ((1 - +sumMotrum / +sum) * 100).toFixed(2)
         )

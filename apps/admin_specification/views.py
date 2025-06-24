@@ -827,7 +827,7 @@ def create_specification(request):
                 #             2,
                 #         ),
             )
-            # .order_by("id_product_cart")
+            .order_by("id_product_cart")
         )
 
     # корзины нет

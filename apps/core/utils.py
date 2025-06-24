@@ -2154,7 +2154,7 @@ def after_save_order_products(products):
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
-            "promo_group": promo,
+            # "promo_group": promo,
         }
 
         order_products.append(data_prod_to_1c)

@@ -5,21 +5,21 @@
     <div class="motrum-footer">
         <div class="motrum-logo-container">
             {% if request.get_full_path == index_url %}
-                <img src={% static "core/images/footer-logo.png" %} alt="logo" />
+                <img src="{% static "core/images/footer-logo.png" %}"
+                     alt="logo"
+                     loading="lazy" />
             {% else %}
                 <a class="navbar_menu_item_link" href="/">
-                    <img src={% static "core/images/footer-logo.png" %} alt="logo" />
+                    <img src="{% static "core/images/footer-logo.png" %}"
+                         alt="logo"
+                         loading="lazy" />
                 </a>
             {% endif %}
         </div>
         <div class="description">
-            <div>
-                {% comment %} ©
-                {% current_year %}
-                ООО "ПМН Мотрум". Все права защищены. {% endcomment %}
-                Самара, ул. 22 Партсъезда, 207 оф. 3, 1 этаж
-            </div>
-            <a onclick="ym(37794920,'reachGoal','click-phone')" href="tel:+78463004117">8 (846) 300-41-17</a>
+            <div>Самара, ул. 22 Партсъезда, 207 оф. 3, 1 этаж</div>
+            <a onclick="ym(37794920,'reachGoal','click-phone')"
+               href="tel:+78463004117">8 (846) 300-41-17</a>
             <a href="{% url "core:privacy-policy" %}">политика конфиденциальности</a>
         </div>
     </div>
@@ -31,7 +31,9 @@
             </div>
         </div>
         <div class="lemur-logo-container">
-            <img src={% static "core/images/lemur-logo.png" %} alt="logo" />
+            <img src="{% static "core/images/lemur-logo.png" %}"
+                 alt="logo"
+                 loading="lazy" />
         </div>
     </div>
 </div>

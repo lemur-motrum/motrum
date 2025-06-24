@@ -63,7 +63,8 @@ export function changePayment(container, errorFn) {
               .then((response) => {
                 paymentInput.setAttribute("summ-pay", response.sum_pay);
                 finishPromice = true;
-              });
+              })
+              .catch((error) => console.error(error));
             const promiceModalInteval = setInterval(() => {
               if (finishPromice) {
                 clearInterval(promiceModalInteval);
@@ -217,7 +218,8 @@ export function changePayment(container, errorFn) {
                             description.style.display = "none";
                           }
                           completeOrder(container);
-                        });
+                        })
+                        .catch((error) => console.error(error));
                     }
                   }
                 };
@@ -245,10 +247,3 @@ export function changePayment(container, errorFn) {
     });
   }
 }
-
-// window.addEventListener("DOMContentLoaded", () => {
-//   const specificationContainer = document.querySelector(
-//     ".all_specifications_table"
-//   );
-//   changePayment(specificationContainer, showErrorValidation);
-// });

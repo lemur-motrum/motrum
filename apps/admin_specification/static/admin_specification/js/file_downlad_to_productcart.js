@@ -9,7 +9,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const cartId = getCookie("cart");
       const dataObj = {
         cart: +cartId,
-        // file: null,
       };
       const data = JSON.stringify(dataObj);
 
@@ -20,15 +19,17 @@ window.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
-      }).then((response) => {
-        if (response.status == 200) {
-          console.log("STOP");
-          location.reload();
-        } else {
-          setErrorModal();
-          throw new Error("Ошибка");
-        }
-      });
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            console.log("STOP");
+            location.reload();
+          } else {
+            setErrorModal();
+            throw new Error("Ошибка");
+          }
+        })
+        .catch((error) => console.error(error));
     };
   }
 });

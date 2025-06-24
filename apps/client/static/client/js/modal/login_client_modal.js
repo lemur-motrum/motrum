@@ -40,7 +40,8 @@ function addNewClient(endpointClient, phone, pin) {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -82,7 +83,8 @@ function updateClient() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -136,7 +138,8 @@ function addRequisites() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -209,7 +212,8 @@ function updateRequisites() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -242,7 +246,8 @@ function getAllClient() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }

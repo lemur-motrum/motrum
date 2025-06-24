@@ -82,8 +82,6 @@ export function setCookie(name, value, options = {}) {
 export function deleteCookie(name, path, domain) {
   if (getCookie(name)) {
     document.cookie = `${name}=; Path=${path}; Max-Age=-1;`;
-    // document.cookie =
-    // name + "=; Path=" + path + "; Domain=" + domain + "; Max-Age=-1;";
   }
 }
 

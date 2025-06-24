@@ -25,8 +25,6 @@ window.addEventListener("DOMContentLoaded", () => {
       'textarea[name="delivery-date-all-input-name-all"]'
     );
 
-    
-
     const bitrixInput = document.querySelector(".bitrix-input");
     const dateDeliveryInputs = document.querySelectorAll(".delivery_date");
 
@@ -264,7 +262,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   post_update: false,
                 };
                 const data = JSON.stringify(dataObj);
-                
+
                 fetch(
                   `/api/v1/order/${response1.specification}/create-bill-admin/`,
                   {
@@ -276,16 +274,20 @@ window.addEventListener("DOMContentLoaded", () => {
                       "Content-Type": "application/json",
                     },
                   }
-                ).then((response3) => {
-                  if (response3.status == 200 || response2.status == 201) {
-                    window.location.href =
-                      "/admin_specification/all_specifications/";
-                  } else {
-                    setErrorModal();
-                  }
-                });
-              });
-          });
+                )
+                  .then((response3) => {
+                    if (response3.status == 200 || response2.status == 201) {
+                      window.location.href =
+                        "/admin_specification/all_specifications/";
+                    } else {
+                      setErrorModal();
+                    }
+                  })
+                  .catch((error) => console.error(error));
+              })
+              .catch((error) => console.error(error));
+          })
+          .catch((error) => console.error(error));
       }
     };
   }

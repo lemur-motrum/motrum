@@ -2077,6 +2077,7 @@ def send_requests(url, headers, data, auth):
     if auth == "1c":
         print("auth1c")
         payload = data
+        #
         url = os.environ.get("1S_URL")
         headers = {}
         auth = HTTPBasicAuth(os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD"))
@@ -2094,6 +2095,7 @@ def send_requests(url, headers, data, auth):
             allow_redirects=False,
             verify=False,
         )
+        
         error = "info_error_order"
         location = "отправка requests 1c"
         info = f"отправка requests 1c {response} / {response.text}"
@@ -2146,22 +2148,22 @@ def after_save_order_products(products):
         
         product_name_str =  prod.product.name
                 
-        # if vendor and  prod.product.vendor.slug == "prompower" and prod.product.description:
-        #     product_name_str = prod.product.description
+        if vendor and  prod.product.supplier.slug == "prompower" and prod.product.description:
+            product_name_str = prod.product.description
 
         data_prod_to_1c = {
             "vendor": vendor,
             "article": prod.product.article_supplier,
             "article_motrum": prod.product.article,
-            "name": prod.product.name,
-            # "name": product_name_str,
+            # "name": prod.product.name,
+            "name": product_name_str,
             
             "price_one": prod.price_one,
             "quantity": prod.quantity,
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
-            # "promo_group": promo,
+            "promo_group": promo,
         }
 
         order_products.append(data_prod_to_1c)

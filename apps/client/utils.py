@@ -505,7 +505,7 @@ def crete_pdf_bill(
                 link = f"{url_absolute}/{link}"
                 product_name_str = product.product.name
                 
-                if product.product.vendor.slug == "prompower" and product.product.description:
+                if product.product.supplier.slug == "prompower" and product.product.description:
                     product_name_str = product.product.description
                     # if product.product.name not in product.product.description:
                     #     product_name_str = f"{product.product.name} {product_name_str}"

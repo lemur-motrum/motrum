@@ -1,5 +1,5 @@
 from django import template
-from project.settings import IS_TESTING
+from project.settings import IS_TESTING,VERSION
 import random
 
 register = template.Library()
@@ -11,5 +11,5 @@ def js_version():
         # ver = random.randint(0,3124567)
         ver = "1.1"
     else:
-        ver = "1.1"
+        ver = VERSION
     return ver

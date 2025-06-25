@@ -13,7 +13,7 @@
                         <a href="{% url "product:group" category.slug %}"
                            class="swiper-slide category">
                             <div class="img-container">
-                                {% if category.image %}<img src="{{ category.image.url }}" alt="img">{% endif %}
+                                {% if category.image %}<img src="{{ category.image.url }}" alt="img" loading="lazy" />{% endif %}
                             </div>
                             <div class="name">{{ category.name }}</div>
                         </a>

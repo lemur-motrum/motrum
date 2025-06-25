@@ -21,15 +21,14 @@
                 {% endif %}
                 <div class="project_one_title_image swiper-slide product_one_slider_elem">
                     {% thumbnail project.image_main "1280x720" format="PNG" as im %}
-                        <img src="{{ im.url }}" alt="" />
+                        <img src="{{ im.url }}" alt="img" loading="lazy" />
                     {% endthumbnail %}
                 </div>
                 {% for image in project_image %}
-                <div class="project_one_img-container swiper-slide product_one_slider_elem">
+                    <div class="project_one_img-container swiper-slide product_one_slider_elem">
                         {% thumbnail image.image "1280x720" format="PNG" as im %}
-                            <img src="{{ im.url }}" alt="" />
+                            <img src="{{ im.url }}" alt="img" loading="lazy" />
                         {% endthumbnail %}
-                        {% comment %} <img src="{{ image.image.url }}" alt="img" /> {% endcomment %}
                     </div>
                 {% endfor %}
             </div>
@@ -52,11 +51,11 @@
                         {% endfor %}
                     {% endif %}
                     <div class="project_one_gallery_first_image swiper-slide product_one_gallery_elem">
-                        <img src="{{ project.image_main.url }}" alt="img" />
+                        <img src="{{ project.image_main.url }}" alt="img" loading="lazy" />
                     </div>
                     {% for image in project_image %}
                         <div class="project_one_gallery_image swiper-slide product_one_gallery_elem">
-                            <img src="{{ image.image.url }}" alt="img" />
+                            <img src="{{ image.image.url }}" alt="img" loading="lazy" />
                         </div>
                     {% endfor %}
                 </div>
@@ -105,49 +104,50 @@
                             </label>
                             <button type="submit">оформить заказ</button>
                         </form>
-                        <div class="politic_description other_politic_description">Нажимая на кнопку, вы даёте согласие на
+                        <div class="politic_description other_politic_description">
+                            Нажимая на кнопку, вы даёте согласие на
                             обработку персональных данных в
                             соответствии с <a target="_blank" href="{% url "core:privacy-policy" %}">политикой
-                                конфиденциальности</a>
-                        </div>
+                        конфиденциальности</a>
                     </div>
                 </div>
-                <div class="onter_projects">
-                    <div class="other_projects_title">Похожие проекты</div>
-                    <div class="other_projects_list">
-                        {% for other_project in other_projects %}
-                            <div class="other_project_elem">
-                                <a class="other_project_name"
-                                   href="{{ other_project.get_absolute_url }}">
-                                    {{ other_project.category_project }}.
-                                    {% if other_project.projectclientcategoryprojectmarking_set.all|length > 0 %}
-                                        {% for marking_categ in other_project.projectclientcategoryprojectmarking_set.all %}
-                                            {{ marking_categ.client_category_marking.name }}
-                                            {% if forloop.last %}
-                                                :
-                                            {% else %}
-                                                ,
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                    {{ other_project.name }}
-                                </a>
-                                <div class="other_project_description">
-                                    <div class="other_project_tags">
-                                        {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}
-                                            <div class="other_project_tag">{{ client_categ_proj.client_category.name }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="other_project_place">
-                                        <div>{{ other_project.place_object }}</div>
-                                        <div>{{ other_project.data_project|date:"Y" }}</div>
-                                    </div>
+            </div>
+            <div class="onter_projects">
+                <div class="other_projects_title">Похожие проекты</div>
+                <div class="other_projects_list">
+                    {% for other_project in other_projects %}
+                        <div class="other_project_elem">
+                            <a class="other_project_name"
+                               href="{{ other_project.get_absolute_url }}">
+                                {{ other_project.category_project }}.
+                                {% if other_project.projectclientcategoryprojectmarking_set.all|length > 0 %}
+                                    {% for marking_categ in other_project.projectclientcategoryprojectmarking_set.all %}
+                                        {{ marking_categ.client_category_marking.name }}
+                                        {% if forloop.last %}
+                                            :
+                                        {% else %}
+                                            ,
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ other_project.name }}
+                            </a>
+                            <div class="other_project_description">
+                                <div class="other_project_tags">
+                                    {% for client_categ_proj in other_project.projectclientcategoryproject_set.all %}
+                                        <div class="other_project_tag">{{ client_categ_proj.client_category.name }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="other_project_place">
+                                    <div>{{ other_project.place_object }}</div>
+                                    <div>{{ other_project.data_project|date:"Y" }}</div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

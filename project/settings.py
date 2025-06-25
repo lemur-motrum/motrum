@@ -61,7 +61,7 @@ IS_PROD = os.environ.get("IS_PROD", "False").lower() in ("true", "1", "t")
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "t")
 # IS_TEHC_WORK= os.environ.get("IS_TEHC_WORK", "False").lower() in ("true", "1", "t")
 # IS_TEHC_WORK = True
-
+VERSION = os.environ.get("VERSION")
 if DEBUG:
     DEBUG = True
 else:

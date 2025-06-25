@@ -10,14 +10,33 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta http-equiv='cache-control' content='no-cache'>
       <!--css инклудить в общий -->
+      {% include "core/includes/font-style.html" %}
       {% include "core/includes/stylesheets.html" %}
-      <link type="image/png" sizes="16x16" rel="icon"  href="{% static "core/images/favs/fav.ico" %}">
-      <link type="image/png" sizes="32x32" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
-      <link type="image/png" sizes="96x96" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
-      <link type="image/png" sizes="120x120" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
-      <title>{% if meta_title %}{{ meta_title }}{% else %}Мотрум - оборудование для автоматизации производства{% endif %}</title>
-      {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}" /> {% endif %}
-      {% if meta_description %}<meta name="description" content="{{ meta_description }}" />{% endif %}  
+      <link type="image/png"
+            sizes="16x16"
+            rel="icon"
+            href="{% static "core/images/favs/fav.ico" %}">
+      <link type="image/png"
+            sizes="32x32"
+            rel="icon"
+            href="{% static "core/images/favs/fav.ico" %}">
+      <link type="image/png"
+            sizes="96x96"
+            rel="icon"
+            href="{% static "core/images/favs/fav.ico" %}">
+      <link type="image/png"
+            sizes="120x120"
+            rel="icon"
+            href="{% static "core/images/favs/fav.ico" %}">
+      <title>
+        {% if meta_title %}
+          {{ meta_title }}
+        {% else %}
+          Мотрум - оборудование для автоматизации производства
+        {% endif %}
+      </title>
+      {% if meta_keywords %}<meta name="keywords" content="{{ meta_keywords }}" />{% endif %}
+      {% if meta_description %}<meta name="description" content="{{ meta_description }}" />{% endif %}
       <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
       <!-- Yandex.Metrika counter -->
       <script type="text/javascript">
@@ -52,16 +71,17 @@
           accurateTrackBounce: true,
         });
       </script>
-      <noscript><div>
-        <img
-          src="https://mc.yandex.ru/watch/37794920"
-          style="position: absolute; left: -9999px"
-          alt=""
-        /></div
-    ></noscript>
-    <!-- /Yandex.Metrika counter -->
-     <!-- Top.Mail.Ru counter -->
-     <script type="text/javascript">
+      <noscript>
+        <div>
+          <img src="https://mc.yandex.ru/watch/37794920"
+               style="position: absolute;
+                      left: -9999px"
+               alt="" />
+        </div>
+      </noscript>
+      <!-- /Yandex.Metrika counter -->
+      <!-- Top.Mail.Ru counter -->
+      <script type="text/javascript">
       var _tmr = window._tmr || (window._tmr = []);
       _tmr.push({
         id: "3535619",
@@ -86,17 +106,18 @@
           f();
         }
       })(document, window, "tmr-code");
-    </script>
-    <noscript><div>
-      <img
-        src="https://top-fwz1.mail.ru/counter?id=3535619;js=na"
-        style="position: absolute; left: -9999px"
-        alt="Top.Mail.Ru"
-      /></div
-  ></noscript>
+      </script>
+      <noscript>
+        <div>
+          <img src="https://top-fwz1.mail.ru/counter?id=3535619;js=na"
+               style="position: absolute;
+                      left: -9999px"
+               alt="Top.Mail.Ru" />
+        </div>
+      </noscript>
       <!-- /Top.Mail.Ru counter -->
-       <!-- Roistat Counter Start -->
-       <script>
+      <!-- Roistat Counter Start -->
+      <script>
         (function (w, d, s, h, id) {
           w.roistatProjectId = id;
           w.roistatHost = h;
@@ -121,7 +142,7 @@
           "8dddd701ce95b9f776ca472fed14e965"
         );
       </script>
-        <!-- Roistat Counter End -->
+      <!-- Roistat Counter End -->
     </head>
     <body >
       <div class="wrapper">

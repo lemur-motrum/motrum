@@ -14,6 +14,7 @@ import environ
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,7 +33,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "www.localhost",
- 
     "90.156.171.134",
     "www.motrum.yuriyzhidkov.ru",
     "motrum.yuriyzhidkov.ru",
@@ -100,12 +100,13 @@ INSTALLED_APPS = [
     "tinymce",
     "drf_spectacular",
     "sorl.thumbnail",
+    "compressor",
 ]
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "sass_processor.finders.CssFinder",
+    "compressor.finders.CompressorFinder",
 ]
 
 MIDDLEWARE = [
@@ -200,6 +201,7 @@ AUTH_USER_MODEL = "user.CustomUser"
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 SASS_PROCESSOR_ROOT = STATIC_ROOT
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
@@ -319,3 +321,24 @@ else:
 DADATA_TOKEN = os.environ.get("DADATA_TOKEN")
 DADATA_SECRET = os.environ.get("DADATA_SECRET")
 FORM_LEMUR = os.environ.get("FORM_LEMUR")
+
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = False
+COMPRESS_ROOT = os.path.join(BASE_DIR, "static/compressed")
+
+NODE_MODULES = BASE_DIR / "node_modules"
+
+COMPRESS_PRECOMPILERS = (
+    (
+        "text/javascript",
+        "./node_modules/.bin/browserify {{infile}} -t ./node_modules/babelify  -o {{outfile}} --presets ./node_modules/@babel/preset-env".format(
+            node_modules="./node_modules/"
+        ),
+    ),
+    (
+        "module",
+        "./node_modules/.bin/browserify {{infile}} -t ./node_modules/babelify -o {{outfile}} --presets ./node_modules/@babel/preset-env".format(
+            node_modules="./node_modules/"
+        ),
+    ),
+)

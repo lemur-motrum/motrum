@@ -1,4 +1,4 @@
-import { showErrorValidation } from "/static/core/js/functions.js";
+import { showErrorValidation } from "../../../../core/static/core/js/functions.js";
 
 export function setCommentProductItem(el) {
   if (el) {

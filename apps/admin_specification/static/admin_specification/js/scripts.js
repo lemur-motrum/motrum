@@ -1,4 +1,4 @@
-import "/static/core/js/slider.js";
+import "../../../../core/static/core/js/slider.js";
 import {
   NumberParser,
   getCookie,
@@ -8,9 +8,9 @@ import {
   showErrorValidation,
   getCurrentPrice,
   getDeliveryDate,
-} from "/static/core/js/functions.js";
+} from "../../../../core/static/core/js/functions.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 import { changeDateInOrder } from "../js/change_date_in_order.js";
 import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";

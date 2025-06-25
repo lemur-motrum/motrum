@@ -553,7 +553,7 @@ def prompower_api():
                             categ = None
                     else:
                         categ = None
-
+                    price_supplier = int(data_item["price"])
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
                         price_supplier = price_supplier + (price_supplier / 100 * NDS)

@@ -1,4 +1,4 @@
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../../core/static/core/js/error_modal.js";
 
 function getCookie(name) {
   let matches = document.cookie.match(

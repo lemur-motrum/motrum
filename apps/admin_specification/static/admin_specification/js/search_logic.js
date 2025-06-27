@@ -1,4 +1,4 @@
-import { getCookie } from "/static/core/js/functions.js";
+import { getCookie } from "../../../../core/static/core/js/functions.js";
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;

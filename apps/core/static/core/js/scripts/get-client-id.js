@@ -1,4 +1,4 @@
-import { deleteCookie } from "/static/core/js/functions.js";
+import { deleteCookie } from "../functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const clientInput = document.querySelector("#client_id");

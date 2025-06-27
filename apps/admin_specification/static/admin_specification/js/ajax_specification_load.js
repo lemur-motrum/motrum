@@ -1,9 +1,9 @@
-import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
+import { getCookie, showErrorValidation } from "../../../../core/static/core/js/functions.js";
 import { invoiceItem } from "../js/invoice_elems.js";
 import { changePayment } from "../js/change_payment.js";
 import { completeOrder } from "../js/complete_order.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 let csrfToken = getCookie("csrftoken");
 

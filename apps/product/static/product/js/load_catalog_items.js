@@ -1,1 +1,1 @@
-import { getCookie } from "/static/core/js/functions.js";
+import { getCookie } from "../../../../core/static/core/js/functions.js";

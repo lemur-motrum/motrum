@@ -1,6 +1,6 @@
-import { getCookie, getClosestInteger } from "/static/core/js/functions.js";
+import { getCookie, getClosestInteger } from "../../../../core/static/core/js/functions.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

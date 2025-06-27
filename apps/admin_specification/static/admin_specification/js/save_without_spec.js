@@ -3,9 +3,9 @@ import {
   deleteCookie,
   getCurrentPrice,
   getDeliveryDate,
-} from "/static/core/js/functions.js";
+} from "../../../../core/static/core/js/functions.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 

@@ -2,7 +2,7 @@ import {
   NumberParser,
   getDigitsNumber,
   getCurrentPrice,
-} from "/static/core/js/functions.js";
+} from "../../../../core/static/core/js/functions.js";
 
 export function getMarginality(wrapper) {
   if (wrapper) {

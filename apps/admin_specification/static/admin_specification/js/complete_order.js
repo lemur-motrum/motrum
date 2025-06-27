@@ -1,5 +1,5 @@
-import { getCookie, showErrorValidation } from "/static/core/js/functions.js";
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { getCookie, showErrorValidation } from "../../../../core/static/core/js/functions.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 export function completeOrder(container) {
   if (container) {

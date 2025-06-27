@@ -1,4 +1,4 @@
-import { ItcCustomSelect } from "/static/core/js/customSelect.js";
+import { ItcCustomSelect } from "../../../../core/static/core/js/customSelect.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   if (document.querySelector("#select-1")) {

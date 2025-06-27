@@ -106,6 +106,7 @@ INSTALLED_APPS = [
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+     "sass_processor.finders.CssFinder",
     "compressor.finders.CompressorFinder",
 ]
 
@@ -323,22 +324,26 @@ DADATA_SECRET = os.environ.get("DADATA_SECRET")
 FORM_LEMUR = os.environ.get("FORM_LEMUR")
 
 COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = False
+if IS_TESTING:
+    COMPRESS_OFFLINE = False
+else:
+    COMPRESS_OFFLINE = True 
+
+
 COMPRESS_ROOT = os.path.join(BASE_DIR, "static/compressed")
 
-NODE_MODULES = BASE_DIR / "node_modules"
 
 COMPRESS_PRECOMPILERS = (
     (
         "text/javascript",
-        "./node_modules/.bin/browserify {{infile}} -t ./node_modules/babelify  -o {{outfile}} --presets ./node_modules/@babel/preset-env".format(
-            node_modules="./node_modules/"
+        "../node_modules/.bin/browserify {{infile}} -t ../node_modules/babelify  -o {{outfile}} --presets ../node_modules/@babel/preset-env".format(
+            node_modules="../node_modules/"
         ),
     ),
     (
         "module",
-        "./node_modules/.bin/browserify {{infile}} -t ./node_modules/babelify -o {{outfile}} --presets ./node_modules/@babel/preset-env".format(
-            node_modules="./node_modules/"
+        "../node_modules/.bin/browserify {{infile}} -t ../node_modules/babelify -o {{outfile}} --presets ../node_modules/@babel/preset-env".format(
+            node_modules="../node_modules/"
         ),
     ),
 )

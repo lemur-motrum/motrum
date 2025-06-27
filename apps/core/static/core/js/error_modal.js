@@ -1,4 +1,4 @@
-import { setPreloaderInButton } from "/static/core/js/functions.js";
+import { setPreloaderInButton } from "../js/functions";
 
 export function setErrorModal() {
   const overlay = document.querySelector(".error_overlay_modal");

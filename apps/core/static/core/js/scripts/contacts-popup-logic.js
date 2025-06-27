@@ -1,7 +1,7 @@
 import {
   showErrorValidation,
   isEmailValid,
-} from "/static/core/js/functions.js";
+} from "../functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const contactsBtn = document.querySelector(".contacts-btn");

@@ -2,9 +2,9 @@ import {
   getCookie,
   getDigitsNumber,
   getCurrentPrice,
-} from "/static/core/js/functions.js";
+} from "../../../../core/static/core/js/functions.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;

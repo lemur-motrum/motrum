@@ -4,10 +4,10 @@ import {
   maskOptions,
   setPreloaderInButton,
   hidePreloaderAndEnabledButton,
-} from "/static/core/js/functions.js";
+} from "../functions.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
-import { successModal } from "/static/core/js/sucessModal.js";
+import { setErrorModal } from "../error_modal.js";
+import { successModal } from "../sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 

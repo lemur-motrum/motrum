@@ -2,18 +2,18 @@
 {% load static %}
 {% load js_version %}
 <!--functions  -->
+<script type="module"
+src="{% static 'core/js/slider.js' %}"></script>
+<script type="module"
+        src="{% static 'core/js/customSelect.js' %}"></script>
+<script type="module"
+        src="{% static 'core/js/nunjucks.min.js' %}"></script>
+<script type="module"
+        src="{% static 'core/js/inputmask.js' %}"></script>
 {% compress js %}
-        <script type="module"
-                src="{% static 'core/js/functions.js' %}?ver={% js_version %}"></script>
-        <!--core  -->
-        <script type="module"
-                src="{% static 'core/js/slider.js' %}?ver={% js_version %}"></script>
-        <script type="module"
-                src="{% static 'core/js/customSelect.js' %}?ver={% js_version %}"></script>
-        <script type="module"
-                src="{% static 'core/js/nunjucks.min.js' %}?ver={% js_version %}"></script>
-        <script type="module"
-                src="{% static 'core/js/inputmask.js' %}?ver={% js_version %}"></script>
+<!--core  -->
+<script type="module"
+        src="{% static 'core/js/functions.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'admin_specification/js/scripts.js' %}?ver={% js_version %}"></script>
         <script type="module"

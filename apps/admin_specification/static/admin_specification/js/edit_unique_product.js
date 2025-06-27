@@ -5,13 +5,13 @@ import {
   getCurrentPrice,
   setPreloaderInButton,
   hidePreloaderAndEnabledButton,
-} from "/static/core/js/functions.js";
+} from "../../../../core/static/core/js/functions.js";
 
 import {
   inputValidation,
   inputValidationQuantity,
 } from "../js/add_new_product_without_cart.js";
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 const csrfToken = getCookie("csrftoken");
 

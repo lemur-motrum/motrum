@@ -1,4 +1,4 @@
-import { getCurrentPrice, getDigitsNumber } from "/static/core/js/functions.js";
+import { getCurrentPrice, getDigitsNumber } from "../../../../core/static/core/js/functions.js";
 
 export function editMotrumPrice(container) {
   if (container) {

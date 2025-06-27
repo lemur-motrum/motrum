@@ -1,5 +1,5 @@
-import { getCookie, setCookie } from "/static/core/js/functions.js";
-import { setErrorModal } from "/static/core/js/error_modal.js";
+import { getCookie, setCookie } from "../../../../core/static/core/js/functions.js";
+import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 
 window.addEventListener("DOMContentLoaded", () => {

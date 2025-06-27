@@ -4,7 +4,7 @@ import {
   maskOptions,
   setPreloaderInButton,
   hidePreloaderAndEnabledButton,
-} from "/static/core/js/functions.js";
+} from "../functions.js";
 
 const csrfToken = getCookie("csrftoken");
 

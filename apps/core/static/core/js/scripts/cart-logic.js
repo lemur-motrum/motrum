@@ -6,12 +6,12 @@ import {
   maskOptions,
   deleteCookie,
   setPreloaderInButton,
-} from "/static/core/js/functions.js";
+} from "../functions.js";
 
-import { ItcCustomSelect } from "/static/core/js/customSelect.js";
+import { ItcCustomSelect } from "../customSelect.js";
 
-import { setErrorModal } from "/static/core/js/error_modal.js";
-import { successModal } from "/static/core/js/sucessModal.js";
+import { setErrorModal } from "../error_modal.js";
+import { successModal } from "../sucessModal.js";
 
 const csrfToken = getCookie("csrftoken");
 

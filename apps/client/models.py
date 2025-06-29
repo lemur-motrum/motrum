@@ -714,8 +714,7 @@ class Order(models.Model):
                     subject, None, to_email, None, html_message
                 )
             
-
-    # создание документов счета
+   # создание документов счета
     def create_bill(
         self,
         request,
@@ -727,21 +726,20 @@ class Order(models.Model):
     ):
 
         from apps.core.utils import create_time_stop_specification
-        from apps.client.utils import crete_pdf_bill
-        from apps.notifications.models import Notification
-
-        (
-            pdf_file,
-            pdf_name,
-            file_path_no_sign,
-            version,
-            name_bill_to_fullname,
-            name_bill_to_fullname_nosign,
-        ) = crete_pdf_bill(
-            self.specification.id,
-            request,
-            is_contract,
-            order,
+        from apps.client.utils import crete_pdf_bill,cr       from apps.notifications.models import Notification
+ 
+        # 
+        #   pdf_file,
+        #   pdf_name,
+        #   file_path_no_sign,
+        #   version,
+        #   name_bill_to_fullname,
+        #   name_bill_to_fullname_nosign,
+        # = crete_pdf_bill(
+        #   self.specification.id,
+        #   request,
+        #   is_contract,
+        #  rrr order,
             # bill_name,
             self.type_delivery,
             post_update,
@@ -802,8 +800,8 @@ class Order(models.Model):
         else:
             return None
 
-    # Получение русского названия статуса в шаблоны
-    def get_status_name(self):
+    # создание Excel документа счета
+    def create_xlsx_bill(
         for choice in STATUS_ORDER:
             if choice[0] == self.status:
                 return choice[1]

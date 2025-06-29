@@ -30,4 +30,8 @@ urlpatterns = [
     path("my_contacts/", views.my_contacts, name="my_contacts"),
     path("user_logout/", views.user_logout, name="user_logout"),
     path("order/<int:pk>/", views.order_client_one, name="order_client_one"),
+    
+    # URL для конвертации XLSX в PDF
+    path("convert-xlsx-to-pdf/<path:xlsx_path>/", views.convert_xlsx_to_pdf_view, name="convert_xlsx_to_pdf"),
+    path("bill-conversion/<int:order_id>/", views.BillConversionView.as_view(), name="bill_conversion"),
 ]

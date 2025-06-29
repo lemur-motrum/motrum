@@ -12,6 +12,8 @@ from django.shortcuts import render
 
 from regex import D
 import requests
+
+from analyze_template import analyze_template
 from apps.client.api.serializers import OrderSerializer
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
@@ -129,6 +131,8 @@ from apps.vacancy_web.models import Vacancy
 from project.settings import DOMIAN, MEDIA_ROOT, BITRIX_WEBHOOK, BASE_MANAGER_FOR_BX
 from fast_bitrix24 import Bitrix
 from fast_bitrix24.server_response import ErrorInServerResponseException
+from test_xlsx_bill import test_create_xlsx_bill
+from apps.client.utils import convert_xlsx_to_pdf, convert_xlsx_to_pdf_simple, convert_xlsx_to_pdf_advanced
 
 
 # тестовая страница скриптов
@@ -138,11 +142,12 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    bs_id_order = 12020
-    order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    # bs_id_order = 12020
+    # order = Order.objects.get(id_bitrix=12020)
+    analyze_template()
+
     
     
     
@@ -151,6 +156,54 @@ def add_iek(request):
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
+def test_xlsx_to_pdf(request):
+    """
+    Тестовая функция для проверки конвертации XLSX в PDF
+    """
+    results = []
+    
+    try:
+        # Создаем тестовый XLSX файл
+        test_xlsx_path = test_create_xlsx_bill()
+        
+        if test_xlsx_path:
+            results.append(f"✅ Тестовый XLSX файл создан: {test_xlsx_path}")
+            
+            # Тестируем простую конвертацию (без wkhtmltopdf)
+            try:
+                pdf_path_simple = convert_xlsx_to_pdf_simple(test_xlsx_path)
+                results.append(f"✅ Простая конвертация: {pdf_path_simple}")
+            except Exception as e:
+                results.append(f"❌ Простая конвертация: {str(e)}")
+            
+            # Тестируем продвинутую конвертацию
+            try:
+                pdf_path_advanced = convert_xlsx_to_pdf_advanced(test_xlsx_path)
+                results.append(f"✅ Продвинутая конвертация: {pdf_path_advanced}")
+            except Exception as e:
+                results.append(f"❌ Продвинутая конвертация: {str(e)}")
+            
+            # Тестируем основную конвертацию (с wkhtmltopdf)
+            try:
+                pdf_path_main = convert_xlsx_to_pdf(test_xlsx_path)
+                results.append(f"✅ Основная конвертация: {pdf_path_main}")
+            except Exception as e:
+                results.append(f"❌ Основная конвертация: {str(e)}")
+                
+        else:
+            results.append("❌ Не удалось создать тестовый XLSX файл")
+            
+    except Exception as e:
+        results.append(f"❌ Общая ошибка: {str(e)}")
+    
+    result = "<br>".join(results)
+    title = "Тест конвертации XLSX в PDF"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+
+
 def prompower_prod_for_1c(request):
     def background_task():
         # Долгосрочная фоновая задача

@@ -1130,8 +1130,15 @@ class OrderViewSet(viewsets.ModelViewSet):
             )
 
             if order_pdf:
-                pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
-                pdf_signed = request.build_absolute_uri(order.bill_file.url)
+                # Для Excel-файлов используем bill_file, так как bill_file_no_signature не заполняется
+                if order.bill_file:
+                    pdf = request.build_absolute_uri(order.bill_file.url)
+                    pdf_signed = request.build_absolute_uri(order.bill_file.url)
+                else:
+                    # Fallback для PDF файлов
+                    pdf = request.build_absolute_uri(order.bill_file_no_signature.url)
+                    pdf_signed = request.build_absolute_uri(order.bill_file.url)
+                    
                 if order.specification.file:
                     document_specification = request.build_absolute_uri(
                         order.specification.file.url

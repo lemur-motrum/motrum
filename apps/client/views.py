@@ -2,8 +2,8 @@ from functools import cache
 import random
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, FileResponse
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
@@ -23,6 +23,17 @@ from apps.client.models import (
 )
 from apps.notifications.models import Notification
 from apps.specification.models import ProductSpecification
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+import os
+
+from apps.client.utils import (
+    convert_xlsx_to_pdf,
+    convert_xlsx_to_pdf_simple,
+    convert_xlsx_to_pdf_advanced,
+    create_xlsx_and_pdf_bill
+)
 
 
 def index(request):
@@ -230,3 +241,140 @@ def user_logout(request):
        
     }
     return response
+
+
+@csrf_exempt
+def convert_xlsx_to_pdf_view(request, xlsx_path):
+    """
+    View для конвертации XLSX файла в PDF
+    """
+    try:
+        # Получаем полный путь к XLSX файлу
+        full_xlsx_path = os.path.join(MEDIA_ROOT, xlsx_path)
+        
+        if not os.path.exists(full_xlsx_path):
+            return HttpResponse("XLSX файл не найден", status=404)
+        
+        # Определяем метод конвертации из параметров
+        method = request.GET.get('method', 'simple')
+        
+        if method == 'advanced':
+            pdf_path = convert_xlsx_to_pdf_advanced(full_xlsx_path)
+        elif method == 'full':
+            pdf_path = convert_xlsx_to_pdf(full_xlsx_path)
+        else:
+            pdf_path = convert_xlsx_to_pdf_simple(full_xlsx_path)
+        
+        # Отправляем PDF файл
+        with open(pdf_path, 'rb') as f:
+            response = FileResponse(f, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(pdf_path)}"'
+            return response
+            
+    except Exception as e:
+        return HttpResponse(f"Ошибка конвертации: {str(e)}", status=500)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class BillConversionView(View):
+    """
+    View для создания и конвертации счетов
+    """
+    
+    def post(self, request, order_id):
+        """
+        Создает XLSX счет и конвертирует его в PDF
+        """
+        try:
+            order = get_object_or_404(Order, id=order_id)
+            
+            # Параметры из запроса
+            is_contract = request.POST.get('is_contract', 'false').lower() == 'true'
+            post_update = request.POST.get('post_update', 'false').lower() == 'true'
+            type_save = request.POST.get('type_save', 'new')
+            
+            # Создаем XLSX и PDF
+            result = create_xlsx_and_pdf_bill(
+                specification=order.specification.id,
+                request=request,
+                is_contract=is_contract,
+                order=order,
+                type_delivery=order.type_delivery,
+                post_update=post_update,
+                type_save=type_save,
+            )
+            
+            xlsx_path, pdf_path, bill_name, version, name_bill_to_fullname = result
+            
+            # Возвращаем информацию о созданных файлах
+            response_data = {
+                'success': True,
+                'xlsx_path': xlsx_path,
+                'pdf_path': pdf_path,
+                'bill_name': bill_name,
+                'version': version,
+                'name_bill_to_fullname': name_bill_to_fullname
+            }
+            
+            return HttpResponse(
+                f"Успешно созданы файлы:<br>"
+                f"XLSX: {xlsx_path}<br>"
+                f"PDF: {pdf_path}<br>"
+                f"Номер счета: {bill_name}<br>"
+                f"Версия: {version}",
+                content_type='text/html'
+            )
+            
+        except Exception as e:
+            return HttpResponse(f"Ошибка создания счета: {str(e)}", status=500)
+    
+    def get(self, request, order_id):
+        """
+        Показывает форму для создания счета
+        """
+        order = get_object_or_404(Order, id=order_id)
+        
+        html = f"""
+        <html>
+        <head>
+            <title>Создание счета для заказа {order_id}</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                .form-group {{ margin-bottom: 15px; }}
+                label {{ display: block; margin-bottom: 5px; }}
+                input, select {{ padding: 8px; width: 200px; }}
+                button {{ padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer; }}
+                button:hover {{ background: #005a87; }}
+            </style>
+        </head>
+        <body>
+            <h2>Создание счета для заказа {order_id}</h2>
+            <form method="post">
+                <div class="form-group">
+                    <label>Тип счета:</label>
+                    <select name="is_contract">
+                        <option value="false">Счет-оферта</option>
+                        <option value="true">Счет</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тип сохранения:</label>
+                    <select name="type_save">
+                        <option value="new">Новый</option>
+                        <option value="update">Обновить</option>
+                        <option value="hard_update">Принудительное обновление</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="post_update" value="true">
+                        Обновление даты
+                    </label>
+                </div>
+                <button type="submit">Создать XLSX и PDF</button>
+            </form>
+        </body>
+        </html>
+        """
+        
+        return HttpResponse(html, content_type='text/html')

@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Case, Value, When
 from django.dispatch import receiver
 from django.urls import reverse
+
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save, pre_save
@@ -714,7 +715,8 @@ class Order(models.Model):
                     subject, None, to_email, None, html_message
                 )
             
-   # создание документов счета
+
+    # создание документов счета
     def create_bill(
         self,
         request,
@@ -726,25 +728,43 @@ class Order(models.Model):
     ):
 
         from apps.core.utils import create_time_stop_specification
-        from apps.client.utils import crete_pdf_bill,cr       from apps.notifications.models import Notification
- 
-        # 
-        #   pdf_file,
-        #   pdf_name,
-        #   file_path_no_sign,
-        #   version,
-        #   name_bill_to_fullname,
-        #   name_bill_to_fullname_nosign,
-        # = crete_pdf_bill(
-        #   self.specification.id,
-        #   request,
-        #   is_contract,
-        #  rrr order,
+        from apps.client.utils import crete_pdf_bill,create_xlsx_bill
+        from apps.notifications.models import Notification
+  
+
+        (
+            pdf_file,
+            pdf_name,
+            file_path_no_sign,
+            version,
+            name_bill_to_fullname,
+            name_bill_to_fullname_nosign,
+        ) = crete_pdf_bill(
+            self.specification.id,
+            request,
+            is_contract,
+            order,
             # bill_name,
             self.type_delivery,
             post_update,
             type_save,
         )
+        # (
+        #     pdf_file,
+        #     pdf_name,
+        #     file_path_no_sign,
+        #     version,
+        #     name_bill_to_fullname,
+        #     name_bill_to_fullname_nosign,
+        # ) = create_xlsx_bill(
+        #     self.specification.id,
+        #     request,
+        #     is_contract,
+        #     order,
+        #     self.type_delivery,
+        #     post_update,
+        #     type_save,
+        # )
 
         if pdf_file:
 
@@ -800,8 +820,53 @@ class Order(models.Model):
         else:
             return None
 
-    # создание Excel документа счета
-    def create_xlsx_bill(
+    # # создание Excel документа счета
+    # def create_xlsx_bill(
+    #     self,
+    #     request,
+    #     is_contract,
+    #     order,
+    #     post_update,
+    #     type_save,
+    # ):
+    #     from apps.core.utils import create_time_stop_specification
+    #     from apps.client.utils import create_xlsx_bill
+    #     from apps.notifications.models import Notification
+
+    #     (
+    #         xlsx_file,
+    #         xlsx_name,
+    #         file_path_no_sign,
+    #         version,
+    #         name_bill_to_fullname,
+    #         name_bill_to_fullname_nosign,
+    #     ) = create_xlsx_bill(
+    #         self.specification.id,
+    #         request,
+    #         is_contract,
+    #         order,
+    #         self.type_delivery,
+    #         post_update,
+    #         type_save,
+    #     )
+
+    #     if xlsx_file:
+    #         # Сохраняем информацию о Excel файле
+    #         # Можно добавить поле в модель для хранения Excel файла
+    #         # self.bill_file_xlsx = xlsx_file
+            
+    #         if IS_TESTING:
+    #             pass
+    #         else:
+    #             pass
+    #             # Notification.add_notification(self.id, "DOCUMENT_BILL_XLSX", xlsx_file)
+            
+    #         return xlsx_file
+    #     else:
+    #         return None
+
+    # Получение русского названия статуса в шаблоны
+    def get_status_name(self):
         for choice in STATUS_ORDER:
             if choice[0] == self.status:
                 return choice[1]

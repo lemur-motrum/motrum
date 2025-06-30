@@ -11,6 +11,8 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrum,
+    ProductPropertyValueMotrum,
     Stock,
 )
 from apps.specification.models import ProductSpecification
@@ -86,7 +88,11 @@ class ProductForm(forms.ModelForm):
         required=False,
         label="Промо группа",
         widget=autocomplete.ModelSelect2(
-            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor",]
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=[
+                "supplier",
+                "vendor",
+            ],
         ),
     )
 
@@ -119,7 +125,7 @@ class DocumentForm(forms.ModelForm):
 
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
-    
+
     category = forms.ModelChoiceField(
         queryset=CategoryProduct.objects.all(),
         label="Категория Motrum",
@@ -210,7 +216,11 @@ class ProductChangeForm(forms.ModelForm):
         required=False,
         label="Промо группа",
         widget=autocomplete.ModelSelect2(
-            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor",]
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=[
+                "supplier",
+                "vendor",
+            ],
         ),
     )
 
@@ -348,7 +358,8 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
         required=False,
         label="Промо группа",
         widget=autocomplete.ModelSelect2(
-            url="supplier:promo-group_catalog-autocomplete_product", forward=["supplier", "vendor"]
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=["supplier", "vendor"],
         ),
     )
 
@@ -394,3 +405,27 @@ class ProductDocumentAdminForm(forms.ModelForm):
             # self.fields['document'].widget.attrs = {
             #         "style": "color:red;",
             #     }
+
+
+class ProductPropertyForm(forms.ModelForm):
+    property_motrum = forms.ModelChoiceField(
+        queryset=ProductPropertyMotrum.objects.all(),
+        label="Характеристика мотрум",
+        required=False,
+        widget=autocomplete.ModelSelect2(
+            url="product:property_motrum-autocomplete"
+        ),
+    )
+
+    property_value_motrum = forms.ModelChoiceField(
+        queryset=ProductPropertyValueMotrum.objects.all(),
+        required=False,
+        label="Значение характеристики Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="product:property_value_motrum-autocomplete", forward=["property_motrum"]
+        ),
+    )
+
+    class Meta:
+        model = ProductProperty
+        fields = "__all__"

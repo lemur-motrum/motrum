@@ -21,6 +21,7 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     ProductPropertyMotrum,
+    ProductPropertyValueMotrum,
     Stock,
 )
 from apps.supplier.models import (
@@ -610,4 +611,26 @@ class SupplierGroupProductAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))
+        return qs
+    
+    
+class ProductPropertyValueMotrumAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = ProductPropertyValueMotrum.objects.all()
+        property_motrum = self.forwarded.get("property_motrum", None)
+        if property_motrum:
+            qs = qs.filter(property_motrum=property_motrum)
+
+        # if self.q:
+        #     # name__icontains=self.q
+        #     qs = qs.filter(Q(name__icontains=self.q))
+        return qs
+
+
+class ProductPropertyMotrumAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = ProductPropertyMotrum.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
         return qs

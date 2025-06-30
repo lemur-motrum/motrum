@@ -27,6 +27,7 @@ from apps.product.forms import (
     ProductChangeNotAutosaveForm,
     ProductDocumentAdminForm,
     ProductForm,
+    ProductPropertyForm,
 )
 from apps.product.models import (
     CategoryProduct,
@@ -549,7 +550,7 @@ class ProductDocumentInline(admin.TabularInline):
         return qs.filter(hide=False)
 
 
-class ProductPropertyInline(admin.TabularInline):
+class ProductPropertyInline(admin.StackedInline):
     model = ProductProperty
     fields = ("name", "value","property_motrum","property_value_motrum", "hide")
     extra = 0
@@ -562,7 +563,9 @@ class ProductPropertyInline(admin.TabularInline):
         qs = super().get_queryset(request)
 
         return qs.filter(hide=False)
-
+    def get_form(self, request, obj, **kwargs):
+        kwargs["form"] = ProductPropertyForm
+        return super().get_form(request, obj, **kwargs)
 
 @admin.action(description="Добавить документы для выбранных товаров")
 def add_documents(ProductAdmin, request, queryset):

@@ -8,6 +8,8 @@ from apps.product.views import (
     SupplierCategoryProductAllAutocomplete,
     SupplierCategoryProductAutocomplete,
     SupplierGroupProductAutocomplete,
+    ProductPropertyValueMotrumAutocomplete,
+    ProductPropertyMotrumAutocomplete
 )
 
 # from apps.product.views import  GropeAutocomplete
@@ -67,5 +69,15 @@ urlpatterns = [
         r"^group_supplier-autocomplete/$",
         SupplierGroupProductAutocomplete.as_view(),
         name="group_supplier-autocomplete",
+    ),
+    url(
+        r"^property_value_motrum-autocomplete/$",
+        ProductPropertyValueMotrumAutocomplete.as_view(),
+        name="property_value_motrum-autocomplete",
+    ),
+    url(
+        r"^property_motrum-autocomplete/$",
+        ProductPropertyMotrumAutocomplete.as_view(),
+        name="property_motrum-autocomplete",
     ),
 ]

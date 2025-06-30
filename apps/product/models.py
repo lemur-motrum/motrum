@@ -1035,3 +1035,29 @@ class ProductCart(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class ProductPropertyMotrum(models.Model):
+    
+    name = models.CharField("Название", max_length=600)
+    
+    class Meta:
+        verbose_name = "Характеристика товара мотрум"
+        verbose_name_plural = "Характеристики товаров мотрум"
+
+    def __str__(self):
+        return str(self.name)
+
+class ProductPropertyValueMotrum(models.Model):
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    value = models.CharField("Значение", max_length=600)
+    
+    class Meta:
+        verbose_name = "Значение характеристики товара мотрум"
+        verbose_name_plural = "Значение характеристик товаров мотрум"
+
+    def __str__(self):
+        return f"{self.value}"

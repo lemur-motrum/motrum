@@ -38,6 +38,8 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     Stock,
+    ProductPropertyValueMotrum,
+    ProductPropertyMotrum
 )
 
 from apps.supplier.models import (
@@ -1188,6 +1190,20 @@ class CategoryProductAdmin(admin.ModelAdmin):
         return False
 
 
+class ProductPropertyValueMotrum(admin.TabularInline):
+    model = ProductPropertyValueMotrum
+    extra = 1
+    # fields = ("value", "article_name")
+
+class ProductPropertyMotrumAdmin(admin.ModelAdmin):
+    fields = (
+        "name",
+    )
+    inlines = [
+        ProductPropertyValueMotrum,
+    ]
+
+
 # АДМИНКА ДЛЯ ВЕБСАЙТА
 
 
@@ -1236,9 +1252,13 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
         return False
 
 
-admin.site.register(CategoryProduct, CategoryProductAdmin)
-website_admin.register(CategoryProduct, CategoryProductAdminWeb)
-# admin.site.register(GroupProduct)
-
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Lot,LotAdmin)
+admin.site.register(CategoryProduct, CategoryProductAdmin)
+admin.site.register(ProductPropertyMotrum, ProductPropertyMotrumAdmin)
+
+
+website_admin.register(CategoryProduct, CategoryProductAdminWeb)
+
+# admin.site.register(GroupProduct)
+

@@ -89,6 +89,23 @@
                             </div>
                         </div>
                     </div>
+                    {% if chars %}
+                    <div class="filter_elem chars_filter_elem">
+                        
+                        <div class="chars_content">
+                            {% for char in chars %}
+                                <div class="char_block">
+                                    <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                    <div class="char_values">
+                                        {% for value in char.values %}
+                                            <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="submit_filter_container">
                         <button class="submit">Применить фильтры</button>
                         <button class="canceled">Сбросить</button>

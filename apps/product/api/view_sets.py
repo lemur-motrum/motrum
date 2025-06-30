@@ -1,4 +1,5 @@
 import base64
+import json
 import math
 import os
 import traceback
@@ -12,6 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
+from django.db.models import Exists, OuterRef
 from apps.core.utils import check_file_price_directory_exist, product_cart_in_file, serch_products_web
 from apps.logs.utils import error_alert
 from apps.product.api.serializers import (
@@ -60,7 +62,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
         count = int(request.query_params.get("count"))
-        print(request)
+    
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
@@ -70,6 +72,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_none = request.query_params.get("pricenone")
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
+        chars_param = request.query_params.get('chars')
+        chars = []
+        if chars_param:
+            chars = json.loads(chars_param)
+            
 
         if request.query_params.get("search_text"):
             search_text = request.query_params.get("search_text")
@@ -77,16 +84,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                 search_text = None
         else:
             search_text = None
-            
-        print("search_text",search_text)
 
-        # sort_price = "-"
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
             vendor_get = vendor_get.split(",")
         else:
             vendor_get = None
-        print(vendor_get)
+
         category_get = request.query_params.get("category")
 
         if request.query_params.get("group"):
@@ -164,6 +168,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         #         descending="-".startswith("-"),
         #         nulls_last=True,
         #     )
+        # for char in chars:
+        #     prop_id = char['id']
+        #     values = char['values']
+        #     q_object &= Q( productproperty__property_value_motrum__in=values, productproperty__property_motrum=prop_id,)
+
         print(q_object)
         queryset = (
             Product.objects.select_related(
@@ -181,24 +190,33 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productimage_set"),
             )
             .filter(q_object)
-            # .order_by(sorting)[count : count + count_last]
+
         )
        
-        # поиск
-        print(queryset)
+
+        # поиск по характеристикам
+        for char in chars:
+            prop_id = char['id']
+            values = char['values']
+            queryset = queryset.filter(
+                Exists(
+                    ProductProperty.objects.filter(
+                        product=OuterRef('pk'),
+                        property_motrum=prop_id,
+                        property_value_motrum__in=values
+                    )
+                )
+            )
+            
+        #  поиск по тексту   
         if search_text:
             queryset = serch_products_web(search_text, queryset)
             
-        
-        # проверка есть ли еще данные для след запроса
-        # queryset_next = Product.objects.filter(q_object)[
-        #     count + count_last : count + count_last + 1
-        # ].exists()
+            
         queryset_next = queryset[
             count + count_last : count + count_last + 1
         ].exists()
-        # prod_qs = Product.objects.filter(q_object)
-       
+
         price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
         page_count = queryset.count()
         queryset = queryset.order_by(sorting)[count : count + count_last]
@@ -238,7 +256,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = search_input.replace(".", "").replace(",", "")
         search_input = search_input.split()
 
-        print(search_input)
+      
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
             
@@ -248,7 +266,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
         )
-        print(len(search_input))
+   
         # del search_input[0]
         if len(search_input) > 1:
             for search_item in search_input[1:]:
@@ -340,7 +358,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             | Q(description__icontains=search_input[0])
            
         )
-        print(len(search_input))
+
         # del search_input[0]
         if len(search_input) > 1:
             for search_item in search_input[1:]:
@@ -357,7 +375,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
         
         queryset = queryset[count  : count_last ]
-        print(queryset)
+    
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
@@ -379,7 +397,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def search_vendor(self, request, *args, **kwargs):
         
         data = request.data
-        print(data)
+     
         count = int(data["count"])
         count_last = int(data["count_last"])
         search_input = data["search_text"]
@@ -391,7 +409,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Vendor.objects.filter(
              Q(name__icontains=search_input)
         )
-        print(queryset)
+
     
         page_count = queryset.count()
 
@@ -428,7 +446,7 @@ class ProductViewSet(viewsets.ModelViewSet):
            
         else:
             group_id = None
-        print(search_input)
+  
         # # вариант ищет каждое слово все рабоатет
       
         
@@ -443,7 +461,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
         )
-        print(len(search_input))
+   
         # del search_input[0]
         if len(search_input) > 1:
             for search_item in search_input[1:]:
@@ -464,7 +482,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if group_id:
             q_object &= Q(group_id=group_id)
         
-        print(q_object)
+   
         queryset = queryset.filter(q_object).order_by("name")
         
         queryset = queryset[count  : count_last ]
@@ -720,7 +738,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         print(queryset)
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-            print(product)
+      
             data["id"] = product.id
             serializer = serializer_class(product, data=data, many=False)
             if serializer.is_valid():
@@ -865,7 +883,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="cart-file-download")
     def product_cart_in_file_download(self, request, pk=None, *args, **kwargs):
-        print("product_cart_in_file_download", request.data)
+   
         cart = 298
         new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT, "documents", "kp_file")
         path_kp = f"{new_dir}/КП.xlsx"

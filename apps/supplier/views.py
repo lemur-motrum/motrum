@@ -93,6 +93,7 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     Stock,
+    VendorPropertyAndMotrum,
 )
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -135,16 +136,22 @@ from fast_bitrix24.server_response import ErrorInServerResponseException
 def add_iek(request):
     # from requests.auth import HTTPBasicAuth
     # import logging
-
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    bs_id_order = 12020
-    order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
-    
-    
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    # bs_id_order = 12020
+    # order = Order.objects.get(id_bitrix=12020)
+   
+   
+    v = VendorPropertyAndMotrum.objects.all()
+    for vd in v:
+        
+        vendor = vd.vendor
+        property_vendor_name = vd.property_vendor_name
+        property_vendor_value = vd.property_vendor_value
+        f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
+        print(f)
     
     
     result = 1

@@ -551,7 +551,7 @@ class ProductDocumentInline(admin.TabularInline):
 
 class ProductPropertyInline(admin.TabularInline):
     model = ProductProperty
-    fields = ("name", "value", "hide")
+    fields = ("name", "value","property_motrum","property_value_motrum", "hide")
     extra = 0
 
     def __init__(self, *args, **kwargs):

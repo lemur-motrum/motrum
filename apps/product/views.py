@@ -1,5 +1,6 @@
 import os
 import re
+from collections import defaultdict
 from django.shortcuts import redirect, render
 from dal import autocomplete
 from django.db.models import Q
@@ -19,6 +20,7 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrum,
     Stock,
 )
 from apps.supplier.models import (
@@ -43,7 +45,7 @@ def catalog_all(request):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-    print(category)
+
     vendors = Vendor.objects.filter(is_view_index_web=True)[0:4]
 
     context = {
@@ -70,7 +72,7 @@ def catalog_group(request, category):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-    print("group", group)
+
     # товарфы в группе
     if len(group) > 0 and category != "search":
         cat = CategoryProduct.objects.get(slug=category)
@@ -115,32 +117,54 @@ def catalog_group(request, category):
                 q_object &= Q(article__isnull=False)
             elif category == "search":
                 search_text = request.GET.get("search_text")
-                # search_text="грибок кнопка"
                 q_object &= Q(article__isnull=False)
 
             else:
                 q_object &= Q(category__slug=category)
 
-        queryset = (
-            Product.objects.select_related(
-                "vendor",
-                "category",
-            ).filter(q_object)
-            # .order_by("vendor__name")
-            # .distinct("vendor__name")
-            # .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
-        )
-        if search_text and search_text != "":
-            print("search_text and search_text != """)
-            queryset = serch_products_web(search_text, queryset)
-            print(queryset)
+        queryset = Product.objects.select_related(
+            "vendor",
+            "category",
+        ).filter(q_object)
 
+        if search_text and search_text != "":
+
+            queryset = serch_products_web(search_text, queryset)
+
+        product_props = ProductProperty.objects.filter(
+            property_motrum__isnull=False, product__in=queryset
+        )
         product_vendor = (
             queryset.order_by("vendor__name")
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-        print("product_vendor",product_vendor)
+        all_values = product_props.values(
+            "property_motrum",
+            "property_motrum__name",
+            "property_value_motrum__id",
+            "property_value_motrum__value",
+        ).distinct()
+        chars_dict = defaultdict(lambda: {"values": []})
+        for row in all_values:
+            pid = row["property_motrum"]
+            if "id_property_motrum" not in chars_dict[pid]:
+                chars_dict[pid].update(
+                    {
+                        "id_property_motrum": pid,
+                        "name_property_motrum": row["property_motrum__name"],
+                        "property_motrum": pid,
+                    }
+                )
+            if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+                chars_dict[pid]["values"].append(
+                    {
+                        "id": row["property_value_motrum__id"],
+                        "value": row["property_value_motrum__value"],
+                    }
+                )
+        chars = list(chars_dict.values())
+
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -174,12 +198,13 @@ def catalog_group(request, category):
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
+            "chars": chars,
             "media_url": media_url,
         }
         return render(request, "product/catalog.html", context)
 
 
-# страница всех продуктов в категории\группе
+# страница всех продуктов в категории\группе + фильтры
 def products_items(request, category, group):
     print("products_items")
     media_url = MEDIA_URL
@@ -190,17 +215,51 @@ def products_items(request, category, group):
     if group is not None:
         q_object &= Q(group__slug=group)
 
+    product = Product.objects.select_related(
+        "vendor",
+        "category",
+        "group",
+    ).filter(q_object)
+
+    product_props = ProductProperty.objects.filter(
+        property_motrum__isnull=False, product__in=product
+    )
+
     product_vendor = (
-        Product.objects.select_related(
-            "vendor",
-            "category",
-            "group",
-        )
-        .filter(q_object)
-        .order_by("vendor__name")
+        product.order_by("vendor__name")
         .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
     )
+
+    # Оптимизация: один запрос для всех характеристик и их значений
+    all_values = product_props.values(
+        "property_motrum",
+        "property_motrum__name",
+        "property_value_motrum__id",
+        "property_value_motrum__value",
+    ).distinct()
+    
+
+    chars_dict = defaultdict(lambda: {"values": []})
+    for row in all_values:
+        pid = row["property_motrum"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "property_motrum": pid,
+                }
+            )
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            chars_dict[pid]["values"].append(
+                {
+                    "id": row["property_value_motrum__id"],
+                    "value": row["property_value_motrum__value"],
+                }
+            )
+    chars = list(chars_dict.values())
+
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 
@@ -234,6 +293,7 @@ def products_items(request, category, group):
         "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,
+        "chars": chars,
         "meta_title": f"{current_group.name} | Мотрум - автоматизация производства",
     }
 
@@ -261,11 +321,9 @@ def product_one(request, category, group, article):
         )
         .get(article=article)
     )
-    print(
-        "1231231",
-    )
+
     product_document = ProductDocument.objects.filter(product=product, hide=False)
-    print("product_document", product_document)
+
     id_ex = []
     for product_docum in product_document:
         dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
@@ -391,7 +449,7 @@ def add_document_admin(request):
 
             profile = form.save(commit=False)
             file_name = request.FILES["document"].name
-            print("request.POST", request.POST)
+
             type_doc = request.POST["type_doc"]
             name_doc = request.POST["name"]
 
@@ -408,7 +466,7 @@ def add_document_admin(request):
             # )
             doc_name = f"{slugish}{type_file}"
             f = FileSystemStorage(location=new_dir).save(doc_name, in_memory_file_obj)
-            print(f)
+
             for id_prod in id_selected:
                 doc = f"{link}/{f}"
                 product_doc = ProductDocument.objects.create(
@@ -417,7 +475,6 @@ def add_document_admin(request):
                     name=name_doc,
                     document=doc,
                 )
-                print(product_doc)
 
                 # for chunk in request.FILES["document"].chunks():
                 #     dest.write(chunk)
@@ -522,7 +579,6 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)
         vendor = self.forwarded.get("vendor", None)
-        print(supplier, vendor)
 
         supplier = self.forwarded.get("supplier", None)
         if supplier:

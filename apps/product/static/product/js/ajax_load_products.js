@@ -121,7 +121,10 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
+    // let chars = [
+    //   { id: 1, values: [2], range:false }, // id характеристики и массив id значений
+    //   { id: 2, values: [6], range:false }
+    // ]
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,
@@ -135,6 +138,7 @@ window.addEventListener("DOMContentLoaded", () => {
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
+        // chars: JSON.stringify(chars),
       };
 
       let params = new URLSearchParams(data);

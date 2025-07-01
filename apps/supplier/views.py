@@ -72,6 +72,7 @@ from apps.core.tasks import (
 )
 from apps.core.utils import (
     add_new_photo_adress_prompower,
+    create_file_props_in_vendor_props2,
     create_time_stop_specification,
     delete_everything_in_folder,
     email_manager_after_new_order_site,
@@ -103,10 +104,12 @@ from apps.supplier.get_utils.iek import (
     update_prod_iek_get_okt,
     update_prod_iek_in_okt,
 )
+from apps.supplier.get_utils.instart import pars_instart_xlsx,get_instart_price_stock
 from apps.supplier.get_utils.motrum_nomenclatur import (
     get_motrum_nomenclature,
     nomek_test_2,
 )
+from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, prompower_api
 
@@ -138,15 +141,19 @@ def add_iek(request):
 
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    bs_id_order = 12020
-    order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    def background_task():
+        # Долгосрочная фоновая задача
+        create_file_props_in_vendor_props()
+        create_file_props_in_vendor_props2()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
     
-    
-    
-    
+  
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

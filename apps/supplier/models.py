@@ -22,7 +22,7 @@ class Supplier(models.Model):
     file = models.FileField(
         "Архив с прайсами",
         upload_to=get_file_price_path_add,
-        max_length=255,
+        max_length=1000,
         null=True,
         blank=True,
     )

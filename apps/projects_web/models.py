@@ -24,7 +24,7 @@ class Project(models.Model):
     image_main = models.ImageField(
         "Главное изображение",
         upload_to=get_file_path_project_web,
-        max_length=255,
+        max_length=1000,
         null=True,
     )
     is_view_home_web = models.BooleanField("Показывать на главной сайта", default=True)
@@ -91,7 +91,7 @@ class ProjectImage(models.Model):
         on_delete=models.CASCADE,
     )
     image = models.ImageField(
-        "Изображение", upload_to=get_file_path_project_web, max_length=255, null=True
+        "Изображение", upload_to=get_file_path_project_web, max_length=1000, null=True
     )
 
     class Meta:
@@ -105,7 +105,7 @@ class ProjectVideo(models.Model):
         on_delete=models.CASCADE,
     )
     video = models.FileField(
-        "Видео", upload_to=get_file_path_project_web, max_length=255, null=True
+        "Видео", upload_to=get_file_path_project_web, max_length=1000, null=True
     )
 
     class Meta:

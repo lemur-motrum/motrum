@@ -75,7 +75,7 @@ from apps.core.utils import (
     create_file_props_in_vendor_props2,
     create_time_stop_specification,
     delete_everything_in_folder,
-    email_manager_after_new_order_site,
+    # email_manager_after_new_order_site,
     get_category_prompower,
     image_error_check,
     product_cart_in_file,

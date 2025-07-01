@@ -906,8 +906,7 @@ class ProductProperty(models.Model):
         blank=True,
         null=True,
     )
-    
-
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
     history = HistoricalRecords()
 
     class Meta:
@@ -1072,6 +1071,11 @@ class ProductCart(models.Model):
 class ProductPropertyMotrum(models.Model):
 
     name = models.CharField("Название", max_length=600)
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Характеристика товара мотрум"
@@ -1086,7 +1090,13 @@ class ProductPropertyValueMotrum(models.Model):
         ProductPropertyMotrum,
         on_delete=CASCADE,
     )
-    value = models.CharField("Значение", max_length=600)
+    value = models.CharField(
+        "Значение",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
 
     class Meta:
         verbose_name = "Значение характеристики товара мотрум"
@@ -1097,6 +1107,13 @@ class ProductPropertyValueMotrum(models.Model):
 
 
 class VendorPropertyAndMotrum(models.Model):
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -1116,19 +1133,36 @@ class VendorPropertyAndMotrum(models.Model):
         blank=True,
         null=True,
     )
-    property_vendor_name = models.CharField("Название", max_length=600)
-    property_vendor_value = models.CharField("Значение", max_length=600)
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    property_vendor_name = models.CharField(
+        "Название",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+    property_vendor_value = models.CharField(
+        "Значение",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+
     # property_vendor = models.ForeignKey(
     #     ProductProperty,
     #     on_delete=CASCADE,
     # )
     class Meta:
-        verbose_name = "Значение характеристики товара мотрум для характеристики поставщика"
-        verbose_name_plural = "Значение характеристик товаров мотрум для характеристики поставщика"
+        verbose_name = (
+            "Значение характеристики товара мотрум для характеристики поставщика"
+        )
+        verbose_name_plural = (
+            "Значение характеристик товаров мотрум для характеристики поставщика"
+        )
 
     def __str__(self):
         return f"{self.property_vendor_name} _ {self.property_vendor_value}"
-    
+
+
 # class VendorPropertyAndMotrumMM(models.Model):
 #     vendor_property_motrum = models.ForeignKey(
 #         VendorPropertyAndMotrum,

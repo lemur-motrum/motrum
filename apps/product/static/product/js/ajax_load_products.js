@@ -121,10 +121,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    // let chars = [
-    //   { id: 1, values: [2], range:false }, // id характеристики и массив id значений
-    //   { id: 2, values: [6], range:false }
-    // ]
+    let chars = [
+      // { id: 1, values: [2], is_diapason:false, min_value:0, max_value:0  }, // id характеристики и массив id значений
+      { id: 1, values: [1], is_diapason:false, min_value:0, max_value:0  },
+      { id: 6, values: null, is_diapason:true, min_value:120, max_value:200}
+    ]
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,
@@ -138,7 +139,7 @@ window.addEventListener("DOMContentLoaded", () => {
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
-        // chars: JSON.stringify(chars),
+        chars: JSON.stringify(chars),
       };
 
       let params = new URLSearchParams(data);

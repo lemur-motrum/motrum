@@ -17,7 +17,7 @@ import traceback
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from apps import supplier
+
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.core.utils_web import send_email_message_html
@@ -57,19 +57,21 @@ def get_price_motrum(
     all_item_group,
     supplier,
     promo_groupe,
-    is_need_vendor_serch=False
+    is_need_vendor_serch=False,
 ):
     from apps.supplier.models import (
         Discount,
     )
-    print(item_category,
-    item_group,
-    vendors,
-    rub_price_supplier,
-    all_item_group,
-    supplier,
-    promo_groupe,
-    is_need_vendor_serch
+
+    print(
+        item_category,
+        item_group,
+        vendors,
+        rub_price_supplier,
+        all_item_group,
+        supplier,
+        promo_groupe,
+        is_need_vendor_serch,
     )
     motrum_price = rub_price_supplier
     percent = 0
@@ -79,7 +81,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
-    
+
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -90,7 +92,7 @@ def get_price_motrum(
         if discount_promo_groupe:
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
-    
+
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
@@ -98,8 +100,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_all_group:
-            discount_all_group = discount_all_group.filter(
-            vendor=vendors)
+            discount_all_group = discount_all_group.filter(vendor=vendors)
 
         if discount_all_group:
             percent = get_percent(discount_all_group)
@@ -108,7 +109,7 @@ def get_price_motrum(
         # скидка по группе
 
     if item_group and percent == 0:
-        print(item_group,"item_group")
+        print(item_group, "item_group")
         discount_group = Discount.objects.filter(
             promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
@@ -116,10 +117,8 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_group:
-            print(discount_group,"discount_group")
-            discount_group = discount_group.filter(
-            vendor=vendors)
-            
+            print(discount_group, "discount_group")
+            discount_group = discount_group.filter(vendor=vendors)
 
         if discount_group:
             percent = get_percent(discount_group)
@@ -138,8 +137,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_categ:
-            discount_categ = discount_categ.filter(
-            vendor=vendors)
+            discount_categ = discount_categ.filter(vendor=vendors)
 
         if discount_categ:
             percent = get_percent(discount_categ)
@@ -155,7 +153,7 @@ def get_price_motrum(
             promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
-        
+
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
@@ -185,7 +183,7 @@ def get_price_motrum(
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    print("motrum_price",motrum_price)
+    print("motrum_price", motrum_price)
     return motrum_price, sale[0]
 
 
@@ -343,7 +341,7 @@ def get_category_unimat(supplier, vendor, category_name):
     print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
-            supplier=supplier,  article_name=category_name
+            supplier=supplier, article_name=category_name
         )
 
         groupe = category_all.group_supplier
@@ -352,7 +350,7 @@ def get_category_unimat(supplier, vendor, category_name):
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
-                supplier=supplier,  article_name=category_name
+                supplier=supplier, article_name=category_name
             )
             category_all = None
 
@@ -1062,7 +1060,7 @@ def save_update_product_attr_all(
 ):
 
     try:
-        print( "save_update_product_attr_all")
+        print("save_update_product_attr_all")
 
         print(
             product,
@@ -2095,7 +2093,7 @@ def send_requests(url, headers, data, auth):
             allow_redirects=False,
             verify=False,
         )
-        
+
         error = "info_error_order"
         location = "отправка requests 1c"
         info = f"отправка requests 1c {response} / {response.text}"
@@ -2145,10 +2143,14 @@ def after_save_order_products(products):
             promo = prod.product.promo_groupe.name
         else:
             promo = ""
-        
-        product_name_str =  prod.product.name
-                
-        if vendor and  prod.product.supplier.slug == "prompower" and prod.product.description:
+
+        product_name_str = prod.product.name
+
+        if (
+            vendor
+            and prod.product.supplier.slug == "prompower"
+            and prod.product.description
+        ):
             product_name_str = prod.product.description
 
         data_prod_to_1c = {
@@ -2157,7 +2159,6 @@ def after_save_order_products(products):
             "article_motrum": prod.product.article,
             # "name": prod.product.name,
             "name": product_name_str,
-            
             "price_one": prod.price_one,
             "quantity": prod.quantity,
             "price_all": prod.price_all,
@@ -2765,9 +2766,10 @@ def create_file_props_in_vendor_props():
     new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
     # path_delta = f"{new_dir}/delta.csv"
     # path_emas = f"{new_dir}/emas.csv"
-    path_iek = f"{new_dir}/iek.csv"
+    # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
+    path_unimat = f"{new_dir}/unimat.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -2778,8 +2780,9 @@ def create_file_props_in_vendor_props():
 
     props = []
 
-    all_product_supplier = Product.objects.filter(supplier__slug="iek")
+    all_product_supplier = Product.objects.filter(vendor__slug="unimat")
     i = 0
+    print(all_product_supplier)
 
     def key_val_upd(key, val, value, unit_measure):
 
@@ -2838,7 +2841,7 @@ def create_file_props_in_vendor_props():
 
     props_count = len(props)
     print("props_count", props_count)
-    with open(path_iek, "w", encoding="UTF-8") as writerFile:
+    with open(path_unimat, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
         )
@@ -2908,3 +2911,140 @@ def email_manager_after_new_order_site(order):
         info = f"order.id = {order.id} {e}{tr}"
         e = error_alert(error, location, info)
         return ("error", info)
+
+
+def props_motrum_compound_props_prod():
+    from apps.product.models import (
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        VendorPropertyAndMotrum,
+    )
+    from apps.supplier.models import Supplier
+
+    # тут получение документа с сочетанием свойств
+    data = [
+        {
+            "name_motrum": "Количество фаз Мотрум",
+            "value_motrum": "1",
+            "supplier": "prompower",
+            "name_supplier": "Количество фаз",
+            "value_supplier": "1ф",
+        },
+        {
+            "name_motrum": "Количество фаз Мотрум",
+            "value_motrum": "1",
+            "supplier": "prompower",
+            "name_supplier": "Количество фаз",
+            "value_supplier": "1",
+        },
+        {
+            "name_motrum": "Количество фаз Мотрум",
+            "value_motrum": "3",
+            "supplier": "prompower",
+            "name_supplier": "Количество фаз",
+            "value_supplier": "3ф",
+        },
+        {
+            "name_motrum": "Количество фаз Мотрум",
+            "value_motrum": "3",
+            "supplier": "prompower",
+            "name_supplier": "Количество фаз",
+            "value_supplier": "3",
+        },
+        {
+            "name_motrum": "Напряжение питания Мотрум",
+            "value_motrum": "220",
+            "supplier": "prompower",
+            "name_supplier": "Напряжение питания (В)",
+            "value_supplier": "220",
+        },
+        {
+            "name_motrum": "Напряжение питания Мотрум",
+            "value_motrum": "380",
+            "supplier": "prompower",
+            "name_supplier": "Напряжение питания (В)",
+            "value_supplier": "380",
+        },
+        {
+            "name_motrum": "Высота",
+            "value_motrum": "диапазон",
+            "supplier": "prompower",
+            "name_supplier": "Высота (мм)",
+            "value_supplier": "диапазон",
+        },
+    ]
+
+    for item in data:
+        name_motrum = item["name_motrum"]
+        value_motrum = item["value_motrum"]
+        supplier = item["supplier"]
+        name_supplier = item["name_supplier"]
+        value_supplier = item["value_supplier"]
+        supplier_obj = Supplier.objects.get(slug=supplier)
+        prod_prop_motrum, created = ProductPropertyMotrum.objects.get_or_create(
+            name=name_motrum
+        )
+        prod_prop_value_motrum, created = (
+            ProductPropertyValueMotrum.objects.get_or_create(
+                property_motrum=prod_prop_motrum, value=value_motrum
+            )
+        )
+        if value_motrum == "диапазон":
+            prod_prop_value_motrum.is_diapason = True
+            prod_prop_value_motrum.save()
+
+        obj, created = VendorPropertyAndMotrum.objects.get_or_create(
+            supplier=supplier_obj,
+            property_motrum=prod_prop_motrum,
+            property_value_motrum=prod_prop_value_motrum,
+            property_vendor_name=name_supplier,
+            property_vendor_value=value_supplier,
+        )
+        if value_motrum == "диапазон":
+            obj.is_diapason = True
+            obj.save()
+
+        print(obj)
+
+
+def add_motrum_props_to_prod_prop():
+    from apps.product.models import (
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        VendorPropertyAndMotrum,
+        ProductProperty,
+    )
+
+    props_compounds = VendorPropertyAndMotrum.objects.all()
+    for  props_compound in props_compounds:
+        supplier = props_compound.supplier
+        vendor = props_compound.vendor
+        property_vendor_name = props_compound.property_vendor_name
+        property_vendor_value = props_compound.property_vendor_value
+        property_value_motrum = props_compound.property_value_motrum
+        is_diapason = props_compound.is_diapason
+        
+        
+        if is_diapason:
+            props_prod = ProductProperty.objects.filter(
+                product__supplier=supplier,
+                name=property_vendor_name,
+            ).update(
+                vendor_property_motrum=props_compound,
+                property_motrum=props_compound.property_motrum,
+                is_diapason=True
+            )
+            print(props_prod)
+        else:
+            props_prod = ProductProperty.objects.filter(
+                product__supplier=supplier,
+                name=property_vendor_name,
+                value=property_vendor_value,
+            ).update(
+                vendor_property_motrum=props_compound,
+                property_motrum=props_compound.property_motrum,
+                property_value_motrum=props_compound.property_value_motrum,
+            )
+            print(props_prod)
+
+     

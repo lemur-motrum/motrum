@@ -1201,6 +1201,7 @@ class ProductPropertyValueMotrum(admin.TabularInline):
 class ProductPropertyMotrumAdmin(admin.ModelAdmin):
     fields = (
         "name",
+        "article"
     )
     inlines = [
         ProductPropertyValueMotrum,

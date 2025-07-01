@@ -71,6 +71,7 @@ from apps.core.tasks import (
     update_currency_price,
 )
 from apps.core.utils import (
+    add_motrum_props_to_prod_prop,
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
@@ -78,6 +79,7 @@ from apps.core.utils import (
     get_category_prompower,
     image_error_check,
     product_cart_in_file,
+    props_motrum_compound_props_prod,
     save_file_product,
     send_requests,
     vendor_delta_optimus_after_load,
@@ -142,16 +144,16 @@ def add_iek(request):
     # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
+    add_motrum_props_to_prod_prop()
    
-   
-    v = VendorPropertyAndMotrum.objects.all()
-    for vd in v:
+    # v = VendorPropertyAndMotrum.objects.all()
+    # for vd in v:
         
-        vendor = vd.vendor
-        property_vendor_name = vd.property_vendor_name
-        property_vendor_value = vd.property_vendor_value
-        f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
-        print(f)
+    #     vendor = vd.vendor
+    #     property_vendor_name = vd.property_vendor_name
+    #     property_vendor_value = vd.property_vendor_value
+    #     f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
+    #     print(f)
     
     
     result = 1

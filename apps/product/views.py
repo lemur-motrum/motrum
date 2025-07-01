@@ -140,23 +140,37 @@ def catalog_group(request, category):
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
+        # Характеристики дял фильтрации
         all_values = product_props.values(
             "property_motrum",
             "property_motrum__name",
             "property_value_motrum__id",
             "property_value_motrum__value",
+            "is_diapason",
+            "value"
         ).distinct()
+        
         chars_dict = defaultdict(lambda: {"values": []})
+        diapason_values = defaultdict(list)  # Для сбора значений диапазонов
         for row in all_values:
             pid = row["property_motrum"]
+            is_diapason = row["is_diapason"]
             if "id_property_motrum" not in chars_dict[pid]:
                 chars_dict[pid].update(
                     {
                         "id_property_motrum": pid,
                         "name_property_motrum": row["property_motrum__name"],
                         "property_motrum": pid,
+                        "is_diapason": is_diapason,
                     }
                 )
+            if is_diapason:
+                # value может быть строкой, пробуем привести к float
+                try:
+                    val = float(row["value"])
+                    diapason_values[pid].append(val)
+                except (TypeError, ValueError):
+                    pass
             if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
                 chars_dict[pid]["values"].append(
                     {
@@ -164,7 +178,18 @@ def catalog_group(request, category):
                         "value": row["property_value_motrum__value"],
                     }
                 )
+        # Добавляем min/max для диапазонных характеристик
+        for pid, values in diapason_values.items():
+            if values:
+                chars_dict[pid]["min_value"] = min(values)
+                chars_dict[pid]["max_value"] = max(values)
         chars = list(chars_dict.values())
+        # Сортировка по article ProductPropertyMotrum
+        chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
+        # Попробуем получить порядок из ProductPropertyMotrum
+        article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
+        chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+        print("chars",chars)
 
         try:
             current_category = CategoryProduct.objects.get(slug=category)
@@ -232,26 +257,37 @@ def products_items(request, category, group):
         .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
     )
 
-    # Оптимизация: один запрос для всех характеристик и их значений
+    # Характеристики дял фильтрации
     all_values = product_props.values(
         "property_motrum",
         "property_motrum__name",
         "property_value_motrum__id",
         "property_value_motrum__value",
+        "is_diapason",
+        "value"
     ).distinct()
     
-
     chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
     for row in all_values:
         pid = row["property_motrum"]
+        is_diapason = row["is_diapason"]
         if "id_property_motrum" not in chars_dict[pid]:
             chars_dict[pid].update(
                 {
                     "id_property_motrum": pid,
                     "name_property_motrum": row["property_motrum__name"],
                     "property_motrum": pid,
+                    "is_diapason": is_diapason,
                 }
             )
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["value"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
         if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
             chars_dict[pid]["values"].append(
                 {
@@ -259,8 +295,20 @@ def products_items(request, category, group):
                     "value": row["property_value_motrum__value"],
                 }
             )
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
     chars = list(chars_dict.values())
-
+    # Сортировка по article ProductPropertyMotrum
+    chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
+    # Попробуем получить порядок из ProductPropertyMotrum
+    article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
+    chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    print("chars",chars)
+    
+    
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 
@@ -422,10 +470,70 @@ def brand_all(request):
 
 # страница бренда одного с товарами
 def brand_one(request, vendor):
+    print("page brand_one")
     brand = Vendor.objects.get(slug=vendor)
-
+    product = Product.objects.select_related(
+        "vendor",
+        "category",
+        "group",
+    ).filter(vendor=brand)
+    
+    product_props = ProductProperty.objects.filter(
+        property_motrum__isnull=False, product__in=product
+    )
+    # Характеристики дял фильтрации
+    all_values = product_props.values(
+        "property_motrum",
+        "property_motrum__name",
+        "property_value_motrum__id",
+        "property_value_motrum__value",
+        "is_diapason",
+        "value"
+    ).distinct()
+    
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "property_motrum": pid,
+                    "is_diapason": is_diapason,
+                }
+            )
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["value"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            chars_dict[pid]["values"].append(
+                {
+                    "id": row["property_value_motrum__id"],
+                    "value": row["property_value_motrum__value"],
+                }
+            )
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    chars = list(chars_dict.values())
+    # Сортировка по article ProductPropertyMotrum
+    chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
+    # Попробуем получить порядок из ProductPropertyMotrum
+    article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
+    chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    print("chars",chars)
     context = {
         "brand": brand,
+        "chars": chars,
         "meta_title": f"{brand.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/brand_one.html", context)

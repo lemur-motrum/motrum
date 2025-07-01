@@ -97,9 +97,20 @@
                                 <div class="char_block">
                                     <div class="filter_title">{{ char.name_property_motrum }}</div>
                                     <div class="char_values">
-                                        {% for value in char.values %}
-                                            <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
-                                        {% endfor %}
+                                        <!-- Для диапазонного значение -->
+                                        {% if char.is_diapason %}
+                                        <div class="" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">
+                                            {{char.min_value }}
+                                            {{char.max_value }}
+                                        </div>
+                                            
+                                        {% else %}
+                                        <!-- Для  значениz c вариантами -->
+                                            {% for value in char.values %}
+                                                <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                        
                                     </div>
                                 </div>
                             {% endfor %}

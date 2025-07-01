@@ -60,6 +60,10 @@ app.conf.beat_schedule = {
         "task": "apps.supplier.tasks.add_prompower",
         "schedule": crontab(minute=00, hour=2),
     },
+    "add_innovert": {
+        "task": "apps.supplier.tasks.add_innovert",
+        "schedule": crontab(minute=00, hour=11),
+    },
     # 'specification_stop': {
     #     'task': 'apps.specification.tasks.specification_date_stop',
     #     'schedule': crontab(minute=20, hour=0),

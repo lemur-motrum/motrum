@@ -2565,9 +2565,11 @@ def create_file_props_in_vendor_props():
     new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
     # path_delta = f"{new_dir}/delta.csv"
     # path_emas = f"{new_dir}/emas.csv"
-    path_iek = f"{new_dir}/iek.csv"
+    # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
+    path_innovert = f"{new_dir}/innovert.csv"
+    # path_instart = f"{new_dir}/instart.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -2578,7 +2580,7 @@ def create_file_props_in_vendor_props():
 
     props = []
     
-    all_product_supplier = Product.objects.filter(supplier__slug="iek")
+    all_product_supplier = Product.objects.filter(supplier__slug="promsiteh")
     i = 0
 
     def key_val_upd(key, val, value, unit_measure):
@@ -2639,7 +2641,7 @@ def create_file_props_in_vendor_props():
     
     props_count = len(props)
     print("props_count",props_count)
-    with open(path_iek, "w", encoding="UTF-8") as writerFile:
+    with open(path_innovert, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
         )
@@ -2676,4 +2678,129 @@ def create_file_props_in_vendor_props():
                             val_u_i = '|| '.join(val_u)
                             row["Единица измерения"] = val_u_i
                 writer_nomenk.writerow(row)        
-        
+
+
+
+def create_file_props_in_vendor_props2():
+    from apps.product.models import (
+        Product,
+        ProductProperty,
+    )
+
+    new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
+    # path_delta = f"{new_dir}/delta.csv"
+    # path_emas = f"{new_dir}/emas.csv"
+    # path_iek = f"{new_dir}/iek.csv"
+    # path_optimus = f"{new_dir}/optimus.csv"
+    # path_prompower = f"{new_dir}/prompower.csv"
+    # path_innovert = f"{new_dir}/innovert.csv"
+    path_instart = f"{new_dir}/instart.csv"
+
+    fieldnames_nomenclature_written = [
+        "Частота упоминания",
+        "Название характеристики",
+        "Варианты значений",
+        "Единица измерения",
+    ]
+
+    props = []
+    
+    all_product_supplier = Product.objects.filter(supplier__slug="instart")
+    i = 0
+
+    def key_val_upd(key, val, value, unit_measure):
+
+        for val_i in val:
+            print(val_i)
+            val_v = val_i.get("value")
+            val_u = val_i.get("unit_measure")
+            val_c = val_i.get("count")
+            if val_c:
+                print(val_c)
+                val_i["count"] = val_c + 1 
+                
+            if val_v:
+                if value not in val_v:
+                    val_v.append(value)
+            if val_u:
+                if unit_measure != None:
+                    if unit_measure not in val_u:
+                        val_u.append(f"{unit_measure}")
+
+    def if_name(name, value, unit_measure):
+        print("startprops", props)
+        need_add_name = True
+        for prop_arr_name in props:
+            print(prop_arr_name)
+
+            for key, val in prop_arr_name.items():
+                print("key,val", key, val)
+                if name == key:
+                    print("name == key")
+                    need_add_name = False
+                    key_val_upd(key, val, value, unit_measure)
+
+            print("need_add_name", need_add_name)
+        if need_add_name:
+            props_new = {
+                name: [
+                    {"value": [value]},
+                    {"unit_measure": [unit_measure]},
+                    {"count": 1},
+                ]
+            }
+
+            print("props_new", props_new)
+            props.append(props_new)
+
+    for prod in all_product_supplier:
+        i += 1
+        props_prod = ProductProperty.objects.filter(product=prod)
+        if props_prod.count() > 0 :
+            for prop_prod in props_prod:
+                print(prop_prod)
+                name = if_name(prop_prod.name, prop_prod.value, prop_prod.unit_measure)
+
+    print(props)
+
+    
+    props_count = len(props)
+    print("props_count",props_count)
+    with open(path_instart, "w", encoding="UTF-8") as writerFile:
+        writer_nomenk = csv.DictWriter(
+            writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
+        )
+        for i in range(0, props_count):
+            row = {}
+            if i == 0:
+
+                row["Частота упоминания"] = "Частота упоминания"
+                row["Название характеристики"] = "Название характеристики"
+                row["Варианты значений"] = "Варианты значений"
+                row["Единица измерения"] = "Единица измерения"
+
+                writer_nomenk.writerow(row)
+            
+            print(i)
+            prop = props[i]
+            print(prop)
+            for key, value in prop.items():
+                print(key, value)
+                # Глубина (мм) [{'value': ['69.6']}, {'unit_measure': [None]}]
+                
+                row["Название характеристики"] = key
+                for val_i in value:
+                    val_v = val_i.get("value")
+                    val_u = val_i.get("unit_measure")
+                    val_c = val_i.get("count")
+                    if val_c:
+                        row["Частота упоминания"] = val_c
+                    if val_v:
+                        val_v_i = '|| '.join(val_v)
+                        row["Варианты значений"] = val_v_i
+                    if val_u:
+                        if val_u != [None]:
+                            val_u_i = '|| '.join(val_u)
+                            row["Единица измерения"] = val_u_i
+                writer_nomenk.writerow(row)        
+                

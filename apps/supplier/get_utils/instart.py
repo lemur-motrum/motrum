@@ -197,27 +197,27 @@ def pars_instart_xlsx(file_path):
                     img_4 = sheet[f"AZ{index}"].value
                     img_5 = sheet[f"BA{index}"].value
 
-                    image = ProductImage.objects.filter(product=product).exists()
-                    if image == False:
-                        _save_image_instart(product, img_1, img_2, img_3, img_4, img_5)
-                    print("after image")
-                    # документы товара
-                    doc_1 = sheet[f"BC{index}"].value
-                    doc_2 = sheet[f"BD{index}"].value
-                    doc_3 = sheet[f"BE{index}"].value
-                    doc_4 = sheet[f"BF{index}"].value
-                    doc_5 = sheet[f"BG{index}"].value
+                    # image = ProductImage.objects.filter(product=product).exists()
+                    # if image == False:
+                    #     _save_image_instart(product, img_1, img_2, img_3, img_4, img_5)
+                    # print("after image")
+                    # # документы товара
+                    # doc_1 = sheet[f"BC{index}"].value
+                    # doc_2 = sheet[f"BD{index}"].value
+                    # doc_3 = sheet[f"BE{index}"].value
+                    # doc_4 = sheet[f"BF{index}"].value
+                    # doc_5 = sheet[f"BG{index}"].value
 
-                    doc = ProductDocument.objects.filter(product=product).exists()
-                    if doc == False:
-                        _save_document_instart(product, doc_1, "Other", "Каталог")
-                        _save_document_instart(
-                            product, doc_2, "InstallationProduct", "Руководство по эксплуатации"
-                        )
-                        _save_document_instart(product, doc_3, "Passport", "Паспорт")
-                        _save_document_instart(product, doc_4, "Certificates", "Cертификат")
-                        _save_document_instart(product, doc_5, "Models3d", "3d модель")
-                    print("after doc")
+                    # doc = ProductDocument.objects.filter(product=product).exists()
+                    # if doc == False:
+                    #     _save_document_instart(product, doc_1, "Other", "Каталог")
+                    #     _save_document_instart(
+                    #         product, doc_2, "InstallationProduct", "Руководство по эксплуатации"
+                    #     )
+                    #     _save_document_instart(product, doc_3, "Passport", "Паспорт")
+                    #     _save_document_instart(product, doc_4, "Certificates", "Cертификат")
+                    #     _save_document_instart(product, doc_5, "Models3d", "3d модель")
+                    # print("after doc")
                     
                     # пропсы товара
                     props = ProductProperty.objects.filter(

@@ -70,6 +70,7 @@ from apps.core.tasks import (
 )
 from apps.core.utils import (
     add_new_photo_adress_prompower,
+    create_file_props_in_vendor_props2,
     create_time_stop_specification,
     delete_everything_in_folder,
     image_error_check,
@@ -138,8 +139,16 @@ def add_iek(request):
 
     # webhook = BITRIX_WEBHOOK
     # bx = Bitrix(webhook)
-    get_innovert_xml()
-    save_stock_innovert()
+    def background_task():
+        # Долгосрочная фоновая задача
+        create_file_props_in_vendor_props()
+        create_file_props_in_vendor_props2()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
+    
   
     result = 1
     title = "TEST"

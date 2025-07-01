@@ -273,16 +273,16 @@ def get_innovert_xml():
                             #     _save_image_innovert(product, imgs)
 
                             # пропсы товара
-                            # props = ProductProperty.objects.filter(
-                            #     product=product
-                            # ).exists()
-                            # if props == False:
-                            #     props = item.find_all("param")
-                            #     weight = item.find("weight")
-                            #     country_of_origin = item.find("country_of_origin")
-                            #     _save_prop_innovert(
-                            #         product, props, weight, country_of_origin
-                            #     )
+                            props = ProductProperty.objects.filter(
+                                product=product
+                            ).exists()
+                            if props == False:
+                                props = item.find_all("param")
+                                weight = item.find("weight")
+                                country_of_origin = item.find("country_of_origin")
+                                _save_prop_innovert(
+                                    product, props, weight, country_of_origin
+                                )
                             
                             # остатки
                             try:
@@ -319,6 +319,9 @@ def get_innovert_xml():
 
                 info = f"get_innovert_xml urls_xml_arr{url}{tr}{e}"
                 e = error_alert(error, location, info)
+    
+        
+    
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

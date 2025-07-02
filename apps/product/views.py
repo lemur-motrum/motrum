@@ -10,7 +10,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_motrum_filter, serch_products_web
+from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -316,17 +316,19 @@ def products_items(request, category, group):
     
     
     
-    chars_motrum = get_props_all_motrum_filter(product_props_2)
-    # chars_motrum = []
+    # chars_motrum = get_props_all_motrum_filter(product_props_2)
     
-    # chars_motrum теперь собирается эффективно, без лишних запросов
+    
+    product_props_3 = ProductProperty.objects.filter(
+            is_property_motrum=True, product__in=product
+        )
+ 
+    chars_motrum = get_props_all_motrum_filter3(product_props_3)
+    
     
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 
-    # all_groups = (
-    #     GroupProduct.objects.select_related("category").all().order_by("article_name")
-    # )
     another_groups = (
         GroupProduct.objects.filter(category__slug=category)
         .prefetch_related(
@@ -337,20 +339,13 @@ def products_items(request, category, group):
         .order_by("article_name")
     )
 
-    def get_another_groups():
-        current_groups = [
-            group_elem
-            for group_elem in all_groups
-            if group_elem.pk != current_group.pk
-            and group_elem.category.pk == current_category.pk
-        ]
-        return current_groups
+    
 
     context = {
         "current_category": current_category,
         "current_group": current_group,
         "product_vendor": product_vendor,
-        # "another_groups": get_another_groups(),
+    
         "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,

@@ -55,6 +55,12 @@ TYPE_DOCUMENT = (
     ("Doc", "Руководства и Спецификации"),
     ("Text", "Тексты"),
 )
+TAG_DOC = (
+    ("ONE", "Один вариант"),
+    ("MULTI", "Несколько вариантов"),
+    ("NONE", "Нет варинтов"),
+    ("-", "Не из документа"),
+)
 # Create your models here.
 
 
@@ -887,27 +893,27 @@ class ProductProperty(models.Model):
     value = models.CharField("Значение", max_length=600)
     unit_measure = models.CharField("Короткое имя значения", max_length=600, null=True)
     hide = models.BooleanField("Удалить", default=False)
-    vendor_property_motrum = models.ForeignKey(
-        "VendorPropertyAndMotrum",
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-        default=None,
-    )
-    property_motrum = models.ForeignKey(
-        "ProductPropertyMotrum",
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-    )
-    property_value_motrum = models.ForeignKey(
-        "ProductPropertyValueMotrum",
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-    )
-    is_diapason = models.BooleanField("Диапазонное значение", default=False)
-    is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
+    # vendor_property_motrum = models.ForeignKey(
+    #     "VendorPropertyAndMotrum",
+    #     on_delete=CASCADE,
+    #     blank=True,
+    #     null=True,
+    #     default=None,
+    # )
+    # property_motrum = models.ForeignKey(
+    #     "ProductPropertyMotrum",
+    #     on_delete=CASCADE,
+    #     blank=True,
+    #     null=True,
+    # )
+    # property_value_motrum = models.ForeignKey(
+    #     "ProductPropertyValueMotrum",
+    #     on_delete=CASCADE,
+    #     blank=True,
+    #     null=True,
+    # )
+    # is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     history = HistoricalRecords()
 
     class Meta:
@@ -958,12 +964,7 @@ class Cart(models.Model):
         return cart
 
 
-TAG_DOC = (
-    ("ONE", "Один вариант"),
-    ("MULTI", "Несколько вариантов"),
-    ("NONE", "Нет варинтов"),
-    ("-", "Не из документа"),
-)
+
 
 
 class ProductCart(models.Model):
@@ -1077,6 +1078,7 @@ class ProductPropertyMotrum(models.Model):
         blank=True,
         null=True,
     )
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
 
     class Meta:
         verbose_name = "Характеристика товара мотрум"
@@ -1106,7 +1108,7 @@ class ProductPropertyValueMotrum(models.Model):
     def __str__(self):
         return f"{self.value}"
 
-
+# таблица соотвествий пропсов вендов пропсам мотрум
 class VendorPropertyAndMotrum(models.Model):
     supplier = models.ForeignKey(
         Supplier,
@@ -1161,12 +1163,42 @@ class VendorPropertyAndMotrum(models.Model):
         return f"{self.property_vendor_name} _ {self.property_vendor_value}"
 
 
-# class VendorPropertyAndMotrumMM(models.Model):
-#     vendor_property_motrum = models.ForeignKey(
-#         VendorPropertyAndMotrum,
-#         on_delete=CASCADE,
-#     )
-#     property_value_motrum = models.ForeignKey(
-#         ProductPropertyValueMotrum,
-#         on_delete=CASCADE,
-#     )
+
+class ProductPropertyMotrumItem(models.Model):
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=CASCADE,
+    )
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    property_value_motrum = models.ForeignKey(
+        ProductPropertyValueMotrum,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+
+
+
+
+
+
+# НЕ ИСПОЛЬЗУЕМ
+class PropertyItemAndMotrum(models.Model):
+    product_props = models.ForeignKey(
+        ProductProperty,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    vendor_property_motrum = models.ForeignKey(
+        VendorPropertyAndMotrum,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    

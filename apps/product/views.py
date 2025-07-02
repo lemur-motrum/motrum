@@ -10,7 +10,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc, serch_products_web
+from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_motrum_filter, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -23,6 +23,7 @@ from apps.product.models import (
     ProductPropertyMotrum,
     ProductPropertyValueMotrum,
     Stock,
+    VendorPropertyAndMotrum,
 )
 from apps.supplier.models import (
     SupplierCategoryProduct,
@@ -247,67 +248,78 @@ def products_items(request, category, group):
         "group",
     ).filter(q_object)
 
-    product_props = ProductProperty.objects.filter(
-        property_motrum__isnull=False, product__in=product
-    )
+    
 
     product_vendor = (
         product.order_by("vendor__name")
         .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
     )
+    print("3333333333")
+    # product_props = ProductProperty.objects.filter(
+    #     property_motrum__isnull=False, product__in=product
+    # )
+    # chars = get_props_motrum_filter(product_props)
+    chars = []
+    
+    print("*************************************")
+    # Новая логика для chars_motrum
+    product_props_2 = ProductProperty.objects.filter(
+            is_property_motrum=True, product__in=product
+        ).values(
+            "name", "product__supplier","value","is_diapason"
+        ).distinct()
+    
+    # product_props_2_diapason = ProductProperty.objects.filter(
+    #         is_property_motrum=True, product__in=product
+    #     ).values(
+    #         "name", "product__supplier","value"
+    #     ).distinct()
+        
+    # props = ProductProperty.objects.filter(
+    #     is_property_motrum=True, product__in=product
+    # ).values(
+    #     "name", "product__supplier", "value", "is_diapason"
+    # )
 
-    # Характеристики дял фильтрации
-    all_values = product_props.values(
-        "property_motrum",
-        "property_motrum__name",
-        "property_value_motrum__id",
-        "property_value_motrum__value",
-        "is_diapason",
-        "value"
-    ).distinct()
+    # # Словарь для уникальных диапазонных
+    # # и сбора всех значений для min/max
+
+    # diapason_seen = {}
+    # result = []
+
+    # for prop in props:
+    #     if prop["is_diapason"]:
+    #         key = (prop["name"], prop["product__supplier"])
+    #         try:
+    #             val = float(prop["value"])
+    #         except (TypeError, ValueError):
+    #             continue
+    #         if key not in diapason_seen:
+    #             diapason_seen[key] = []
+    #         diapason_seen[key].append(val)
+    #     else:
+    #         result.append(prop)
+
+    # # После сбора всех диапазонных — добавляем их с min/max
+    # for (name, supplier), values in diapason_seen.items():
+    #     if values:
+    #         result.append({
+    #             "name": name,
+    #             "product__supplier": supplier,
+    #             "is_diapason": True,
+    #             "min_value": min(values),
+    #             "max_value": max(values)
+    #         })
+    # print("pppppppppppppppppppppppppppppp")
+    # print(result)
     
-    chars_dict = defaultdict(lambda: {"values": []})
-    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
-    for row in all_values:
-        pid = row["property_motrum"]
-        is_diapason = row["is_diapason"]
-        if "id_property_motrum" not in chars_dict[pid]:
-            chars_dict[pid].update(
-                {
-                    "id_property_motrum": pid,
-                    "name_property_motrum": row["property_motrum__name"],
-                    "property_motrum": pid,
-                    "is_diapason": is_diapason,
-                }
-            )
-        if is_diapason:
-            # value может быть строкой, пробуем привести к float
-            try:
-                val = float(row["value"])
-                diapason_values[pid].append(val)
-            except (TypeError, ValueError):
-                pass
-        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
-            chars_dict[pid]["values"].append(
-                {
-                    "id": row["property_value_motrum__id"],
-                    "value": row["property_value_motrum__value"],
-                }
-            )
-    # Добавляем min/max для диапазонных характеристик
-    for pid, values in diapason_values.items():
-        if values:
-            chars_dict[pid]["min_value"] = min(values)
-            chars_dict[pid]["max_value"] = max(values)
-    chars = list(chars_dict.values())
-    # Сортировка по article ProductPropertyMotrum
-    chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
-    # Попробуем получить порядок из ProductPropertyMotrum
-    article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
-    chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
-    print("chars",chars)
     
+    
+    chars_motrum = get_props_all_motrum_filter(product_props_2)
+    # chars_motrum = []
+    
+    # chars_motrum теперь собирается эффективно, без лишних запросов
     
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
@@ -343,6 +355,7 @@ def products_items(request, category, group):
         "title": current_group.name,
         "media_url": media_url,
         "chars": chars,
+        "chars_motrum": chars_motrum,
         "meta_title": f"{current_group.name} | Мотрум - автоматизация производства",
     }
 
@@ -603,8 +616,8 @@ def add_document_admin(request):
                 #     profile.save()
                 #     file_path = profile.document
 
-            else:
-                print(form.errors)
+                # else:
+                #     print(form.errors)
             context = {"type_document": TYPE_DOCUMENT, "form": form, "create": "ok"}
         return render(request, "admin/add_doc.html", context)
     else:

@@ -907,6 +907,7 @@ class ProductProperty(models.Model):
         null=True,
     )
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     history = HistoricalRecords()
 
     class Meta:
@@ -1133,6 +1134,7 @@ class VendorPropertyAndMotrum(models.Model):
         blank=True,
         null=True,
     )
+    # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
     property_vendor_name = models.CharField(
         "Название",
@@ -1147,10 +1149,6 @@ class VendorPropertyAndMotrum(models.Model):
         null=True,
     )
 
-    # property_vendor = models.ForeignKey(
-    #     ProductProperty,
-    #     on_delete=CASCADE,
-    # )
     class Meta:
         verbose_name = (
             "Значение характеристики товара мотрум для характеристики поставщика"

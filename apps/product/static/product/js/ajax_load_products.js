@@ -122,9 +122,9 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
     let chars = [
-      // { id: 1, values: [2], is_diapason:false, min_value:0, max_value:0  }, // id характеристики и массив id значений
-      { id: 1, values: [1], is_diapason:false, min_value:0, max_value:0  },
-      { id: 6, values: null, is_diapason:true, min_value:120, max_value:200}
+      // { id: 12, values: [20], is_diapason:false, min_value:0, max_value:0  }, 
+      { id: 1, values: [2], is_diapason:false, min_value:0, max_value:0  },
+      // { id: 6, values: null, is_diapason:true, min_value:120, max_value:200}
     ]
     function loadItems(addMoreBtn = false) {
       let data = {

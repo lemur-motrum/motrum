@@ -31,6 +31,7 @@ from apps.product.models import (
     Product,
     ProductCart,
     ProductProperty,
+    VendorPropertyAndMotrum,
 )
 from django.db.models import Q, F, OrderBy, Value
 
@@ -196,39 +197,60 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
        
 
-        # поиск по характеристикам
-        for char in chars:
-            prop_id = char['id']
-            values = char['values']
-            is_diapason = char.get('is_diapason', False)
-            if is_diapason:
-                min_value = char.get('min_value')
-                max_value = char.get('max_value')
-                print("minmax",min_value,max_value)
-                queryset = queryset.filter(
-                    Exists(
-                        ProductProperty.objects.annotate(
-                            value_float=Cast('value', FloatField())
-                        ).filter(
-                            product=OuterRef('pk'),
-                            property_motrum=prop_id,
-                            is_diapason=True,
-                            value_float__gte=min_value,
-                            value_float__lte=max_value
+        # поиск по характеристикам для варианта с точны одним значением 
+        # for char in chars:
+        #     prop_id = char['id']
+        #     values = char['values']
+        #     is_diapason = char.get('is_diapason', False)
+        #     if is_diapason:
+        #         min_value = char.get('min_value')
+        #         max_value = char.get('max_value')
+        #         print("minmax",min_value,max_value)
+        #         queryset = queryset.filter(
+        #             Exists(
+        #                 ProductProperty.objects.annotate(
+        #                     value_float=Cast('value', FloatField())
+        #                 ).filter(
+        #                     product=OuterRef('pk'),
+        #                     property_motrum=prop_id,
+        #                     is_diapason=True,
+        #                     value_float__gte=min_value,
+        #                     value_float__lte=max_value
+        #                 )
+        #             )
+        #         )
+        #     else:
+        #         queryset = queryset.filter(
+        #             Exists(
+        #                 ProductProperty.objects.filter(
+        #                     product=OuterRef('pk'),
+        #                     property_motrum=prop_id,
+        #                     property_value_motrum__in=values
+        #                 )
+        #             )
+        #         )
+        
+        # поиск по характеристикам 2  
+        for char2 in chars:
+            prop_id = char2['id']
+            values = char2['values']
+            is_diapason = char2.get('is_diapason', False)
+            if values:
+                vendor_props = VendorPropertyAndMotrum.objects.filter(
+                    property_motrum=prop_id,
+                    property_value_motrum__in=values
+                ).values_list('property_vendor_name', 'property_vendor_value')
+                if vendor_props:
+                    queryset = queryset.filter(
+                        Exists(
+                            ProductProperty.objects.filter(
+                                product=OuterRef('pk'),
+                                name__in=[vp[0] for vp in vendor_props],
+                                value__in=[vp[1] for vp in vendor_props]
+                            )
                         )
                     )
-                )
-            else:
-                queryset = queryset.filter(
-                    Exists(
-                        ProductProperty.objects.filter(
-                            product=OuterRef('pk'),
-                            property_motrum=prop_id,
-                            property_value_motrum__in=values
-                        )
-                    )
-                )
-            
+
         #  поиск по тексту   
         if search_text:
             queryset = serch_products_web(search_text, queryset)
@@ -922,64 +944,3 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(None, status=status.HTTP_200_OK)
 
 
-# class ProductViewSet(viewsets.ModelViewSet):
-#     permission_classes = (permissions.AllowAny,)
-#     queryset = Product.objects.none()
-#     serializer_class = ProductSerializer
-#     http_method_names = ['get', 'head', 'options']
-
-#     @action(detail=False, url_path='load-ajax-product-list')
-#     def load_ajax_match_list(self, request):
-#         count = int(request.query_params.get('count'))
-
-#         queryset = Product.objects.select_related(
-#             "supplier",
-#             "vendor",
-#             "category_supplier_all",
-#             "group_supplier",
-#             "category_supplier",
-#             "category",
-#             "group",
-#             "price",
-#             "stock",
-#         ).filter(check_to_order=True)[count+1:count+2]
-
-#         serializer = ProductSerializer(queryset, many=True)
-#         print(serializer.data)
-
-#         return Response(serializer.data)
-
-#     @action(detail=False, url_path=r"view")
-#     def view(self, request):
-#         queryset = Product.objects.select_related(
-#             "supplier",
-#             "vendor",
-#             "category_supplier_all",
-#             "group_supplier",
-#             "category_supplier",
-#             "category",
-#             "group",
-#             "price",
-#             "stock",
-#         ).filter(check_to_order=True)
-
-#         serializer = ProductSerializer(queryset, many=True)
-#         print(1231123123)
-#         print(serializer.data)
-
-#         return Response(serializer.data)
-
-
-# class ApiCProductViewSet(viewsets.ModelViewSet):
-#     queryset = Product.objects.filter(article="0017")
-#     serializer_class = ProductTestSerializer
-
-#     http_method_names = ["get", "post", "put", "update"]
-
-#     @action(detail=False, methods=["get"], url_path=r"1")
-#     def one(self, request, *args, **kwargs):
-#         queryset = Product.objects.get(article="0017")
-#         serializer_class = ProductTestSerializer
-#         serializer = self.serializer_class(queryset, many=False)
-
-#         return Response(serializer.data, status=status.HTTP_200_OK)

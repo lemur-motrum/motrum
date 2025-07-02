@@ -144,6 +144,7 @@ def add_iek(request):
     # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
+    props_motrum_compound_props_prod()
     add_motrum_props_to_prod_prop()
    
     # v = VendorPropertyAndMotrum.objects.all()

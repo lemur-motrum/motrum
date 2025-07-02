@@ -277,18 +277,20 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              ym(37794920, "reachGoal", "send_current_vacancy_form");
-              closeOverlay();
-              successModal(
-                `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
-              );
-              hidePreloaderAndEnabledButton(formSubmitBtn);
-            } else {
-              setErrorModal();
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                ym(37794920, "reachGoal", "send_current_vacancy_form");
+                closeOverlay();
+                successModal(
+                  `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
+                );
+                hidePreloaderAndEnabledButton(formSubmitBtn);
+              } else {
+                setErrorModal();
+              }
+            })
+            .catch((error) => console.error(error));
         }
       };
     }

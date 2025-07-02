@@ -136,33 +136,35 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            if (submitBtn.getAttribute("type-btn") == "no_manager") {
-              ym(37794920, "reachGoal", "send_no_manager_form");
-            } else {
-              if (
-                window.location.pathname == "/robots/" ||
-                window.location.pathname == "/cobots/" ||
-                window.location.pathname == "/cobots-box/" ||
-                window.location.pathname == "/cobots-packing/"
-              ) {
-                ym(37794920, "reachGoal", "send-form-cobots");
-              } else if (window.location.pathname == "/marking/") {
-                ym(37794920, "reachGoal", "send-form-marking");
+        })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              if (submitBtn.getAttribute("type-btn") == "no_manager") {
+                ym(37794920, "reachGoal", "send_no_manager_form");
               } else {
-                ym(37794920, "reachGoal", "send_manager_message");
+                if (
+                  window.location.pathname == "/robots/" ||
+                  window.location.pathname == "/cobots/" ||
+                  window.location.pathname == "/cobots-box/" ||
+                  window.location.pathname == "/cobots-packing/"
+                ) {
+                  ym(37794920, "reachGoal", "send-form-cobots");
+                } else if (window.location.pathname == "/marking/") {
+                  ym(37794920, "reachGoal", "send-form-marking");
+                } else {
+                  ym(37794920, "reachGoal", "send_manager_message");
+                }
               }
+              closeOverlay();
+              hidePreloaderAndEnabledButton(submitBtn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
+            } else {
+              setErrorModal();
             }
-            closeOverlay();
-            hidePreloaderAndEnabledButton(submitBtn);
-            successModal(
-              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
-            );
-          } else {
-            setErrorModal();
-          }
-        });
+          })
+          .catch((error) => console.error(error));
       }
     };
 

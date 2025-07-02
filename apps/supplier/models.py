@@ -87,6 +87,7 @@ class Vendor(models.Model):
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"
+        ordering = [ "name"]
 
     def __str__(self):
         return self.name
@@ -174,7 +175,7 @@ class SupplierCategoryProduct(models.Model):
                     product_one.group = self.group_catalog
 
                 product_one._change_reason = "Автоматическое"
-                product_one.save()
+                product_one.save(update_fields=['category', 'group', '_change_reason'])
                 # update_change_reason(product_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)
@@ -260,9 +261,10 @@ class SupplierGroupProduct(models.Model):
                     if product_one.group_supplier is not None:
                         if product_one.group_supplier.vendor is not None:
                             product_one.vendor = product_one.group_supplier.vendor
-
-                product_one._change_reason = "Автоматическое"
-                product_one.save()
+                            
+                product_one.save(update_fields=['category', 'group','vendor', '_change_reason'])
+                # product_one._change_reason = "Автоматическое"
+                # product_one.save()
                 # update_change_reason(product_one, "Автоматически из групп поставщика")
 
         daemon_thread = threading.Thread(target=background_task)
@@ -368,17 +370,35 @@ class SupplierCategoryProductAll(models.Model):
                     product_one.category = self.category_catalog
                     if self.group_catalog:
                         product_one.group = self.group_catalog
-                    product_one._change_reason = "Автоматическое"
-                    product_one.save()
+                    
+                    product_one.save(update_fields=['category', 'group', '_change_reason'])
+                    # product_one._change_reason = "Автоматическое"
+                    # product_one.save()
                   
 
             daemon_thread = threading.Thread(target=background_task)
             daemon_thread.setDaemon(True)
             daemon_thread.start()
 
-
-
-
+class SupplierPromoGroupe(models.Model):
+    name = models.CharField("Название промо группы", max_length=150)
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Промо группы"
+        verbose_name_plural = "Промо группы"
+        
+    def __str__(self):
+        return f"{self.name}"
 class Discount(models.Model):
     supplier = models.ForeignKey(
         Supplier,
@@ -415,6 +435,16 @@ class Discount(models.Model):
         blank=True,
         null=True,
     )
+    
+    promo_groupe = models.ForeignKey(
+        "SupplierPromoGroupe",
+        verbose_name="Промо группа",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    
+    
     percent = models.FloatField(
         "Процент скидки",
         blank=True,
@@ -449,7 +479,11 @@ class Discount(models.Model):
         from apps.product.models import Price
 
         # обновление цен товаров связанной группы
-        if self.category_supplier_all:
+        if self.promo_groupe:
+            price = Price.objects.filter(
+                prod__promo_groupe=self.promo_groupe
+            )
+        elif self.category_supplier_all:
             price = Price.objects.filter(
                 prod__category_supplier_all=self.category_supplier_all
             )

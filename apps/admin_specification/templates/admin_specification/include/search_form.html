@@ -15,9 +15,23 @@
                     {{ form_elem }}
                 </div>
             {% endfor %}
-            <div class="search-elem-fields">
-                <div class="loader">loading</div>
+            <div class="search_elems_block_wrapper">
+                <div class="search-elem-fields" okt-search-elem="wrapper">
+                    <div class="loader"></div>
+                    <div class="search_elem_fields_container" okt-search-elem="container"></div>
+                    <div class="small_loader">Загрузка...</div>
+                </div>
             </div>
         </div>
     </form>
 </div>
+{% comment %} 
+ {
+    "category": "",
+    "group": "",
+    "value": "VM-10-P37K-0075-T4-CV2-M",
+    "start": 0,
+    "counter": 7
+}
+
+{% endcomment %}

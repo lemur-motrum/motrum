@@ -21,7 +21,7 @@
                             <a href="{{ product_item.get_absolute_url }}">
                                 <div class="img-contaner">
                                     {% for productimage in product_item.productimage_set.all %}
-                                        {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="">{% endif %}
+                                        {% if forloop.counter == 1 %}<img src="{{ productimage.photo.url }}" alt="img" >{% endif %}
                                     {% empty %}
                                         <img src="{% static "core/images/nophoto1.png" %}" alt="img" />
                                     {% endfor %}

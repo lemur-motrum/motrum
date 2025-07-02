@@ -827,7 +827,7 @@ def create_specification(request):
                 #             2,
                 #         ),
             )
-            # .order_by("id_product_cart")
+            .order_by("id_product_cart")
         )
 
     # корзины нет
@@ -1384,6 +1384,7 @@ def load_products(request):
                 price,
                 product_elem.category_supplier_all,
                 product_elem.supplier,
+                product_elem.promo_groupe,
             )[1]
 
             if discount_item == None:

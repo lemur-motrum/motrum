@@ -1,5 +1,6 @@
 import csv
 import datetime
+import json
 from locale import LC_ALL, setlocale
 import os
 import random
@@ -55,6 +56,7 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
+from apps.supplier.get_utils.unimat_pp import export_unimat_prod_for_1c, unimat_prompower_api
 from dal import autocomplete
 from django.db.models import Q
 
@@ -72,6 +74,8 @@ from apps.core.utils import (
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
+    email_manager_after_new_order_site,
+    get_category_prompower,
     image_error_check,
     product_cart_in_file,
     save_file_product,
@@ -104,10 +108,10 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
     nomek_test_2,
 )
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
-from apps.supplier.get_utils.prompower import prompower_api
+from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, prompower_api
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import Supplier, SupplierCategoryProductAll, Vendor
+from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -137,32 +141,43 @@ def add_iek(request):
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     bs_id_order = 12020
-    req_bx_order = bx.call(
-        "crm.requisite.link.list",
-        {"filter": {"ENTITY_TYPE_ID": 2, "ENTITY_ID": bs_id_order}},
-    )
-    req_bx_id = req_bx_order["REQUISITE_ID"]
-    req_bx = bx.call(
-            "crm.requisite.get",
-            {"id": int(req_bx_id)},
-        )
-    print(req_bx)
-    for k, v in req_bx.items():
-        tel = v["RQ_PHONE"]
-        if tel == "" or tel == None or tel == "None":
-            tel = None
-        
-        print("tel=",tel)
-        print(type(tel))
+    order = Order.objects.get(id_bitrix=12020)
+    prompower_api()
     
-
-
+    
+    
+    
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+def prompower_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        export_prompower_prod_for_1c()
 
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+def unimat_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        export_unimat_prod_for_1c()
+        # get_motrum_nomenclature()
 
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
 # тестовая страница скриптов
 def test(request):
     def background_task():
@@ -283,7 +298,11 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
         vendor = self.forwarded.get("vendor", None)
         if vendor:
             qs = qs.filter(vendor=vendor)
-
+            
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
         return qs
 
 
@@ -393,3 +412,43 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
+    
+
+class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = SupplierPromoGroupe.objects.all()
+        supplier = self.forwarded.get("supplier", None)
+        if supplier:
+            qs = qs.filter(supplier=supplier)
+
+        vendor = self.forwarded.get("vendor", None)
+        
+        if vendor:
+            qs = qs.filter(vendor=vendor)
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
+        return qs
+    
+class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = SupplierPromoGroupe.objects.all()
+        supplier = self.forwarded.get("supplier", None)
+        if supplier:
+            qs = qs.filter(supplier=supplier)
+
+        vendor = self.forwarded.get("vendor", None)
+        print("vendor",vendor)
+        if vendor:
+            qs = qs.filter(vendor=vendor)
+            
+        if self.q:
+            qs = qs.filter(
+                Q(name__icontains=self.q)
+            )
+        return qs
+
+

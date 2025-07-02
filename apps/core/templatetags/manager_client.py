@@ -30,7 +30,7 @@ def manager_client(context):
 
     client = None
     if context.request.path_info == "/marking/":
-        manager = AdminUser.objects.get(email="maksim.skitchenko@motrum.ru")
+        manager = AdminUser.objects.get(email="sergey.govorkov@motrum.ru")
         phone_manager = "78463004117"
         frontend_num = get_phone_number(phone_manager, True)
 

@@ -33,6 +33,7 @@ from apps.core.models import Currency, StageDealBx, UpdatedCompanyBX24
 from apps.core.utils import (
     client_info_bitrix,
     create_info_request_order_bitrix,
+    email_manager_after_new_order_site,
     save_file_product,
     save_info_bitrix_after_web,
 )
@@ -710,6 +711,7 @@ def add_info_order(request, order, type_save):
                         "OPPORTUNITY": order.bill_sum,
                         "UF_CRM_1734772155723": order.bill_sum_paid,
                         "UF_CRM_1734772173389": order_debt,
+                        "UF_CRM_1747900569834":order.marginality,
                     },
                 }
                 orders_bx = bx.call("crm.deal.update", data_order)
@@ -961,13 +963,13 @@ def save_payment_order_bx(data):
         for data_item in data_payment:
             order = Order.objects.get(id_bitrix=int(data_item["bitrix_id"]))
             id_bitrix_order = order.id_bitrix
-            order_debt = order.bill_sum - order.bill_sum_paid
+            # order_debt = order.bill_sum - order.bill_sum_paid
 
             data_order = {
                 "id": id_bitrix_order,
                 "fields": {
                     "UF_CRM_1734772155723": order.bill_sum_paid,
-                    "UF_CRM_1734772173389": order_debt,
+                    # "UF_CRM_1734772173389": order_debt, считает сам битрикс можно ен отправлять бывыют баги - Значение поля Задолженность должно быть строкой в формате ЦЕНА|ВАЛЮТА<br>
                 },
             }
             orders_bx = bx.call("crm.deal.update", data_order)
@@ -1469,6 +1471,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
+        email_manager_after_new_order_site(order)
         return ("ok", None)
 
     except Exception as e:
@@ -2130,6 +2133,10 @@ def add_new_order_bx(
         }
         order_new_bx_id = bx.call("crm.deal.add", tasks)
         print("order_new_bx_id", order_new_bx_id)
+        error = "info_error_order"
+        location = "ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС"
+        info = f"ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС сделка с инфой о клиенте tasks{tasks}"
+        e = error_alert(error, location, info)
         task_req = {
             "fields": {
                 "ENTITY_TYPE_ID": 2,
@@ -2167,6 +2174,10 @@ def add_new_order_bx(
         }
         order_new_bx_id = bx.call("crm.deal.add", tasks)
         print("order_new_bx_id", order_new_bx_id)
+        error = "info_error_order"
+        location = "ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС"
+        info = f"ИНФО О ЗАКАЗЕ С САЙТА ПОСЛЕ СОХРАНЕНИЯ БИТРИКС сделка без инфы о клиенте tasks{tasks}"
+        e = error_alert(error, location, info)
     return order_new_bx_id
 
 
@@ -2322,12 +2333,14 @@ def add_new_order_web_not_info(order_id):
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
+            email_manager_after_new_order_site(order)
         elif type_save == "old":
             order_new_bx_id = add_new_order_bx(
                 bx, None, None, None, None, client_bx_id, client
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
+            email_manager_after_new_order_site(order)
 
         return ("ok", None)
 
@@ -2341,7 +2354,6 @@ def add_new_order_web_not_info(order_id):
 
 
 def get_manager_info():
-    print(1111111)
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
     current_date = datetime.date.today()
@@ -2353,18 +2365,14 @@ def get_manager_info():
         # requisitesotherkpp__requisites__id_bitrix__isnull=False,
     ).distinct("client")
     # .distinct("requisitesotherkpp")
-    print(client)
     for clien in client:
 
         inn = clien.requisitesotherkpp.requisites.inn
         req_id_bitrix_and_inn = clien.requisitesotherkpp.requisites.id_bitrix
         req_id_bitrix = req_id_bitrix_and_inn.replace(inn, "")
         client_bx_id = clien.client.bitrix_id_client
-        print(client_bx_id)
         try:
-            print(9999)
             contact_bx = bx.get_by_ID("crm.contact.get", [client_bx_id])
-            print(contact_bx)
             manager = AdminUser.objects.filter(bitrix_id=contact_bx["ASSIGNED_BY_ID"])
             if manager.count() == 0:
                 error = "error"

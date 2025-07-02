@@ -43,6 +43,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const options = select.querySelectorAll(".itc-select__options");
 
       options.forEach((el) => {
+        console.log(222222222222222222222222)
         el.onclick = () => {
           setTimeout(() => {
             select.classList.remove("itc-select_show");
@@ -187,14 +188,16 @@ window.addEventListener("DOMContentLoaded", () => {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .catch((error) => console.error(error));
         }
       };
     });

@@ -47,6 +47,9 @@ class LogsInfoErrorAdmin(admin.ModelAdmin):
     ]   
     
 class LogsOrderErrorAdmin(admin.ModelAdmin):
+    search_fields = [
+        "info",
+    ]
     list_display_links = None
     list_display = [
         "date",

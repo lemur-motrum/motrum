@@ -212,7 +212,8 @@ window.addEventListener("DOMContentLoaded", () => {
             inputValidate(maxInputPrice, true);
           }
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     if (urlParams.get("vendor")) {

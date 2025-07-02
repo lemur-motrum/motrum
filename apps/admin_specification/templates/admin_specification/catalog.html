@@ -149,7 +149,7 @@
                                            onkeypress='validate(event)'>
                                     <button class="plus-button">
                                         <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                             alt="img" />
+                                             alt="img"/>
                                     </button>
                                 </div>
                             </div>
@@ -208,6 +208,7 @@
                         <div class="item_value">
                             <label>
                                 {% if bill_upd %}
+                                
                                     <input class="delivery_date"
                                            type="date"
                                            name="calendar"
@@ -310,7 +311,7 @@
                                     <div class="input-container">
                                         <button class="minus-button">
                                             <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                         <input class="input-quantity"
                                                type="text"
@@ -320,7 +321,7 @@
                                                onkeypress='validate(event)'>
                                         <button class="plus-button">
                                             <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                     </div>
                                 </div>
@@ -479,7 +480,7 @@
                              data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                             <div title="Редактировать элемент" class="change_icon_container">
-                                <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
+                                <img src="{% static "core/images/changeIcon.svg" %}" alt="icon"  />
                             </div>
                             <div title="Cохранить элемент" class="save_icon_container">
                                 <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
@@ -500,7 +501,7 @@
                                     <div class="input-container">
                                         <button class="minus-button">
                                             <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                         <input class="input-quantity"
                                                type="text"
@@ -510,7 +511,7 @@
                                                onkeypress='validate(event)'>
                                         <button class="plus-button">
                                             <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                     </div>
                                 </div>
@@ -531,7 +532,7 @@
                                     <div class="input-container">
                                         <button class="minus-button">
                                             <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                         <input class="input-quantity"
                                                type="text"
@@ -541,7 +542,7 @@
                                                onkeypress='validate(event)'>
                                         <button class="plus-button">
                                             <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                     </div>
                                 </div>
@@ -717,7 +718,7 @@
                                     <div class="input-container">
                                         <button class="minus-button">
                                             <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                         <input class="input-quantity"
                                                type="text"
@@ -727,7 +728,7 @@
                                                onkeypress='validate(event)'>
                                         <button class="plus-button">
                                             <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                     </div>
                                 </div>
@@ -748,7 +749,7 @@
                                     <div class="input-container">
                                         <button class="minus-button">
                                             <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                         <input class="input-quantity"
                                                type="text"
@@ -758,7 +759,7 @@
                                                onkeypress='validate(event)'>
                                         <button class="plus-button">
                                             <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img" />
+                                                 alt="img"  />
                                         </button>
                                     </div>
                                 </div>
@@ -1025,11 +1026,14 @@
                             <input class="search_input"
                                    placeholder="введите название или артикул"
                                    type="text" />
-                            <div class="search_container">
-                                <div class="loader"></div>
-                                <div class="search_elems_contaner"></div>
-                                <div class="small_loader"></div>
-                            </div>
+                                   <div class="search_container_wrapper">
+
+                                       <div class="search_container">
+                                           <div class="loader"></div>
+                                           <div class="search_elems_contaner"></div>
+                                           <div class="small_loader"></div>
+                                       </div>
+                                   </div>
                         </label>
                         <div class="add_product_container">
                             <button class="add_product">Добавить этот товар</button>
@@ -1262,11 +1266,13 @@
                             <input class="search_input"
                                    placeholder="введите название или артикул"
                                    type="text" />
+                                     <div class="search_container_wrapper">
                             <div class="search_container">
                                 <div class="loader"></div>
                                 <div class="search_elems_contaner"></div>
                                 <div class="small_loader"></div>
                             </div>
+                        </div>
                         </label>
                         <div class="add_product_container">
                             <button class="add_product">Добавить этот товар</button>

@@ -285,7 +285,7 @@ def crete_pdf_specification(
                 product_name_str = str(product.product.name)
                 if product.product.in_view_website:
                     product_name = (
-                        Paragraph(f"{product_name}", norm10_left_style),
+                        Paragraph(f"{product_name_str}", norm10_left_style),
                     )
                 else:
                     product_name = Paragraph(

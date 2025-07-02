@@ -60,6 +60,11 @@ app.conf.beat_schedule = {
         "task": "apps.supplier.tasks.add_prompower",
         "schedule": crontab(minute=00, hour=2),
     },
+    # получение апи товаров промповер
+    "add_unimat": {
+        "task": "apps.supplier.tasks.add_unimat",
+        "schedule": crontab(minute=45, hour=2),
+    },
     # 'specification_stop': {
     #     'task': 'apps.specification.tasks.specification_date_stop',
     #     'schedule': crontab(minute=20, hour=0),

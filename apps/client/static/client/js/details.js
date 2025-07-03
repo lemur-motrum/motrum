@@ -188,7 +188,6 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             })
             .then((response) => {
-              console.log("response", response);
               legalEntitiesSearchContainer.innerHTML = "";
               response.forEach((el) => {
                 legalEntitiesSearchContainer.innerHTML += `

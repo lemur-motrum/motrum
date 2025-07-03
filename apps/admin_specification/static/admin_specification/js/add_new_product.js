@@ -99,7 +99,6 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("ff ff ff");
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -316,8 +315,9 @@ function addNewProductLogic(container) {
       addNewItemInCartButton.onclick = () => {
         setPreloaderInButton(addNewItemInCartButton);
         function inputValidate(input) {
-          if (!input.value) {
+          if (!input.value || input.value.trim().length === 0) {
             validate = false;
+
             input.style.border = "1px solid red";
           }
         }

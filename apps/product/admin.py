@@ -654,7 +654,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 
 
                 for item_dict in product_blank_dict:
-                    print(product_item.get('supplier_id'))
+                  
                     verbose_name = Model._meta.get_field(item_dict).verbose_name
                     supplier_id = product_item.get('supplier_id') 
                     if supplier_id and supplier_id == 1  and  verbose_name == "Промо группа":
@@ -686,7 +686,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             product_blank = f"{product_blank}{product_blank_local}"
             return product_blank
 
-        # print(obj.productdocument_set.all())
+        
         product = Product.objects.filter(id=obj.id).values()
         product_blank_new = get_blank(product, Product, product_blank)
 
@@ -898,7 +898,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 # kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
                 kwargs["queryset"] = Vendor.objects.filter()
             if item.autosave_tag == False:
-                print("AUTOSAVE TAG FALSE")
+                
                 if db_field.name == "category_supplier":
                     kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
                         supplier_id=item.supplier.id
@@ -950,7 +950,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     # история изменений
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
-        print("""The 'history' admin view for this model.""")
+ 
         request.current_app = self.admin_site.name
 
         model = self.model
@@ -1120,7 +1120,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         context.update(extra_context or {})
         extra_kwargs = {}
-        print("self.object_history_template", self.object_history_template)
+       
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )

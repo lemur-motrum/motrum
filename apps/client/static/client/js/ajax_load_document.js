@@ -1,4 +1,7 @@
-import { getCookie, getDigitsNumber } from "../../../../core/static/core/js/functions.js";
+import {
+  getCookie,
+  getDigitsNumber,
+} from "../../../../core/static/core/js/functions.js";
 import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
 const currentUrl = new URL(window.location.href);
@@ -7,8 +10,6 @@ const urlParams = currentUrl.searchParams;
 window.addEventListener("DOMContentLoaded", () => {
   const catalogWrapper = document.querySelector('[document-elem="wrapper"]');
   if (catalogWrapper) {
-    let paramsArray = [];
-
     const catalogContainer = catalogWrapper.querySelector(
       '[document-elem="container"]'
     );

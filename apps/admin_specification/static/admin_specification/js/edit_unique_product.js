@@ -43,7 +43,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const options = select.querySelectorAll(".itc-select__options");
 
       options.forEach((el) => {
-        console.log(222222222222222222222222)
+        console.log(222222222222222222222222);
         el.onclick = () => {
           setTimeout(() => {
             select.classList.remove("itc-select_show");

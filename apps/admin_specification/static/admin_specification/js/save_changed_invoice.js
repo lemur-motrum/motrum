@@ -23,9 +23,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const commentAll = document.querySelector(
         'textarea[name="comment-input-name-all"]'
       );
-      const dateDeliveryAll = document.querySelector(
-        'textarea[name="delivery-date-all-input-name-all"]'
-      );
 
       const bitrixInput = document.querySelector(".bitrix-input");
       const dateDeliveryInputs = document.querySelectorAll(".delivery_date");

@@ -28,9 +28,6 @@ export function changePayment(container, errorFn) {
           const paymentLink = specification.querySelector(
             ".price_bill_sum_paid"
           );
-          const invoiceSpecificationContainer = specification.querySelector(
-            ".invoice-table_item_value"
-          );
           const changedItemButtonsContainer = specification.querySelector(
             ".table_item_value_change_buttons_container"
           );

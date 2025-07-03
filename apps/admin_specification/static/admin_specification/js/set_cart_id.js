@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from "../../../../core/static/core/js/functions.js";
+import { getCookie } from "../../../../core/static/core/js/functions.js";
 import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 const csrfToken = getCookie("csrftoken");
 

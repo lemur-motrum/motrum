@@ -48,7 +48,6 @@ function addNewClient(endpointClient, phone, pin) {
 addNewClient("/api/v1/client/login/", "89276892252", "1111");
 
 function updateClient() {
-  // const idClient = element.getAttribute("data-client-id");
   const idClient = "9";
   const endpoint = "/api/v1/client/" + idClient + "/";
   const clientAdd = document.querySelector(".client_update");
@@ -91,7 +90,6 @@ function updateClient() {
 updateClient();
 
 function addRequisites() {
-  // const idClient = element.getAttribute("data-client-id");
   const idClient = 10;
   const endpoint = "/api/v1/requisites/add/";
   const clientAdd = document.querySelector(".client_requisites");
@@ -146,7 +144,6 @@ function addRequisites() {
 addRequisites();
 
 function updateRequisites() {
-  // const idClient = element.getAttribute("data-client-id");
   const idClient = 10;
   const idRequisites = 63;
   const endpoint = "/api/v1/requisites/" + idRequisites + "/update/";
@@ -225,7 +222,6 @@ function getAllClient() {
     clientAdd.addEventListener("click", (event) => {
       const idClient = 10;
       const endpoint = "/api/v1/client-requisites/" + idClient + "/";
-      const clientAdd = document.querySelector(".client_update");
 
       let csrfToken = getCookie("csrftoken");
 

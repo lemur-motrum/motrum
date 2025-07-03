@@ -5,7 +5,6 @@ export function setCommentProductItem(el) {
     const overlay = document.querySelector(".okt_product_comment_overlay");
     const closeBtn = overlay.querySelector(".close_btn");
     const textAreaComment = overlay.querySelector(".comment_text_area");
-    const error = overlay.querySelector(".error");
     const submitBtn = overlay.querySelector(".btn");
     const commentButton = el.querySelector(".comment");
 

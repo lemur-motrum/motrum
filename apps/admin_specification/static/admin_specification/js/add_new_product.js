@@ -416,7 +416,6 @@ function addNewProductLogic(container) {
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
 
-      let counterElems = 0;
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
@@ -427,7 +426,7 @@ function addNewProductLogic(container) {
           searchProductItem.classList.remove("active");
           counterElems = 0;
         };
-        const searchButton = searchProductItem.querySelector(".search_button");
+
         const productId = searchProductItem.getAttribute("product-id");
 
         searchProductItem.onclick = () => {

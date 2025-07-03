@@ -160,7 +160,6 @@ window.addEventListener("DOMContentLoaded", () => {
           if (response.status === 200) {
             smallLoader.classList.remove("show");
             loader.classList.add("remove");
-            console.log(finish);
             return response.json();
           } else {
             setErrorModal();

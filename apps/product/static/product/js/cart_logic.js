@@ -131,9 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
               saveProductInCart();
             };
             function saveProductInCart() {
-              console.log(getCookie("cart"));
               if (!getCookie("cart")) {
-                console.log(111);
                 fetch("/api/v1/cart/add-cart/", {
                   method: "GET",
                   headers: {

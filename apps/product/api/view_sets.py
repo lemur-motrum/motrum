@@ -185,7 +185,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
        
         # поиск
-        print(queryset)
+        
         if search_text:
             queryset = serch_products_web(search_text, queryset)
             
@@ -357,7 +357,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
         
         queryset = queryset[count  : count_last ]
-        print(queryset)
+        
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
@@ -391,7 +391,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Vendor.objects.filter(
              Q(name__icontains=search_input)
         )
-        print(queryset)
+        
     
         page_count = queryset.count()
 
@@ -766,6 +766,10 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
+        product_new_name = data["product_new"]
+        if product_new_article == "" or product_new_article == " " or product_new_name == "" or product_new_name == " " :
+            data = {"status": "none_art_or_name"}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article

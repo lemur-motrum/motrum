@@ -133,7 +133,7 @@ def catalog_group(request, category):
         if search_text and search_text != "":
             print("search_text and search_text != """)
             queryset = serch_products_web(search_text, queryset)
-            print(queryset)
+            
 
         product_vendor = (
             queryset.order_by("vendor__name")

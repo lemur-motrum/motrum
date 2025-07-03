@@ -317,8 +317,9 @@ function addNewProductLogic(container) {
         function inputValidate(input) {
           if (!input.value || input.value.trim().length === 0) {
             validate = false;
-
             input.style.border = "1px solid red";
+          } else {
+            validate = true;
           }
         }
         inputValidate(nameInput);
@@ -340,15 +341,6 @@ function addNewProductLogic(container) {
           validate = true;
         }
 
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOnceInput.value &&
-          quantityInput.value &&
-          vendorSelect.getAttribute("value")
-        ) {
-          validate = true;
-        }
         if (validate == false) {
           addNewItemInCartButton.disabled = false;
           addNewItemInCartButton.innerHTML = "";

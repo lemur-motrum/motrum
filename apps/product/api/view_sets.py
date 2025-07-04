@@ -235,7 +235,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
 
         print(search_input)
@@ -326,7 +326,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
 
         print(search_input)
@@ -410,7 +410,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
         
         # q_object = Q(name__icontains=search_input[0])

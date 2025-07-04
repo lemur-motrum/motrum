@@ -2739,7 +2739,7 @@ def add_new_photo_adress_prompower():
 def serch_products_web(search_text, queryset):
     print("queryset1", queryset)
     search_input = search_text
-    search_input = search_input.replace(".", "").replace(",", "")
+    search_input = search_input.replace(",", "")
     search_input = search_input.split()
     print("search_input", search_input)
     queryset = queryset.filter(

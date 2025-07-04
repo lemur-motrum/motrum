@@ -14,7 +14,6 @@ const csrfToken = getCookie("csrftoken");
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".contacts-wrapper");
   if (wrapper) {
-    const mapWrapper = wrapper.querySelector(".map-wrapper");
     ymaps.ready(function () {
       const myMap = new ymaps.Map(
           "map",

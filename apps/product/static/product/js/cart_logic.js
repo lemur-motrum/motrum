@@ -1,7 +1,6 @@
 import {
   getCookie,
   getClosestInteger,
-  NumberParser,
   getDigitsNumber,
   getCurrentPrice,
 } from "../../../../core/static/core/js/functions.js";

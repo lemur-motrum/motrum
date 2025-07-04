@@ -2,7 +2,6 @@ import {
   showErrorValidation,
   getCookie,
   setPreloaderInButton,
-  hidePreloaderAndEnabledButton,
 } from "../../../../core/static/core/js/functions.js";
 import { setErrorModal } from "../../../../core/static/core/js/error_modal.js";
 
@@ -26,9 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
           ".current_legal_adress_region_error"
         );
         const cityInput = form.querySelector(".current_legal_adress_city");
-        const cityError = form.querySelector(
-          ".current_legal_adress_city_error"
-        );
+
         const addresOneInput = form.querySelector(
           ".current_legal_adress_adress_one"
         );
@@ -38,9 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const addressTwoInput = form.querySelector(
           ".current_legal_adress_adress_two"
         );
-        const addressTwoError = form.querySelector(
-          ".current_legal_adress_adress_two_error"
-        );
+
         const addressCountry = form.getAttribute("data-country");
         const addressId = form.getAttribute("data-address-id");
 

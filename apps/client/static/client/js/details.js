@@ -89,14 +89,9 @@ window.addEventListener("DOMContentLoaded", () => {
       const legalAdressInput = newLegalEntityForm.querySelector(
         ".legal-adress-adress"
       );
-      const newLegalEntityLegalAdressError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_legal_adress_adress_error"
-      );
+
       const legalAddressHouseInput = newLegalEntityForm.querySelector(
         ".legal-adress-adress-appartments"
-      );
-      const legalAddressHouseError = newLegalEntityForm.querySelector(
-        ".new_legal_entity_legal_adress_appartments_error"
       );
 
       const currentAccount = newLegalEntityForm.querySelector(
@@ -617,13 +612,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     legalEntities.forEach((legalEntity) => {
-      const countContainer = legalEntity.querySelector(
-        ".new_bank_detail_counter"
-      );
-      const bankDetails = legalEntity.querySelectorAll(".bank_detail");
-
-      // countContainer.textContent = bankDetails.length + 1;
-
       const btn = legalEntity.querySelector(".change_button");
       legalEntity.onmouseover = () => {
         btn.classList.add("show");

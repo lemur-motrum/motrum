@@ -14,7 +14,5 @@ window.addEventListener("DOMContentLoaded", () => {
         }, 700);
       };
     }
-
-    const footer = document.querySelector(".footer");
   }
 });

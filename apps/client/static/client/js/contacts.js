@@ -35,7 +35,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const inputLastName = changeForm.querySelector(".last-name");
         const inputLastNameError = changeForm.querySelector(".last_name_error");
         const inputJobTitle = changeForm.querySelector(".job_title-input");
-        const inputJobTitleError = changeForm.querySelector(".job_title_error");
         const inputEmail = changeForm.querySelector(".mail-input");
         const inputEmailError = changeForm.querySelector(".mail_error");
         const extraPhoneInputs =

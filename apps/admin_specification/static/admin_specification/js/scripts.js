@@ -2,7 +2,6 @@ import "../../../../core/static/core/js/slider.js";
 import {
   NumberParser,
   getCookie,
-  deleteCookie,
   getClosestInteger,
   getDigitsNumber,
   showErrorValidation,
@@ -19,16 +18,6 @@ import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
-
-// получение полной информации о товаре при наведении мыши
-function showInformation(elem) {
-  elem.onmouseover = () => {
-    elem.classList.add("show");
-  };
-  elem.onmouseout = () => {
-    elem.classList.remove("show");
-  };
-}
 
 //рендеринг цен
 function setCurrentPriceCataloItem(elems) {
@@ -48,21 +37,6 @@ function setCurrentPriceCataloItem(elems) {
       const priceValue = new NumberParser("ru").parse(supplerPrice.textContent);
       getDigitsNumber(supplerPrice, priceValue);
     }
-  });
-}
-
-// console.log("arrayDateValues", arrayDateValues);
-//логика страницы каталога
-function catalogLogic(elems) {
-  elems.forEach((catalogItem) => {
-    const productId = catalogItem.getAttribute("data-id");
-    const buttonContainer = catalogItem.querySelector(".quantity-buttons");
-    const plusButton = buttonContainer.querySelector(".plus-button");
-    const minusButton = buttonContainer.querySelector(".minus-button");
-    const addSpecificationButton = catalogItem.querySelector(
-      ".add-specification-button"
-    );
-    const countQuantityZone = buttonContainer.querySelector("input");
   });
 }
 
@@ -321,7 +295,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const valueContainer = totalPriceValueContainer.querySelector(".price");
       const marginality =
         totalPriceValueContainer.querySelector(".marginality_value");
-      const revenue = totalPriceValueContainer.querySelector(".revenue");
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
 
@@ -359,10 +332,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         console.log("sumMotrum1", sumMotrum);
         getDigitsNumber(valueContainer, +sum);
-        // getDigitsNumber(marginality, +margSum);
         getDigitsNumber(marginality, +margSum);
-        console.log("sum",sum)
-        console.log("sumMotrum",sumMotrum)
+        console.log("sum", sum);
+        console.log("sumMotrum", sumMotrum);
         allMarginalityPercent.textContent = isNaN(
           ((1 - +sumMotrum / +sum) * 100).toFixed(2)
         )
@@ -1301,7 +1273,6 @@ window.addEventListener("DOMContentLoaded", () => {
   //кнопки из битрикс
   const BxBtn = document.querySelector(".bx-btn");
   if (BxBtn) {
-    const iframe = window.frameElement;
     const BxUpd = document.querySelector(".bx-btn-upd");
     const BxHardUpd = document.querySelector(".bx-btn-hard-upd");
     const serialazer = BxBtn.getAttribute("data-serializer-order");

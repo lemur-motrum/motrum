@@ -23,7 +23,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if (productContainer) {
       const personalDiscount =
         cartContainer.querySelector(".personal_discount");
-
       let totalSumCart = 0;
       let totalSumSaleCart = 0;
       let totalSalePriceCart = 0;
@@ -73,7 +72,6 @@ window.addEventListener("DOMContentLoaded", () => {
           ".cart_price_one_no_sale"
         );
         priceOnceNoSale = priceOnceNoSale.getAttribute("data-cart-one-no-sale");
-        const priceAll = productItem.querySelector(".all_cart_price");
         const priceAllNoSale = productItem.querySelector(
           ".all_cart_no_sale_price"
         );
@@ -261,7 +259,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const submitBtn = form.querySelector(".save_cart_button");
 
       const phoneMask = IMask(phoneInput, maskOptions);
-
       const maskPinOptions = {
         mask: "0000",
         lazy: false,

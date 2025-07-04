@@ -1,7 +1,4 @@
-import {
-  showErrorValidation,
-  isEmailValid,
-} from "../functions.js";
+import { showErrorValidation, isEmailValid } from "../functions.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const contactsBtn = document.querySelector(".contacts-btn");
@@ -14,7 +11,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const nameError = modalWindow.querySelector(".name_error");
       const emailInput = modalWindow.querySelector(".mail_input");
       const emailError = modalWindow.querySelector(".mail_error");
-      const textArea = modalWindow.querySelector(".text_area");
       const submitBtn = modalWindow.querySelector(".submit_button");
 
       contactsBtn.onclick = () => {

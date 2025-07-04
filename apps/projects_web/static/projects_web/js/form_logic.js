@@ -20,7 +20,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const phoneInput = formWrapper.querySelector(".phone_input");
     const phoneError = formWrapper.querySelector(".phone_error");
     const btn = form.querySelector("button");
-
     const mask = IMask(phoneInput, maskOptions);
 
     function validate() {

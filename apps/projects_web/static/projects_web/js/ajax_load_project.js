@@ -18,7 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const paginationLastElem = pagination.querySelector(".last");
     const firstDots = pagination.querySelector(".first_dots");
     const lastDots = pagination.querySelector(".last_dots");
-    const btn = wrapper.querySelector(".add_more");
     const catalogContainer = wrapper.querySelector(
       '[project-elem="container"]'
     );

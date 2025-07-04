@@ -1,6 +1,5 @@
 import {
   getCookie,
-  deleteCookie,
   getCurrentPrice,
   getDeliveryDate,
 } from "../../../../core/static/core/js/functions.js";
@@ -73,9 +72,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .getAttribute("value");
         const commentAll = cartWrapper.querySelector(
           'textarea[name="comment-input-name-all"]'
-        ).value;
-        const dateDeliveryAll = cartWrapper.querySelector(
-          'textarea[name="delivery-date-all-input-name-all"]'
         ).value;
         const deliveryRequsits = document.querySelector(
           "[name='delevery-requisit']"

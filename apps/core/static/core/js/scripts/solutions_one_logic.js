@@ -17,10 +17,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const slider = new Swiper(".solution_one_slider", {
       slidesPerView: "auto",
     });
-
-    const palettScrollZoneContainer = wrapper.querySelector(
-      ".palett_description"
-    );
   }
 
   const formContainer = document.querySelector(".demo-form-container");

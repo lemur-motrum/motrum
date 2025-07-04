@@ -2,18 +2,14 @@
 {% load static %}
 {% load js_version %}
 <!--functions  -->
-<script type="module"
-src="{% static 'core/js/slider.js' %}"></script>
-<script type="module"
-        src="{% static 'core/js/customSelect.js' %}"></script>
-<script type="module"
-        src="{% static 'core/js/nunjucks.min.js' %}"></script>
-<script type="module"
-        src="{% static 'core/js/inputmask.js' %}"></script>
+<script type="module" src="{% static 'core/js/slider.js' %}"></script>
+<script type="module" src="{% static 'core/js/customSelect.js' %}"></script>
+<script type="module" src="{% static 'core/js/nunjucks.min.js' %}"></script>
+<script type="module" src="{% static 'core/js/inputmask.js' %}"></script>
 {% compress js %}
-<!--core  -->
-<script type="module"
-        src="{% static 'core/js/functions.js' %}?ver={% js_version %}"></script>
+        <!--core  -->
+        <script type="module"
+                src="{% static 'core/js/functions.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'admin_specification/js/scripts.js' %}?ver={% js_version %}"></script>
         <script type="module"
@@ -39,8 +35,6 @@ src="{% static 'core/js/slider.js' %}"></script>
         <script type="module"
                 src="{% static 'admin_specification/js/ajax_specification_load.js' %}?ver={% js_version %}"></script>
         <script type="module"
-                src="{% static 'admin_specification/js/sorting_by_status_order.js' %}?ver={% js_version %}"></script>
-        <script type="module"
                 src="{% static 'admin_specification/js/setCommnetToProduct.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'admin_specification/js/complete_order.js' %}?ver={% js_version %}"></script>
@@ -64,8 +58,6 @@ src="{% static 'core/js/slider.js' %}"></script>
                 src="{% static 'admin_specification/js/add_product_in_cart.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'admin_specification/js/file_downlad_to_productcart.js' %}?ver={% js_version %}"></script>
-        <script type="module"
-                src="{% static 'core/js/scripts/web.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'core/js/scripts/overlay-logic.js' %}?ver={% js_version %}"></script>
         <script type="module"
@@ -113,8 +105,6 @@ src="{% static 'core/js/slider.js' %}"></script>
         <script type="module"
                 src="{% static 'product/js/sliders.js' %}?ver={% js_version %}"></script>
         <script type="module"
-                src="{% static 'product/js/filters_logic.js' %}?ver={% js_version %}"></script>
-        <script type="module"
                 src="{% static 'product/js/ajax_load_products.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'product/js/cart_logic.js' %}?ver={% js_version %}"></script>
@@ -137,9 +127,6 @@ src="{% static 'core/js/slider.js' %}"></script>
                 src="{% static 'client/js/ajax_load_order.js' %}?ver={% js_version %}"></script>
         <script type="module"
                 src="{% static 'client/js/ajax_load_document.js' %}?ver={% js_version %}"></script>
-        <!--продукты -->
-        <script type="module"
-                src="{% static 'product/js/load_catalog_items.js' %}?ver={% js_version %}"></script>
         <!--проекты -->
         <script type="module"
                 src="{% static 'projects_web/js/ajax_load_project.js' %}?ver={% js_version %}"></script>

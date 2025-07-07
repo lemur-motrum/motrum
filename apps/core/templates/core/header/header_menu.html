@@ -4,7 +4,7 @@
 {% url 'core:about' as company_url %}
 {% url 'core:contact' as contact_url %}
 <li class="nav-elem">
-  {% if namespace == 'product' %}
+  {% if view_name == 'product:catalog' %}
     <div class="disabled-link">
       <span class="navbar_menu_item_text active">Товары</span>
       <div class="circle"></div>

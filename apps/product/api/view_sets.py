@@ -31,6 +31,7 @@ from apps.product.models import (
     Product,
     ProductCart,
     ProductProperty,
+    ProductPropertyMotrumItem,
     VendorPropertyAndMotrum,
 )
 from django.db.models import Q, F, OrderBy, Value
@@ -191,6 +192,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productproperty_set"),
                 Prefetch("productimage_set"),
                 Prefetch("productimage_set"),
+                Prefetch("productpropertymotrumitem_set"),
+               
             )
             .filter(q_object)
 
@@ -231,26 +234,56 @@ class ProductViewSet(viewsets.ModelViewSet):
         #         )
         
         # поиск по характеристикам 2  
-        for char2 in chars:
-            prop_id = char2['id']
-            values = char2['values']
-            is_diapason = char2.get('is_diapason', False)
-            if values:
-                vendor_props = VendorPropertyAndMotrum.objects.filter(
-                    property_motrum=prop_id,
-                    property_value_motrum__in=values
-                ).values_list('property_vendor_name', 'property_vendor_value')
-                if vendor_props:
-                    queryset = queryset.filter(
-                        Exists(
-                            ProductProperty.objects.filter(
-                                product=OuterRef('pk'),
-                                name__in=[vp[0] for vp in vendor_props],
-                                value__in=[vp[1] for vp in vendor_props]
-                            )
+        # for char2 in chars:
+        #     prop_id = char2['id']
+        #     values = char2['values']
+        #     is_diapason = char2.get('is_diapason', False)
+        #     if values:
+        #         vendor_props = VendorPropertyAndMotrum.objects.filter(
+        #             property_motrum=prop_id,
+        #             property_value_motrum__in=values
+        #         ).values_list('property_vendor_name', 'property_vendor_value')
+        #         if vendor_props:
+        #             queryset = queryset.filter(
+        #                 Exists(
+        #                     ProductProperty.objects.filter(
+        #                         product=OuterRef('pk'),
+        #                         name__in=[vp[0] for vp in vendor_props],
+        #                         value__in=[vp[1] for vp in vendor_props]
+        #                     )
+        #                 )
+        #             )
+        # поис по характеристикам мотрум
+        for char in chars:
+            prop_id = char['id']
+            values = char['values']
+            is_diapason = char.get('is_diapason', False)
+            if is_diapason:
+                min_value = char.get('min_value')
+                max_value = char.get('max_value')
+                print("minmax",min_value,max_value)
+                queryset = queryset.filter(
+                    Exists(
+                        ProductPropertyMotrumItem.objects.filter(
+                            product=OuterRef('pk'),
+                            property_motrum=prop_id,
+                            is_diapason=True,
+                            property_value_motrum_to_diapason__gte=min_value,
+                            property_value_motrum_to_diapason__lte=max_value
                         )
                     )
-
+                )
+            else:
+                queryset = queryset.filter(
+                    Exists(
+                        ProductPropertyMotrumItem.objects.filter(
+                            product=OuterRef('pk'),
+                            property_motrum=prop_id,
+                            property_value_motrum__in=values
+                        )
+                    )
+                )
+        
         #  поиск по тексту   
         if search_text:
             queryset = serch_products_web(search_text, queryset)

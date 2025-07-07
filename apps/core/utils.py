@@ -3435,7 +3435,6 @@ def get_props_motrum_filter_to_view(product_props):
                 {
                     "id_property_motrum": pid,
                     "name_property_motrum": row["property_motrum__name"],
-                    "property_motrum": pid,
                     "is_diapason":  is_diapason,
                 }
             )

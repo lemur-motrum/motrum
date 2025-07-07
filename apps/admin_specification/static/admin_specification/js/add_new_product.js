@@ -99,7 +99,6 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("ff ff ff");
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -312,50 +311,37 @@ function addNewProductLogic(container) {
       }
       changeTotalCost(priceOnceInput, quantityInput);
       changeTotalCost(quantityInput, priceOnceInput);
-      let validate = true;
       addNewItemInCartButton.onclick = () => {
-        setPreloaderInButton(addNewItemInCartButton);
+        let addNewItemInCartButtonValidate = true;
         function inputValidate(input) {
-          if (!input.value) {
-            validate = false;
+          if (!input.value || input.value.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
             input.style.border = "1px solid red";
           }
         }
+        setPreloaderInButton(addNewItemInCartButton);
+        if (!vendorSelectToggle.getAttribute("value")) {
+          addNewItemInCartButtonValidate = false;
+          vendorSelectToggle.style.borderColor = "red";
+        }
+
+        if (!supplierSelectToggle.getAttribute("value")) {
+          addNewItemInCartButtonValidate = false;
+          supplierSelectToggle.style.borderColor = "red";
+        }
+
         inputValidate(nameInput);
         inputValidate(articleInput);
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
 
-        if (!vendorSelectToggle.getAttribute("value")) {
-          validate = false;
-          vendorSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (!supplierSelectToggle.getAttribute("value")) {
-          validate = false;
-          supplierSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOnceInput.value &&
-          quantityInput.value &&
-          vendorSelect.getAttribute("value")
-        ) {
-          validate = true;
-        }
-        if (validate == false) {
+        if (addNewItemInCartButtonValidate == false) {
           addNewItemInCartButton.disabled = false;
           addNewItemInCartButton.innerHTML = "";
           addNewItemInCartButton.textContent = "Добавить товар";
         }
 
-        if (validate === true) {
+        if (addNewItemInCartButtonValidate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {
             product: null,
@@ -416,7 +402,6 @@ function addNewProductLogic(container) {
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
 
-      let counterElems = 0;
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
@@ -427,7 +412,7 @@ function addNewProductLogic(container) {
           searchProductItem.classList.remove("active");
           counterElems = 0;
         };
-        const searchButton = searchProductItem.querySelector(".search_button");
+
         const productId = searchProductItem.getAttribute("product-id");
 
         searchProductItem.onclick = () => {

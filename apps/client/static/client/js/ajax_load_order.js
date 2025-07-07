@@ -54,7 +54,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
             if (paginationElems[1].textContent == "") {
@@ -74,7 +73,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         if (pageCount >= lastPage - 2) {
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           if (pageCount >= lastPage - 1) {
@@ -122,7 +120,6 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           smallLoader.classList.remove("show");
           lastPage = +data.count;
-          console.log(lastPage);
           const paginationArray = [];
           paginationLastElem.textContent = `${lastPage}`;
 

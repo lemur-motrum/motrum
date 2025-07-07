@@ -43,7 +43,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const options = select.querySelectorAll(".itc-select__options");
 
       options.forEach((el) => {
-        console.log(222222222222222222222222)
         el.onclick = () => {
           setTimeout(() => {
             select.classList.remove("itc-select_show");
@@ -147,7 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
       changeButton.onclick = () => {
         setPreloaderInButton(changeButton);
         function validate(input) {
-          if (!input.value) {
+          if (!input.value || input.value.trim().length === 0) {
             input.style.border = "0.063rem solid red";
             hidePreloaderAndEnabledButton(changeButton);
           }

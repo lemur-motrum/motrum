@@ -5,7 +5,7 @@ export function changeDateInOrder(container) {
       const calendar = specificationItem.querySelector(".delivery_date");
       const supplierUnit = specificationItem.querySelector(".supplier_unit");
       const motrumUnit = specificationItem.querySelector(".motrum_unit");
-      
+
       if (calendar && supplierUnit && motrumUnit && calendar.value === "") {
         const quantityInput =
           specificationItem.querySelector(".input-quantity");
@@ -13,7 +13,6 @@ export function changeDateInOrder(container) {
           const currentDate = new Date();
           currentDate.setDate(currentDate.getDate() + day);
           const date = currentDate.toISOString().slice(0, 10);
-          console.log(date);
           return date;
         };
         const getDateInCalendar = () => {

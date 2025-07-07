@@ -107,6 +107,22 @@ class ProductForm(forms.ModelForm):
                 }
             ),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
+
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
 
 class DocumentForm(forms.ModelForm):
@@ -247,6 +263,22 @@ class ProductChangeForm(forms.ModelForm):
                 }
             ),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
+
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
     # def __init__(self, *args, **kwargs):
     #     super(ProductChangeForm, self).__init__(*args, **kwargs)
@@ -388,7 +420,22 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
                 # self.fields[verbose_name].widget.attrs = {
                 #     "style": "border: 1px solid red;",
                 # }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
 
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
 class ProductDocumentAdminForm(forms.ModelForm):
     document = forms.ClearableFileInput()

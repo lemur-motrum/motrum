@@ -39,7 +39,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const array = file["name"].split(".");
       const fileName = array[0];
       const fileType = array.at(-1);
-      console.log("fileType", fileType);
       fileLabelDescription.textContent = truncate(fileName, 8) + "." + fileType;
     });
 

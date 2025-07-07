@@ -296,7 +296,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
 
       
@@ -387,7 +387,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
 
         print(search_input)
@@ -471,7 +471,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         count = data["count"]
         count_last = data["count_last"]
         search_input = data["search_text"]
-        search_input = search_input.replace(".", "").replace(",", "")
+        search_input = search_input.replace(",", "")
         search_input = search_input.split()
         
         # q_object = Q(name__icontains=search_input[0])
@@ -827,6 +827,10 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
+        product_new_name = data["product_new"]
+        if product_new_article == "" or product_new_article == " " or product_new_name == "" or product_new_name == " " :
+            data = {"status": "none_art_or_name"}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         try:
             product_okt = Product.objects.get(
                 vendor_id=data["vendor"], article_supplier=product_new_article

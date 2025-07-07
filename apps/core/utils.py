@@ -2914,7 +2914,7 @@ def email_manager_after_new_order_site(order):
         e = error_alert(error, location, info)
         return ("error", info)
 
-
+# Пропсы мотрум
 def props_motrum_compound_props_prod():
     from apps.product.models import (
         ProductPropertyMotrum,
@@ -3117,6 +3117,10 @@ def add_motrum_props_to_prod_prop():
             for props2 in props_prod2:
                 new_item = PropertyItemAndMotrum.objects.create(product_props=props2, vendor_property_motrum=props_compound)
 
+# получение сочетания пропсов постовщиков и пропсов мотрум из документа
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ
 # фильтр в шаблон если у одного значение пропсов товара только ожно значение пропсов мотрум           
 def get_props_motrum_filter(product_props):
    
@@ -3406,3 +3410,128 @@ def get_props_all_motrum_filter3(product_props_3):
                     chars_motrum_dict[key]['max_value'] = max(diapason_values)
     chars_motrum = list(chars_motrum_dict.values())
     return chars_motrum
+
+def get_props_motrum_filter_to_view(product_props):
+   
+    from apps.product.models import  ProductPropertyMotrum
+    # Характеристики дял фильтрации
+    all_values = product_props.values(
+        "property_motrum",
+        "property_motrum__name",
+        "property_value_motrum__id",
+        "property_value_motrum__value",
+        "property_motrum__is_diapason",
+        "property_value_motrum_to_diapason"
+        
+    ).distinct()
+    
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["property_motrum__is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "property_motrum": pid,
+                    "is_diapason":  is_diapason,
+                }
+            )
+            # Добавляем ключ gabarit для нужных характеристик
+            if row["property_motrum__name"] in ["Высота M", "Ширина M"]:
+                chars_dict[pid]["gabarit"] = True
+            else:
+                chars_dict[pid]["gabarit"] = False
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["property_value_motrum_to_diapason"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+            
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            chars_dict[pid]["values"].append(
+                {
+                    "id": row["property_value_motrum__id"],
+                    "value": row["property_value_motrum__value"],
+                }
+            )
+            
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    chars = list(chars_dict.values())
+    # Сортировка по article ProductPropertyMotrum
+    chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
+    # Попробуем получить порядок из ProductPropertyMotrum
+    article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
+    chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    print("chars",chars)
+    
+    return chars
+    # поиск в товарах для него поиск по характеристикам для варианта с точны одним значением 
+        # for char in chars:
+        #     prop_id = char['id']
+        #     values = char['values']
+        #     is_diapason = char.get('is_diapason', False)
+        #     if is_diapason:
+        #         min_value = char.get('min_value')
+        #         max_value = char.get('max_value')
+        #         print("minmax",min_value,max_value)
+        #         queryset = queryset.filter(
+        #             Exists(
+        #                 ProductProperty.objects.annotate(
+        #                     value_float=Cast('value', FloatField())
+        #                 ).filter(
+        #                     product=OuterRef('pk'),
+        #                     property_motrum=prop_id,
+        #                     is_diapason=True,
+        #                     value_float__gte=min_value,
+        #                     value_float__lte=max_value
+        #                 )
+        #             )
+        #         )
+        #     else:
+        #         queryset = queryset.filter(
+        #             Exists(
+        #                 ProductProperty.objects.filter(
+        #                     product=OuterRef('pk'),
+        #                     property_motrum=prop_id,
+        #                     property_value_motrum__in=values
+        #                 )
+        #             )
+        #         )
+    # макет для него 
+    # {% if chars %}
+    #                 <div class="filter_elem chars_filter_elem">
+                        
+    #                     <div class="chars_content">
+    #                         {% for char in chars %}
+    #                             <div class="char_block">
+    #                                 <div class="filter_title">{{ char.name_property_motrum }}</div>
+    #                                 <div class="char_values">
+    #                                     <!-- Для диапазонного значение -->
+    #                                     {% if char.is_diapason %}
+    #                                     <div class="" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">
+    #                                         {{char.min_value }}
+    #                                         {{char.max_value }}
+    #                                     </div>
+                                            
+    #                                     {% else %}
+    #                                     <!-- Для  значениz c вариантами -->
+    #                                         {% for value in char.values %}
+    #                                             <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
+    #                                         {% endfor %}
+    #                                     {% endif %}
+                                        
+    #                                 </div>
+    #                             </div>
+    #                         {% endfor %}
+    #                     </div>
+    #                 </div>
+    #                 {% endif %}

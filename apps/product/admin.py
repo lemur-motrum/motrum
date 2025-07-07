@@ -28,6 +28,7 @@ from apps.product.forms import (
     ProductDocumentAdminForm,
     ProductForm,
     ProductPropertyForm,
+    ProductPropertyMotrumItemForm,
 )
 from apps.product.models import (
     CategoryProduct,
@@ -38,6 +39,7 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrumItem,
     Stock,
     ProductPropertyValueMotrum,
     ProductPropertyMotrum
@@ -550,9 +552,9 @@ class ProductDocumentInline(admin.TabularInline):
         return qs.filter(hide=False)
 
 
-class ProductPropertyInline(admin.StackedInline):
+class ProductPropertyInline(admin.TabularInline):
     model = ProductProperty
-    fields = ("name", "value","property_motrum","property_value_motrum", "hide")
+    fields = ("name", "value", "hide")
     extra = 0
 
     def __init__(self, *args, **kwargs):
@@ -563,10 +565,22 @@ class ProductPropertyInline(admin.StackedInline):
         qs = super().get_queryset(request)
 
         return qs.filter(hide=False)
-    def get_form(self, request, obj, **kwargs):
-        kwargs["form"] = ProductPropertyForm
-        return super().get_form(request, obj, **kwargs)
 
+class ProductPropertyMotrumItemInline(admin.TabularInline):
+    model = ProductPropertyMotrumItem
+    form = ProductPropertyMotrumItemForm
+    fields = ("property_motrum", "property_value_motrum", "is_diapason","property_value_motrum_to_diapason")
+    extra = 0
+
+    
+
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+
+    #     return qs.filter(hide=False)
+   
+
+   
 @admin.action(description="Добавить документы для выбранных товаров")
 def add_documents(ProductAdmin, request, queryset):
     from django.http import HttpResponseRedirect
@@ -615,8 +629,10 @@ class ProductAdmin(SimpleHistoryAdmin):
         PriceInline,
         StockInline,
         ProductPropertyInline,
+        ProductPropertyMotrumItemInline,
         ProductImageInline,
         ProductDocumentInline,
+        
     ]
 
     fieldsets = [
@@ -1201,7 +1217,8 @@ class ProductPropertyValueMotrum(admin.TabularInline):
 class ProductPropertyMotrumAdmin(admin.ModelAdmin):
     fields = (
         "name",
-        "article"
+        "article",
+        'is_diapason',
     )
     inlines = [
         ProductPropertyValueMotrum,

@@ -1181,6 +1181,27 @@ class ProductPropertyMotrumItem(models.Model):
         null=True,
     )
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    property_value_motrum_to_diapason = models.FloatField(
+        "Значение для диапазона",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    is_have_vendor_props = models.BooleanField("Есть ли такая хорка в хорках поставщика", default=False)
+
+    class Meta:
+        verbose_name = (
+            "Характеристика мотрум"
+        )
+        verbose_name_plural = (
+            "Характеристики мотрум"
+        )
+
+    def __str__(self):
+        if self.is_diapason:
+          return f"{self.property_motrum} {self.property_value_motrum_to_diapason}"
+        else:
+            return f"{self.property_motrum} {self.property_value_motrum}"
 
 
 

@@ -10,7 +10,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, serch_products_web
+from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, get_props_motrum_filter_to_view, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -21,6 +21,7 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     ProductPropertyMotrum,
+    ProductPropertyMotrumItem,
     ProductPropertyValueMotrum,
     Stock,
     VendorPropertyAndMotrum,
@@ -264,11 +265,11 @@ def products_items(request, category, group):
     
     print("*************************************")
     # Новая логика для chars_motrum
-    product_props_2 = ProductProperty.objects.filter(
-            is_property_motrum=True, product__in=product
-        ).values(
-            "name", "product__supplier","value","is_diapason"
-        ).distinct()
+    # product_props_2 = ProductProperty.objects.filter(
+    #         is_property_motrum=True, product__in=product
+    #     ).values(
+    #         "name", "product__supplier","value","is_diapason"
+    #     ).distinct()
     
     # product_props_2_diapason = ProductProperty.objects.filter(
     #         is_property_motrum=True, product__in=product
@@ -319,11 +320,17 @@ def products_items(request, category, group):
     # chars_motrum = get_props_all_motrum_filter(product_props_2)
     
     
-    product_props_3 = ProductProperty.objects.filter(
-            is_property_motrum=True, product__in=product
-        )
+    # product_props_3 = ProductProperty.objects.filter(
+    #         is_property_motrum=True, product__in=product
+    #     )
  
-    chars_motrum = get_props_all_motrum_filter3(product_props_3)
+    # chars_motrum = get_props_all_motrum_filter3(product_props_3)
+    
+    product_props_motrum = ProductPropertyMotrumItem.objects.filter( product__in=product
+        )
+    print(product_props_motrum)
+    chars_motrum =[]
+    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
     
     
     current_category = CategoryProduct.objects.get(slug=category)

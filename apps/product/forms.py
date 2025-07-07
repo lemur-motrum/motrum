@@ -14,6 +14,7 @@ from apps.product.models import (
     ProductPropertyMotrum,
     ProductPropertyValueMotrum,
     Stock,
+    ProductPropertyMotrumItem,
 )
 from apps.specification.models import ProductSpecification
 from apps.supplier.models import (
@@ -476,3 +477,17 @@ class ProductPropertyForm(forms.ModelForm):
     class Meta:
         model = ProductProperty
         fields = "__all__"
+
+
+class ProductPropertyMotrumItemForm(forms.ModelForm):
+    class Meta:
+        model = ProductPropertyMotrumItem
+        fields = '__all__'
+        widgets = {
+            # 'property_motrum': autocomplete.ModelSelect2(
+            #     url='product:property_motrum-autocomplete'
+            # ),
+            'property_value_motrum': autocomplete.ModelSelect2(
+                url='product:property_value_motrum-autocomplete', forward=["property_motrum"]
+            ),
+        }

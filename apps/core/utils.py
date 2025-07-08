@@ -3447,7 +3447,7 @@ def get_props_motrum_filter_to_view(product_props):
                 }
             )
             # Добавляем ключ gabarit для нужных характеристик
-            if row["property_motrum__name"] in ["Высота M", "Ширина M"]:
+            if row["property_motrum__name"] in ["Высота (мм)", "Ширина (мм)","Глубина (мм)"]:
                 chars_dict[pid]["gabarit"] = True
             else:
                 chars_dict[pid]["gabarit"] = False
@@ -3473,11 +3473,9 @@ def get_props_motrum_filter_to_view(product_props):
             chars_dict[pid]["min_value"] = min(values)
             chars_dict[pid]["max_value"] = max(values)
     chars = list(chars_dict.values())
-    # Сортировка по article ProductPropertyMotrum
-    chars.sort(key=lambda x: (x.get('id_property_motrum') is None, x.get('id_property_motrum')))
-    # Попробуем получить порядок из ProductPropertyMotrum
+    # Сортировка: сначала обычные, потом габариты, внутри — по article
     article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
-    chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    chars.sort(key=lambda x: (x.get("gabarit", False), article_map.get(x['id_property_motrum'], 9999)))
     # Сортировка значений внутри каждого фильтра по числовому значению
     for char in chars:
         try:

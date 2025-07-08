@@ -2916,213 +2916,8 @@ def email_manager_after_new_order_site(order):
         e = error_alert(error, location, info)
         return ("error", info)
 
-# Пропсы мотрум
-def props_motrum_compound_props_prod():
-    from apps.product.models import (
-        ProductPropertyMotrum,
-        ProductPropertyValueMotrum,
-        VendorPropertyAndMotrum,
-    )
-    from apps.supplier.models import Supplier
 
-    # тут получение документа с сочетанием свойств
-    data = [
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "1",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "1ф",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "1",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "1",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "1",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "1ф / 3ф",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "3",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "1ф / 3ф",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "3",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "3ф",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "3",
-            "supplier": "prompower",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "3",
-        },
-        {
-            "name_motrum": "Количество фаз Мотрум",
-            "value_motrum": "3",
-            "supplier": "iek",
-            "name_supplier": "Количество фаз",
-            "value_supplier": "3",
-        },
-        {
-            "name_motrum": "Напряжение питания Мотрум",
-            "value_motrum": "220",
-            "supplier": "prompower",
-            "name_supplier": "Напряжение питания (В)",
-            "value_supplier": "220",
-        },
-        {
-            "name_motrum": "Напряжение питания Мотрум",
-            "value_motrum": "380",
-            "supplier": "prompower",
-            "name_supplier": "Напряжение питания (В)",
-            "value_supplier": "380",
-        },
-        {
-            "name_motrum": "Высота",
-            "value_motrum": "диапазон",
-            "supplier": "prompower",
-            "name_supplier": "Высота (мм)",
-            "value_supplier": "диапазон",
-        },
-        {
-            "name_motrum": "Ширина мотрум",
-            "value_motrum": "диапазон",
-            "supplier": "prompower",
-            "name_supplier": "Ширина (мм)",
-            "value_supplier": "диапазон",
-        },
-        {
-            "name_motrum": "Ширина мотрум",
-            "value_motrum": "диапазон",
-            "supplier": "iek",
-            "name_supplier": "Ширина мм",
-            "value_supplier": "диапазон",
-        },
-        {
-            "name_motrum": "Мощность в тяжелом режиме Мотрум",
-            "value_motrum": "7.5",
-            "supplier": "prompower",
-            "name_supplier": "Мощность в тяжелом режиме (кВт)",
-            "value_supplier": "7,5",
-        },
-        {
-            "name_motrum": "Мощность в тяжелом режиме Мотрум",
-            "value_motrum": "0.75",
-            "supplier": "prompower",
-            "name_supplier": "Мощность в тяжелом режиме (кВт)",
-            "value_supplier": "0,75",
-        },
-    ]
-
-    for item in data:
-        name_motrum = item["name_motrum"]
-        value_motrum = item["value_motrum"]
-        supplier = item["supplier"]
-        name_supplier = item["name_supplier"]
-        value_supplier = item["value_supplier"]
-        supplier_obj = Supplier.objects.get(slug=supplier)
-        prod_prop_motrum, created = ProductPropertyMotrum.objects.get_or_create(
-            name=name_motrum
-        )
-        prod_prop_value_motrum, created = (
-            ProductPropertyValueMotrum.objects.get_or_create(
-                property_motrum=prod_prop_motrum, value=value_motrum
-            )
-        )
-        if value_motrum == "диапазон":
-            prod_prop_value_motrum.is_diapason = True
-            prod_prop_value_motrum.save()
-
-        obj, created = VendorPropertyAndMotrum.objects.get_or_create(
-            supplier=supplier_obj,
-            property_motrum=prod_prop_motrum,
-            property_value_motrum=prod_prop_value_motrum,
-            property_vendor_name=name_supplier,
-            property_vendor_value=value_supplier,
-        )
-        if value_motrum == "диапазон":
-            obj.is_diapason = True
-            obj.save()
-
-        print(obj)
-
-
-def add_motrum_props_to_prod_prop():
-    from apps.product.models import (
-        ProductPropertyMotrum,
-        ProductPropertyValueMotrum,
-        VendorPropertyAndMotrum,
-        ProductProperty,
-        PropertyItemAndMotrum,
-    )
-
-    props_compounds = VendorPropertyAndMotrum.objects.all()
-    for  props_compound in props_compounds:
-        print(props_compound)
-        supplier = props_compound.supplier
-        vendor = props_compound.vendor
-        property_vendor_name = props_compound.property_vendor_name
-        property_vendor_value = props_compound.property_vendor_value
-        property_value_motrum = props_compound.property_value_motrum
-        is_diapason = props_compound.is_diapason
-        
-        
-        if is_diapason:
-            props_prod = ProductProperty.objects.filter(
-                product__supplier=supplier,
-                name=property_vendor_name,
-            ).update(
-                vendor_property_motrum=props_compound,
-                property_motrum=props_compound.property_motrum,
-                is_diapason=True,
-                is_property_motrum=True
-            )
-            print(props_prod)
-            props_prod1 = ProductProperty.objects.filter(
-                product__supplier=supplier,
-                name=property_vendor_name,
-            
-            ) 
-            for props1 in props_prod1:
-                new_item = PropertyItemAndMotrum.objects.create(product_props=props1, vendor_property_motrum=props_compound)
-
-        else:
-            props_prod = ProductProperty.objects.filter(
-                product__supplier=supplier,
-                name=property_vendor_name,
-                value=property_vendor_value,
-            ).update(
-                vendor_property_motrum=props_compound,
-                is_property_motrum=True
-                # property_motrum=props_compound.property_motrum,
-                # property_value_motrum=props_compound.property_value_motrum,
-            )
-            print(props_prod)
-            props_prod2 = ProductProperty.objects.filter(
-                product__supplier=supplier,
-                name=property_vendor_name,
-                value=property_vendor_value,
-            ) 
-            for props2 in props_prod2:
-                new_item = PropertyItemAndMotrum.objects.create(product_props=props2, vendor_property_motrum=props_compound)
-
-# получение сочетания пропсов постовщиков и пропсов мотрум из документа
-
-
-# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
 # фильтр в шаблон если у одного значение пропсов товара только ожно значение пропсов мотрум           
 def get_props_motrum_filter(product_props):
    
@@ -3249,7 +3044,7 @@ def get_props_motrum_filter(product_props):
     #                 </div>
     #                 {% endif %}
 
-     
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем     
 def get_props_all_motrum_filter(product_props_2):
     from apps.product.models import (
         TYPE_DOCUMENT,
@@ -3346,7 +3141,7 @@ def get_props_all_motrum_filter(product_props_2):
     print("vendor_props_conditions (все условия):", vendor_props_conditions)
     return chars_motrum
 
-     
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем     
 def get_props_all_motrum_filter3(product_props_3):
     from apps.product.models import (
         ProductPropertyMotrum,
@@ -3419,6 +3214,9 @@ def get_props_all_motrum_filter3(product_props_3):
     chars_motrum = list(chars_motrum_dict.values())
     return chars_motrum
 
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -ИСПОЛЬЗУЕМ
 def get_props_motrum_filter_to_view(product_props):
    
     from apps.product.models import  ProductPropertyMotrum

@@ -893,27 +893,7 @@ class ProductProperty(models.Model):
     value = models.CharField("Значение", max_length=600)
     unit_measure = models.CharField("Короткое имя значения", max_length=600, null=True)
     hide = models.BooleanField("Удалить", default=False)
-    # vendor_property_motrum = models.ForeignKey(
-    #     "VendorPropertyAndMotrum",
-    #     on_delete=CASCADE,
-    #     blank=True,
-    #     null=True,
-    #     default=None,
-    # )
-    # property_motrum = models.ForeignKey(
-    #     "ProductPropertyMotrum",
-    #     on_delete=CASCADE,
-    #     blank=True,
-    #     null=True,
-    # )
-    # property_value_motrum = models.ForeignKey(
-    #     "ProductPropertyValueMotrum",
-    #     on_delete=CASCADE,
-    #     blank=True,
-    #     null=True,
-    # )
-    # is_diapason = models.BooleanField("Диапазонное значение", default=False)
-    # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
+
     history = HistoricalRecords()
 
     class Meta:
@@ -924,11 +904,35 @@ class ProductProperty(models.Model):
         return f"{self.name}:{self.value}"
 
     def save(self, *args, **kwargs):
-        if self.value == "true" or self.value == "True":
+        if self.value == "true" or self.value == "True" or self.value == True :
             self.value == "Да"
 
-        if self.value == "false" or self.value == "False":
+        if self.value == "false" or self.value == "False" or self.value == False :
             self.value == "Нет"
+        
+        # Получение х-к мотрум  
+        obj= VendorPropertyAndMotrum.objects.filter(
+        supplier=self.product.supplier,
+        property_vendor_name=self.name,
+        property_vendor_value=self.value,
+    )
+        if obj:
+            for ob in obj:
+                if ob.is_diapason:
+                    value_diapason = self.value
+                else:
+                    value_diapason = None
+                    
+                prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                    product=self.product,
+                    property_motrum=ob.property_motrum,
+                    property_value_motrum=ob.property_value_motrum,
+                    is_diapason=ob.is_diapason,
+                    is_have_vendor_props=True,
+                    property_value_motrum_to_diapason=value_diapason
+                )
+                print("*********")
+                print(prop_motrum, created )
         super().save(*args, **kwargs)
 
 

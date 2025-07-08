@@ -122,7 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
     let chars = [
-      { id: 137, values: [1148], is_diapason:false, min_value:0, max_value:0 }, 
+      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 }, 
       // { id: 141, values: [1167], is_diapason:false, min_value:0, max_value:0 },
       // { id: 143, values: null, is_diapason:true, min_value:800, max_value:800}
     ]

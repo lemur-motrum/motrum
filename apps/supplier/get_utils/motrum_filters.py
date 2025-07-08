@@ -20,18 +20,7 @@ from project.settings import MEDIA_ROOT
 
 
 def xlsx_props_motrum():
-    # input_path = f"{MEDIA_ROOT}/documents/filter/filter_comma.xlsx"
-    # output_path = f'{MEDIA_ROOT}/documents/filter/filter_comma2.xlsx'
-    # wb = openpyxl.load_workbook(input_path)
-    # ws = wb.active
 
-    # for row in ws.iter_rows(min_row=2, min_col=1, max_col=8):
-    #     for cell in row:
-    #         if cell.value is not None:
-    #             cell.value = str(cell.value)
-    #             cell.number_format = '@'  # формат "Текст"
-    # wb.save(output_path)
-    # print(1)
     
     try:
         print(2)
@@ -347,37 +336,37 @@ def xlsx_props_motrum_pandas():
                         else:
                             is_article = False
                         print(type_save)
-                        # if type_save == "normal" and name_supplier and value_supplier != "-":
-                        #     prod_prop_motrum, prod_prop_value_motrum = create_motrum_props(
-                        #         name_motrum, value_motrum, is_diapason
-                        #     )
-                        #     vendor_property_and_motrum, created = create_motrum_props_and_vendor(
-                        #         supplier_sheets,
-                        #         None,
-                        #         prod_prop_motrum,
-                        #         prod_prop_value_motrum,
-                        #         name_supplier,
-                        #         value_supplier,
-                        #         is_diapason,
-                        #     )
-                        #     serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier_sheets)
-                        # if type_save == "multi":
-                        #     val = value_motrum.split("||")
-                        #     for val_item in val:
-                        #         val_item = val_item.strip()
-                        #         prod_prop_motrum, prod_prop_value_motrum = create_motrum_props(
-                        #             name_motrum, val_item, is_diapason
-                        #         )
-                        #         vendor_property_and_motrum, created = create_motrum_props_and_vendor(
-                        #             supplier_sheets,
-                        #             None,
-                        #             prod_prop_motrum,
-                        #             prod_prop_value_motrum,
-                        #             name_supplier,
-                        #             val_item,
-                        #             is_diapason,
-                        #         )
-                        #         serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier_sheets)
+                        if type_save == "normal" and name_supplier and value_supplier != "-":
+                            prod_prop_motrum, prod_prop_value_motrum = create_motrum_props(
+                                name_motrum, value_motrum, is_diapason
+                            )
+                            vendor_property_and_motrum, created = create_motrum_props_and_vendor(
+                                supplier_sheets,
+                                None,
+                                prod_prop_motrum,
+                                prod_prop_value_motrum,
+                                name_supplier,
+                                value_supplier,
+                                is_diapason,
+                            )
+                            serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier_sheets)
+                        if type_save == "multi":
+                            val = value_motrum.split("||")
+                            for val_item in val:
+                                val_item = val_item.strip()
+                                prod_prop_motrum, prod_prop_value_motrum = create_motrum_props(
+                                    name_motrum, val_item, is_diapason
+                                )
+                                vendor_property_and_motrum, created = create_motrum_props_and_vendor(
+                                    supplier_sheets,
+                                    None,
+                                    prod_prop_motrum,
+                                    prod_prop_value_motrum,
+                                    name_supplier,
+                                    val_item,
+                                    is_diapason,
+                                )
+                                serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier_sheets)
                         
                         if type_save == "article":
                             prod_prop_motrum, prod_prop_value_motrum = create_motrum_props(

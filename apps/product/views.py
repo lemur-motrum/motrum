@@ -354,12 +354,18 @@ def product_one_without_group(request, category, article):
     product_document = product_document.exclude(id__in=id_ex)
 
     # Формируем all_properties
+    # 1. Обычные характеристики
     properties = list(product.productproperty_set.filter(hide=False).values("name", "value", "unit_measure"))
+    # 2. Мотрум-характеристики без vendor_props, сгруппированные по названию
     motrum_items = ProductPropertyMotrumItem.objects.select_related('property_motrum', 'property_value_motrum').filter(product=product, is_have_vendor_props=False)
     motrum_grouped = {}
     for item in motrum_items:
         name = item.property_motrum.name if item.property_motrum else None
-        value = item.property_value_motrum.value if item.property_value_motrum else None
+        if item.is_diapason:
+            diapason_value = item.property_value_motrum_to_diapason
+            value = str(diapason_value) if diapason_value is not None else None
+        else:
+            value = item.property_value_motrum.value if item.property_value_motrum else None
         if name:
             if name not in motrum_grouped:
                 motrum_grouped[name] = []
@@ -369,6 +375,7 @@ def product_one_without_group(request, category, article):
         "properties": properties,
         "motrum": motrum_grouped,
     }
+    
 
     context = {
         "product": product,

@@ -56,9 +56,15 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
-from apps.supplier.get_utils.motrum_filters import xlsx_props_motrum, xlsx_props_motrum_pandas
+from apps.supplier.get_utils.motrum_filters import (
+    xlsx_props_motrum,
+    xlsx_props_motrum_pandas,
+)
 from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
-from apps.supplier.get_utils.unimat_pp import export_unimat_prod_for_1c, unimat_prompower_api
+from apps.supplier.get_utils.unimat_pp import (
+    export_unimat_prod_for_1c,
+    unimat_prompower_api,
+)
 from dal import autocomplete
 from django.db.models import Q
 
@@ -73,7 +79,6 @@ from apps.core.tasks import (
     update_currency_price,
 )
 from apps.core.utils import (
-    add_motrum_props_to_prod_prop,
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
@@ -81,7 +86,6 @@ from apps.core.utils import (
     get_category_prompower,
     image_error_check,
     product_cart_in_file,
-    props_motrum_compound_props_prod,
     save_file_product,
     send_requests,
     vendor_delta_optimus_after_load,
@@ -113,10 +117,18 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
     nomek_test_2,
 )
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
-from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, prompower_api
+from apps.supplier.get_utils.prompower import (
+    export_prompower_prod_for_1c,
+    prompower_api,
+)
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
+from apps.supplier.models import (
+    Supplier,
+    SupplierCategoryProductAll,
+    SupplierPromoGroupe,
+    Vendor,
+)
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -146,25 +158,35 @@ def add_iek(request):
     # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    
-   
+
     # v = VendorPropertyAndMotrum.objects.all()
     # for vd in v:
-        
+
     #     vendor = vd.vendor
     #     property_vendor_name = vd.property_vendor_name
     #     property_vendor_value = vd.property_vendor_value
     #     f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
     #     print(f)
-    
-    xlsx_props_motrum_pandas()
+
     # p=ProductProperty.objects.filter(name="Макс мощность двигателя ND-реж перем нагрузки кВт",value=375)
     # for t in p:
     #     print(t.product.article_supplier)
+
+    prod = Product.objects.get(article="0011")
+    property_product = ProductProperty(
+        product=prod,
+        name="Количество фаз",
+        value="1ф",
+    )
+    property_product.save()
+    update_change_reason(property_product, "Автоматическое")
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 def prompower_prod_for_1c(request):
     def background_task():
         # Долгосрочная фоновая задача
@@ -173,11 +195,13 @@ def prompower_prod_for_1c(request):
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 def unimat_prod_for_1c(request):
     def background_task():
         # Долгосрочная фоновая задача
@@ -187,11 +211,13 @@ def unimat_prod_for_1c(request):
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 # тестовая страница скриптов
 def test(request):
     def background_task():
@@ -270,10 +296,11 @@ def add_stage_bx(request):
 # def add_admin_okt(request):
 #     get_manager()
 
+
 def add_props_motrum(request):
-  
+
     xlsx_props_motrum_pandas()
-  
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
@@ -321,11 +348,9 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
         vendor = self.forwarded.get("vendor", None)
         if vendor:
             qs = qs.filter(vendor=vendor)
-            
+
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
 
 
@@ -435,7 +460,7 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
-    
+
 
 class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
 
@@ -446,15 +471,14 @@ class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(supplier=supplier)
 
         vendor = self.forwarded.get("vendor", None)
-        
+
         if vendor:
             qs = qs.filter(vendor=vendor)
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
-    
+
+
 class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
@@ -464,14 +488,10 @@ class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(supplier=supplier)
 
         vendor = self.forwarded.get("vendor", None)
-        print("vendor",vendor)
+        print("vendor", vendor)
         if vendor:
             qs = qs.filter(vendor=vendor)
-            
+
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
-
-

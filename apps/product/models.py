@@ -919,7 +919,15 @@ class ProductProperty(models.Model):
         if obj:
             for ob in obj:
                 if ob.is_diapason:
-                    value_diapason = self.value
+                    def extract_first_number(value):
+                        if isinstance(value, (int, float)):
+                            return value
+                        if isinstance(value, str):
+                            match = re.search(r'\d+(\.\d+)?', value)
+                            if match:
+                                return float(match.group())
+                    value = extract_first_number(self.value)
+                    value_diapason = value
                 else:
                     value_diapason = None
                     

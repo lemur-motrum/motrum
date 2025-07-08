@@ -3310,15 +3310,23 @@ def serch_props_prod_and_add_motrum_props_diapason(vendor_property_and_motrum,su
     from apps.product.models import ProductProperty,ProductPropertyMotrumItem
     print("serch_props_prod_and_add_motrum_props_diapason",vendor_property_and_motrum)
     props = ProductProperty.objects.filter(product__supplier=supplier,name=vendor_property_and_motrum.property_vendor_name)
-    
+    def extract_first_number(value):
+       if isinstance(value, (int, float)):
+           return value
+       if isinstance(value, str):
+           match = re.search(r'\d+(\.\d+)?', value)
+           if match:
+               return float(match.group())
+           
     for prop in props:
         
         if prop.value != "" or  prop.value != " ":
+            value = extract_first_number(prop.value)
             prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
                 product=prop.product,
                 property_motrum=vendor_property_and_motrum.property_motrum,
                 is_diapason=True,
-                property_value_motrum_to_diapason=prop.value,
+                property_value_motrum_to_diapason=value,
                 is_have_vendor_props=True
             )
             print("****_diapason*****")

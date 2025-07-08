@@ -1,5 +1,6 @@
 import os
 import re
+from collections import defaultdict
 from django.shortcuts import redirect, render
 from dal import autocomplete
 from django.db.models import Q
@@ -9,7 +10,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc, serch_products_web
+from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, get_props_motrum_filter_to_view, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -19,7 +20,11 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrum,
+    ProductPropertyMotrumItem,
+    ProductPropertyValueMotrum,
     Stock,
+    VendorPropertyAndMotrum,
 )
 from apps.supplier.models import (
     SupplierCategoryProduct,
@@ -43,7 +48,7 @@ def catalog_all(request):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-    print(category)
+
     vendors = Vendor.objects.filter(is_view_index_web=True)[0:4]
 
     context = {
@@ -70,7 +75,7 @@ def catalog_group(request, category):
         .exclude(product__isnull=True)
         .order_by("article_name")
     )
-    print("group", group)
+
     # товарфы в группе
     if len(group) > 0 and category != "search":
         cat = CategoryProduct.objects.get(slug=category)
@@ -115,32 +120,30 @@ def catalog_group(request, category):
                 q_object &= Q(article__isnull=False)
             elif category == "search":
                 search_text = request.GET.get("search_text")
-                # search_text="грибок кнопка"
                 q_object &= Q(article__isnull=False)
 
             else:
                 q_object &= Q(category__slug=category)
 
-        queryset = (
-            Product.objects.select_related(
-                "vendor",
-                "category",
-            ).filter(q_object)
-            # .order_by("vendor__name")
-            # .distinct("vendor__name")
-            # .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
-        )
-        if search_text and search_text != "":
-            print("search_text and search_text != """)
-            queryset = serch_products_web(search_text, queryset)
-            print(queryset)
+        queryset = Product.objects.select_related(
+            "vendor",
+            "category",
+        ).filter(q_object)
 
+        if search_text and search_text != "":
+
+            queryset = serch_products_web(search_text, queryset)
+
+        
         product_vendor = (
             queryset.order_by("vendor__name")
             .distinct("vendor__name")
             .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
-        print("product_vendor",product_vendor)
+        product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=queryset
+        )
+        chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -174,12 +177,13 @@ def catalog_group(request, category):
         context = {
             "current_category": current_category,
             "product_vendor": product_vendor,
+            "chars_motrum": chars_motrum,
             "media_url": media_url,
         }
         return render(request, "product/catalog.html", context)
 
 
-# страница всех продуктов в категории\группе
+# страница всех продуктов в категории\группе + фильтры
 def products_items(request, category, group):
     print("products_items")
     media_url = MEDIA_URL
@@ -190,23 +194,29 @@ def products_items(request, category, group):
     if group is not None:
         q_object &= Q(group__slug=group)
 
+    product = Product.objects.select_related(
+        "vendor",
+        "category",
+        "group",
+    ).filter(q_object)
+
+    
+
     product_vendor = (
-        Product.objects.select_related(
-            "vendor",
-            "category",
-            "group",
-        )
-        .filter(q_object)
-        .order_by("vendor__name")
+        product.order_by("vendor__name")
         .distinct("vendor__name")
         .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
     )
+    
+    
+    product_props_motrum = ProductPropertyMotrumItem.objects.filter( product__in=product
+        )
+    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+    
+    
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 
-    # all_groups = (
-    #     GroupProduct.objects.select_related("category").all().order_by("article_name")
-    # )
     another_groups = (
         GroupProduct.objects.filter(category__slug=category)
         .prefetch_related(
@@ -217,23 +227,18 @@ def products_items(request, category, group):
         .order_by("article_name")
     )
 
-    def get_another_groups():
-        current_groups = [
-            group_elem
-            for group_elem in all_groups
-            if group_elem.pk != current_group.pk
-            and group_elem.category.pk == current_category.pk
-        ]
-        return current_groups
+    
 
     context = {
         "current_category": current_category,
         "current_group": current_group,
         "product_vendor": product_vendor,
-        # "another_groups": get_another_groups(),
+    
         "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,
+       
+        "chars_motrum": chars_motrum,
         "meta_title": f"{current_group.name} | Мотрум - автоматизация производства",
     }
 
@@ -258,14 +263,13 @@ def product_one(request, category, group, article):
             Prefetch("productproperty_set"),
             Prefetch("productimage_set"),
             Prefetch("productdocument_set"),
+            Prefetch("productpropertymotrumitem_set"),
         )
         .get(article=article)
     )
-    print(
-        "1231231",
-    )
+
     product_document = ProductDocument.objects.filter(product=product, hide=False)
-    print("product_document", product_document)
+
     id_ex = []
     for product_docum in product_document:
         dir_img = "{0}/{1}".format(MEDIA_ROOT, product_docum.document)
@@ -274,6 +278,29 @@ def product_one(request, category, group, article):
 
     product_document = product_document.exclude(id__in=id_ex)
 
+    # Формируем all_properties
+    # 1. Обычные характеристики
+    properties = list(product.productproperty_set.filter(hide=False).values("name", "value", "unit_measure"))
+    # 2. Мотрум-характеристики без vendor_props, сгруппированные по названию
+    motrum_items = ProductPropertyMotrumItem.objects.select_related('property_motrum', 'property_value_motrum').filter(product=product, is_have_vendor_props=False)
+    motrum_grouped = {}
+    for item in motrum_items:
+        name = item.property_motrum.name if item.property_motrum else None
+        if item.is_diapason:
+            diapason_value = item.property_value_motrum_to_diapason
+            value = str(diapason_value) if diapason_value is not None else None
+        else:
+            value = item.property_value_motrum.value if item.property_value_motrum else None
+        if name:
+            if name not in motrum_grouped:
+                motrum_grouped[name] = []
+            if value:
+                motrum_grouped[name].append(value)
+    all_properties = {
+        "properties": properties,
+        "motrum": motrum_grouped,
+    }
+
     context = {
         "product": product,
         "current_category": product.category,
@@ -281,6 +308,7 @@ def product_one(request, category, group, article):
         "title": product.name,
         "product_document": product_document,
         "meta_title": f"{product.name} | Мотрум - автоматизация производства",
+        "all_properties": all_properties,
     }
     return render(request, "product/product_one.html", context)
 
@@ -324,9 +352,30 @@ def product_one_without_group(request, category, article):
             id_ex.append(product_docum.id)
 
     product_document = product_document.exclude(id__in=id_ex)
-    # product = Product.objects.get(article=article)
-    # product_properties = ProductProperty.objects.filter(product=product.pk)
-    # product_lot = Stock.objects.get(prod=product.pk)
+
+    # Формируем all_properties
+    # 1. Обычные характеристики
+    properties = list(product.productproperty_set.filter(hide=False).values("name", "value", "unit_measure"))
+    # 2. Мотрум-характеристики без vendor_props, сгруппированные по названию
+    motrum_items = ProductPropertyMotrumItem.objects.select_related('property_motrum', 'property_value_motrum').filter(product=product, is_have_vendor_props=False)
+    motrum_grouped = {}
+    for item in motrum_items:
+        name = item.property_motrum.name if item.property_motrum else None
+        if item.is_diapason:
+            diapason_value = item.property_value_motrum_to_diapason
+            value = str(diapason_value) if diapason_value is not None else None
+        else:
+            value = item.property_value_motrum.value if item.property_value_motrum else None
+        if name:
+            if name not in motrum_grouped:
+                motrum_grouped[name] = []
+            if value:
+                motrum_grouped[name].append(value)
+    all_properties = {
+        "properties": properties,
+        "motrum": motrum_grouped,
+    }
+    
 
     context = {
         "product": product,
@@ -334,8 +383,7 @@ def product_one_without_group(request, category, article):
         "title": product.name,
         "product_document": product_document,
         "meta_title": f"{product.name} | Мотрум - автоматизация производства",
-        # "product_properties": product_properties,
-        # "product_lot": product_lot,
+        "all_properties": all_properties,
     }
     return render(request, "product/product_one.html", context)
 
@@ -363,10 +411,21 @@ def brand_all(request):
 
 # страница бренда одного с товарами
 def brand_one(request, vendor):
+    print("page brand_one")
     brand = Vendor.objects.get(slug=vendor)
-
+    product = Product.objects.select_related(
+        "vendor",
+        "category",
+        "group",
+    ).filter(vendor=brand)
+    
+    product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=product
+        )
+    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+    
     context = {
         "brand": brand,
+        "chars_motrum": chars_motrum,
         "meta_title": f"{brand.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/brand_one.html", context)
@@ -391,7 +450,7 @@ def add_document_admin(request):
 
             profile = form.save(commit=False)
             file_name = request.FILES["document"].name
-            print("request.POST", request.POST)
+
             type_doc = request.POST["type_doc"]
             name_doc = request.POST["name"]
 
@@ -408,7 +467,7 @@ def add_document_admin(request):
             # )
             doc_name = f"{slugish}{type_file}"
             f = FileSystemStorage(location=new_dir).save(doc_name, in_memory_file_obj)
-            print(f)
+
             for id_prod in id_selected:
                 doc = f"{link}/{f}"
                 product_doc = ProductDocument.objects.create(
@@ -417,7 +476,6 @@ def add_document_admin(request):
                     name=name_doc,
                     document=doc,
                 )
-                print(product_doc)
 
                 # for chunk in request.FILES["document"].chunks():
                 #     dest.write(chunk)
@@ -437,8 +495,8 @@ def add_document_admin(request):
                 #     profile.save()
                 #     file_path = profile.document
 
-            else:
-                print(form.errors)
+                # else:
+                #     print(form.errors)
             context = {"type_document": TYPE_DOCUMENT, "form": form, "create": "ok"}
         return render(request, "admin/add_doc.html", context)
     else:
@@ -522,7 +580,6 @@ class SupplierCategoryProductAutocomplete(autocomplete.Select2QuerySetView):
         qs = SupplierCategoryProduct.objects.all()
         supplier = self.forwarded.get("supplier", None)
         vendor = self.forwarded.get("vendor", None)
-        print(supplier, vendor)
 
         supplier = self.forwarded.get("supplier", None)
         if supplier:
@@ -554,4 +611,26 @@ class SupplierGroupProductAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             # name__icontains=self.q
             qs = qs.filter(Q(name__icontains=self.q))
+        return qs
+    
+    
+class ProductPropertyValueMotrumAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = ProductPropertyValueMotrum.objects.all()
+        property_motrum = self.forwarded.get("property_motrum", None)
+        if property_motrum:
+            qs = qs.filter(property_motrum=property_motrum)
+
+        if self.q:
+            # name__icontains=self.q
+            qs = qs.filter(Q(value__icontains=self.q))
+        return qs
+
+
+class ProductPropertyMotrumAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = ProductPropertyMotrum.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
         return qs

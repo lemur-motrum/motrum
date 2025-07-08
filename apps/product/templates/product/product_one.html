@@ -84,24 +84,39 @@
                 <div class="technical_specifications">
                     <div class="title">Технические характеристики</div>
                     <div class="properties">
-                        {% if product.productproperty_set.all %}
-                            {% for product_property in product.productproperty_set.all %}
-                                {% if product_property.hide == False %}
+                        <div class="properties">
+                            {# Сначала обычные характеристики #}
+                            {% if all_properties.properties %}
+                                {% for prop in all_properties.properties %}
                                     <div class="property">
-                                        <div class="property_name">{{ product_property.name }}</div>
+                                        <div class="property_name">{{ prop.name }}</div>
                                         <div class="property_description">
-                                            {% if product_property.value %}
-                                                {{ product_property.value }}
+                                            {% if prop.value %}
+                                                {{ prop.value }}
                                             {% else %}
                                                 -
                                             {% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        
+                            {# Теперь характеристики мотрум, сгруппированные по названию #}
+                            {% for name, values in all_properties.motrum.items %}
+                                <div class="property">
+                                    <div class="property_name">{{ name }}</div>
+                                    <div class="property_description">
+                                        {% for value in values %}
+                                            {{ value }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             {% endfor %}
-                        {% else %}
-                            -
-                        {% endif %}
+                        
+                            {% if not all_properties.properties and not all_properties.motrum %}
+                                -
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

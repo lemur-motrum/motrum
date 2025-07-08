@@ -51,7 +51,6 @@ function setCurrentPriceCataloItem(elems) {
   });
 }
 
-// console.log("arrayDateValues", arrayDateValues);
 //логика страницы каталога
 function catalogLogic(elems) {
   elems.forEach((catalogItem) => {
@@ -338,7 +337,6 @@ window.addEventListener("DOMContentLoaded", () => {
         );
         const allMotrumSum =
           spetificationTable.querySelectorAll(".price_motrum");
-        console.log(allMotrumSum);
         for (let i = 0; i < allElems.length; i++) {
           margSum += new NumberParser("ru").parse(
             allElemsMarginaliry[i].textContent
@@ -348,12 +346,7 @@ window.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < allElems.length; i++) {
           sum += new NumberParser("ru").parse(allElems[i].textContent);
         }
-        console.log(allMotrumSum.length);
         for (let i = 0; i < allMotrumSum.length; i++) {
-          console.log(
-            "allMotrumSum[i].textContent",
-            allMotrumSum[i].textContent
-          );
           sumMotrum += new NumberParser("ru").parse(
             allMotrumSum[i].textContent
           );
@@ -479,8 +472,6 @@ window.addEventListener("DOMContentLoaded", () => {
             supplier: supplier ? supplier : null,
           };
 
-          console.log("date-delivery", deliveryDate.value);
-
           if (
             inputPrice
               ? !inputPrice.value || !deliveryDate.value
@@ -517,8 +508,6 @@ window.addEventListener("DOMContentLoaded", () => {
             dateDeliveryPosition.forEach((el) => {
               arrayDateValues.push(el.value);
             });
-
-            console.log("arrayDateValues", arrayDateValues);
           }
         }
 
@@ -1540,15 +1529,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const bxId = BxBtn.getAttribute("data-bx-id");
     const specificationId = BxBtn.getAttribute("data-spesif-id");
     const newOrderInWeb = BxBtn.getAttribute("data-serializer-new");
-    console.log(newOrderInWeb);
     let endpoint = "/api/v1/order/order-bitrix/";
 
     const objData = {
       bitrix_id_order: +bxId,
       serializer: serialazer,
     };
-    console.log(objData);
-    console.log(7);
     if (newOrderInWeb == 0) {
       document.cookie = `type_save=new; path=/; SameSite=None; Secure`;
       const data = JSON.stringify(objData);
@@ -1562,7 +1548,6 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
           document.location.href =
             "/admin_specification/current_specification/";
@@ -1582,7 +1567,6 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
             document.location.href =
               "/admin_specification/current_specification/";
@@ -1602,7 +1586,6 @@ window.addEventListener("DOMContentLoaded", () => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
             document.cookie = `specificationId=${specificationId}; path=/; SameSite=None; Secure`;
             document.location.href =
               "/admin_specification/current_specification/";

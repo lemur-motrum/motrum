@@ -121,7 +121,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
+    let chars = [
+      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 }, 
+      // { id: 141, values: [1167], is_diapason:false, min_value:0, max_value:0 },
+      // { id: 143, values: null, is_diapason:true, min_value:800, max_value:800}
+    ]
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,
@@ -135,6 +139,7 @@ window.addEventListener("DOMContentLoaded", () => {
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
+        chars: JSON.stringify(chars),
       };
 
       let params = new URLSearchParams(data);

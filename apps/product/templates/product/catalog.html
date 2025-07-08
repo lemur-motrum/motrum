@@ -89,6 +89,48 @@
                             </div>
                         </div>
                     </div>
+                    {{chars_motrum}}
+                    {% if chars_motrum %}
+                    <div class="filter_elem chars_filter_elem">
+                        <div class="chars_content">
+                            {% for char in chars_motrum %}
+                            <!-- Отдельные характеристики -->
+                                {% if not char.gabarit %}
+                                 <div class="char_block">
+                                    <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                        <div class="char_values">
+                                            <!-- Для диапазонного значение -->
+                                            {% if char.is_diapason %}
+                                            <div class="">{{char.min_value }}{{char.max_value }}</div>
+                                            {% else %}
+                                            <!-- Для  значениz c вариантами -->
+                                                {% for value in char.values %}
+                                                    <div class="char_value" data-id-name="{{ char.name_property_motrum}}" data-id-chars="{{ char.id_property_motrum}}" data-id-value-chars="{{ value.id}}">{{ value.value }}</div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    
+                                </div>
+                                {% else %} 
+                                <!-- Сгруппированные характеристики габариты --> 
+                                <div class="char_block">
+                                        <div class="filter_grop_title">Габариты:</div>
+                                        <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                            <div class="char_values">
+                                                <div class="char_value">
+                                                    {{char.min_value }}
+                                                    {{char.max_value }}
+                                                </div>
+                                            </div>
+                                        
+                                </div> 
+                                {% endif %}    
+                                    
+                                
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="submit_filter_container">
                         <button class="submit">Применить фильтры</button>
                         <button class="canceled">Сбросить</button>

@@ -27,6 +27,8 @@ from apps.product.forms import (
     ProductChangeNotAutosaveForm,
     ProductDocumentAdminForm,
     ProductForm,
+    ProductPropertyForm,
+    ProductPropertyMotrumItemForm,
 )
 from apps.product.models import (
     CategoryProduct,
@@ -37,7 +39,10 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrumItem,
     Stock,
+    ProductPropertyValueMotrum,
+    ProductPropertyMotrum
 )
 
 from apps.supplier.models import (
@@ -561,7 +566,21 @@ class ProductPropertyInline(admin.TabularInline):
 
         return qs.filter(hide=False)
 
+class ProductPropertyMotrumItemInline(admin.TabularInline):
+    model = ProductPropertyMotrumItem
+    form = ProductPropertyMotrumItemForm
+    fields = ("property_motrum", "property_value_motrum", "property_value_motrum_to_diapason")
+    extra = 0
 
+    
+
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+
+    #     return qs.filter(hide=False)
+   
+
+   
 @admin.action(description="Добавить документы для выбранных товаров")
 def add_documents(ProductAdmin, request, queryset):
     from django.http import HttpResponseRedirect
@@ -610,8 +629,10 @@ class ProductAdmin(SimpleHistoryAdmin):
         PriceInline,
         StockInline,
         ProductPropertyInline,
+        ProductPropertyMotrumItemInline,
         ProductImageInline,
         ProductDocumentInline,
+        
     ]
 
     fieldsets = [
@@ -654,7 +675,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 
 
                 for item_dict in product_blank_dict:
-                    print(product_item.get('supplier_id'))
+                  
                     verbose_name = Model._meta.get_field(item_dict).verbose_name
                     supplier_id = product_item.get('supplier_id') 
                     if supplier_id and supplier_id == 1  and  verbose_name == "Промо группа":
@@ -686,7 +707,7 @@ class ProductAdmin(SimpleHistoryAdmin):
             product_blank = f"{product_blank}{product_blank_local}"
             return product_blank
 
-        # print(obj.productdocument_set.all())
+        
         product = Product.objects.filter(id=obj.id).values()
         product_blank_new = get_blank(product, Product, product_blank)
 
@@ -898,7 +919,7 @@ class ProductAdmin(SimpleHistoryAdmin):
                 # kwargs["queryset"] = Vendor.objects.filter(supplier_id=item.supplier.id)
                 kwargs["queryset"] = Vendor.objects.filter()
             if item.autosave_tag == False:
-                print("AUTOSAVE TAG FALSE")
+                
                 if db_field.name == "category_supplier":
                     kwargs["queryset"] = SupplierCategoryProduct.objects.filter(
                         supplier_id=item.supplier.id
@@ -950,7 +971,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     # история изменений
     def history_view(self, request, object_id, extra_context=None):
         """The 'history' admin view for this model."""
-        print("""The 'history' admin view for this model.""")
+ 
         request.current_app = self.admin_site.name
 
         model = self.model
@@ -1120,7 +1141,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 
         context.update(extra_context or {})
         extra_kwargs = {}
-        print("self.object_history_template", self.object_history_template)
+       
         return self.render_history_view(
             request, self.object_history_template, context, **extra_kwargs
         )
@@ -1188,6 +1209,22 @@ class CategoryProductAdmin(admin.ModelAdmin):
         return False
 
 
+class ProductPropertyValueMotrum(admin.TabularInline):
+    model = ProductPropertyValueMotrum
+    extra = 1
+    fields = ("value",)
+
+class ProductPropertyMotrumAdmin(admin.ModelAdmin):
+    fields = (
+        "name",
+        "article",
+        'is_diapason',
+    )
+    inlines = [
+        ProductPropertyValueMotrum,
+    ]
+
+
 # АДМИНКА ДЛЯ ВЕБСАЙТА
 
 
@@ -1236,9 +1273,13 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
         return False
 
 
-admin.site.register(CategoryProduct, CategoryProductAdmin)
-website_admin.register(CategoryProduct, CategoryProductAdminWeb)
-# admin.site.register(GroupProduct)
-
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Lot,LotAdmin)
+admin.site.register(CategoryProduct, CategoryProductAdmin)
+admin.site.register(ProductPropertyMotrum, ProductPropertyMotrumAdmin)
+
+
+website_admin.register(CategoryProduct, CategoryProductAdminWeb)
+
+# admin.site.register(GroupProduct)
+

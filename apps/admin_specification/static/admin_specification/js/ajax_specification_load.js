@@ -351,7 +351,6 @@ export function uptadeOrChanegeSpecification(
   idSpecification
 ) {
   button.onclick = () => {
-    console.log(button);
     button.setAttribute("text-content", button.textContent);
     const typeSave = button.getAttribute("data-type-save");
     button.disabled = true;

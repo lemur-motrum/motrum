@@ -1110,10 +1110,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                     order.id, "DOCUMENT_SPECIFICATION", order.specification.file
                 )
 
-            for obj in products:
-                prod = ProductSpecification.objects.filter(id=obj["id"]).update(
-                    text_delivery=obj["text_delivery"]
-                )
+            # for obj in products:
+            #     prod = ProductSpecification.objects.filter(id=obj["id"]).update(
+            #         text_delivery=obj["text_delivery"]
+            #     )
 
             if order.requisites.contract:
                 is_req = True

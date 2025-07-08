@@ -491,3 +491,13 @@ class ProductPropertyMotrumItemForm(forms.ModelForm):
                 url='product:property_value_motrum-autocomplete', forward=["property_motrum"]
             ),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        property_value_motrum = cleaned_data.get('property_value_motrum')
+        property_value_motrum_to_diapason = cleaned_data.get('property_value_motrum_to_diapason')
+        if not property_value_motrum and not property_value_motrum_to_diapason:
+            raise forms.ValidationError("Заполните либо 'Значение характеристики Motrum', либо 'Значение для диапазона'.")
+        if property_value_motrum and property_value_motrum_to_diapason:
+            raise forms.ValidationError("Заполните только одно поле: либо 'Значение характеристики Motrum', либо 'Значение для диапазона'.")
+        return cleaned_data

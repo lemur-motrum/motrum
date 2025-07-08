@@ -27,6 +27,8 @@ from requests.auth import HTTPBasicAuth
 
 
 
+
+
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -3176,6 +3178,12 @@ def get_props_motrum_filter(product_props):
     # Попробуем получить порядок из ProductPropertyMotrum
     article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
     chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
     print("chars",chars)
     
     return chars
@@ -3423,7 +3431,7 @@ def get_props_motrum_filter_to_view(product_props):
         "property_motrum__is_diapason",
         "property_value_motrum_to_diapason"
         
-    ).distinct()
+    ).distinct().order_by("property_value_motrum__value")
     
     chars_dict = defaultdict(lambda: {"values": []})
     diapason_values = defaultdict(list)  # Для сбора значений диапазонов
@@ -3470,67 +3478,72 @@ def get_props_motrum_filter_to_view(product_props):
     # Попробуем получить порядок из ProductPropertyMotrum
     article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}
     chars.sort(key=lambda x: article_map.get(x['id_property_motrum'], 9999))
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
     print("chars",chars)
     
     return chars
-    # поиск в товарах для него поиск по характеристикам для варианта с точны одним значением 
-        # for char in chars:
-        #     prop_id = char['id']
-        #     values = char['values']
-        #     is_diapason = char.get('is_diapason', False)
-        #     if is_diapason:
-        #         min_value = char.get('min_value')
-        #         max_value = char.get('max_value')
-        #         print("minmax",min_value,max_value)
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.annotate(
-        #                     value_float=Cast('value', FloatField())
-        #                 ).filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     is_diapason=True,
-        #                     value_float__gte=min_value,
-        #                     value_float__lte=max_value
-        #                 )
-        #             )
-        #         )
-        #     else:
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     property_value_motrum__in=values
-        #                 )
-        #             )
-        #         )
-    # макет для него 
-    # {% if chars %}
-    #                 <div class="filter_elem chars_filter_elem">
-                        
-    #                     <div class="chars_content">
-    #                         {% for char in chars %}
-    #                             <div class="char_block">
-    #                                 <div class="filter_title">{{ char.name_property_motrum }}</div>
-    #                                 <div class="char_values">
-    #                                     <!-- Для диапазонного значение -->
-    #                                     {% if char.is_diapason %}
-    #                                     <div class="" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">
-    #                                         {{char.min_value }}
-    #                                         {{char.max_value }}
-    #                                     </div>
-                                            
-    #                                     {% else %}
-    #                                     <!-- Для  значениz c вариантами -->
-    #                                         {% for value in char.values %}
-    #                                             <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
-    #                                         {% endfor %}
-    #                                     {% endif %}
-                                        
-    #                                 </div>
-    #                             </div>
-    #                         {% endfor %}
-    #                     </div>
-    #                 </div>
-    #                 {% endif %}
+   
+
+
+def serch_props_prod_and_add_motrum_props(vendor_property_and_motrum,supplier):
+    from apps.product.models import ProductProperty,ProductPropertyMotrumItem
+    print("serch_props_prod_and_add_motrum_props",vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(product__supplier=supplier,name=vendor_property_and_motrum.property_vendor_name,value=vendor_property_and_motrum.property_vendor_value)
+    
+    for prop in props:
+        if prop.value != "" or  prop.value != " ":
+            
+                
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                property_value_motrum=vendor_property_and_motrum.property_value_motrum,
+                is_diapason=False,
+                is_have_vendor_props=True
+            )
+            print("*****standart_or_multi****")
+            print(prop_motrum, created )
+            
+            
+def serch_props_prod_and_add_motrum_props_diapason(vendor_property_and_motrum,supplier):
+    from apps.product.models import ProductProperty,ProductPropertyMotrumItem
+    print("serch_props_prod_and_add_motrum_props_diapason",vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(product__supplier=supplier,name=vendor_property_and_motrum.property_vendor_name)
+    
+    for prop in props:
+        
+        if prop.value != "" or  prop.value != " ":
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                is_diapason=True,
+                property_value_motrum_to_diapason=prop.value,
+                is_have_vendor_props=True
+            )
+            print("****_diapason*****")
+            print(prop_motrum, created )
+        
+
+def serch_prod_to_motrum_props_article(prod_prop_motrum,prod_prop_value_motrum,article,supplier,is_diapason):
+    from apps.product.models import Product,ProductPropertyMotrumItem
+    products = Product.objects.filter(supplier=supplier,article_supplier=article)
+    if products:
+        for prod in products:
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                    product=prod,
+                    property_motrum=prod_prop_motrum,
+                    property_value_motrum=prod_prop_value_motrum,
+                    is_diapason=is_diapason,
+                    # property_value_motrum_to_diapason=prod_prop_value_motrum,
+                    is_have_vendor_props=False
+                )
+            print("****_article*****")
+            print(prop_motrum, created )
+            
+    
+        

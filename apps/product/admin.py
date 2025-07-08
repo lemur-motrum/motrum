@@ -569,7 +569,7 @@ class ProductPropertyInline(admin.TabularInline):
 class ProductPropertyMotrumItemInline(admin.TabularInline):
     model = ProductPropertyMotrumItem
     form = ProductPropertyMotrumItemForm
-    fields = ("property_motrum", "property_value_motrum", "is_diapason","property_value_motrum_to_diapason")
+    fields = ("property_motrum", "property_value_motrum", "property_value_motrum_to_diapason")
     extra = 0
 
     
@@ -1212,7 +1212,7 @@ class CategoryProductAdmin(admin.ModelAdmin):
 class ProductPropertyValueMotrum(admin.TabularInline):
     model = ProductPropertyValueMotrum
     extra = 1
-    # fields = ("value", "article_name")
+    fields = ("value",)
 
 class ProductPropertyMotrumAdmin(admin.ModelAdmin):
     fields = (

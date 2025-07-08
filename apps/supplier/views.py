@@ -56,6 +56,8 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
+from apps.supplier.get_utils.motrum_filters import xlsx_props_motrum, xlsx_props_motrum_pandas
+from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
 from apps.supplier.get_utils.unimat_pp import export_unimat_prod_for_1c, unimat_prompower_api
 from dal import autocomplete
 from django.db.models import Q
@@ -144,8 +146,7 @@ def add_iek(request):
     # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    props_motrum_compound_props_prod()
-    add_motrum_props_to_prod_prop()
+    
    
     # v = VendorPropertyAndMotrum.objects.all()
     # for vd in v:
@@ -156,7 +157,10 @@ def add_iek(request):
     #     f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
     #     print(f)
     
-    
+    xlsx_props_motrum_pandas()
+    # p=ProductProperty.objects.filter(name="Макс мощность двигателя ND-реж перем нагрузки кВт",value=375)
+    # for t in p:
+    #     print(t.product.article_supplier)
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
@@ -265,6 +269,15 @@ def add_stage_bx(request):
 
 # def add_admin_okt(request):
 #     get_manager()
+
+def add_props_motrum(request):
+  
+    xlsx_props_motrum_pandas()
+  
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
 
 
 # добавление праздников вручную

@@ -574,9 +574,9 @@ class ProductPropertyValueMotrumAutocomplete(autocomplete.Select2QuerySetView):
         if property_motrum:
             qs = qs.filter(property_motrum=property_motrum)
 
-        # if self.q:
-        #     # name__icontains=self.q
-        #     qs = qs.filter(Q(name__icontains=self.q))
+        if self.q:
+            # name__icontains=self.q
+            qs = qs.filter(Q(value__icontains=self.q))
         return qs
 
 

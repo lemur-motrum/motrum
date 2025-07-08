@@ -917,8 +917,8 @@ class ProductProperty(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = "Характеристика\свойства"
-        verbose_name_plural = "Характеристики\свойства"
+        verbose_name = "Характеристика поставщика"
+        verbose_name_plural = "Характеристики поставщиков"
 
     def __str__(self):
         return f"{self.name}:{self.value}"
@@ -962,9 +962,6 @@ class Cart(models.Model):
         )
 
         return cart
-
-
-
 
 
 class ProductCart(models.Model):
@@ -1104,9 +1101,12 @@ class ProductPropertyValueMotrum(models.Model):
     class Meta:
         verbose_name = "Значение характеристики товара мотрум"
         verbose_name_plural = "Значение характеристик товаров мотрум"
-
+        
     def __str__(self):
         return f"{self.value}"
+
+
+    
 
 # таблица соотвествий пропсов вендов пропсам мотрум
 class VendorPropertyAndMotrum(models.Model):
@@ -1138,6 +1138,12 @@ class VendorPropertyAndMotrum(models.Model):
     )
     # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    # property_value_motrum_to_diapason = models.FloatField(
+    #     "Значение для диапазона",
+    #     blank=True,
+    #     null=True,
+    #     default=None,
+    # )
     property_vendor_name = models.CharField(
         "Название",
         max_length=600,
@@ -1161,6 +1167,8 @@ class VendorPropertyAndMotrum(models.Model):
 
     def __str__(self):
         return f"{self.property_vendor_name} _ {self.property_vendor_value}"
+    
+    
 
 
 
@@ -1196,7 +1204,14 @@ class ProductPropertyMotrumItem(models.Model):
         verbose_name_plural = (
             "Характеристики мотрум"
         )
-
+        
+    def save(self, *args, **kwargs):
+        if self.property_value_motrum_to_diapason:
+            self.is_diapason = True
+        else:
+            self.is_diapason = False
+        super().save(*args, **kwargs)
+        
     def __str__(self):
         if self.is_diapason:
           return f"{self.property_motrum} {self.property_value_motrum_to_diapason}"
@@ -1207,19 +1222,3 @@ class ProductPropertyMotrumItem(models.Model):
 
 
 
-
-# НЕ ИСПОЛЬЗУЕМ
-class PropertyItemAndMotrum(models.Model):
-    product_props = models.ForeignKey(
-        ProductProperty,
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-    )
-    vendor_property_motrum = models.ForeignKey(
-        VendorPropertyAndMotrum,
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-    )
-    

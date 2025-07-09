@@ -2045,6 +2045,24 @@ a {
               left: -28%;
             }
           }
+          .circle_active {
+            position: absolute;
+            width: 150.39%;
+            height: 3.563rem;
+            border-radius: 1.875rem;
+            border: 0.094rem solid black;
+            top: -70%;
+            left: -53%;
+            transform: translateX(16%);
+            transition: 0.6s;
+            @media screen and(max-width:576px) {
+              display: none;
+            }
+            &.small_circle {
+              width: 117%;
+              left: -28%;
+            }
+          }
           &:hover {
             .circle {
               opacity: 1;

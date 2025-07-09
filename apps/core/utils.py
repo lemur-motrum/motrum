@@ -2226,7 +2226,7 @@ def create_info_request_order_1c(order, order_products):
         contract_date = order.requisites.contract_date.isoformat()
 
     if order.account_requisites.requisitesKpp.kpp:
-        kpp = int(order.account_requisites.requisitesKpp.kpp)
+        kpp = order.account_requisites.requisitesKpp.kpp
     else:
         kpp = None
 

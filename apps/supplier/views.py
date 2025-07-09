@@ -301,8 +301,15 @@ def add_stage_bx(request):
 
 
 def add_props_motrum(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        xlsx_props_motrum_pandas()
+    
 
-    xlsx_props_motrum_pandas()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
 
     result = 1
     title = "TEST"

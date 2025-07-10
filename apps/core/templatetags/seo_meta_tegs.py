@@ -19,6 +19,14 @@ def get_seo_meta(context):
         params = {k: v[0] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
         return norm_path, params
 
+    def extract_path(page):
+        if not page:
+            return page
+        parsed = urlparse(page)
+        if parsed.scheme and parsed.netloc:
+            return parsed.path
+        return page
+
     meta = None
     # 1. Совпадение path и всех параметров из SeoMetaTags (в URL может быть больше параметров)
     if full_path:
@@ -26,6 +34,7 @@ def get_seo_meta(context):
         candidates = []
         for m in SeoMetaTags.objects.all():
             m_path, m_params = split_path_params(m.page)
+            m_path = extract_path(m_path)
             if m_path == req_path:
                 # Все параметры из m_params должны быть в req_params с теми же значениями
                 if all(k in req_params and req_params[k] == v for k, v in m_params.items()):
@@ -35,7 +44,7 @@ def get_seo_meta(context):
             meta = max(candidates, key=lambda m: len(split_path_params(m.page)[1]))
     # 2. Только path (без параметров)
     if not meta and path:
-        norm_path = path.strip('/')
+        norm_path = extract_path(path.strip('/'))
         meta = SeoMetaTags.objects.filter(page=norm_path).first()
     # 3. url_name
     if not meta and url_name:

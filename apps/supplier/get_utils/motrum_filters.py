@@ -279,7 +279,7 @@ def xlsx_props_motrum_pandas():
                 supplier_sheets = Supplier.objects.get(slug="prompower")
             elif sheet_name == "ONI ":
                 supplier_sheets = Supplier.objects.get(slug="iek")
-            if sheet_name == "Характеристики Мотрум " or  sheet_name:
+            if sheet_name == "Характеристики Мотрум ":
                 continue  # пропускаем этот лист
             print(f"Обрабатывается лист: {sheet_name}")
             prev_name_motrum = None

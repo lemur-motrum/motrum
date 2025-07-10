@@ -66,6 +66,16 @@ window.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".bread_crumbs").getBoundingClientRect().top +
       window.scrollY;
 
+    const charBlocks = document.querySelectorAll(".char_block");
+    charBlocks.forEach((charBlock) => {
+      const charValues = charBlock.querySelectorAll(".char_value");
+      charValues.forEach((charValue) => {
+        charValue.onclick = () => {
+          charValue.classList.toggle("checked");
+        };
+      });
+    });
+
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
         if (paginationElems[i].textContent == pageCount + 1) {
@@ -122,10 +132,10 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
     let chars = [
-      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 }, 
+      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 },
       // { id: 141, values: [1167], is_diapason:false, min_value:0, max_value:0 },
       // { id: 143, values: null, is_diapason:true, min_value:800, max_value:800}
-    ]
+    ];
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,

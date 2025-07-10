@@ -1150,7 +1150,13 @@ class OrderViewSet(viewsets.ModelViewSet):
                 e = error_alert(error, location, info)
 
                 type_save = request.COOKIES.get("type_save")
-
+                
+                # json_data = json.dumps(data_for_1c)
+                # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+                # headers = {"Content-type": "application/json"}
+                # response = send_requests(url, headers, json_data, "1c")
+                
+                # print(response)
                 if IS_TESTING or user.username == "testadmin":
 
                     json_data = json.dumps(data_for_1c)

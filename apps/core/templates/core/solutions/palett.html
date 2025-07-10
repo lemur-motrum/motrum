@@ -5,7 +5,13 @@
         <a href="{% url "core:solutions" %}">решения</a>
         <a href="{% url "core:cobots" %}">роботы</a>
     </div>
-    <h1 class="title">РЕШЕНИЕ ДЛЯ ПАЛЛЕТИЗАЦИИ</h1>
+    {% if seo_meta and seo_meta.meta_h1 %}
+        <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
+                
+    {% else %}
+        <h1 class="title">РЕШЕНИЕ ДЛЯ ПАЛЛЕТИЗАЦИИ</h1>
+    {% endif %}
+    
 </div>
 <div class="solution_one_slider">
     <div class="swiper-wrapper">

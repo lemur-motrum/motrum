@@ -4,7 +4,13 @@
         <a href="/">главная</a>
         <a href="{% url "core:solutions" %}">решения</a>
     </div>
-    <h1 class="title">Маркировка</h1>
+    {% if seo_meta and seo_meta.meta_h1 %}
+        <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
+                
+    {% else %}
+        <h1 class="title">Маркировка</h1>
+    {% endif %}
+    
     <div class="solution_one_slider">
         <div class="swiper-wrapper">
             <div class="swiper-slide information_slide">

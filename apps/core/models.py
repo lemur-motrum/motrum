@@ -507,3 +507,39 @@ class UpdatedCompanyBX24(models.Model):
 
     def __str__(self):
         return f"{self.image}"
+
+
+
+class SeoMetaTags(models.Model):
+    page = models.CharField(
+        "Страница",
+        max_length=700,
+        null=True,
+        blank=True,
+    )
+    title = models.CharField(
+        "title",
+        max_length=1000,
+        null=True,
+        blank=True,
+    )
+    description = models.CharField(
+        "title",
+        max_length=2000,
+        null=True,
+        blank=True,
+    )
+    h1 = models.CharField(
+        "h1",
+        max_length=500,
+        null=True,
+        blank=True,
+    )
+    
+
+    class Meta:
+        verbose_name = "SEO тег"
+        verbose_name_plural = "SEO теги"
+
+    def __str__(self):
+        return f"{self.page}"

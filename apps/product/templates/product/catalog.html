@@ -10,10 +10,14 @@
                 <a href={% url "product:group" current_category.slug %}>{{ current_category.name }}</a>
             </div>
             <h1>
-                {% if current_group %}
-                    {{ current_group.name }}
+                {% if seo_meta and seo_meta.meta_h1 %}
+                   {{ seo_meta.meta_h1 }}
                 {% else %}
-                    {{ current_category.name }}
+                    {% if current_group %}
+                        {{ current_group.name }}
+                    {% else %}
+                        {{ current_category.name }}
+                    {% endif %}
                 {% endif %}
             </h1>
             {% if another_groups|length != 0 %}

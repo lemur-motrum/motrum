@@ -66,14 +66,127 @@ window.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".bread_crumbs").getBoundingClientRect().top +
       window.scrollY;
 
-    const charBlocks = document.querySelectorAll(".char_block");
-    charBlocks.forEach((charBlock) => {
+    const charBlocksFalseDiaposon = document.querySelectorAll(
+      ".char_block_false_diapason"
+    );
+
+    let charactiristics = [];
+
+    charBlocksFalseDiaposon.forEach((charBlock) => {
       const charValues = charBlock.querySelectorAll(".char_value");
       charValues.forEach((charValue) => {
         charValue.onclick = () => {
+          const dataIdChars = charValue.getAttribute("data-id-chars");
+          const dataIdValueChars = charValue.getAttribute(
+            "data-id-value-chars"
+          );
           charValue.classList.toggle("checked");
+          let validate = false;
+          if (charValue.classList.contains("checked")) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  charactiristics[i]["value"].push(dataIdValueChars);
+                  validate = true;
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: dataIdChars,
+                  value: [dataIdValueChars],
+                  is_diapason: false,
+                  min_value: 0,
+                  max_value: 0,
+                });
+                validate = false;
+              }
+            } else {
+              charactiristics.push({
+                id: dataIdChars,
+                value: [dataIdValueChars],
+                is_diapason: false,
+                min_value: 0,
+                max_value: 0,
+              });
+            }
+          } else {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  if (charactiristics[i]["value"].length > 1) {
+                    charactiristics[i]["value"] = charactiristics[i][
+                      "value"
+                    ].filter((el) => el !== dataIdValueChars);
+                    break;
+                  } else {
+                    charactiristics = charactiristics.filter(
+                      (el) => el["id"] !== dataIdChars
+                    );
+                    break;
+                  }
+                }
+              }
+            }
+          }
         };
       });
+    });
+
+    const charBlocksTrueDiaposon = document.querySelectorAll(
+      ".char_block_true_diapason"
+    );
+
+    charBlocksTrueDiaposon.forEach((charBlock) => {
+      const charValueContainer = charBlock.querySelector(".range_chars_value");
+
+      const minValueInput = charValueContainer.querySelector(
+        ".range_chars_value_small_input"
+      );
+      const maxValueInput = charValueContainer.querySelector(
+        ".range_chars_value_big_input"
+      );
+
+      // Получаем числовые значения из атрибутов
+      const minValue = parseInt(
+        charValueContainer.getAttribute("data-min-value"),
+        10
+      );
+      const maxValue = parseInt(
+        charValueContainer.getAttribute("data-max-value"),
+        10
+      );
+      const charBlockDataId = charValueContainer.getAttribute("data-id-chars");
+
+      // Добавляем обработчики событий
+      setupInputHandler(minValueInput, minValue, maxValue, true);
+      setupInputHandler(maxValueInput, minValue, maxValue, false);
+
+      function setupInputHandler(input, min, max, isMinInput) {
+        input.addEventListener("input", () => {
+          // Очищаем от нечисловых символов
+          let value = input.value.replace(/^\d+(\.\d{1,2})?$/, "");
+
+          // Преобразуем в число
+          value = parseInt(value, 10);
+
+          // Проверяем границы
+          if (isNaN(value)) {
+            value = isMinInput ? min : max;
+          } else {
+            if (isMinInput) {
+              value = Math.max(value, min);
+              value = Math.min(value, max);
+            } else {
+              value = Math.min(value, max);
+              value = Math.max(value, min);
+            }
+          }
+
+          // Обновляем значение инпута
+          input.value = value;
+        });
+      }
     });
 
     function getActivePaginationElem() {

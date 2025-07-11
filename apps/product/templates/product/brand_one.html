@@ -45,14 +45,13 @@
                             </div>
                         </div>
                     </div>
-                    {% comment %} {{ chars_motrum }} {% endcomment %}
                     {% if chars_motrum %}
                         <div class="filter_elem chars_filter_elem">
                             <div class="chars_content">
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
                                     {% if not char.gabarit %}
-                                        <div class="char_block">
+                                        <div class="char_block char_block_false_diapason">
                                             <div class="filter_title">{{ char.name_property_motrum }}</div>
                                             <div class="char_values">
                                                 <!-- Для диапазонного значение -->
@@ -77,22 +76,21 @@
                                     {% else %}
                                         <!-- Сгруппированные характеристики габариты -->
                                         {% comment %} <div class="filter_grop_title">Габариты:</div> {% endcomment %}
-                                        <div class="char_block">
+                                        <div class="char_block char_block_true_diapason">
                                             <div class="filter_title">{{ char.name_property_motrum }}</div>
                                             <div class="char_values">
-                                                {% comment %} <div class="char_value">
-                                                    {{ char.min_value }}
-                                                    {{ char.max_value }}
-                                                </div> {% endcomment %}
-                                                <div class="char_value range_chars_value">
+                                                <div class="char_value range_chars_value"
+                                                     data-id-chars="{{ char.id_property_motrum }}"
+                                                     data-min-value="{{ char.min_value }}"
+                                                     data-max-value="{{ char.max_value }}">
                                                     <div class="range_chars_value_input_container">
-                                                        <input placeholder="от  {{ char.min_value }}"
-                                                               class="small_price_input"
+                                                        <input placeholder="от {{ char.min_value }}"
+                                                               class="range_chars_value_small_input"
                                                                type="text" />
                                                     </div>
                                                     <div class="range_chars_value_input_container">
-                                                        <input placeholder="до  {{ char.max_value }}"
-                                                               class="big_price_input"
+                                                        <input placeholder="до {{ char.max_value }}"
+                                                               class="range_chars_value_big_input"
                                                                type="text" />
                                                     </div>
                                                 </div>

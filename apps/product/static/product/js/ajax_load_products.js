@@ -86,7 +86,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (charactiristics.length > 0) {
               for (let i = 0; i < charactiristics.length; i++) {
                 if (charactiristics[i]["id"] == dataIdChars) {
-                  charactiristics[i]["value"].push(dataIdValueChars);
+                  charactiristics[i]["values"].push(dataIdValueChars);
                   validate = true;
                   break;
                 }
@@ -94,7 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
               if (!validate) {
                 charactiristics.push({
                   id: dataIdChars,
-                  value: [dataIdValueChars],
+                  values: [dataIdValueChars],
                   is_diapason: false,
                   min_value: 0,
                   max_value: 0,
@@ -104,7 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
               charactiristics.push({
                 id: dataIdChars,
-                value: [dataIdValueChars],
+                values: [dataIdValueChars],
                 is_diapason: false,
                 min_value: 0,
                 max_value: 0,
@@ -114,9 +114,9 @@ window.addEventListener("DOMContentLoaded", () => {
             if (charactiristics.length > 0) {
               for (let i = 0; i < charactiristics.length; i++) {
                 if (charactiristics[i]["id"] == dataIdChars) {
-                  if (charactiristics[i]["value"].length > 1) {
-                    charactiristics[i]["value"] = charactiristics[i][
-                      "value"
+                  if (charactiristics[i]["values"].length > 1) {
+                    charactiristics[i]["values"] = charactiristics[i][
+                      "values"
                     ].filter((el) => el !== dataIdValueChars);
                     break;
                   } else {
@@ -147,38 +147,87 @@ window.addEventListener("DOMContentLoaded", () => {
         ".range_chars_value_big_input"
       );
 
-      const minValue = parseInt(
-        charValueContainer.getAttribute("data-min-value"),
-        10
+      const minValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-min-value")
       );
-      const maxValue = parseInt(
-        charValueContainer.getAttribute("data-max-value"),
-        10
+
+      const maxValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-max-value")
       );
+
       const charBlockDataId = charValueContainer.getAttribute("data-id-chars");
 
-      setupInputHandler(minValueInput, minValue, maxValue, true);
-      setupInputHandler(maxValueInput, minValue, maxValue, false);
+      setupInputHandler(minValueInput, 0, maxValue);
+      setupInputHandler(maxValueInput, 0, maxValue);
 
-      function setupInputHandler(input, min, max, isMinInput) {
-        input.addEventListener("input", () => {
-          let value = input.value.replace(/^\d+(\.\d{1,2})?$/, "");
+      function setupInputHandler(input, min, max) {
+        input.addEventListener("input", (e) => {
+          let value = e.target.value;
 
-          value = parseInt(value, 10);
+          function formatInput(value) {
+            let newValue = value;
+            newValue = newValue.replace(/,/g, ".");
+            newValue = newValue.replace(/[^\d.]/g, "");
+            newValue = newValue.replace(/\.+/g, ".");
+            if (newValue.startsWith(".")) {
+              newValue = newValue.substring(1);
+            }
+            newValue = newValue.replace(/\.(?=.*\.)/g, "");
 
-          if (isNaN(value)) {
-            value = isMinInput ? min : max;
-          } else {
-            if (isMinInput) {
-              value = Math.max(value, min);
-              value = Math.min(value, max);
+            if (+newValue < min) {
+              return min;
+            } else if (+newValue > max) {
+              return max;
             } else {
-              value = Math.min(value, max);
-              value = Math.max(value, min);
+              return newValue;
             }
           }
-
+          value = formatInput(value);
           input.value = value;
+          let validate = false;
+
+          if (minValueInput.value || minValueInput.value) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == charBlockDataId) {
+                  charactiristics[i]["min_value"] = minValueInput.value
+                    ? minValueInput.value
+                    : minValue;
+                  charactiristics[i]["max_value"] = maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue;
+                  validate = true;
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: charBlockDataId,
+                  values: null,
+                  is_diapason: true,
+                  min_value: minValueInput.value
+                    ? minValueInput.value
+                    : minValue,
+                  max_value: maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue,
+                });
+              }
+            } else {
+              charactiristics.push({
+                id: charBlockDataId,
+                values: null,
+                is_diapason: true,
+                min_value: minValueInput.value ? minValueInput.value : minValue,
+                max_value: maxValueInput.value ? maxValueInput.value : maxValue,
+              });
+            }
+          } else {
+            charactiristics = charactiristics.filter(
+              (el) => el["id"] !== charBlockDataId
+            );
+          }
+          console.log(charactiristics);
         });
       }
     });
@@ -253,7 +302,7 @@ window.addEventListener("DOMContentLoaded", () => {
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
         chars:
-          charactiristics.length > 0 ? JSON.stringify(charactiristics) : null,
+          charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
       };
 
       let params = new URLSearchParams(data);

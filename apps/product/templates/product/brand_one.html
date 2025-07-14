@@ -51,9 +51,9 @@
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
                                     {% if not char.gabarit %}
-                                        <div class="char_block char_block_false_diapason">
+                                        <div class="char_block char_block_false_diapason ">
                                             <div class="filter_title">{{ char.name_property_motrum }}</div>
-                                            <div class="char_values">
+                                            <div class="char_values {% if char.position == "vertical" %}vertical{% endif %}">
                                                 <!-- Для диапазонного значение -->
                                                 {% if char.is_diapason %}
                                                     <div class="">{{ char.min_value }}{{ char.max_value }}</div>

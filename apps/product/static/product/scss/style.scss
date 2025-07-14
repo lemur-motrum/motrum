@@ -942,6 +942,17 @@
                       }
                     }
                   }
+                  &.vertical {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    .char_value {
+                      align-items: center;
+                      .char_value_name {
+                        width: 90%;
+                      }
+                    }
+                  }
                 }
               }
             }

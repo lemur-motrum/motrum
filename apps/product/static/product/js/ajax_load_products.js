@@ -173,6 +173,10 @@ window.addEventListener("DOMContentLoaded", () => {
               newValue = newValue.substring(1);
             }
             newValue = newValue.replace(/\.(?=.*\.)/g, "");
+            if (newValue.includes(".")) {
+              const [integerPart, decimalPart] = newValue.split(".");
+              newValue = integerPart + "." + decimalPart.slice(0, 2); // Берем только первые 2 знака после точки
+            }
 
             if (+newValue < min) {
               return min;
@@ -184,6 +188,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           value = formatInput(value);
           input.value = value;
+
           let validate = false;
 
           if (minValueInput.value || minValueInput.value) {
@@ -231,6 +236,16 @@ window.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
+
+    const charsContent = document.querySelector(".chars_content");
+    if (charsContent) {
+      new Accordion(".chars_content", {
+        elementClass: "char_values_long",
+        triggerClass: "add_more_btn",
+        panelClass: "char_values",
+        showMultiple: true,
+      });
+    }
 
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
@@ -552,6 +567,12 @@ window.addEventListener("DOMContentLoaded", () => {
       });
       priceFrom = "";
       priceTo = "";
+      charactiristics = [];
+      document.querySelectorAll(".char_value").forEach((el) => {
+        if (el.classList.contains("checked")) {
+          el.classList.remove("checked");
+        }
+      });
       maxInputPrice.value = "";
       minInputPrice.value = "";
       pageCount = 0;

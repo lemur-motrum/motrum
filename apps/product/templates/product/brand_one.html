@@ -51,9 +51,9 @@
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
                                     {% if not char.gabarit %}
-                                        <div class="char_block char_block_false_diapason ">
+                                        <div class="char_block char_block_false_diapason {% if char.count_values > 12 or char.count_values > 4 and char.position == "vertical" %}char_values_long{% endif %}">
                                             <div class="filter_title">{{ char.name_property_motrum }}</div>
-                                            <div class="char_values {% if char.position == "vertical" %}vertical{% endif %}">
+                                            <div class="char_values  {% if char.position == "vertical" %}vertical{% endif %}">
                                                 <!-- Для диапазонного значение -->
                                                 {% if char.is_diapason %}
                                                     <div class="">{{ char.min_value }}{{ char.max_value }}</div>
@@ -72,6 +72,9 @@
                                                     {% endfor %}
                                                 {% endif %}
                                             </div>
+                                            {% if char.count_values > 12 or char.count_values > 4 and char.position == "vertical" %}
+                                                <div class="add_more_btn"></div>
+                                            {% endif %}
                                         </div>
                                     {% else %}
                                         <!-- Сгруппированные характеристики габариты -->

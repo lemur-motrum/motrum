@@ -2982,67 +2982,7 @@ def get_props_motrum_filter(product_props):
     print("chars",chars)
     
     return chars
-    # поиск в товарах для него поиск по характеристикам для варианта с точны одним значением 
-        # for char in chars:
-        #     prop_id = char['id']
-        #     values = char['values']
-        #     is_diapason = char.get('is_diapason', False)
-        #     if is_diapason:
-        #         min_value = char.get('min_value')
-        #         max_value = char.get('max_value')
-        #         print("minmax",min_value,max_value)
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.annotate(
-        #                     value_float=Cast('value', FloatField())
-        #                 ).filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     is_diapason=True,
-        #                     value_float__gte=min_value,
-        #                     value_float__lte=max_value
-        #                 )
-        #             )
-        #         )
-        #     else:
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     property_value_motrum__in=values
-        #                 )
-        #             )
-        #         )
-    # макет для него 
-    # {% if chars %}
-    #                 <div class="filter_elem chars_filter_elem">
-                        
-    #                     <div class="chars_content">
-    #                         {% for char in chars %}
-    #                             <div class="char_block">
-    #                                 <div class="filter_title">{{ char.name_property_motrum }}</div>
-    #                                 <div class="char_values">
-    #                                     <!-- Для диапазонного значение -->
-    #                                     {% if char.is_diapason %}
-    #                                     <div class="" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">
-    #                                         {{char.min_value }}
-    #                                         {{char.max_value }}
-    #                                     </div>
-                                            
-    #                                     {% else %}
-    #                                     <!-- Для  значениz c вариантами -->
-    #                                         {% for value in char.values %}
-    #                                             <div class="char_value" data-id-value="{{ value.id }}" data-id-name="{{ char.id_property_motrum}}">{{ value.value }}</div>
-    #                                         {% endfor %}
-    #                                     {% endif %}
-                                        
-    #                                 </div>
-    #                             </div>
-    #                         {% endfor %}
-    #                     </div>
-    #                 </div>
-    #                 {% endif %}
+   
 
 # ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем     
 def get_props_all_motrum_filter(product_props_2):
@@ -3249,6 +3189,9 @@ def get_props_motrum_filter_to_view(product_props):
                 chars_dict[pid]["gabarit"] = True
             else:
                 chars_dict[pid]["gabarit"] = False
+            # Для недиапазонных фильтров сразу инициализируем массив для длин
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"] = []
         if is_diapason:
             # value может быть строкой, пробуем привести к float
             try:
@@ -3256,20 +3199,29 @@ def get_props_motrum_filter_to_view(product_props):
                 diapason_values[pid].append(val)
             except (TypeError, ValueError):
                 pass
-            
         if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
-            chars_dict[pid]["values"].append(
-                {
-                    "id": row["property_value_motrum__id"],
-                    "value": row["property_value_motrum__value"],
-                }
-            )
-            
+            value_str = str(row["property_value_motrum__value"])
+            value_dict = {
+                "id": row["property_value_motrum__id"],
+                "value": row["property_value_motrum__value"],
+            }
+            chars_dict[pid]["values"].append(value_dict)
+            # Для недиапазонных фильтров собираем длины значений
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"].append(len(value_str))
     # Добавляем min/max для диапазонных характеристик
     for pid, values in diapason_values.items():
         if values:
             chars_dict[pid]["min_value"] = min(values)
             chars_dict[pid]["max_value"] = max(values)
+    # Для недиапазонных фильтров определяем position
+    for pid, char in chars_dict.items():
+        if not char.get("is_diapason", False) and "_value_lengths" in char:
+            if any(l > 6 for l in char["_value_lengths"]):
+                char["position"] = "vertical"
+            else:
+                char["position"] = "horizontal"
+            del char["_value_lengths"]
     chars = list(chars_dict.values())
     # Сортировка: сначала обычные, потом габариты, внутри — по article
     article_map = {p.id: p.article if p.article is not None else 9999 for p in ProductPropertyMotrum.objects.filter(id__in=[c['id_property_motrum'] for c in chars])}

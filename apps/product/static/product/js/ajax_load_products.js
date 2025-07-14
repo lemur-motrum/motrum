@@ -147,7 +147,6 @@ window.addEventListener("DOMContentLoaded", () => {
         ".range_chars_value_big_input"
       );
 
-      // Получаем числовые значения из атрибутов
       const minValue = parseInt(
         charValueContainer.getAttribute("data-min-value"),
         10
@@ -158,19 +157,15 @@ window.addEventListener("DOMContentLoaded", () => {
       );
       const charBlockDataId = charValueContainer.getAttribute("data-id-chars");
 
-      // Добавляем обработчики событий
       setupInputHandler(minValueInput, minValue, maxValue, true);
       setupInputHandler(maxValueInput, minValue, maxValue, false);
 
       function setupInputHandler(input, min, max, isMinInput) {
         input.addEventListener("input", () => {
-          // Очищаем от нечисловых символов
           let value = input.value.replace(/^\d+(\.\d{1,2})?$/, "");
 
-          // Преобразуем в число
           value = parseInt(value, 10);
 
-          // Проверяем границы
           if (isNaN(value)) {
             value = isMinInput ? min : max;
           } else {
@@ -183,7 +178,6 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
 
-          // Обновляем значение инпута
           input.value = value;
         });
       }
@@ -244,11 +238,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    let chars = [
-      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 },
-      // { id: 141, values: [1167], is_diapason:false, min_value:0, max_value:0 },
-      // { id: 143, values: null, is_diapason:true, min_value:800, max_value:800}
-    ];
+
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,
@@ -262,7 +252,8 @@ window.addEventListener("DOMContentLoaded", () => {
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
-        chars: JSON.stringify(chars),
+        chars:
+          charactiristics.length > 0 ? JSON.stringify(charactiristics) : null,
       };
 
       let params = new URLSearchParams(data);

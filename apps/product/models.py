@@ -939,8 +939,11 @@ class ProductProperty(models.Model):
                     is_have_vendor_props=True,
                     property_value_motrum_to_diapason=value_diapason
                 )
-                print("*********")
-                print(prop_motrum, created )
+                error = "info_error"
+                location = "+ х-ка"
+                info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                e = error_alert(error, location, info)
+                
         super().save(*args, **kwargs)
 
 
@@ -1088,6 +1091,7 @@ class ProductPropertyMotrum(models.Model):
         null=True,
     )
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    
 
     class Meta:
         verbose_name = "Характеристика товара мотрум"
@@ -1148,6 +1152,7 @@ class VendorPropertyAndMotrum(models.Model):
         blank=True,
         null=True,
     )
+    is_category = models.BooleanField("Категория поставщика", default=False)
     # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
     # property_value_motrum_to_diapason = models.FloatField(

@@ -18,6 +18,7 @@ from apps.core.utils import (
     get_file_path_add,
     get_lot,
     get_motrum_category,
+    get_motrum_category_and_motrum_props,
     get_price_motrum,
     get_price_supplier_rub,
 )
@@ -208,6 +209,7 @@ class Product(models.Model):
             price.save()
         except Price.DoesNotExist:
             pass
+        get_motrum_category_and_motrum_props(self)
 
     def get_absolute_url(self):
         if self.category is not None:
@@ -430,7 +432,7 @@ class Price(models.Model):
     )
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
     price_supplier = models.FloatField(
-        "Цена в каталоге поставщика в валюте каталога",
+        "Цена в каталоге поставщика в валюте каталога с НДС",
         blank=True,
         null=True,
         default=0,

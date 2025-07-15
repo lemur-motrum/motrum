@@ -57,8 +57,10 @@ from apps.core.utils_web import (
 )
 from apps.logs.utils import error_alert
 from apps.supplier.get_utils.motrum_filters import (
+    convert_all_to_text,
     xlsx_props_motrum,
     xlsx_props_motrum_pandas,
+    xlsx_to_csv_one_sheet,
 )
 from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
 from apps.supplier.get_utils.unimat_pp import (
@@ -171,15 +173,11 @@ def add_iek(request):
     # p=ProductProperty.objects.filter(name="Макс мощность двигателя ND-реж перем нагрузки кВт",value=375)
     # for t in p:
     #     print(t.product.article_supplier)
-
-    prod = Product.objects.get(article="0011")
-    property_product = ProductProperty(
-        product=prod,
-        name="Количество фаз",
-        value="1ф",
-    )
-    property_product.save()
-    update_change_reason(property_product, "Автоматическое")
+    prompower_api()
+#     convert_all_to_text(
+#    f"{MEDIA_ROOT}/documents/filter/filter.xlsx",
+#     f"{MEDIA_ROOT}/documents/filter/filter_all.xlsx"
+# )
 
     result = 1
     title = "TEST"

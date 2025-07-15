@@ -199,7 +199,7 @@ def products_items(request, category, group):
         "category",
         "group",
     ).filter(q_object)
-
+    
     
 
     product_vendor = (

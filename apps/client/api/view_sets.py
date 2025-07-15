@@ -661,6 +661,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "status": "PRE-PROCESSING",
                             "cart": cart.id,
                             "bill_name": None,
+                            "bill_name_prefix": "ИМ",
                             "bill_file": None,
                             "bill_date_start": None,
                             "bill_date_stop": None,
@@ -726,6 +727,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                             "status": "PRE-PROCESSING",
                             "cart": cart.id,
                             "bill_name": None,
+                            "bill_name_prefix": "ИМ",
                             "bill_file": None,
                             "bill_date_start": None,
                             "bill_date_stop": None,
@@ -938,6 +940,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "postpay_persent": requisites.postpay_persent,
                     "motrum_requisites": motrum_requisites.id,
                     "type_delivery": type_delivery,
+                    
                 }
 
                 order = Order.objects.get(cart_id=cart)
@@ -963,6 +966,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "status": "PROCESSING",
                     "cart": cart.id,
                     "bill_name": None,
+                    "bill_name_prefix": "ОКТ",
                     "bill_file": None,
                     "bill_date_start": None,
                     "bill_date_stop": None,
@@ -973,6 +977,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "motrum_requisites": motrum_requisites.id,
                     "id_bitrix": id_bitrix,
                     "type_delivery": type_delivery,
+                    
                     # "manager": admin_creator_id,
                 }
 
@@ -1601,6 +1606,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "notification_set": [],
                     "type_notification": "DOCUMENT_BILL",
                     "number_document": order["bill_name"],
+                    "invoice_prefix": order["bill_name_prefix"],
                 }
                 print(data_bill)
                 for notification_set in order["notification_set"]:

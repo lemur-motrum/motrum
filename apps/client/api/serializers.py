@@ -183,6 +183,7 @@ class LkOrderSerializer(serializers.ModelSerializer):
             "status_full",
             "specification_list",
             "bill_name",
+            "bill_name_prefix",
             "bill_sum",
             "bill_sum_paid",
             "bill_file",
@@ -242,6 +243,7 @@ class LkOrderDocumentSerializer(serializers.ModelSerializer):
             "bill_date_stop",
             "bill_date_start",
             "bill_name",
+            "bill_name_prefix",
             "notification_set",
             "documentshipment_set",
         )

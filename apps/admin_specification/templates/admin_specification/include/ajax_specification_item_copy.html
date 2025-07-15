@@ -94,7 +94,7 @@
             {% endif %}
         </div>
         <div class="table_item_value invoice-table_item_value">
-            <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name }}</a>
+            <a target="_blank" class="invoice-link" href="{{ bill_file }}">Скачать счет №{{ bill_name_prefix }}-{{ bill_name }}</a>
             <!--<button data-specication-id-to-bill="{{ specification }}" class="create-bill-button">Создать счет</button>    -->
             <br>
             <button data-type-save="update" class="change-bill-button">Изменить счет</button>

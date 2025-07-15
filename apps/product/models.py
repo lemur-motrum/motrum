@@ -575,7 +575,7 @@ class Price(models.Model):
         rub_price_supplier = self.rub_price_supplier
         all_item_group = self.prod.category_supplier_all
         supplier = self.prod.supplier
-        promo_groupe = self.promo_groupe
+        promo_groupe = self.prod.promo_groupe
 
         motrum_price = rub_price_supplier
         percent = 0

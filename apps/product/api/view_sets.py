@@ -334,7 +334,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Product.objects.filter(
             
             Q(name__icontains=search_input[0])
-            # | Q(article__icontains=search_input[0])
+            | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
@@ -346,7 +346,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             for search_item in search_input[1:]:
                 queryset = queryset.filter(
                     Q(name__icontains=search_item)
-                    # | Q(article__icontains=search_item)
+                    | Q(article__icontains=search_item)
                     | Q(article_supplier__icontains=search_item)
                     | Q(additional_article_supplier__icontains=search_item)
                     | Q(description__icontains=search_item)

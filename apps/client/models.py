@@ -605,7 +605,8 @@ class Order(models.Model):
     )
     bill_name_prefix = models.CharField(
         "Префикс номера счета",
-        max_length=100, choices=TYPE_ORDER_NAME, default="ОКТ"
+        max_length=100, choices=TYPE_ORDER_NAME, default="ОКТ",blank=True,
+        null=True,
     )
     bill_file = models.FileField(
         "Фаил счета",
@@ -863,7 +864,8 @@ class OrderDocumentBill(models.Model):
     )
     bill_name_prefix = models.CharField(
         "Префикс номера счета",
-        max_length=100, choices=STATUS_ORDER, default="ОКТ"
+        max_length=100, choices=STATUS_ORDER, default="ОКТ",blank=True,
+        null=True,
     )
     text_name_bill = models.CharField(
         "Текстовое название",

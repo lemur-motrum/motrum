@@ -66,6 +66,187 @@ window.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".bread_crumbs").getBoundingClientRect().top +
       window.scrollY;
 
+    const charBlocksFalseDiaposon = document.querySelectorAll(
+      ".char_block_false_diapason"
+    );
+
+    let charactiristics = [];
+
+    charBlocksFalseDiaposon.forEach((charBlock) => {
+      const charValues = charBlock.querySelectorAll(".char_value");
+      charValues.forEach((charValue) => {
+        charValue.onclick = () => {
+          const dataIdChars = charValue.getAttribute("data-id-chars");
+          const dataIdValueChars = charValue.getAttribute(
+            "data-id-value-chars"
+          );
+          charValue.classList.toggle("checked");
+          let validate = false;
+          if (charValue.classList.contains("checked")) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  charactiristics[i]["values"].push(dataIdValueChars);
+                  validate = true;
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: dataIdChars,
+                  values: [dataIdValueChars],
+                  is_diapason: false,
+                  min_value: 0,
+                  max_value: 0,
+                });
+                validate = false;
+              }
+            } else {
+              charactiristics.push({
+                id: dataIdChars,
+                values: [dataIdValueChars],
+                is_diapason: false,
+                min_value: 0,
+                max_value: 0,
+              });
+            }
+          } else {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  if (charactiristics[i]["values"].length > 1) {
+                    charactiristics[i]["values"] = charactiristics[i][
+                      "values"
+                    ].filter((el) => el !== dataIdValueChars);
+                    break;
+                  } else {
+                    charactiristics = charactiristics.filter(
+                      (el) => el["id"] !== dataIdChars
+                    );
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        };
+      });
+    });
+
+    const charBlocksTrueDiaposon = document.querySelectorAll(
+      ".char_block_true_diapason"
+    );
+
+    charBlocksTrueDiaposon.forEach((charBlock) => {
+      const charValueContainer = charBlock.querySelector(".range_chars_value");
+
+      const minValueInput = charValueContainer.querySelector(
+        ".range_chars_value_small_input"
+      );
+      const maxValueInput = charValueContainer.querySelector(
+        ".range_chars_value_big_input"
+      );
+
+      const minValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-min-value")
+      );
+
+      const maxValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-max-value")
+      );
+
+      const charBlockDataId = charValueContainer.getAttribute("data-id-chars");
+
+      setupInputHandler(minValueInput, 0, maxValue);
+      setupInputHandler(maxValueInput, 0, maxValue);
+
+      function setupInputHandler(input, min, max) {
+        input.addEventListener("input", (e) => {
+          let value = e.target.value;
+
+          function formatInput(value) {
+            let newValue = value;
+            newValue = newValue.replace(/,/g, ".");
+            newValue = newValue.replace(/[^\d.]/g, "");
+            newValue = newValue.replace(/\.+/g, ".");
+            if (newValue.startsWith(".")) {
+              newValue = newValue.substring(1);
+            }
+            newValue = newValue.replace(/\.(?=.*\.)/g, "");
+            if (newValue.includes(".")) {
+              const [integerPart, decimalPart] = newValue.split(".");
+              newValue = integerPart + "." + decimalPart.slice(0, 2); // Берем только первые 2 знака после точки
+            }
+
+            if (+newValue < min) {
+              return min;
+            } else if (+newValue > max) {
+              return max;
+            } else {
+              return newValue;
+            }
+          }
+          value = formatInput(value);
+          input.value = value;
+
+          let validate = false;
+
+          if (minValueInput.value || minValueInput.value) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == charBlockDataId) {
+                  charactiristics[i]["min_value"] = minValueInput.value
+                    ? minValueInput.value
+                    : minValue;
+                  charactiristics[i]["max_value"] = maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue;
+                  validate = true;
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: charBlockDataId,
+                  values: null,
+                  is_diapason: true,
+                  min_value: minValueInput.value
+                    ? minValueInput.value
+                    : minValue,
+                  max_value: maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue,
+                });
+              }
+            } else {
+              charactiristics.push({
+                id: charBlockDataId,
+                values: null,
+                is_diapason: true,
+                min_value: minValueInput.value ? minValueInput.value : minValue,
+                max_value: maxValueInput.value ? maxValueInput.value : maxValue,
+              });
+            }
+          } else {
+            charactiristics = charactiristics.filter(
+              (el) => el["id"] !== charBlockDataId
+            );
+          }
+          console.log(charactiristics);
+        });
+      }
+    });
+
+    const charsContent = document.querySelector(".chars_content");
+    if (charsContent) {
+      new Accordion(".chars_content", {
+        elementClass: "char_values_long",
+        triggerClass: "add_more_btn",
+        panelClass: "char_values",
+        showMultiple: true,
+      });
+    }
+
     function getActivePaginationElem() {
       for (let i = 0; i < paginationElems.length; i++) {
         if (paginationElems[i].textContent == pageCount + 1) {
@@ -121,11 +302,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    let chars = [
-      // { id: 134, values: [927], is_diapason:false, min_value:0, max_value:0 }, 
-      // { id: 141, values: [1167], is_diapason:false, min_value:0, max_value:0 },
-      // { id: 143, values: null, is_diapason:true, min_value:800, max_value:800}
-    ]
+
     function loadItems(addMoreBtn = false) {
       let data = {
         count: productCount,
@@ -139,7 +316,8 @@ window.addEventListener("DOMContentLoaded", () => {
         priceto: priceTo ? priceTo : 0,
         pricenone: pricenone,
         search_text: searchText ? searchText : "",
-        chars: JSON.stringify(chars),
+        chars:
+          charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
       };
 
       let params = new URLSearchParams(data);
@@ -389,6 +567,12 @@ window.addEventListener("DOMContentLoaded", () => {
       });
       priceFrom = "";
       priceTo = "";
+      charactiristics = [];
+      document.querySelectorAll(".char_value").forEach((el) => {
+        if (el.classList.contains("checked")) {
+          el.classList.remove("checked");
+        }
+      });
       maxInputPrice.value = "";
       minInputPrice.value = "";
       pageCount = 0;

@@ -206,8 +206,8 @@ def xlsx_props_motrum_pandas():
             if sheet_name == "Характеристики Мотрум ":
                 continue  # пропускаем этот лист
 
-            if sheet_name != "РP (привод.техника)Серво":
-                continue  # пропускаем этот лист
+            # if sheet_name != "РP (привод.техника)Серво":
+            #     continue  # пропускаем этот лист
             print(f"Обрабатывается лист: {sheet_name}")
             prev_name_motrum = None
             prev_supplier = None

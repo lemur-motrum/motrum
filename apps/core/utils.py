@@ -870,7 +870,7 @@ def create_time_stop_specification():
 
 
 # получение категорий мотрум из категорий поставщика
-def get_motrum_category(self):
+def get_motrum_category_and_motrum_props(self):
     category_catalog = None
     group_catalog = None
     if self.category_supplier_all != None:
@@ -896,6 +896,30 @@ def get_motrum_category(self):
             serch_prod_to_motrum_props_categ_to_create_product(
     self,self.category_supplier.name
 )
+    print(category_catalog, group_catalog)
+    return (category_catalog, group_catalog)
+
+# получение категорий мотрум из категорий поставщика
+def get_motrum_category(self):
+    category_catalog = None
+    group_catalog = None
+    if self.category_supplier_all != None:
+        category_catalog = self.category_supplier_all.category_catalog
+        group_catalog = self.category_supplier_all.group_catalog
+       
+    if self.group_supplier != None:
+        print(self.group_supplier)
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.group_supplier.category_catalog
+            print(category_catalog)
+            group_catalog = self.group_supplier.group_catalog
+            print(group_catalog)
+            
+    if self.category_supplier != None:
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.category_supplier.category_catalog
+            group_catalog = self.category_supplier.group_catalog
+           
     print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 

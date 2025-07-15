@@ -38,9 +38,9 @@ class ProductForm(forms.ModelForm):
         queryset=Vendor.objects.all(),
         # required=False,
         label="Производитель",
-        # widget=autocomplete.ModelSelect2(
-        #     url="product:vendor-autocomplete", forward=["supplier"]
-        # ),
+        widget=autocomplete.ModelSelect2(
+            url="product:vendor-autocomplete",
+        ),
     )
 
     category = forms.ModelChoiceField(

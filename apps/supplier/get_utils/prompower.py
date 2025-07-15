@@ -205,7 +205,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"]=="CPSEM03PS":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -374,6 +374,18 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
+                            print("обновление характеристик")
+                            # обновление характеристик 
+                            for prop in data_item["props"]:
+                                property_product,created = ProductProperty.objects.get_or_create(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                if created:
+                                    update_change_reason(
+                                        property_product, "Автоматическое"
+                                    )
                             if IS_PROD:
                                 # если у товара не было совсем дококв из пропсов
                                 props = ProductProperty.objects.filter(
@@ -438,16 +450,16 @@ def prompower_api():
                                 save_image(article)
                                 save_document(categ, article)
 
-                                for prop in data_item["props"]:
-                                    property_product = ProductProperty(
-                                        product=article,
-                                        name=prop["name"],
-                                        value=prop["value"],
-                                    )
-                                    property_product.save()
-                                    update_change_reason(
-                                        property_product, "Автоматическое"
-                                    )
+                            for prop in data_item["props"]:
+                                property_product = ProductProperty(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                property_product.save()
+                                update_change_reason(
+                                    property_product, "Автоматическое"
+                                )
 
                         # цены товара
                         try:

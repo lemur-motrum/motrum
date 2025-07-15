@@ -610,7 +610,7 @@
             }
           }
           .suppliers_add_more_btn {
-            width: 100%;
+            width: 18.313rem;
             display: flex;
             justify-content: space-between;
             padding: 1rem 1.875rem;
@@ -802,6 +802,196 @@
                 @media screen and (max-width: 576px) {
                   font-size: 0.75rem;
                   width: 8rem;
+                }
+              }
+            }
+          }
+          &.chars_filter_elem {
+            .chars_content {
+              display: flex;
+              flex-direction: column;
+              gap: 2.688rem;
+              .char_block {
+                display: flex;
+                flex-direction: column;
+                gap: 1.625rem;
+                .filter_title {
+                  font-size: 1.5rem;
+                  font-weight: 700;
+                }
+                .char_values {
+                  width: 18.313rem;
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr;
+                  gap: 0.5rem;
+                  .char_value {
+                    display: flex;
+                    gap: 0.25rem;
+                    align-items: center;
+                    cursor: pointer;
+                    .char_value_checkbox_container {
+                      width: 1rem;
+                      height: 1rem;
+                      border-radius: 0.313rem;
+                      border: 0.094rem solid #000;
+                      background-color: #fff;
+                      transition: 0.6s;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      .char_value_checkbox {
+                        width: 0;
+                        height: 0;
+                        background-color: #95bad4;
+                        transition: 0.6s;
+                      }
+                    }
+                    &.checked {
+                      .char_value_checkbox_container {
+                        border: 0.094rem solid #95bad4;
+                        .char_value_checkbox {
+                          width: 1rem;
+                          height: 1rem;
+                          background-color: #95bad4;
+                          border-radius: 0.113rem;
+                        }
+                      }
+                    }
+                    .char_value_name {
+                      font-weight: 300;
+                      font-size: 1.125rem;
+                    }
+                    &.range_chars_value {
+                      width: 18.313rem;
+                      height: 3.563rem;
+                      border: 0.094rem solid #000;
+                      border-radius: 2rem;
+                      display: flex;
+                      justify-content: space-between;
+                      padding: 0.938rem 1.094rem;
+                      box-sizing: border-box;
+                      .range_chars_value_input_container {
+                        width: 7rem;
+                        display: flex;
+                        gap: 0.5rem;
+                        font-size: 1.125rem;
+                        font-weight: 300;
+                        input {
+                          width: 100%;
+                          border: none;
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          font-family: "Nunito", sans-serif;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                          &:focus {
+                            outline: none;
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+
+                          &::-webkit-input-placeholder {
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            color: #d4d2d3;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+
+                          &::-moz-placeholder {
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            color: #d4d2d3;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+
+                          &:-ms-input-placeholder {
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            color: #d4d2d3;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+
+                          &::-ms-input-placeholder {
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            color: #d4d2d3;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+
+                          &::placeholder {
+                            font-size: 1.125rem;
+                            font-weight: 300;
+                            color: #d4d2d3;
+                            @media screen and (max-width: 576px) {
+                              font-size: 0.75rem;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  &.vertical {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    .char_value {
+                      align-items: center;
+                      .char_value_name {
+                        width: 90%;
+                      }
+                    }
+                  }
+                }
+                &.char_values_long {
+                  // overflow: hidden;
+                  .char_values {
+                    min-height: 8rem;
+                    overflow: hidden;
+                  }
+
+                  .add_more_btn {
+                    width: 18.313rem;
+                    display: flex;
+                    justify-content: center;
+                    gap: 0.1rem;
+                    align-items: center;
+                    font-size: 1.313rem;
+                    text-transform: lowercase;
+                    cursor: pointer;
+                    transition: 0.6s;
+                    color: #000;
+                    position: relative;
+                    &::after {
+                      content: "показать еще";
+                      position: absolute;
+                      top: 50%;
+                      left: 46%;
+                      transform: translate(-50%, -50%);
+                    }
+                  }
+                  &.is-active {
+                    .add_more_btn {
+                      &::after {
+                        content: "скрыть";
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                      }
+                    }
+                  }
                 }
               }
             }

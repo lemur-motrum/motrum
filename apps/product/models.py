@@ -939,8 +939,11 @@ class ProductProperty(models.Model):
                     is_have_vendor_props=True,
                     property_value_motrum_to_diapason=value_diapason
                 )
-                print("*********")
-                print(prop_motrum, created )
+                error = "info_error"
+                location = "+ х-ка"
+                info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                e = error_alert(error, location, info)
+                
         super().save(*args, **kwargs)
 
 
@@ -1107,7 +1110,12 @@ class ProductPropertyMotrum(models.Model):
         blank=True,
         null=True,
     )
+    name_to_slug = models.CharField("Название для слага", max_length=600,blank=True,
+        null=True,)
+    slug = models.CharField("Название для слага", max_length=600,blank=True,
+        null=True,)
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    
 
     class Meta:
         verbose_name = "Характеристика товара мотрум"
@@ -1115,6 +1123,18 @@ class ProductPropertyMotrum(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
+    def save(self, *args, **kwargs):
+        if self.name_to_slug and self.slug == None:
+            slug_text = self.name_to_slug
+            regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+            slugish = re.sub(regex, "", slug_text)
+            slugish = translit.translify(slugish)
+            self.slug = slugify(slugish)
+            print( "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& self.slug", self.slug)
+        
+        super().save(*args, **kwargs)
+
 
 
 class ProductPropertyValueMotrum(models.Model):
@@ -1168,6 +1188,7 @@ class VendorPropertyAndMotrum(models.Model):
         blank=True,
         null=True,
     )
+    is_category = models.BooleanField("Категория поставщика", default=False)
     # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
     is_diapason = models.BooleanField("Диапазонное значение", default=False)
     # property_value_motrum_to_diapason = models.FloatField(

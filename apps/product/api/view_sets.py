@@ -720,7 +720,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         print(queryset)
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-            print(product)
+
             data["id"] = product.id
             serializer = serializer_class(product, data=data, many=False)
             if serializer.is_valid():
@@ -736,27 +736,27 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # новый товар
         except ProductCart.DoesNotExist:
-            # try:
-            #     product = queryset.get(product=data["product"])
-            #     data = {"status": "product_in_cart"}
-            #     return Response(data, status=status.HTTP_409_CONFLICT)
+            try:
+                product = queryset.get(product=data["product"])
+                data = {"status": "product_in_cart"}
+                return Response(data, status=status.HTTP_409_CONFLICT)
             
-            # except ProductCart.DoesNotExist:
+            except ProductCart.DoesNotExist:
             
-            data["product_price"] = product_price
-            data["product_sale_motrum"] = product_sale_motrum
-            serializer = serializer_class(data=data, many=False)
-            if serializer.is_valid():
-                cart_product = serializer.save()
-                cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
-                data["cart_len"] = cart_len
-                cart_prod = ProductCart.objects.get(
-                    cart_id=kwargs["cart"], product=data["product"]
-                )
-                data["cart_prod"] = cart_prod.id
-                return Response(data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                data["product_price"] = product_price
+                data["product_sale_motrum"] = product_sale_motrum
+                serializer = serializer_class(data=data, many=False)
+                if serializer.is_valid():
+                    cart_product = serializer.save()
+                    cart_len = ProductCart.objects.filter(cart_id=kwargs["cart"]).count()
+                    data["cart_len"] = cart_len
+                    cart_prod = ProductCart.objects.get(
+                        cart_id=kwargs["cart"], product=data["product"]
+                    )
+                    data["cart_prod"] = cart_prod.id
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # добавить товар не из  бд в корзину
     @action(detail=False, methods=["post"], url_path=r"(?P<cart>\w+)/save-product-new")

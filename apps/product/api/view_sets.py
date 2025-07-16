@@ -328,6 +328,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     # поиск товар в окт
     @action(detail=False, methods=["post", "get"], url_path=r"search-product")
     def search_product(self, request, *args, **kwargs):
+        
         data = request.data
         count = data["count"]
         count_last = int(data["count_last"])
@@ -480,7 +481,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-vendor")
     def search_vendor(self, request, *args, **kwargs):
-        
+        queryset = Vendor.objects.filter()
         data = request.data
      
         count = int(data["count"])
@@ -488,9 +489,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = data["search_text"]
         # search_input = search_input.replace(".", "").replace(",", "")
         # search_input = search_input.split()
-
-        # стандатный варинт ищет целиокм
-        queryset = Vendor.objects.filter(Q(name__icontains=search_input))
+        if search_input:
+            # стандатный варинт ищет целиокм
+            queryset = Vendor.objects.filter(Q(name__icontains=search_input))
 
 
         queryset = queryset[count:count_last]

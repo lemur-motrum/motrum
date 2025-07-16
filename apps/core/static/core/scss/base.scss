@@ -60,7 +60,7 @@ a {
     .site-description-content {
       margin-bottom: 1.5rem;
       min-height: 22rem;
-      overflow-x: hidden;
+      overflow-x: clip;
 
       .custom_404_text {
         display: flex;

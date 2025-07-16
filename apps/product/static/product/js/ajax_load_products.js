@@ -70,174 +70,38 @@ window.addEventListener("DOMContentLoaded", () => {
       ".char_block_false_diapason"
     );
 
-    let charactiristics = [];
-
-    charBlocksFalseDiaposon.forEach((charBlock) => {
-      const charValues = charBlock.querySelectorAll(".char_value");
-      charValues.forEach((charValue) => {
-        charValue.onclick = () => {
-          const dataIdChars = charValue.getAttribute("data-id-chars");
-          const dataIdValueChars = charValue.getAttribute(
-            "data-id-value-chars"
-          );
-          charValue.classList.toggle("checked");
-          let validate = false;
-          if (charValue.classList.contains("checked")) {
-            if (charactiristics.length > 0) {
-              for (let i = 0; i < charactiristics.length; i++) {
-                if (charactiristics[i]["id"] == dataIdChars) {
-                  charactiristics[i]["values"].push(dataIdValueChars);
-                  validate = true;
-                  break;
-                }
-              }
-              if (!validate) {
-                charactiristics.push({
-                  id: dataIdChars,
-                  values: [dataIdValueChars],
-                  is_diapason: false,
-                  min_value: 0,
-                  max_value: 0,
-                });
-                validate = false;
-              }
-            } else {
-              charactiristics.push({
-                id: dataIdChars,
-                values: [dataIdValueChars],
-                is_diapason: false,
-                min_value: 0,
-                max_value: 0,
-              });
-            }
-          } else {
-            if (charactiristics.length > 0) {
-              for (let i = 0; i < charactiristics.length; i++) {
-                if (charactiristics[i]["id"] == dataIdChars) {
-                  if (charactiristics[i]["values"].length > 1) {
-                    charactiristics[i]["values"] = charactiristics[i][
-                      "values"
-                    ].filter((el) => el !== dataIdValueChars);
-                    break;
-                  } else {
-                    charactiristics = charactiristics.filter(
-                      (el) => el["id"] !== dataIdChars
-                    );
-                    break;
-                  }
-                }
-              }
-            }
-          }
-          test_serch_chars(charactiristics)
-          console.log("charactiristics",charactiristics)
-        };
-      });
-    });
-
-    const charBlocksTrueDiaposon = document.querySelectorAll(
-      ".char_block_true_diapason"
+    const filterContainer = document.querySelector(".filter_container");
+    const messageElem = document.querySelector(
+      ".filters_quantity_message_container"
     );
 
-    charBlocksTrueDiaposon.forEach((charBlock) => {
-      const charValueContainer = charBlock.querySelector(".range_chars_value");
+    let initialTop = 0;
 
-      const minValueInput = charValueContainer.querySelector(
-        ".range_chars_value_small_input"
-      );
-      const maxValueInput = charValueContainer.querySelector(
-        ".range_chars_value_big_input"
-      );
+    // Рассчитываем начальную позицию в пикселях
+    function calculateInitialTop() {
+      initialTop = filterContainer.offsetHeight * 0.05; // 25% от высоты контейнера
+    }
+    calculateInitialTop();
+    window.addEventListener("resize", () => {
+      // Пересчитываем позицию при изменении размера окна
+      calculateInitialTop();
+      messageElem.style.top = "0%";
+    });
 
-      const minValue = getCurrentPrice(
-        charValueContainer.getAttribute("data-min-value")
-      );
+    document.addEventListener("scroll", () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
 
-      const maxValue = getCurrentPrice(
-        charValueContainer.getAttribute("data-max-value")
-      );
-
-      const charBlockDataId = charValueContainer.getAttribute("data-id-chars");
-
-      setupInputHandler(minValueInput, 0, maxValue);
-      setupInputHandler(maxValueInput, 0, maxValue);
-
-      function setupInputHandler(input, min, max) {
-        input.addEventListener("input", (e) => {
-          let value = e.target.value;
-
-          function formatInput(value) {
-            let newValue = value;
-            newValue = newValue.replace(/,/g, ".");
-            newValue = newValue.replace(/[^\d.]/g, "");
-            newValue = newValue.replace(/\.+/g, ".");
-            if (newValue.startsWith(".")) {
-              newValue = newValue.substring(1);
-            }
-            newValue = newValue.replace(/\.(?=.*\.)/g, "");
-            if (newValue.includes(".")) {
-              const [integerPart, decimalPart] = newValue.split(".");
-              newValue = integerPart + "." + decimalPart.slice(0, 2); // Берем только первые 2 знака после точки
-            }
-
-            if (+newValue < min) {
-              return min;
-            } else if (+newValue > max) {
-              return max;
-            } else {
-              return newValue;
-            }
-          }
-          value = formatInput(value);
-          input.value = value;
-
-          let validate = false;
-
-          if (minValueInput.value || minValueInput.value) {
-            if (charactiristics.length > 0) {
-              for (let i = 0; i < charactiristics.length; i++) {
-                if (charactiristics[i]["id"] == charBlockDataId) {
-                  charactiristics[i]["min_value"] = minValueInput.value
-                    ? minValueInput.value
-                    : minValue;
-                  charactiristics[i]["max_value"] = maxValueInput.value
-                    ? maxValueInput.value
-                    : maxValue;
-                  validate = true;
-                  break;
-                }
-              }
-              if (!validate) {
-                charactiristics.push({
-                  id: charBlockDataId,
-                  values: null,
-                  is_diapason: true,
-                  min_value: minValueInput.value
-                    ? minValueInput.value
-                    : minValue,
-                  max_value: maxValueInput.value
-                    ? maxValueInput.value
-                    : maxValue,
-                });
-              }
-            } else {
-              charactiristics.push({
-                id: charBlockDataId,
-                values: null,
-                is_diapason: true,
-                min_value: minValueInput.value ? minValueInput.value : minValue,
-                max_value: maxValueInput.value ? maxValueInput.value : maxValue,
-              });
-            }
-          } else {
-            charactiristics = charactiristics.filter(
-              (el) => el["id"] !== charBlockDataId
-            );
-          }
-          console.log(charactiristics);
-        });
+      if (scrollTop >= initialTop) {
+        messageElem.style.top = `${
+          scrollTop - initialTop + filterContainer.offsetTop
+        }px`;
+      } else {
+        messageElem.style.top = "0%";
       }
     });
+
+    let charactiristics = [];
 
     const charsContent = document.querySelector(".chars_content");
     if (charsContent) {
@@ -303,6 +167,69 @@ window.addEventListener("DOMContentLoaded", () => {
           lastDots.classList.add("show");
         }
       }
+    }
+
+    function num_word(value, words) {
+      value = Math.abs(value) % 100;
+      var num = value % 10;
+      if (value > 10 && value < 20) return words[2];
+      if (num > 1 && num < 5) return words[1];
+      if (num == 1) return words[0];
+      return words[2];
+    }
+
+    function test_serch_chars() {
+      let data = {
+        count: productCount,
+        sort: sort ? sort : "?",
+        page: pageCount,
+        category: category,
+        group: !group ? "" : group,
+        vendor: paramsArray.length > 0 ? paramsArray : "",
+        pricefrom: priceFrom ? priceFrom : 0,
+        priceto: priceTo ? priceTo : 0,
+        pricenone: pricenone,
+        search_text: searchText ? searchText : "",
+        chars:
+          charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
+      };
+      let csrfToken = getCookie("csrftoken");
+      let params = new URLSearchParams(data);
+      fetch(`/api/v1/product/search-filters-product/?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            setErrorModal();
+          }
+        })
+        .then((response) => {
+          messageElem.classList.remove("hide");
+          messageElem.classList.remove("disabled");
+          if (response["count_product"] > 999) {
+            if (charactiristics.length > 0) {
+              messageElem.textContent = "Найдено больше 1тыс. товаров";
+            } else {
+              messageElem.classList.add("hide");
+            }
+          } else if (response["count_product"] == 0) {
+            messageElem.classList.add("disabled");
+            messageElem.textContent = "Ничего не найдено";
+          } else {
+            messageElem.textContent = `Найдено ${
+              response["count_product"]
+            } ${num_word(response["count_product"], [
+              "товар",
+              "товара",
+              "товаров",
+            ])}`;
+          }
+        });
     }
 
     function loadItems(addMoreBtn = false) {
@@ -412,6 +339,61 @@ window.addEventListener("DOMContentLoaded", () => {
       const pageGetParam = urlParams.get("page");
       const priceGetParam = urlParams.get("price");
 
+      const slugsElems = document.querySelectorAll("[data-chars-slug]");
+      slugsElems.forEach((slugElem) => {
+        if (slugElem.classList.contains("char_block_false_diapason")) {
+          const slug = slugElem.getAttribute("data-chars-slug");
+          const charsGetParam = urlParams.get(`${slug}`);
+          if (charsGetParam) {
+            const dataIdChars = slugElem.getAttribute("data-id-chars");
+            const values = charsGetParam.split(",");
+            const charValues = slugElem.querySelectorAll(".char_value");
+
+            values.forEach((valueID) => {
+              charValues.forEach((charValue) => {
+                if (charValue.getAttribute("data-id-value-chars") == valueID) {
+                  charValue.classList.add("checked");
+                }
+              });
+            });
+
+            charactiristics.push({
+              id: dataIdChars,
+              values: values,
+              is_diapason: false,
+              min_value: 0,
+              max_value: 0,
+            });
+          }
+        }
+        if (slugElem.classList.contains("char_block_true_diapason")) {
+          const slug = slugElem.getAttribute("data-chars-slug");
+
+          const charsGetParam = urlParams.get(`${slug}`);
+          if (charsGetParam) {
+            const minInput = slugElem.querySelector(
+              ".range_chars_value_small_input"
+            );
+            const maxInput = slugElem.querySelector(
+              ".range_chars_value_big_input"
+            );
+            const dataIdChars = slugElem.getAttribute("data-id-chars");
+            const values = charsGetParam.split(",");
+
+            minInput.value = values[0];
+            maxInput.value = values[1];
+
+            charactiristics.push({
+              id: dataIdChars,
+              values: null,
+              is_diapason: true,
+              min_value: values[0],
+              max_value: values[1],
+            });
+          }
+        }
+      });
+
       if (pageGetParam) {
         pageCount = +pageGetParam - 1;
         productCount = 10;
@@ -423,6 +405,15 @@ window.addEventListener("DOMContentLoaded", () => {
           : downPriceBtn.classList.add("active");
       }
       loadItems();
+    };
+
+    messageElem.onclick = () => {
+      if (!messageElem.classList.contains("disabled")) {
+        pageCount = 0;
+        preLoaderLogic();
+        productCount = 10;
+        scrollToTop(offsetTop);
+      }
     };
 
     paginationFirstElem.onclick = () => {
@@ -478,16 +469,241 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    charBlocksFalseDiaposon.forEach((charBlock) => {
+      const slug = charBlock.getAttribute("data-chars-slug");
+      const charValues = charBlock.querySelectorAll(".char_value");
+      const dataIdChars = charBlock.getAttribute("data-id-chars");
+      charValues.forEach((charValue) => {
+        charValue.onclick = () => {
+          const dataIdValueChars = charValue.getAttribute(
+            "data-id-value-chars"
+          );
+          charValue.classList.toggle("checked");
+          let validate = false;
+          if (charValue.classList.contains("checked")) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  charactiristics[i]["values"].push(dataIdValueChars);
+                  validate = true;
+                  currentUrl.searchParams.set(
+                    `${slug}`,
+                    charactiristics
+                      .filter((el) => el["id"] == dataIdChars)[0]
+                      ["values"].join(",")
+                  );
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: dataIdChars,
+                  values: [dataIdValueChars],
+                  is_diapason: false,
+                  min_value: 0,
+                  max_value: 0,
+                });
+                validate = false;
+                currentUrl.searchParams.set(
+                  `${slug}`,
+                  charactiristics
+                    .filter((el) => el["id"] == dataIdChars)[0]
+                    ["values"].join(",")
+                );
+              }
+            } else {
+              charactiristics.push({
+                id: dataIdChars,
+                values: [dataIdValueChars],
+                is_diapason: false,
+                min_value: 0,
+                max_value: 0,
+              });
+
+              currentUrl.searchParams.set(
+                `${slug}`,
+                charactiristics
+                  .filter((el) => el["id"] == dataIdChars)[0]
+                  ["values"].join()
+              );
+            }
+          } else {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == dataIdChars) {
+                  if (charactiristics[i]["values"].length > 1) {
+                    charactiristics[i]["values"] = charactiristics[i][
+                      "values"
+                    ].filter((el) => el !== dataIdValueChars);
+                    currentUrl.searchParams.set(
+                      `${slug}`,
+                      charactiristics
+                        .filter((el) => el["id"] == dataIdChars)[0]
+                        ["values"].join(",")
+                    );
+                    break;
+                  } else {
+                    charactiristics = charactiristics.filter(
+                      (el) => el["id"] !== dataIdChars
+                    );
+                    currentUrl.searchParams.delete(`${slug}`);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+          history.pushState({}, "", currentUrl);
+          test_serch_chars();
+          console.log("charactiristics", charactiristics);
+        };
+      });
+    });
+
+    const charBlocksTrueDiaposon = document.querySelectorAll(
+      ".char_block_true_diapason"
+    );
+
+    charBlocksTrueDiaposon.forEach((charBlock) => {
+      const charValueContainer = charBlock.querySelector(".range_chars_value");
+      const slug = charBlock.getAttribute("data-chars-slug");
+      const charBlockDataId = charBlock.getAttribute("data-id-chars");
+
+      const minValueInput = charValueContainer.querySelector(
+        ".range_chars_value_small_input"
+      );
+      const maxValueInput = charValueContainer.querySelector(
+        ".range_chars_value_big_input"
+      );
+
+      const minValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-min-value")
+      );
+
+      const maxValue = getCurrentPrice(
+        charValueContainer.getAttribute("data-max-value")
+      );
+
+      setupInputHandler(minValueInput, 0, maxValue);
+      setupInputHandler(maxValueInput, 0, maxValue);
+
+      function setupInputHandler(input, min, max) {
+        input.addEventListener("input", (e) => {
+          let value = e.target.value;
+
+          function formatInput(value) {
+            let newValue = value;
+            newValue = newValue.replace(/,/g, ".");
+            newValue = newValue.replace(/[^\d.]/g, "");
+            newValue = newValue.replace(/\.+/g, ".");
+            if (newValue.startsWith(".")) {
+              newValue = newValue.substring(1);
+            }
+            newValue = newValue.replace(/\.(?=.*\.)/g, "");
+            if (newValue.includes(".")) {
+              const [integerPart, decimalPart] = newValue.split(".");
+              newValue = integerPart + "." + decimalPart.slice(0, 2);
+            }
+
+            if (+newValue < min) {
+              return min;
+            } else if (+newValue > max) {
+              return max;
+            } else {
+              return newValue;
+            }
+          }
+          value = formatInput(value);
+          input.value = value;
+
+          let validate = false;
+
+          const minMaxArrray = [];
+
+          if (minValueInput.value || minValueInput.value) {
+            if (charactiristics.length > 0) {
+              for (let i = 0; i < charactiristics.length; i++) {
+                if (charactiristics[i]["id"] == charBlockDataId) {
+                  charactiristics[i]["min_value"] = minValueInput.value
+                    ? minValueInput.value
+                    : minValue;
+                  charactiristics[i]["max_value"] = maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue;
+                  validate = true;
+
+                  minMaxArrray.push(charactiristics[i]["min_value"]);
+                  minMaxArrray.push(charactiristics[i]["max_value"]);
+
+                  currentUrl.searchParams.set(
+                    `${slug}`,
+                    minMaxArrray.join(",")
+                  );
+
+                  break;
+                }
+              }
+              if (!validate) {
+                charactiristics.push({
+                  id: charBlockDataId,
+                  values: null,
+                  is_diapason: true,
+                  min_value: minValueInput.value
+                    ? minValueInput.value
+                    : minValue,
+                  max_value: maxValueInput.value
+                    ? maxValueInput.value
+                    : maxValue,
+                });
+
+                const char = charactiristics.filter(
+                  (el) => el["id"] == charBlockDataId
+                )[0];
+
+                minMaxArrray.push(char["min_value"]);
+                minMaxArrray.push(char["max_value"]);
+
+                currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
+              }
+            } else {
+              charactiristics.push({
+                id: charBlockDataId,
+                values: null,
+                is_diapason: true,
+                min_value: minValueInput.value ? minValueInput.value : minValue,
+                max_value: maxValueInput.value ? maxValueInput.value : maxValue,
+              });
+
+              const char = charactiristics.filter(
+                (el) => el["id"] == charBlockDataId
+              )[0];
+
+              minMaxArrray.push(char["min_value"]);
+              minMaxArrray.push(char["max_value"]);
+
+              currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
+            }
+          } else {
+            charactiristics = charactiristics.filter(
+              (el) => el["id"] !== charBlockDataId
+            );
+            currentUrl.searchParams.delete(`${slug}`);
+          }
+          history.pushState({}, "", currentUrl);
+          test_serch_chars();
+          console.log(charactiristics);
+        });
+      }
+    });
+
     filters.forEach((filterElem) => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
-
       filterValues.forEach((filterValue) => {
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
             if (vendorParam == param) {
               filterValue.classList.add("show");
-
               supplierNameContainer.prepend(filterValue);
             }
           });
@@ -587,6 +803,12 @@ window.addEventListener("DOMContentLoaded", () => {
       urlParams.delete("price");
       urlParams.delete("vendor");
       checkboxZone.classList.remove("checked");
+      const slugsElems = document.querySelectorAll("[data-chars-slug]");
+      slugsElems.forEach((slugElem) => {
+        const slug = slugElem.getAttribute("data-chars-slug");
+        urlParams.delete(`${slug}`);
+      });
+      messageElem.classList.add("hide");
       closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();
@@ -618,6 +840,8 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
+      messageElem.classList.add("hide");
+      messageElem.classList.remove("disabled");
       loadItems();
     }
 
@@ -676,36 +900,3 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
-
-
-function test_serch_chars(charactiristics){
-  let data = {
-        // category: category,
-        // group: !group ? "" : group,
-        // vendor: paramsArray.length > 0 ? paramsArray : "",
-       
-        // pricefrom: priceFrom ? priceFrom : 0,
-        // priceto: priceTo ? priceTo : 0,
-        // pricenone: pricenone,
-        chars:
-          charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-    chars:
-      charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-  };
-  let csrfToken = getCookie("csrftoken");
-  let params = new URLSearchParams(data);
-  fetch(`/api/v1/product/search-filters-product/?${params.toString()}`, {
-    method: "GET",
-    headers: {
-      "X-CSRFToken": csrfToken,
-    },
-  }).then((response) => {
-    if (response.status >= 200 && response.status < 300) {
-      
-      return response.json();
-    } else {
-      setErrorModal();
-    }
-  })
-}
-  

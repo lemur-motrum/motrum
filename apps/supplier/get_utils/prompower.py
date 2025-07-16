@@ -396,7 +396,7 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
-                            save_document(categ, article)
+                            
                             if IS_PROD:
                                 save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов

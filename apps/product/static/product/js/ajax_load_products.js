@@ -74,6 +74,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const messageElem = document.querySelector(
       ".filters_quantity_message_container"
     );
+    const sup = filterContainer.querySelector(".supplier_content");
 
     let initialTop = 0;
 
@@ -87,17 +88,33 @@ window.addEventListener("DOMContentLoaded", () => {
       calculateInitialTop();
       messageElem.style.top = "0%";
     });
+    console.log(sup.offsetHeight);
 
     document.addEventListener("scroll", () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      if (scrollTop >= initialTop) {
-        messageElem.style.top = `${
-          scrollTop - initialTop + filterContainer.offsetTop
-        }px`;
+      if (sup) {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop >= initialTop) {
+          messageElem.style.top = `${
+            scrollTop -
+            initialTop +
+            filterContainer.offsetTop -
+            sup.clientHeight * 2
+          }px`;
+        } else {
+          messageElem.style.top = "0%";
+        }
       } else {
-        messageElem.style.top = "0%";
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop >= initialTop) {
+          messageElem.style.top = `${
+            scrollTop - initialTop + filterContainer.offsetTop
+          }px`;
+        } else {
+          messageElem.style.top = "0%";
+        }
       }
     });
 
@@ -221,13 +238,17 @@ window.addEventListener("DOMContentLoaded", () => {
             messageElem.classList.add("disabled");
             messageElem.textContent = "Ничего не найдено";
           } else {
-            messageElem.textContent = `Найдено ${
-              response["count_product"]
-            } ${num_word(response["count_product"], [
-              "товар",
-              "товара",
-              "товаров",
-            ])}`;
+            if (charactiristics.length > 0) {
+              messageElem.textContent = `Найдено ${
+                response["count_product"]
+              } ${num_word(response["count_product"], [
+                "товар",
+                "товара",
+                "товаров",
+              ])}`;
+            } else {
+              messageElem.classList.add("hide");
+            }
           }
         });
     }
@@ -554,8 +575,8 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
           history.pushState({}, "", currentUrl);
-          test_serch_chars();
           console.log("charactiristics", charactiristics);
+          test_serch_chars();
         };
       });
     });
@@ -690,8 +711,8 @@ window.addEventListener("DOMContentLoaded", () => {
             currentUrl.searchParams.delete(`${slug}`);
           }
           history.pushState({}, "", currentUrl);
-          test_serch_chars();
           console.log(charactiristics);
+          test_serch_chars();
         });
       }
     });

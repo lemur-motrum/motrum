@@ -573,6 +573,143 @@ class ProductViewSet(viewsets.ModelViewSet):
         }
         return Response(data_response, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post", "get"], url_path=r"search-filters-product")
+    def search_filters_product(self, request, *args, **kwargs):
+        
+        
+        chars_param = request.query_params.get('chars')
+        chars = []
+        if chars_param:
+            chars = json.loads(chars_param)
+        print(chars)
+        if request.query_params.get("pricenone"):
+            price_none = request.query_params.get("pricenone")
+        else:
+            price_none = None
+            
+        if  request.query_params.get("priceto"):
+            price_to = float(request.query_params.get("priceto"))
+        else:
+            price_to = None
+            
+        if request.query_params.get("pricefrom"):
+            price_from = float(request.query_params.get("pricefrom"))
+        else:
+            price_from = None
+            
+        if request.query_params.get("vendor"):
+            vendor_get = request.query_params.get("vendor")
+            vendor_get = vendor_get.split(",")
+        else:
+            vendor_get = None
+
+        category_get = request.query_params.get("category")
+
+        if request.query_params.get("group"):
+            groupe_get = request.query_params.get("group")
+        else:
+            groupe_get = None
+        
+        # сортировка по гет параметрам
+        q_object = Q()
+        q_object &= Q(check_to_order=True, in_view_website=True)    
+        if vendor_get is not None:
+            if "None" in vendor_get:
+                if len(vendor_get) > 1:
+                    vendor_get.remove("None")
+                    q_object &= Q(
+                        vendor__slug=None,
+                    ) | Q(vendor__slug__in=vendor_get)
+                else:
+                    q_object &= Q(vendor__slug=None)
+            else:
+                q_object &= Q(vendor__slug__in=vendor_get)
+
+        if category_get is not None:
+            if category_get == "all":
+                q_object &= Q(article__isnull=False)
+            elif category_get == "other":
+                q_object &= Q(category=None)
+            elif category_get == "":
+                pass
+            elif category_get == "search":
+                q_object &= Q(article__isnull=False)
+            else:
+                q_object &= Q(category__id=category_get)
+
+        if groupe_get is not None:
+            q_object &= Q(group__id=groupe_get)
+        # сортировка из блока с ценами
+
+        if price_none and price_none == "true":
+            q_object &= Q(price__rub_price_supplier__isnull=False)
+
+        if price_from and price_from != 0:
+            q_object &= Q(price__rub_price_supplier__gte=price_from)
+
+        if price_to and price_to != 0:
+            q_object &= Q(price__rub_price_supplier__lte=price_to)
+        print(q_object)
+        queryset = (
+            Product.objects.select_related(
+                "supplier",
+                "vendor",
+                "category",
+                "group",
+                "price",
+                "stock",
+            )
+            .prefetch_related(
+                Prefetch("stock__lot"),
+                Prefetch("productproperty_set"),
+                Prefetch("productimage_set"),
+                Prefetch("productimage_set"),
+                Prefetch("productpropertymotrumitem_set"),
+               
+            )
+            .filter(q_object)
+
+        )    
+        # поис по характеристикам мотрум
+        for char in chars:
+            prop_id = char['id']
+            values = char['values']
+            is_diapason = char.get('is_diapason', False)
+            if is_diapason:
+                min_value = char.get('min_value')
+                max_value = char.get('max_value')
+                print("minmax",min_value,max_value)
+                queryset = queryset.filter(
+                    Exists(
+                        ProductPropertyMotrumItem.objects.filter(
+                            product=OuterRef('pk'),
+                            property_motrum=prop_id,
+                            is_diapason=True,
+                            property_value_motrum_to_diapason__gte=min_value,
+                            property_value_motrum_to_diapason__lte=max_value
+                        )
+                    )
+                )
+            else:
+                queryset = queryset.filter(
+                    Exists(
+                        ProductPropertyMotrumItem.objects.filter(
+                            product=OuterRef('pk'),
+                            property_motrum=prop_id,
+                            property_value_motrum__in=values
+                        )
+                    )
+                )
+        count_product = queryset.count()
+        # serializer = ProductSerializer(
+        #     queryset, context={"request": request}, many=True
+        # )
+        data_response = {
+            "count_product": count_product,
+           
+        }
+
+        return Response(data=data_response, status=status.HTTP_200_OK)
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer

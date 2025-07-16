@@ -1220,6 +1220,7 @@ class ProductPropertyMotrumAdmin(admin.ModelAdmin):
         "article",
         'is_diapason',
     )
+    
     inlines = [
         ProductPropertyValueMotrum,
     ]

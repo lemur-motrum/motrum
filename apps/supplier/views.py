@@ -57,8 +57,10 @@ from apps.core.utils_web import (
 )
 from apps.logs.utils import error_alert
 from apps.supplier.get_utils.motrum_filters import (
+    convert_all_to_text,
     xlsx_props_motrum,
     xlsx_props_motrum_pandas,
+    xlsx_to_csv_one_sheet,
 )
 from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
 from apps.supplier.get_utils.unimat_pp import (
@@ -159,27 +161,6 @@ def add_iek(request):
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
 
-    # v = VendorPropertyAndMotrum.objects.all()
-    # for vd in v:
-
-    #     vendor = vd.vendor
-    #     property_vendor_name = vd.property_vendor_name
-    #     property_vendor_value = vd.property_vendor_value
-    #     f = ProductProperty.objects.filter(product__vendor=vendor,name=property_vendor_name,value=property_vendor_value).update(vendor_property_motrum=vd,property_motrum=vd.property_motrum,property_value_motrum=vd.property_value_motrum)
-    #     print(f)
-
-    # p=ProductProperty.objects.filter(name="Макс мощность двигателя ND-реж перем нагрузки кВт",value=375)
-    # for t in p:
-    #     print(t.product.article_supplier)
-
-    prod = Product.objects.get(article="0011")
-    property_product = ProductProperty(
-        product=prod,
-        name="Количество фаз",
-        value="1ф",
-    )
-    property_product.save()
-    update_change_reason(property_product, "Автоматическое")
 
     result = 1
     title = "TEST"

@@ -868,13 +868,15 @@ def create_time_stop_specification():
 
 
 # получение категорий мотрум из категорий поставщика
-def get_motrum_category(self):
+def get_motrum_category_and_motrum_props(self):
     category_catalog = None
     group_catalog = None
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-
+        serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier_all.name
+)
     if self.group_supplier != None:
         print(self.group_supplier)
         if category_catalog == None and group_catalog == None:
@@ -882,11 +884,40 @@ def get_motrum_category(self):
             print(category_catalog)
             group_catalog = self.group_supplier.group_catalog
             print(group_catalog)
-
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.group_supplier.name
+)
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier.name
+)
+    print(category_catalog, group_catalog)
+    return (category_catalog, group_catalog)
+
+# получение категорий мотрум из категорий поставщика
+def get_motrum_category(self):
+    category_catalog = None
+    group_catalog = None
+    if self.category_supplier_all != None:
+        category_catalog = self.category_supplier_all.category_catalog
+        group_catalog = self.category_supplier_all.group_catalog
+       
+    if self.group_supplier != None:
+        print(self.group_supplier)
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.group_supplier.category_catalog
+            print(category_catalog)
+            group_catalog = self.group_supplier.group_catalog
+            print(group_catalog)
+            
+    if self.category_supplier != None:
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.category_supplier.category_catalog
+            group_catalog = self.category_supplier.group_catalog
+           
     print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
@@ -3195,6 +3226,8 @@ def get_props_motrum_filter_to_view(product_props):
         product_props.values(
             "property_motrum",
             "property_motrum__name",
+            "property_motrum__name_to_slug",
+            "property_motrum__slug",
             "property_value_motrum__id",
             "property_value_motrum__value",
             "property_motrum__is_diapason",
@@ -3215,6 +3248,8 @@ def get_props_motrum_filter_to_view(product_props):
                     "id_property_motrum": pid,
                     "name_property_motrum": row["property_motrum__name"],
                     "is_diapason": is_diapason,
+                    "slug":row["property_motrum__slug"],
+                    "property_motrum__name_to_slug":row['property_motrum__name_to_slug']
                     # "count_values": 0,  # убираем счетчик
                 }
             )
@@ -3277,6 +3312,13 @@ def get_props_motrum_filter_to_view(product_props):
             article_map.get(x["id_property_motrum"], 9999),
         )
     )
+    # --- Новый блок: если есть дубликаты name_property_motrum, заменить на name_to_slug ---
+    from collections import Counter
+    name_counts = Counter([c["name_property_motrum"] for c in chars])
+    for char in chars:
+        if name_counts[char["name_property_motrum"]] > 1:
+            # заменить на property_motrum__name_to_slug
+            char["name_property_motrum"] = char.get("property_motrum__name_to_slug", char["name_property_motrum"])
     # Сортировка значений внутри каждого фильтра по числовому значению
     for char in chars:
         try:
@@ -3375,6 +3417,14 @@ def serch_prod_to_motrum_props_categ(
     groupe,
     last_categ,
 ):
+    print(prod_prop_motrum,
+    prod_prop_value_motrum,
+    article,
+    supplier,
+    is_diapason,
+    categ,
+    groupe,
+    last_categ,"")
     from apps.product.models import Product, ProductPropertyMotrumItem
 
     if last_categ:
@@ -3389,6 +3439,7 @@ def serch_prod_to_motrum_props_categ(
         products = Product.objects.filter(
             supplier=supplier, category_supplier__name=categ
         )
+    print(products)
     if products:
         for prod in products:
             prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
@@ -3404,23 +3455,24 @@ def serch_prod_to_motrum_props_categ(
 
 
 def serch_prod_to_motrum_props_categ_to_create_product(
-    product
+    product,value
 ):
     from apps.product.models import Product, ProductPropertyMotrumItem,VendorPropertyAndMotrum
     # Получение х-к мотрум  
     obj= VendorPropertyAndMotrum.objects.filter(
         supplier=product.supplier,
         is_category = True,
-        property_vendor_value=self.value,
-    )
-    prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
-        product=product,
-        property_motrum=ob.property_motrum,
-        property_value_motrum=ob.property_value_motrum,
-        is_diapason=ob.is_diapason,
-        is_have_vendor_props=True,
-    )
-    error = "info_error"
-    location = "+ х-ка"
-    info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
-    e = error_alert(error, location, info)
+        property_value_motrum__value=value,
+    ).first()
+    if obj is not None:
+        prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+            product=product,
+            property_motrum=obj.property_motrum,
+            property_value_motrum=obj.property_value_motrum,
+            is_diapason=obj.is_diapason,
+            is_have_vendor_props=True,
+        )
+        error = "info_error"
+        location = "+ х-ка"
+        info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+        e = error_alert(error, location, info)

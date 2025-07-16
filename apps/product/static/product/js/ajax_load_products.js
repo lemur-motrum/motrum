@@ -129,6 +129,8 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             }
           }
+          test_serch_chars(charactiristics)
+          console.log("charactiristics",charactiristics)
         };
       });
     });
@@ -674,3 +676,36 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+
+function test_serch_chars(charactiristics){
+  let data = {
+        // category: category,
+        // group: !group ? "" : group,
+        // vendor: paramsArray.length > 0 ? paramsArray : "",
+       
+        // pricefrom: priceFrom ? priceFrom : 0,
+        // priceto: priceTo ? priceTo : 0,
+        // pricenone: pricenone,
+        chars:
+          charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
+    chars:
+      charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
+  };
+  let csrfToken = getCookie("csrftoken");
+  let params = new URLSearchParams(data);
+  fetch(`/api/v1/product/search-filters-product/?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      "X-CSRFToken": csrfToken,
+    },
+  }).then((response) => {
+    if (response.status >= 200 && response.status < 300) {
+      
+      return response.json();
+    } else {
+      setErrorModal();
+    }
+  })
+}
+  

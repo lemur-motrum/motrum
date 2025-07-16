@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
       calculateInitialTop();
       messageElem.style.top = "0%";
     });
-    console.log(sup.offsetHeight);
+    
 
     document.addEventListener("scroll", () => {
       if (sup) {

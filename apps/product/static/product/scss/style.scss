@@ -987,7 +987,7 @@
                         content: "скрыть";
                         position: absolute;
                         top: 50%;
-                        left: 50%;
+                        left: 45%;
                         transform: translate(-50%, -50%);
                       }
                     }
@@ -1039,6 +1039,37 @@
             &:hover {
               color: gray;
             }
+          }
+        }
+        min-height: 100vh;
+        overflow: visible;
+        .filters_quantity_message_container {
+          position: absolute;
+          width: 18.313rem;
+          height: 3.563rem;
+          background-color: #95bad4;
+          border-radius: 1.875rem;
+          top: 5%;
+          left: 100%;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          transition: 0.1s;
+          cursor: pointer;
+          &:hover {
+            background-color: #ff5b00;
+          }
+          &.hide {
+            position: absolute;
+            opacity: 0;
+            z-index: -1;
+          }
+          &.disabled {
+            color: lightgrey;
+            background-color: gray;
+            cursor: auto;
           }
         }
       }

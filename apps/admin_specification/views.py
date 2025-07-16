@@ -498,7 +498,7 @@ def create_specification(request):
             client_req_all = AccountRequisites.objects.filter(
                 requisitesKpp__requisites=requisites
             )
-
+           
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -549,6 +549,11 @@ def create_specification(request):
                         id=OuterRef("id_cart")
                     ).values(
                         "product_new_sale_motrum",
+                    ),
+                    product_prod_in_cart = product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "product",
                     ),
                 )
                 .annotate(

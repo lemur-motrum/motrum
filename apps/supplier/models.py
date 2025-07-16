@@ -175,7 +175,7 @@ class SupplierCategoryProduct(models.Model):
                     product_one.group = self.group_catalog
 
                 product_one._change_reason = "Автоматическое"
-                product_one.save(update_fields=['category', 'group', '_change_reason'])
+                product_one.save(update_fields=['category', 'group'])
                 # update_change_reason(product_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)
@@ -262,7 +262,7 @@ class SupplierGroupProduct(models.Model):
                         if product_one.group_supplier.vendor is not None:
                             product_one.vendor = product_one.group_supplier.vendor
                             
-                product_one.save(update_fields=['category', 'group','vendor', '_change_reason'])
+                product_one.save(update_fields=['category', 'group','vendor'])
                 # product_one._change_reason = "Автоматическое"
                 # product_one.save()
                 # update_change_reason(product_one, "Автоматически из групп поставщика")
@@ -371,7 +371,7 @@ class SupplierCategoryProductAll(models.Model):
                     if self.group_catalog:
                         product_one.group = self.group_catalog
                     
-                    product_one.save(update_fields=['category', 'group', '_change_reason'])
+                    product_one.save(update_fields=['category', 'group'])
                     # product_one._change_reason = "Автоматическое"
                     # product_one.save()
                   

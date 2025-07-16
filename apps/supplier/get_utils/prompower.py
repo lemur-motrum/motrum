@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 import traceback
 import requests
 import json
@@ -359,7 +360,16 @@ def prompower_api():
                                 image.link = img
                                 image.document = image_path
                                 image.link = img
-                                image.name = doc_item_individual["title"]
+                                
+                                if doc_item_individual["title"] == "" or doc_item_individual["title"] ==" ":
+                                    result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc_item_individual["filename"])
+                                   
+                                else:
+                                    result_name = doc_item_individual["title"]
+                                    
+                                
+                                image.name = result_name
+                                print(image.name)
                                 image.type_doc = "Other"
                                 image.save()
                                 update_change_reason(image, "Автоматическое")
@@ -374,6 +384,7 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
+                            
                             if IS_PROD:
                                 # если у товара не было совсем дококв из пропсов
                                 props = ProductProperty.objects.filter(
@@ -619,3 +630,18 @@ def export_prompower_prod_for_1c():
 
     file_path = os.path.join(MEDIA_ROOT, "prompower.xlsx")
     wb.save(file_path)
+
+
+def pp_aup_doc_name():
+    product = Product.objects.filter(vendor__slug="prompower").values_list('id',flat=True)
+    print("product",product)
+    name = ['',' ']
+    documents = ProductDocument.objects.filter(product_id__in=product,name__in=name)
+    print("documents",documents)
+    
+    for doc in documents:
+        # Удаляем префикс и расширение
+        result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc.link)
+        doc.name = result_name
+        doc.save()
+    

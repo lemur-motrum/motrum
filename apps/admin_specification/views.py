@@ -601,6 +601,7 @@ def create_specification(request):
                 )
                 .order_by("id_product_cart")
             )
+            print(product_new)
             product_new_value_id = product_new.values_list("id_product_cart")
 
             # список товаров без щаписи в окт которые новые еще на записанны

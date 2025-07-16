@@ -219,6 +219,10 @@ function addNewProductLogic(container) {
         ".add_new_item_in_cart_container_error"
       );
       const vendorInput = newItemContainer.querySelector(".vendor_input");
+      // const vendorSelect = newItemContainer.querySelector(".vendor_select");
+      // const vendorSelectToggle = vendorSelect.querySelector(
+      //   ".vendor_select__toggle"
+      // );
 
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
       const supplierSelectToggle = supplierSelect.querySelector(
@@ -364,20 +368,20 @@ function addNewProductLogic(container) {
           }
         }
         setPreloaderInButton(addNewItemInCartButton);
-        if (!vendorSelectToggle.getAttribute("value")) {
-          addNewItemInCartButtonValidate = false;
-          vendorSelectToggle.style.borderColor = "red";
-        }
+        // if (!vendorSelectToggle.getAttribute("value")) {
+        //   addNewItemInCartButtonValidate = false;
+        //   vendorSelectToggle.style.borderColor = "red";
+        // }
 
-        if (!supplierSelectToggle.getAttribute("value")) {
-          addNewItemInCartButtonValidate = false;
-          supplierSelectToggle.style.borderColor = "red";
-        }
+        // if (!supplierSelectToggle.getAttribute("value")) {
+        //   addNewItemInCartButtonValidate = false;
+        //   supplierSelectToggle.style.borderColor = "red";
+        // }
 
         inputValidate(nameInput);
         inputValidate(articleInput);
-        inputValidate(priceOnceInput);
-        inputValidate(quantityInput);
+        // inputValidate(priceOnceInput);
+        // inputValidate(quantityInput);
 
         if (addNewItemInCartButtonValidate == false) {
           addNewItemInCartButton.disabled = false;
@@ -456,11 +460,11 @@ function addNewProductLogic(container) {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
           searchProductItem.classList.add("active");
-          counterElems = i + 1;
+          // counterElems = i + 1;
         };
         searchProductItem.onmouseout = () => {
           searchProductItem.classList.remove("active");
-          counterElems = 0;
+          // counterElems = 0;
         };
 
         const productId = searchProductItem.getAttribute("product-id");

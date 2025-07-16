@@ -157,7 +157,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (itemPrice) {
           console.log(itemPrice)
           console.log("inputPrice.value", itemPrice)
-          if (!itemPrice || itemPrice == 0.00 || itemPrice == "0,00" || itemPrice == "0") {
+          if (!itemPrice || itemPrice == 0.00 || itemPrice == 0.0 || itemPrice == 0 || itemPrice == "0,00" || itemPrice == "0,0"  || itemPrice == "0") {
 
             console.log(" if inputPrice 22222222222222")
             validate = false;

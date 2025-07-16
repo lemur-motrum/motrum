@@ -631,7 +631,7 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         }
         if (itemPriceOnce) {
-          console.log(item.querySelector(".price_once").textContent);
+          console.log("634item.querySelector(price_once.textContent",item.querySelector(".price_once").textContent);
           if (discountInput.value) {
             console.log("discountInput");
             getDigitsNumber(

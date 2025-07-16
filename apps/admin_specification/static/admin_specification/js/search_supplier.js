@@ -37,7 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
         vendorSearchInput.setAttribute("vendor_value", "");
         loader.classList.remove("hide");
         noneContent.classList.remove("show");
-        if (vendorSearchInput) {
+        if (vendorSearchInput.value.length) {
           vendorSearchInput.classList.add("inputed");
           vendorSearchElemsContainerWrapper.classList.add("show");
           vendorSearchElemsContainer.classList.add("show");
@@ -57,31 +57,31 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       // Для срабатыванию по простому клику
-      function showVendorSearch() {
-        const inputedvalue = vendorSearchInput.value;
-        searchElemsContainer.innerHTML = "";
-        vendorSearchInput.setAttribute("vendor_value", "");
-        loader.classList.remove("hide");
-        noneContent.classList.remove("show");
-        if (vendorSearchInput.value == "") {
-          vendorSearchInput.classList.add("inputed");
-          vendorSearchElemsContainerWrapper.classList.add("show");
-          vendorSearchElemsContainer.classList.add("show");
+      // function showVendorSearch() {
+      //   const inputedvalue = vendorSearchInput.value;
+      //   searchElemsContainer.innerHTML = "";
+      //   vendorSearchInput.setAttribute("vendor_value", "");
+      //   loader.classList.remove("hide");
+      //   noneContent.classList.remove("show");
+      //   if (vendorSearchInput.value == "") {
+      //     vendorSearchInput.classList.add("inputed");
+      //     vendorSearchElemsContainerWrapper.classList.add("show");
+      //     vendorSearchElemsContainer.classList.add("show");
           
-            count = 0;
-            countLast = 5;
-            finish = false;
-            if (inputedvalue == vendorSearchInput.value) {
-              getSearchElems();
-            }
+      //       count = 0;
+      //       countLast = 5;
+      //       finish = false;
+      //       if (inputedvalue == vendorSearchInput.value) {
+      //         getSearchElems();
+      //       }
           
-        } else {
-          vendorSearchElemsContainerWrapper.classList.remove("show");
-          vendorSearchElemsContainer.classList.remove("show");
-          vendorSearchInput.classList.remove("inputed");
-        }
-      }
-      vendorSearchInput.addEventListener("click", showVendorSearch);
+      //   } else {
+      //     vendorSearchElemsContainerWrapper.classList.remove("show");
+      //     vendorSearchElemsContainer.classList.remove("show");
+      //     vendorSearchInput.classList.remove("inputed");
+      //   }
+      // }
+      // vendorSearchInput.addEventListener("click", showVendorSearch);
 
 
       vendorSearchElemsContainer.addEventListener("scroll", function () {

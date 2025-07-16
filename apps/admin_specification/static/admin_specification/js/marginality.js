@@ -23,6 +23,7 @@ export function getMarginality(wrapper) {
       const clientPrice = new NumberParser("ru").parse(
         item.querySelector(".total_cost").textContent
       );
+      console.log("clientPrice26",clientPrice)
 
       let marginalityPercentValue;
       let totalCost;
@@ -45,9 +46,14 @@ export function getMarginality(wrapper) {
         } 
         else if(discountInput.value != 0 & discountInput.value != ""){
           console.log("discountInput.value != 0 & discountInput.value !=")
+          console.log(+quantityInput.value)
+          console.log( discountInput.value)
+          console.log(clientPrice)
+          console.log(priceMotrum)
           totalCost =
             +quantityInput.value *
             ((priceOne / 100) * (100 - discountInput.value)).toFixed(2);
+            console.log(totalCost)
           marginalityPercentValue =
             ((clientPrice - priceMotrum) / clientPrice) * 100;
             console.log("marginalityPercentValue discountInput",marginalityPercentValue)

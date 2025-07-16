@@ -1599,9 +1599,16 @@ def save_new_product_okt(product_new):
     if product_new.product:
         product_new_prod = product_new.product.id
         product = Product.objects.get(id=product_new_prod)
+        # product.name = product_new.product_new
+        prod_cart = product_new.id_cart
+        if prod_cart.product != product:
+        
+            prod_cart.product = product
+            prod_cart.product_price = product_new.price_one_original_new 
+            prod_cart.product_sale_motrum = product_new.sale_motrum 
+            prod_cart.sale_client = product_new.extra_discount 
 
-        product.name = product_new.product_new
-
+        prod_cart.save()
         product.save()
 
     else:
@@ -1638,6 +1645,13 @@ def save_new_product_okt(product_new):
         product_stock.save()
 
         product_new.product = product
+        prod_cart = product_new.id_cart
+        prod_cart.product = product
+        prod_cart.product_price = product_new.price_one_original_new 
+        prod_cart.product_sale_motrum = product_new.sale_motrum 
+        prod_cart.sale_client = product_new.extra_discount 
+
+        prod_cart.save()
         product_new.save()
 
     return product
@@ -1681,7 +1695,6 @@ def save_new_product_okt(product_new):
     #     product_stock.save()
 
     #     return product
-
 
 def number_specification(type_save):
     from apps.specification.models import Specification

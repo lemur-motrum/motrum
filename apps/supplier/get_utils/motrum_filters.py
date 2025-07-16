@@ -305,6 +305,8 @@ def xlsx_props_motrum_pandas():
                 supplier_sheets = Supplier.objects.get(slug="iek")
             if sheet_name == "Характеристики Мотрум ":
                 continue  # пропускаем этот лист
+            if sheet_name != "ONI ":
+                continue  # пропускаем этот лист
             print(f"Обрабатывается лист: {sheet_name}")
             prev_name_motrum = None
             prev_supplier = None
@@ -313,7 +315,8 @@ def xlsx_props_motrum_pandas():
             for idx, row in df.iterrows():
                 try:
                     # pandas индексация с 0, Excel с 2, поэтому idx+2
-                    if idx + 2 > 0:
+                    if idx + 2 == 14:
+                        print(type(row.iloc[4]))
                         name_motrum = str(row[0]).strip() if pd.notna(row[0]) else None
                         value_motrum = str(row[1]).strip() if pd.notna(row[1]) else None
                         supplier = str(row[2]).strip() if pd.notna(row[2]) else None

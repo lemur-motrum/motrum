@@ -354,10 +354,18 @@ class CategoryProduct(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -396,9 +404,18 @@ class GroupProduct(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -793,9 +810,18 @@ class Lot(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super().save(*args, **kwargs)
 

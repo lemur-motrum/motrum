@@ -25,7 +25,6 @@
             </div>
             <div class="filters_and_products_container">
                 <div class="filter_container">
-                    <div class="filters_quantity_message_container hide"></div>
                     <div class="close_filter_elem_btn">+</div>
                     <div class="filter_elem  price_filter_elem">
                         <div class="filter_title">Цена</div>
@@ -52,10 +51,25 @@
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
                                     {% if not char.gabarit %}
-                                        <div class="char_block char_block_false_diapason {% if char.count_values > 12 or char.count_values > 4 and char.position == "vertical" %}char_values_long{% endif %}"
+                                        <div class="char_block char_block_false_diapason {% if char.is_visible %}{% if char.count_values > 12 or char.count_values > 4 and char.position == "vertical" %}char_values_long{% endif %}{% else %}accordion_head{% endif %}"
                                              data-chars-slug="{{ char.slug }}"
                                              data-id-chars="{{ char.id_property_motrum }}">
-                                            <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                            {% if char.is_visible == False %}
+                                                <div class="filter_arrow_title">
+                                                    <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                                    <div class="vector">
+                                                        <svg width="28"
+                                                             height="14"
+                                                             viewBox="0 0 28 14"
+                                                             fill="none"
+                                                             xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M26.5143 1.5L13.807 12.24L1.09961 1.5" stroke="black" stroke-width="1.42" stroke-miterlimit="10" stroke-linecap="round" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="filter_title ">{{ char.name_property_motrum }}</div>
+                                            {% endif %}
                                             <div class="char_values{% if char.position == "vertical" %} vertical{% endif %}">
                                                 <!-- Для диапазонного значение -->
                                                 {% if char.is_diapason %}
@@ -64,6 +78,7 @@
                                                     <!-- Для  значениz c вариантами -->
                                                     {% for value in char.values %}
                                                         <div class="char_value"
+                                                             data-position="{{ forloop.counter0 }}"
                                                              data-id-name="{{ char.name_property_motrum }}"
                                                              data-id-value-chars="{{ value.id }}">
                                                             <div class="char_value_checkbox_container">

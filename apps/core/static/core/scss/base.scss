@@ -2880,6 +2880,11 @@ a {
       }
     }
   }
+  &.right {
+    float: right;
+    justify-content: flex-end;
+    right: 3.125rem;
+  }
 }
 
 .head-page-container {

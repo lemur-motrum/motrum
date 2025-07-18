@@ -78,6 +78,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const contentElement = document.querySelector(".catalog_wrapper");
 
+    const noManagerContainer = document.querySelector(
+      ".personal-manager-container"
+    );
+
+    if (filterContainer) {
+      noManagerContainer.classList.add("right");
+    }
+
     function checkIntersection() {
       // Позиция фиксированного элемента
       const fixedRect = messageElem.getBoundingClientRect();

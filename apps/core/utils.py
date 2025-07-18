@@ -3325,6 +3325,11 @@ def get_props_motrum_filter_to_view(product_props):
             char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
         except Exception as e:
             pass  # если не число — не сортируем
+    # Добавляем is_visible: True для первых 5, False для остальных
+    for idx, char in enumerate(chars):
+        char["is_visible"] = True if idx < 5 else False
+    print("chars", chars)
+    
     print("chars", chars)
 
     return chars

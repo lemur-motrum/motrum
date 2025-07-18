@@ -76,46 +76,32 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     const sup = filterContainer.querySelector(".supplier_content");
 
-    let initialTop = 0;
+    const contentElement = document.querySelector(".catalog_wrapper");
 
-    // Рассчитываем начальную позицию в пикселях
-    function calculateInitialTop() {
-      initialTop = filterContainer.offsetHeight * 0.05; // 25% от высоты контейнера
-    }
-    calculateInitialTop();
-    window.addEventListener("resize", () => {
-      // Пересчитываем позицию при изменении размера окна
-      calculateInitialTop();
-      messageElem.style.top = "0%";
-    });
-    
+    function checkIntersection() {
+      // Позиция фиксированного элемента
+      const fixedRect = messageElem.getBoundingClientRect();
+      const fixedTop = fixedRect.top;
+      const fixedHeight = fixedRect.height;
 
-    document.addEventListener("scroll", () => {
-      if (sup) {
-        const scrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
-        if (scrollTop >= initialTop) {
-          messageElem.style.top = `${
-            scrollTop -
-            initialTop +
-            filterContainer.offsetTop -
-            sup.clientHeight * 2
-          }px`;
-        } else {
-          messageElem.style.top = "0%";
-        }
+      // Позиция контента
+      const contentRect = contentElement.getBoundingClientRect();
+      const contentTop = contentRect.top;
+      const contentHeight = contentRect.height;
+
+      // Проверяем пересечение
+      if (fixedTop + fixedHeight < contentTop) {
+        messageElem.classList.add("sticky");
+        // } else if (fixedTop > contentTop + contentHeight) {
+        //   messageElem.classList.add("sticky");
       } else {
-        const scrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop >= initialTop) {
-          messageElem.style.top = `${
-            scrollTop - initialTop + filterContainer.offsetTop
-          }px`;
-        } else {
-          messageElem.style.top = "0%";
-        }
+        messageElem.classList.remove("sticky");
       }
+    }
+
+    const supOne = document.querySelector(".suplier_elem_content");
+    document.addEventListener("scroll", () => {
+      checkIntersection();
     });
 
     let charactiristics = [];
@@ -575,7 +561,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
           history.pushState({}, "", currentUrl);
-          console.log("charactiristics", charactiristics);
+
           test_serch_chars();
         };
       });
@@ -711,7 +697,6 @@ window.addEventListener("DOMContentLoaded", () => {
             currentUrl.searchParams.delete(`${slug}`);
           }
           history.pushState({}, "", currentUrl);
-          console.log(charactiristics);
           test_serch_chars();
         });
       }

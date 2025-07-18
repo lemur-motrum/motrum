@@ -74,9 +74,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const messageElem = document.querySelector(
       ".filters_quantity_message_container"
     );
-    const sup = filterContainer.querySelector(".supplier_content");
-
-    const contentElement = document.querySelector(".catalog_wrapper");
 
     const noManagerContainer = document.querySelector(
       ".personal-manager-container"

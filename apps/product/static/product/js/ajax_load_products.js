@@ -74,35 +74,22 @@ window.addEventListener("DOMContentLoaded", () => {
     const messageElem = document.querySelector(
       ".filters_quantity_message_container"
     );
-    const sup = filterContainer.querySelector(".supplier_content");
 
-    const contentElement = document.querySelector(".catalog_wrapper");
+    const noManagerContainer = document.querySelector(
+      ".personal-manager-container"
+    );
 
-    function checkIntersection() {
-      // Позиция фиксированного элемента
-      const fixedRect = messageElem.getBoundingClientRect();
-      const fixedTop = fixedRect.top;
-      const fixedHeight = fixedRect.height;
+    const submitFiltersContainer = document.querySelector(
+      ".submit_filter_container"
+    );
 
-      // Позиция контента
-      const contentRect = contentElement.getBoundingClientRect();
-      const contentTop = contentRect.top;
-      const contentHeight = contentRect.height;
+    const filterButton = submitFiltersContainer.querySelector(".submit");
+    const cancelFilterButton =
+      submitFiltersContainer.querySelector(".canceled");
 
-      // Проверяем пересечение
-      if (fixedTop + fixedHeight < contentTop) {
-        messageElem.classList.add("sticky");
-        // } else if (fixedTop > contentTop + contentHeight) {
-        //   messageElem.classList.add("sticky");
-      } else {
-        messageElem.classList.remove("sticky");
-      }
+    if (filterContainer) {
+      noManagerContainer.classList.add("right");
     }
-
-    const supOne = document.querySelector(".suplier_elem_content");
-    document.addEventListener("scroll", () => {
-      checkIntersection();
-    });
 
     let charactiristics = [];
 
@@ -113,6 +100,13 @@ window.addEventListener("DOMContentLoaded", () => {
         triggerClass: "add_more_btn",
         panelClass: "char_values",
         showMultiple: true,
+      });
+
+      new Accordion(".chars_content", {
+        elementClass: "accordion_head",
+        triggerClass: "filter_arrow_title",
+        panelClass: "char_values",
+        showMultiple: false,
       });
     }
 
@@ -212,20 +206,21 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         })
         .then((response) => {
-          messageElem.classList.remove("hide");
-          messageElem.classList.remove("disabled");
           if (response["count_product"] > 999) {
             if (charactiristics.length > 0) {
-              messageElem.textContent = "Найдено больше 1тыс. товаров";
+              filterButton.disabled = false;
+              filterButton.textContent = "Найдено больше 1тыс. товаров";
             } else {
-              messageElem.classList.add("hide");
+              filterButton.disabled = false;
+              filterButton.textContent = "применить фильтры";
             }
           } else if (response["count_product"] == 0) {
-            messageElem.classList.add("disabled");
-            messageElem.textContent = "Ничего не найдено";
+            filterButton.disabled = true;
+            filterButton.textContent = "Ничего не найдено";
           } else {
             if (charactiristics.length > 0) {
-              messageElem.textContent = `Найдено ${
+              filterButton.disabled = false;
+              filterButton.textContent = `Найдено ${
                 response["count_product"]
               } ${num_word(response["count_product"], [
                 "товар",
@@ -233,7 +228,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 "товаров",
               ])}`;
             } else {
-              messageElem.classList.add("hide");
+              filterButton.textContent = "применить фильтры";
             }
           }
         });
@@ -329,6 +324,7 @@ window.addEventListener("DOMContentLoaded", () => {
             urlParams.set("page", pageCount + 1);
             inputValidate(minInputPrice);
             inputValidate(maxInputPrice, true);
+            test_serch_chars();
           }
           history.pushState({}, "", currentUrl);
         })
@@ -355,11 +351,11 @@ window.addEventListener("DOMContentLoaded", () => {
             const dataIdChars = slugElem.getAttribute("data-id-chars");
             const values = charsGetParam.split(",");
             const charValues = slugElem.querySelectorAll(".char_value");
-
             values.forEach((valueID) => {
               charValues.forEach((charValue) => {
                 if (charValue.getAttribute("data-id-value-chars") == valueID) {
                   charValue.classList.add("checked");
+                  charValue.parentNode.prepend(charValue);
                 }
               });
             });
@@ -412,15 +408,6 @@ window.addEventListener("DOMContentLoaded", () => {
           : downPriceBtn.classList.add("active");
       }
       loadItems();
-    };
-
-    messageElem.onclick = () => {
-      if (!messageElem.classList.contains("disabled")) {
-        pageCount = 0;
-        preLoaderLogic();
-        productCount = 10;
-        scrollToTop(offsetTop);
-      }
     };
 
     paginationFirstElem.onclick = () => {
@@ -480,7 +467,9 @@ window.addEventListener("DOMContentLoaded", () => {
       const slug = charBlock.getAttribute("data-chars-slug");
       const charValues = charBlock.querySelectorAll(".char_value");
       const dataIdChars = charBlock.getAttribute("data-id-chars");
+      const charValuesContainer = charBlock.querySelector(".char_values");
       charValues.forEach((charValue) => {
+        let originalPosition = +charValue.getAttribute("data-position");
         charValue.onclick = () => {
           const dataIdValueChars = charValue.getAttribute(
             "data-id-value-chars"
@@ -488,6 +477,7 @@ window.addEventListener("DOMContentLoaded", () => {
           charValue.classList.toggle("checked");
           let validate = false;
           if (charValue.classList.contains("checked")) {
+            charValue.parentNode.prepend(charValue);
             if (charactiristics.length > 0) {
               for (let i = 0; i < charactiristics.length; i++) {
                 if (charactiristics[i]["id"] == dataIdChars) {
@@ -535,6 +525,13 @@ window.addEventListener("DOMContentLoaded", () => {
               );
             }
           } else {
+            const siblings = charValuesContainer.children;
+            console.log(siblings[originalPosition]);
+            charValuesContainer.insertBefore(
+              charValue,
+              siblings[originalPosition + 1]
+            );
+
             if (charactiristics.length > 0) {
               for (let i = 0; i < charactiristics.length; i++) {
                 if (charactiristics[i]["id"] == dataIdChars) {
@@ -554,6 +551,7 @@ window.addEventListener("DOMContentLoaded", () => {
                       (el) => el["id"] !== dataIdChars
                     );
                     currentUrl.searchParams.delete(`${slug}`);
+                    filterButton.textContent = "применить фильтры";
                     break;
                   }
                 }
@@ -767,14 +765,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    const submitFiltersContainer = document.querySelector(
-      ".submit_filter_container"
-    );
-
-    const filterButton = submitFiltersContainer.querySelector(".submit");
-    const cancelFilterButton =
-      submitFiltersContainer.querySelector(".canceled");
-
     filterButton.onclick = () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
@@ -846,8 +836,6 @@ window.addEventListener("DOMContentLoaded", () => {
       endContent.classList.remove("show");
       catalogContainer.innerHTML = "";
       loader.style.display = "block";
-      messageElem.classList.add("hide");
-      messageElem.classList.remove("disabled");
       loadItems();
     }
 

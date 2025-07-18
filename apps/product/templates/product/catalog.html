@@ -101,7 +101,9 @@
                                              data-id-chars="{{ char.id_property_motrum }}">
                                             {% if char.is_visible == False %}
                                                 <div class="filter_arrow_title">
-                                                    <div class="filter_title">{{ char.name_property_motrum }}</div>
+                                                    <div class="filter_title">
+                                                        {{ char.name_property_motrum }}<span class="count_quantity">0</span>
+                                                    </div>
                                                     <div class="vector">
                                                         <svg width="28"
                                                              height="14"

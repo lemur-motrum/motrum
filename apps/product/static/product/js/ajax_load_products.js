@@ -20,6 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
       .getAttribute("data-group-id");
     let pageCount = 0;
     let productCount = 0;
+
     let lastPage = 0;
     let paramsArray = [];
     let pricenone = false;
@@ -395,6 +396,26 @@ window.addEventListener("DOMContentLoaded", () => {
             });
           }
         }
+
+        if (slugElem.classList.contains("accordion_head")) {
+          const countQuantityPush = slugElem.querySelector(".count_quantity");
+          let countQuantity = 0;
+          slugElem.setAttribute("data-quantity", countQuantity);
+          const charValues = slugElem.querySelectorAll(".char_value");
+          charValues.forEach((el) => {
+            if (el.classList.contains("checked")) {
+              countQuantity += 1;
+            }
+          });
+          slugElem.setAttribute("data-quantity", countQuantity);
+
+          countQuantityPush.textContent = countQuantity;
+          if (countQuantity > 0) {
+            countQuantityPush.classList.add("show");
+          } else {
+            countQuantityPush.classList.remove("show");
+          }
+        }
       });
 
       if (pageGetParam) {
@@ -468,15 +489,20 @@ window.addEventListener("DOMContentLoaded", () => {
       const charValues = charBlock.querySelectorAll(".char_value");
       const dataIdChars = charBlock.getAttribute("data-id-chars");
       const charValuesContainer = charBlock.querySelector(".char_values");
+      const countQuantityPush = charBlock.querySelector(".count_quantity");
+
       charValues.forEach((charValue) => {
         let originalPosition = +charValue.getAttribute("data-position");
         charValue.onclick = () => {
+          let countQuantity = +charBlock.getAttribute("data-quantity");
           const dataIdValueChars = charValue.getAttribute(
             "data-id-value-chars"
           );
           charValue.classList.toggle("checked");
           let validate = false;
           if (charValue.classList.contains("checked")) {
+            countQuantity += 1;
+            console.log(countQuantity);
             charValue.parentNode.prepend(charValue);
             if (charactiristics.length > 0) {
               for (let i = 0; i < charactiristics.length; i++) {
@@ -525,8 +551,8 @@ window.addEventListener("DOMContentLoaded", () => {
               );
             }
           } else {
+            countQuantity -= 1;
             const siblings = charValuesContainer.children;
-            console.log(siblings[originalPosition]);
             charValuesContainer.insertBefore(
               charValue,
               siblings[originalPosition + 1]
@@ -558,8 +584,16 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             }
           }
+          if (charBlock.classList.contains("accordion_head")) {
+            charBlock.setAttribute("data-quantity", countQuantity);
+            countQuantityPush.textContent = countQuantity;
+            if (countQuantity > 0) {
+              countQuantityPush.classList.add("show");
+            } else {
+              countQuantityPush.classList.remove("show");
+            }
+          }
           history.pushState({}, "", currentUrl);
-
           test_serch_chars();
         };
       });
@@ -803,8 +837,12 @@ window.addEventListener("DOMContentLoaded", () => {
       slugsElems.forEach((slugElem) => {
         const slug = slugElem.getAttribute("data-chars-slug");
         urlParams.delete(`${slug}`);
+        if (slugElem.classList.contains("accordion_head")) {
+          slugElem.setAttribute("data-quantity", 0);
+          slugElem.querySelector(".count_quantity").classList.remove("show");
+        }
       });
-      messageElem.classList.add("hide");
+      filterButton.textContent = "применить фильтры";
       closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();

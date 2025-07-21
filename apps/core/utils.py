@@ -1034,7 +1034,8 @@ def save_update_product_attr(
             product.name = name
         if product.name == None or product.name == "":
             product.name = name
-
+        
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1114,7 +1115,7 @@ def save_update_product_attr_all(
             print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
             print("product.promo_groupe", product.promo_groupe)
-
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:

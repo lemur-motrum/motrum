@@ -187,7 +187,7 @@ def prompower_api():
         data = response.json()
 
         # vendor = Vendor.objects.filter(supplier=prompower)
-        vat_catalog = Vat.objects.get(name="20")
+        vat_catalog = Vat.objects.get(name=NDS)
         vat_catalog_int = int(vat_catalog.name)
         currency = Currency.objects.get(words_code="RUB")
         base_adress = "https://prompower.ru"
@@ -206,7 +206,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PD310A420K":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -318,12 +318,25 @@ def prompower_api():
                         for item_doc in data["data"]:
                             doc_item = item_doc["link"]
                             doc_link = f"{base_adress}{doc_item}"
+                            title = item_doc["title"]
                             # print("doc_link",doc_link)
                             print("save_document")
-                            doc_old = ProductDocument.objects.filter(
-                                    link=doc_link,product=article
+                            if  title:
+                                doc_old =  ProductDocument.objects.filter(
+                                    link=doc_link,product=article,name=title
                                 ).exists()
+                                if doc_old:
+                                    need_upd = True
+                                else:
+                                    need_upd = False
+                                
+                            else:
+                                doc_old = ProductDocument.objects.filter(
+                                        link=doc_link,product=article
+                                    ).exists()
+                                need_upd = False
                             print("doc_link",doc_old,doc_link)
+                            
                             if doc_old == False:
                                 print("doc_old == False",doc_link)
 
@@ -337,6 +350,13 @@ def prompower_api():
 
                                 if os.path.isfile(link_file):
                                     print("Файл существует")
+                                    if need_upd:
+                                        r = requests.get(doc_link, stream=True)
+                                        with open(os.path.join(link_file), "wb") as ofile:
+                                            ofile.write(r.content)
+                                    #     doc_old =  ProductDocument.objects.filter(
+                                    # link=doc_link,product=article,name=title
+                                # ) 
                                 else:
                                     r = requests.get(doc_link, stream=True)
                                     with open(os.path.join(link_file), "wb") as ofile:
@@ -609,10 +629,10 @@ def prompower_api():
             finally:
                 continue
 
-    add_category_groupe()
-    add_category()
+    # add_category_groupe()
+    # add_category()
     add_products()
-    add_products_promo_group()
+    # add_products_promo_group()
 
 
 def export_prompower_prod_for_1c():

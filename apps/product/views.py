@@ -131,16 +131,28 @@ def catalog_group(request, category):
             # .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
         )
         if search_text and search_text != "":
-            print("search_text and search_text != """)
+            print("search_text and search_text != " "")
             queryset = serch_products_web(search_text, queryset)
-            
 
         product_vendor = (
             queryset.order_by("vendor__name")
             .distinct("vendor__name")
-            .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+            .values(
+                "vendor",
+                "vendor__name",
+                "vendor__slug",
+                "vendor__img",
+                "vendor__article_filter",
+            )
         )
-        print("product_vendor",product_vendor)
+        product_vendor = sorted(
+            product_vendor,
+            key=lambda x: (
+                x["vendor__article_filter"] is None,
+                x["vendor__article_filter"],
+            ),
+        )
+        print("product_vendor", product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -199,8 +211,15 @@ def products_items(request, category, group):
         .filter(q_object)
         .order_by("vendor__name")
         .distinct("vendor__name")
-        .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+        .values("vendor", "vendor__name", "vendor__slug", "vendor__img","vendor__article_filter",)
     )
+    product_vendor = sorted(
+            product_vendor,
+            key=lambda x: (
+                x["vendor__article_filter"] is None,
+                x["vendor__article_filter"],
+            ),
+        )
     current_category = CategoryProduct.objects.get(slug=category)
     current_group = GroupProduct.objects.get(slug=group)
 

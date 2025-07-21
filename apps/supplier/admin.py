@@ -53,7 +53,7 @@ class SupplierAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    readonly_fields = ["name",]
+    # readonly_fields = ["name",]
     
     # inlines = [
     #     VendorInline,
@@ -127,11 +127,11 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
-    # def has_change_permission(self, request, obj=None):
-    #     if obj:
-    #         return False
-    #     else:
-    #         return True
+    def has_change_permission(self, request, obj=None):
+        if obj:
+            return False
+        else:
+            return True
 
     def has_delete_permission(self, request, obj=None):
         return False

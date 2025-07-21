@@ -92,6 +92,11 @@ class Vendor(models.Model):
         blank=True,
         null=True,
     )
+    article_filter = models.PositiveIntegerField(
+        "Очередность в фильтре",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Производитель"

@@ -517,6 +517,7 @@ class VendorWebAdmin(admin.ModelAdmin):
         "img",
         "is_view_index_web",
         "article",
+        "article_filter",
     )
     readonly_fields = ["name"]
 

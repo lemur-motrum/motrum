@@ -442,18 +442,18 @@ class Price(models.Model):
     )
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
     price_supplier = models.FloatField(
-        "Цена в каталоге поставщика в валюте каталога",
+        "Цена в каталоге поставщика в валюте каталога с НДС",
         blank=True,
         null=True,
         default=0,
     )
     rub_price_supplier = models.FloatField(
-        "Цена в каталоге поставщика в рублях + НДС",
+        "Цена в каталоге поставщика в рублях с НДС",
         blank=True,
         null=True,
     )
     price_motrum = models.FloatField(
-        "Цена поставщика для Motrum в рублях",
+        "Цена поставщика для Motrum в рублях с НДС",
         blank=True,
         null=True,
     )

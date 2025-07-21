@@ -35,9 +35,18 @@ class Supplier(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -93,9 +102,18 @@ class Vendor(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super(Vendor, self).save(*args, **kwargs)
 
@@ -159,7 +177,15 @@ class SupplierCategoryProduct(models.Model):
         if self.slug == None:
             slug_text = self.name
             slugish = translit.translify(slug_text)
-            self.slug = slugify(slugish)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super().save(*args, **kwargs)
         from apps.product.models import Product
@@ -177,10 +203,8 @@ class SupplierCategoryProduct(models.Model):
                 # product_one._change_reason = "Автоматическое"
                 product_one.save(update_fields=['category', 'group',])
                 product_one._change_reason = "Автоматическое"
-                try:
-                    update_change_reason(product_one, "Автоматическое")
-                except AttributeError:
-                    pass
+                product_one.save(update_fields=['category', 'group'])
+                # update_change_reason(product_one, "Автоматическое")
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -378,11 +402,9 @@ class SupplierCategoryProductAll(models.Model):
                     if self.group_catalog:
                         product_one.group = self.group_catalog
                     
-                    product_one.save(update_fields=['category', 'group',])
-                    try:
-                        update_change_reason(product_one, "Автоматическое")
-                    except AttributeError:
-                        pass
+                    product_one.save(update_fields=['category', 'group'])
+                    # product_one._change_reason = "Автоматическое"
+                    # product_one.save()
                   
 
             daemon_thread = threading.Thread(target=background_task)

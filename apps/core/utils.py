@@ -2180,7 +2180,6 @@ def save_new_product_okt(product_new):
 
     #     return product
 
-
 def number_specification(type_save):
     from apps.specification.models import Specification
 
@@ -2727,7 +2726,7 @@ def create_info_request_order_1c(order, order_products):
         contract_date = order.requisites.contract_date.isoformat()
 
     if order.account_requisites.requisitesKpp.kpp:
-        kpp = int(order.account_requisites.requisitesKpp.kpp)
+        kpp = order.account_requisites.requisitesKpp.kpp
     else:
         kpp = None
 
@@ -2742,9 +2741,9 @@ def create_info_request_order_1c(order, order_products):
             "contract": order.requisites.contract,
             "contract_date": contract_date,
             "legal_entity": order.requisites.legal_entity,
-            "inn": int(order.requisites.inn),
+            "inn": order.requisites.inn,
             "kpp": kpp,
-            "ogrn": int(order.account_requisites.requisitesKpp.ogrn),
+            "ogrn": order.account_requisites.requisitesKpp.ogrn,
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
@@ -2752,10 +2751,10 @@ def create_info_request_order_1c(order, order_products):
             # "postal_city": order.account_requisites.requisitesKpp.postal_city,
             # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
-            "account_requisites": int(order.account_requisites.account_requisites),
+            "account_requisites": order.account_requisites.account_requisites,
             "bank": order.account_requisites.bank,
-            "ks": int(order.account_requisites.kpp),
-            "bic": int(order.account_requisites.bic),
+            "ks": order.account_requisites.kpp,
+            "bic": order.account_requisites.bic,
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,

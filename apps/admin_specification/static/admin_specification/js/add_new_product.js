@@ -455,7 +455,7 @@ function addNewProductLogic(container) {
 
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
-
+      
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));

@@ -124,7 +124,7 @@ from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innove
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import (
     export_prompower_prod_for_1c,
-    prompower_api,
+    pp_aup_doc_name, prompower_api,
 )
 
 from apps.supplier.get_utils.veda import veda_api

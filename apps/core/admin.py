@@ -13,6 +13,7 @@ from apps.core.models import (
     PhotoClientInfoWeb,
     PhotoEmoloeeInfoWeb,
     ReviewsAutoInfoWeb,
+    SeoMetaTags,
     SeoTextSolutions,
     SliderMain,
     TypeDelivery,
@@ -236,6 +237,11 @@ class PhotoClientInfoWebWebAdmin(admin.ModelAdmin):
             '<img src="{}" width="60" height="60" />'.format(obj.image.url)
         )
 
+class SeoMetaTagsAdminWeb(admin.ModelAdmin):
+    list_display = (
+        "page",
+        "title",
+    )
 
 # Register your models here.
 
@@ -253,3 +259,4 @@ website_admin.register(CompanyInfoWeb, CompanyInfoWebAdminWeb)
 website_admin.register(CompanyPrijectAutoInfoWeb, CompanyPrijectAutoInfoWebAdminWeb)
 # website_admin.register(ReviewsAutoInfoWeb, ReviewsAutoInfoWebAdminWeb)
 website_admin.register(PhotoClientInfoWeb, PhotoClientInfoWebWebAdmin)
+website_admin.register(SeoMetaTags, SeoMetaTagsAdminWeb)

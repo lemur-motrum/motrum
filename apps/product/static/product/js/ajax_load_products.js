@@ -219,7 +219,7 @@ window.addEventListener("DOMContentLoaded", () => {
             filterButton.disabled = true;
             filterButton.textContent = "Ничего не найдено";
           } else {
-            if (charactiristics.length > 0) {
+            if (charactiristics.length > 0 || paramsArray.length > 0) {
               filterButton.disabled = false;
               filterButton.textContent = `Найдено ${
                 response["count_product"]
@@ -750,6 +750,7 @@ window.addEventListener("DOMContentLoaded", () => {
           paramsArray.push(vendorParam);
           filterValue.classList.toggle("show");
           closeFilterElems();
+
           if (filterValue.classList.contains("show")) {
             scrollToTop(offsetTop);
             supplierNameContainer.prepend(filterValue);
@@ -760,7 +761,6 @@ window.addEventListener("DOMContentLoaded", () => {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
             }
             pageCount = 0;
-            preLoaderLogic();
           } else {
             const activeSupplierElems =
               supplierNameContainer.querySelectorAll(".show");
@@ -779,8 +779,8 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
               searchParams.set("vendor", paramsArray.join());
             }
-            preLoaderLogic();
           }
+          test_serch_chars();
           history.pushState({}, "", currentUrl);
         };
       });
@@ -794,7 +794,9 @@ window.addEventListener("DOMContentLoaded", () => {
       checkboxZone.classList.toggle("checked");
       if (checkboxZone.classList.contains("checked")) {
         pricenone = true;
+        test_serch_chars();
       } else {
+        test_serch_chars();
         pricenone = false;
       }
     };

@@ -45,7 +45,7 @@
                             </div>
                         </div>
                     </div>
-                    {% if chars_motrum %}
+                    {% comment %} {% if chars_motrum %}
                         <div class="filter_elem chars_filter_elem">
                             <div class="chars_content">
                                 {% for char in chars_motrum %}
@@ -73,11 +73,11 @@
                                                 <div class="filter_title ">{{ char.name_property_motrum }}</div>
                                             {% endif %}
                                             <div class="char_values{% if char.position == "vertical" %} vertical{% endif %}">
-                                                <!-- Для диапазонного значение -->
+                                         
                                                 {% if char.is_diapason %}
                                                     <div class="">{{ char.min_value }}{{ char.max_value }}</div>
                                                 {% else %}
-                                                    <!-- Для  значениz c вариантами -->
+                                          
                                                     {% for value in char.values %}
                                                         <div class="char_value"
                                                              data-position="{{ forloop.counter0 }}"
@@ -96,8 +96,7 @@
                                             {% endif %}
                                         </div>
                                     {% else %}
-                                        <!-- Сгруппированные характеристики габариты -->
-                                        {% comment %} <div class="filter_grop_title">Габариты:</div> {% endcomment %}
+                             
                                         <div class="char_block char_block_true_diapason"
                                              data-chars-slug="{{ char.slug }}"
                                              data-id-chars="{{ char.id_property_motrum }}">
@@ -123,7 +122,7 @@
                                 {% endfor %}
                             </div>
                         </div>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
                     <div class="submit_filter_container">
                         <button class="submit">Применить фильтры</button>
                         <button class="canceled">Сбросить</button>

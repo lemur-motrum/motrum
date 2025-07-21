@@ -35,7 +35,7 @@ from apps.specification.models import ProductSpecification, Specification
 
 from apps.supplier.models import Supplier
 from apps.user.models import AdminUser
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, NDS
 from .forms import SearchForm
 from django.db.models import Q, F, OrderBy, Case, When, Value
 from django.db.models.functions import Replace
@@ -506,26 +506,7 @@ def create_specification(request):
             product_specification_old_i= ProductSpecification.objects.filter(
                 specification=specification,product_new__isnull=False,id_cart__isnull=False,product__isnull=False
             ).values_list('id_cart')
-            print(product_specification_old_i)
-        #     product_cart_list = ProductCart.objects.filter(
-        #     cart=cart,
-        # )
-        #     print("product_cart_list",product_cart_list)
-            # product_specification_new_item = ProductSpecification.objects.filter(
-            #     specification=specification,product_id__isnull=True
-            # ).values_list('id')
-            
-        #     product_cart_list = ProductCart.objects.filter(
-        #     cart=cart, product__isnull=True
-        # ).values_list("id")
-        #     print("product_specification_new_item",product_specification_new_item)
-        #     print("product_cart_list_item",product_cart_list)
-            
-        #     product_cart_list = product_cart_list.exclude(id__in=[product_specification_new_item]).values_list("product__id")
-        #     print("product_cart_list",product_cart_list)
-            
-            
-            
+
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
@@ -578,6 +559,7 @@ def create_specification(request):
                     ).values(
                         "product",
                     ),
+                    
                 )
                 .annotate(
                     price_motrum=Case(
@@ -601,7 +583,7 @@ def create_specification(request):
                 )
                 .order_by("id_product_cart")
             )
-            print(product_new)
+      
             product_new_value_id = product_new.values_list("id_product_cart")
 
             # список товаров без щаписи в окт которые новые еще на записанны
@@ -966,6 +948,7 @@ def create_specification(request):
         "hard_upd": hard_upd,
         "post_data_bx_id": post_data_bx_id,
         "lot":lot,
+        "nds":NDS
     }
     print("context",context)
     return render(request, "admin_specification/catalog.html", context)

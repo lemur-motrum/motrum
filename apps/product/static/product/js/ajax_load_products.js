@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let maxValue;
     let minValue;
     let searchText = urlParams.get("search_text");
-    let priceInputsArray = [];
+    let priceInputsArray = [0, 0];
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -90,6 +90,11 @@ window.addEventListener("DOMContentLoaded", () => {
     if (filterContainer) {
       noManagerContainer.classList.add("right");
     }
+
+    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
+      ".price_checkbox_content"
+    );
+    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
 
     let charactiristics = [];
 
@@ -207,7 +212,11 @@ window.addEventListener("DOMContentLoaded", () => {
         })
         .then((response) => {
           if (response["count_product"] > 999) {
-            if (charactiristics.length > 0) {
+            if (
+              charactiristics.length > 0 ||
+              (paramsArray.length > 0 &&
+                currentUrl.searchParams.get("priceDiapazon"))
+            ) {
               filterButton.disabled = false;
               filterButton.textContent = "Найдено больше 1тыс. товаров";
             } else {
@@ -218,7 +227,11 @@ window.addEventListener("DOMContentLoaded", () => {
             filterButton.disabled = true;
             filterButton.textContent = "Ничего не найдено";
           } else {
-            if (charactiristics.length > 0 || paramsArray.length > 0) {
+            if (
+              charactiristics.length > 0 ||
+              paramsArray.length > 0 ||
+              (priceTo && priceFrom)
+            ) {
               filterButton.disabled = false;
               filterButton.textContent = `Найдено ${
                 response["count_product"]
@@ -228,6 +241,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 "товаров",
               ])}`;
             } else {
+              filterButton.disabled = false;
               filterButton.textContent = "применить фильтры";
             }
           }
@@ -281,6 +295,10 @@ window.addEventListener("DOMContentLoaded", () => {
             smallLoader.classList.remove("show");
             maxValue = +data["price_max"]["price__rub_price_supplier__max"];
             minValue = +data["price_min"]["price__rub_price_supplier__min"];
+
+            priceInputsArray = [minValue, maxValue];
+            priceFrom = minValue;
+            priceTo = maxValue;
 
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);
@@ -428,6 +446,21 @@ window.addEventListener("DOMContentLoaded", () => {
           ? upPriceBtn.classList.add("active")
           : downPriceBtn.classList.add("active");
       }
+
+      if (currentUrl.searchParams.get("priceDiapazon")) {
+        const paramsString = currentUrl.searchParams.get("priceDiapazon");
+        const paramsArray = paramsString.split("-");
+        priceFrom = paramsArray[0];
+        priceTo = paramsArray[1];
+        document.querySelector(".small_price_input").value = priceFrom;
+        document.querySelector(".big_price_input").value = priceTo;
+      }
+
+      if (currentUrl.searchParams.get("pricenone")) {
+        pricenone = true;
+        checkboxZone.classList.add("checked");
+      }
+
       loadItems();
     };
 
@@ -786,19 +819,19 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
-      ".price_checkbox_content"
-    );
-    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
     priceOneFilterContent.onclick = () => {
       checkboxZone.classList.toggle("checked");
       if (checkboxZone.classList.contains("checked")) {
         pricenone = true;
+        currentUrl.searchParams.set("pricenone", true);
         test_serch_chars();
       } else {
         pricenone = false;
+        currentUrl.searchParams.delete("pricenone");
         test_serch_chars();
       }
+
+      history.pushState({}, "", currentUrl);
     };
 
     filterButton.onclick = () => {
@@ -915,7 +948,7 @@ window.addEventListener("DOMContentLoaded", () => {
       input.addEventListener("input", function (e) {
         const currentValue = this.value
           .replace(",", ".")
-          .replace(/[^.\d.-]+/g, "")
+          .replace(/[^.\d]+/g, "")
           .replace(/^([^\.]*\.)|\./g, "$1")
           .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
             return a + b + c.slice(0, 2);
@@ -932,19 +965,29 @@ window.addEventListener("DOMContentLoaded", () => {
             e.target.value = maxValue;
           }
         }
-        // if (minValue) {
-        //   if (+input.value <= minValue) {
-        //     e.target.value = minValue;
-        //   }
-        // }
 
         if (max) {
           priceTo = e.target.value;
-          test_serch_chars();
+          priceInputsArray[1] = priceTo;
+          currentUrl.searchParams.set(
+            "priceDiapazon",
+            priceInputsArray.join("-")
+          );
         } else {
           priceFrom = e.target.value;
-          test_serch_chars();
+          priceInputsArray[0] = priceFrom;
+          currentUrl.searchParams.set(
+            "priceDiapazon",
+            priceInputsArray.join("-")
+          );
         }
+        test_serch_chars();
+
+        if (priceInputsArray[0] == "" && priceInputsArray[0] == "") {
+          currentUrl.searchParams.delete("priceDiapazon");
+        }
+
+        history.pushState({}, "", currentUrl);
       });
     }
   }

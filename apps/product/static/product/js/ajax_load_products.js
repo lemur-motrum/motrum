@@ -28,7 +28,9 @@ window.addEventListener("DOMContentLoaded", () => {
     let priceTo;
     let sort;
     let maxValue;
+    let minValue;
     let searchText = urlParams.get("search_text");
+    let priceInputsArray = [];
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -278,6 +280,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             smallLoader.classList.remove("show");
             maxValue = +data["price_max"]["price__rub_price_supplier__max"];
+            minValue = +data["price_min"]["price__rub_price_supplier__min"];
 
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);
@@ -793,8 +796,8 @@ window.addEventListener("DOMContentLoaded", () => {
         pricenone = true;
         test_serch_chars();
       } else {
-        test_serch_chars();
         pricenone = false;
+        test_serch_chars();
       }
     };
 
@@ -900,10 +903,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function inputValidate(input, max = false) {
       const intervalMaxValue = setInterval(() => {
-        if (maxValue) {
+        if (maxValue && minValue) {
           clearInterval(intervalMaxValue);
           if (max) {
             input.placeholder = `до ${maxValue.toString()}`;
+          } else {
+            input.placeholder = `от ${minValue.toString()}`;
           }
         }
       }, 5);
@@ -926,6 +931,19 @@ window.addEventListener("DOMContentLoaded", () => {
           if (+input.value >= maxValue) {
             e.target.value = maxValue;
           }
+        }
+        // if (minValue) {
+        //   if (+input.value <= minValue) {
+        //     e.target.value = minValue;
+        //   }
+        // }
+
+        if (max) {
+          priceTo = e.target.value;
+          test_serch_chars();
+        } else {
+          priceFrom = e.target.value;
+          test_serch_chars();
         }
       });
     }

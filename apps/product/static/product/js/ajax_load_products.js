@@ -82,8 +82,15 @@ window.addEventListener("DOMContentLoaded", () => {
     const submitFiltersContainer = document.querySelector(
       ".submit_filter_container"
     );
+    const submitButtonContainer =
+      submitFiltersContainer.querySelector(".submit");
 
-    const filterButton = submitFiltersContainer.querySelector(".submit");
+    const submitButtonContainerButtonLoader =
+      submitFiltersContainer.querySelector(".small_loader");
+
+    const filterButton = submitButtonContainer.querySelector(
+      ".submit_button_name"
+    );
     const cancelFilterButton =
       submitFiltersContainer.querySelector(".canceled");
 
@@ -197,6 +204,11 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       let csrfToken = getCookie("csrftoken");
       let params = new URLSearchParams(data);
+
+      filterButton.classList.add("hide");
+      submitButtonContainerButtonLoader.classList.add("show");
+      submitButtonContainer.disabled = true;
+
       fetch(`/api/v1/product/search-filters-product/?${params.toString()}`, {
         method: "GET",
         headers: {
@@ -205,20 +217,28 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            filterButton.classList.remove("hide");
+            submitButtonContainerButtonLoader.classList.remove("show");
             return response.json();
           } else {
             setErrorModal();
           }
         })
         .then((response) => {
+          maxValue = +response["price_max"]["price__rub_price_supplier__max"];
+          minValue = +response["price_min"]["price__rub_price_supplier__min"];
+
+          addPlaceholderValue(minInputPrice);
+          addPlaceholderValue(maxInputPrice, true);
+
           if (response["count_product"] > 999) {
-            filterButton.disabled = false;
+            submitButtonContainer.disabled = false;
             filterButton.textContent = "Найдено больше 1тыс. товаров";
           } else if (response["count_product"] == 0) {
-            filterButton.disabled = true;
+            submitButtonContainer.disabled = true;
             filterButton.textContent = "Ничего не найдено";
           } else {
-            filterButton.disabled = false;
+            submitButtonContainer.disabled = false;
             filterButton.textContent = `Найдено ${
               response["count_product"]
             } ${num_word(response["count_product"], [
@@ -850,6 +870,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
       urlParams.delete("price");
       urlParams.delete("vendor");
+      urlParams.delete("priceDiapazon");
       checkboxZone.classList.remove("checked");
       const slugsElems = document.querySelectorAll("[data-chars-slug]");
       slugsElems.forEach((slugElem) => {
@@ -860,7 +881,6 @@ window.addEventListener("DOMContentLoaded", () => {
           slugElem.querySelector(".count_quantity").classList.remove("show");
         }
       });
-      filterButton.textContent = "применить фильтры";
       closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();
@@ -921,11 +941,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const intervalMaxValue = setInterval(() => {
         if (maxValue && minValue) {
           clearInterval(intervalMaxValue);
-          if (max) {
-            input.placeholder = `до ${maxValue.toString()}`;
-          } else {
-            input.placeholder = `от ${minValue.toString()}`;
-          }
+          addPlaceholderValue(input, max);
         }
       }, 5);
       input.addEventListener("input", function (e) {
@@ -973,14 +989,24 @@ window.addEventListener("DOMContentLoaded", () => {
             priceInputsArray.join("-")
           );
         }
-        test_serch_chars();
-
         if (priceInputsArray[0] == "" && priceInputsArray[0] == "") {
           currentUrl.searchParams.delete("priceDiapazon");
+          priceFrom = 0;
+          priceTo = 0;
         }
+
+        test_serch_chars();
 
         history.pushState({}, "", currentUrl);
       });
+    }
+
+    function addPlaceholderValue(input, max = false) {
+      if (max) {
+        input.placeholder = `до ${maxValue.toString()}`;
+      } else {
+        input.placeholder = `от ${minValue.toString()}`;
+      }
     }
   }
 });

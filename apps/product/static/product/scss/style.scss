@@ -1102,11 +1102,65 @@
             background-color: #95bad4;
             border: none;
             border-radius: 1.875rem;
-            font-size: 1.313rem;
-            color: #fff;
             text-transform: lowercase;
             cursor: pointer;
             transition: 0.6s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .small_loader {
+              display: none;
+              overflow: hidden;
+              font-size: 0.625rem;
+              margin: 1rem auto;
+              text-indent: -9999em;
+              width: 2.5rem;
+              min-height: 2.5rem;
+              border-radius: 50%;
+              background: #65abf8;
+              background: linear-gradient(
+                to right,
+                #fff 10%,
+                rgba(0, 0, 0, 0) 42%
+              );
+              position: relative;
+              -webkit-animation: load3 1.4s infinite linear;
+              animation: load3 1.4s infinite linear;
+              transform: translateZ(0);
+              &:before {
+                width: 50%;
+                height: 50%;
+                background: #fff;
+                border-radius: 100% 0 0 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: "";
+              }
+              &:after {
+                background-color: #bdbdbd;
+                width: 75%;
+                height: 75%;
+                border-radius: 50%;
+                content: "";
+                margin: auto;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+              }
+              &.show {
+                display: block;
+              }
+            }
+            .submit_button_name {
+              font-size: 1.313rem;
+              color: #fff;
+              &.hide {
+                display: none;
+              }
+            }
             @media screen and (max-width: 576px) {
               height: 2.5rem;
               font-size: 1rem;

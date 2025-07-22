@@ -659,8 +659,7 @@ def prompower_api():
                     print("Файлы одинакового размера")
                 else:
                     print("Размеры отличаются")# в байтах 
-                    prod_d.hide = True
-                    prod_d.save() 
+                  
                     r = requests.get(url, stream=True)
                     with open(os.path.join(local_file_path), "wb") as ofile:
                         ofile.write(r.content)  

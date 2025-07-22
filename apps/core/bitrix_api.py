@@ -353,7 +353,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 middle_name = None
 
             elif type_preset_req == "3":  # ИП
-                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
+                legal_entity = f'ИП {v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}'
                 # tel = v["RQ_PHONE"]
                 type_client = "3"
                 ogrn = v["RQ_OGRNIP"]
@@ -363,7 +363,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 middle_name = v["RQ_SECOND_NAME"]
 
             elif type_preset_req == "5":  # Физ. лицо
-                legal_entity = f'ФИЗ.ЛИЦО "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
+                legal_entity = f'ФИЗ.ЛИЦО {v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}'
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "5"

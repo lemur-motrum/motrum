@@ -652,10 +652,15 @@ class ProductViewSet(viewsets.ModelViewSet):
                     )
                 )
         count_product = queryset.count()
+        
+        price_min = queryset.aggregate(Min("price__rub_price_supplier", default=None))
+        price_max = queryset.aggregate(Max("price__rub_price_supplier", default=None))
         # serializer = ProductSerializer(
         #     queryset, context={"request": request}, many=True
         # )
         data_response = {
+            "price_min": price_min,
+            "price_max": price_max,
             "count_product": count_product,
         }
 

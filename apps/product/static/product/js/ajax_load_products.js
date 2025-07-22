@@ -774,6 +774,7 @@ window.addEventListener("DOMContentLoaded", () => {
     filters.forEach((filterElem) => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
       filterValues.forEach((filterValue) => {
+        let dataPosition = +filterValue.getAttribute("data-position");
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
@@ -798,6 +799,13 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             pageCount = 0;
           } else {
+            const siblings = document.querySelector(
+              ".suppliers_max_height_container"
+            ).children;
+            document
+              .querySelector(".suppliers_max_height_container")
+              .insertBefore(filterValue, siblings[dataPosition + 1]);
+
             const activeSupplierElems =
               supplierNameContainer.querySelectorAll(".show");
             if (activeSupplierElems[activeSupplierElems.length - 1]) {
@@ -974,6 +982,7 @@ window.addEventListener("DOMContentLoaded", () => {
           if (e.target.value == "") {
             priceTo = 0;
           }
+
           priceInputsArray[1] = priceTo;
           currentUrl.searchParams.set(
             "priceDiapazon",
@@ -990,7 +999,7 @@ window.addEventListener("DOMContentLoaded", () => {
             priceInputsArray.join("-")
           );
         }
-        if (priceInputsArray[0] == "" && priceInputsArray[0] == "") {
+        if (priceInputsArray[0] == "" && priceInputsArray[1] == "") {
           currentUrl.searchParams.delete("priceDiapazon");
           priceFrom = 0;
           priceTo = 0;

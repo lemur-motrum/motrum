@@ -44,7 +44,9 @@
                             <div>
                                 <div class="suppliers_max_height_container">
                                     {% for vendor in product_vendor %}
-                                        <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
+                                        <div param="{{ vendor.vendor__slug }}"
+                                             class="suplier_elem_content"
+                                             data-position="{{ forloop.counter0 }}">
                                             <div class="suplier_elem_content_img_container">
                                                 {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
                                             </div>

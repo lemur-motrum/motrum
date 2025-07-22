@@ -545,17 +545,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
         
-        if price_from == 0.0 and price_to != 0.0 and price_none == "false":
-            q_object &= ( Q(price__rub_price_supplier__isnull=True)  | Q(price__rub_price_supplier__lte=price_to))
-        else:
-            if price_none == "true":
-                q_object &= Q(price__rub_price_supplier__isnull=False)
-
-            if price_from != 0.0 :
-                q_object &= Q(price__rub_price_supplier__gte=price_from)
-
-            if price_to != 0.0:
-                q_object &= Q(price__rub_price_supplier__lte=price_to)
+        
         # if request.query_params.get("pricenone"):
         #     price_none = request.query_params.get("pricenone")
         # else:
@@ -586,6 +576,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # сортировка по гет параметрам
         q_object = Q()
+        
         q_object &= Q(check_to_order=True, in_view_website=True)
         if vendor_get is not None:
             if "None" in vendor_get:
@@ -614,15 +605,26 @@ class ProductViewSet(viewsets.ModelViewSet):
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
         # сортировка из блока с ценами
+        if price_from == 0.0 and price_to != 0.0 and price_none == "false":
+            q_object &= ( Q(price__rub_price_supplier__isnull=True)  | Q(price__rub_price_supplier__lte=price_to))
+        else:
+            if price_none == "true":
+                q_object &= Q(price__rub_price_supplier__isnull=False)
 
-        if price_none and price_none == "true":
-            q_object &= Q(price__rub_price_supplier__isnull=False)
+            if price_from != 0.0 :
+                q_object &= Q(price__rub_price_supplier__gte=price_from)
 
-        if price_from and price_from != 0:
-            q_object &= Q(price__rub_price_supplier__gte=price_from)
+            if price_to != 0.0:
+                q_object &= Q(price__rub_price_supplier__lte=price_to)
+                
+        # if price_none and price_none == "true":
+        #     q_object &= Q(price__rub_price_supplier__isnull=False)
 
-        if price_to and price_to != 0:
-            q_object &= Q(price__rub_price_supplier__lte=price_to)
+        # if price_from and price_from != 0:
+        #     q_object &= Q(price__rub_price_supplier__gte=price_from)
+
+        # if price_to and price_to != 0:
+        #     q_object &= Q(price__rub_price_supplier__lte=price_to)
         print(q_object)
         queryset = (
             Product.objects.select_related(

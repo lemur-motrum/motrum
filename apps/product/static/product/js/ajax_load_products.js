@@ -72,9 +72,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     const filterContainer = document.querySelector(".filter_container");
-    const messageElem = document.querySelector(
-      ".filters_quantity_message_container"
-    );
 
     const noManagerContainer = document.querySelector(
       ".personal-manager-container"

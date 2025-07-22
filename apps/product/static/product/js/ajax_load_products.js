@@ -275,9 +275,12 @@ window.addEventListener("DOMContentLoaded", () => {
               endContent.classList.add("show");
             }
             smallLoader.classList.remove("show");
-            maxValue = +data["price_max"]["price__rub_price_supplier__max"];
-            minValue = +data["price_min"]["price__rub_price_supplier__min"];
-
+            maxValue = !priceTo
+              ? +data["price_max"]["price__rub_price_supplier__max"]
+              : maxValue;
+            minValue = !priceFrom
+              ? +data["price_min"]["price__rub_price_supplier__min"]
+              : minValue;
             priceInputsArray = [minValue, maxValue];
 
             for (let i in data.data) {
@@ -432,6 +435,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const paramsArray = paramsString.split("-");
         priceFrom = paramsArray[0];
         priceTo = paramsArray[1];
+
         document.querySelector(".small_price_input").value = priceFrom;
         document.querySelector(".big_price_input").value = priceTo;
       }

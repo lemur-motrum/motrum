@@ -945,111 +945,6 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // function inputValidate(input, max = false, anotherInput) {
-    //   const intervalMaxValue = setInterval(() => {
-    //     if (maxValue && minValue) {
-    //       clearInterval(intervalMaxValue);
-    //       addPlaceholderValue(input, max);
-    //     }
-    //   }, 5);
-
-    //   input.addEventListener("input", function (e) {
-    //     console.log(priceInputsArray);
-    //     if (max) {
-    //       if (!input.value) {
-    //         priceTo = 0;
-    //       } else {
-    //         priceInputsArray[1] = priceTo;
-    //       }
-    //     } else {
-    //       if (!input.value) {
-    //         console.log("Да тут пусто");
-    //         priceFrom = 0;
-    //       } else {
-    //         priceInputsArray[0] = priceFrom;
-    //       }
-    //     }
-
-    //     const inputValueLength = input.value.length;
-
-    //     const currentValue = this.value
-    //       .replace(",", ".")
-    //       .replace(/[^.\d]+/g, "")
-    //       .replace(/^([^\.]*\.)|\./g, "$1")
-    //       .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-    //         return a + b + c.slice(0, 2);
-    //       });
-    //     input.value = currentValue;
-    //     if (input.value == ".") {
-    //       e.target.value = "";
-    //     }
-    //     if (input.value == "0") {
-    //       e.target.value = "";
-    //     }
-    //     if (maxValue) {
-    //       if (+input.value >= maxValue) {
-    //         e.target.value = maxValue;
-    //       }
-    //     }
-
-    //     if (max) {
-    //       priceTo = e.target.value;
-    //       if (e.target.value == "") {
-    //         priceTo = 0;
-    //       }
-    //       if ((anotherInput.value = "")) {
-    //         priceFrom = 0;
-    //       }
-
-    //       priceInputsArray[1] = priceTo;
-    //       currentUrl.searchParams.set(
-    //         "priceDiapazon",
-    //         priceInputsArray.join("-")
-    //       );
-    //       setTimeout(() => {
-    //         if (input.value.length == inputValueLength) {
-    //           console.log(11111);
-    //           test_serch_chars();
-    //         }
-    //       }, 600);
-    //     } else {
-    //       priceFrom = e.target.value;
-    //       if (input.value == "") {
-    //         priceFrom = 0;
-    //       }
-
-    //       if ((anotherInput.value = "")) {
-    //         priceTo = 0;
-    //       }
-
-    //       priceInputsArray[0] = priceFrom;
-    //       currentUrl.searchParams.set(
-    //         "priceDiapazon",
-    //         priceInputsArray.join("-")
-    //       );
-    //       setTimeout(() => {
-    //         if (input.value.length == inputValueLength) {
-    //           console.log(222222);
-    //           test_serch_chars();
-    //         }
-    //       }, 600);
-    //     }
-    //     if (priceInputsArray[0] == "" && priceInputsArray[1] == "") {
-    //       currentUrl.searchParams.delete("priceDiapazon");
-    //       priceFrom = 0;
-    //       priceTo = 0;
-    //       setTimeout(() => {
-    //         if (input.value.length == inputValueLength) {
-    //           console.log(3333333);
-    //           test_serch_chars();
-    //         }
-    //       }, 600);
-    //     }
-
-    //     history.pushState({}, "", currentUrl);
-    //   });
-    // }
-
     function inputValidate(input, max = false, anotherInput) {
       const intervalMaxValue = setInterval(() => {
         if (maxValue && minValue) {
@@ -1059,7 +954,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }, 5);
 
       input.addEventListener("input", function (e) {
-        const inputValueLength = input.value.length;
         const currentValue = this.value
           .replace(",", ".")
           .replace(/[^.\d]+/g, "")
@@ -1068,6 +962,8 @@ window.addEventListener("DOMContentLoaded", () => {
             return a + b + c.slice(0, 2);
           });
         input.value = currentValue;
+
+        const inputValueLength = input.value.length;
 
         if (input.value == ".") {
           e.target.value = "";
@@ -1098,12 +994,6 @@ window.addEventListener("DOMContentLoaded", () => {
             "priceDiapazon",
             priceInputsArray.join("-")
           );
-          setTimeout(() => {
-            if (input.value.length == inputValueLength) {
-              console.log(1111111);
-              test_serch_chars();
-            }
-          }, 600);
         } else {
           priceFrom = e.target.value;
           if (input.value == "") {
@@ -1121,24 +1011,20 @@ window.addEventListener("DOMContentLoaded", () => {
             "priceDiapazon",
             priceInputsArray.join("-")
           );
-          setTimeout(() => {
-            if (input.value.length == inputValueLength) {
-              console.log(222222);
-              test_serch_chars();
-            }
-          }, 600);
         }
         if (priceInputsArray[0] == "" && priceInputsArray[1] == "") {
           currentUrl.searchParams.delete("priceDiapazon");
           priceFrom = 0;
           priceTo = 0;
-          setTimeout(() => {
-            if (input.value.length == inputValueLength) {
-              console.log(3333333);
-              test_serch_chars();
-            }
-          }, 600);
         }
+
+        const timeout = setTimeout(() => {
+          if (input.value.length == inputValueLength) {
+            console.log("Происходит вызов");
+            test_serch_chars();
+            clearTimeout(timeout);
+          }
+        }, 600);
 
         history.pushState({}, "", currentUrl);
       });

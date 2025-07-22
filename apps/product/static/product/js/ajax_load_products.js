@@ -1018,11 +1018,10 @@ window.addEventListener("DOMContentLoaded", () => {
           priceTo = 0;
         }
 
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
           if (input.value.length == inputValueLength) {
             console.log("Происходит вызов");
             test_serch_chars();
-            clearTimeout(timeout);
           }
         }, 600);
 

@@ -947,6 +947,7 @@ window.addEventListener("DOMContentLoaded", () => {
       input.addEventListener("input", function (e) {
         priceFrom = priceInputsArray[0];
         priceTo = priceInputsArray[1];
+        const inputValueLength = input.value.length;
 
         const currentValue = this.value
           .replace(",", ".")
@@ -994,9 +995,11 @@ window.addEventListener("DOMContentLoaded", () => {
           priceFrom = 0;
           priceTo = 0;
         }
-
-        test_serch_chars();
-
+        setTimeout(() => {
+          if (input.value.length == inputValueLength) {
+            test_serch_chars();
+          }
+        }, 600);
         history.pushState({}, "", currentUrl);
       });
     }

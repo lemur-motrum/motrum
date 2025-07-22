@@ -206,7 +206,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PD310A4100K":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -350,6 +350,7 @@ def prompower_api():
 
                                 if os.path.isfile(link_file):
                                     print("Файл существует")
+                                    print("need_upd",need_upd)
                                     if need_upd:
                                         r = requests.get(doc_link, stream=True)
                                         with open(os.path.join(link_file), "wb") as ofile:
@@ -416,7 +417,7 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
-                            
+                            save_document(categ, article)
                             if IS_PROD:
                                 save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов
@@ -629,10 +630,10 @@ def prompower_api():
             finally:
                 continue
 
-    add_category_groupe()
-    add_category()
+    # add_category_groupe()
+    # add_category()
     add_products()
-    add_products_promo_group()
+    # add_products_promo_group()
 
 
 def export_prompower_prod_for_1c():

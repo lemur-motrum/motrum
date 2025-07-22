@@ -344,8 +344,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
-            inputValidate(minInputPrice);
-            inputValidate(maxInputPrice, true);
+
             test_serch_chars();
           }
           history.pushState({}, "", currentUrl);
@@ -359,6 +358,9 @@ window.addEventListener("DOMContentLoaded", () => {
         paramsArray.push(el);
       });
     }
+
+    inputValidate(minInputPrice);
+    inputValidate(maxInputPrice, true);
 
     window.onload = () => {
       const pageGetParam = urlParams.get("page");
@@ -738,7 +740,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
                 minMaxArrray.push(char["min_value"]);
                 minMaxArrray.push(char["max_value"]);
-
                 currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
               }
             } else {
@@ -756,7 +757,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
               minMaxArrray.push(char["min_value"]);
               minMaxArrray.push(char["max_value"]);
-
               currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
             }
           } else {
@@ -952,9 +952,22 @@ window.addEventListener("DOMContentLoaded", () => {
           addPlaceholderValue(input, max);
         }
       }, 5);
+
+      if (max) {
+        if (!input.value) {
+          priceTo = 0;
+        } else {
+          priceTo = priceInputsArray[1];
+        }
+      } else {
+        if (!input.value) {
+          priceFrom = 0;
+        } else {
+          priceFrom = priceInputsArray[0];
+        }
+      }
+
       input.addEventListener("input", function (e) {
-        priceFrom = priceInputsArray[0];
-        priceTo = priceInputsArray[1];
         const inputValueLength = input.value.length;
 
         const currentValue = this.value
@@ -988,6 +1001,12 @@ window.addEventListener("DOMContentLoaded", () => {
             "priceDiapazon",
             priceInputsArray.join("-")
           );
+          setTimeout(() => {
+            if (input.value.length == inputValueLength) {
+              console.log(11111);
+              test_serch_chars();
+            }
+          }, 600);
         } else {
           priceFrom = e.target.value;
           if (e.target.value == "") {
@@ -998,17 +1017,25 @@ window.addEventListener("DOMContentLoaded", () => {
             "priceDiapazon",
             priceInputsArray.join("-")
           );
+          setTimeout(() => {
+            if (input.value.length == inputValueLength) {
+              console.log(222222);
+              test_serch_chars();
+            }
+          }, 600);
         }
         if (priceInputsArray[0] == "" && priceInputsArray[1] == "") {
           currentUrl.searchParams.delete("priceDiapazon");
           priceFrom = 0;
           priceTo = 0;
+          setTimeout(() => {
+            if (input.value.length == inputValueLength) {
+              console.log(3333333);
+              test_serch_chars();
+            }
+          }, 600);
         }
-        setTimeout(() => {
-          if (input.value.length == inputValueLength) {
-            test_serch_chars();
-          }
-        }, 600);
+
         history.pushState({}, "", currentUrl);
       });
     }

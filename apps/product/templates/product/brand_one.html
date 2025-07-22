@@ -45,8 +45,8 @@
                             </div>
                         </div>
                     </div>
-                    {% comment %} {% if chars_motrum %}
-                        <div class="filter_elem chars_filter_elem">
+                    {% if chars_motrum %}
+                        {% comment %} <div class="filter_elem chars_filter_elem">
                             <div class="chars_content">
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
@@ -96,7 +96,7 @@
                                             {% endif %}
                                         </div>
                                     {% else %}
-                             
+                                        <!-- Сгруппированные характеристики габариты -->
                                         <div class="char_block char_block_true_diapason"
                                              data-chars-slug="{{ char.slug }}"
                                              data-id-chars="{{ char.id_property_motrum }}">
@@ -121,8 +121,8 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                        </div>
-                    {% endif %} {% endcomment %}
+                        </div> {% endcomment %}
+                    {% endif %}
                     <div class="submit_filter_container">
                         <button class="submit">Применить фильтры</button>
                         <button class="canceled">Сбросить</button>

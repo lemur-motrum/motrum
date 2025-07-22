@@ -2,8 +2,9 @@ import base64
 import json
 import math
 import os
+import re
 import traceback
-from django.db.models import Max
+from django.db.models import Max,Min
 from django.db.models import Prefetch
 from unicodedata import category
 from django.forms import CharField
@@ -14,7 +15,11 @@ from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, mixins, status
 from apps.client.models import Order
 from django.db.models import Exists, OuterRef
-from apps.core.utils import check_file_price_directory_exist, product_cart_in_file, serch_products_web
+from apps.core.utils import (
+    check_file_price_directory_exist,
+    product_cart_in_file,
+    serch_products_web,
+)
 from apps.logs.utils import error_alert
 from apps.product.api.serializers import (
     CartSerializer,
@@ -65,8 +70,26 @@ class ProductViewSet(viewsets.ModelViewSet):
     # аякс загрузка товаров в каталоге
     @action(detail=False, url_path=r"load-ajax-product-list")
     def load_ajax_match_list(self, request, *args, **kwargs):
+        referer = request.META.get('HTTP_REFERER', '')
+        if '/brand/' in referer:
+            match = re.search(r'/brand/([^/?]+)/?', referer)
+            if match:
+                brand_slug = match.group(1)
+                vendor_get = [brand_slug]
+                print("Это страница бренда:", brand_slug)
+            else:
+                vendor_get = None
+                print("Не удалось определить слаг бренда")
+        elif '/product/' in referer:
+            if request.query_params.get("vendor"):
+                vendor_get = request.query_params.get("vendor")
+                vendor_get = vendor_get.split(",")
+            else:
+                vendor_get = None
+        else:
+            print("Неизвестная страница")
         count = int(request.query_params.get("count"))
-        
+
         count_last = 10
         # page_btn = request.query_params.get("addMoreBtn")
         page_btn = request.query_params.get("addMoreBtn").lower() in ("true", "1", "t")
@@ -76,11 +99,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_none = request.query_params.get("pricenone")
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
-        chars_param = request.query_params.get('chars')
+        chars_param = request.query_params.get("chars")
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
-        print(chars)    
+        print(chars)
 
         if request.query_params.get("search_text"):
             search_text = request.query_params.get("search_text")
@@ -89,11 +112,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             search_text = None
 
-        if request.query_params.get("vendor"):
-            vendor_get = request.query_params.get("vendor")
-            vendor_get = vendor_get.split(",")
-        else:
-            vendor_get = None
+       
 
         category_get = request.query_params.get("category")
 
@@ -108,7 +127,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по гет параметрам
         q_object = Q()
         q_object &= Q(check_to_order=True, in_view_website=True)
-        
 
         if vendor_get is not None:
             if "None" in vendor_get:
@@ -193,83 +211,27 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productimage_set"),
                 Prefetch("productimage_set"),
                 Prefetch("productpropertymotrumitem_set"),
-               
             )
             .filter(q_object)
-
         )
-       
 
-        # поиск по характеристикам для варианта с точны одним значением 
-        # for char in chars:
-        #     prop_id = char['id']
-        #     values = char['values']
-        #     is_diapason = char.get('is_diapason', False)
-        #     if is_diapason:
-        #         min_value = char.get('min_value')
-        #         max_value = char.get('max_value')
-        #         print("minmax",min_value,max_value)
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.annotate(
-        #                     value_float=Cast('value', FloatField())
-        #                 ).filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     is_diapason=True,
-        #                     value_float__gte=min_value,
-        #                     value_float__lte=max_value
-        #                 )
-        #             )
-        #         )
-        #     else:
-        #         queryset = queryset.filter(
-        #             Exists(
-        #                 ProductProperty.objects.filter(
-        #                     product=OuterRef('pk'),
-        #                     property_motrum=prop_id,
-        #                     property_value_motrum__in=values
-        #                 )
-        #             )
-        #         )
-        
-        # поиск по характеристикам 2  
-        # for char2 in chars:
-        #     prop_id = char2['id']
-        #     values = char2['values']
-        #     is_diapason = char2.get('is_diapason', False)
-        #     if values:
-        #         vendor_props = VendorPropertyAndMotrum.objects.filter(
-        #             property_motrum=prop_id,
-        #             property_value_motrum__in=values
-        #         ).values_list('property_vendor_name', 'property_vendor_value')
-        #         if vendor_props:
-        #             queryset = queryset.filter(
-        #                 Exists(
-        #                     ProductProperty.objects.filter(
-        #                         product=OuterRef('pk'),
-        #                         name__in=[vp[0] for vp in vendor_props],
-        #                         value__in=[vp[1] for vp in vendor_props]
-        #                     )
-        #                 )
-        #             )
         # поис по характеристикам мотрум
         for char in chars:
-            prop_id = char['id']
-            values = char['values']
-            is_diapason = char.get('is_diapason', False)
+            prop_id = char["id"]
+            values = char["values"]
+            is_diapason = char.get("is_diapason", False)
             if is_diapason:
-                min_value = char.get('min_value')
-                max_value = char.get('max_value')
-                print("minmax",min_value,max_value)
+                min_value = char.get("min_value")
+                max_value = char.get("max_value")
+                print("minmax", min_value, max_value)
                 queryset = queryset.filter(
                     Exists(
                         ProductPropertyMotrumItem.objects.filter(
-                            product=OuterRef('pk'),
+                            product=OuterRef("pk"),
                             property_motrum=prop_id,
                             is_diapason=True,
                             property_value_motrum_to_diapason__gte=min_value,
-                            property_value_motrum_to_diapason__lte=max_value
+                            property_value_motrum_to_diapason__lte=max_value,
                         )
                     )
                 )
@@ -277,30 +239,27 @@ class ProductViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(
                     Exists(
                         ProductPropertyMotrumItem.objects.filter(
-                            product=OuterRef('pk'),
+                            product=OuterRef("pk"),
                             property_motrum=prop_id,
-                            property_value_motrum__in=values
+                            property_value_motrum__in=values,
                         )
                     )
                 )
-        
-        #  поиск по тексту   
+
+        #  поиск по тексту
         if search_text:
             queryset = serch_products_web(search_text, queryset)
-            
-            
-        queryset_next = queryset[
-            count + count_last : count + count_last + 1
-        ].exists()
 
+        queryset_next = queryset[count + count_last : count + count_last + 1].exists()
+        price_min = queryset.aggregate(Min("price__rub_price_supplier", default=0))
         price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
         page_count = queryset.count()
         queryset = queryset.order_by(sorting)[count : count + count_last]
-        
+
         serializer = ProductSerializer(
             queryset, context={"request": request}, many=True
         )
-        
+
         if page_count % 10 == 0:
             count = page_count / 10
         else:
@@ -317,6 +276,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count": math.ceil(page_count / 10),
             "page": page_get,
             "small": small,
+            "price_min": price_min,
             "price_max": price_max,
         }
 
@@ -332,17 +292,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = search_input.replace(",", "")
         search_input = search_input.split()
 
-      
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
-            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
         )
-   
+
         # del search_input[0]
         if len(search_input) > 1:
             for search_item in search_input[1:]:
@@ -356,8 +314,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             queryset = queryset.filter(check_to_order=True).order_by("name")
         queryset = queryset.filter(check_to_order=True).order_by("name")
-        
-        queryset = queryset[count  : count_last ]
+
+        queryset = queryset[count:count_last]
         # стандатный варинт ищет целиокм
 
         # queryset = Product.objects.filter(
@@ -426,13 +384,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
         queryset = Product.objects.filter(
-            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
-           
         )
 
         # del search_input[0]
@@ -446,12 +402,20 @@ class ProductViewSet(viewsets.ModelViewSet):
                     | Q(description__icontains=search_item)
                 )
         else:
-            queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
-        
-        queryset = queryset.filter(check_to_order=True).filter(in_view_website=True).order_by("name")
-        
-        queryset = queryset[count  : count_last ]
-    
+            queryset = (
+                queryset.filter(check_to_order=True)
+                .filter(in_view_website=True)
+                .order_by("name")
+            )
+
+        queryset = (
+            queryset.filter(check_to_order=True)
+            .filter(in_view_website=True)
+            .order_by("name")
+        )
+
+        queryset = queryset[count:count_last]
+
         # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
@@ -471,22 +435,18 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-vendor")
     def search_vendor(self, request, *args, **kwargs):
-        
+
         data = request.data
-     
+
         count = int(data["count"])
         count_last = int(data["count_last"])
         search_input = data["search_text"]
         # search_input = search_input.replace(".", "").replace(",", "")
         # search_input = search_input.split()
 
-        
         # стандатный варинт ищет целиокм
-        queryset = Vendor.objects.filter(
-             Q(name__icontains=search_input)
-        )
+        queryset = Vendor.objects.filter(Q(name__icontains=search_input))
 
-    
         page_count = queryset.count()
 
         count_all = count + page_count
@@ -506,42 +466,37 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = data["search_text"]
         search_input = search_input.replace(",", "")
         search_input = search_input.split()
-        
+
         # q_object = Q(name__icontains=search_input[0])
         # q_object |= Q(article_supplier__icontains=search_input[0])
         # q_object |= Q(additional_article_supplier__icontains=search_input[0])
         # q_object |= Q(description__icontains=search_input[0])
-        
-        if "cat" in data and data["cat"] != "" :
+
+        if "cat" in data and data["cat"] != "":
             category_id = int(data["cat"])
         else:
             category_id = None
-        
+
         if "gr" in data and data["gr"] != "":
             group_id = int(data["gr"])
-           
+
         else:
             group_id = None
-  
+
         # # вариант ищет каждое слово все рабоатет
-      
-        
-        
-        
-        
+
         queryset = Product.objects.filter(
-            
             Q(name__icontains=search_input[0])
             # | Q(article__icontains=search_input[0])
             | Q(article_supplier__icontains=search_input[0])
             | Q(additional_article_supplier__icontains=search_input[0])
             | Q(description__icontains=search_input[0])
         )
-   
+
         # del search_input[0]
         if len(search_input) > 1:
             for search_item in search_input[1:]:
-           
+
                 queryset = queryset.filter(
                     Q(name__icontains=search_item)
                     # | Q(article__icontains=search_item)
@@ -551,17 +506,16 @@ class ProductViewSet(viewsets.ModelViewSet):
                 )
         else:
             queryset = queryset.filter(check_to_order=True).order_by("name")
-        
+
         q_object = Q(check_to_order=True)
         if category_id:
             q_object &= Q(category_id=category_id)
         if group_id:
             q_object &= Q(group_id=group_id)
-        
-   
+
         queryset = queryset.filter(q_object).order_by("name")
-        
-        queryset = queryset[count  : count_last ]
+
+        queryset = queryset[count:count_last]
 
         page_count = queryset.count()
         count_all = count + page_count
@@ -575,9 +529,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-filters-product")
     def search_filters_product(self, request, *args, **kwargs):
-        
-        
-        chars_param = request.query_params.get('chars')
+
+        chars_param = request.query_params.get("chars")
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
@@ -586,17 +539,17 @@ class ProductViewSet(viewsets.ModelViewSet):
             price_none = request.query_params.get("pricenone")
         else:
             price_none = None
-            
-        if  request.query_params.get("priceto"):
+
+        if request.query_params.get("priceto"):
             price_to = float(request.query_params.get("priceto"))
         else:
             price_to = None
-            
+
         if request.query_params.get("pricefrom"):
             price_from = float(request.query_params.get("pricefrom"))
         else:
             price_from = None
-            
+
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
             vendor_get = vendor_get.split(",")
@@ -609,10 +562,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             groupe_get = request.query_params.get("group")
         else:
             groupe_get = None
-        
+
         # сортировка по гет параметрам
         q_object = Q()
-        q_object &= Q(check_to_order=True, in_view_website=True)    
+        q_object &= Q(check_to_order=True, in_view_website=True)
         if vendor_get is not None:
             if "None" in vendor_get:
                 if len(vendor_get) > 1:
@@ -665,28 +618,26 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productimage_set"),
                 Prefetch("productimage_set"),
                 Prefetch("productpropertymotrumitem_set"),
-               
             )
             .filter(q_object)
-
-        )    
+        )
         # поис по характеристикам мотрум
         for char in chars:
-            prop_id = char['id']
-            values = char['values']
-            is_diapason = char.get('is_diapason', False)
+            prop_id = char["id"]
+            values = char["values"]
+            is_diapason = char.get("is_diapason", False)
             if is_diapason:
-                min_value = char.get('min_value')
-                max_value = char.get('max_value')
-                print("minmax",min_value,max_value)
+                min_value = char.get("min_value")
+                max_value = char.get("max_value")
+                print("minmax", min_value, max_value)
                 queryset = queryset.filter(
                     Exists(
                         ProductPropertyMotrumItem.objects.filter(
-                            product=OuterRef('pk'),
+                            product=OuterRef("pk"),
                             property_motrum=prop_id,
                             is_diapason=True,
                             property_value_motrum_to_diapason__gte=min_value,
-                            property_value_motrum_to_diapason__lte=max_value
+                            property_value_motrum_to_diapason__lte=max_value,
                         )
                     )
                 )
@@ -694,9 +645,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(
                     Exists(
                         ProductPropertyMotrumItem.objects.filter(
-                            product=OuterRef('pk'),
+                            product=OuterRef("pk"),
                             property_motrum=prop_id,
-                            property_value_motrum__in=values
+                            property_value_motrum__in=values,
                         )
                     )
                 )
@@ -706,10 +657,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         # )
         data_response = {
             "count_product": count_product,
-           
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)
+
+
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Cart.objects.filter()
     serializer_class = CartSerializer
@@ -951,7 +903,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         print(queryset)
         try:
             product = queryset.get(product=data["product"], product_new=product_new)
-      
+
             data["id"] = product.id
             serializer = serializer_class(product, data=data, many=False)
             if serializer.is_valid():
@@ -971,9 +923,9 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
             #     product = queryset.get(product=data["product"])
             #     data = {"status": "product_in_cart"}
             #     return Response(data, status=status.HTTP_409_CONFLICT)
-            
+
             # except ProductCart.DoesNotExist:
-            
+
             data["product_price"] = product_price
             data["product_sale_motrum"] = product_sale_motrum
             serializer = serializer_class(data=data, many=False)
@@ -998,7 +950,12 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
         product_new_name = data["product_new"]
-        if product_new_article == "" or product_new_article == " " or product_new_name == "" or product_new_name == " " :
+        if (
+            product_new_article == ""
+            or product_new_article == " "
+            or product_new_name == ""
+            or product_new_name == " "
+        ):
             data = {"status": "none_art_or_name"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -1016,7 +973,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(data, status=status.HTTP_409_CONFLICT)
 
             except ProductCart.DoesNotExist:
-                
+
                 serializer = serializer_class(data=data, many=False)
                 if serializer.is_valid():
                     cart_product = serializer.save()
@@ -1053,9 +1010,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         data = request.data
         if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = 0
-            
-        
-            
+
         serializer = serializer_class(queryset, data=data, partial=True)
 
         if serializer.is_valid():
@@ -1100,7 +1055,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="cart-file-download")
     def product_cart_in_file_download(self, request, pk=None, *args, **kwargs):
-   
+
         cart = 298
         new_dir = "{0}/{1}/{2}".format(MEDIA_ROOT, "documents", "kp_file")
         path_kp = f"{new_dir}/КП.xlsx"
@@ -1116,5 +1071,3 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         stop_daemon = daemon_thread.join()
         # is_alive_daemon = daemon_thread.is_alive()
         return Response(None, status=status.HTTP_200_OK)
-
-

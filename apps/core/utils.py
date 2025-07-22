@@ -3328,9 +3328,7 @@ def get_props_motrum_filter_to_view(product_props):
     # Добавляем is_visible: True для первых 5, False для остальных
     for idx, char in enumerate(chars):
         char["is_visible"] = True if idx < 5 else False
-    print("chars", chars)
-    
-    print("chars", chars)
+   
 
     return chars
 

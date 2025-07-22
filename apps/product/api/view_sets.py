@@ -4,7 +4,7 @@ import math
 import os
 import re
 import traceback
-from django.db.models import Max
+from django.db.models import Max,Min
 from django.db.models import Prefetch
 from unicodedata import category
 from django.forms import CharField
@@ -251,7 +251,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = serch_products_web(search_text, queryset)
 
         queryset_next = queryset[count + count_last : count + count_last + 1].exists()
-
+        price_min = queryset.aggregate(Min("price__rub_price_supplier", default=0))
         price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
         page_count = queryset.count()
         queryset = queryset.order_by(sorting)[count : count + count_last]
@@ -276,6 +276,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count": math.ceil(page_count / 10),
             "page": page_get,
             "small": small,
+            "price_min": price_min,
             "price_max": price_max,
         }
 

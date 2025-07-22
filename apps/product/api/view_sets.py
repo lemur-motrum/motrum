@@ -155,7 +155,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
 
-        # сортировка по цене
         if sort_price:
             if sort_price == "?":
                 # sorting = "?"
@@ -164,17 +163,21 @@ class ProductViewSet(viewsets.ModelViewSet):
                 sorting = F("price__rub_price_supplier").asc(nulls_last=True)
             else:
                 sorting = F("price__rub_price_supplier").desc(nulls_last=True)
-
         # сортировка из блока с ценами
 
-        if price_none == "true":
-            q_object &= Q(price__rub_price_supplier__isnull=False)
+        
+            
+        if price_from == 0.0 and price_to != 0.0 and price_none == "false":
+            q_object &= ( Q(price__rub_price_supplier__isnull=True)  | Q(price__rub_price_supplier__lte=price_to))
+        else:
+            if price_none == "true":
+                q_object &= Q(price__rub_price_supplier__isnull=False)
 
-        if price_from != 0:
-            q_object &= Q(price__rub_price_supplier__gte=price_from)
+            if price_from != 0.0 :
+                q_object &= Q(price__rub_price_supplier__gte=price_from)
 
-        if price_to != 0:
-            q_object &= Q(price__rub_price_supplier__lte=price_to)
+            if price_to != 0.0:
+                q_object &= Q(price__rub_price_supplier__lte=price_to)
 
         # if sort_price:
         #     sort = "price__rub_price_supplier"
@@ -194,6 +197,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         #     prop_id = char['id']
         #     values = char['values']
         #     q_object &= Q( productproperty__property_value_motrum__in=values, productproperty__property_motrum=prop_id,)
+        # сортировка по цене
+
 
         print(q_object)
         queryset = (
@@ -213,9 +218,10 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Prefetch("productpropertymotrumitem_set"),
             )
             .filter(q_object)
+            
         )
-
-        # поис по характеристикам мотрум
+        print(queryset.query)
+        print(str(queryset.query))
         for char in chars:
             prop_id = char["id"]
             values = char["values"]
@@ -535,20 +541,35 @@ class ProductViewSet(viewsets.ModelViewSet):
         if chars_param:
             chars = json.loads(chars_param)
         print(chars)
-        if request.query_params.get("pricenone"):
-            price_none = request.query_params.get("pricenone")
+        price_none = request.query_params.get("pricenone")
+        price_to = float(request.query_params.get("priceto"))
+        price_from = float(request.query_params.get("pricefrom"))
+        
+        if price_from == 0.0 and price_to != 0.0 and price_none == "false":
+            q_object &= ( Q(price__rub_price_supplier__isnull=True)  | Q(price__rub_price_supplier__lte=price_to))
         else:
-            price_none = None
+            if price_none == "true":
+                q_object &= Q(price__rub_price_supplier__isnull=False)
 
-        if request.query_params.get("priceto"):
-            price_to = float(request.query_params.get("priceto"))
-        else:
-            price_to = None
+            if price_from != 0.0 :
+                q_object &= Q(price__rub_price_supplier__gte=price_from)
 
-        if request.query_params.get("pricefrom"):
-            price_from = float(request.query_params.get("pricefrom"))
-        else:
-            price_from = None
+            if price_to != 0.0:
+                q_object &= Q(price__rub_price_supplier__lte=price_to)
+        # if request.query_params.get("pricenone"):
+        #     price_none = request.query_params.get("pricenone")
+        # else:
+        #     price_none = None
+
+        # if request.query_params.get("priceto"):
+        #     price_to = float(request.query_params.get("priceto"))
+        # else:
+        #     price_to = None
+
+        # if request.query_params.get("pricefrom"):
+        #     price_from = float(request.query_params.get("pricefrom"))
+        # else:
+        #     price_from = None
 
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")

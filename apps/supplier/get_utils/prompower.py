@@ -6,7 +6,7 @@ import requests
 import json
 from simple_history.utils import update_change_reason
 from apps import supplier
-from project.settings import IS_PROD, MEDIA_ROOT, NDS
+from project.settings import BASE_DIR, IS_PROD, MEDIA_ROOT, NDS
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -326,6 +326,10 @@ def prompower_api():
                                     link=doc_link,product=article,name=title
                                 ).exists()
                                 if doc_old:
+                                    tt = ProductDocument.objects.filter(
+                                        link=doc_link,product=article,hide=False
+                                    ).exclude(name=title).update(hide=True)
+                                    print("tttttt",tt)
                                     need_upd = True
                                 else:
                                     need_upd = False
@@ -339,7 +343,8 @@ def prompower_api():
                             
                             if doc_old == False:
                                 print("doc_old == False",doc_link)
-
+                                
+                                
                                 doc = ProductDocument.objects.create(product=article)
                                 update_change_reason(doc, "Автоматическое")
                                 doc_list_name = doc_link.split("/")
@@ -347,7 +352,7 @@ def prompower_api():
                                 images_last_list = doc_link.split(".")
                                 type_file = "." + images_last_list[-1]
                                 link_file = f"{new_dir}/{doc_name}"
-
+                                
                                 if os.path.isfile(link_file):
                                     print("Файл существует")
                                     print("need_upd",need_upd)
@@ -629,11 +634,46 @@ def prompower_api():
 
             finally:
                 continue
+    
+    
+    def upd_document_pp():
+        prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False, product__article_supplier="PD310A4100K").distinct('link')
+        for prod_d in prod_doc:
+           
+            print(prod_d.document)
+            local_file_path  = prod_d.document.path
+            print(local_file_path)
+            if os.path.isfile(local_file_path):
+                local_file_size = os.path.getsize(local_file_path)  # в байтах
+            else:
+                local_file_size = None
+                
+            print("local_file_size",local_file_size)
 
+            url = prod_d.link
+            response = requests.head(url, allow_redirects=True)
+            remote_file_size = int(response.headers.get('content-length', 0))
+            
+            if local_file_size is not None and remote_file_size > 0:
+                if local_file_size == remote_file_size:
+                    print("Файлы одинакового размера")
+                else:
+                    print("Размеры отличаются")# в байтах 
+                    prod_d.hide = True
+                    prod_d.save() 
+                    r = requests.get(url, stream=True)
+                    with open(os.path.join(local_file_path), "wb") as ofile:
+                        ofile.write(r.content)  
+            else:
+                prod_d.hide = True
+                prod_d.save()
+                print("local_file_size is not None and remote_file_size > 0")    
+    
     # add_category_groupe()
     # add_category()
     add_products()
     # add_products_promo_group()
+    upd_document_pp()
 
 
 def export_prompower_prod_for_1c():

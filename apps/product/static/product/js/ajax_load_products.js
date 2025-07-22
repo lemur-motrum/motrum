@@ -212,38 +212,20 @@ window.addEventListener("DOMContentLoaded", () => {
         })
         .then((response) => {
           if (response["count_product"] > 999) {
-            if (
-              charactiristics.length > 0 ||
-              (paramsArray.length > 0 &&
-                currentUrl.searchParams.get("priceDiapazon"))
-            ) {
-              filterButton.disabled = false;
-              filterButton.textContent = "Найдено больше 1тыс. товаров";
-            } else {
-              filterButton.disabled = false;
-              filterButton.textContent = "применить фильтры";
-            }
+            filterButton.disabled = false;
+            filterButton.textContent = "Найдено больше 1тыс. товаров";
           } else if (response["count_product"] == 0) {
             filterButton.disabled = true;
             filterButton.textContent = "Ничего не найдено";
           } else {
-            if (
-              charactiristics.length > 0 ||
-              paramsArray.length > 0 ||
-              (priceTo && priceFrom)
-            ) {
-              filterButton.disabled = false;
-              filterButton.textContent = `Найдено ${
-                response["count_product"]
-              } ${num_word(response["count_product"], [
-                "товар",
-                "товара",
-                "товаров",
-              ])}`;
-            } else {
-              filterButton.disabled = false;
-              filterButton.textContent = "применить фильтры";
-            }
+            filterButton.disabled = false;
+            filterButton.textContent = `Найдено ${
+              response["count_product"]
+            } ${num_word(response["count_product"], [
+              "товар",
+              "товара",
+              "товаров",
+            ])}`;
           }
         });
     }
@@ -297,8 +279,6 @@ window.addEventListener("DOMContentLoaded", () => {
             minValue = +data["price_min"]["price__rub_price_supplier__min"];
 
             priceInputsArray = [minValue, maxValue];
-            priceFrom = minValue;
-            priceTo = maxValue;
 
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);
@@ -785,7 +765,6 @@ window.addEventListener("DOMContentLoaded", () => {
           closeFilterElems();
 
           if (filterValue.classList.contains("show")) {
-            scrollToTop(offsetTop);
             supplierNameContainer.prepend(filterValue);
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
@@ -946,6 +925,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }, 5);
       input.addEventListener("input", function (e) {
+        priceFrom = priceInputsArray[0];
+        priceTo = priceInputsArray[1];
+
         const currentValue = this.value
           .replace(",", ".")
           .replace(/[^.\d]+/g, "")
@@ -968,6 +950,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if (max) {
           priceTo = e.target.value;
+          if (e.target.value == "") {
+            priceTo = 0;
+          }
           priceInputsArray[1] = priceTo;
           currentUrl.searchParams.set(
             "priceDiapazon",
@@ -975,6 +960,9 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         } else {
           priceFrom = e.target.value;
+          if (e.target.value == "") {
+            priceFrom = 0;
+          }
           priceInputsArray[0] = priceFrom;
           currentUrl.searchParams.set(
             "priceDiapazon",

@@ -225,12 +225,6 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         })
         .then((response) => {
-          maxValue = +response["price_max"]["price__rub_price_supplier__max"];
-          minValue = +response["price_min"]["price__rub_price_supplier__min"];
-
-          addPlaceholderValue(minInputPrice);
-          addPlaceholderValue(maxInputPrice, true);
-
           if (response["count_product"] > 999) {
             submitButtonContainer.disabled = false;
             filterButton.textContent = "Найдено больше 1тыс. товаров";
@@ -295,12 +289,8 @@ window.addEventListener("DOMContentLoaded", () => {
               endContent.classList.add("show");
             }
             smallLoader.classList.remove("show");
-            maxValue = !priceTo
-              ? +data["price_max"]["price__rub_price_supplier__max"]
-              : maxValue;
-            minValue = !priceFrom
-              ? +data["price_min"]["price__rub_price_supplier__min"]
-              : minValue;
+            maxValue = !priceTo ? +data["price_max"] : maxValue;
+            minValue = !priceFrom ? +data["price_min"] : minValue;
             priceInputsArray = [minValue, maxValue];
 
             for (let i in data.data) {
@@ -344,8 +334,9 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
-
             test_serch_chars();
+            addPlaceholderValue(maxInputPrice, true);
+            addPlaceholderValue(minInputPrice);
           }
           history.pushState({}, "", currentUrl);
         })
@@ -867,6 +858,7 @@ window.addEventListener("DOMContentLoaded", () => {
           el.classList.remove("checked");
         }
       });
+
       maxInputPrice.value = "";
       minInputPrice.value = "";
       pageCount = 0;
@@ -952,24 +944,23 @@ window.addEventListener("DOMContentLoaded", () => {
           addPlaceholderValue(input, max);
         }
       }, 5);
-      let countCaller = 0;
-
-      const regexCountAfterDot = /\.\d{2}$/;
+      let validate = true;
 
       input.addEventListener("input", function (e) {
+        validate = true;
+        console.log(minValue, maxValue);
         const currentValue = this.value
           .replace(",", ".")
           .replace(/[^.\d]+/g, "")
           .replace(/^([^\.]*\.)|\./g, "$1")
           .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
             return a + b + c.slice(0, 2);
-          })
-          .replace(/\.(\d)$/, ".$10");
+          });
+
         input.value = currentValue;
 
-        const inputValueLength = input.value.length;
-
         if (input.value == ".") {
+          validate = false;
           e.target.value = "";
         }
         if (input.value == "0") {
@@ -977,14 +968,16 @@ window.addEventListener("DOMContentLoaded", () => {
           e.target.value = "";
         }
 
-        if (max) {
-          if (maxValue) {
-            if (+input.value >= maxValue) {
-              e.target.value = maxValue;
-            }
+        if (maxValue) {
+          if (+input.value >= +maxValue) {
+            e.target.value = maxValue;
           }
-          priceTo = e.target.value;
+        }
 
+        const inputValue = input.value;
+
+        if (max) {
+          priceTo = e.target.value;
           if (e.target.value == "") {
             priceTo = 0;
           }
@@ -1023,28 +1016,25 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         setTimeout(() => {
-          if (input.value.length == inputValueLength) {
-            if (countCaller == 0) {
-              console.log("Происходит вызов");
+          if (e.target.value == inputValue) {
+            if (validate) {
+              console.log("Запрос");
               test_serch_chars();
+              validate = false;
             }
-            if (regexCountAfterDot.test(input.value)) {
-              countCaller = 999;
-            } else {
-              countCaller = 0;
-            }
+          } else {
+            validate = true;
           }
         }, 600);
-
         history.pushState({}, "", currentUrl);
       });
     }
 
     function addPlaceholderValue(input, max = false) {
       if (max) {
-        input.placeholder = `до ${maxValue.toString()}`;
+        input.placeholder = `до ${maxValue}`;
       } else {
-        input.placeholder = `от ${minValue.toString()}`;
+        input.placeholder = `от ${minValue}`;
       }
     }
   }

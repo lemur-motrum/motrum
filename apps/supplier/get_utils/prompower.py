@@ -206,7 +206,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None and data_item["article"] == "PD310A4100K":
+                if data_item["article"] != None and data_item["article"] == "PD310-A420K":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]

@@ -291,7 +291,11 @@ window.addEventListener("DOMContentLoaded", () => {
             smallLoader.classList.remove("show");
 
             if (urlParams.get("priceDiapazon")) {
-              maxValue = +data["price_max"]["price__rub_price_supplier__max"];
+              maxValue = getCurrentPrice(
+                document
+                  .querySelector(".price_content")
+                  .getAttribute("data-max-price")
+              );
               minValue = +data["price_min"]["price__rub_price_supplier__min"];
             } else {
               maxValue = !priceTo

@@ -142,7 +142,7 @@ def catalog_group(request, category):
         )
         product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=queryset
         )
-        chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+        chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=category,group=None)
 
         try:
             current_category = CategoryProduct.objects.get(slug=category)
@@ -211,7 +211,7 @@ def products_items(request, category, group):
     
     product_props_motrum = ProductPropertyMotrumItem.objects.filter( product__in=product
         )
-    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=category,group=group)
     
     
     current_category = CategoryProduct.objects.get(slug=category)
@@ -421,7 +421,7 @@ def brand_one(request, vendor):
     
     product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=product
         )
-    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum)
+    chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=None,group=None)
     
     context = {
         "brand": brand,

@@ -1117,8 +1117,33 @@ class ProductPropertyMotrum(models.Model):
         
         super().save(*args, **kwargs)
 
+class ProductPropertyMotrumArticleCateg(models.Model):
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    category = models.ForeignKey(
+        "CategoryProduct",
+        verbose_name="Категория Мотрум",
+        on_delete=models.CASCADE,
+        null=True,
+    )
 
-
+    group = models.ForeignKey(
+        "GroupProduct",
+        verbose_name="Группа Мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Очередность в группе Характеристика товара мотрум"
+        verbose_name_plural = "Очередность в группе Характеристики товаров мотрум"
 class ProductPropertyValueMotrum(models.Model):
     property_motrum = models.ForeignKey(
         ProductPropertyMotrum,

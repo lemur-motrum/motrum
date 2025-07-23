@@ -12,6 +12,7 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     ProductPropertyMotrum,
+    ProductPropertyMotrumArticleCateg,
     ProductPropertyValueMotrum,
     Stock,
     ProductPropertyMotrumItem,
@@ -501,3 +502,24 @@ class ProductPropertyMotrumItemForm(forms.ModelForm):
         if property_value_motrum and property_value_motrum_to_diapason:
             raise forms.ValidationError("Заполните только одно поле: либо 'Значение характеристики Motrum', либо 'Значение для диапазона'.")
         return cleaned_data
+
+
+
+class ProductPropertyMotrumForm(forms.ModelForm):
+    class Meta:
+        model = ProductPropertyMotrumArticleCateg
+        fields = '__all__'
+        widgets = {
+            'group': autocomplete.ModelSelect2(
+                url='product:group-autocomplete', forward=["category"]
+            ),
+        }
+        
+    # group = forms.ModelChoiceField(
+    #     queryset=GroupProduct.objects.all(),
+    #     required=False,
+    #     label="Группа Motrum",
+    #     widget=autocomplete.ModelSelect2(
+    #         url="product:group-autocomplete", forward=["category"]
+    #     ),
+    # )

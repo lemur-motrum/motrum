@@ -289,8 +289,8 @@ window.addEventListener("DOMContentLoaded", () => {
               endContent.classList.add("show");
             }
             smallLoader.classList.remove("show");
-            maxValue = !priceTo ? +data["price_max"] : maxValue;
-            minValue = !priceFrom ? +data["price_min"] : minValue;
+            maxValue = +data["price_max"];
+            minValue = +data["price_min"];
             priceInputsArray = [minValue, maxValue];
 
             for (let i in data.data) {
@@ -335,6 +335,8 @@ window.addEventListener("DOMContentLoaded", () => {
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
             test_serch_chars();
+
+            console.log("min", minValue, "max", maxValue);
             addPlaceholderValue(maxInputPrice, true);
             addPlaceholderValue(minInputPrice);
           }

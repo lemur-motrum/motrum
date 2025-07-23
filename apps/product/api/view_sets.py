@@ -257,8 +257,19 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = serch_products_web(search_text, queryset)
 
         queryset_next = queryset[count + count_last : count + count_last + 1].exists()
-        price_min = queryset.aggregate(Min("price__rub_price_supplier", default=0))
-        price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
+        # price_min = queryset.aggregate(Min("price__rub_price_supplier", default=0))
+        # price_max = queryset.aggregate(Max("price__rub_price_supplier", default=0))
+        price_min_dict = queryset.aggregate(min_val=Min("price__rub_price_supplier", default=0))
+        price_max_dict = queryset.aggregate(max_val=Max("price__rub_price_supplier", default=0))
+
+        price_min = float(price_min_dict["min_val"]) if price_min_dict["min_val"] is not None else None
+        price_max = float(price_max_dict["max_val"]) if price_max_dict["max_val"] is not None else None
+        if price_min is not None:
+            price_min = round(price_min, 2)
+        if price_max is not None:
+            price_max = round(price_max, 2)
+
+        print(price_min)
         page_count = queryset.count()
         queryset = queryset.order_by(sorting)[count : count + count_last]
 
@@ -282,8 +293,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count": math.ceil(page_count / 10),
             "page": page_get,
             "small": small,
-            "price_min": price_min,
-            "price_max": price_max,
+            "price_min": "{:.2f}".format(price_min),
+            "price_max": "{:.2f}".format(price_max),
         }
 
         return Response(data=data_response, status=status.HTTP_200_OK)
@@ -676,14 +687,21 @@ class ProductViewSet(viewsets.ModelViewSet):
                 )
         count_product = queryset.count()
         
-        price_min = queryset.aggregate(Min("price__rub_price_supplier", default=None))
-        price_max = queryset.aggregate(Max("price__rub_price_supplier", default=None))
+        price_min_dict = queryset.aggregate(min_val=Min("price__rub_price_supplier", default=0))
+        price_max_dict = queryset.aggregate(max_val=Max("price__rub_price_supplier", default=0))
+
+        price_min = float(price_min_dict["min_val"]) if price_min_dict["min_val"] is not None else None
+        price_max = float(price_max_dict["max_val"]) if price_max_dict["max_val"] is not None else None
+        if price_min is not None:
+            price_min = round(price_min, 2)
+        if price_max is not None:
+            price_max = round(price_max, 2)
         # serializer = ProductSerializer(
         #     queryset, context={"request": request}, many=True
         # )
         data_response = {
-            "price_min": price_min,
-            "price_max": price_max,
+            "price_min": "{:.2f}".format(price_min),
+            "price_max": "{:.2f}".format(price_max),
             "count_product": count_product,
         }
 

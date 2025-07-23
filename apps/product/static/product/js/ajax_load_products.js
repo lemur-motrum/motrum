@@ -289,8 +289,19 @@ window.addEventListener("DOMContentLoaded", () => {
               endContent.classList.add("show");
             }
             smallLoader.classList.remove("show");
-            maxValue = +data["price_max"];
-            minValue = +data["price_min"];
+
+            if (urlParams.get("priceDiapazon")) {
+              maxValue = +data["price_max"]["price__rub_price_supplier__max"];
+              minValue = +data["price_min"]["price__rub_price_supplier__min"];
+            } else {
+              maxValue = !priceTo
+                ? +data["price_max"]["price__rub_price_supplier__max"]
+                : maxValue;
+              minValue = !priceFrom
+                ? +data["price_min"]["price__rub_price_supplier__min"]
+                : minValue;
+            }
+
             priceInputsArray = [minValue, maxValue];
 
             for (let i in data.data) {
@@ -336,7 +347,6 @@ window.addEventListener("DOMContentLoaded", () => {
             urlParams.set("page", pageCount + 1);
             test_serch_chars();
 
-            console.log("min", minValue, "max", maxValue);
             addPlaceholderValue(maxInputPrice, true);
             addPlaceholderValue(minInputPrice);
           }

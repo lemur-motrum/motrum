@@ -73,7 +73,24 @@
                 </div>
             </div>
             <div class="centered_container">
-                <div class="product_article">Арткул: {{ product.article }}</div>
+                <div class="article_wrapper">
+                    <div class="product_article">Артикул: {{ product.article }}</div>
+                    <div class="product_article_vendor">Артикул производителя: {{ product.article_supplier }}</div>
+                    
+                    {% if product.vendor %}
+                        <div class="product_vendor">Производитель: 
+                            {% if product.vendor.name_web  %}
+                                {{ product.vendor.name_web }}
+                            {% else %}
+                                {{ product.vendor.name}}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+                
+                    
+                
                 <div class="product_description">
                     {% if product.description %}
                         {{ product.description|striptags }}

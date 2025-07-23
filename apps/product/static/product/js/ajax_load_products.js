@@ -334,7 +334,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
-
+            test_serch_chars();
             addPlaceholderValue(maxInputPrice, true);
             addPlaceholderValue(minInputPrice);
           }

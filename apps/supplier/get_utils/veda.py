@@ -8,6 +8,7 @@ from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import Supplier, Vendor
 import requests
 from simple_history.utils import update_change_reason
+import re
 
 
 def veda_api():
@@ -159,3 +160,115 @@ def veda_api():
             e = error_alert(error, location, info)
         finally:
             continue
+
+def parse_drives_ru_products():
+    """
+    Парсит товары с drives.ru по артикулу (article_supplier) для товаров с vendor.slug == 'veda'.
+    Получает фото (главные и доп), описание и характеристики, сохраняет их в переменные.
+    Проверяет совпадение артикула на странице товара.
+    """
+    from apps.product.models import Product
+    from apps.supplier.models import Vendor
+    import requests
+    from bs4 import BeautifulSoup
+
+    vendor = Vendor.objects.get(slug="veda")
+    products = Product.objects.filter(article_supplier="PBC02003")
+    results = []
+    print(products)
+    for product in products:
+        type_code = product.article_supplier  # используем артикул напрямую
+        if not type_code:
+            continue
+
+        search_url = f"https://drives.ru/search/?query={type_code}"
+        print(search_url)
+        response = requests.get(search_url)
+        if response.status_code != 200:
+            continue
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        found = False
+        for item in soup.find_all('div', class_='s-products__item'):
+            link_tag = item.find('a', href=True)
+            if not link_tag:
+                continue
+            product_link = link_tag['href']
+            if not product_link.startswith('http'):
+                product_link = f"https://drives.ru{product_link}"
+            print(product_link)
+            prod_resp = requests.get(product_link)
+            if prod_resp.status_code != 200:
+                continue
+            prod_soup = BeautifulSoup(prod_resp.text, "html.parser")
+
+            code_div = prod_soup.find('div', class_='product__code')
+            page_article = None
+            if code_div:
+                span = code_div.find('span')
+                if span:
+                    page_article = span.get_text(strip=True)
+            if not page_article or page_article != product.article_supplier:
+                continue  # если артикул не совпал, пропускаем
+
+            # --- Парсинг изображений ---
+            main_images = []
+            for a in prod_soup.find_all('a', class_='p-images__slider-item'):
+                href = a.get('href')
+                if href:
+                    if not href.startswith('http'):
+                        href = f"https://drives.ru{href}"
+                    main_images.append(href)
+
+            dop_images = []
+            for img in prod_soup.find_all('img', class_='p-images__dop-img'):
+                src = img.get('data-src') or img.get('src')
+                if src:
+                    if not src.startswith('http'):
+                        src = f"https://drives.ru{src}"
+                    dop_images.append(src)
+            # --- Конец парсинга изображений ---
+
+            # --- Преобразование маленьких доп. изображений в большие ---
+            big_dop_images = []
+            for img_url in dop_images:
+                big_url = re.sub(r'\.[0-9]+x[0-9]+\.png$', '.970.png', img_url)
+                big_dop_images.append(big_url)
+            # --- Конец преобразования ---
+
+            description = None
+            desc_div = prod_soup.find('div', class_='product-description')
+            if desc_div:
+                description = desc_div.get_text(strip=True)
+
+            # --- Парсинг характеристик из features-two-val ---
+            features = {}
+            features_block = prod_soup.find('div', class_=lambda x: x and x.startswith('features'))
+            if features_block:
+                for block in features_block.find_all('div', class_='features-two-val__block'):
+                    name_div = block.find('div', class_='features-two-val__name')
+                    value_div = block.find('div', class_='features-two-val__value')
+                    if name_div and value_div:
+                        name = name_div.get_text(strip=True)
+                        value = value_div.get_text(strip=True)
+                        features[name] = value
+            # --- Конец парсинга характеристик ---
+
+            results.append({
+                'product_id': product.id,
+                'type_code': type_code,
+                'product_link': product_link,
+                'main_images': main_images,
+                'dop_images': dop_images,
+                'big_dop_images': big_dop_images,
+                'description': description,
+                'features': features,
+                'page_article': page_article,
+            })
+            print(results)
+            found = True
+            break  # нашли нужный товар, дальше не ищем
+        if not found:
+            print(f"Товар с артикулом {type_code} не найден на drives.ru")
+
+    return results

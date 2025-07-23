@@ -110,7 +110,7 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, pp_aup_doc_name, prompower_api
 
-from apps.supplier.get_utils.veda import veda_api
+from apps.supplier.get_utils.veda import parse_drives_ru_products, veda_api
 from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
@@ -142,119 +142,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    adress_bx = bx.get_all(
-        "crm.address.list",
-        params={
-            "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": 6120},
-        },
-    )
-    print(adress_bx)
-    #  получение данных из адресов
-    adress_type = None
-    company_adress_all = []
-    for adress in adress_bx:
-        not_web_adrees = False
-        company_adress = {
-            "requisitesKpp": None,
-            "type_address_bx": adress["TYPE_ID"],
-            "country": adress["COUNTRY"],
-            "post_code": adress["POSTAL_CODE"],
-            "region": adress["REGION"],
-            "province": adress["PROVINCE"],
-            "city": adress["CITY"],
-            "address1": adress["ADDRESS_1"],
-            "address2": adress["ADDRESS_2"],
-        }
-        company_adress_all.append(company_adress)
-        if adress["TYPE_ID"] == "9" or adress["TYPE_ID"] == 9:
-            not_web_adrees = True
-            adress_type = 9
-            legal_post_code = adress["POSTAL_CODE"]
-            if legal_post_code == None:
-                return (True, "Индекс в адрес бенефициара не указан", None)
-            bx_city = adress["CITY"]
-            bx_city_post = adress["CITY"]
-
-            postal_post_code = adress["POSTAL_CODE"]
-            if legal_post_code == None:
-                return (True, "Индекс в адрес юридический не указан", None)
-            bx_city = adress["CITY"]
-            bx_city_post = adress["CITY"]
-            
-            province = adress.get("PROVINCE")
-            city = adress.get("CITY")
-            if province not in ("", "None", None) and city not in ("", "None", None):
-                postal_city = f"{province}, г.{city}"
-            elif province not in ("", "None", None):
-                postal_city = f"{province}"
-            elif city not in ("", "None", None):
-                postal_city = f"г.{city}"
-            else:
-                postal_city = ""
-                
-            adress_1 = adress.get("ADDRESS_1")
-            adress_2 = adress.get("ADDRESS_2")
-            
-            if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                postal_address = f"{adress_1}, г.{adress_2}"
-            elif adress_1 not in ("", "None", None):
-                postal_address = f"{adress_1}"
-            elif adress_2 not in ("", "None", None):
-                postal_address = f"{adress_2}"
-            else:
-                postal_address = ""
-
-        if not_web_adrees == False:
-            if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
-                adress_type = 6
-                legal_post_code = adress["POSTAL_CODE"]
-                postal_post_code = adress["POSTAL_CODE"]
-                if legal_post_code == None:
-                    return (True, "Индекс в адрес юридический не указан", None)
-                bx_city = adress["CITY"]
-                bx_city_post = adress["CITY"]
-                
-                province = adress.get("PROVINCE")
-                city = adress.get("CITY")
-                if province not in ("", "None", None) and city not in ("", "None", None):
-                    postal_city = f"{province}, г.{city}"
-                elif province not in ("", "None", None):
-                    postal_city = f"{province}"
-                elif city not in ("", "None", None):
-                    postal_city = f"г.{city}"
-                else:
-                    postal_city = ""
-                    
-                adress_1 = adress.get("ADDRESS_1")
-                adress_2 = adress.get("ADDRESS_2")
-                
-                if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                    postal_address = f"{adress_1}, г.{adress_2}"
-                elif adress_1 not in ("", "None", None):
-                    postal_address = f"{adress_1}"
-                elif adress_2 not in ("", "None", None):
-                    postal_address = f"{adress_2}"
-                else:
-                    postal_address = ""
-                
-                
-                
-
-    company = {
-            "legal_post_code": legal_post_code,
-            "legal_city": postal_city,
-            "legal_address": postal_address,
-            "postal_post_code": postal_post_code,
-            "postal_city": postal_city,
-            "postal_address": postal_address,
-            
-            "postal_post_code": postal_post_code,
-            "legal_post_code": legal_post_code,
-            "bx_city": bx_city,
-            "bx_city_post": bx_city_post,
-           
-        }
-    print(company)
+    parse_drives_ru_products()
     
     result = 1
     title = "TEST"

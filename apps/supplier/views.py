@@ -110,7 +110,7 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, pp_aup_doc_name, prompower_api
 
-from apps.supplier.get_utils.veda import parse_drives_ru_products, veda_api
+from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, veda_api
 from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct

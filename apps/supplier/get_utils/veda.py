@@ -5,7 +5,7 @@ from apps.core.models import Currency, Vat
 from apps.core.utils import create_article_motrum, save_update_product_attr
 from apps.logs.utils import error_alert
 from apps.product.models import Lot, Price, Product, Stock
-from apps.supplier.models import Supplier, Vendor
+from apps.supplier.models import Supplier, SupplierCategoryProduct, SupplierGroupProduct, Vendor
 import requests
 from simple_history.utils import update_change_reason
 import re
@@ -236,12 +236,47 @@ def parse_drives_ru_products():
                 big_dop_images.append(big_url)
             # --- Конец преобразования ---
 
-            description = None
-            desc_div = prod_soup.find('div', class_='product-description')
-            if desc_div:
-                description = desc_div.get_text(strip=True)
+            # --- Новый парсинг названия, описания и характеристик ---
+            # Название
+            name_tag = prod_soup.find("h1", class_="product__h1")
+            name = name_tag.get_text(strip=True) if name_tag else None
 
-            # --- Парсинг характеристик из features-two-val ---
+            # Описание
+            desc = None
+            desc_block = prod_soup.find("div", id="description")
+            if desc_block:
+                desc_inner = desc_block.find("div", class_="desc desc_max ")
+                if desc_inner:
+                    desc = desc_inner.get_text(strip=True)
+            if desc is None:
+                # fallback: ищем по заголовку "Описание"
+                title_name = prod_soup.find("div", class_="in-blocks__title-name", string="Описание")
+                if title_name:
+                    parent_item = title_name.find_parent("div", class_="in-blocks__item")
+                    if parent_item:
+                        desc_inner = parent_item.find("div", class_="desc desc_max")
+                        if desc_inner:
+                            desc = desc_inner.get_text(strip=True)
+            if desc is None:
+                # ищем все desc desc_max h-hidden-show, над которыми есть in-blocks__title с Описание
+                for desc_inner in prod_soup.find_all("div", class_="desc desc_max"):
+                    found = False
+                    for sib in desc_inner.previous_siblings:
+                        # Пропускаем не-теги
+                        if not getattr(sib, "name", None):
+                            continue
+                        sib_classes = set(sib.get("class", []))
+                        print(f"SIB: {sib}, classes: {sib_classes}")  # отладка
+                        if "in-blocks__title" in sib_classes:
+                            title_name = sib.find("div", class_="in-blocks__title-name")
+                            if title_name and title_name.get_text(strip=True) == "Описание":
+                                desc = desc_inner.get_text(strip=True)
+                                found = True
+                                break
+                    if found:
+                        break
+
+            # Характеристики
             features = {}
             features_block = prod_soup.find('div', class_=lambda x: x and x.startswith('features'))
             if features_block:
@@ -249,21 +284,99 @@ def parse_drives_ru_products():
                     name_div = block.find('div', class_='features-two-val__name')
                     value_div = block.find('div', class_='features-two-val__value')
                     if name_div and value_div:
-                        name = name_div.get_text(strip=True)
-                        value = value_div.get_text(strip=True)
-                        features[name] = value
-            # --- Конец парсинга характеристик ---
+                        fname = name_div.get_text(strip=True)
+                        fval = value_div.get_text(strip=True)
+                        if fname in ("Описание", "Типовой код"):
+                            continue
+                        if fname == "ВхШхГ, мм":
+                            nums = re.findall(r"[\d,\.]+", fval)
+                            if len(nums) == 3:
+                                features["Высота (мм)"] = nums[0]
+                                features["Ширина (мм)"] = nums[1]
+                                features["Глубина (мм)"] = nums[2]
+                            else:
+                                features[fname] = fval
+                        else:
+                            features[fname] = fval
+            # --- Конец нового парсинга ---
+
+            # --- Документы с категории ---
+            documents = []
+            # Найти ссылку на категорию
+            cat_block = prod_soup.find('div', class_='product__category')
+            cat_a = cat_block.find('a', class_='product__category-item') if cat_block else None
+            if cat_a and cat_a.has_attr('href'):
+                cat_url = cat_a['href']
+                print("cat_url",cat_url)
+                if not cat_url.startswith('http'):
+                    cat_url = f"https://drives.ru{cat_url}"
+                try:
+                    print("cat_url",cat_url)
+                    cat_resp = requests.get(cat_url)
+                    if cat_resp.status_code == 200:
+                        cat_soup = BeautifulSoup(cat_resp.text, "html.parser")
+                        res_block = cat_soup.find('div', class_='series__resources')
+                        if res_block:
+                            for item in res_block.find_all('div', class_='series__resources-item'):
+                                h3 = item.find('h3')
+                                doc_type = None
+                                if h3:
+                                    h3_text = h3.get_text(strip=True)
+                                    if h3_text == "Инструкции и руководства":
+                                        doc_type = {"type": "Doc", "type_name": "Руководства и Спецификации"}
+                                    elif h3_text == "Каталоги и брошюры":
+                                        doc_type = {"type": "Other", "type_name": "Другое"}
+                                    elif h3_text == "Чертежи":
+                                        doc_type = {"type": "DimensionDrawing", "type_name": "Габаритные чертежи"}
+                                ul = item.find('ul')
+                                if doc_type and ul:
+                                    for li in ul.find_all('li'):
+                                        a = li.find('a')
+                                        print("a",a)
+                                        if a and a.has_attr('href'):
+                                            doc_url = a['href']
+                                            if not doc_url.startswith('http'):
+                                                doc_url = f"https://drives.ru{doc_url}"
+                                            doc_name = a.get_text(strip=True)
+                                            
+                                            documents.append({
+                                                "name": doc_name,
+                                                "url": doc_url,
+                                                "type": doc_type["type"],
+                                                "type_name": doc_type["type_name"]
+                                            })
+                except Exception as e:
+                    print(f"Ошибка при парсинге документов: {e}")
+
+            # --- Парсинг хлебных крошек (категория и группа) ---
+            category_name = None
+            group_name = None
+            nav = prod_soup.find('nav', class_='bread__wrap')
+            if nav:
+                crumb_items = nav.find_all(attrs={'itemprop': 'itemListElement'})
+                if len(crumb_items) >= 2:
+                    meta_cat = crumb_items[1].find('meta', attrs={'itemprop': 'name'})
+                    if meta_cat:
+                        category_name = meta_cat.get('content')
+                if len(crumb_items) >= 3:
+                    meta_group = crumb_items[2].find('meta', attrs={'itemprop': 'name'})
+                    if meta_group:
+                        group_name = meta_group.get('content')
 
             results.append({
                 'product_id': product.id,
                 'type_code': type_code,
                 'product_link': product_link,
                 'main_images': main_images,
-                'dop_images': dop_images,
-                'big_dop_images': big_dop_images,
-                'description': description,
+                # 'dop_images': dop_images,
+                # 'big_dop_images': big_dop_images,
+                'description': desc,
                 'features': features,
                 'page_article': page_article,
+                'name': name,
+                'documents': documents,
+                'category_name': category_name,
+                'group_name': group_name,
             })
             print(results)
             found = True
@@ -272,3 +385,109 @@ def parse_drives_ru_products():
             print(f"Товар с артикулом {type_code} не найден на drives.ru")
 
     return results
+
+
+def parse_drives_ru_category():
+    """
+    Парсит категории и группы VEDA с drives.ru.
+    Категории и группы ищутся внутри блока .cat-prod-grid, если на странице есть <h3 class="main__title-2">Приводная техника и средства автоматизации VEDA</h3>.
+    Категория: .cat-prod-name, группы: .cat-prod-sub-name (в том числе внутри .hidden-list)
+    Возвращает список словарей: [{category_name, category_url, groups: [{group_name, group_url}]}]
+    """
+    import requests
+    from bs4 import BeautifulSoup
+    supplier = Supplier.objects.get(slug="veda-mc")
+    vendor = Vendor.objects.get(slug="veda")
+    
+    url = "https://drives.ru/products/"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Ошибка запроса: {response.status_code}")
+        return []
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Проверяем наличие нужного заголовка
+    h3 = soup.find("h3", class_="main__title-2")
+    if not h3:
+        print("Заголовок не найден или не совпадает")
+        return []
+
+    cat_grid = soup.find("div", class_="cat-prod-grid")
+    if not cat_grid:
+        print("cat-prod-grid не найден")
+        return []
+
+    categories = []
+    for cat_prod in cat_grid.find_all("div", class_="cat-prod", recursive=False):
+        # Категория
+        cat_name_div = cat_prod.find("div", class_="cat-prod-name")
+        if not cat_name_div:
+            continue
+        cat_a = cat_name_div.find("a")
+        if not cat_a:
+            continue
+        category_name = re.sub(r'\s+', ' ', cat_a.get_text(strip=True))
+        category_url = cat_a["href"]
+        if not category_url.startswith("http"):
+            category_url = f"https://drives.ru{category_url}"
+
+        # Группы (основные)
+        groups = []
+        for group_div in cat_prod.find_all("div", class_="cat-prod-sub-name", recursive=False):
+            group_a = group_div.find("a")
+            if group_a:
+                group_name = re.sub(r'\s+', ' ', group_a.get_text(strip=True))
+                
+                groups.append({"group_name": group_name})
+        # Группы (скрытые)
+        hidden_list = cat_prod.find("div", class_="hidden-list")
+        if hidden_list:
+            for group_div in hidden_list.find_all("div", class_="cat-prod-sub-name"):
+                group_a = group_div.find("a")
+                if group_a:
+                    group_name = re.sub(r'\s+', ' ', group_a.get_text(strip=True))
+                   
+                    groups.append({"group_name": group_name, })
+        categories.append({
+            "category_name": category_name,
+            "groups": groups
+        })
+        
+    for category in categories:
+        print(category["category_name"])
+        try:
+            categ = SupplierCategoryProduct.objects.get(
+                supplier=supplier,
+                vendor=vendor,
+                name=category["category_name"],
+            )
+
+        except SupplierCategoryProduct.DoesNotExist:
+            categ = SupplierCategoryProduct(
+                supplier=supplier,
+                vendor=vendor,
+                name=category["category_name"],
+            )
+            categ.save()
+            
+        for group_item in category["groups"]:
+            try:
+                grope = SupplierGroupProduct.objects.get(
+                    supplier=supplier,
+                    vendor=vendor,
+                    category_supplier=categ,
+                    name=group_item["group_name"],
+                )
+            
+                grope.save()
+
+            except SupplierGroupProduct.DoesNotExist:
+                grope = SupplierGroupProduct(
+                    supplier=supplier,
+                    vendor=vendor,
+                    category_supplier=categ,
+                    name=group_item["group_name"],
+                )
+                grope.save()
+
+    return categories

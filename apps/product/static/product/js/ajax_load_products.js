@@ -952,6 +952,9 @@ window.addEventListener("DOMContentLoaded", () => {
           addPlaceholderValue(input, max);
         }
       }, 5);
+      let countCaller = 0;
+
+      const regexCountAfterDot = /\.\d{2}$/;
 
       input.addEventListener("input", function (e) {
         const currentValue = this.value
@@ -960,7 +963,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .replace(/^([^\.]*\.)|\./g, "$1")
           .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
             return a + b + c.slice(0, 2);
-          });
+          })
+          .replace(/\.(\d)$/, ".$10");
         input.value = currentValue;
 
         const inputValueLength = input.value.length;
@@ -969,6 +973,7 @@ window.addEventListener("DOMContentLoaded", () => {
           e.target.value = "";
         }
         if (input.value == "0") {
+          validate = false;
           e.target.value = "";
         }
 
@@ -978,7 +983,6 @@ window.addEventListener("DOMContentLoaded", () => {
               e.target.value = maxValue;
             }
           }
-
           priceTo = e.target.value;
 
           if (e.target.value == "") {
@@ -1020,8 +1024,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
         setTimeout(() => {
           if (input.value.length == inputValueLength) {
-            console.log("Происходит вызов");
-            test_serch_chars();
+            if (countCaller == 0) {
+              console.log("Происходит вызов");
+              test_serch_chars();
+            }
+            if (regexCountAfterDot.test(input.value)) {
+              countCaller = 999;
+            } else {
+              countCaller = 0;
+            }
           }
         }, 600);
 

@@ -3224,15 +3224,15 @@ def get_props_motrum_filter_to_view(product_props,category,group):
     from apps.product.models import CategoryProduct, GroupProduct
     print("category,group",category,group)
     # Характеристики дял фильтрации
-    print("category,group",category,group)
-    if category == "all" or category == "other" or category == "search":
-        category_motrum = None
-    else:
-        category_motrum = CategoryProduct.objects.get(slug=category)
-        if group:
-            group_motrum = GroupProduct.objects.get(slug=group)
-        else:
-            group_motrum = None
+    # print("category,group",category,group)
+    # if category == "all" or category == "other" or category == "search":
+    #     category_motrum = None
+    # else:
+    #     category_motrum = CategoryProduct.objects.get(slug=category)
+    #     if group:
+    #         group_motrum = GroupProduct.objects.get(slug=group)
+    #     else:
+    #         group_motrum = None
     all_values = (
         product_props.values(
             "property_motrum",

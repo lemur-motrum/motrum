@@ -836,7 +836,7 @@ window.addEventListener("DOMContentLoaded", () => {
       history.pushState({}, "", currentUrl);
     };
 
-    filterButton.onclick = () => {
+    submitButtonContainer.onclick = () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
       pageCount = 0;

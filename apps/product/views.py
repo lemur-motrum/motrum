@@ -158,7 +158,7 @@ def catalog_group(request, category):
                 x["vendor__article_filter"],
             ),
         )
-        print("product_vendor", product_vendor)
+        
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:

@@ -76,10 +76,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             if match:
                 brand_slug = match.group(1)
                 vendor_get = [brand_slug]
-                print("Это страница бренда:", brand_slug)
+          
             else:
                 vendor_get = None
-                print("Не удалось определить слаг бренда")
+           
         elif '/product/' in referer:
             if request.query_params.get("vendor"):
                 vendor_get = request.query_params.get("vendor")
@@ -103,7 +103,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
-        print(chars)
+      
 
         if request.query_params.get("search_text"):
             search_text = request.query_params.get("search_text")
@@ -200,7 +200,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # сортировка по цене
 
 
-        print(q_object)
+     
         queryset = (
             Product.objects.select_related(
                 "supplier",
@@ -220,8 +220,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             .filter(q_object)
             
         )
-        print(queryset.query)
-        print(str(queryset.query))
+  
         for char in chars:
             prop_id = char["id"]
             values = char["values"]
@@ -543,27 +542,17 @@ class ProductViewSet(viewsets.ModelViewSet):
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
-        print(chars)
+   
         price_none = request.query_params.get("pricenone")
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
-        
-        
-        # if request.query_params.get("pricenone"):
-        #     price_none = request.query_params.get("pricenone")
-        # else:
-        #     price_none = None
-
-        # if request.query_params.get("priceto"):
-        #     price_to = float(request.query_params.get("priceto"))
-        # else:
-        #     price_to = None
-
-        # if request.query_params.get("pricefrom"):
-        #     price_from = float(request.query_params.get("pricefrom"))
-        # else:
-        #     price_from = None
-
+        if request.query_params.get("search_text"):
+            search_text = request.query_params.get("search_text")
+            if search_text == "":
+                search_text = None
+        else:
+            search_text = None
+        print("search_text",search_text)
         if request.query_params.get("vendor"):
             vendor_get = request.query_params.get("vendor")
             vendor_get = vendor_get.split(",")
@@ -628,7 +617,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # if price_to and price_to != 0:
         #     q_object &= Q(price__rub_price_supplier__lte=price_to)
-        print(q_object)
+    
         queryset = (
             Product.objects.select_related(
                 "supplier",
@@ -677,6 +666,10 @@ class ProductViewSet(viewsets.ModelViewSet):
                         )
                     )
                 )
+        #  поиск по тексту
+        if search_text:
+            queryset = serch_products_web(search_text, queryset)
+
         count_product = queryset.count()
         
         price_min = queryset.aggregate(min_val=Min("price__rub_price_supplier", default=None))

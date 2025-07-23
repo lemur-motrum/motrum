@@ -3237,12 +3237,12 @@ def get_props_motrum_filter_to_view(product_props,category,group):
     from django.db.models.functions import Coalesce
     from apps.product.models import ProductPropertyMotrum,ProductPropertyMotrumArticleCateg
     from apps.product.models import CategoryProduct, GroupProduct
-    print("category,group",category,group)
+ 
     # Характеристики дял фильтрации
-    print("category,group",category,group)
-    if category == "all" or category == "other" or category == "search":
+ 
+    if not category or category in ("all", "other", "search"):
         category_motrum = None
-        group_motrum = None 
+        group_motrum = None
     else:
         category_motrum = CategoryProduct.objects.get(slug=category)
         if group:

@@ -630,7 +630,7 @@
               display: none;
             }
             span {
-              font-size: 1.313rem;
+              font-size: 1.14rem;
               @media screen and(max-width:576px) {
                 font-size: 1rem;
               }
@@ -1128,6 +1128,10 @@
               -webkit-animation: load3 1.4s infinite linear;
               animation: load3 1.4s infinite linear;
               transform: translateZ(0);
+              @media screen and (max-width: 576px) {
+                width: 1.5rem;
+                min-height: 1.5rem;
+              }
               &:before {
                 width: 50%;
                 height: 50%;
@@ -1158,6 +1162,9 @@
             .submit_button_name {
               font-size: 1.313rem;
               color: #fff;
+              @media screen and (max-width: 576px) {
+                font-size: 1rem;
+              }
               &.hide {
                 display: none;
               }

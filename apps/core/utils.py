@@ -26,6 +26,7 @@ from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
 
+
 from apps.specification.utils import crete_pdf_specification
 
 
@@ -3217,11 +3218,21 @@ def get_props_all_motrum_filter3(product_props_3):
 
 
 # ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -ИСПОЛЬЗУЕМ
-def get_props_motrum_filter_to_view(product_props):
+def get_props_motrum_filter_to_view(product_props,category,group):
 
     from apps.product.models import ProductPropertyMotrum
-
+    from apps.product.models import CategoryProduct, GroupProduct
+    print("category,group",category,group)
     # Характеристики дял фильтрации
+    print("category,group",category,group)
+    if category == "all" or category == "other" or category == "search":
+        category_motrum = None
+    else:
+        category_motrum = CategoryProduct.objects.get(slug=category)
+        if group:
+            group_motrum = GroupProduct.objects.get(slug=group)
+        else:
+            group_motrum = None
     all_values = (
         product_props.values(
             "property_motrum",
@@ -3329,7 +3340,8 @@ def get_props_motrum_filter_to_view(product_props):
     for idx, char in enumerate(chars):
         char["is_visible"] = True if idx < 5 else False
    
-
+    
+    
     return chars
 
 

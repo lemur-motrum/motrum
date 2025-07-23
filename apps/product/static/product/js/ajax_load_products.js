@@ -334,7 +334,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
-            test_serch_chars();
+
             addPlaceholderValue(maxInputPrice, true);
             addPlaceholderValue(minInputPrice);
           }
@@ -836,7 +836,7 @@ window.addEventListener("DOMContentLoaded", () => {
       history.pushState({}, "", currentUrl);
     };
 
-    filterButton.onclick = () => {
+    submitButtonContainer.onclick = () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
       pageCount = 0;

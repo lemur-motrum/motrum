@@ -9,4 +9,5 @@ def header_menu_url(context):
     return {
         "view_name": context.request.resolver_match.view_name,
         "namespace": context.request.resolver_match.namespace,
+        "request": context.request,  
     }

@@ -302,7 +302,10 @@ class RequisitesOtherKpp(models.Model):
         null=True,
         blank=True,
     )
-
+   
+    class Meta:
+        verbose_name = "Реквизиты и данные"
+        verbose_name_plural = "Реквизиты и данные"
     def __str__(self):
         return f"{self.requisites.legal_entity} {self.kpp}"
 

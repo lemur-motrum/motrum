@@ -139,12 +139,26 @@ def catalog_group(request, category):
         product_vendor = (
             queryset.order_by("vendor__name")
             .distinct("vendor__name")
-            .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+            .values(
+                "vendor",
+                "vendor__name",
+                "vendor__slug",
+                "vendor__img",
+                "vendor__article_filter",
+            )
         )
         product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=queryset
         )
         chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=category,group=None)
 
+        product_vendor = sorted(
+            product_vendor,
+            key=lambda x: (
+                x["vendor__article_filter"] is None,
+                x["vendor__article_filter"],
+            ),
+        )
+        print("product_vendor", product_vendor)
         try:
             current_category = CategoryProduct.objects.get(slug=category)
         except:
@@ -207,8 +221,17 @@ def products_items(request, category, group):
     product_vendor = (
         product.order_by("vendor__name")
         .distinct("vendor__name")
-        .values("vendor", "vendor__name", "vendor__slug", "vendor__img")
+        .values("vendor", "vendor__name", "vendor__slug", "vendor__img","vendor__article_filter",)
     )
+    
+    product_vendor = sorted(
+            product_vendor,
+            key=lambda x: (
+                x["vendor__article_filter"] is None,
+                x["vendor__article_filter"],
+            ),
+        )
+    
     
     
     product_props_motrum = ProductPropertyMotrumItem.objects.filter( product__in=product

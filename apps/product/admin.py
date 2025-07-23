@@ -828,10 +828,13 @@ class ProductAdmin(SimpleHistoryAdmin):
                     # "supplier"
                 ]
             else:
-                return [
-                    "article_supplier",
-                    # "supplier"
-                ]
+                # return [
+                #     "article_supplier",
+                #     # "supplier"
+                # ]
+                 return [
+            "",
+        ]
         return [
             "",
         ]

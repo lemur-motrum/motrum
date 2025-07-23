@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 import traceback
 import requests
 import json
@@ -186,7 +187,7 @@ def prompower_api():
         data = response.json()
 
         # vendor = Vendor.objects.filter(supplier=prompower)
-        vat_catalog = Vat.objects.get(name="20")
+        vat_catalog = Vat.objects.get(name=NDS)
         vat_catalog_int = int(vat_catalog.name)
         currency = Currency.objects.get(words_code="RUB")
         base_adress = "https://prompower.ru"
@@ -317,31 +318,59 @@ def prompower_api():
                         for item_doc in data["data"]:
                             doc_item = item_doc["link"]
                             doc_link = f"{base_adress}{doc_item}"
-
-                            doc = ProductDocument.objects.create(product=article)
-                            update_change_reason(doc, "Автоматическое")
-                            doc_list_name = doc_link.split("/")
-                            doc_name = doc_list_name[-1]
-                            images_last_list = doc_link.split(".")
-                            type_file = "." + images_last_list[-1]
-                            link_file = f"{new_dir}/{doc_name}"
-
-                            if os.path.isfile(link_file):
-                                print("Файл существует")
+                            title = item_doc["title"]
+                            # print("doc_link",doc_link)
+                            print("save_document")
+                            if  title:
+                                doc_old =  ProductDocument.objects.filter(
+                                    link=doc_link,product=article,name=title
+                                ).exists()
+                                if doc_old:
+                                    need_upd = True
+                                else:
+                                    need_upd = False
+                                
                             else:
-                                r = requests.get(doc_link, stream=True)
-                                with open(os.path.join(link_file), "wb") as ofile:
-                                    ofile.write(r.content)
+                                doc_old = ProductDocument.objects.filter(
+                                        link=doc_link,product=article
+                                    ).exists()
+                                need_upd = False
+                            print("doc_link",doc_old,doc_link)
+                            
+                            if doc_old == False:
+                                print("doc_old == False",doc_link)
 
-                            type_doc = item_doc["type"].capitalize()
+                                doc = ProductDocument.objects.create(product=article)
+                                update_change_reason(doc, "Автоматическое")
+                                doc_list_name = doc_link.split("/")
+                                doc_name = doc_list_name[-1]
+                                images_last_list = doc_link.split(".")
+                                type_file = "." + images_last_list[-1]
+                                link_file = f"{new_dir}/{doc_name}"
 
-                            doc.document = f"{dir_no_path}/{doc_name}"
-                            doc.link = doc_link
-                            doc.name = item_doc["title"]
-                            doc.type_doc = item_doc["type"].capitalize()
+                                if os.path.isfile(link_file):
+                                    print("Файл существует")
+                                    if need_upd:
+                                        r = requests.get(doc_link, stream=True)
+                                        with open(os.path.join(link_file), "wb") as ofile:
+                                            ofile.write(r.content)
+                                    #     doc_old =  ProductDocument.objects.filter(
+                                    # link=doc_link,product=article,name=title
+                                # ) 
+                                else:
+                                    r = requests.get(doc_link, stream=True)
+                                    with open(os.path.join(link_file), "wb") as ofile:
+                                        ofile.write(r.content)
 
-                            doc.save()
-                            update_change_reason(doc, "Автоматическое")
+                                type_doc = item_doc["type"].capitalize()
+
+                                doc.document = f"{dir_no_path}/{doc_name}"
+                                doc.link = doc_link
+                                doc.name = item_doc["title"]
+                                doc.type_doc = item_doc["type"].capitalize()
+
+                                doc.save()
+                                update_change_reason(doc, "Автоматическое")
 
                         # документы индивидуальные
                         doc_list = data_item["cad"]
@@ -350,19 +379,32 @@ def prompower_api():
                             for doc_item_individual in doc_list:
 
                                 img = f"{base_adress}/catalog/CAD/{doc_item_individual["filename"]}"
-                                image = ProductDocument.objects.create(product=article)
-                                update_change_reason(image, "Автоматическое")
-                                image_path = get_file_path_add(image, img)
+                                doc_old = ProductDocument.objects.filter(
+                                    link=img,product=article
+                                ).exists()
+                                if doc_old == False:
+                                    image = ProductDocument.objects.create(product=article)
+                                    update_change_reason(image, "Автоматическое")
+                                    image_path = get_file_path_add(image, img)
 
-                                p = save_file_product(img, image_path)
-                                image.photo = image_path
-                                image.link = img
-                                image.document = image_path
-                                image.link = img
-                                image.name = doc_item_individual["title"]
-                                image.type_doc = "Other"
-                                image.save()
-                                update_change_reason(image, "Автоматическое")
+                                    p = save_file_product(img, image_path)
+                                    image.photo = image_path
+                                    image.link = img
+                                    image.document = image_path
+                                    image.link = img
+                                    
+                                    if doc_item_individual["title"] == "" or doc_item_individual["title"] ==" ":
+                                        result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc_item_individual["filename"])
+                                    
+                                    else:
+                                        result_name = doc_item_individual["title"]
+                                        
+                                    
+                                    image.name = result_name
+                                    print(image.name)
+                                    image.type_doc = "Other"
+                                    image.save()
+                                    update_change_reason(image, "Автоматическое")
 
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
@@ -387,10 +429,12 @@ def prompower_api():
                                         property_product, "Автоматическое"
                                     )
                             if IS_PROD:
+                                save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов
                                 props = ProductProperty.objects.filter(
                                     product=article
                                 ).exists()
+                                
                                 if props == False:
                                     for prop in data_item["props"]:
                                         property_product = ProductProperty(
@@ -409,11 +453,11 @@ def prompower_api():
                                 if image == False:
                                     save_image(article)
 
-                                doc = ProductDocument.objects.filter(
-                                    product=article
-                                ).exists()
-                                if doc == False:
-                                    save_document(categ, article)
+                                # doc = ProductDocument.objects.filter(
+                                #     product=article
+                                # ).exists()
+                                # if doc == False:
+                                #     save_document(categ, article)
 
                             save_update_product_attr_all(
                                 article,
@@ -631,3 +675,18 @@ def export_prompower_prod_for_1c():
 
     file_path = os.path.join(MEDIA_ROOT, "prompower.xlsx")
     wb.save(file_path)
+
+
+def pp_aup_doc_name():
+    product = Product.objects.filter(vendor__slug="prompower").values_list('id',flat=True)
+    print("product",product)
+    name = ['',' ']
+    documents = ProductDocument.objects.filter(product_id__in=product,name__in=name)
+    print("documents",documents)
+    
+    for doc in documents:
+        # Удаляем префикс и расширение
+        result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc.link)
+        doc.name = result_name
+        doc.save()
+    

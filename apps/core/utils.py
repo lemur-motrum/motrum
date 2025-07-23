@@ -1069,7 +1069,8 @@ def save_update_product_attr(
             product.name = name
         if product.name == None or product.name == "":
             product.name = name
-
+        
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1149,7 +1150,7 @@ def save_update_product_attr_all(
             print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
             print("product.promo_groupe", product.promo_groupe)
-
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1634,9 +1635,16 @@ def save_new_product_okt(product_new):
     if product_new.product:
         product_new_prod = product_new.product.id
         product = Product.objects.get(id=product_new_prod)
+        # product.name = product_new.product_new
+        prod_cart = product_new.id_cart
+        if prod_cart.product != product:
+        
+            prod_cart.product = product
+            prod_cart.product_price = product_new.price_one_original_new 
+            prod_cart.product_sale_motrum = product_new.sale_motrum 
+            prod_cart.sale_client = product_new.extra_discount 
 
-        product.name = product_new.product_new
-
+        prod_cart.save()
         product.save()
 
     else:
@@ -1673,6 +1681,13 @@ def save_new_product_okt(product_new):
         product_stock.save()
 
         product_new.product = product
+        prod_cart = product_new.id_cart
+        prod_cart.product = product
+        prod_cart.product_price = product_new.price_one_original_new 
+        prod_cart.product_sale_motrum = product_new.sale_motrum 
+        prod_cart.sale_client = product_new.extra_discount 
+
+        prod_cart.save()
         product_new.save()
 
     return product
@@ -1716,7 +1731,6 @@ def save_new_product_okt(product_new):
     #     product_stock.save()
 
     #     return product
-
 
 def number_specification(type_save):
     from apps.specification.models import Specification
@@ -2264,7 +2278,7 @@ def create_info_request_order_1c(order, order_products):
         contract_date = order.requisites.contract_date.isoformat()
 
     if order.account_requisites.requisitesKpp.kpp:
-        kpp = int(order.account_requisites.requisitesKpp.kpp)
+        kpp = order.account_requisites.requisitesKpp.kpp
     else:
         kpp = None
 
@@ -2279,9 +2293,9 @@ def create_info_request_order_1c(order, order_products):
             "contract": order.requisites.contract,
             "contract_date": contract_date,
             "legal_entity": order.requisites.legal_entity,
-            "inn": int(order.requisites.inn),
+            "inn": order.requisites.inn,
             "kpp": kpp,
-            "ogrn": int(order.account_requisites.requisitesKpp.ogrn),
+            "ogrn": order.account_requisites.requisitesKpp.ogrn,
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
@@ -2289,10 +2303,10 @@ def create_info_request_order_1c(order, order_products):
             # "postal_city": order.account_requisites.requisitesKpp.postal_city,
             # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
-            "account_requisites": int(order.account_requisites.account_requisites),
+            "account_requisites": order.account_requisites.account_requisites,
             "bank": order.account_requisites.bank,
-            "ks": int(order.account_requisites.kpp),
-            "bic": int(order.account_requisites.bic),
+            "ks": order.account_requisites.kpp,
+            "bic": order.account_requisites.bic,
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,

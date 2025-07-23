@@ -1,6 +1,7 @@
 from re import L
 import threading
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 from apps.core.utils_web import (
@@ -507,3 +508,50 @@ class UpdatedCompanyBX24(models.Model):
 
     def __str__(self):
         return f"{self.image}"
+
+
+
+class SeoMetaTags(models.Model):
+    page = models.CharField(
+        "Страница",
+        max_length=700,
+        null=True,
+        blank=True,
+    )
+    title = models.CharField(
+        "title",
+        max_length=1000,
+        null=True,
+        blank=True,
+    )
+    description = models.CharField(
+        "description",
+        max_length=2000,
+        null=True,
+        blank=True,
+    )
+    h1 = models.CharField(
+        "h1",
+        max_length=500,
+        null=True,
+        blank=True,
+    )
+    
+    def clean(self):
+        qs = SeoMetaTags.objects.all()
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+        for obj in qs:
+            if obj.page == self.page:
+                raise ValidationError({'page': 'SeoMetaTags с таким page уже существует.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "SEO тег"
+        verbose_name_plural = "SEO теги"
+
+    def __str__(self):
+        return f"{self.page}"

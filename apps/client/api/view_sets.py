@@ -444,10 +444,10 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                     "ogrn": requisitesKpp["ogrn"],
                     "legal_post_code": adress["legal_adress"]["post_code"],
                     "legal_city": adress["legal_adress"]["city"],
-                    "legal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
+                    "legal_address": f"{adress["legal_adress"]["legal_address1"]} {adress["legal_adress"]["legal_address2"]}",
                     "postal_post_code": adress["legal_adress"]["post_code"],
                     "postal_city": adress["legal_adress"]["city"],
-                    "postal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
+                    "postal_address": f"{adress["legal_adress"]["legal_address1"]} {adress["legal_adress"]["legal_address2"]}",
                     "tel": requisitesKpp["phone"],
                     "email": requisitesKpp["email"],
                 },
@@ -459,10 +459,10 @@ class RequisitesViewSet(viewsets.ModelViewSet):
                 defaults={
                     "legal_post_code": adress["legal_adress"]["post_code"],
                     "legal_city": adress["legal_adress"]["city"],
-                    "legal_address": f"{adress["legal_adress"]["legal_address1"]}{adress["legal_adress"]["legal_address2"]}",
+                    "legal_address": f"{adress["legal_adress"]["legal_address1"]} {adress["legal_adress"]["legal_address2"]}",
                     "postal_post_code": adress["postal_adress"]["post_code"],
                     "postal_city": adress["postal_adress"]["city"],
-                    "postal_address": f"{adress["postal_adress"]["legal_address1"]}{adress["postal_adress"]["legal_address2"]}",
+                    "postal_address": f"{adress["postal_adress"]["legal_address1"]} {adress["postal_adress"]["legal_address2"]}",
                     "tel": requisitesKpp["phone"],
                     "email": requisitesKpp["email"],
                 },
@@ -1150,7 +1150,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 e = error_alert(error, location, info)
 
                 type_save = request.COOKIES.get("type_save")
-
+                
+                # json_data = json.dumps(data_for_1c)
+                # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+                # headers = {"Content-type": "application/json"}
+                # response = send_requests(url, headers, json_data, "1c")
+                
                 if IS_TESTING or user.username == "testadmin":
 
                     json_data = json.dumps(data_for_1c)

@@ -1,6 +1,7 @@
 import os
 import re
 from collections import defaultdict
+from django.db.models import Max,Min
 from django.shortcuts import redirect, render
 from dal import autocomplete
 from django.db.models import Q
@@ -134,7 +135,7 @@ def catalog_group(request, category):
 
             queryset = serch_products_web(search_text, queryset)
 
-        
+        price_max = queryset.aggregate(Max("price__rub_price_supplier", default=None))
         product_vendor = (
             queryset.order_by("vendor__name")
             .distinct("vendor__name")
@@ -179,6 +180,7 @@ def catalog_group(request, category):
             "product_vendor": product_vendor,
             "chars_motrum": chars_motrum,
             "media_url": media_url,
+            "price_max":price_max
         }
         return render(request, "product/catalog.html", context)
 
@@ -199,7 +201,7 @@ def products_items(request, category, group):
         "category",
         "group",
     ).filter(q_object)
-    
+    price_max = product.aggregate(Max("price__rub_price_supplier", default=None))
     
 
     product_vendor = (
@@ -237,7 +239,7 @@ def products_items(request, category, group):
         "another_groups": another_groups,
         "title": current_group.name,
         "media_url": media_url,
-       
+        "price_max":price_max,
         "chars_motrum": chars_motrum,
         "meta_title": f"{current_group.name} | Мотрум - автоматизация производства",
     }
@@ -418,7 +420,7 @@ def brand_one(request, vendor):
         "category",
         "group",
     ).filter(vendor=brand)
-    
+    price_max = product.aggregate(Max("price__rub_price_supplier", default=None))
     product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=product
         )
     chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=None,group=None)
@@ -426,6 +428,7 @@ def brand_one(request, vendor):
     context = {
         "brand": brand,
         "chars_motrum": chars_motrum,
+        "price_max":price_max,
         "meta_title": f"{brand.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/brand_one.html", context)

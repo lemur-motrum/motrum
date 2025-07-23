@@ -1449,7 +1449,7 @@ h1 {
         z-index: 90;
       }
       .title_item {
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: bold;
         text-transform: uppercase;
         &:nth-of-type(2) {
@@ -1462,7 +1462,7 @@ h1 {
           margin-left: 3rem;
         }
         &:nth-of-type(4) {
-          margin-left: 5.5rem;
+          margin-left: 2rem;
         }
         &:nth-of-type(5) {
           margin-left: 3.75rem;
@@ -1471,13 +1471,16 @@ h1 {
           margin-left: 2.188rem;
         }
         &:nth-of-type(7) {
-          margin-left: 1.125rem;
+          margin-left: 2rem;
         }
         &:nth-of-type(8) {
           margin-left: 2.25rem;
         }
         &:nth-of-type(9) {
-          margin-left: 3.688rem;
+          margin-left: 2.8rem;
+        }
+        &:nth-of-type(10) {
+          margin-left: 4rem;
         }
         span {
           display: block;
@@ -2243,7 +2246,8 @@ h1 {
               }
             }
             &:disabled {
-              background: #f1eded;}
+              background: #f1eded;
+            }
           }
         }
         &:nth-of-type(7) {
@@ -2358,10 +2362,10 @@ h1 {
               &::placeholder {
                 color: transparent;
               }
-             
             }
             &:disabled {
-              background: #f1eded;}
+              background: #f1eded;
+            }
           }
           label {
             position: absolute;
@@ -2419,7 +2423,8 @@ h1 {
               }
             }
             &:disabled {
-              background: #f1eded;}
+              background: #f1eded;
+            }
           }
           label {
             position: absolute;
@@ -2464,7 +2469,8 @@ h1 {
               height: 1.25rem;
             }
             &:disabled {
-              background: #f1eded;}
+              background: #f1eded;
+            }
           }
         }
 
@@ -2563,15 +2569,15 @@ h1 {
             width: 3rem;
             height: 1.5rem;
             left: 0;
-            padding: 0.5rem!important;
-            font-size: 0.813rem!important;
+            padding: 0.5rem !important;
+            font-size: 0.813rem !important;
             font-weight: 700;
 
-            box-sizing: border-box!important;
-            border: 0.094rem solid #000!important;
-            border-radius: 1.875rem!important;
-            height: 1.5rem!important;
-            color: #ff5b00!important;
+            box-sizing: border-box !important;
+            border: 0.094rem solid #000 !important;
+            border-radius: 1.875rem !important;
+            height: 1.5rem !important;
+            color: #ff5b00 !important;
             &.show {
               display: inline-block;
             }
@@ -2592,18 +2598,18 @@ h1 {
         }
       }
       .change_input_price {
-        position: relative!important;
-        left: -0.5rem!important;
-       
-        padding: 0.5rem!important;
-        font-size: 0.813rem!important;
+        position: relative !important;
+        left: -0.5rem !important;
+
+        padding: 0.5rem !important;
+        font-size: 0.813rem !important;
         font-weight: 700;
 
-        box-sizing: border-box!important;
-        border: 0.094rem solid #000!important;
-        border-radius: 1.875rem!important;
-        height: 1.5rem!important;
-        color: #ff5b00!important;
+        box-sizing: border-box !important;
+        border: 0.094rem solid #000 !important;
+        border-radius: 1.875rem !important;
+        height: 1.5rem !important;
+        color: #ff5b00 !important;
         display: none;
         &.show {
           display: block;
@@ -2623,18 +2629,18 @@ h1 {
         }
       }
       .change_price_motrum {
-        position: relative!important;
-        left: -0.5rem!important;
-       
-        padding: 0.5rem!important;
-        font-size: 0.813rem!important;
+        position: relative !important;
+        left: -0.5rem !important;
+
+        padding: 0.5rem !important;
+        font-size: 0.813rem !important;
         font-weight: 700;
 
-        box-sizing: border-box!important;
-        border: 0.094rem solid #000!important;
-        border-radius: 1.875rem!important;
-        height: 1.5rem!important;
-        color: #ff5b00!important;
+        box-sizing: border-box !important;
+        border: 0.094rem solid #000 !important;
+        border-radius: 1.875rem !important;
+        height: 1.5rem !important;
+        color: #ff5b00 !important;
         display: none;
         &.show {
           display: block;

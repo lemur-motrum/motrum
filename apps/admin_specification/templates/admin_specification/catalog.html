@@ -3,7 +3,9 @@
 {% block content %}
     {% load number_into_digits %}
     {% include "admin_specification/include/header.html" %}
-    <div nds={{ nds }} order={{ order }} class="specification-container okt_cart_container">
+    <div nds="{{ nds }}"
+         order="{{ order }}"
+         class="specification-container okt_cart_container">
         {% if order.bill_sum and bill_upd == False and order.status != "CANCELED" %}<div class=""></div>{% endif %}
         {% if product or product_new or product_new_more %}
             <div class="spetification_table">
@@ -25,7 +27,9 @@
                     </div>
                     <div class="title_item">Маржа</div>
                     <div class="title_item">Марж-ть</div>
-                    <div class="title_item">Срок поставки</div>
+                    <div class="title_item">
+                        Срок <span>поставки</span>
+                    </div>
                 </div>
                 <!-- товары из окт -->
                 {% for item in product %}
@@ -46,20 +50,8 @@
                 <!--товары без записи в бд при аплдете добавленные новые которых еще нет в спецификации-->
                 {% for item in product_new_more %}
                     {% if update_spesif %}
-                    
                         {% include "admin_specification/include/item_in_cart/new_product_item.html" %}
-                        {% comment %} <div class="item_container added_item_container"
-                             data-vendor="{{ item.vendor.id }}"
-                             data-supplier="{{ item.supplier.id }}"
-                             data-product-pk=""
-                             data-product-name-new="{{ item.product_new }}"
-                             data-product-article-new="{{ item.product_new_article }}"
-                             data-product-id-cart="{{ item.id }}"
-                             data-id="{{ item.id }}"
-                             data-price="{{ item.product_new_price }}"
-                             data-price-exclusive="1"
-                             data-product-specification-id=""
-                             data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
+                        {% comment %} <div class="item_container added_item_container" data-vendor="{{ item.vendor.id }}" data-supplier="{{ item.supplier.id }}" data-product-pk="" data-product-name-new="{{ item.product_new }}" data-product-article-new="{{ item.product_new_article }}" data-product-id-cart="{{ item.id }}" data-id="{{ item.id }}" data-price="{{ item.product_new_price }}" data-price-exclusive="1" data-product-specification-id="" data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
                             <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
                             <div title="Редактировать элемент" class="change_icon_container">
                                 <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
@@ -81,13 +73,7 @@
                             1111
                             {% if item.product_new_price == 0 or item.product_new_price == None %}
                                 <div class="item_value">
-                                    <input class="price-input"
-                                           disabled
-                                           name="price-input-extra"
-                                           type="text"
-                                           placeholder="Введите цену по запросу"
-                                           maxlength="10"
-                                           value="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one }}{% else %}{% endif %}" />
+                                    <input class="price-input" disabled name="price-input-extra" type="text" placeholder="Введите цену по запросу" maxlength="10" value="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one }}{% else %}{% endif %}" />
                                     <label for="price-input-extra">
                                         <br>
                                         {% if item.old_price_one_full %}{{ item.old_date }} - {{ item.old_price_one_full }}{% endif %}
@@ -96,18 +82,11 @@
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">
-                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img"  />
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}" alt="img" />
                                         </button>
-                                        <input class="input-quantity"
-                                               type="text"
-                                               value="{{ item.quantity }}"
-                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                               maxlength="5"
-                                               onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value="{{ item.quantity }}" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">
-                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img"  />
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}" alt="img" />
                                         </button>
                                     </div>
                                 </div>
@@ -117,26 +96,18 @@
                                 <div class="item_value input_quantity quantity">
                                     <div class="input-container">
                                         <button class="minus-button">
-                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}"
-                                                 alt="img"  />
+                                            <img src="{% static "admin_specification/images/minus_btn.svg" %}" alt="img" />
                                         </button>
-                                        <input class="input-quantity"
-                                               type="text"
-                                               value="{{ item.quantity }}"
-                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                               maxlength="5"
-                                               onkeypress='validate(event)'>
+                                        <input class="input-quantity" type="text" value="{{ item.quantity }}" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="5" onkeypress='validate(event)'>
                                         <button class="plus-button">
-                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}"
-                                                 alt="img"  />
+                                            <img src="{% static "admin_specification/images/plus_btn.svg" %}" alt="img" />
                                         </button>
                                     </div>
                                 </div>
                                 <div class="item_value total_cost price"></div>
                             {% endif %}
                             <div class="item_value">
-                                <div class="price_motrum"
-                                     price-motrum="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% else %}{% if item.price_motrum %}{{ item.price_motrum }}{% else %}0{% endif %}{% endif %}">
+                                <div class="price_motrum" price-motrum="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% else %}{% if item.price_motrum %}{{ item.price_motrum }}{% else %}0{% endif %}{% endif %}">
                                     {% if item.product_price_motrum %}
                                         {{ item.product_price_motrum }}
                                     {% else %}
@@ -155,13 +126,7 @@
                                 </div>
                             </div>
                             <div class="item_value">
-                                <input class="discount-input"
-                                       disabled
-                                       type="text"
-                                       name="price-input-discount"
-                                       placeholder="% скидки"
-                                       maxlength="6"
-                                       value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
+                                <input class="discount-input" disabled type="text" name="price-input-discount" placeholder="% скидки" maxlength="6" value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
                             </div>
                             <div class="item_value">
                                 <div>
@@ -174,17 +139,9 @@
                             <div class="item_value">
                                 <label>
                                     {% if bill_upd %}
-                                        <input class="delivery_date"
-                                               disabled
-                                               type="date"
-                                               name="calendar"
-                                               value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
+                                        <input class="delivery_date" disabled type="date" name="calendar" value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
                                     {% else %}
-                                        <input class="delivery_date"
-                                               disabled
-                                               type="date"
-                                               name="calendar"
-                                               min="{{ current_date }}">
+                                        <input class="delivery_date" disabled type="date" name="calendar" min="{{ current_date }}">
                                     {% endif %}
                                 </label>
                             </div>
@@ -193,27 +150,17 @@
                                 <div class="change_item_container">
                                     <div class="change_item_container_value">
                                         <label class="name_label">
-                                            <input placeholder="Имя товара"
-                                                   class="new_item_container_name_input"
-                                                   type="text"
-                                                   value="{{ item.product_new }}" />
+                                            <input placeholder="Имя товара" class="new_item_container_name_input" type="text" value="{{ item.product_new }}" />
                                             <div class="error"></div>
                                         </label>
                                         <label class="article_label">
-                                            <input placeholder="Артикул товара"
-                                                   class="new_item_container_article_input"
-                                                   type="text"
-                                                   value="{{ item.product_new_article }}" />
+                                            <input placeholder="Артикул товара" class="new_item_container_article_input" type="text" value="{{ item.product_new_article }}" />
                                             <div class="error"></div>
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
                                         <label class="vendor_label">
-                                            <input class="vendor_input"
-                                                   value="{{ item.vendor.name }}"
-                                                   vendor_value="{{ item.vendor.id }}"
-                                                   type="text"
-                                                   placeholder="Производитель" />
+                                            <input class="vendor_input" value="{{ item.vendor.name }}" vendor_value="{{ item.vendor.id }}" type="text" placeholder="Производитель" />
                                             <div class="vendor_input_elems_container_wrapper">
                                                 <div class="vendor_input_elems_container" search-supplier-elem="wrapper">
                                                     <div class="loader"></div>
@@ -231,19 +178,13 @@
                              
                                     <div class="change_item_container_value">
                                         <label class="price_once_label">
-                                            <input placeholder="цена за 1шт"
-                                                   type="text"
-                                                   class="price_input"
-                                                   value="{{ item.product_new_price }}" />
+                                            <input placeholder="цена за 1шт" type="text" class="price_input" value="{{ item.product_new_price }}" />
                                             <div class="error"></div>
                                         </label>
                                     </div>
                                     <div class="change_item_container_value">
                                         <label class="quantity_label">
-                                            <input placeholder="Количество"
-                                                   type="text"
-                                                   class="quantity_input"
-                                                   value="{{ item.quantity }}" />
+                                            <input placeholder="Количество" type="text" class="quantity_input" value="{{ item.quantity }}" />
                                             <div class="error"></div>
                                         </label>
                                     </div>
@@ -254,32 +195,18 @@
                                         <div class="change_item_container_value_motrum_price">0</div>
                                         <div>
                                             Cкидка
-                                            <input class="persent_sale"
-                                                   type="text"
-                                                   placeholder="%"
-                                                   value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
+                                            <input class="persent_sale" type="text" placeholder="%" value="{% if item.product_new_sale_motrum %}{{ item.product_new_sale_motrum }}{% endif %}" />
                                             %
                                         </div>
-                                        <label class="new_item_change_price_motrum_label"
-                                               for="new_item_change_price_motrum_hands">или цена закупки</label>
-                                        <input class="new_item_change_price_motrum"
-                                               id="new_item_change_price_motrum_hands"
-                                               value="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% endif %}">
+                                        <label class="new_item_change_price_motrum_label" for="new_item_change_price_motrum_hands">или цена закупки</label>
+                                        <input class="new_item_change_price_motrum" id="new_item_change_price_motrum_hands" value="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% endif %}">
                                     </div>
                                     <div class="new_item_container_value">
-                                        <input class="discount-input"
-                                               type="text"
-                                               name="price-input-discount"
-                                               placeholder="% скидки"
-                                               maxlength="6"
-                                               value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
+                                        <input class="discount-input" type="text" name="price-input-discount" placeholder="% скидки" maxlength="6" value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
                                     </div>
                                     <div class="add_change_item_in_cart_container">
                                         <label class="new_item_container_value_calendar_label">
-                                            <input class="new_item_container_calendar"
-                                                   type="date"
-                                                   value="{% if item.date_delivery %}{{ item.date_delivery|date:"Y-m-d" }}{% endif %}"
-                                                   min="{{ current_date }}" />
+                                            <input class="new_item_container_calendar" type="date" value="{% if item.date_delivery %}{{ item.date_delivery|date:"Y-m-d" }}{% endif %}" min="{{ current_date }}" />
                                             <div class="error"></div>
                                         </label>
                                         <button class="add_new_item_in_cart">Изменить</button>
@@ -291,8 +218,6 @@
                         </div> {% endcomment %}
                     {% endif %}
                 {% endfor %}
-                
-                
                 <!--новый товар добавить-->
                 {% include "admin_specification/include/item_in_cart/new_product_add.html" %}
                 <div class="price_description">

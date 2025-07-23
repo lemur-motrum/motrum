@@ -24,7 +24,9 @@
                         Скидка <span>клиента</span>
                     </div>
                     <div class="title_item">Маржа</div>
-                    <div class="title_item">Срок поставки</div>
+                    <div class="title_item">
+                        Срок <span>поставки</span>
+                    </div>
                 </div>
                 {% for item in product %}
                     <div class="item_container data-base-product-container"
@@ -372,7 +374,7 @@
                                         </div>
                                         <div class="">
                                             {% if item.product_new_sale_motrum %}
-                                            скидка на прайс <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+                                                скидка на прайс <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
                                             {% else %}
                                             {% endif %}
                                         </div>
@@ -628,7 +630,7 @@
                                     </div>
                                     <div class="">
                                         {% if item.product_new_sale_motrum %}
-                                        скидка на прайс <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+                                            скидка на прайс <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
                                         {% else %}
                                         {% endif %}
                                     </div>
@@ -885,7 +887,7 @@
                                     </div>
                                     <div class="">
                                         {% if item.product_new_sale_motrum %}
-                                        скидка на прайс  <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
+                                            скидка на прайс  <span class="motrum_sale_persent">{{ item.product_new_sale_motrum }}</span>%
                                         {% else %}
                                         {% endif %}
                                     </div>
@@ -1182,13 +1184,12 @@
                                        placeholder="введите название или артикул"
                                        type="text" />
                                 <div class="search_container_wrapper">
-
-                                       <div class="search_container">
-                                           <div class="loader"></div>
-                                           <div class="search_elems_contaner"></div>
-                                           <div class="small_loader"></div>
-                                       </div>
-                                   </div>
+                                    <div class="search_container">
+                                        <div class="loader"></div>
+                                        <div class="search_elems_contaner"></div>
+                                        <div class="small_loader"></div>
+                                    </div>
+                                </div>
                             </label>
                             <div class="add_product_container">
                                 <button class="add_product">Добавить этот товар</button>
@@ -1425,13 +1426,12 @@
                                        placeholder="введите название или артикул"
                                        type="text" />
                                 <div class="search_container_wrapper">
-
-                                       <div class="search_container">
-                                           <div class="loader"></div>
-                                           <div class="search_elems_contaner"></div>
-                                           <div class="small_loader"></div>
-                                       </div>
-                                   </div>
+                                    <div class="search_container">
+                                        <div class="loader"></div>
+                                        <div class="search_elems_contaner"></div>
+                                        <div class="small_loader"></div>
+                                    </div>
+                                </div>
                             </label>
                             <div class="add_product_container">
                                 <button class="add_product">Добавить этот товар</button>

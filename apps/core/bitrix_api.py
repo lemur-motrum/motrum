@@ -424,7 +424,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 adress_2 = adress.get("ADDRESS_2")
                 
                 if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                    postal_address = f"{adress_1}, г.{adress_2}"
+                    postal_address = f"{adress_1}, {adress_2}"
                 elif adress_1 not in ("", "None", None):
                     postal_address = f"{adress_1}"
                 elif adress_2 not in ("", "None", None):
@@ -465,7 +465,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                     province = adress.get("PROVINCE")
                     city = adress.get("CITY")
                     if province not in ("", "None", None) and city not in ("", "None", None):
-                        postal_city = f"{province}, г.{city}"
+                        postal_city = f"{province}, {city}"
                     elif province not in ("", "None", None):
                         postal_city = f"{province}"
                     elif city not in ("", "None", None):
@@ -477,7 +477,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                     adress_2 = adress.get("ADDRESS_2")
                     
                     if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                        postal_address = f"{adress_1}, г.{adress_2}"
+                        postal_address = f"{adress_1}, {adress_2}"
                     elif adress_1 not in ("", "None", None):
                         postal_address = f"{adress_1}"
                     elif adress_2 not in ("", "None", None):

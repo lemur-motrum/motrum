@@ -196,7 +196,7 @@ def add_iek(request):
             adress_2 = adress.get("ADDRESS_2")
             
             if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                postal_address = f"{adress_1}, г.{adress_2}"
+                postal_address = f"{adress_1}, {adress_2}"
             elif adress_1 not in ("", "None", None):
                 postal_address = f"{adress_1}"
             elif adress_2 not in ("", "None", None):
@@ -229,7 +229,7 @@ def add_iek(request):
                 adress_2 = adress.get("ADDRESS_2")
                 
                 if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
-                    postal_address = f"{adress_1}, г.{adress_2}"
+                    postal_address = f"{adress_1}, {adress_2}"
                 elif adress_1 not in ("", "None", None):
                     postal_address = f"{adress_1}"
                 elif adress_2 not in ("", "None", None):

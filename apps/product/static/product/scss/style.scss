@@ -1997,6 +1997,20 @@
           font-size: 0.75rem;
         }
       }
+      .product_vendor {
+        font-size: 1.125rem;
+        font-weight: 300;
+        @media screen and(max-width:576px) {
+          font-size: 0.75rem;
+        }
+      }
+      .product_article_vendor {
+        font-size: 1.125rem;
+        font-weight: 300;
+        @media screen and(max-width:576px) {
+          font-size: 0.75rem;
+        }
+      }
       .product_description {
         font-size: 1.125rem;
         font-weight: 300;

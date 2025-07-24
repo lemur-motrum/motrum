@@ -39,6 +39,7 @@ from apps.supplier.models import (
 
 def prompower_api():
     prompower = Supplier.objects.get(slug="prompower")
+    print(prompower)
     vendors = Vendor.objects.filter(slug="prompower")
     for vendors_item in vendors:
         if vendors_item.slug == "prompower":
@@ -171,6 +172,7 @@ def prompower_api():
 
     # добавление товаров
     def add_products():
+        print(99999)
         url = "https://prompower.ru/api/prod/getProducts"
         payload = json.dumps(
             {
@@ -206,7 +208,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None and data_item["article"] == "PD310-A420K":
+                if data_item["article"] != None :
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -333,6 +335,7 @@ def prompower_api():
                                     need_upd = True
                                 else:
                                     need_upd = False
+                                    
                                 
                             else:
                                 doc_old = ProductDocument.objects.filter(
@@ -414,6 +417,7 @@ def prompower_api():
 
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
+                        print(article_suppliers)
                         price_supplier = price_supplier + (price_supplier / 100 * NDS)
                         try:
                             # если товар есть в бд
@@ -422,6 +426,7 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
+                            print(article)
                             print("обновление характеристик")
                             # обновление характеристик 
                             for prop in data_item["props"]:
@@ -434,24 +439,26 @@ def prompower_api():
                                     update_change_reason(
                                         property_product, "Автоматическое"
                                     )
+                            
+                            
                             if IS_PROD:
                                 save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов
-                                props = ProductProperty.objects.filter(
-                                    product=article
-                                ).exists()
+                                # props = ProductProperty.objects.filter(
+                                #     product=article
+                                # ).exists()
                                 
-                                if props == False:
-                                    for prop in data_item["props"]:
-                                        property_product = ProductProperty(
-                                            product=article,
-                                            name=prop["name"],
-                                            value=prop["value"],
-                                        )
-                                        property_product.save()
-                                        update_change_reason(
-                                            property_product, "Автоматическое"
-                                        )
+                                # if props == False:
+                                #     for prop in data_item["props"]:
+                                #         property_product = ProductProperty(
+                                #             product=article,
+                                #             name=prop["name"],
+                                #             value=prop["value"],
+                                #         )
+                                #         property_product.save()
+                                #         update_change_reason(
+                                #             property_product, "Автоматическое"
+                                #         )
 
                                 image = ProductImage.objects.filter(
                                     product=article
@@ -589,7 +596,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PD310A420K":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -679,10 +686,10 @@ def prompower_api():
                 prod_d.save()
                 print("local_file_size is not None and remote_file_size > 0")    
     
-    # add_category_groupe()
-    # add_category()
+    add_category_groupe()
+    add_category()
     add_products()
-    # add_products_promo_group()
+    add_products_promo_group()
     upd_document_pp()
 
 

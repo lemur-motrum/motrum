@@ -60,7 +60,7 @@ a {
     .site-description-content {
       margin-bottom: 1.5rem;
       min-height: 22rem;
-      overflow-x: hidden;
+      overflow-x: clip;
 
       .custom_404_text {
         display: flex;
@@ -2401,6 +2401,7 @@ a {
   &.visible {
     opacity: 1;
   }
+
   @media screen and (max-width: 576px) {
     width: 96%;
     bottom: 5%;
@@ -2896,6 +2897,14 @@ a {
           }
         }
       }
+    }
+  }
+  &.right {
+    float: right;
+    justify-content: flex-end;
+    right: 3.125rem;
+    @media screen and (max-width: 576px) {
+      z-index: 50;
     }
   }
 }

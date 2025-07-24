@@ -1,5 +1,6 @@
 # расчет цены
 
+from collections import defaultdict
 import csv
 import datetime
 import json
@@ -17,12 +18,14 @@ import traceback
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from apps import supplier
+
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.core.utils_web import send_email_message_html
 from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
+from django.db.models import OuterRef, Subquery, IntegerField, Case, When, Value
+
 
 
 from apps.specification.utils import crete_pdf_specification
@@ -57,19 +60,21 @@ def get_price_motrum(
     all_item_group,
     supplier,
     promo_groupe,
-    is_need_vendor_serch=False
+    is_need_vendor_serch=False,
 ):
     from apps.supplier.models import (
         Discount,
     )
-    print(item_category,
-    item_group,
-    vendors,
-    rub_price_supplier,
-    all_item_group,
-    supplier,
-    promo_groupe,
-    is_need_vendor_serch
+
+    print(
+        item_category,
+        item_group,
+        vendors,
+        rub_price_supplier,
+        all_item_group,
+        supplier,
+        promo_groupe,
+        is_need_vendor_serch,
     )
     motrum_price = rub_price_supplier
     percent = 0
@@ -79,7 +84,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
-    
+
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -90,7 +95,7 @@ def get_price_motrum(
         if discount_promo_groupe:
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
-    
+
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
@@ -98,8 +103,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_all_group:
-            discount_all_group = discount_all_group.filter(
-            vendor=vendors)
+            discount_all_group = discount_all_group.filter(vendor=vendors)
 
         if discount_all_group:
             percent = get_percent(discount_all_group)
@@ -108,7 +112,7 @@ def get_price_motrum(
         # скидка по группе
 
     if item_group and percent == 0:
-        print(item_group,"item_group")
+        print(item_group, "item_group")
         discount_group = Discount.objects.filter(
             promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
@@ -116,10 +120,8 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_group:
-            print(discount_group,"discount_group")
-            discount_group = discount_group.filter(
-            vendor=vendors)
-            
+            print(discount_group, "discount_group")
+            discount_group = discount_group.filter(vendor=vendors)
 
         if discount_group:
             percent = get_percent(discount_group)
@@ -138,8 +140,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_categ:
-            discount_categ = discount_categ.filter(
-            vendor=vendors)
+            discount_categ = discount_categ.filter(vendor=vendors)
 
         if discount_categ:
             percent = get_percent(discount_categ)
@@ -155,7 +156,7 @@ def get_price_motrum(
             promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
-        
+
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
@@ -185,7 +186,7 @@ def get_price_motrum(
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    print("motrum_price",motrum_price)
+    print("motrum_price", motrum_price)
     return motrum_price, sale[0]
 
 
@@ -207,10 +208,13 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
             current_percent = CurrencyPercent.objects.filter().latest("id")
 
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-
+            print("price_supplier_vat",price_supplier_vat)
+            print("currency_rate",currency_rate)
+            print("current_percent",current_percent.percent)
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
+            print("price_supplier_rub",price_supplier_rub)
 
             return round(price_supplier_rub, 2)
     else:
@@ -343,7 +347,7 @@ def get_category_unimat(supplier, vendor, category_name):
     print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
-            supplier=supplier,  article_name=category_name
+            supplier=supplier, article_name=category_name
         )
 
         groupe = category_all.group_supplier
@@ -352,7 +356,7 @@ def get_category_unimat(supplier, vendor, category_name):
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
-                supplier=supplier,  article_name=category_name
+                supplier=supplier, article_name=category_name
             )
             category_all = None
 
@@ -866,13 +870,15 @@ def create_time_stop_specification():
 
 
 # получение категорий мотрум из категорий поставщика
-def get_motrum_category(self):
+def get_motrum_category_and_motrum_props(self):
     category_catalog = None
     group_catalog = None
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-
+        serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier_all.name
+)
     if self.group_supplier != None:
         print(self.group_supplier)
         if category_catalog == None and group_catalog == None:
@@ -880,11 +886,40 @@ def get_motrum_category(self):
             print(category_catalog)
             group_catalog = self.group_supplier.group_catalog
             print(group_catalog)
-
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.group_supplier.name
+)
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier.name
+)
+    print(category_catalog, group_catalog)
+    return (category_catalog, group_catalog)
+
+# получение категорий мотрум из категорий поставщика
+def get_motrum_category(self):
+    category_catalog = None
+    group_catalog = None
+    if self.category_supplier_all != None:
+        category_catalog = self.category_supplier_all.category_catalog
+        group_catalog = self.category_supplier_all.group_catalog
+       
+    if self.group_supplier != None:
+        print(self.group_supplier)
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.group_supplier.category_catalog
+            print(category_catalog)
+            group_catalog = self.group_supplier.group_catalog
+            print(group_catalog)
+            
+    if self.category_supplier != None:
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.category_supplier.category_catalog
+            group_catalog = self.category_supplier.group_catalog
+           
     print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
@@ -1063,7 +1098,7 @@ def save_update_product_attr_all(
 ):
 
     try:
-        print( "save_update_product_attr_all")
+        print("save_update_product_attr_all")
 
         print(
             product,
@@ -2109,7 +2144,7 @@ def send_requests(url, headers, data, auth):
             allow_redirects=False,
             verify=False,
         )
-        
+
         error = "info_error_order"
         location = "отправка requests 1c"
         info = f"отправка requests 1c {response} / {response.text}"
@@ -2159,10 +2194,14 @@ def after_save_order_products(products):
             promo = prod.product.promo_groupe.name
         else:
             promo = ""
-        
-        product_name_str =  prod.product.name
-                
-        if vendor and  prod.product.supplier.slug == "prompower" and prod.product.description:
+
+        product_name_str = prod.product.name
+
+        if (
+            vendor
+            and prod.product.supplier.slug == "prompower"
+            and prod.product.description
+        ):
             product_name_str = prod.product.description
 
         data_prod_to_1c = {
@@ -2171,7 +2210,6 @@ def after_save_order_products(products):
             "article_motrum": prod.product.article,
             # "name": prod.product.name,
             "name": product_name_str,
-            
             "price_one": prod.price_one,
             "quantity": prod.quantity,
             "price_all": prod.price_all,
@@ -2779,9 +2817,10 @@ def create_file_props_in_vendor_props():
     new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
     # path_delta = f"{new_dir}/delta.csv"
     # path_emas = f"{new_dir}/emas.csv"
-    path_iek = f"{new_dir}/iek.csv"
+    # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
+    path_unimat = f"{new_dir}/unimat.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -2792,8 +2831,9 @@ def create_file_props_in_vendor_props():
 
     props = []
 
-    all_product_supplier = Product.objects.filter(supplier__slug="iek")
+    all_product_supplier = Product.objects.filter(vendor__slug="unimat")
     i = 0
+    print(all_product_supplier)
 
     def key_val_upd(key, val, value, unit_measure):
 
@@ -2852,7 +2892,7 @@ def create_file_props_in_vendor_props():
 
     props_count = len(props)
     print("props_count", props_count)
-    with open(path_iek, "w", encoding="UTF-8") as writerFile:
+    with open(path_unimat, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
         )
@@ -2922,3 +2962,610 @@ def email_manager_after_new_order_site(order):
         info = f"order.id = {order.id} {e}{tr}"
         e = error_alert(error, location, info)
         return ("error", info)
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+# фильтр в шаблон если у одного значение пропсов товара только ожно значение пропсов мотрум
+def get_props_motrum_filter(product_props):
+
+    from apps.product.models import ProductPropertyMotrum
+
+    # Характеристики дял фильтрации
+    all_values = product_props.values(
+        "property_motrum",
+        "property_motrum__name",
+        "property_value_motrum__id",
+        "property_value_motrum__value",
+        "is_diapason",
+        "value",
+    ).distinct()
+
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "property_motrum": pid,
+                    "is_diapason": is_diapason,
+                }
+            )
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["value"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            chars_dict[pid]["values"].append(
+                {
+                    "id": row["property_value_motrum__id"],
+                    "value": row["property_value_motrum__value"],
+                }
+            )
+
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    chars = list(chars_dict.values())
+    # Сортировка по article ProductPropertyMotrum
+    chars.sort(
+        key=lambda x: (x.get("id_property_motrum") is None, x.get("id_property_motrum"))
+    )
+    # Попробуем получить порядок из ProductPropertyMotrum
+    article_map = {
+        p.id: p.article if p.article is not None else 9999
+        for p in ProductPropertyMotrum.objects.filter(
+            id__in=[c["id_property_motrum"] for c in chars]
+        )
+    }
+    chars.sort(key=lambda x: article_map.get(x["id_property_motrum"], 9999))
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
+    print("chars", chars)
+
+    return chars
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+def get_props_all_motrum_filter(product_props_2):
+    from apps.product.models import (
+        TYPE_DOCUMENT,
+        CategoryProduct,
+        GroupProduct,
+        Product,
+        ProductDocument,
+        ProductImage,
+        ProductProperty,
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        Stock,
+        VendorPropertyAndMotrum,
+    )
+
+    # Оптимизированная сборка chars_motrum
+    # Собираем все условия для поиска VendorPropertyAndMotrum
+    print(product_props_2)
+    vendor_props_q = Q()
+    vendor_props_conditions = []
+    diapason_names = set()
+    diapason_value = []
+
+    for prop in product_props_2:
+        is_diapason = prop.get("is_diapason", False)
+        if is_diapason:
+            p = {
+                "property_vendor_name": prop["name"],
+                "supplier_id": prop["product__supplier"],
+                "is_diapason": True,
+            }
+            if p not in diapason_value:
+                diapason_value.append(p)
+                vendor_props_conditions.append(
+                    Q(
+                        property_vendor_name=prop["name"],
+                        supplier_id=prop["product__supplier"],
+                    )
+                )
+
+        else:
+            vendor_props_conditions.append(
+                Q(
+                    property_vendor_name=prop["name"],
+                    supplier_id=prop["product__supplier"],
+                    property_vendor_value=prop["value"],
+                )
+            )
+
+    print("diapason_value3333", diapason_value)
+    print("vendor_props_conditions", vendor_props_conditions)
+    if vendor_props_conditions:
+        vendor_props_q = vendor_props_conditions.pop()
+        for cond in vendor_props_conditions:
+            vendor_props_q |= cond
+
+        all_vendor_props = VendorPropertyAndMotrum.objects.filter(vendor_props_q)
+    else:
+        all_vendor_props = VendorPropertyAndMotrum.objects.none()
+
+    print("44444444444444444444444444444444444444444444")
+    print("vendor_props_q", vendor_props_q)
+    # Собираем все уникальные id property_motrum и property_value_motrum
+    motrum_ids = set()
+    value_ids = set()
+    for vp in all_vendor_props:
+        if vp.property_motrum_id and vp.property_value_motrum_id:
+            motrum_ids.add(vp.property_motrum_id)
+            value_ids.add(vp.property_value_motrum_id)
+    # Получаем все объекты одним запросом
+    motrum_objs = {
+        m.id: m for m in ProductPropertyMotrum.objects.filter(id__in=motrum_ids)
+    }
+    value_objs = {
+        v.id: v for v in ProductPropertyValueMotrum.objects.filter(id__in=value_ids)
+    }
+    # Формируем структуру
+    chars_motrum_dict = {}
+    for vp in all_vendor_props:
+        key = vp.property_motrum_id
+        val_id = vp.property_value_motrum_id
+        if key is None or val_id is None:
+            continue
+        if key not in chars_motrum_dict:
+            motrum_obj = motrum_objs.get(key)
+            chars_motrum_dict[key] = {
+                "values": [],
+                "id_property_motrum": key,
+                "name_property_motrum": motrum_obj.name if motrum_obj else "",
+                "is_diapason": getattr(motrum_obj, "is_diapason", False),
+            }
+
+        value_obj = value_objs.get(val_id)
+        value_val = value_obj.value if value_obj else None
+        if (
+            value_val is not None
+            and {"value": value_val, "id": val_id}
+            not in chars_motrum_dict[key]["values"]
+        ):
+            chars_motrum_dict[key]["values"].append({"value": value_val, "id": val_id})
+    chars_motrum = list(chars_motrum_dict.values())
+    print(chars_motrum)
+    print("diapason_names (уникальные диапазонные пары):", diapason_names)
+    print("vendor_props_conditions (все условия):", vendor_props_conditions)
+    return chars_motrum
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+def get_props_all_motrum_filter3(product_props_3):
+    from apps.product.models import (
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        VendorPropertyAndMotrum,
+        ProductProperty,
+        PropertyItemAndMotrum,
+    )
+
+    chars_motrum_dict = {}
+    # Получаем все id product_props из product_props_3
+    props_prod_ids = [p.id for p in product_props_3]
+    # Получаем все PropertyItemAndMotrum одним запросом
+    items = PropertyItemAndMotrum.objects.filter(
+        product_props_id__in=props_prod_ids
+    ).select_related(
+        "vendor_property_motrum__property_motrum",
+        "vendor_property_motrum__property_value_motrum",
+        "product_props",
+    )
+    # Группируем по product_props_id
+    from collections import defaultdict
+
+    items_by_props = defaultdict(list)
+    for item in items:
+        items_by_props[item.product_props_id].append(item)
+
+    # Теперь перебираем product_props_3 и работаем с уже загруженными items
+    for props_prod in product_props_3:
+
+        for item in items_by_props.get(props_prod.id, []):
+            vendor_prop = item.vendor_property_motrum
+            if not vendor_prop or not vendor_prop.property_motrum:
+                continue
+            key = vendor_prop.property_motrum.id
+            motrum_obj = vendor_prop.property_motrum
+            value_obj = vendor_prop.property_value_motrum
+            is_diapason = value_obj.is_diapason if value_obj else False
+            # --- добавляем ключ, даже если нет value_obj ---
+            if key not in chars_motrum_dict:
+
+                chars_motrum_dict[key] = {
+                    "values": [],
+                    "id_property_motrum": key,
+                    "name_property_motrum": motrum_obj.name if motrum_obj else "",
+                    "is_diapason": is_diapason,
+                }
+
+            # --- для диапазонных не добавляем values, только min/max ниже ---
+            if (
+                not is_diapason
+                and value_obj
+                and {"value": value_obj.value, "id": value_obj.id}
+                not in chars_motrum_dict[key]["values"]
+            ):
+                chars_motrum_dict[key]["values"].append(
+                    {"value": value_obj.value, "id": value_obj.id}
+                )
+
+    # Для диапазонных характеристик вычисляем min/max
+    for props_prod in product_props_3:
+        for item in items_by_props.get(props_prod.id, []):
+            vendor_prop = item.vendor_property_motrum
+            if not vendor_prop or not vendor_prop.property_motrum:
+                continue
+            key = vendor_prop.property_motrum.id
+            motrum_obj = vendor_prop.property_motrum
+            value_obj = vendor_prop.property_value_motrum
+            is_diapason = value_obj.is_diapason if value_obj else False
+            if is_diapason:
+                diapason_values = []
+                for diapason_item in items_by_props.get(props_prod.id, []):
+                    try:
+                        val = float(diapason_item.product_props.value)
+                        diapason_values.append(val)
+                    except (TypeError, ValueError, AttributeError):
+                        pass
+                if diapason_values:
+                    chars_motrum_dict[key]["min_value"] = min(diapason_values)
+                    chars_motrum_dict[key]["max_value"] = max(diapason_values)
+    chars_motrum = list(chars_motrum_dict.values())
+    return chars_motrum
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -ИСПОЛЬЗУЕМ
+def get_props_motrum_filter_to_view(product_props,category,group):
+    from django.db.models.functions import Coalesce
+    from apps.product.models import ProductPropertyMotrum,ProductPropertyMotrumArticleCateg
+    from apps.product.models import CategoryProduct, GroupProduct
+ 
+    # Характеристики дял фильтрации
+ 
+    if not category or category in ("all", "other", "search"):
+        category_motrum = None
+        group_motrum = None
+    else:
+        category_motrum = CategoryProduct.objects.get(slug=category)
+        if group:
+            group_motrum = GroupProduct.objects.get(slug=group)
+        else:
+            group_motrum = None
+    
+    article_by_all = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group=OuterRef('product__group'),
+    ).values('article')[:1]
+
+    article_by_cat = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group__isnull=True,
+    ).values('article')[:1]
+            
+    # all_values = (
+    #     product_props.values(
+    #         "property_motrum",
+    #         "property_motrum__name",
+    #         "property_motrum__name_to_slug",
+    #         "property_motrum__slug",
+    #         "property_value_motrum__id",
+    #         "property_value_motrum__value",
+    #         "property_motrum__is_diapason",
+    #         "property_value_motrum_to_diapason",
+    #     )
+    #     .distinct()
+    #     .order_by("property_value_motrum__value")
+    # )
+    all_values = (
+        product_props.annotate(
+            article_group=Coalesce(
+                Subquery(article_by_all, output_field=IntegerField()),
+                Subquery(article_by_cat, output_field=IntegerField()),
+            )
+        )
+        .values(
+            "property_motrum",
+            "property_motrum__name",
+            "property_motrum__name_to_slug",
+            "property_motrum__slug",
+            "property_value_motrum__id",
+            "property_value_motrum__value",
+            "property_motrum__is_diapason",
+            "property_value_motrum_to_diapason",
+            "article_group",
+        )
+        .distinct()
+        .order_by("property_value_motrum__value")
+    )
+
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["property_motrum__is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "is_diapason": is_diapason,
+                    "slug":row["property_motrum__slug"],
+                    "property_motrum__name_to_slug":row['property_motrum__name_to_slug']
+                    # "count_values": 0,  # убираем счетчик
+                }
+            )
+            # Добавляем ключ gabarit для нужных характеристик
+            if row["property_motrum__name"] in [
+                "Высота (мм)",
+                "Ширина (мм)",
+                "Глубина (мм)",
+            ]:
+                chars_dict[pid]["gabarit"] = True
+            else:
+                chars_dict[pid]["gabarit"] = False
+            # Для недиапазонных фильтров сразу инициализируем массив для длин
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"] = []
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["property_value_motrum_to_diapason"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            value_str = str(row["property_value_motrum__value"])
+            value_dict = {
+                "id": row["property_value_motrum__id"],
+                "value": row["property_value_motrum__value"],
+            }
+            chars_dict[pid]["values"].append(value_dict)
+            # Для недиапазонных фильтров собираем длины значений
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"].append(len(value_str))
+
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    # Для недиапазонных фильтров определяем position
+    for pid, char in chars_dict.items():
+        if not char.get("is_diapason", False) and "_value_lengths" in char:
+            if any(l > 6 for l in char["_value_lengths"]):
+                char["position"] = "vertical"
+            else:
+                char["position"] = "horizontal"
+            del char["_value_lengths"]
+        # добавляем count_values через len
+        char["count_values"] = len(char["values"])
+    chars = list(chars_dict.values())
+    # Получаем все нужные id характеристик
+    motrum_ids = [c["id_property_motrum"] for c in chars]
+
+    # Получаем article_group для каждой характеристики (property_motrum) и текущей группы/категории
+    article_group_map = {
+    p.property_motrum_id: p.article
+    for p in ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum_id__in=motrum_ids,
+        category_id=category_motrum.id if category_motrum else None,
+        group_id=group_motrum.id if group_motrum else None
+    )
+}
+
+    # Получаем обычный article из ProductPropertyMotrum
+    article_map = {
+        p.id: p.article if p.article is not None else 9999
+        for p in ProductPropertyMotrum.objects.filter(id__in=motrum_ids)
+    }
+
+    # Сортировка: сначала обычные, потом габариты, внутри — по article_group если есть, иначе по article
+    chars.sort(
+        key=lambda x: (
+            x.get("gabarit", False),
+            article_group_map.get(x["id_property_motrum"], article_map.get(x["id_property_motrum"], 9999)),
+        )
+    )
+    
+    
+    # # Сортировка: сначала обычные, потом габариты, внутри — по article
+    # article_map = {
+    #     p.id: p.article if p.article is not None else 9999
+    #     for p in ProductPropertyMotrum.objects.filter(
+    #         id__in=[c["id_property_motrum"] for c in chars]
+    #     )
+    # }
+    # chars.sort(
+    #     key=lambda x: (
+    #         x.get("gabarit", False),
+    #         article_map.get(x["id_property_motrum"], 9999),
+    #     )
+    # )
+    # --- Новый блок: если есть дубликаты name_property_motrum, заменить на name_to_slug ---
+    from collections import Counter
+    name_counts = Counter([c["name_property_motrum"] for c in chars])
+    for char in chars:
+        if name_counts[char["name_property_motrum"]] > 1:
+            # заменить на property_motrum__name_to_slug
+            char["name_property_motrum"] = char.get("property_motrum__name_to_slug", char["name_property_motrum"])
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
+    # Добавляем is_visible: True для первых 5, False для остальных
+    for idx, char in enumerate(chars):
+        char["is_visible"] = True if idx < 5 else False
+   
+    
+    
+    return chars
+
+
+def serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier):
+    from apps.product.models import ProductProperty, ProductPropertyMotrumItem
+
+    print("serch_props_prod_and_add_motrum_props", vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(
+        product__supplier=supplier,
+        name=vendor_property_and_motrum.property_vendor_name,
+        value=vendor_property_and_motrum.property_vendor_value,
+    )
+
+    for prop in props:
+        if prop.value != "" or prop.value != " ":
+
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                property_value_motrum=vendor_property_and_motrum.property_value_motrum,
+                is_diapason=False,
+                is_have_vendor_props=True,
+            )
+            print("*****standart_or_multi****")
+            print(prop_motrum, created)
+
+
+def serch_props_prod_and_add_motrum_props_diapason(
+    vendor_property_and_motrum, supplier
+):
+    from apps.product.models import ProductProperty, ProductPropertyMotrumItem
+
+    print("serch_props_prod_and_add_motrum_props_diapason", vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(
+        product__supplier=supplier, name=vendor_property_and_motrum.property_vendor_name
+    )
+
+    def extract_first_number(value):
+        if isinstance(value, (int, float)):
+            return value
+        if isinstance(value, str):
+            match = re.search(r"\d+(\.\d+)?", value)
+            if match:
+                return float(match.group())
+
+    for prop in props:
+
+        if prop.value != "" or prop.value != " ":
+            value = extract_first_number(prop.value)
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                is_diapason=True,
+                property_value_motrum_to_diapason=value,
+                is_have_vendor_props=True,
+            )
+            print("****_diapason*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_article(
+    prod_prop_motrum, prod_prop_value_motrum, article, supplier, is_diapason
+):
+    from apps.product.models import Product, ProductPropertyMotrumItem
+
+    products = Product.objects.filter(supplier=supplier, article_supplier=article)
+    if products:
+        for prod in products:
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prod,
+                property_motrum=prod_prop_motrum,
+                property_value_motrum=prod_prop_value_motrum,
+                is_diapason=is_diapason,
+                # property_value_motrum_to_diapason=prod_prop_value_motrum,
+                is_have_vendor_props=False,
+            )
+            print("****_article*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_categ(
+    prod_prop_motrum,
+    prod_prop_value_motrum,
+    article,
+    supplier,
+    is_diapason,
+    categ,
+    groupe,
+    last_categ,
+):
+    print(prod_prop_motrum,
+    prod_prop_value_motrum,
+    article,
+    supplier,
+    is_diapason,
+    categ,
+    groupe,
+    last_categ,"")
+    from apps.product.models import Product, ProductPropertyMotrumItem
+
+    if last_categ:
+        products = Product.objects.filter(
+            supplier=supplier, category_supplier_all__name=last_categ
+        )
+    elif groupe:
+        products = Product.objects.filter(
+            supplier=supplier, group_supplier__name=groupe
+        )
+    elif categ:
+        products = Product.objects.filter(
+            supplier=supplier, category_supplier__name=categ
+        )
+    print(products)
+    if products:
+        for prod in products:
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prod,
+                property_motrum=prod_prop_motrum,
+                property_value_motrum=prod_prop_value_motrum,
+                is_diapason=is_diapason,
+                # property_value_motrum_to_diapason=prod_prop_value_motrum,
+                is_have_vendor_props=False,
+            )
+            print("****_categ*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_categ_to_create_product(
+    product,value
+):
+    from apps.product.models import Product, ProductPropertyMotrumItem,VendorPropertyAndMotrum
+    # Получение х-к мотрум  
+    obj= VendorPropertyAndMotrum.objects.filter(
+        supplier=product.supplier,
+        is_category = True,
+        property_value_motrum__value=value,
+    ).first()
+    if obj is not None:
+        prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+            product=product,
+            property_motrum=obj.property_motrum,
+            property_value_motrum=obj.property_value_motrum,
+            is_diapason=obj.is_diapason,
+            is_have_vendor_props=True,
+        )
+        error = "info_error"
+        location = "+ х-ка"
+        info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+        e = error_alert(error, location, info)

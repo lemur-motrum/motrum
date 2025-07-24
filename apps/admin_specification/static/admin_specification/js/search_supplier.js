@@ -30,6 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let count = 0;
       let countLast = 5;
       let finish = false;
+      let counClicks = 0;
 
       vendorSearchInput.oninput = () => {
         const inputedvalue = vendorSearchInput.value;
@@ -37,7 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
         vendorSearchInput.setAttribute("vendor_value", "");
         loader.classList.remove("hide");
         noneContent.classList.remove("show");
-        if (vendorSearchInput.value.length) {
+        if (vendorSearchInput.value.length > 0) {
           vendorSearchInput.classList.add("inputed");
           vendorSearchElemsContainerWrapper.classList.add("show");
           vendorSearchElemsContainer.classList.add("show");
@@ -50,39 +51,61 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }, 600);
         } else {
+          // vendorSearchElemsContainerWrapper.classList.remove("show");
+          // vendorSearchElemsContainer.classList.remove("show");
+          // vendorSearchInput.classList.remove("inputed");
+          counClicks = 0;
+          getSearchElems();
+        }
+        closeSupplierPopup();
+      };
+
+      function closeSupplierPopup() {
+        document.addEventListener("click", function (e) {
+          if (
+            !vendorSearchInput.contains(e.target) &&
+            !vendorSearchElemsContainerWrapper.contains(e.target)
+          ) {
+            vendorSearchElemsContainerWrapper.classList.remove("show");
+            vendorSearchElemsContainer.classList.remove("show");
+            vendorSearchInput.classList.remove("inputed");
+            counClicks = 0;
+          }
+        });
+      }
+
+      // Для срабатыванию по простому клику
+      function showVendorSearch() {
+        const inputedvalue = vendorSearchInput.value;
+        searchElemsContainer.innerHTML = "";
+        vendorSearchInput.setAttribute("vendor_value", "");
+        loader.classList.remove("hide");
+        noneContent.classList.remove("show");
+        if (vendorSearchInput.value == "") {
+          vendorSearchInput.classList.add("inputed");
+          vendorSearchElemsContainerWrapper.classList.add("show");
+          vendorSearchElemsContainer.classList.add("show");
+
+          count = 0;
+          countLast = 5;
+          finish = false;
+          if (inputedvalue == vendorSearchInput.value) {
+            getSearchElems();
+          }
+        } else {
           vendorSearchElemsContainerWrapper.classList.remove("show");
           vendorSearchElemsContainer.classList.remove("show");
           vendorSearchInput.classList.remove("inputed");
         }
-      };
+        closeSupplierPopup();
+      }
 
-      // Для срабатыванию по простому клику
-      // function showVendorSearch() {
-      //   const inputedvalue = vendorSearchInput.value;
-      //   searchElemsContainer.innerHTML = "";
-      //   vendorSearchInput.setAttribute("vendor_value", "");
-      //   loader.classList.remove("hide");
-      //   noneContent.classList.remove("show");
-      //   if (vendorSearchInput.value == "") {
-      //     vendorSearchInput.classList.add("inputed");
-      //     vendorSearchElemsContainerWrapper.classList.add("show");
-      //     vendorSearchElemsContainer.classList.add("show");
-          
-      //       count = 0;
-      //       countLast = 5;
-      //       finish = false;
-      //       if (inputedvalue == vendorSearchInput.value) {
-      //         getSearchElems();
-      //       }
-          
-      //   } else {
-      //     vendorSearchElemsContainerWrapper.classList.remove("show");
-      //     vendorSearchElemsContainer.classList.remove("show");
-      //     vendorSearchInput.classList.remove("inputed");
-      //   }
-      // }
-      // vendorSearchInput.addEventListener("click", showVendorSearch);
-
+      vendorSearchInput.addEventListener("click", function () {
+        if (counClicks == 0) {
+          showVendorSearch();
+          counClicks += 1;
+        }
+      });
 
       vendorSearchElemsContainer.addEventListener("scroll", function () {
         console.log(
@@ -129,6 +152,7 @@ window.addEventListener("DOMContentLoaded", () => {
               "vendor_value",
               el.getAttribute("search-supplier-id")
             );
+            vendorSearchElemsContainerWrapper.classList.remove("show");
             vendorSearchElemsContainer.classList.remove("show");
             vendorSearchInput.classList.remove("inputed");
           };

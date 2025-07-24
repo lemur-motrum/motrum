@@ -99,7 +99,6 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -229,9 +228,7 @@ function addNewProductLogic(container) {
         ".supplier_select__toggle"
       );
       const lotSelect = newItemContainer.querySelector(".lot_select");
-      const lotSelectToggle = lotSelect.querySelector(
-        ".lot_select__toggle"
-      );
+      const lotSelectToggle = lotSelect.querySelector(".lot_select__toggle");
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
       );
@@ -244,9 +241,10 @@ function addNewProductLogic(container) {
       const changeMotrumPriceInput = newItemContainer.querySelector(
         ".new_item_change_price_motrum"
       );
-      const deliveryDate = newItemContainer.querySelector(".new_item_container_calendar")
-      const discountInput = newItemContainer.querySelector(".add_sale")
-
+      const deliveryDate = newItemContainer.querySelector(
+        ".new_item_container_calendar"
+      );
+      const discountInput = newItemContainer.querySelector(".add_sale");
 
       function closeSelectDropdown(select) {
         const options = select.querySelectorAll(".itc-select__options");
@@ -399,7 +397,7 @@ function addNewProductLogic(container) {
             // product_new_price: +priceOnceInput.value,
             cart: +cartId,
             quantity: 1,
-            lot:lotSelectToggle.getAttribute("value"),
+            lot: lotSelectToggle.getAttribute("value"),
             // quantity: +quantityInput.value,
             // product_new_sale_motrum: persentSaleInput.value
             //   ? persentSaleInput.value
@@ -414,7 +412,7 @@ function addNewProductLogic(container) {
             // product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(dataObjNewProduct);
-          console.log(dataObjNewProduct)
+          console.log(dataObjNewProduct);
           fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
             method: "POST",
             body: data,
@@ -455,7 +453,7 @@ function addNewProductLogic(container) {
 
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
-      
+
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));

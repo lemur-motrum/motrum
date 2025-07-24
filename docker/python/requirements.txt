@@ -26,6 +26,8 @@ smsru-api==0.1.7
 sorl-thumbnail==12.11.0
 django_resized==1.0.3
 
+pandas==2.3.1
+
 djlint==1.36.4
 libsass==0.23.0
 django-compressor==4.5.1

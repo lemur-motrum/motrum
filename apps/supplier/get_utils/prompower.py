@@ -422,7 +422,18 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
-                            save_document(categ, article)
+                            print("обновление характеристик")
+                            # обновление характеристик 
+                            for prop in data_item["props"]:
+                                property_product,created = ProductProperty.objects.get_or_create(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                if created:
+                                    update_change_reason(
+                                        property_product, "Автоматическое"
+                                    )
                             if IS_PROD:
                                 save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов
@@ -489,16 +500,16 @@ def prompower_api():
                                 save_image(article)
                                 save_document(categ, article)
 
-                                for prop in data_item["props"]:
-                                    property_product = ProductProperty(
-                                        product=article,
-                                        name=prop["name"],
-                                        value=prop["value"],
-                                    )
-                                    property_product.save()
-                                    update_change_reason(
-                                        property_product, "Автоматическое"
-                                    )
+                            for prop in data_item["props"]:
+                                property_product = ProductProperty(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                property_product.save()
+                                update_change_reason(
+                                    property_product, "Автоматическое"
+                                )
 
                         # цены товара
                         try:

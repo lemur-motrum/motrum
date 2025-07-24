@@ -56,7 +56,17 @@ from apps.core.utils_web import (
     up_int_skafy,
 )
 from apps.logs.utils import error_alert
-from apps.supplier.get_utils.unimat_pp import export_unimat_prod_for_1c, unimat_prompower_api
+from apps.supplier.get_utils.motrum_filters import (
+    convert_all_to_text,
+    xlsx_props_motrum,
+    xlsx_props_motrum_pandas,
+    xlsx_to_csv_one_sheet,
+)
+from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
+from apps.supplier.get_utils.unimat_pp import (
+    export_unimat_prod_for_1c,
+    unimat_prompower_api,
+)
 from dal import autocomplete
 from django.db.models import Q
 
@@ -93,6 +103,7 @@ from apps.product.models import (
     ProductImage,
     ProductProperty,
     Stock,
+    VendorPropertyAndMotrum,
 )
 from apps.specification.models import ProductSpecification, Specification
 from apps.specification.tasks import bill_date_stop, specification_date_stop
@@ -108,10 +119,18 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
     nomek_test_2,
 )
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
-from apps.supplier.get_utils.prompower import export_prompower_prod_for_1c, pp_aup_doc_name, prompower_api
+from apps.supplier.get_utils.prompower import (
+    export_prompower_prod_for_1c,
+    pp_aup_doc_name, prompower_api,
+)
 
 from apps.supplier.get_utils.veda import veda_api
-from apps.supplier.models import Supplier, SupplierCategoryProductAll, SupplierPromoGroupe, Vendor
+from apps.supplier.models import (
+    Supplier,
+    SupplierCategoryProductAll,
+    SupplierPromoGroupe,
+    Vendor,
+)
 from apps.supplier.get_utils.emas import add_group_emas, add_props_emas_product
 from apps.supplier.models import SupplierCategoryProduct, SupplierGroupProduct
 from apps.supplier.tasks import add_veda
@@ -135,22 +154,132 @@ from fast_bitrix24.server_response import ErrorInServerResponseException
 def add_iek(request):
     # from requests.auth import HTTPBasicAuth
     # import logging
-
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
-    
-    
-    
+    adress_bx = bx.get_all(
+        "crm.address.list",
+        params={
+            "filter": {"ENTITY_TYPE_ID": [8], "ENTITY_ID": 6120},
+        },
+    )
+    print(adress_bx)
+    #  получение данных из адресов
+    adress_type = None
+    company_adress_all = []
+    for adress in adress_bx:
+        not_web_adrees = False
+        company_adress = {
+            "requisitesKpp": None,
+            "type_address_bx": adress["TYPE_ID"],
+            "country": adress["COUNTRY"],
+            "post_code": adress["POSTAL_CODE"],
+            "region": adress["REGION"],
+            "province": adress["PROVINCE"],
+            "city": adress["CITY"],
+            "address1": adress["ADDRESS_1"],
+            "address2": adress["ADDRESS_2"],
+        }
+        company_adress_all.append(company_adress)
+        if adress["TYPE_ID"] == "9" or adress["TYPE_ID"] == 9:
+            not_web_adrees = True
+            adress_type = 9
+            legal_post_code = adress["POSTAL_CODE"]
+            if legal_post_code == None:
+                return (True, "Индекс в адрес бенефициара не указан", None)
+            bx_city = adress["CITY"]
+            bx_city_post = adress["CITY"]
+
+            postal_post_code = adress["POSTAL_CODE"]
+            if legal_post_code == None:
+                return (True, "Индекс в адрес юридический не указан", None)
+            bx_city = adress["CITY"]
+            bx_city_post = adress["CITY"]
+            
+            province = adress.get("PROVINCE")
+            city = adress.get("CITY")
+            if province not in ("", "None", None) and city not in ("", "None", None):
+                postal_city = f"{province}, г.{city}"
+            elif province not in ("", "None", None):
+                postal_city = f"{province}"
+            elif city not in ("", "None", None):
+                postal_city = f"г.{city}"
+            else:
+                postal_city = ""
+                
+            adress_1 = adress.get("ADDRESS_1")
+            adress_2 = adress.get("ADDRESS_2")
+            
+            if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
+                postal_address = f"{adress_1}, {adress_2}"
+            elif adress_1 not in ("", "None", None):
+                postal_address = f"{adress_1}"
+            elif adress_2 not in ("", "None", None):
+                postal_address = f"{adress_2}"
+            else:
+                postal_address = ""
+
+        if not_web_adrees == False:
+            if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
+                adress_type = 6
+                legal_post_code = adress["POSTAL_CODE"]
+                postal_post_code = adress["POSTAL_CODE"]
+                if legal_post_code == None:
+                    return (True, "Индекс в адрес юридический не указан", None)
+                bx_city = adress["CITY"]
+                bx_city_post = adress["CITY"]
+                
+                province = adress.get("PROVINCE")
+                city = adress.get("CITY")
+                if province not in ("", "None", None) and city not in ("", "None", None):
+                    postal_city = f"{province}, г.{city}"
+                elif province not in ("", "None", None):
+                    postal_city = f"{province}"
+                elif city not in ("", "None", None):
+                    postal_city = f"г.{city}"
+                else:
+                    postal_city = ""
+                    
+                adress_1 = adress.get("ADDRESS_1")
+                adress_2 = adress.get("ADDRESS_2")
+                
+                if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
+                    postal_address = f"{adress_1}, {adress_2}"
+                elif adress_1 not in ("", "None", None):
+                    postal_address = f"{adress_1}"
+                elif adress_2 not in ("", "None", None):
+                    postal_address = f"{adress_2}"
+                else:
+                    postal_address = ""
+                
+                
+                
+
+    company = {
+            "legal_post_code": legal_post_code,
+            "legal_city": postal_city,
+            "legal_address": postal_address,
+            "postal_post_code": postal_post_code,
+            "postal_city": postal_city,
+            "postal_address": postal_address,
+            
+            "postal_post_code": postal_post_code,
+            "legal_post_code": legal_post_code,
+            "bx_city": bx_city,
+            "bx_city_post": bx_city_post,
+           
+        }
+    print(company)
     
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 def prompower_prod_for_1c(request):
     def background_task():
         # Долгосрочная фоновая задача
@@ -159,11 +288,13 @@ def prompower_prod_for_1c(request):
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 def unimat_prod_for_1c(request):
     def background_task():
         # Долгосрочная фоновая задача
@@ -173,11 +304,13 @@ def unimat_prod_for_1c(request):
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()
-    
+
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
+
+
 # тестовая страница скриптов
 def test(request):
     def background_task():
@@ -257,6 +390,23 @@ def add_stage_bx(request):
 #     get_manager()
 
 
+def add_props_motrum(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        xlsx_props_motrum_pandas()
+    
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
+
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+
+
 # добавление праздников вручную
 def add_holidays(request):
     import json
@@ -298,11 +448,9 @@ class VendorAutocomplete(autocomplete.Select2QuerySetView):
         vendor = self.forwarded.get("vendor", None)
         if vendor:
             qs = qs.filter(vendor=vendor)
-            
+
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
 
 
@@ -412,7 +560,7 @@ class GroupProductAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__icontains=self.q) | Q(article_name__icontains=self.q)
             )
         return qs
-    
+
 
 class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
 
@@ -423,15 +571,14 @@ class PromoGroupeAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(supplier=supplier)
 
         vendor = self.forwarded.get("vendor", None)
-        
+
         if vendor:
             qs = qs.filter(vendor=vendor)
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
-    
+
+
 class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
@@ -441,14 +588,10 @@ class PromoGroupeProductAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(supplier=supplier)
 
         vendor = self.forwarded.get("vendor", None)
-        print("vendor",vendor)
+        print("vendor", vendor)
         if vendor:
             qs = qs.filter(vendor=vendor)
-            
+
         if self.q:
-            qs = qs.filter(
-                Q(name__icontains=self.q)
-            )
+            qs = qs.filter(Q(name__icontains=self.q))
         return qs
-
-

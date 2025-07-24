@@ -11,7 +11,7 @@
      data-id="{{ item.id }}"
      data-price="{{ item.product_new_price }}"
      data-price-exclusive="1"
-     data-product-specification-id="{{id_product_spesif}}"
+     data-product-specification-id="{{ id_product_spesif }}"
      data-comment-item="{% if item.comment %}{{ item.comment }}{% endif %}">
     <div title="Удалить элемент" class="item_conainer-delete_btn">+</div>
     <div title="Редактировать элемент" class="change_icon_container">
@@ -84,8 +84,6 @@
         </div>
         <div class="item_value total_cost price"></div>
     {% endif %}
-
-
     <!--прайс мотрум-->
     <div class="item_value">
         <div class="price_motrum"
@@ -109,8 +107,7 @@
     </div>
     <div class="item_value">
         <input class="discount-input"
-                {% if item.sale_marja %}disabled{% endif %}
-               
+               {% if item.sale_marja %}disabled{% endif %}
                type="text"
                name="price-input-discount"
                placeholder="% скидки"
@@ -118,14 +115,14 @@
                value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" />
     </div>
     <div class="item_value">
-            <input class="marja-input"
-                   {% if item.sale_client %}disabled{% endif %}
-                   type="text"
-                   name="marja-input-discount"
-                   placeholder="% маржа"
-                   maxlength="6"
-                   value="{% if item.sale_marja %}{{ item.sale_marja }}{% endif %}" />
-        </div>
+        <input class="marja-input"
+               {% if item.sale_client %}disabled{% endif %}
+               type="text"
+               name="marja-input-discount"
+               placeholder="% маржа"
+               maxlength="6"
+               value="{% if item.sale_marja %}{{ item.sale_marja }}{% endif %}" />
+    </div>
     <div class="item_value">
         <div>
             <span class="marginality">0</span> ₽
@@ -139,16 +136,16 @@
             {% if bill_upd %}
                 <input class="delivery_date"
                        {% comment %}
-                           disabled
-                           {% endcomment %}
+                       disabled
+                       {% endcomment %}
                        type="date"
                        name="calendar"
                        value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
             {% else %}
                 <input class="delivery_date"
                        {% comment %}
-                           disabled
-                           {% endcomment %}
+                       disabled
+                       {% endcomment %}
                        type="date"
                        name="calendar"
                        value="{% if item.date_delivery|date %}{{ item.date_delivery|date:"Y-m-d" }}{% else %}{% endif %}"
@@ -156,10 +153,8 @@
             {% endif %}
         </label>
     </div>
-<!-- изменениеновый товар -->
-
+    <!-- изменениеновый товар -->
     <div class="change_item_container_wrapper">
-        
         <div class="change_item_container">
             <div class="change_item_container_value">
                 <label class="name_label">
@@ -179,25 +174,23 @@
             </div>
             <div class="change_item_container_value">
                 <label class="supplier_label">
-                    <div class="itc-select supplier_select" id="select-1">
+                    <div class="itc-select supplier_select"
+                         id="select-{{ forloop.counter0 }}1">
                         <button type="button"
                                 class="itc-select__toggle supplier_select__toggle"
                                 name="supplier"
                                 value="{{ item.supplier.id }}"
-                            
                                 data-select="toggle"
                                 data-index="-1">{{ item.supplier.name }}</button>
                         <div class="itc-select__dropdown">
-                        <ul class="itc-select__options">
-                            {% for supplier_item in supplier %}
-                            <li class="itc-select__option {% if supplier_item.id == item.supplier.id %} itc-select__option_selected
-                                {% endif %}"
-                                data-select="option"
-                                data-value="{{ supplier_item.id }}"
-                                
-                                data-index="0">{{ supplier_item.name }}</li>
-                            {% endfor %}
-                        </ul>
+                            <ul class="itc-select__options">
+                                {% for supplier_item in supplier %}
+                                    <li class="itc-select__option {% if supplier_item.id == item.supplier.id %}itc-select__option_selected{% endif %}"
+                                        data-select="option"
+                                        data-value="{{ supplier_item.id }}"
+                                        data-index="0">{{ supplier_item.name }}</li>
+                                {% endfor %}
+                            </ul>
                         </div>
                     </div>
                 </label>
@@ -247,32 +240,29 @@
             </div>
             <div class="change_item_container_value">
                 {% comment %} <label class="quantity_label">
-                    <input placeholder="Количество"
-                           type="text"
-                           class="quantity_input"
-                           value="{{ item.quantity }}" />
+                    <input placeholder="Количество" type="text" class="quantity_input" value="{{ item.quantity }}" />
                     <div class="error"></div>
                 </label> {% endcomment %}
                 <label class="lot_label">
-          <div class="itc-select lot_select" id="select-4">
-            <button type="button"
-                    class="itc-select__toggle lot_select__toggle"
-                    name="lot"
-                    value="{{ item.lot.id }}"
-                    data-select="toggle"
-                    data-index="-4">{{ item.lot.name }}</button>
-            <div class="itc-select__dropdown">
-              <ul class="itc-select__options">
-                {% for lot_item in lot %}
-                  <li class="itc-select__option"
-                      data-select="option"
-                      data-value="{{ lot_item.id }}"
-                      data-index="0">{{ lot_item.name }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </label>
+                    <div class="itc-select lot_select" id="select-{{ forloop.counter0 }}4">
+                        <button type="button"
+                                class="itc-select__toggle lot_select__toggle"
+                                name="lot"
+                                value="{{ item.lot.id }}"
+                                data-select="toggle"
+                                data-index="-4">{{ item.lot.name }}</button>
+                        <div class="itc-select__dropdown">
+                            <ul class="itc-select__options">
+                                {% for lot_item in lot %}
+                                    <li class="itc-select__option"
+                                        data-select="option"
+                                        data-value="{{ lot_item.id }}"
+                                        data-index="0">{{ lot_item.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </label>
             </div>
             <div class="change_item_container_value">
                 {% comment %} <div class="change_item_container_value_total_cost">0</div> {% endcomment %}
@@ -294,14 +284,8 @@
                        value="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% endif %}">
             </div>
             <div class="new_item_container_value">
-                {% comment %} <input class="discount-input"
-                       type="text"
-                       name="price-input-discount"
-                       placeholder="% скидки"
-                       maxlength="6"
-                       value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" /> {% endcomment %}
+                {% comment %} <input class="discount-input" type="text" name="price-input-discount" placeholder="% скидки" maxlength="6" value="{% if item.sale_client %}{{ item.sale_client }}{% endif %}" /> {% endcomment %}
             </div>
-        
             <div class="add_change_item_in_cart_container">
                 <label class="new_item_container_value_calendar_label">
                     <input class="new_item_container_calendar"

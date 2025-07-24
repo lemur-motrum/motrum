@@ -2678,7 +2678,7 @@ h1 {
             position: absolute;
             top: 150%;
             right: -3rem;
-            transform: translateY(-50%);
+            // transform: translateY(-50%);
             display: flex;
             justify-content: flex-end;
             width: -webkit-max-content;
@@ -2771,6 +2771,9 @@ h1 {
             align-items: center;
             label {
               display: block;
+              &.lot_label {
+                width: 7rem;
+              }
               input {
                 position: relative;
                 padding: 0.5rem;

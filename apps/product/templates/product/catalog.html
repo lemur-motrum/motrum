@@ -48,7 +48,9 @@
                             <div>
                                 <div class="suppliers_max_height_container">
                                     {% for vendor in product_vendor %}
-                                        <div param="{{ vendor.vendor__slug }}" class="suplier_elem_content">
+                                        <div param="{{ vendor.vendor__slug }}"
+                                             class="suplier_elem_content"
+                                             data-position="{{ forloop.counter0 }}">
                                             <div class="suplier_elem_content_img_container">
                                                 {% if vendor.vendor__img %}<img src="{{ media_url }}{{ vendor.vendor__img }}" alt="">{% endif %}
                                             </div>
@@ -66,7 +68,7 @@
                         </div>
                         {% if product_vendor|length > 4 %}
                             <div class="suppliers_add_more_btn">
-                                <span>все поставщики</span>
+                                <span>все производители</span>
                                 <div class="arrow-container">
                                     <img src="{% static "core/images/direction/arrow.png" %}"
                                          alt="img"
@@ -77,13 +79,13 @@
                     </div>
                     <div class="filter_elem price_filter_elem">
                         <div class="filter_title">Цена</div>
-                        <div class="price_content">
+                        <div class="price_content" data-max-price="{{price_max.price__rub_price_supplier__max}}">
                             <div class="price_content_wrapper">
                                 <div class="price_content_wrapper_elem">
-                                    <input placeholder="от 1000" class="small_price_input" type="text" />
+                                    <input placeholder="от" class="small_price_input" type="text" />
                                 </div>
                                 <div class="price_content_wrapper_elem">
-                                    <input placeholder="до 500000" class="big_price_input" type="text" />
+                                    <input placeholder="до" class="big_price_input" type="text" />
                                 </div>
                             </div>
                             <div class="price_checkbox_content">
@@ -174,7 +176,10 @@
                         </div>
                     {% endif %}
                     <div class="submit_filter_container">
-                        <button class="submit">Применить фильтры</button>
+                        <button class="submit">
+                            <div class="small_loader"></div>
+                            <div class="submit_button_name">Применить фильтры</div>
+                        </button>
                         <button class="canceled">Сбросить</button>
                     </div>
                 </div>

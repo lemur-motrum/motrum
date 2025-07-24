@@ -28,6 +28,7 @@ from apps.product.forms import (
     ProductDocumentAdminForm,
     ProductForm,
     ProductPropertyForm,
+    ProductPropertyMotrumForm,
     ProductPropertyMotrumItemForm,
 )
 from apps.product.models import (
@@ -39,6 +40,7 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrumArticleCateg,
     ProductPropertyMotrumItem,
     Stock,
     ProductPropertyValueMotrum,
@@ -1211,11 +1213,15 @@ class CategoryProductAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-
 class ProductPropertyValueMotrum(admin.TabularInline):
     model = ProductPropertyValueMotrum
     extra = 1
     fields = ("value",)
+class ProductPropertyMotrumArticleCategAdmin(admin.TabularInline):
+    model = ProductPropertyMotrumArticleCateg
+    extra = 1
+    fields = ("category","group","article")
+    form = ProductPropertyMotrumForm
 
 class ProductPropertyMotrumAdmin(admin.ModelAdmin):
     fields = (
@@ -1226,6 +1232,7 @@ class ProductPropertyMotrumAdmin(admin.ModelAdmin):
     
     inlines = [
         ProductPropertyValueMotrum,
+        ProductPropertyMotrumArticleCategAdmin,
     ]
 
 

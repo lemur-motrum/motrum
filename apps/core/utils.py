@@ -26,6 +26,8 @@ from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
 
 
+from django.db.models import OuterRef, Subquery, IntegerField, Case, When, Value
+
 
 
 from apps.specification.utils import crete_pdf_specification
@@ -1091,7 +1093,8 @@ def save_update_product_attr(
             product.name = name
         if product.name == None or product.name == "":
             product.name = name
-
+        
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1171,7 +1174,7 @@ def save_update_product_attr_all(
             print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
             print("product.promo_groupe", product.promo_groupe)
-
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -3807,13 +3810,57 @@ def get_props_all_motrum_filter3(product_props_3):
 
 
 # ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -ИСПОЛЬЗУЕМ
-def get_props_motrum_filter_to_view(product_props):
-
-    from apps.product.models import ProductPropertyMotrum
-
+def get_props_motrum_filter_to_view(product_props,category,group):
+    from django.db.models.functions import Coalesce
+    from apps.product.models import ProductPropertyMotrum,ProductPropertyMotrumArticleCateg
+    from apps.product.models import CategoryProduct, GroupProduct
+ 
     # Характеристики дял фильтрации
+ 
+    if not category or category in ("all", "other", "search"):
+        category_motrum = None
+        group_motrum = None
+    else:
+        category_motrum = CategoryProduct.objects.get(slug=category)
+        if group:
+            group_motrum = GroupProduct.objects.get(slug=group)
+        else:
+            group_motrum = None
+    
+    article_by_all = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group=OuterRef('product__group'),
+    ).values('article')[:1]
+
+    article_by_cat = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group__isnull=True,
+    ).values('article')[:1]
+            
+    # all_values = (
+    #     product_props.values(
+    #         "property_motrum",
+    #         "property_motrum__name",
+    #         "property_motrum__name_to_slug",
+    #         "property_motrum__slug",
+    #         "property_value_motrum__id",
+    #         "property_value_motrum__value",
+    #         "property_motrum__is_diapason",
+    #         "property_value_motrum_to_diapason",
+    #     )
+    #     .distinct()
+    #     .order_by("property_value_motrum__value")
+    # )
     all_values = (
-        product_props.values(
+        product_props.annotate(
+            article_group=Coalesce(
+                Subquery(article_by_all, output_field=IntegerField()),
+                Subquery(article_by_cat, output_field=IntegerField()),
+            )
+        )
+        .values(
             "property_motrum",
             "property_motrum__name",
             "property_motrum__name_to_slug",
@@ -3822,6 +3869,7 @@ def get_props_motrum_filter_to_view(product_props):
             "property_value_motrum__value",
             "property_motrum__is_diapason",
             "property_value_motrum_to_diapason",
+            "article_group",
         )
         .distinct()
         .order_by("property_value_motrum__value")
@@ -3889,19 +3937,47 @@ def get_props_motrum_filter_to_view(product_props):
         # добавляем count_values через len
         char["count_values"] = len(char["values"])
     chars = list(chars_dict.values())
-    # Сортировка: сначала обычные, потом габариты, внутри — по article
+    # Получаем все нужные id характеристик
+    motrum_ids = [c["id_property_motrum"] for c in chars]
+
+    # Получаем article_group для каждой характеристики (property_motrum) и текущей группы/категории
+    article_group_map = {
+    p.property_motrum_id: p.article
+    for p in ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum_id__in=motrum_ids,
+        category_id=category_motrum.id if category_motrum else None,
+        group_id=group_motrum.id if group_motrum else None
+    )
+}
+
+    # Получаем обычный article из ProductPropertyMotrum
     article_map = {
         p.id: p.article if p.article is not None else 9999
-        for p in ProductPropertyMotrum.objects.filter(
-            id__in=[c["id_property_motrum"] for c in chars]
-        )
+        for p in ProductPropertyMotrum.objects.filter(id__in=motrum_ids)
     }
+
+    # Сортировка: сначала обычные, потом габариты, внутри — по article_group если есть, иначе по article
     chars.sort(
         key=lambda x: (
             x.get("gabarit", False),
-            article_map.get(x["id_property_motrum"], 9999),
+            article_group_map.get(x["id_property_motrum"], article_map.get(x["id_property_motrum"], 9999)),
         )
     )
+    
+    
+    # # Сортировка: сначала обычные, потом габариты, внутри — по article
+    # article_map = {
+    #     p.id: p.article if p.article is not None else 9999
+    #     for p in ProductPropertyMotrum.objects.filter(
+    #         id__in=[c["id_property_motrum"] for c in chars]
+    #     )
+    # }
+    # chars.sort(
+    #     key=lambda x: (
+    #         x.get("gabarit", False),
+    #         article_map.get(x["id_property_motrum"], 9999),
+    #     )
+    # )
     # --- Новый блок: если есть дубликаты name_property_motrum, заменить на name_to_slug ---
     from collections import Counter
     name_counts = Counter([c["name_property_motrum"] for c in chars])
@@ -3918,10 +3994,9 @@ def get_props_motrum_filter_to_view(product_props):
     # Добавляем is_visible: True для первых 5, False для остальных
     for idx, char in enumerate(chars):
         char["is_visible"] = True if idx < 5 else False
-    print("chars", chars)
+   
     
-    print("chars", chars)
-
+    
     return chars
 
 

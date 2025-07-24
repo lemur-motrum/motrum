@@ -28,13 +28,13 @@
                     <div class="close_filter_elem_btn">+</div>
                     <div class="filter_elem  price_filter_elem">
                         <div class="filter_title">Цена</div>
-                        <div class="price_content">
+                        <div class="price_content" data-max-price="{{price_max.price__rub_price_supplier__max}}">
                             <div class="price_content_wrapper">
                                 <div class="price_content_wrapper_elem">
-                                    <input placeholder="от 1000" class="small_price_input" type="text" />
+                                    <input placeholder="от" class="small_price_input" type="text" />
                                 </div>
                                 <div class="price_content_wrapper_elem">
-                                    <input placeholder="до 500000" class="big_price_input" type="text" />
+                                    <input placeholder="до" class="big_price_input" type="text" />
                                 </div>
                             </div>
                             <div class="price_checkbox_content">
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     {% if chars_motrum %}
-                        <div class="filter_elem chars_filter_elem">
+                        {% comment %} <div class="filter_elem chars_filter_elem">
                             <div class="chars_content">
                                 {% for char in chars_motrum %}
                                     <!-- Отдельные характеристики -->
@@ -73,11 +73,11 @@
                                                 <div class="filter_title ">{{ char.name_property_motrum }}</div>
                                             {% endif %}
                                             <div class="char_values{% if char.position == "vertical" %} vertical{% endif %}">
-                                                <!-- Для диапазонного значение -->
+                                         
                                                 {% if char.is_diapason %}
                                                     <div class="">{{ char.min_value }}{{ char.max_value }}</div>
                                                 {% else %}
-                                                    <!-- Для  значениz c вариантами -->
+                                          
                                                     {% for value in char.values %}
                                                         <div class="char_value"
                                                              data-position="{{ forloop.counter0 }}"
@@ -97,7 +97,6 @@
                                         </div>
                                     {% else %}
                                         <!-- Сгруппированные характеристики габариты -->
-                                        {% comment %} <div class="filter_grop_title">Габариты:</div> {% endcomment %}
                                         <div class="char_block char_block_true_diapason"
                                              data-chars-slug="{{ char.slug }}"
                                              data-id-chars="{{ char.id_property_motrum }}">
@@ -122,10 +121,13 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                     {% endif %}
-                    <div class="submit_filter_container">
-                        <button class="submit">Применить фильтры</button>
+                   <div class="submit_filter_container">
+                        <button class="submit">
+                            <div class="small_loader"></div>
+                            <div class="submit_button_name">Применить фильтры</div>
+                        </button>
                         <button class="canceled">Сбросить</button>
                     </div>
                 </div>

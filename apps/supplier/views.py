@@ -124,7 +124,7 @@ from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innove
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import (
     export_prompower_prod_for_1c,
-    pp_aup_doc_name, prompower_api,
+    pp_aup_doc_name, pp_aup_doc_name, prompower_api,
 )
 
 from apps.supplier.get_utils.veda import veda_api
@@ -159,8 +159,8 @@ def add_iek(request):
     # import logging
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    # webhook = BITRIX_WEBHOOK
-    # bx = Bitrix(webhook)
+    webhook = BITRIX_WEBHOOK
+    bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
 

@@ -45,6 +45,7 @@ class AccountRequisitesAdminInline(admin.TabularInline):
 class RequisitesOtherKppAdminInline(admin.TabularInline):
     extra = 1
     model = RequisitesOtherKpp
+    readonly_fields = ["id_bitrix", ]
 
 
 class RequisitesAdmin(admin.ModelAdmin):

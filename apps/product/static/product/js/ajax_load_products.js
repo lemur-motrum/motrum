@@ -28,7 +28,9 @@ window.addEventListener("DOMContentLoaded", () => {
     let priceTo;
     let sort;
     let maxValue;
+    let minValue;
     let searchText = urlParams.get("search_text");
+    let priceInputsArray = [0, 0];
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -72,9 +74,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     const filterContainer = document.querySelector(".filter_container");
-    const messageElem = document.querySelector(
-      ".filters_quantity_message_container"
-    );
 
     const noManagerContainer = document.querySelector(
       ".personal-manager-container"
@@ -83,14 +82,26 @@ window.addEventListener("DOMContentLoaded", () => {
     const submitFiltersContainer = document.querySelector(
       ".submit_filter_container"
     );
+    const submitButtonContainer =
+      submitFiltersContainer.querySelector(".submit");
 
-    const filterButton = submitFiltersContainer.querySelector(".submit");
+    const submitButtonContainerButtonLoader =
+      submitFiltersContainer.querySelector(".small_loader");
+
+    const filterButton = submitButtonContainer.querySelector(
+      ".submit_button_name"
+    );
     const cancelFilterButton =
       submitFiltersContainer.querySelector(".canceled");
 
     if (filterContainer) {
       noManagerContainer.classList.add("right");
     }
+
+    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
+      ".price_checkbox_content"
+    );
+    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
 
     let charactiristics = [];
 
@@ -193,6 +204,11 @@ window.addEventListener("DOMContentLoaded", () => {
       };
       let csrfToken = getCookie("csrftoken");
       let params = new URLSearchParams(data);
+
+      filterButton.classList.add("hide");
+      submitButtonContainerButtonLoader.classList.add("show");
+      submitButtonContainer.disabled = true;
+
       fetch(`/api/v1/product/search-filters-product/?${params.toString()}`, {
         method: "GET",
         headers: {
@@ -201,6 +217,8 @@ window.addEventListener("DOMContentLoaded", () => {
       })
         .then((response) => {
           if (response.status >= 200 && response.status < 300) {
+            filterButton.classList.remove("hide");
+            submitButtonContainerButtonLoader.classList.remove("show");
             return response.json();
           } else {
             setErrorModal();
@@ -208,29 +226,20 @@ window.addEventListener("DOMContentLoaded", () => {
         })
         .then((response) => {
           if (response["count_product"] > 999) {
-            if (charactiristics.length > 0) {
-              filterButton.disabled = false;
-              filterButton.textContent = "Найдено больше 1тыс. товаров";
-            } else {
-              filterButton.disabled = false;
-              filterButton.textContent = "применить фильтры";
-            }
+            submitButtonContainer.disabled = false;
+            filterButton.textContent = "Найдено больше 1тыс. товаров";
           } else if (response["count_product"] == 0) {
-            filterButton.disabled = true;
+            submitButtonContainer.disabled = true;
             filterButton.textContent = "Ничего не найдено";
           } else {
-            if (charactiristics.length > 0) {
-              filterButton.disabled = false;
-              filterButton.textContent = `Найдено ${
-                response["count_product"]
-              } ${num_word(response["count_product"], [
-                "товар",
-                "товара",
-                "товаров",
-              ])}`;
-            } else {
-              filterButton.textContent = "применить фильтры";
-            }
+            submitButtonContainer.disabled = false;
+            filterButton.textContent = `Найдено ${
+              response["count_product"]
+            } ${num_word(response["count_product"], [
+              "товар",
+              "товара",
+              "товаров",
+            ])}`;
           }
         });
     }
@@ -280,7 +289,24 @@ window.addEventListener("DOMContentLoaded", () => {
               endContent.classList.add("show");
             }
             smallLoader.classList.remove("show");
-            maxValue = +data["price_max"]["price__rub_price_supplier__max"];
+
+            if (urlParams.get("priceDiapazon")) {
+              maxValue = getCurrentPrice(
+                document
+                  .querySelector(".price_content")
+                  .getAttribute("data-max-price")
+              );
+              minValue = +data["price_min"]["price__rub_price_supplier__min"];
+            } else {
+              maxValue = !priceTo
+                ? +data["price_max"]["price__rub_price_supplier__max"]
+                : maxValue;
+              minValue = !priceFrom
+                ? +data["price_min"]["price__rub_price_supplier__min"]
+                : minValue;
+            }
+
+            priceInputsArray = [minValue, maxValue];
 
             for (let i in data.data) {
               addAjaxCatalogItem(data.data[i]);
@@ -323,9 +349,10 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             getActivePaginationElem();
             urlParams.set("page", pageCount + 1);
-            inputValidate(minInputPrice);
-            inputValidate(maxInputPrice, true);
             test_serch_chars();
+
+            addPlaceholderValue(maxInputPrice, true);
+            addPlaceholderValue(minInputPrice);
           }
           history.pushState({}, "", currentUrl);
         })
@@ -338,6 +365,9 @@ window.addEventListener("DOMContentLoaded", () => {
         paramsArray.push(el);
       });
     }
+
+    inputValidate(minInputPrice, false, maxInputPrice);
+    inputValidate(maxInputPrice, true, minInputPrice);
 
     window.onload = () => {
       const pageGetParam = urlParams.get("page");
@@ -428,6 +458,22 @@ window.addEventListener("DOMContentLoaded", () => {
           ? upPriceBtn.classList.add("active")
           : downPriceBtn.classList.add("active");
       }
+
+      if (currentUrl.searchParams.get("priceDiapazon")) {
+        const paramsString = currentUrl.searchParams.get("priceDiapazon");
+        const paramsArray = paramsString.split("-");
+        priceFrom = paramsArray[0];
+        priceTo = paramsArray[1];
+
+        document.querySelector(".small_price_input").value = priceFrom;
+        document.querySelector(".big_price_input").value = priceTo;
+      }
+
+      if (currentUrl.searchParams.get("pricenone")) {
+        pricenone = true;
+        checkboxZone.classList.add("checked");
+      }
+
       loadItems();
     };
 
@@ -701,7 +747,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
                 minMaxArrray.push(char["min_value"]);
                 minMaxArrray.push(char["max_value"]);
-
                 currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
               }
             } else {
@@ -719,7 +764,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
               minMaxArrray.push(char["min_value"]);
               minMaxArrray.push(char["max_value"]);
-
               currentUrl.searchParams.set(`${slug}`, minMaxArrray.join(","));
             }
           } else {
@@ -737,6 +781,7 @@ window.addEventListener("DOMContentLoaded", () => {
     filters.forEach((filterElem) => {
       const filterValues = filterElem.querySelectorAll(".suplier_elem_content");
       filterValues.forEach((filterValue) => {
+        let dataPosition = +filterValue.getAttribute("data-position");
         const vendorParam = filterValue.getAttribute("param");
         if (paramsArray.length > 0) {
           paramsArray.forEach((param) => {
@@ -750,8 +795,8 @@ window.addEventListener("DOMContentLoaded", () => {
           paramsArray.push(vendorParam);
           filterValue.classList.toggle("show");
           closeFilterElems();
+
           if (filterValue.classList.contains("show")) {
-            scrollToTop(offsetTop);
             supplierNameContainer.prepend(filterValue);
             const vendorsString = currentUrl.searchParams.get("vendor");
             if (vendorsString) {
@@ -760,8 +805,14 @@ window.addEventListener("DOMContentLoaded", () => {
               currentUrl.searchParams.set("vendor", paramsArray.join(","));
             }
             pageCount = 0;
-            preLoaderLogic();
           } else {
+            const siblings = document.querySelector(
+              ".suppliers_max_height_container"
+            ).children;
+            document
+              .querySelector(".suppliers_max_height_container")
+              .insertBefore(filterValue, siblings[dataPosition + 1]);
+
             const activeSupplierElems =
               supplierNameContainer.querySelectorAll(".show");
             if (activeSupplierElems[activeSupplierElems.length - 1]) {
@@ -779,27 +830,29 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
               searchParams.set("vendor", paramsArray.join());
             }
-            preLoaderLogic();
           }
+          test_serch_chars();
           history.pushState({}, "", currentUrl);
         };
       });
     });
 
-    const priceOneFilterContent = priceFilterElemWrapper.querySelector(
-      ".price_checkbox_content"
-    );
-    const checkboxZone = priceOneFilterContent.querySelector(".checkbox");
     priceOneFilterContent.onclick = () => {
       checkboxZone.classList.toggle("checked");
       if (checkboxZone.classList.contains("checked")) {
         pricenone = true;
+        currentUrl.searchParams.set("pricenone", true);
+        test_serch_chars();
       } else {
         pricenone = false;
+        currentUrl.searchParams.delete("pricenone");
+        test_serch_chars();
       }
+
+      history.pushState({}, "", currentUrl);
     };
 
-    filterButton.onclick = () => {
+    submitButtonContainer.onclick = () => {
       priceFrom = minInputPrice.value ? +minInputPrice.value : "";
       priceTo = maxInputPrice.value ? +maxInputPrice.value : "";
       pageCount = 0;
@@ -821,6 +874,7 @@ window.addEventListener("DOMContentLoaded", () => {
           el.classList.remove("checked");
         }
       });
+
       maxInputPrice.value = "";
       minInputPrice.value = "";
       pageCount = 0;
@@ -832,6 +886,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
       urlParams.delete("price");
       urlParams.delete("vendor");
+      urlParams.delete("priceDiapazon");
       checkboxZone.classList.remove("checked");
       const slugsElems = document.querySelectorAll("[data-chars-slug]");
       slugsElems.forEach((slugElem) => {
@@ -842,7 +897,6 @@ window.addEventListener("DOMContentLoaded", () => {
           slugElem.querySelector(".count_quantity").classList.remove("show");
         }
       });
-      filterButton.textContent = "применить фильтры";
       closeFilterElems();
       scrollToTop(offsetTop);
       preLoaderLogic();
@@ -899,36 +953,105 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    function inputValidate(input, max = false) {
+    function inputValidate(input, max = false, anotherInput) {
       const intervalMaxValue = setInterval(() => {
-        if (maxValue) {
+        if (maxValue && minValue) {
           clearInterval(intervalMaxValue);
-          if (max) {
-            input.placeholder = `до ${maxValue.toString()}`;
-          }
+          addPlaceholderValue(input, max);
         }
       }, 5);
+      let validate = true;
+
       input.addEventListener("input", function (e) {
+        validate = true;
+        console.log(minValue, maxValue);
         const currentValue = this.value
           .replace(",", ".")
-          .replace(/[^.\d.-]+/g, "")
+          .replace(/[^.\d]+/g, "")
           .replace(/^([^\.]*\.)|\./g, "$1")
           .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
             return a + b + c.slice(0, 2);
           });
+
         input.value = currentValue;
+
         if (input.value == ".") {
+          validate = false;
           e.target.value = "";
         }
         if (input.value == "0") {
+          validate = false;
           e.target.value = "";
         }
+
         if (maxValue) {
-          if (+input.value >= maxValue) {
+          if (+input.value >= +maxValue) {
             e.target.value = maxValue;
           }
         }
+
+        const inputValue = input.value;
+
+        if (max) {
+          priceTo = e.target.value;
+          if (e.target.value == "") {
+            priceTo = 0;
+          }
+
+          if (anotherInput.value == "") {
+            priceFrom = 0;
+          }
+          priceInputsArray[0] = priceFrom;
+          priceInputsArray[1] = priceTo;
+          currentUrl.searchParams.set(
+            "priceDiapazon",
+            priceInputsArray.join("-")
+          );
+        } else {
+          priceFrom = e.target.value;
+          if (input.value == "") {
+            priceFrom = 0;
+          }
+
+          if (anotherInput.value == "") {
+            priceTo = 0;
+          }
+
+          priceInputsArray[0] = priceFrom;
+          priceInputsArray[1] = priceTo;
+
+          currentUrl.searchParams.set(
+            "priceDiapazon",
+            priceInputsArray.join("-")
+          );
+        }
+        if (priceInputsArray[0] == "" && priceInputsArray[1] == "") {
+          currentUrl.searchParams.delete("priceDiapazon");
+          priceFrom = 0;
+          priceTo = 0;
+        }
+
+        setTimeout(() => {
+          if (e.target.value == inputValue) {
+            if (validate) {
+              console.log("Запрос");
+              test_serch_chars();
+              validate = false;
+            }
+          } else {
+            validate = true;
+          }
+        }, 600);
+        history.pushState({}, "", currentUrl);
       });
+    }
+
+    function addPlaceholderValue(input, max = false) {
+      if (max) {
+        input.placeholder = `до ${maxValue}`;
+      } else {
+        input.placeholder = `от ${minValue}`;
+      }
     }
   }
 });

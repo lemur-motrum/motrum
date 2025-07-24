@@ -92,6 +92,11 @@ class Vendor(models.Model):
         blank=True,
         null=True,
     )
+    article_filter = models.PositiveIntegerField(
+        "Очередность в фильтре",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Производитель"
@@ -203,8 +208,10 @@ class SupplierCategoryProduct(models.Model):
                 # product_one._change_reason = "Автоматическое"
                 product_one.save(update_fields=['category', 'group',])
                 product_one._change_reason = "Автоматическое"
-                product_one.save(update_fields=['category', 'group'])
-                # update_change_reason(product_one, "Автоматическое")
+                try:
+                    update_change_reason(product_one, "Автоматическое")
+                except AttributeError:
+                    pass
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -402,9 +409,11 @@ class SupplierCategoryProductAll(models.Model):
                     if self.group_catalog:
                         product_one.group = self.group_catalog
                     
-                    product_one.save(update_fields=['category', 'group'])
-                    # product_one._change_reason = "Автоматическое"
-                    # product_one.save()
+                    product_one.save(update_fields=['category', 'group',])
+                    try:
+                        update_change_reason(product_one, "Автоматическое")
+                    except AttributeError:
+                        pass
                   
 
             daemon_thread = threading.Thread(target=background_task)

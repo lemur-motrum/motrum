@@ -2,7 +2,12 @@ import datetime
 import os
 import traceback
 from apps.core.models import Currency, Vat
-from apps.core.utils import create_article_motrum, save_update_product_attr
+from apps.core.utils import (
+    create_article_motrum,
+    get_file_path_add,
+    save_file_product,
+    save_update_product_attr,
+)
 from apps.logs.utils import error_alert
 from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import (
@@ -12,8 +17,11 @@ from apps.supplier.models import (
     Vendor,
 )
 import requests
+from project.settings import MEDIA_ROOT
 from simple_history.utils import update_change_reason
 import re
+from django.utils.text import slugify
+from pytils import translit
 
 
 def veda_api():
@@ -173,14 +181,20 @@ def parse_drives_ru_products():
     Получает фото (главные и доп), описание и характеристики, сохраняет их в переменные.
     Проверяет совпадение артикула на странице товара.
     """
-    from apps.product.models import Product
+    from apps.product.models import (
+        Product,
+        ProductImage,
+        ProductDocument,
+        ProductProperty,
+    )
     from apps.supplier.models import Vendor
     import requests
     from bs4 import BeautifulSoup
 
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
-    products = Product.objects.filter(article_supplier="PBC02003")
+    products = Product.objects.filter(article_supplier="MCD21007")
+    # products = Product.objects.filter(supplier=supplier, vendor=vendor)
     results = []
     print(products)
     for product in products:
@@ -304,7 +318,7 @@ def parse_drives_ru_products():
                     if name_div and value_div:
                         fname = name_div.get_text(strip=True)
                         fval = value_div.get_text(strip=True)
-                        if fname in ("Описание", "Типовой код","Бренд"):
+                        if fname in ("Описание", "Типовой код", "Бренд"):
                             continue
                         if fname == "ВхШхГ, мм":
                             nums = re.findall(r"[\d,\.]+", fval)
@@ -460,11 +474,157 @@ def parse_drives_ru_products():
             #         "group_name": "Силовые опции для преобразователей частоты VEDA VFD",
             #     }
             # ]
+
+            # [
+            #     {
+            #         "product_id": 269,
+            #         "type_code": "PBC02003",
+            #         "product_link": "https://drives.ru/vhodnye-drosseli-peremennogo-toka-dlya-preobrazovatelej-chastoty-veda-vfd-pbc02003/",
+            #         "main_images": [
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3294/3294.970.png",
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3289/3289.970.png",
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3290/3290.970.png",
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3291/3291.970.png",
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3292/3292.970.png",
+            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3293/3293.970.png",
+            #         ],
+            #         "description": "Входной дроссель – силовая опция, устанавливаемая на входе преобразователя частоты, позволяет подавлять гармонические искажения, генерируемые как самим преобразователем частоты, так и воздействием сети питания.\n\nПреимущества сетевых дросселей\n\n- Защита от гармонических искажений из сети питания, увеличение срока службы и надежности работы преобразователя частоты.\n\n- Защита ПЧ при коротких замыканиях.\n\n- Защита от скачков напряжения при подключении нескольких мощных устройств к одной шине питания.",
+            #         "features": {
+            #             "Высота (мм)": "145",
+            #             "Ширина (мм)": "75",
+            #             "Глубина (мм)": "120",
+            #             "Масса, кг": "3,2",
+            #             "Крепление, axb": "65x50   4-φ6x12",
+            #             "Теплопотери, Вт": "88",
+            #             "Мощность ПЧ, кВт": "2,2",
+            #             "Номинальный выходной ток, А": "9",
+            #         },
+            #         "page_article": "PBC02003",
+            #         "name": "Входные дроссели переменного тока для преобразователей частоты VEDA VFD — PBC02003 — ACI-C-0009-T4",
+            #         "documents": [
+            #             {
+            #                 "name": "Чертежи входных дросселей переменного тока 3х380 В",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20входных%20дросселей%20постоянного%20тока.zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #             {
+            #                 "name": "Чертежи входных дросселей переменного тока Т6",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20входных%20дросселей%20переменного%20тока%20Т6.zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #             {
+            #                 "name": "Чертежи моторных дросселей 4% 380 В.zip",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20моторных%20дросселей%204%%20380%20В%20(2).zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #             {
+            #                 "name": "ACO 1-проц 660 В.zip",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%201-проц%20660%20В%20(1).zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #             {
+            #                 "name": "ACO 4-проц 380 В.zip",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%204-проц%20380%20В%20(2).zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #             {
+            #                 "name": "ACO 4-проц 660 В.zip",
+            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%204-проц%20660%20В%20(1).zip",
+            #                 "type": "DimensionDrawing",
+            #                 "type_name": "Габаритные чертежи",
+            #             },
+            #         ],
+            #         "category_name": "Низковольтные ПЧ и УПП",
+            #         "group_name": "Силовые опции для преобразователей частоты VEDA VFD",
+            #     }
+            # ]
             print(results)
             for result in results:
-                groupe, categ =  get_category_delta(supplier, vendor,result['category_name'], result['group_name'])
+
+                def save_document(doc, product):
+
+                    base_dir = "products"
+                    path_name = "documents"
+                    base_dir_supplier = supplier
+                    base_dir_vendor = vendor
+
+                    new_dir = "{0}/{1}/{2}/{3}/{4}".format(
+                        MEDIA_ROOT,
+                        base_dir,
+                        base_dir_supplier,
+                        base_dir_vendor,
+                        path_name,
+                    )
+                    dir_no_path = "{0}/{1}/{2}/{3}".format(
+                        base_dir,
+                        base_dir_supplier,
+                        base_dir_vendor,
+                        path_name,
+                    )
+                    if not os.path.exists(new_dir):
+                        os.makedirs(new_dir)
+
+                    if doc:
+                        for doc_item in doc:
+                            url = doc_item["url"]
+                            other_doc = ProductDocument.objects.filter(
+                                link=url,
+                            )
+                            if other_doc:
+                                other_doc_first = other_doc.first()
+                                doc = ProductDocument.objects.create(
+                                    product=product,
+                                    document=other_doc_first.document,
+                                    link=other_doc_first.link,
+                                    name=doc_item["name"],
+                                    type_doc=doc_item["type"].capitalize(),
+                                )
+                            else:
+                                slugish = translit.translify(doc_item["name"])
+                                base_slug = slugify(slugish)
+                                doc_name = base_slug
+                                doc = ProductDocument.objects.create(product=product)
+                                update_change_reason(doc, "Автоматическое")
+                                doc_list_name = url.split("/")
+                                doc_name = doc_list_name[-1]
+                                images_last_list = url.split(".")
+                                type_file = "." + images_last_list[-1]
+                                link_file = f"{new_dir}/{doc_name}"
+                                r = requests.get(url, stream=True)
+                                with open(os.path.join(link_file), "wb") as ofile:
+                                    ofile.write(r.content)
+                                doc.document = f"{dir_no_path}/{doc_name}"
+                                doc.link = url
+                                doc.name = doc_item["name"]
+                                doc.type_doc = doc_item["type"].capitalize()
+                                doc.save()
+                                update_change_reason(doc, "Автоматическое")
+
+                def save_image(
+                    product,
+                ):
+                    if len(result["main_images"]) > 0:
+                        for img_item in result["main_images"]:
+                            img = img_item
+                            image = ProductImage.objects.create(product=product)
+                            update_change_reason(image, "Автоматическое")
+                            image_path = get_file_path_add(image, img)
+                            p = save_file_product(img, image_path)
+                            image.photo = image_path
+                            image.link = img
+                            image.save()
+                            update_change_reason(image, "Автоматическое")
+
+                groupe, categ = get_category_delta(
+                    supplier, vendor, result["category_name"], result["group_name"]
+                )
                 print(groupe, categ)
-               
+
                 if product.group_supplier == None or product.group_supplier == "":
                     product.group_supplier = groupe
                 if product.group_supplier == None or product.group_supplier == "":
@@ -474,24 +634,41 @@ def parse_drives_ru_products():
                     product.category_supplier = categ
                 if product.category_supplier == None or product.category_supplier == "":
                     product.category_supplier = categ
-                
+
                 if product.description == None or product.description == "":
-                    product.description = result['description']
-                    
-                product.name = result['name']
+                    product.description = result["description"]
+
+                product.name = result["name"]
                 if product.name == None or product.name == "":
-                    product.name = result['name']
+                    product.name = result["name"]
                 product.autosave_tag = True
-                product._change_reason = "Автоматическое"    
+                product._change_reason = "Автоматическое"
                 product.save()
-                
+
+                image = ProductImage.objects.filter(product=product).exists()
+                if image == False:
+                    save_image(product)
             
-            
-            
-            
-            
-            
-            
+                doc = ProductDocument.objects.filter(
+                        product=product
+                    ).exists()
+                if doc == False:
+                    save_document(result["documents"], product)
+                    
+                props = ProductProperty.objects.filter(
+                                    product=product
+                                ).exists()
+                                
+                if props == False:
+                    for name, value in features.items():
+                        property_product = ProductProperty(
+                            product=product,
+                            name=name,
+                            value=value,
+                        )
+                        property_product.save()
+                        update_change_reason(property_product, "Автоматическое")
+
             found = True
             break  # нашли нужный товар, дальше не ищем
         if not found:
@@ -609,28 +786,29 @@ def parse_drives_ru_category():
 
     return categories
 
+
 # категории поставщика промповер для товара
-def get_category_delta(supplier, vendor, category,group):
+def get_category_delta(supplier, vendor, category, group):
     from apps.supplier.models import (
         SupplierCategoryProduct,
         SupplierCategoryProductAll,
         SupplierGroupProduct,
     )
+
     groupe = None
     categ = None
-    
+
     if group:
         groupe = SupplierGroupProduct.objects.get(
-                supplier=supplier, vendor=vendor, name=group
-            )
+            supplier=supplier, vendor=vendor, name=group
+        )
         categ = groupe.category_supplier
     elif category:
         groupe = None
         categ = SupplierCategoryProduct.objects.get(
-                    supplier=supplier, vendor=vendor, name=category
-                )
-        
-    
+            supplier=supplier, vendor=vendor, name=category
+        )
+
     ("return get_category_delta", groupe, categ)
 
     return (groupe, categ)

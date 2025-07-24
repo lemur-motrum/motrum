@@ -193,17 +193,18 @@ def parse_drives_ru_products():
 
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
-    products = Product.objects.filter(article_supplier="MCD21007")
+    products = Product.objects.filter(article_supplier="MCD13003")
     # products = Product.objects.filter(supplier=supplier, vendor=vendor)
     results = []
-    print(products)
+    
     for product in products:
+        print(product)
         type_code = product.article_supplier  # используем артикул напрямую
         if not type_code:
             continue
 
         search_url = f"https://drives.ru/search/?query={type_code}"
-        print(search_url)
+    
         response = requests.get(search_url)
         if response.status_code != 200:
             continue
@@ -217,7 +218,7 @@ def parse_drives_ru_products():
             product_link = link_tag["href"]
             if not product_link.startswith("http"):
                 product_link = f"https://drives.ru{product_link}"
-            print(product_link)
+   
             prod_resp = requests.get(product_link)
             if prod_resp.status_code != 200:
                 continue
@@ -291,7 +292,7 @@ def parse_drives_ru_products():
                         if not getattr(sib, "name", None):
                             continue
                         sib_classes = set(sib.get("class", []))
-                        print(f"SIB: {sib}, classes: {sib_classes}")  # отладка
+                   
                         if "in-blocks__title" in sib_classes:
                             title_name = sib.find("div", class_="in-blocks__title-name")
                             if (
@@ -343,11 +344,11 @@ def parse_drives_ru_products():
             )
             if cat_a and cat_a.has_attr("href"):
                 cat_url = cat_a["href"]
-                print("cat_url", cat_url)
+        
                 if not cat_url.startswith("http"):
                     cat_url = f"https://drives.ru{cat_url}"
                 try:
-                    print("cat_url", cat_url)
+         
                     cat_resp = requests.get(cat_url)
                     if cat_resp.status_code == 200:
                         cat_soup = BeautifulSoup(cat_resp.text, "html.parser")
@@ -379,7 +380,7 @@ def parse_drives_ru_products():
                                 if doc_type and ul:
                                     for li in ul.find_all("li"):
                                         a = li.find("a")
-                                        print("a", a)
+                                
                                         if a and a.has_attr("href"):
                                             doc_url = a["href"]
                                             if not doc_url.startswith("http"):
@@ -429,6 +430,7 @@ def parse_drives_ru_products():
                     "group_name": group_name,
                 }
             )
+            print(results)
             # [
             #     {
             #         "product_id": 269,
@@ -543,7 +545,7 @@ def parse_drives_ru_products():
             #         "group_name": "Силовые опции для преобразователей частоты VEDA VFD",
             #     }
             # ]
-            print(results)
+         
             for result in results:
 
                 def save_document(doc, product):
@@ -572,9 +574,16 @@ def parse_drives_ru_products():
                     if doc:
                         for doc_item in doc:
                             url = doc_item["url"]
+                            # Проверка наличия расширения файла
+                            doc_filename = url.split("/")[-1]
+                            _, ext = os.path.splitext(doc_filename)
+                            if not ext:
+                                continue  # если нет расширения, пропускаем
+                            
                             other_doc = ProductDocument.objects.filter(
                                 link=url,
                             )
+                            print(other_doc)
                             if other_doc:
                                 other_doc_first = other_doc.first()
                                 doc = ProductDocument.objects.create(
@@ -623,7 +632,7 @@ def parse_drives_ru_products():
                 groupe, categ = get_category_delta(
                     supplier, vendor, result["category_name"], result["group_name"]
                 )
-                print(groupe, categ)
+              
 
                 if product.group_supplier == None or product.group_supplier == "":
                     product.group_supplier = groupe
@@ -748,7 +757,7 @@ def parse_drives_ru_category():
         categories.append({"category_name": category_name, "groups": groups})
 
     for category in categories:
-        print(category["category_name"])
+  
         try:
             categ = SupplierCategoryProduct.objects.get(
                 supplier=supplier,

@@ -2279,6 +2279,11 @@ a {
               height: 3rem;
               border-radius: 1.5rem;
             }
+            .circle_active {
+              height: 3rem;
+              border-radius: 1.5rem;
+              transition: 0.1s;
+            }
             &.small_circle {
             }
           }

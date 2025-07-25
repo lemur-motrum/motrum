@@ -22,6 +22,7 @@ from simple_history.utils import update_change_reason
 import re
 from django.utils.text import slugify
 from pytils import translit
+from urllib.parse import urljoin
 
 
 def veda_api():
@@ -193,496 +194,407 @@ def parse_drives_ru_products():
 
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
-    products = Product.objects.filter(article_supplier="MCD13003")
-    # products = Product.objects.filter(supplier=supplier, vendor=vendor)
+    # products = Product.objects.filter(article_supplier__in=['MCD13003', 'MCD12208', 'PBV00010'])
+    products = Product.objects.filter(supplier=supplier, vendor=vendor)
     results = []
     
     for product in products:
-        print(product)
-        type_code = product.article_supplier  # используем артикул напрямую
-        if not type_code:
-            continue
+        try:
+            result_one = []
+            print(product)
+            type_code = product.article_supplier  # используем артикул напрямую
+            if not type_code:
+                continue
 
-        search_url = f"https://drives.ru/search/?query={type_code}"
+            search_url = f"https://drives.ru/search/?query={type_code}"
+        
+            response = requests.get(search_url)
+            if response.status_code != 200:
+                continue
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            found = False
+            for item in soup.find_all("div", class_="s-products__item"):
+                link_tag = item.find("a", href=True)
+                if not link_tag:
+                    continue
+                product_link = link_tag["href"]
+                if not product_link.startswith("http"):
+                    product_link = f"https://drives.ru{product_link}"
     
-        response = requests.get(search_url)
-        if response.status_code != 200:
-            continue
-        soup = BeautifulSoup(response.text, "html.parser")
+                prod_resp = requests.get(product_link)
+                if prod_resp.status_code != 200:
+                    continue
+                prod_soup = BeautifulSoup(prod_resp.text, "html.parser")
 
-        found = False
-        for item in soup.find_all("div", class_="s-products__item"):
-            link_tag = item.find("a", href=True)
-            if not link_tag:
-                continue
-            product_link = link_tag["href"]
-            if not product_link.startswith("http"):
-                product_link = f"https://drives.ru{product_link}"
-   
-            prod_resp = requests.get(product_link)
-            if prod_resp.status_code != 200:
-                continue
-            prod_soup = BeautifulSoup(prod_resp.text, "html.parser")
+                code_div = prod_soup.find("div", class_="product__code")
+                page_article = None
+                if code_div:
+                    span = code_div.find("span")
+                    if span:
+                        page_article = span.get_text(strip=True)
+                if not page_article or page_article != product.article_supplier:
+                    continue  # если артикул не совпал, пропускаем
 
-            code_div = prod_soup.find("div", class_="product__code")
-            page_article = None
-            if code_div:
-                span = code_div.find("span")
-                if span:
-                    page_article = span.get_text(strip=True)
-            if not page_article or page_article != product.article_supplier:
-                continue  # если артикул не совпал, пропускаем
+                # --- Парсинг изображений ---
+                main_images = []
+                for a in prod_soup.find_all("a", class_="p-images__slider-item"):
+                    href = a.get("href")
+                    if href:
+                        if not href.startswith("http"):
+                            href = f"https://drives.ru{href}"
+                        main_images.append(href)
 
-            # --- Парсинг изображений ---
-            main_images = []
-            for a in prod_soup.find_all("a", class_="p-images__slider-item"):
-                href = a.get("href")
-                if href:
-                    if not href.startswith("http"):
-                        href = f"https://drives.ru{href}"
-                    main_images.append(href)
+                dop_images = []
+                for img in prod_soup.find_all("img", class_="p-images__dop-img"):
+                    src = img.get("data-src") or img.get("src")
+                    if src:
+                        if not src.startswith("http"):
+                            src = f"https://drives.ru{src}"
+                        dop_images.append(src)
+                # --- Конец парсинга изображений ---
 
-            dop_images = []
-            for img in prod_soup.find_all("img", class_="p-images__dop-img"):
-                src = img.get("data-src") or img.get("src")
-                if src:
-                    if not src.startswith("http"):
-                        src = f"https://drives.ru{src}"
-                    dop_images.append(src)
-            # --- Конец парсинга изображений ---
+                # --- Преобразование маленьких доп. изображений в большие ---
+                big_dop_images = []
+                for img_url in dop_images:
+                    big_url = re.sub(r"\.[0-9]+x[0-9]+\.png$", ".970.png", img_url)
+                    big_dop_images.append(big_url)
+                # --- Конец преобразования ---
 
-            # --- Преобразование маленьких доп. изображений в большие ---
-            big_dop_images = []
-            for img_url in dop_images:
-                big_url = re.sub(r"\.[0-9]+x[0-9]+\.png$", ".970.png", img_url)
-                big_dop_images.append(big_url)
-            # --- Конец преобразования ---
+                # --- Новый парсинг названия, описания и характеристик ---
+                # Название
+                name_tag = prod_soup.find("h1", class_="product__h1")
+                name = name_tag.get_text(strip=True) if name_tag else None
 
-            # --- Новый парсинг названия, описания и характеристик ---
-            # Название
-            name_tag = prod_soup.find("h1", class_="product__h1")
-            name = name_tag.get_text(strip=True) if name_tag else None
-
-            # Описание
-            desc = None
-            desc_block = prod_soup.find("div", id="description")
-            if desc_block:
-                desc_inner = desc_block.find("div", class_="desc desc_max ")
-                if desc_inner:
-                    desc = desc_inner.get_text(strip=True)
-            if desc is None:
-                # fallback: ищем по заголовку "Описание"
-                title_name = prod_soup.find(
-                    "div", class_="in-blocks__title-name", string="Описание"
-                )
-                if title_name:
-                    parent_item = title_name.find_parent(
-                        "div", class_="in-blocks__item"
+                # Описание
+                desc = None
+                desc_block = prod_soup.find("div", id="description")
+                if desc_block:
+                    desc_inner = desc_block.find("div", class_="desc desc_max ")
+                    if desc_inner:
+                        desc = desc_inner.get_text(strip=True)
+                if desc is None:
+                    # fallback: ищем по заголовку "Описание"
+                    title_name = prod_soup.find(
+                        "div", class_="in-blocks__title-name", string="Описание"
                     )
-                    if parent_item:
-                        desc_inner = parent_item.find("div", class_="desc desc_max")
-                        if desc_inner:
-                            desc = desc_inner.get_text(strip=True)
-            if desc is None:
-                # ищем все desc desc_max h-hidden-show, над которыми есть in-blocks__title с Описание
-                for desc_inner in prod_soup.find_all("div", class_="desc desc_max"):
-                    found = False
-                    for sib in desc_inner.previous_siblings:
-                        # Пропускаем не-теги
-                        if not getattr(sib, "name", None):
-                            continue
-                        sib_classes = set(sib.get("class", []))
-                   
-                        if "in-blocks__title" in sib_classes:
-                            title_name = sib.find("div", class_="in-blocks__title-name")
-                            if (
-                                title_name
-                                and title_name.get_text(strip=True) == "Описание"
-                            ):
+                    if title_name:
+                        parent_item = title_name.find_parent(
+                            "div", class_="in-blocks__item"
+                        )
+                        if parent_item:
+                            desc_inner = parent_item.find("div", class_="desc desc_max")
+                            if desc_inner:
                                 desc = desc_inner.get_text(strip=True)
-                                found = True
-                                break
-                    if found:
-                        break
+                if desc is None:
+                    # ищем все desc desc_max h-hidden-show, над которыми есть in-blocks__title с Описание
+                    for desc_inner in prod_soup.find_all("div", class_="desc desc_max"):
+                        found = False
+                        for sib in desc_inner.previous_siblings:
+                            # Пропускаем не-теги
+                            if not getattr(sib, "name", None):
+                                continue
+                            sib_classes = set(sib.get("class", []))
+                    
+                            if "in-blocks__title" in sib_classes:
+                                title_name = sib.find("div", class_="in-blocks__title-name")
+                                if (
+                                    title_name
+                                    and title_name.get_text(strip=True) == "Описание"
+                                ):
+                                    desc = desc_inner.get_text(strip=True)
+                                    found = True
+                                    break
+                        if found:
+                            break
 
-            # Характеристики
-            features = {}
-            features_block = prod_soup.find(
-                "div", class_=lambda x: x and x.startswith("features")
-            )
-            if features_block:
-                for block in features_block.find_all(
-                    "div", class_="features-two-val__block"
-                ):
-                    name_div = block.find("div", class_="features-two-val__name")
-                    value_div = block.find("div", class_="features-two-val__value")
-                    if name_div and value_div:
-                        fname = name_div.get_text(strip=True)
-                        fval = value_div.get_text(strip=True)
-                        if fname in ("Описание", "Типовой код", "Бренд"):
-                            continue
-                        if fname == "ВхШхГ, мм":
-                            nums = re.findall(r"[\d,\.]+", fval)
-                            if len(nums) == 3:
-                                features["Высота (мм)"] = nums[0]
-                                features["Ширина (мм)"] = nums[1]
-                                features["Глубина (мм)"] = nums[2]
+                # Характеристики
+                features = {}
+                features_block = prod_soup.find(
+                    "div", class_=lambda x: x and x.startswith("features")
+                )
+                if features_block:
+                    for block in features_block.find_all(
+                        "div", class_="features-two-val__block"
+                    ):
+                        name_div = block.find("div", class_="features-two-val__name")
+                        value_div = block.find("div", class_="features-two-val__value")
+                        if name_div and value_div:
+                            fname = name_div.get_text(strip=True)
+                            fval = value_div.get_text(strip=True)
+                            if fname in ("Описание", "Типовой код", "Бренд"):
+                                continue
+                            if fname == "ВхШхГ, мм":
+                                nums = re.findall(r"[\d,\.]+", fval)
+                                if len(nums) == 3:
+                                    features["Высота (мм)"] = nums[0]
+                                    features["Ширина (мм)"] = nums[1]
+                                    features["Глубина (мм)"] = nums[2]
+                                else:
+                                    features[fname] = fval
                             else:
                                 features[fname] = fval
-                        else:
-                            features[fname] = fval
-            # --- Конец нового парсинга ---
+                # --- Конец нового парсинга ---
 
-            # --- Документы с категории ---
-            documents = []
-            # Найти ссылку на категорию
-            cat_block = prod_soup.find("div", class_="product__category")
-            cat_a = (
-                cat_block.find("a", class_="product__category-item")
-                if cat_block
-                else None
-            )
-            if cat_a and cat_a.has_attr("href"):
-                cat_url = cat_a["href"]
-        
-                if not cat_url.startswith("http"):
-                    cat_url = f"https://drives.ru{cat_url}"
-                try:
-         
-                    cat_resp = requests.get(cat_url)
-                    if cat_resp.status_code == 200:
-                        cat_soup = BeautifulSoup(cat_resp.text, "html.parser")
-                        res_block = cat_soup.find("div", class_="series__resources")
-                        if res_block:
-                            for item in res_block.find_all(
-                                "div", class_="series__resources-item"
-                            ):
-                                h3 = item.find("h3")
-                                doc_type = None
-                                if h3:
-                                    h3_text = h3.get_text(strip=True)
-                                    if h3_text == "Инструкции и руководства":
-                                        doc_type = {
-                                            "type": "Doc",
-                                            "type_name": "Руководства и Спецификации",
-                                        }
-                                    elif h3_text == "Каталоги и брошюры":
-                                        doc_type = {
-                                            "type": "Other",
-                                            "type_name": "Другое",
-                                        }
-                                    elif h3_text == "Чертежи":
-                                        doc_type = {
-                                            "type": "DimensionDrawing",
-                                            "type_name": "Габаритные чертежи",
-                                        }
-                                ul = item.find("ul")
-                                if doc_type and ul:
-                                    for li in ul.find_all("li"):
-                                        a = li.find("a")
-                                
-                                        if a and a.has_attr("href"):
-                                            doc_url = a["href"]
-                                            if not doc_url.startswith("http"):
-                                                doc_url = f"https://drives.ru{doc_url}"
-                                            doc_name = a.get_text(strip=True)
-
-                                            documents.append(
-                                                {
-                                                    "name": doc_name,
-                                                    "url": doc_url,
-                                                    "type": doc_type["type"],
-                                                    "type_name": doc_type["type_name"],
-                                                }
-                                            )
-                except Exception as e:
-                    print(f"Ошибка при парсинге документов: {e}")
-
-            # --- Парсинг хлебных крошек (категория и группа) ---
-            category_name = None
-            group_name = None
-            nav = prod_soup.find("nav", class_="bread__wrap")
-            if nav:
-                crumb_items = nav.find_all(attrs={"itemprop": "itemListElement"})
-                if len(crumb_items) >= 2:
-                    meta_cat = crumb_items[1].find("meta", attrs={"itemprop": "name"})
-                    if meta_cat:
-                        category_name = meta_cat.get("content")
-                if len(crumb_items) >= 3:
-                    meta_group = crumb_items[2].find("meta", attrs={"itemprop": "name"})
-                    if meta_group:
-                        group_name = meta_group.get("content")
-
-            results.append(
-                {
-                    "product_id": product.id,
-                    "type_code": type_code,
-                    "product_link": product_link,
-                    "main_images": main_images,
-                    # 'dop_images': dop_images,
-                    # 'big_dop_images': big_dop_images,
-                    "description": desc,
-                    "features": features,
-                    "page_article": page_article,
-                    "name": name,
-                    "documents": documents,
-                    "category_name": category_name,
-                    "group_name": group_name,
-                }
-            )
-            print(results)
-            # [
-            #     {
-            #         "product_id": 269,
-            #         "type_code": "PBC02003",
-            #         "product_link": "https://drives.ru/vhodnye-drosseli-peremennogo-toka-dlya-preobrazovatelej-chastoty-veda-vfd-pbc02003/",
-            #         "main_images": [
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3294/3294.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3289/3289.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3290/3290.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3291/3291.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3292/3292.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3293/3293.970.png",
-            #         ],
-            #         "description": "Входной дроссель – силовая опция, устанавливаемая на входе преобразователя частоты, позволяет подавлять гармонические искажения, генерируемые как самим преобразователем частоты, так и воздействием сети питания.\n\nПреимущества сетевых дросселей\n\n- Защита от гармонических искажений из сети питания, увеличение срока службы и надежности работы преобразователя частоты.\n\n- Защита ПЧ при коротких замыканиях.\n\n- Защита от скачков напряжения при подключении нескольких мощных устройств к одной шине питания.",
-            #         "features": {
-            #             "Высота (мм)": "145",
-            #             "Ширина (мм)": "75",
-            #             "Глубина (мм)": "120",
-            #             "Масса, кг": "3,2",
-            #             "Бренд": "VEDA",
-            #             "Крепление, axb": "65x50   4-φ6x12",
-            #             "Теплопотери, Вт": "88",
-            #             "Мощность ПЧ, кВт": "2,2",
-            #             "Номинальный выходной ток, А": "9",
-            #         },
-            #         "page_article": "PBC02003",
-            #         "name": "Входные дроссели переменного тока для преобразователей частоты VEDA VFD — PBC02003 — ACI-C-0009-T4",
-            #         "documents": [
-            #             {
-            #                 "name": "Чертежи входных дросселей переменного тока",
-            #                 "url": "https://drives.ru/files/file/197be00061cd599a2823d227c73b2c2eba9",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "Чертежи входных дросселей переменного тока Т6",
-            #                 "url": "https://drives.ru/files/file/197be00061cd599a2833d227c73b2c2eba9",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #         ],
-            #         "category_name": "Низковольтные ПЧ и УПП",
-            #         "group_name": "Силовые опции для преобразователей частоты VEDA VFD",
-            #     }
-            # ]
-
-            # [
-            #     {
-            #         "product_id": 269,
-            #         "type_code": "PBC02003",
-            #         "product_link": "https://drives.ru/vhodnye-drosseli-peremennogo-toka-dlya-preobrazovatelej-chastoty-veda-vfd-pbc02003/",
-            #         "main_images": [
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3294/3294.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3289/3289.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3290/3290.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3291/3291.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3292/3292.970.png",
-            #             "https://drives.ru/wa-data/public/shop/products/94/32/3294/images/3293/3293.970.png",
-            #         ],
-            #         "description": "Входной дроссель – силовая опция, устанавливаемая на входе преобразователя частоты, позволяет подавлять гармонические искажения, генерируемые как самим преобразователем частоты, так и воздействием сети питания.\n\nПреимущества сетевых дросселей\n\n- Защита от гармонических искажений из сети питания, увеличение срока службы и надежности работы преобразователя частоты.\n\n- Защита ПЧ при коротких замыканиях.\n\n- Защита от скачков напряжения при подключении нескольких мощных устройств к одной шине питания.",
-            #         "features": {
-            #             "Высота (мм)": "145",
-            #             "Ширина (мм)": "75",
-            #             "Глубина (мм)": "120",
-            #             "Масса, кг": "3,2",
-            #             "Крепление, axb": "65x50   4-φ6x12",
-            #             "Теплопотери, Вт": "88",
-            #             "Мощность ПЧ, кВт": "2,2",
-            #             "Номинальный выходной ток, А": "9",
-            #         },
-            #         "page_article": "PBC02003",
-            #         "name": "Входные дроссели переменного тока для преобразователей частоты VEDA VFD — PBC02003 — ACI-C-0009-T4",
-            #         "documents": [
-            #             {
-            #                 "name": "Чертежи входных дросселей переменного тока 3х380 В",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20входных%20дросселей%20постоянного%20тока.zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "Чертежи входных дросселей переменного тока Т6",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20входных%20дросселей%20переменного%20тока%20Т6.zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "Чертежи моторных дросселей 4% 380 В.zip",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/Чертежи%20моторных%20дросселей%204%%20380%20В%20(2).zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "ACO 1-проц 660 В.zip",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%201-проц%20660%20В%20(1).zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "ACO 4-проц 380 В.zip",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%204-проц%20380%20В%20(2).zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #             {
-            #                 "name": "ACO 4-проц 660 В.zip",
-            #                 "url": "https://drives.ru/wa-data/public/site/docs%20VEDA/Silovye-optsii-dlya-preobrazovateley-chastoty-VEDA-VFD/ACO%204-проц%20660%20В%20(1).zip",
-            #                 "type": "DimensionDrawing",
-            #                 "type_name": "Габаритные чертежи",
-            #             },
-            #         ],
-            #         "category_name": "Низковольтные ПЧ и УПП",
-            #         "group_name": "Силовые опции для преобразователей частоты VEDA VFD",
-            #     }
-            # ]
-         
-            for result in results:
-
-                def save_document(doc, product):
-
-                    base_dir = "products"
-                    path_name = "documents"
-                    base_dir_supplier = supplier
-                    base_dir_vendor = vendor
-
-                    new_dir = "{0}/{1}/{2}/{3}/{4}".format(
-                        MEDIA_ROOT,
-                        base_dir,
-                        base_dir_supplier,
-                        base_dir_vendor,
-                        path_name,
-                    )
-                    dir_no_path = "{0}/{1}/{2}/{3}".format(
-                        base_dir,
-                        base_dir_supplier,
-                        base_dir_vendor,
-                        path_name,
-                    )
-                    if not os.path.exists(new_dir):
-                        os.makedirs(new_dir)
-
-                    if doc:
-                        for doc_item in doc:
-                            url = doc_item["url"]
-                            # Проверка наличия расширения файла
-                            doc_filename = url.split("/")[-1]
-                            _, ext = os.path.splitext(doc_filename)
-                            if not ext:
-                                continue  # если нет расширения, пропускаем
-                            
-                            other_doc = ProductDocument.objects.filter(
-                                link=url,
-                            )
-                            print(other_doc)
-                            if other_doc:
-                                other_doc_first = other_doc.first()
-                                doc = ProductDocument.objects.create(
-                                    product=product,
-                                    document=other_doc_first.document,
-                                    link=other_doc_first.link,
-                                    name=doc_item["name"],
-                                    type_doc=doc_item["type"].capitalize(),
-                                )
-                            else:
-                                slugish = translit.translify(doc_item["name"])
-                                base_slug = slugify(slugish)
-                                doc_name = base_slug
-                                doc = ProductDocument.objects.create(product=product)
-                                update_change_reason(doc, "Автоматическое")
-                                doc_list_name = url.split("/")
-                                doc_name = doc_list_name[-1]
-                                images_last_list = url.split(".")
-                                type_file = "." + images_last_list[-1]
-                                link_file = f"{new_dir}/{doc_name}"
-                                r = requests.get(url, stream=True)
-                                with open(os.path.join(link_file), "wb") as ofile:
-                                    ofile.write(r.content)
-                                doc.document = f"{dir_no_path}/{doc_name}"
-                                doc.link = url
-                                doc.name = doc_item["name"]
-                                doc.type_doc = doc_item["type"].capitalize()
-                                doc.save()
-                                update_change_reason(doc, "Автоматическое")
-
-                def save_image(
-                    product,
-                ):
-                    if len(result["main_images"]) > 0:
-                        for img_item in result["main_images"]:
-                            img = img_item
-                            image = ProductImage.objects.create(product=product)
-                            update_change_reason(image, "Автоматическое")
-                            image_path = get_file_path_add(image, img)
-                            p = save_file_product(img, image_path)
-                            image.photo = image_path
-                            image.link = img
-                            image.save()
-                            update_change_reason(image, "Автоматическое")
-
-                groupe, categ = get_category_delta(
-                    supplier, vendor, result["category_name"], result["group_name"]
+                # --- Документы с категории ---
+                documents = []
+                # Найти ссылку на категорию
+                cat_block = prod_soup.find("div", class_="product__category")
+                cat_a = (
+                    cat_block.find("a", class_="product__category-item")
+                    if cat_block
+                    else None
                 )
-              
-
-                if product.group_supplier == None or product.group_supplier == "":
-                    product.group_supplier = groupe
-                if product.group_supplier == None or product.group_supplier == "":
-                    product.group_supplier = groupe
-
-                if product.category_supplier == None or product.category_supplier == "":
-                    product.category_supplier = categ
-                if product.category_supplier == None or product.category_supplier == "":
-                    product.category_supplier = categ
-
-                if product.description == None or product.description == "":
-                    product.description = result["description"]
-
-                product.name = result["name"]
-                if product.name == None or product.name == "":
-                    product.name = result["name"]
-                product.autosave_tag = True
-                product._change_reason = "Автоматическое"
-                product.save()
-
-                image = ProductImage.objects.filter(product=product).exists()
-                if image == False:
-                    save_image(product)
+                if cat_a and cat_a.has_attr("href"):
+                    cat_url = cat_a["href"]
             
-                doc = ProductDocument.objects.filter(
-                        product=product
-                    ).exists()
-                if doc == False:
-                    save_document(result["documents"], product)
-                    
-                props = ProductProperty.objects.filter(
-                                    product=product
-                                ).exists()
-                                
-                if props == False:
-                    for name, value in features.items():
-                        property_product = ProductProperty(
-                            product=product,
-                            name=name,
-                            value=value,
+                    if not cat_url.startswith("http"):
+                        cat_url = f"https://drives.ru{cat_url}"
+                    try:
+            
+                        cat_resp = requests.get(cat_url)
+                        if cat_resp.status_code == 200:
+                            cat_soup = BeautifulSoup(cat_resp.text, "html.parser")
+                            res_block = cat_soup.find("div", class_="series__resources")
+                            if res_block:
+                                for item in res_block.find_all(
+                                    "div", class_="series__resources-item"
+                                ):
+                                    h3 = item.find("h3")
+                                    doc_type = None
+                                    if h3:
+                                        h3_text = h3.get_text(strip=True)
+                                        if h3_text == "Инструкции и руководства":
+                                            doc_type = {
+                                                "type": "Doc",
+                                                "type_name": "Руководства и Спецификации",
+                                            }
+                                        elif h3_text == "Каталоги и брошюры":
+                                            doc_type = {
+                                                "type": "Other",
+                                                "type_name": "Другое",
+                                            }
+                                        elif h3_text == "Чертежи":
+                                            doc_type = {
+                                                "type": "DimensionDrawing",
+                                                "type_name": "Габаритные чертежи",
+                                            }
+                                    ul = item.find("ul")
+                                    if doc_type and ul:
+                                        for li in ul.find_all("li"):
+                                            a = li.find("a")
+                                    
+                                            if a and a.has_attr("href"):
+                                                doc_url = a["href"]
+                                                doc_url = urljoin("https://drives.ru", doc_url)
+                                                doc_name = a.get_text(strip=True)
+
+                                                documents.append(
+                                                    {
+                                                        "name": doc_name,
+                                                        "url": doc_url,
+                                                        "type": doc_type["type"],
+                                                        "type_name": doc_type["type_name"],
+                                                    }
+                                                )
+                    except Exception as e:
+                        print(f"Ошибка при парсинге документов: {e}")
+
+                # --- Парсинг хлебных крошек (категория и группа) ---
+                category_name = None
+                group_name = None
+                nav = prod_soup.find("nav", class_="bread__wrap")
+                if nav:
+                    crumb_items = nav.find_all(attrs={"itemprop": "itemListElement"})
+                    if len(crumb_items) >= 2:
+                        meta_cat = crumb_items[1].find("meta", attrs={"itemprop": "name"})
+                        if meta_cat:
+                            category_name = meta_cat.get("content")
+                    if len(crumb_items) >= 3:
+                        meta_group = crumb_items[2].find("meta", attrs={"itemprop": "name"})
+                        if meta_group:
+                            group_name = meta_group.get("content")
+
+                results.append(
+                    {
+                        "product_id": product.id,
+                        "type_code": type_code,
+                        "product_link": product_link,
+                        "main_images": main_images,
+                        # 'dop_images': dop_images,
+                        # 'big_dop_images': big_dop_images,
+                        "description": desc,
+                        "features": features,
+                        "page_article": page_article,
+                        "name": name,
+                        "documents": documents,
+                        "category_name": category_name,
+                        "group_name": group_name,
+                    }
+                )
+                result_one = [{
+                        "product_id": product.id,
+                        "type_code": type_code,
+                        "product_link": product_link,
+                        "main_images": main_images,
+                        # 'dop_images': dop_images,
+                        # 'big_dop_images': big_dop_images,
+                        "description": desc,
+                        "features": features,
+                        "page_article": page_article,
+                        "name": name,
+                        "documents": documents,
+                        "category_name": category_name,
+                        "group_name": group_name,
+                    }]
+                print(results)
+
+            
+                for result in result_one:
+
+                    def save_document(doc, product):
+
+                        base_dir = "products"
+                        path_name = "documents"
+                        base_dir_supplier = supplier
+                        base_dir_vendor = vendor
+
+                        new_dir = "{0}/{1}/{2}/{3}/{4}".format(
+                            MEDIA_ROOT,
+                            base_dir,
+                            base_dir_supplier,
+                            base_dir_vendor,
+                            path_name,
                         )
-                        property_product.save()
-                        update_change_reason(property_product, "Автоматическое")
+                        dir_no_path = "{0}/{1}/{2}/{3}".format(
+                            base_dir,
+                            base_dir_supplier,
+                            base_dir_vendor,
+                            path_name,
+                        )
+                        if not os.path.exists(new_dir):
+                            os.makedirs(new_dir)
 
-            found = True
-            break  # нашли нужный товар, дальше не ищем
-        if not found:
-            print(f"Товар с артикулом {type_code} не найден на drives.ru")
+                        if doc:
+                            for doc_item in doc:
+                                url = doc_item["url"]
+                                # Проверка наличия расширения файла
+                                doc_filename = url.split("/")[-1]
+                                _, ext = os.path.splitext(doc_filename)
+                                if not ext:
+                                    continue  # если нет расширения, пропускаем
+                                
+                                other_doc = ProductDocument.objects.filter(
+                                    link=url,
+                                )
+                                print(other_doc)
+                                if other_doc:
+                                    other_doc_first = other_doc.first()
+                                    doc = ProductDocument.objects.create(
+                                        product=product,
+                                        document=other_doc_first.document,
+                                        link=other_doc_first.link,
+                                        name=doc_item["name"],
+                                        type_doc=doc_item["type"].capitalize(),
+                                    )
+                                else:
+                                    slugish = translit.translify(doc_item["name"])
+                                    base_slug = slugify(slugish)
+                                    doc_name = base_slug
+                                    doc = ProductDocument.objects.create(product=product)
+                                    update_change_reason(doc, "Автоматическое")
+                                    doc_list_name = url.split("/")
+                                    doc_name = doc_list_name[-1]
+                                    images_last_list = url.split(".")
+                                    type_file = "." + images_last_list[-1]
+                                    link_file = f"{new_dir}/{doc_name}"
+                                    r = requests.get(url, stream=True)
+                                    with open(os.path.join(link_file), "wb") as ofile:
+                                        ofile.write(r.content)
+                                    doc.document = f"{dir_no_path}/{doc_name}"
+                                    doc.link = url
+                                    doc.name = doc_item["name"]
+                                    doc.type_doc = doc_item["type"].capitalize()
+                                    doc.save()
+                                    update_change_reason(doc, "Автоматическое")
 
+                    def save_image(
+                        product,
+                    ):
+                        if len(result["main_images"]) > 0:
+                            for img_item in result["main_images"]:
+                                img = img_item
+                                image = ProductImage.objects.create(product=product)
+                                update_change_reason(image, "Автоматическое")
+                                image_path = get_file_path_add(image, img)
+                                p = save_file_product(img, image_path)
+                                image.photo = image_path
+                                image.link = img
+                                image.save()
+                                update_change_reason(image, "Автоматическое")
+
+                    groupe, categ = get_category_delta(
+                        supplier, vendor, result["category_name"], result["group_name"]
+                    )
+                
+
+                    if product.group_supplier == None or product.group_supplier == "":
+                        product.group_supplier = groupe
+                    if product.group_supplier == None or product.group_supplier == "":
+                        product.group_supplier = groupe
+
+                    if product.category_supplier == None or product.category_supplier == "":
+                        product.category_supplier = categ
+                    if product.category_supplier == None or product.category_supplier == "":
+                        product.category_supplier = categ
+
+                    if product.description == None or product.description == "":
+                        product.description = result["description"]
+
+                    product.name = result["name"]
+                    if product.name == None or product.name == "":
+                        product.name = result["name"]
+                    product.autosave_tag = True
+                    product._change_reason = "Автоматическое"
+                    product.save()
+
+                    image = ProductImage.objects.filter(product=product).exists()
+                    if image == False:
+                        save_image(product)
+                
+                    doc = ProductDocument.objects.filter(
+                            product=product
+                        ).exists()
+                    if doc == False:
+                        save_document(result["documents"], product)
+                        
+                    props = ProductProperty.objects.filter(
+                                        product=product
+                                    ).exists()
+                                    
+                    if props == False:
+                        for name, value in features.items():
+                            property_product = ProductProperty(
+                                product=product,
+                                name=name,
+                                value=value,
+                            )
+                            property_product.save()
+                            update_change_reason(property_product, "Автоматическое")
+
+                found = True
+                break  # нашли нужный товар, дальше не ищем
+            if not found:
+                print(f"Товар с артикулом {type_code} не найден на drives.ru")
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Загрузка крыса Veda MC"
+            info = f"ошибка при чтении товара артикул: {product}. Тип ошибки:{e}{tr}"
+            e = error_alert(error, location, info)
+        finally:
+            continue
     return results
 
 

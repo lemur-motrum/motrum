@@ -6136,6 +6136,8 @@ h1 {
     margin: 0;
     padding: 0;
     list-style: none;
+    position: relative;
+    z-index: 4;
 
     .itc-select__option {
       padding: 0.5rem;

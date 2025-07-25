@@ -247,7 +247,7 @@ function addNewProductLogic(container) {
       const discountInput = newItemContainer.querySelector(".add_sale");
 
       function closeSelectDropdown(select) {
-        const options = select.querySelectorAll(".itc-select__options");
+        const options = select.querySelectorAll(".itc-select__option ");
 
         options.forEach((el) => {
           el.onclick = () => {
@@ -355,6 +355,7 @@ function addNewProductLogic(container) {
       // }
       // changeTotalCost(priceOnceInput, quantityInput);
       // changeTotalCost(quantityInput, priceOnceInput);
+
       let validate = true;
 
       addNewItemInCartButton.onclick = () => {
@@ -438,8 +439,7 @@ function addNewProductLogic(container) {
                   "Данный товар уже есть в ОКТ",
                   newProductError
                 );
-              } else if (response.status == "product_in_cart") {
-                hidePreloaderAndEnabledButton(addNewItemInCartButton);
+                ton(addNewItemInCartButton);
                 showErrorValidation(
                   "Товар с таким артикулом уже есть в корзине",
                   newProductError

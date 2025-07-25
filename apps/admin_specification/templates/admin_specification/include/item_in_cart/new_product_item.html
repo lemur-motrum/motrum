@@ -182,7 +182,7 @@
                                 value="{{ item.supplier.id }}"
                                 data-select="toggle"
                                 data-index="-1">{{ item.supplier.name }}</button>
-                        <div class="itc-select__dropdown">
+                        <div class="itc-select__dropdown supplier_select__dropdown">
                             <ul class="itc-select__options">
                                 {% for supplier_item in supplier %}
                                     <li class="itc-select__option {% if supplier_item.id == item.supplier.id %}itc-select__option_selected{% endif %}"

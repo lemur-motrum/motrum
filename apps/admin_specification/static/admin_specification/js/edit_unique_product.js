@@ -45,6 +45,8 @@ window.addEventListener("DOMContentLoaded", () => {
       //   ".vendor_select__toggle_change"
       // );
       const vendorInput = changeFormWrapper.querySelector(".vendor_input");
+      const supplierSelect =
+        changeFormWrapper.querySelector(".supplier_select");
       const supplierSelectToggle = changeFormWrapper.querySelector(
         ".supplier_select__toggle"
       );
@@ -91,6 +93,20 @@ window.addEventListener("DOMContentLoaded", () => {
       //     });
       //   };
       // });
+
+      function closeSelectDropdown(select) {
+        const options = select.querySelectorAll(".itc-select__option ");
+
+        options.forEach((el) => {
+          el.onclick = () => {
+            setTimeout(() => {
+              select.classList.remove("itc-select_show");
+            });
+          };
+        });
+      }
+      closeSelectDropdown(supplierSelect);
+      closeSelectDropdown(lotSelect);
 
       const priceOneInput = changeFormWrapper.querySelector(".price_input");
       priceOneInput.value = getCurrentPrice(priceOneInput.value);

@@ -111,8 +111,8 @@ app.conf.beat_schedule = {
     # },
     # # обновить битые доки промповер
     
-    "add_prompower_name_doc": {
-        "task": "apps.supplier.tasks.add_prompower_name_doc",
-        "schedule": crontab(0, 0, day_of_month=17, month_of_year=7),
-    },
+    # "add_prompower_name_doc": {
+    #     "task": "apps.supplier.tasks.add_prompower_name_doc",
+    #     "schedule": crontab(0, 0, day_of_month=17, month_of_year=7),
+    # },
 }

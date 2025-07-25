@@ -29,14 +29,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const changeFormWrapper = newProduct.querySelector(
         ".change_item_container"
       );
-      
+
       const nameInput = changeFormWrapper.querySelector(
         ".new_item_container_name_input"
       );
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
-      const motrumPriceContainerTitle = changeFormWrapper.querySelector(".change_input_price_title");
+      const motrumPriceContainerTitle = changeFormWrapper.querySelector(
+        ".change_input_price_title"
+      );
       motrumPriceContainerTitle.classList.add("show");
       // const select = changeFormWrapper.querySelector(".vendor_select");
       // const supplierSelect = select.querySelector(
@@ -47,21 +49,23 @@ window.addEventListener("DOMContentLoaded", () => {
         ".supplier_select__toggle"
       );
       const lotSelect = changeFormWrapper.querySelector(".lot_select");
-      const lotSelectToggle = lotSelect.querySelector(
-        ".lot_select__toggle"
-      );
+      const lotSelectToggle = lotSelect.querySelector(".lot_select__toggle");
       const newProductError = changeFormWrapper.querySelector(
         ".add_new_item_in_cart_container_error"
       );
-      const deliveryDate = changeFormWrapper.querySelector(".new_item_container_calendar")
-      const discountInput = changeFormWrapper.querySelector(".discount-input")
+      const deliveryDate = changeFormWrapper.querySelector(
+        ".new_item_container_calendar"
+      );
+      const discountInput = changeFormWrapper.querySelector(".discount-input");
       // discountInput.value = getCurrentPrice(discountInput.value);
 
       // const options = select.querySelectorAll(".itc-select__options");
-      const changeMotrumPriceInput= changeFormWrapper.querySelector(
+      const changeMotrumPriceInput = changeFormWrapper.querySelector(
         ".new_item_change_price_motrum"
       );
-      changeMotrumPriceInput.value = getCurrentPrice(changeMotrumPriceInput.value);
+      changeMotrumPriceInput.value = getCurrentPrice(
+        changeMotrumPriceInput.value
+      );
 
       changeMotrumPriceInput.addEventListener("input", function () {
         const currentValue = this.value
@@ -71,15 +75,15 @@ window.addEventListener("DOMContentLoaded", () => {
           .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
             return a + b + c.slice(0, 2);
           });
-          changeMotrumPriceInput.value = currentValue;
+        changeMotrumPriceInput.value = currentValue;
         if (changeMotrumPriceInput.value == ".") {
           e.target.value = "";
         }
         if (changeMotrumPriceInput.value == "0") {
           e.target.value = "";
         }
-      })
- 
+      });
+
       // options.forEach((el) => {
       //   el.onclick = () => {
       //     setTimeout(() => {
@@ -218,9 +222,9 @@ window.addEventListener("DOMContentLoaded", () => {
             vendor: vendorInput.getAttribute("vendor_value"),
             supplier: supplierSelectToggle.getAttribute("value"),
             lot: lotSelectToggle.getAttribute("value"),
-            date_delivery:deliveryDate.value,
+            date_delivery: deliveryDate.value,
             // sale_client: discountInput.value,
-            product_price_motrum: changeMotrumPriceInput.value
+            product_price_motrum: changeMotrumPriceInput.value,
           };
           const data = JSON.stringify(objData);
           fetch(`/api/v1/cart/${productId}/upd-product-new/`, {
@@ -234,31 +238,31 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               if (response.status == 200) {
                 window.location.reload();
-            } else if  (response.status == 409) {
-              return response.json();
-              // showErrorValidation(
-              //   "Товар с таким артикулом в корзине уже есть ",
-              //   newProductError
-              // );
+              } else if (response.status == 409) {
+                return response.json();
+                // showErrorValidation(
+                //   "Товар с таким артикулом в корзине уже есть ",
+                //   newProductError
+                // );
               } else {
                 setErrorModal();
                 throw new Error("Ошибка");
               }
-          })
-          .then((response) => {
-            if (response.status == "product_in_okt") {
-              hidePreloaderAndEnabledButton(changeButton);
-              showErrorValidation(
-                "Данный товар уже есть в ОКТ",
-                newProductError
-              );
-            } else if (response.status == "product_in_cart") {
-              hidePreloaderAndEnabledButton(changeButton);
-              showErrorValidation(
-                "Товар с таким артикулом уже есть в корзине",
-                newProductError
-              );
-            }
+            })
+            .then((response) => {
+              if (response.status == "product_in_okt") {
+                hidePreloaderAndEnabledButton(changeButton);
+                showErrorValidation(
+                  "Данный товар уже есть в ОКТ",
+                  newProductError
+                );
+              } else if (response.status == "product_in_cart") {
+                hidePreloaderAndEnabledButton(changeButton);
+                showErrorValidation(
+                  "Товар с таким артикулом уже есть в корзине",
+                  newProductError
+                );
+              }
             })
             .catch((error) => console.error(error));
         }

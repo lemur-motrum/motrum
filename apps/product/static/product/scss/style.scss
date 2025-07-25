@@ -980,6 +980,9 @@
                     min-height: 6.5rem;
                     overflow: hidden;
                     margin-left: 0.1rem;
+                    @media screen and (max-width: 576px) {
+                      min-height: 5.5rem;
+                    }
                   }
 
                   .add_more_btn {

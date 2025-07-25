@@ -194,8 +194,8 @@ def parse_drives_ru_products():
 
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
-    # products = Product.objects.filter(article_supplier__in=['MCD13003', 'MCD12208', 'PBV00010'])
-    products = Product.objects.filter(supplier=supplier, vendor=vendor)
+    products = Product.objects.filter(article_supplier__in=['ABC00056'])
+    # products = Product.objects.filter(supplier=supplier, vendor=vendor)
     results = []
     
     for product in products:
@@ -478,46 +478,52 @@ def parse_drives_ru_products():
                         if doc:
                             for doc_item in doc:
                                 url = doc_item["url"]
-                                # Проверка наличия расширения файла
-                                doc_filename = url.split("/")[-1]
-                                _, ext = os.path.splitext(doc_filename)
-                                if not ext:
-                                    continue  # если нет расширения, пропускаем
-                                
-                                other_doc = ProductDocument.objects.filter(
-                                    link=url,
-                                )
-                                print(other_doc)
-                                if other_doc:
-                                    other_doc_first = other_doc.first()
-                                    doc = ProductDocument.objects.create(
-                                        product=product,
-                                        document=other_doc_first.document,
-                                        link=other_doc_first.link,
-                                        name=doc_item["name"],
-                                        type_doc=doc_item["type"].capitalize(),
+                                try:
+                                    d = ProductDocument.objects.get(product=product,link = url)
+                                    
+                                except ProductDocument.DoesNotExist:
+                                    # Проверка наличия расширения файла
+                                    doc_filename = url.split("/")[-1]
+                                    _, ext = os.path.splitext(doc_filename)
+                                    if not ext:
+                                        continue  # если нет расширения, пропускаем
+                                    
+                                    other_doc = ProductDocument.objects.filter(
+                                        link=url,
                                     )
-                                else:
-                                    slugish = translit.translify(doc_item["name"])
-                                    base_slug = slugify(slugish)
-                                    doc_name = base_slug
-                                    doc = ProductDocument.objects.create(product=product)
-                                    update_change_reason(doc, "Автоматическое")
-                                    doc_list_name = url.split("/")
-                                    doc_name = doc_list_name[-1]
-                                    images_last_list = url.split(".")
-                                    type_file = "." + images_last_list[-1]
-                                    link_file = f"{new_dir}/{doc_name}"
-                                    r = requests.get(url, stream=True)
-                                    with open(os.path.join(link_file), "wb") as ofile:
-                                        ofile.write(r.content)
-                                    doc.document = f"{dir_no_path}/{doc_name}"
-                                    doc.link = url
-                                    doc.name = doc_item["name"]
-                                    doc.type_doc = doc_item["type"].capitalize()
-                                    doc.save()
-                                    update_change_reason(doc, "Автоматическое")
-
+                                    print(other_doc)
+                                    if other_doc:
+                                        other_doc_first = other_doc.first()
+                                        doc = ProductDocument.objects.create(
+                                            product=product,
+                                            document=other_doc_first.document,
+                                            link=other_doc_first.link,
+                                            name=doc_item["name"],
+                                            type_doc=doc_item["type"].capitalize(),
+                                        )
+                                    else:
+                                        slugish = translit.translify(doc_item["name"])
+                                        base_slug = slugify(slugish)
+                                        doc_name = base_slug
+                                        doc = ProductDocument.objects.create(product=product)
+                                        update_change_reason(doc, "Автоматическое")
+                                        doc_list_name = url.split("/")
+                                        doc_name = doc_list_name[-1]
+                                        # Удаляем неразрывные пробелы и обычные пробелы, ограничиваем длину
+                                        doc_name = doc_name.replace('\u00A0', '').replace(' ', '')[:100]
+                                        images_last_list = url.split(".")
+                                        type_file = "." + images_last_list[-1]
+                                        link_file = f"{new_dir}/{doc_name}"
+                                        r = requests.get(url, stream=True)
+                                        with open(os.path.join(link_file), "wb") as ofile:
+                                            ofile.write(r.content)
+                                        doc.document = f"{dir_no_path}/{doc_name}"
+                                        doc.link = url
+                                        doc.name = doc_item["name"]
+                                        doc.type_doc = doc_item["type"].capitalize()
+                                        doc.save()
+                                        update_change_reason(doc, "Автоматическое")
+                                
                     def save_image(
                         product,
                     ):
@@ -562,11 +568,11 @@ def parse_drives_ru_products():
                     if image == False:
                         save_image(product)
                 
-                    doc = ProductDocument.objects.filter(
-                            product=product
-                        ).exists()
-                    if doc == False:
-                        save_document(result["documents"], product)
+                    # doc = ProductDocument.objects.filter(
+                    #         product=product
+                    #     ).exists()
+                    # if doc == False:
+                    save_document(result["documents"], product)
                         
                     props = ProductProperty.objects.filter(
                                         product=product

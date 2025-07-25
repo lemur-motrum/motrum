@@ -2207,7 +2207,6 @@ a {
       width: 95%;
       padding: 1.25rem 0.75rem;
       left: 0.5rem;
-      top: 0.5rem;
       height: auto;
     }
     .logo-container {
@@ -2308,6 +2307,9 @@ a {
         gap: 1.125rem;
         // margin-left: 5.419rem;
         margin-top: -0.5rem;
+        @media screen and(max-width:576px) {
+          margin-top: 1rem;
+        }
         div {
           width: 2.75rem;
           height: 2.35rem;

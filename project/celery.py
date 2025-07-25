@@ -97,6 +97,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.up_int_task_skafy",
         "schedule": crontab(minute=10, hour=0, day_of_month=1),
     },
+    "add_veda_parse_web": {
+        "task": "apps.supplier.tasks.add_veda_parse_web",
+        "schedule": crontab(minute=20, hour=0, day_of_month=1),
+    },
     
     # ТАСКИ раз  в год
     # обнуление счетчиков счетов

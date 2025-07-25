@@ -4,7 +4,7 @@ from apps.logs.utils import error_alert
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
 from apps.supplier.get_utils.prompower import pp_aup_doc_name, prompower_api
 from apps.supplier.get_utils.unimat_pp import unimat_prompower_api
-from apps.supplier.get_utils.veda import veda_api
+from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, veda_api
 from project.celery import app
 from celery.exceptions import MaxRetriesExceededError, Reject, Retry
 from project.settings import IS_TESTING
@@ -57,7 +57,7 @@ def add_iek_individual(self):
 def add_veda(self):
     try:
         if IS_TESTING:
-            pass
+            veda_api()
         else:
             veda_api()
     except Exception as exc:
@@ -69,7 +69,28 @@ def add_veda(self):
             e = error_alert(error, location, info)
         self.retry(exc=exc, countdown=600)
 
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def add_veda_parse_web(self):
+    try:
+        if IS_TESTING:
+            parse_drives_ru_category()
+            parse_drives_ru_products()
+        else:
+            parse_drives_ru_category()
+            parse_drives_ru_products()
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Связь с сервером VEDA"
 
+            info = f"Нет связи с сервером VEDA "
+            e = error_alert(error, location, info)
+        self.retry(exc=exc, countdown=600)
+        
+        
 @app.task(
     bind=True,
     max_retries=10,

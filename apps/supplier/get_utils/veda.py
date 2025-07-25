@@ -13,6 +13,7 @@ from apps.product.models import Lot, Price, Product, Stock
 from apps.supplier.models import (
     Supplier,
     SupplierCategoryProduct,
+    SupplierCategoryProductAll,
     SupplierGroupProduct,
     Vendor,
 )
@@ -194,10 +195,10 @@ def parse_drives_ru_products():
 
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
-    products = Product.objects.filter(article_supplier__in=['ABC00056'])
-    # products = Product.objects.filter(supplier=supplier, vendor=vendor)
+    # products = Product.objects.filter(article_supplier__in=["PBC01014"])
+    products = Product.objects.filter(supplier=supplier, vendor=vendor)
     results = []
-    
+
     for product in products:
         try:
             result_one = []
@@ -207,7 +208,7 @@ def parse_drives_ru_products():
                 continue
 
             search_url = f"https://drives.ru/search/?query={type_code}"
-        
+
             response = requests.get(search_url)
             if response.status_code != 200:
                 continue
@@ -221,7 +222,7 @@ def parse_drives_ru_products():
                 product_link = link_tag["href"]
                 if not product_link.startswith("http"):
                     product_link = f"https://drives.ru{product_link}"
-    
+
                 prod_resp = requests.get(product_link)
                 if prod_resp.status_code != 200:
                     continue
@@ -295,9 +296,11 @@ def parse_drives_ru_products():
                             if not getattr(sib, "name", None):
                                 continue
                             sib_classes = set(sib.get("class", []))
-                    
+
                             if "in-blocks__title" in sib_classes:
-                                title_name = sib.find("div", class_="in-blocks__title-name")
+                                title_name = sib.find(
+                                    "div", class_="in-blocks__title-name"
+                                )
                                 if (
                                     title_name
                                     and title_name.get_text(strip=True) == "Описание"
@@ -347,11 +350,11 @@ def parse_drives_ru_products():
                 )
                 if cat_a and cat_a.has_attr("href"):
                     cat_url = cat_a["href"]
-            
+
                     if not cat_url.startswith("http"):
                         cat_url = f"https://drives.ru{cat_url}"
                     try:
-            
+
                         cat_resp = requests.get(cat_url)
                         if cat_resp.status_code == 200:
                             cat_soup = BeautifulSoup(cat_resp.text, "html.parser")
@@ -383,10 +386,12 @@ def parse_drives_ru_products():
                                     if doc_type and ul:
                                         for li in ul.find_all("li"):
                                             a = li.find("a")
-                                    
+
                                             if a and a.has_attr("href"):
                                                 doc_url = a["href"]
-                                                doc_url = urljoin("https://drives.ru", doc_url)
+                                                doc_url = urljoin(
+                                                    "https://drives.ru", doc_url
+                                                )
                                                 doc_name = a.get_text(strip=True)
 
                                                 documents.append(
@@ -394,7 +399,9 @@ def parse_drives_ru_products():
                                                         "name": doc_name,
                                                         "url": doc_url,
                                                         "type": doc_type["type"],
-                                                        "type_name": doc_type["type_name"],
+                                                        "type_name": doc_type[
+                                                            "type_name"
+                                                        ],
                                                     }
                                                 )
                     except Exception as e:
@@ -403,17 +410,28 @@ def parse_drives_ru_products():
                 # --- Парсинг хлебных крошек (категория и группа) ---
                 category_name = None
                 group_name = None
+                group_all_name = None
                 nav = prod_soup.find("nav", class_="bread__wrap")
                 if nav:
                     crumb_items = nav.find_all(attrs={"itemprop": "itemListElement"})
                     if len(crumb_items) >= 2:
-                        meta_cat = crumb_items[1].find("meta", attrs={"itemprop": "name"})
+                        meta_cat = crumb_items[1].find(
+                            "meta", attrs={"itemprop": "name"}
+                        )
                         if meta_cat:
                             category_name = meta_cat.get("content")
                     if len(crumb_items) >= 3:
-                        meta_group = crumb_items[2].find("meta", attrs={"itemprop": "name"})
+                        meta_group = crumb_items[2].find(
+                            "meta", attrs={"itemprop": "name"}
+                        )
                         if meta_group:
                             group_name = meta_group.get("content")
+                    if len(crumb_items) >= 4:
+                        meta_group_all = crumb_items[3].find(
+                            "meta", attrs={"itemprop": "name"}
+                        )
+                        if meta_group_all:
+                            group_all_name = meta_group_all.get("content")
 
                 results.append(
                     {
@@ -430,9 +448,11 @@ def parse_drives_ru_products():
                         "documents": documents,
                         "category_name": category_name,
                         "group_name": group_name,
+                        "group_all_name": group_all_name,
                     }
                 )
-                result_one = [{
+                result_one = [
+                    {
                         "product_id": product.id,
                         "type_code": type_code,
                         "product_link": product_link,
@@ -446,10 +466,11 @@ def parse_drives_ru_products():
                         "documents": documents,
                         "category_name": category_name,
                         "group_name": group_name,
-                    }]
+                         "group_all_name": group_all_name,
+                    }
+                ]
                 print(results)
 
-            
                 for result in result_one:
 
                     def save_document(doc, product):
@@ -479,15 +500,17 @@ def parse_drives_ru_products():
                             for doc_item in doc:
                                 url = doc_item["url"]
                                 try:
-                                    d = ProductDocument.objects.get(product=product,link = url)
-                                    
+                                    d = ProductDocument.objects.get(
+                                        product=product, link=url
+                                    )
+
                                 except ProductDocument.DoesNotExist:
                                     # Проверка наличия расширения файла
                                     doc_filename = url.split("/")[-1]
                                     _, ext = os.path.splitext(doc_filename)
                                     if not ext:
                                         continue  # если нет расширения, пропускаем
-                                    
+
                                     other_doc = ProductDocument.objects.filter(
                                         link=url,
                                     )
@@ -505,17 +528,23 @@ def parse_drives_ru_products():
                                         slugish = translit.translify(doc_item["name"])
                                         base_slug = slugify(slugish)
                                         doc_name = base_slug
-                                        doc = ProductDocument.objects.create(product=product)
+                                        doc = ProductDocument.objects.create(
+                                            product=product
+                                        )
                                         update_change_reason(doc, "Автоматическое")
                                         doc_list_name = url.split("/")
                                         doc_name = doc_list_name[-1]
                                         # Удаляем неразрывные пробелы и обычные пробелы, ограничиваем длину
-                                        doc_name = doc_name.replace('\u00A0', '').replace(' ', '')[:100]
+                                        doc_name = doc_name.replace(
+                                            "\u00a0", ""
+                                        ).replace(" ", "")[:100]
                                         images_last_list = url.split(".")
                                         type_file = "." + images_last_list[-1]
                                         link_file = f"{new_dir}/{doc_name}"
                                         r = requests.get(url, stream=True)
-                                        with open(os.path.join(link_file), "wb") as ofile:
+                                        with open(
+                                            os.path.join(link_file), "wb"
+                                        ) as ofile:
                                             ofile.write(r.content)
                                         doc.document = f"{dir_no_path}/{doc_name}"
                                         doc.link = url
@@ -523,7 +552,7 @@ def parse_drives_ru_products():
                                         doc.type_doc = doc_item["type"].capitalize()
                                         doc.save()
                                         update_change_reason(doc, "Автоматическое")
-                                
+
                     def save_image(
                         product,
                     ):
@@ -539,27 +568,28 @@ def parse_drives_ru_products():
                                 image.save()
                                 update_change_reason(image, "Автоматическое")
 
-                    groupe, categ = get_category_delta(
-                        supplier, vendor, result["category_name"], result["group_name"]
+                    category_all, groupe, categ = get_category_delta(
+                        supplier, vendor, result["category_name"], result["group_name"],result["group_all_name"]
                     )
-                
-
+                    if product.category_supplier_all == None or product.category_supplier_all == "":
+                        product.category_supplier_all = category_all
+                        
                     if product.group_supplier == None or product.group_supplier == "":
                         product.group_supplier = groupe
-                    if product.group_supplier == None or product.group_supplier == "":
-                        product.group_supplier = groupe
 
-                    if product.category_supplier == None or product.category_supplier == "":
+                    if (
+                        product.category_supplier == None
+                        or product.category_supplier == ""
+                    ):
                         product.category_supplier = categ
-                    if product.category_supplier == None or product.category_supplier == "":
-                        product.category_supplier = categ
+                    
 
-                    if product.description == None or product.description == "":
-                        product.description = result["description"]
-
+                    # if product.description == None or product.description == "":
+                    #     product.description = result["description"]
+                    product.description = result["description"]
                     product.name = result["name"]
-                    if product.name == None or product.name == "":
-                        product.name = result["name"]
+                    # if product.name == None or product.name == "":
+                    #     product.name = result["name"]
                     product.autosave_tag = True
                     product._change_reason = "Автоматическое"
                     product.save()
@@ -567,17 +597,15 @@ def parse_drives_ru_products():
                     image = ProductImage.objects.filter(product=product).exists()
                     if image == False:
                         save_image(product)
-                
+
                     # doc = ProductDocument.objects.filter(
                     #         product=product
                     #     ).exists()
                     # if doc == False:
                     save_document(result["documents"], product)
-                        
-                    props = ProductProperty.objects.filter(
-                                        product=product
-                                    ).exists()
-                                    
+
+                    props = ProductProperty.objects.filter(product=product).exists()
+
                     if props == False:
                         for name, value in features.items():
                             property_product = ProductProperty(
@@ -604,118 +632,8 @@ def parse_drives_ru_products():
     return results
 
 
-def parse_drives_ru_category():
-    """
-    Парсит категории и группы VEDA с drives.ru.
-    Категории и группы ищутся внутри блока .cat-prod-grid, если на странице есть <h3 class="main__title-2">Приводная техника и средства автоматизации VEDA</h3>.
-    Категория: .cat-prod-name, группы: .cat-prod-sub-name (в том числе внутри .hidden-list)
-    Возвращает список словарей: [{category_name, category_url, groups: [{group_name, group_url}]}]
-    """
-    import requests
-    from bs4 import BeautifulSoup
-
-    supplier = Supplier.objects.get(slug="veda-mc")
-    vendor = Vendor.objects.get(slug="veda")
-
-    url = "https://drives.ru/products/"
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Ошибка запроса: {response.status_code}")
-        return []
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    # Проверяем наличие нужного заголовка
-    h3 = soup.find("h3", class_="main__title-2")
-    if not h3:
-        print("Заголовок не найден или не совпадает")
-        return []
-
-    cat_grid = soup.find("div", class_="cat-prod-grid")
-    if not cat_grid:
-        print("cat-prod-grid не найден")
-        return []
-
-    categories = []
-    for cat_prod in cat_grid.find_all("div", class_="cat-prod", recursive=False):
-        # Категория
-        cat_name_div = cat_prod.find("div", class_="cat-prod-name")
-        if not cat_name_div:
-            continue
-        cat_a = cat_name_div.find("a")
-        if not cat_a:
-            continue
-        category_name = re.sub(r"\s+", " ", cat_a.get_text(strip=True))
-        category_url = cat_a["href"]
-        if not category_url.startswith("http"):
-            category_url = f"https://drives.ru{category_url}"
-
-        # Группы (основные)
-        groups = []
-        for group_div in cat_prod.find_all(
-            "div", class_="cat-prod-sub-name", recursive=False
-        ):
-            group_a = group_div.find("a")
-            if group_a:
-                group_name = re.sub(r"\s+", " ", group_a.get_text(strip=True))
-
-                groups.append({"group_name": group_name})
-        # Группы (скрытые)
-        hidden_list = cat_prod.find("div", class_="hidden-list")
-        if hidden_list:
-            for group_div in hidden_list.find_all("div", class_="cat-prod-sub-name"):
-                group_a = group_div.find("a")
-                if group_a:
-                    group_name = re.sub(r"\s+", " ", group_a.get_text(strip=True))
-
-                    groups.append(
-                        {
-                            "group_name": group_name,
-                        }
-                    )
-        categories.append({"category_name": category_name, "groups": groups})
-
-    for category in categories:
-  
-        try:
-            categ = SupplierCategoryProduct.objects.get(
-                supplier=supplier,
-                vendor=vendor,
-                name=category["category_name"],
-            )
-
-        except SupplierCategoryProduct.DoesNotExist:
-            categ = SupplierCategoryProduct(
-                supplier=supplier,
-                vendor=vendor,
-                name=category["category_name"],
-            )
-            categ.save()
-
-        for group_item in category["groups"]:
-            try:
-                grope = SupplierGroupProduct.objects.get(
-                    supplier=supplier,
-                    vendor=vendor,
-                    category_supplier=categ,
-                    name=group_item["group_name"],
-                )
-
-                grope.save()
-
-            except SupplierGroupProduct.DoesNotExist:
-                grope = SupplierGroupProduct(
-                    supplier=supplier,
-                    vendor=vendor,
-                    category_supplier=categ,
-                    name=group_item["group_name"],
-                )
-                grope.save()
-
-    return categories
-
-
 # категории поставщика промповер для товара
-def get_category_delta(supplier, vendor, category, group):
+def get_category_delta(supplier, vendor, category, group,group_all):
     from apps.supplier.models import (
         SupplierCategoryProduct,
         SupplierCategoryProductAll,
@@ -724,18 +642,344 @@ def get_category_delta(supplier, vendor, category, group):
 
     groupe = None
     categ = None
-
-    if group:
-        groupe = SupplierGroupProduct.objects.get(
-            supplier=supplier, vendor=vendor, name=group
-        )
-        categ = groupe.category_supplier
-    elif category:
-        groupe = None
-        categ = SupplierCategoryProduct.objects.get(
-            supplier=supplier, vendor=vendor, name=category
+    category_all = None
+    try:
+        category_all = SupplierCategoryProductAll.objects.get(
+            supplier=supplier, vendor=vendor, name=group_all
         )
 
-    ("return get_category_delta", groupe, categ)
+        groupe = category_all.group_supplier
+        categ = category_all.category_supplier
+        print(" try:1", category_all, groupe, categ)
+    except SupplierCategoryProductAll.DoesNotExist:
+        try:
+            groupe = SupplierGroupProduct.objects.get(
+                supplier=supplier, vendor=vendor, name=group
+            )
+            category_all = None
 
-    return (groupe, categ)
+            categ = groupe.category_supplier
+        except SupplierGroupProduct.DoesNotExist:
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    supplier=supplier, vendor=vendor, name=category
+                )
+                category_all = None
+                groupe = None
+
+            except SupplierCategoryProduct.DoesNotExist:
+                category_all = None
+                groupe = None
+                categ = None
+
+
+    # if group:
+    #     groupe = SupplierGroupProduct.objects.get(
+    #         supplier=supplier, vendor=vendor, name=group
+    #     )
+    #     categ = groupe.category_supplier
+    # elif category:
+    #     groupe = None
+    #     categ = SupplierCategoryProduct.objects.get(
+    #         supplier=supplier, vendor=vendor, name=category
+    #     )
+
+    ("return get_category_delta", category_all, groupe, categ)
+
+    return (category_all, groupe, categ)
+
+
+def parse_drives_ru_category():
+    import requests
+    from bs4 import BeautifulSoup
+    import re
+    from django.db import transaction # Для атомарности операций
+    """
+    Парсит категории, группы и подгруппы VEDA с drives.ru.
+    Категории ищутся внутри блока .cat-prod-grid.
+    Категория: .cat-prod-name
+    Группы: .cat-prod-sub-name (в том числе внутри .hidden-list)
+    Подгруппы: заходим на страницу группы и ищем .h-menu__img-ul-1 .h-menu__img-link-1
+    """
+    try:
+        supplier = Supplier.objects.get(slug="veda-mc")
+    except Supplier.DoesNotExist:
+        print("Поставщик с slug 'veda-mc' не найден.")
+        return []
+        
+    try:
+        vendor = Vendor.objects.get(slug="veda")
+    except Vendor.DoesNotExist:
+        print("Производитель с slug 'veda' не найден.")
+        return []
+
+    base_url = "https://drives.ru"
+    url = f"{base_url}/products/"
+    
+    session = requests.Session()
+    # session.headers.update({'User-Agent': 'Mozilla/5.0 ...'})
+
+    try:
+        response = session.get(url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Ошибка запроса к {url}: {e}")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Проверяем наличие нужного заголовка (упрощено)
+    h3 = soup.find("h3", class_="main__title-2")
+    if not h3 or "Приводная техника и средства автоматизации VEDA" not in h3.get_text():
+        print("Заголовок 'Приводная техника и средства автоматизации VEDA' не найден или не совпадает")
+        return []
+
+    cat_grid = soup.find("div", class_="cat-prod-grid")
+    if not cat_grid:
+        print("cat-prod-grid не найден")
+        return []
+
+    categories_data = []
+    # --- Парсинг структуры ---
+    for cat_prod in cat_grid.find_all("div", class_="cat-prod", recursive=False):
+        cat_name_div = cat_prod.find("div", class_="cat-prod-name")
+        if not cat_name_div:
+            continue
+        cat_a = cat_name_div.find("a")
+        if not cat_a:
+            continue
+        category_name = re.sub(r"\s+", " ", cat_a.get_text(strip=True))
+        category_url_raw = cat_a["href"]
+        category_url = category_url_raw
+        if not category_url_raw.startswith("http"):
+            category_url = f"{base_url}{category_url_raw}" if not category_url_raw.startswith('/') else f"{base_url}{category_url_raw}"
+
+        groups = []
+        # Группы (основные и скрытые)
+        all_group_divs = cat_prod.find_all("div", class_="cat-prod-sub-name", recursive=True)
+        for group_div in all_group_divs:
+            group_a = group_div.find("a")
+            if group_a:
+                group_name = re.sub(r"\s+", " ", group_a.get_text(strip=True))
+                group_url_raw = group_a["href"]
+                group_url = group_url_raw
+                if not group_url_raw.startswith("http"):
+                    group_url = f"{base_url}{group_url_raw}" if not group_url_raw.startswith('/') else f"{base_url}{group_url_raw}"
+
+                # --- Парсинг подгрупп ДЛЯ КОНКРЕТНОЙ ГРУППЫ ---
+                subgroups = []
+                try:
+                    print(f"Запрос к странице группы: {group_url}")
+                    group_response = session.get(group_url)
+                    group_response.raise_for_status()
+                    group_soup = BeautifulSoup(group_response.text, "html.parser")
+                    
+                    # --- ИСПРАВЛЕННЫЙ ПОДХОД ---
+                    # Вариант 1: Ищем контейнер, относящийся к текущей группе
+                    # (Требует анализа реального HTML страницы группы)
+                    # subgroup_container = group_soup.find('div', {'data-current-group': 'some_identifier'})
+                    # if subgroup_container:
+                    #     potential_subgroup_links = subgroup_container.select('a.h-menu__img-link-1')
+                    # else:
+                    #     print(f"  Контейнер подгрупп для {group_url} не найден.")
+                    #     continue # Или продолжить с альтернативным методом
+
+                    # Вариант 2: Ищем все ссылки и фильтруем по URL
+                    # Сначала находим все потенциальные ссылки на подгруппы
+                    all_potential_links = group_soup.select('a.h-menu__img-link-1')
+                    
+                    if all_potential_links:
+                        print(f"Найдено {len(all_potential_links)} потенциальных подгрупп на {group_url}. Фильтруем...")
+                        for sub_link in all_potential_links:
+                            subgroup_href = sub_link.get('href', '')
+                            # Формируем полный URL для подгруппы
+                            if subgroup_href:
+                                if not subgroup_href.startswith("http"):
+                                    subgroup_url_full = f"{base_url}{subgroup_href}" if not subgroup_href.startswith('/') else f"{base_url}{subgroup_href}"
+                                else:
+                                    subgroup_url_full = subgroup_href
+                                
+                                # --- КЛЮЧЕВАЯ ПРОВЕРКА ---
+                                # Проверяем, принадлежит ли найденная подгруппа текущей группе
+                                # URL подгруппы должен начинаться с URL группы
+                                if subgroup_url_full.startswith(group_url.rstrip('/')):
+                                    # --- Извлекаем данные подгруппы ---
+                                    subgroup_name_raw = sub_link.get_text(strip=True)
+                                    if not subgroup_name_raw:
+                                        subgroup_name_span = sub_link.find('span', class_='h-menu__name')
+                                        if subgroup_name_span:
+                                            subgroup_name_raw = subgroup_name_span.get_text(strip=True)
+                                    
+                                    subgroup_name = re.sub(r"\s+", " ", subgroup_name_raw) if subgroup_name_raw else "Без названия"
+                                    
+                                    subgroups.append({
+                                        "subgroup_name": subgroup_name,
+                                        "subgroup_url": subgroup_url_full
+                                    })
+                                    print(f"  Найдена и добавлена подгруппа: {subgroup_name} - {subgroup_url_full}")
+                                else:
+                                    print(f"  Пропущена подгруппа (не принадлежит группе): {subgroup_href} (Группа: {group_url})")
+                        print(f"  Всего добавлено подгрупп для {group_name}: {len(subgroups)}")
+                    else:
+                        print(f"  Потенциальные подгруппы по h-menu__img-link-1 на {group_url} НЕ НАЙДЕНЫ")
+
+                except requests.RequestException as e:
+                    print(f"Ошибка при запросе группы {group_url}: {e}")
+                except Exception as e:
+                    print(f"Ошибка при парсинге подгрупп для {group_url}: {e}")
+                    # import traceback
+                    # traceback.print_exc() # Для отладки
+
+                # Добавляем данные группы с ЕЁ (отфильтрованными) подгруппами
+                groups.append({
+                    "group_name": group_name,
+                    "group_url": group_url,
+                    "subgroups": subgroups # Только подгруппы этой конкретной группы, благодаря фильтрации
+                })
+
+        # -------------------------
+
+        categories_data.append({
+            "category_name": category_name,
+            "category_url": category_url,
+            "groups": groups
+        })
+    # --- Конец парсинга ---
+
+    # --- Сохранение в БД ---
+    # Используем транзакцию для обеспечения целостности данных
+    try:
+        with transaction.atomic():
+            for category_data in categories_data:
+                # Получаем или создаем категорию поставщика
+                category_obj, created = SupplierCategoryProduct.objects.get_or_create(
+                    supplier=supplier,
+                    vendor=vendor,
+                    name=category_data["category_name"],
+                   
+                )
+               
+
+                for group_item in category_data["groups"]:
+                    # Получаем или создаем группу поставщика
+                    group_obj, group_created = SupplierGroupProduct.objects.get_or_create(
+                        supplier=supplier,
+                        vendor=vendor,
+                        category_supplier=category_obj,
+                        name=group_item["group_name"],
+                       
+                    )
+                    
+                    # --- Сохранение подгрупп ---
+                    for subgroup_item in group_item.get("subgroups", []):
+                        # Создаем или получаем запись подгруппы, связанную с КОНКРЕТНОЙ Группой
+                        subgroup_obj, subgroup_created = SupplierCategoryProductAll.objects.get_or_create(
+                            supplier=supplier,
+                            vendor=vendor,
+                            category_supplier=category_obj, # Опционально, если нужно прямое связывание
+                            group_supplier=group_obj, # Ключевая связь - с группой
+                            name=subgroup_item["subgroup_name"],
+                            
+                        )
+                        
+
+    except Exception as e:
+        print(f"Ошибка при сохранении данных в БД: {e}")
+        # Транзакция будет откачена автоматически
+        return [] # Возвращаем пустой список, если сохранение не удалось
+
+    # -----------------------
+
+    return categories_data
+
+
+def save_categories_to_excel(parsed_data, filename="veda_categories.xlsx"):
+    
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill
+    from openpyxl.utils import get_column_letter
+    """
+    Сохраняет данные категорий, групп и подгрупп в Excel файл.
+    Структура:
+    - Столбец A: Категории
+    - Столбец B: Группы (относящиеся к категории)
+    - Столбец C: Подгруппы (относящиеся к группе)
+    """
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Категории VEDA"
+
+    # Заголовки
+    headers = ["Категория", "Группа", "Подгруппа"]
+    ws.append(headers)
+    
+    # Стилизация заголовков (опционально)
+    header_font = Font(bold=True)
+    header_fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+    for col_num, header in enumerate(headers, 1):
+        cell = ws[f"{get_column_letter(col_num)}1"]
+        cell.font = header_font
+        cell.fill = header_fill
+
+    # Заполнение данными
+    row_num = 2 # Начинаем с второй строки, так как первая - заголовки
+    for category_data in parsed_data:
+        category_name = category_data["category_name"]
+        category_written = False # Флаг, чтобы записать категорию только один раз
+
+        if not category_data["groups"]:
+            # Если у категории нет групп, всё равно запишем её
+            ws[f"A{row_num}"] = category_name
+            row_num += 1
+        else:
+            for group_item in category_data["groups"]:
+                group_name = group_item["group_name"]
+                group_written = False # Флаг для записи группы
+
+                if not group_item["subgroups"]:
+                    # Если у группы нет подгрупп
+                    if not category_written:
+                        ws[f"A{row_num}"] = category_name
+                        category_written = True
+                    ws[f"B{row_num}"] = group_name
+                    # URL можно тоже добавить, например, в комментарии к ячейке или в соседних столбцах
+                    row_num += 1
+                else:
+                    # Если есть подгруппы
+                    for subgroup_item in group_item["subgroups"]:
+                        subgroup_name = subgroup_item["subgroup_name"]
+                        
+                        if not category_written:
+                            ws[f"A{row_num}"] = category_name
+                            category_written = True
+                        if not group_written:
+                            ws[f"B{row_num}"] = group_name
+                            group_written = True
+                        
+                        ws[f"C{row_num}"] = subgroup_name
+                        # URL подгруппы тоже можно добавить
+                        row_num += 1
+
+    # Автонастройка ширины столбцов
+    for column in ws.columns:
+         max_length = 0
+         column_letter = get_column_letter(column[0].column)
+         for cell in column:
+             try:
+                 if len(str(cell.value)) > max_length:
+                     max_length = len(str(cell.value))
+             except:
+                 pass
+         adjusted_width = (max_length + 2) # Немного отступа
+         if adjusted_width > 100: # Ограничим максимальную ширину
+             adjusted_width = 100
+         elif adjusted_width < 10: # Минимальная ширина
+             adjusted_width = 10
+         ws.column_dimensions[column_letter].width = adjusted_width
+
+    try:
+        wb.save(filename)
+        print(f"Данные успешно сохранены в файл: {filename}")
+    except Exception as e:
+        print(f"Ошибка при сохранении файла {filename}: {e}")
+

@@ -160,8 +160,13 @@ def add_iek(request):
     bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    parse_drives_ru_products()
-    
+    p = Product.objects.filter(vendor__slug="veda")
+    for pt in p:
+        props = ProductProperty.objects.filter(product=pt)
+        props.delete()
+        
+    # parse_drives_ru_products()
+    create_file_props_in_vendor_props()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

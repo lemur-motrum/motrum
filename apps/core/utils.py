@@ -2820,7 +2820,7 @@ def create_file_props_in_vendor_props():
     # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
-    path_unimat = f"{new_dir}/unimat.csv"
+    path_unimat = f"{new_dir}/veda.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -2831,7 +2831,7 @@ def create_file_props_in_vendor_props():
 
     props = []
 
-    all_product_supplier = Product.objects.filter(vendor__slug="unimat")
+    all_product_supplier = Product.objects.filter(vendor__slug="veda")
     i = 0
     print(all_product_supplier)
 
@@ -2929,7 +2929,7 @@ def create_file_props_in_vendor_props():
                             val_u_i = "|| ".join(val_u)
                             row["Единица измерения"] = val_u_i
                 writer_nomenk.writerow(row)
-
+    print("last")
 
 def email_manager_after_new_order_site(order):
     try:

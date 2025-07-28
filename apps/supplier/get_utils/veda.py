@@ -594,15 +594,12 @@ def parse_drives_ru_products():
                     product._change_reason = "Автоматическое"
                     product.save()
 
-                    image = ProductImage.objects.filter(product=product).exists()
-                    if image == False:
-                        save_image(product)
+                    # image = ProductImage.objects.filter(product=product).exists()
+                    # if image == False:
+                    #     save_image(product)
 
-                    # doc = ProductDocument.objects.filter(
-                    #         product=product
-                    #     ).exists()
-                    # if doc == False:
-                    save_document(result["documents"], product)
+             
+                    # save_document(result["documents"], product)
 
                     props = ProductProperty.objects.filter(product=product).exists()
 
@@ -673,18 +670,6 @@ def get_category_delta(supplier, vendor, category, group,group_all):
                 categ = None
 
 
-    # if group:
-    #     groupe = SupplierGroupProduct.objects.get(
-    #         supplier=supplier, vendor=vendor, name=group
-    #     )
-    #     categ = groupe.category_supplier
-    # elif category:
-    #     groupe = None
-    #     categ = SupplierCategoryProduct.objects.get(
-    #         supplier=supplier, vendor=vendor, name=category
-    #     )
-
-    ("return get_category_delta", category_all, groupe, categ)
 
     return (category_all, groupe, categ)
 

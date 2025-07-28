@@ -460,18 +460,4 @@ def export_unimat_prod_for_1c():
     wb.save(file_path)
 
 
-# def export_unimat_prod_for_1c():
-#     prompower = Supplier.objects.get(slug="prompower")
-#     vendori = Vendor.objects.get(slug="unimat")
-
-#     products = Product.objects.get(
-#         supplier=prompower,
-#         vendor=vendori,
-#     )
-#     title = ["Артикул мотрум","Артикул псотавщика","Название","Промо группа"]
-#     for product in product:
-#         article_vendor = product.article_supplier
-#         article_motrum = product.article_motrum
-#         name =  product.name
-#         promo_groupe = product.promo_groupe
     

@@ -667,6 +667,9 @@ h1 {
             align-items: center;
             label {
               display: block;
+              &.lot_label {
+                width: 7rem;
+              }
               input {
                 position: relative;
                 padding: 0.5rem;
@@ -680,6 +683,7 @@ h1 {
                 &:focus {
                   outline: none;
                 }
+                
               }
             }
             &:nth-of-type(1) {
@@ -1080,7 +1084,7 @@ h1 {
     }
     .add_new_product_container {
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 1rem;
       margin-top: 2rem;
       margin-left: 0rem;
@@ -1489,6 +1493,14 @@ h1 {
           text-transform: lowercase;
         }
       }
+      .title_item_price{
+        display: flex;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        
+      }
     }
     .item_container {
       display: flex;
@@ -1665,6 +1677,9 @@ h1 {
                 &:focus {
                   outline: none;
                 }
+                &.lot_label {
+                  width: 7rem;
+                }
               }
             }
             &:nth-of-type(1) {
@@ -1758,6 +1773,7 @@ h1 {
                 border: 0.063rem solid black;
                 border-radius: 0.625rem;
                 font-size: 0.675rem;
+                
                 &:focus {
                   outline: none;
                 }
@@ -2010,6 +2026,15 @@ h1 {
                 border-radius: 1.875rem;
                 font-family: "Nunito", sans-serif;
                 height: 1.5rem !important;
+
+                padding: 0.5rem !important;
+                font-size: 0.813rem !important;
+                font-weight: 700;
+                box-sizing: border-box !important;
+                border: 0.094rem solid #000 !important;
+                border-radius: 1.875rem !important;
+                height: 1.5rem !important;
+                color: #ff5b00 !important;
               }
             }
             &:nth-of-type(4) {
@@ -2028,7 +2053,7 @@ h1 {
               }
             }
             &:nth-of-type(5) {
-              width: 7.563rem;
+              width: 4.9rem;
               margin-left: 1.7rem;
               font-size: 0.875rem;
               font-weight: 300;
@@ -2056,12 +2081,20 @@ h1 {
                 &:nth-of-type(2) {
                   font-size: 0.625rem;
                   input {
-                    width: 37%;
+                    width: 3rem;
                     font-size: 0.625rem;
                     height: 1.5rem;
                     border-radius: 1.875rem;
                     padding: 0 0.2rem;
                     box-sizing: border-box;
+                    padding: 0.5rem !important;
+                    font-size: 0.813rem !important;
+                    font-weight: 700;
+                    box-sizing: border-box !important;
+                    border: 0.094rem solid #000 !important;
+                    border-radius: 1.875rem !important;
+                    height: 1.5rem !important;
+                    color: #ff5b00 !important;
                     &:focus {
                       outline: none;
                     }
@@ -2103,6 +2136,14 @@ h1 {
             border: 0.094rem solid #000;
             border-radius: 1.875rem;
             font-family: "Nunito", sans-serif;
+            padding: 0.5rem !important;
+            font-size: 0.813rem !important;
+            font-weight: 700;
+            box-sizing: border-box !important;
+            border: 0.094rem solid #000 !important;
+            border-radius: 1.875rem !important;
+            height: 1.5rem !important;
+            color: #ff5b00 !important;
           }
         }
       }
@@ -3556,7 +3597,7 @@ h1 {
             font-size: 1.5rem;
           }
         }
-        &:nth-of-type(3) {
+        &:nth-of-type(4) {
           margin-top: 1rem;
           font-weight: 700;
           div {

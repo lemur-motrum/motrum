@@ -357,6 +357,12 @@ window.addEventListener("DOMContentLoaded", () => {
         // ставить занчение в сумму общей маржи за все товары
         getDigitsNumber(marginality, +margSum);
 
+        // ставить занчение в сумму НДС
+        let nds_sum = +sum * 20 / (20 + 100)
+        const nds_container = totalPriceValueContainer.querySelector(".nds_sum_value");
+        console.log("nds_sum", nds_sum);
+        getDigitsNumber(nds_container, nds_sum);
+
         console.log("sum", sum);
         console.log("sumMotrum", sumMotrum);
         console.log("margSum", margSum);
@@ -1123,7 +1129,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           if (saveButton) {
-            console.log("1292")
+            console.log("1292 saveButton.onclick = () => saveSpecification();")
             saveButton.onclick = () => saveSpecification();
           }
         } else {
@@ -1184,6 +1190,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           if (saveButton) {
+            console.log(" 1191 saveButton.onclick = () => saveSpecification(productItems);");
             saveButton.onclick = () => saveSpecification(productItems);
           }
         }
@@ -1229,7 +1236,7 @@ window.addEventListener("DOMContentLoaded", () => {
       getResult();
       getMarginality(spetificationTable);
       if (saveButton) {
-        console.log("1396")
+        console.log("1396 saveButton.onclick = () => saveSpecification(productItems);")
         saveButton.onclick = () => saveSpecification(productItems);
       }
       exitButton.onclick = () => exitSpecification(productItems);

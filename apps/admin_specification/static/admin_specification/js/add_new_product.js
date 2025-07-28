@@ -366,6 +366,13 @@ function addNewProductLogic(container) {
             input.style.border = "1px solid red";
           }
         }
+        function inputValidateVendor(input) {
+          let v = input.getAttribute("vendor_value")
+          if (!v || v.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
+          }
+        }
         setPreloaderInButton(addNewItemInCartButton);
         // if (!vendorSelectToggle.getAttribute("value")) {
         //   addNewItemInCartButtonValidate = false;
@@ -379,6 +386,9 @@ function addNewProductLogic(container) {
 
         inputValidate(nameInput);
         inputValidate(articleInput);
+        inputValidate(supplierSelectToggle);
+        inputValidateVendor(vendorInput);
+        inputValidate(lotSelectToggle);
         // inputValidate(priceOnceInput);
         // inputValidate(quantityInput);
 
@@ -439,7 +449,8 @@ function addNewProductLogic(container) {
                   "Данный товар уже есть в ОКТ",
                   newProductError
                 );
-                ton(addNewItemInCartButton);
+              } else if (response.status == "product_in_cart") {
+                hidePreloaderAndEnabledButton(addNewItemInCartButton);
                 showErrorValidation(
                   "Товар с таким артикулом уже есть в корзине",
                   newProductError

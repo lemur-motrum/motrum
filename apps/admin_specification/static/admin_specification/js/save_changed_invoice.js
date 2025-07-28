@@ -38,6 +38,16 @@ window.addEventListener("DOMContentLoaded", () => {
       button.onclick = () => {
         const products = [];
         let validate = true;
+        const marginality =
+        document.querySelector(".marginality_value");
+        const marginality_sum = marginality.textContent
+        const marginalityValue =
+        document.querySelector(".marginality_prcent_value");
+        const marginality_percent = marginalityValue.textContent
+
+        console.log("marginality_sum", marginality, marginality_sum)
+        console.log("marginalityValue", marginalityValue, marginality_percent)
+
         const clientRequsits = document
           .querySelector("[name='client-requisit']")
           .getAttribute("value");
@@ -61,6 +71,8 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-price-exclusive"
           );
           const itemPrice = specificationItem.getAttribute("data-price");
+          const marjaItem =
+          specificationItem.querySelector(".marja-input");
           const extraDiscount =
             specificationItem.querySelector(".discount-input");
           const productSpecificationId = specificationItem.getAttribute(
@@ -76,6 +88,9 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           const vendor = specificationItem.getAttribute("data-vendor");
           const supplier = specificationItem.getAttribute("data-supplier");
+          const motrumPrice = specificationItem.getAttribute(
+            "data-price-motrum"
+          );
           const deliveryDate =
             specificationItem.querySelector(".delivery_date");
 
@@ -118,6 +133,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
+            marja_motrum:  marjaItem.value,
             date_delivery: deliveryDate.value
               ? new Date(deliveryDate.value).toISOString().split("T")[0]
               : null,
@@ -125,6 +141,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNewart,
             comment: commentItem ? commentItem : null,
+            price_motrum:+getCurrentPrice(motrumPrice),
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
             supplier: supplier ? supplier : null,
@@ -189,6 +206,8 @@ window.addEventListener("DOMContentLoaded", () => {
             type_delivery: deliveryRequsits,
             type_save: "bill",
             post_update: true,
+            marginality_sum: +getCurrentPrice(marginality_sum),
+            marginality: +marginality_percent,
           };
 
           const data = JSON.stringify(dataObj);

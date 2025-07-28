@@ -522,6 +522,7 @@ def create_specification(request):
                     product_new_article__isnull=False,
                 )
                 .annotate(
+                    
                     id_product_spesif=F("id"),
                     product_new_cart_vendor=product_cart.filter(
                         id=OuterRef("id_cart")
@@ -559,7 +560,11 @@ def create_specification(request):
                     ).values(
                         "product",
                     ),
-                    
+                    id_cart_item=product_cart.filter(
+                        id=OuterRef("id")
+                    ).values(
+                        "id",
+                    ),
                 )
                 .annotate(
                     price_motrum=Case(
@@ -595,6 +600,7 @@ def create_specification(request):
                 )
                 .exclude(id__in=product_new_value_id)
                 .annotate(
+                    id_cart_item=F("id"),
                     price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
@@ -844,7 +850,10 @@ def create_specification(request):
                 sale_marja=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "sale_marja",
                 ),
-                # price_motrum_okt = Round(
+                
+                id_cart_item=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "id",
+                ),# price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
                 #         ),

@@ -1005,10 +1005,13 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         ):
             data = {"status": "none_art_or_name"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(data["supplier"],data["vendor"])
         try:
             product_okt = Product.objects.get(
-                vendor_id=data["vendor"], article_supplier=product_new_article
+                supplier__id = data["supplier"], vendor__id=data["vendor"], article_supplier=product_new_article
             )
+            print(product_okt)
             data = {"status": "product_in_okt"}
             return Response(data, status=status.HTTP_409_CONFLICT)
         except Product.DoesNotExist:

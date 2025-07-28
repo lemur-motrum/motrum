@@ -269,7 +269,11 @@ def crete_pdf_specification(
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
             except Stock.DoesNotExist:
-                product_stock = "шт"
+                if product.lot:
+                    product_stock = product.lot.name_shorts
+                else:
+                    product_stock = "шт"
+                
             date_delivery = product.date_delivery
             if date_delivery and date_delivery > date_ship:
                 date_ship = date_delivery

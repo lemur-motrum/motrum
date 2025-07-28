@@ -149,8 +149,8 @@ window.addEventListener("DOMContentLoaded", () => {
           getDigitsNumber(
             saleValue,
             (priceOneInput.value / 100) *
-              (100 - salePersentInput.value) *
-              quantityInput.value
+            (100 - salePersentInput.value) *
+            quantityInput.value
           );
         }
       }
@@ -202,28 +202,42 @@ window.addEventListener("DOMContentLoaded", () => {
       // changeTotalCost(quantityInput, priceOneInput);
 
       changeButton.onclick = () => {
+        let addNewItemInCartButtonValidate = true;
         setPreloaderInButton(changeButton);
         function validate(input) {
           if (!input.value || input.value.trim().length === 0) {
-            input.style.border = "0.063rem solid red";
-            hidePreloaderAndEnabledButton(changeButton);
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
           }
         }
+        function inputValidateVendor(input) {
+          let v = input.getAttribute("vendor_value")
+          if (!v || v.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
+          }
+        }
+        // setPreloaderInButton(changeButton);
+
+
         validate(nameInput);
         validate(articleInput);
         validate(priceOneInput);
-        // validate(quantityInput);
-        if (!vendorInput.getAttribute("vendor_value")) {
-          setPreloaderInButton(changeButton);
-          vendorInput.style.border = "0.063rem solid red";
+        validate(supplierSelectToggle);
+        inputValidateVendor(vendorInput);
+        validate(lotSelectToggle);
+
+        if (addNewItemInCartButtonValidate == false) {
+          changeButton.disabled = false;
+          changeButton.innerHTML = "";
+          changeButton.textContent = "Изменить";
         }
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOneInput.value &&
-          // quantityInput.value &&
-          vendorInput.getAttribute("vendor_value")
-        ) {
+        // // validate(quantityInput);
+        // if (!vendorInput.getAttribute("vendor_value")) {
+        //   setPreloaderInButton(changeButton);
+        //   vendorInput.style.border = "0.063rem solid red";
+        // }
+        if (addNewItemInCartButtonValidate === true) {
           const cartId = getCookie("cart");
           const objData = {
             product: null,
@@ -256,10 +270,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 window.location.reload();
               } else if (response.status == 409) {
                 return response.json();
-                // showErrorValidation(
-                //   "Товар с таким артикулом в корзине уже есть ",
-                //   newProductError
-                // );
               } else {
                 setErrorModal();
                 throw new Error("Ошибка");

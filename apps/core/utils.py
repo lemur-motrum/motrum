@@ -1288,8 +1288,8 @@ def save_specification(
             product = Product.objects.get(id=product_item["product_id"])
             # цена прайс
             price_data = float(product_item["price_one"])
-            # цена закупки мотрум
-            motrum_price = float(product_item["price_motrum"])
+            
+           
             # скидка мотрум от прайса
             if product_item["sale_motrum"]:
                 sale_motrum_data = product_item["sale_motrum"]
@@ -1413,7 +1413,8 @@ def save_specification(
             product_spes.comment = product_item["comment"]
             product_spes.id_cart_id = int(product_item["id_cart"])
             product_spes.product_price_catalog = product_price_catalog
-
+            product_spes.sale_motrum = sale_motrum_data
+            
             # запись дат
             date_delivery = product_item["date_delivery"]
             if date_delivery != "" and date_delivery != None:
@@ -1437,6 +1438,8 @@ def save_specification(
 
             # price_one = product_item["price_one"]
             # price_one_original_new = price_one
+            
+            # скидка мотрум от прайса
             if product_item["sale_motrum"]:
                 motrum_sale = product_item["sale_motrum"]
                 motrum_sale = motrum_sale.replace(".", "")
@@ -1446,7 +1449,7 @@ def save_specification(
                 motrum_sale = 0.00
                 
             price_one = float(product_item["price_one"])
-            
+            price_one_original_new = price_one
             price_one_motrum = float(product_item["price_motrum"])
             # если есть доп скидка работать с ценой прайс
             if (
@@ -1472,24 +1475,17 @@ def save_specification(
                 price_one = round(price_one_sale, 2)
                 
 
-            price_one_motrum = price_one - (price_one / 100 * motrum_sale)
-            price_one_motrum = round(price_one_motrum, 2)
-            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
-            price_all_motrum = round(price_all_motrum, 2)
+            # price_one_motrum = price_one - (price_one / 100 * motrum_sale)
+            # price_one_motrum = round(price_one_motrum, 2)
+            # price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            # price_all_motrum = round(price_all_motrum, 2)
 
-            if (
-                product_item["extra_discount"] != "0"
-                and product_item["extra_discount"] != ""
-                and product_item["extra_discount"] != 0
-            ):
-
-                persent_sale = float(product_item["extra_discount"])
-
-                price_one_sale = price_one - (price_one / 100 * persent_sale)
-                price_one = round(price_one_sale, 2)
+    
 
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            price_all_motrum = round(price_all_motrum, 2)
 
             currency = Currency.objects.get(words_code="RUB")
 
@@ -1516,7 +1512,7 @@ def save_specification(
             else:
                 product_spes.extra_discount = None
                 
-            price_one_original_new = price_one
+            
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = currency
             product_spes.quantity = product_item["quantity"]
@@ -1555,6 +1551,9 @@ def save_specification(
     
     marginality =  ((total_amount - total_amount_motrum) / total_amount) * 100
     marginality =  round(marginality, 2)
+    marginality_sum =  round(total_amount - total_amount_motrum, 2)
+    
+    specification.marginality_sum = marginality_sum
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
@@ -2123,8 +2122,11 @@ def save_new_product_okt(product_new):
         )
         price.save()
         update_change_reason(price, "Автоматическое")
-
-        lot_auto = Lot.objects.get(name_shorts="шт")
+        if  product_new.id_cart.lot:
+            lot_auto = product_new.id_cart.lot
+        else:
+            lot_auto = Lot.objects.get(name_shorts="шт")
+            
         product_stock = Stock(
             prod=product,
             lot=lot_auto,

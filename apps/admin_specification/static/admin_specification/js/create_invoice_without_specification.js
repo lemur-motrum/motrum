@@ -232,6 +232,10 @@ window.addEventListener("DOMContentLoaded", () => {
               deleteCookie("key", "/", window.location.hostname);
               deleteCookie("specificationId", "/", window.location.hostname);
               deleteCookie("cart", "/", window.location.hostname);
+              document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
               return response.json();
             } else {
               setErrorModal();

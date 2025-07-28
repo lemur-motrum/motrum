@@ -358,7 +358,9 @@ window.addEventListener("DOMContentLoaded", () => {
         getDigitsNumber(marginality, +margSum);
 
         // ставить занчение в сумму НДС
-        let nds_sum = +sum * 20 / (20 + 100)
+      
+        const ndsPercent = +specificationContainer.getAttribute("nds");
+        let nds_sum = +sum * ndsPercent / (ndsPercent + 100)
         const nds_container = totalPriceValueContainer.querySelector(".nds_sum_value");
         console.log("nds_sum", nds_sum);
         getDigitsNumber(nds_container, nds_sum);

@@ -1233,14 +1233,23 @@ class OrderViewSet(viewsets.ModelViewSet):
         url_path=r"exit-order-admin",
     )
     def exit_order_admin(self, request, *args, **kwargs):
-        cart_id = request.COOKIES.get("cart")
-        # specification = request.COOKIES.get("specificationId")
-        cart = Cart.objects.filter(id=cart_id).update(is_active=True)
-        # if specification and specification != 0 and specification != "":
-        #     check_delite_product_cart_in_upd_spes(specification,cart)
+        from apps.core.utils import revert_cart_changes
         
+        cart_id = request.COOKIES.get("cart")
+        # specification_id = request.COOKIES.get("specificationId")
+        
+        # if cart_id:
+        #     # Откатываем изменения в корзине
+        #     success = revert_cart_changes(cart_id, specification_id)
+            
+        #     if success:
+        #         return Response({"status": "success", "message": "Изменения отменены"}, status=status.HTTP_200_OK)
+        #     else:
+        #         return Response({"status": "error", "message": "Не удалось отменить изменения"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # return Response({"status": "error", "message": "Корзина не найдена"}, status=status.HTTP_400_BAD_REQUEST)
+        cart = Cart.objects.filter(id=cart_id).update(is_active=True)
         return Response(cart, status=status.HTTP_200_OK)
-
     # ОКТ получить список товаров для создания счета с датами псотавки 
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):

@@ -1,7 +1,9 @@
-{% comment %} <div class="item_container added_item_container"
+{% load static %}
+ <div class="item_container added_item_container"
         data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
         data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"
         data-product-pk="{% if item.product %}{{ item.product.id }} {% endif %}"
+         data-price-motrum=""
         data-product-name-new="{% if item.product_new_cart %}{{ item.product_new_cart }}{% else %}{{ item.product_new }}{% endif %}"
         data-product-article-new="{% if item.product_new_article_cart %}{{ item.product_new_article_cart }}{% else %}{{ item.product_new_article_cart }}{% endif %}"
         data-product-id-cart="{{ item.id_product_cart }}"
@@ -38,7 +40,7 @@
                 </button>
                 <input class="input-quantity"
                        type="text"
-                       value="{{ item.quantity }}"
+                       value="{{ item.quantity_cart }}"
                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                        maxlength="5"
                        onkeypress='validate(event)'>
@@ -69,7 +71,7 @@
                 </button>
                 <input class="input-quantity"
                        type="text"
-                       value="{{ item.quantity }}"
+                       value="{{ item.quantity_cart }}"
                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                        maxlength="5"
                        onkeypress='validate(event)'>
@@ -285,4 +287,4 @@
             <div class="close-btn">+</div>
         </div>
     </div>
-</div> {% endcomment %}
+</div> 

@@ -4148,3 +4148,106 @@ def serch_prod_to_motrum_props_categ_to_create_product(
         location = "+ х-ка"
         info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
         e = error_alert(error, location, info)
+
+def revert_cart_changes(cart_id, specification_id=None):
+    """
+    Откатывает все изменения в корзине до состояния на момент создания спецификации
+    или до последнего сохраненного состояния
+    """
+    from apps.product.models import Cart, ProductCart
+    from apps.specification.models import Specification, ProductSpecification
+    
+    try:
+        cart = Cart.objects.get(id=cart_id)
+        
+        # Если есть спецификация, восстанавливаем состояние на момент её создания
+        if specification_id:
+            try:
+                specification = Specification.objects.get(id=specification_id)
+                # Получаем все товары из спецификации
+                spec_products = ProductSpecification.objects.filter(specification=specification)
+                
+                # Удаляем все текущие товары в корзине
+                ProductCart.objects.filter(cart=cart).delete()
+                
+                # Восстанавливаем товары из спецификации
+                for spec_product in spec_products:
+                    ProductCart.objects.create(
+                        cart=cart,
+                        product=spec_product.product,
+                        product_price=spec_product.price_one,
+                        product_price_motrum=spec_product.price_one_motrum,
+                        product_sale_motrum=spec_product.sale_motrum,
+                        sale_client=spec_product.extra_discount,
+                        vendor=spec_product.vendor,
+                        supplier=spec_product.supplier,
+                        product_new=spec_product.product_new,
+                        product_new_article=spec_product.product_new_article,
+                        product_new_price=spec_product.price_one_original_new,
+                        product_new_sale=spec_product.extra_discount,
+                        product_new_sale_motrum=spec_product.sale_motrum,
+                        quantity=spec_product.quantity,
+                        comment=spec_product.comment,
+                        date_delivery=spec_product.date_shipment,
+                    )
+                
+                # Восстанавливаем состояние корзины
+                cart.is_active = True
+                cart.save()
+                
+                return True
+                
+            except Specification.DoesNotExist:
+                pass
+        
+        # Если спецификации нет, восстанавливаем из истории
+        # Получаем последнее состояние корзины из истории
+        cart_history = cart.history.all().order_by('-history_date')
+        if cart_history.exists():
+            last_cart_state = cart_history.first()
+            
+            # Восстанавливаем состояние корзины
+            cart.is_active = last_cart_state.is_active
+            cart.save()
+            
+            # Восстанавливаем товары из истории
+            product_cart_history = ProductCart.history.filter(cart=cart).order_by('-history_date')
+            
+            # Группируем по ID товара и берем последнее состояние каждого
+            restored_products = {}
+            for product_history in product_cart_history:
+                product_id = product_history.id
+                if product_id not in restored_products:
+                    restored_products[product_id] = product_history
+            
+            # Удаляем все текущие товары
+            ProductCart.objects.filter(cart=cart).delete()
+            
+            # Восстанавливаем товары из истории
+            for product_history in restored_products.values():
+                if product_history.history_type != '-':  # Не восстанавливаем удаленные
+                    ProductCart.objects.create(
+                        cart=cart,
+                        product=product_history.product,
+                        product_price=product_history.product_price,
+                        product_price_motrum=product_history.product_price_motrum,
+                        product_sale_motrum=product_history.product_sale_motrum,
+                        sale_client=product_history.sale_client,
+                        vendor=product_history.vendor,
+                        supplier=product_history.supplier,
+                        product_new=product_history.product_new,
+                        product_new_article=product_history.product_new_article,
+                        product_new_price=product_history.product_new_price,
+                        product_new_sale=product_history.product_new_sale,
+                        product_new_sale_motrum=product_history.product_new_sale_motrum,
+                        quantity=product_history.quantity,
+                        comment=product_history.comment,
+                        date_delivery=product_history.date_delivery,
+                    )
+            
+            return True
+        
+        return False
+        
+    except Cart.DoesNotExist:
+        return False

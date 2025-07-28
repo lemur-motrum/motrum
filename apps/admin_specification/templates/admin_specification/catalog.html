@@ -41,7 +41,7 @@
                     {% if update_spesif %}
                         {% if  item.product_prod_in_cart == None %}
                             <!--когда аптейдейт ПОДЕРЖК СТАРЫХ ЗАКАЗОВ если у товара добавленного вручную не проставился product_id-  -->
-                            {% include "admin_specification/include/item_in_cart/new_product_item.html" %}
+                            {% include "admin_specification/include/item_in_cart/new_product_item_old_order.html" %}
                         {% endif %}
                     {% else %}
                         <!--товары без записи в бд когда новая спецификация-->

@@ -990,6 +990,7 @@ class Cart(models.Model):
         blank=True,
         null=True,
     )
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
         verbose_name = "Корзина"
@@ -1118,6 +1119,7 @@ class ProductCart(models.Model):
     )
     date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
         verbose_name = "Корзина продукт"
@@ -1323,7 +1325,6 @@ class ProductPropertyMotrumItem(models.Model):
           return f"{self.property_motrum} {self.property_value_motrum_to_diapason}"
         else:
             return f"{self.property_motrum} {self.property_value_motrum}"
-
 
 
 

@@ -6,8 +6,7 @@
      data-product-pk=""
      data-price-motrum="{% if item.product_price_motrum %}{{ item.product_price_motrum }}{% else %}{{ item.price_motrum }} {% endif %}"
      data-product-name-new="{{ item.product_new }}"
-     {% comment %} data-product-id-cart="{{ item.id }}" {% endcomment %}
-     data-product-id-cart="{% if item.id_cart_item %}{{ item.cart_id }}{% else %}{{ item.id_cart }}{% endif %}"
+     data-product-id-cart="{{ item.id }}"
      data-product-article-new="{{ item.product_new_article }}"
      data-id="{{ item.id }}"
      data-price="{{ item.product_new_price }}"

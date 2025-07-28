@@ -12,7 +12,11 @@ from apps import specification, supplier
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
 from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
-from apps.core.utils import check_delite_product_cart_in_upd_spes, get_price_motrum, save_specification
+from apps.core.utils import (
+    check_delite_product_cart_in_upd_spes,
+    get_price_motrum,
+    save_specification,
+)
 from apps.product.models import (
     Cart,
     CategoryProduct,
@@ -472,11 +476,11 @@ def create_specification(request):
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")
-    
+
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
-        print("cart_qs",cart_qs)
+        print("cart_qs", cart_qs)
         if cart_qs.client:
             discount_client = Client.objects.filter(id=cart_qs.client.id)
 
@@ -499,13 +503,16 @@ def create_specification(request):
             client_req_all = AccountRequisites.objects.filter(
                 requisitesKpp__requisites=requisites
             )
-           
+
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
-            product_specification_old_i= ProductSpecification.objects.filter(
-                specification=specification,product_new__isnull=False,id_cart__isnull=False,product__isnull=False
-            ).values_list('id_cart')
+            product_specification_old_i = ProductSpecification.objects.filter(
+                specification=specification,
+                product_new__isnull=False,
+                id_cart__isnull=False,
+                product__isnull=False,
+            ).values_list("id_cart")
 
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
@@ -522,7 +529,6 @@ def create_specification(request):
                     product_new_article__isnull=False,
                 )
                 .annotate(
-                    
                     id_product_spesif=F("id"),
                     product_new_cart_vendor=product_cart.filter(
                         id=OuterRef("id_cart")
@@ -536,6 +542,9 @@ def create_specification(request):
                     ),
                     product_new_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "product_new",
+                    ),
+                    quantity_cart=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "quantity",
                     ),
                     product_new_article_cart=product_cart.filter(
                         id=OuterRef("id_cart")
@@ -555,15 +564,47 @@ def create_specification(request):
                     ).values(
                         "product_new_sale_motrum",
                     ),
-                    product_prod_in_cart = product_cart.filter(
+                    product_prod_in_cart=product_cart.filter(
                         id=OuterRef("id_cart")
                     ).values(
                         "product",
                     ),
-                    id_cart_item=product_cart.filter(
-                        id=OuterRef("id")
-                    ).values(
+                    id_cart_item=product_cart.filter(id=OuterRef("id")).values(
                         "id",
+                    ),
+                    price_motrum_cart=product_cart.filter(
+                        product=OuterRef("pk")
+                    ).values(
+                        "product_price_motrum",
+                    ),
+                    date_delivery_cart=product_cart.filter(
+                        product=OuterRef("pk")
+                    ).values(
+                        "date_delivery",
+                    ),
+                    price_cart=product_cart.filter(product=OuterRef("pk")).values(
+                        "product_price",
+                    ),
+                    product_price_motrum=product_cart.filter(
+                        product=OuterRef("pk")
+                    ).values(
+                        "product_price_motrum",
+                    ),
+                    product_sale_motrum=product_cart.filter(product=OuterRef("pk")).values(
+                        "product_sale_motrum",
+                    ),
+                    
+                    
+                    price_motrum=Case(
+                        When(sale_motrum=None, then="price_cart"),
+                        When(
+                            sale_motrum__isnull=False,
+                            then=Round(
+                                F("price_cart")
+                                - (F("price_cart") / 100 * F("sale_motrum")),
+                                2,
+                            ),
+                        ),
                     ),
                 )
                 .annotate(
@@ -588,7 +629,7 @@ def create_specification(request):
                 )
                 .order_by("id_product_cart")
             )
-      
+
             product_new_value_id = product_new.values_list("id_product_cart")
 
             # список товаров без щаписи в окт которые новые еще на записанны
@@ -830,7 +871,9 @@ def create_specification(request):
                 price_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_price",
                 ),
-                price_motrum_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
+                price_motrum_cart=product_cart_prod.filter(
+                    product=OuterRef("pk")
+                ).values(
                     "product_price_motrum",
                 ),
                 price_motrum=Case(
@@ -850,14 +893,14 @@ def create_specification(request):
                 sale_marja=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "sale_marja",
                 ),
-                
                 id_cart_item=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "id",
-                ),# price_motrum_okt = Round(
+                ),  # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
                 #         ),
-            ).order_by("id_product_cart")
+            )
+            .order_by("id_product_cart")
             # .order_by("id_product_cart")
         )
 
@@ -956,10 +999,10 @@ def create_specification(request):
         "type_save_cookee": type_save_cookee,
         "hard_upd": hard_upd,
         "post_data_bx_id": post_data_bx_id,
-        "lot":lot,
-        "nds":NDS
+        "lot": lot,
+        "nds": NDS,
     }
-    print("context",context)
+    print("context", context)
     return render(request, "admin_specification/catalog.html", context)
     # return render(request, "admin_specification/catalog_copy_price.html", context)
 
@@ -1633,7 +1676,6 @@ def history_admin(request, pk):
         **extra_kwargs,
     )
 
-   
 
 # исторические записи для счета
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -1696,7 +1738,7 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
-            
+
             # получение инфо о заказе из битрикса по айдишке
             if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
                 next_url, context, error = get_info_for_order_bitrix(
@@ -1740,7 +1782,7 @@ def bx_save_start_info(request):
                         secure=True,
                     )
                 else:
-                    
+
                     response = render(
                         request,
                         next_url,
@@ -1923,5 +1965,3 @@ def bitrix_product(request):
         "products": order_product,
     }
     return render(request, "admin_specification/bitrix_product.html", context)
-
-

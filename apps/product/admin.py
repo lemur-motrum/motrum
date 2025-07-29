@@ -626,7 +626,7 @@ class ProductAdmin(SimpleHistoryAdmin):
         "name",
         "пустые_поля",
     ]
-
+    
     inlines = [
         PriceInline,
         StockInline,

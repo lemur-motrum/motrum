@@ -3563,7 +3563,7 @@ def serch_prod_to_motrum_props_categ_to_create_product(
             property_motrum=obj.property_motrum,
             property_value_motrum=obj.property_value_motrum,
             is_diapason=obj.is_diapason,
-            is_have_vendor_props=True,
+            is_have_vendor_props=False,
         )
         error = "info_error"
         location = "+ х-ка"

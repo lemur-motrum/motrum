@@ -83,6 +83,7 @@ def crete_pdf_specification(
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
     from apps.core.models import TypeDelivery
+    from django.db.models import Prefetch, OuterRef, Case, When, F
 
     try:
         print("create document spesif")
@@ -93,7 +94,14 @@ def crete_pdf_specification(
         specifications = Specification.objects.get(id=specification)
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
+        ).order_by(
+            Case(
+                When(id_cart__isnull=False, then=0),
+                default=1
+            ),
+            F('id_cart__order'),
+            'id'
+        )
         type_delivery = TypeDelivery.objects.get(id=type_delivery)
         type_delivery_name = type_delivery.text
         kpp_req = account_requisites.requisitesKpp

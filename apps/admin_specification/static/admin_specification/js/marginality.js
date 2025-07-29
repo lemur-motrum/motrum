@@ -65,12 +65,6 @@ export function getMarginality(wrapper) {
         else if(marjinInput.value != 0 & marjinInput.value != ""){
           console.log("marjinInput.value != 0 & marjinInput.value != ")
           const marjinValue = +marjinInput.value;
-          // const marjinCoefficient = (100 + marjinValue) / 100;
-          // const priceWithMarjin = priceOneMotrum * marjinCoefficient;
-          // // totalCost = +quantityInput.value * priceWithMarjin;
-          // totalCost =
-          //   +quantityInput.value *
-          //   ((priceOneMotrum / 100) * (100 - marjinCoefficient)).toFixed(2);
           let oneProduct = (priceOneMotrum/ ((100 - +marjinInput.value)/100))
           totalCost = (+quantityInput.value *oneProduct).toFixed(2);
           marginalityPercentValue =

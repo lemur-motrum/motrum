@@ -568,6 +568,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           const data = JSON.stringify(dataObj);
+          console.log("add-order-admin", "sctipts")
           let endpoint = "/api/v1/order/add-order-admin/";
           fetch(endpoint, {
             method: "POST",

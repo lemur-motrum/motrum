@@ -2657,6 +2657,14 @@ def after_save_order_products(products):
         ):
             product_name_str = prod.product.description
 
+        # Получаем единицу измерения товара
+        try:
+            from apps.product.models import Stock
+            product_stock_item = Stock.objects.get(prod=prod.product)
+            lot = product_stock_item.lot.name_shorts
+        except Stock.DoesNotExist:
+            lot = "шт"
+
         data_prod_to_1c = {
             "vendor": vendor,
             "article": prod.product.article_supplier,
@@ -2669,6 +2677,7 @@ def after_save_order_products(products):
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
             "promo_group": promo,
+            # "lot": lot,
         }
 
         order_products.append(data_prod_to_1c)

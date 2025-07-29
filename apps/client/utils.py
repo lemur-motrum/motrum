@@ -33,7 +33,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from apps.logs.utils import error_alert
 from apps.specification.utils import MyCanvas
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
-from django.db.models import Prefetch, OuterRef
+from django.db.models import Prefetch, OuterRef, Case, When, F
 from apps.product.models import Product, ProductCart, Stock
 from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
@@ -77,7 +77,14 @@ def crete_pdf_bill(
 
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
+        ).order_by(
+            Case(
+                When(id_cart__isnull=False, then=0),
+                default=1
+            ),
+            F('id_cart__order'),
+            'id'
+        )
         print(type_delivery)
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
 
@@ -113,6 +120,7 @@ def crete_pdf_bill(
 
         print("type_bill", type_bill)
         print("bill_name", bill_name)
+        print("type_save", type_save)
         print("*******************************")
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"

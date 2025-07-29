@@ -71,8 +71,10 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-price-exclusive"
           );
           const itemPrice = specificationItem.getAttribute("data-price");
+          const textPrice = specificationItem.querySelector(".price_once");
           const marjaItem =
           specificationItem.querySelector(".marja-input");
+          
           const extraDiscount =
             specificationItem.querySelector(".discount-input");
           const productSpecificationId = specificationItem.getAttribute(
@@ -154,7 +156,16 @@ window.addEventListener("DOMContentLoaded", () => {
               deliveryDate.style.borderColor = "red";
             }
           }
-
+          if (itemPrice) {
+            console.log(itemPrice)
+            console.log("inputPrice.value", itemPrice)
+            if (!itemPrice || itemPrice == 0.00 || itemPrice == 0.0 || itemPrice == 0 || itemPrice == "0,00" || itemPrice == "0,0"  || itemPrice == "0") {
+  
+              console.log(" if inputPrice 22222222222222")
+              validate = false;
+              textPrice.style.color = "red";
+            }
+          }
           if (inputPrice) {
             if (!inputPrice.value) {
               validate = false;
@@ -211,7 +222,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           const data = JSON.stringify(dataObj);
-
+          console.log("add-order-admin", "change-invoice")
           fetch("/api/v1/order/add-order-admin/", {
             method: "POST",
             body: data,
@@ -223,10 +234,13 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               if (response.status == 200 || response.status == 201) {
                 localStorage.removeItem("specificationValues");
-                document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                deleteCookie("key", "/", window.location.hostname);
+                deleteCookie("specificationId", "/", window.location.hostname);
+                deleteCookie("cart", "/", window.location.hostname);
+                // document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                 return response.json();
               } else {
                 throw new Error("Ошибка");

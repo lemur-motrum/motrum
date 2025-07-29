@@ -232,17 +232,13 @@
             <label>
                 {% if bill_upd %}
                     <input class="delivery_date"
-                           {% comment %}
-                           disabled
-                           {% endcomment %}
+                           
                            type="date"
                            name="calendar"
                            value="{% if item.date_delivery_cart|date %}{{ item.date_delivery_cart|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
                 {% else %}
                     <input class="delivery_date"
-                           {% comment %}
-                           disabled
-                           {% endcomment %}
+                          
                            type="date"
                            name="calendar"
                            min="{{ current_date }}"

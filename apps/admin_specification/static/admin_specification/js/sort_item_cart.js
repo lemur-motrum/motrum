@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
       
       // Автоматическая прокрутка при перетаскивании
       scroll: true,
-      scrollSensitivity: 50,
+      scrollSensitivity: 100,
       scrollSpeed: 10,
       
       // События

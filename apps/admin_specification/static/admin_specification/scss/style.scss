@@ -6207,3 +6207,42 @@ h1 {
     }
   }
 }
+
+/* SortableJS стили */
+.sortable-ghost {
+  opacity: 0.5;
+  background: #f0f0f0;
+  border: 2px dashed #ccc;
+}
+
+.sortable-chosen {
+  background: #e3f2fd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sortable-drag {
+  opacity: 0.8;
+  transform: rotate(5deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для элементов корзины при перетаскивании */
+.item_container {
+  cursor: grab;
+  transition: all 0.2s ease;
+  
+  &:active {
+    cursor: grabbing;
+  }
+  
+  &.sortable-ghost {
+    cursor: grabbing;
+  }
+}
+
+/* Запрещаем перетаскивание для кнопок */
+.item_container-delete_btn,
+.change_icon_container,
+.save_icon_container {
+  cursor: pointer !important;
+}

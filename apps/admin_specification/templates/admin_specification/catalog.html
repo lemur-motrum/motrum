@@ -32,6 +32,7 @@
                         Срок <span>поставки</span>
                     </div>
                 </div>
+                <div id="drop_items">
                 <!-- товары из окт -->
                 {% for item in product %}
                     {% include "admin_specification/include/item_in_cart/product_in_bd_item.html" %}
@@ -217,8 +218,9 @@
                                 </div>
                             </div>
                         </div> {% endcomment %}
-                    {% endif %}
-                {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
                 <!--новый товар добавить-->
                 {% include "admin_specification/include/item_in_cart/new_product_add.html" %}
                 <div class="price_description">

@@ -1,5 +1,7 @@
 {% load static %}
 {% load js_version %}
+<!-- CDN libraries -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <!--functions  -->
 <script type="module"
         src="{% static 'core/js/functions.js' %}?ver={% js_version %}"></script>
@@ -66,7 +68,11 @@
         src="{% static 'admin_specification/js/file_downlad_to_productcart.js' %}?ver={% js_version %}"></script>
 <script type="module"
         src="{% static 'admin_specification/js/search_supplier.js' %}?ver={% now 'u' %}"></script>
-<script type="module"
+        <script type="module"
+        src="{% static 'admin_specification/js/sort_item_cart.js' %}?ver={% now 'u' %}"></script>
+
+
+        <script type="module"
         src="{% static 'core/js/scripts/web.js' %}?ver={% js_version %}"></script>
 <script type="module"
         src="{% static 'core/js/scripts/overlay-logic.js' %}?ver={% js_version %}"></script>

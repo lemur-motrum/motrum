@@ -1937,6 +1937,29 @@ def bx_save_start_info(request):
             pass
 
 
+# Сохранение порядка элементов корзины
+@csrf_exempt
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def save_cart_order(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            order_data = data.get('order', [])
+            
+            # Обновляем порядок элементов в корзине
+            for item in order_data:
+                item_id = item.get('id')
+                new_order = item.get('order')
+                
+                # Обновляем порядок в ProductCart
+                ProductCart.objects.filter(id=item_id).update(order=new_order)
+            
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
 # страница товаров заказа только для трансляции битрикс
 @csrf_exempt
 def bitrix_product(request):

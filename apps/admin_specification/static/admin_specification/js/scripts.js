@@ -16,6 +16,7 @@ import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
 import { buttonsLogic } from "../js/add_product_in_cart.js";
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
+import { sortingItemCart } from "../js/sort_item_cart.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -75,6 +76,7 @@ function backendDataFormat(string) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  // СТРАНИЦА КАТАЛОГА ТОВАРОВ
   const catalogContainer = document.querySelector(".catalog_container");
   if (catalogContainer) {
     const catalog = catalogContainer.querySelector(
@@ -303,10 +305,11 @@ window.addEventListener("DOMContentLoaded", () => {
       setCurrentPriceCataloItem(catalogItems);
     }
   }
-
+  // СТРАНИЦА СПЕЦИФИКАЦИИ КОРЗИНА
   const specificationContainer = document.querySelector(
     ".specification-container"
   );
+  
 
   if (specificationContainer) {
     const spetificationTable = specificationContainer.querySelector(
@@ -323,6 +326,8 @@ window.addEventListener("DOMContentLoaded", () => {
       const revenue = totalPriceValueContainer.querySelector(".revenue");
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
+      // перетягивание элементов в корзине
+      sortingItemCart();
 
       // функция ставит значения в блок итого
       function getResult() {
@@ -358,10 +363,11 @@ window.addEventListener("DOMContentLoaded", () => {
         getDigitsNumber(marginality, +margSum);
 
         // ставить занчение в сумму НДС
-      
+
         const ndsPercent = +specificationContainer.getAttribute("nds");
-        let nds_sum = +sum * ndsPercent / (ndsPercent + 100)
-        const nds_container = totalPriceValueContainer.querySelector(".nds_sum_value");
+        let nds_sum = (+sum * ndsPercent) / (ndsPercent + 100);
+        const nds_container =
+          totalPriceValueContainer.querySelector(".nds_sum_value");
         console.log("nds_sum", nds_sum);
         getDigitsNumber(nds_container, nds_sum);
 
@@ -381,7 +387,7 @@ window.addEventListener("DOMContentLoaded", () => {
       // в этой функции тольуо первичная отправка на первый эндпоинт без остальных
       // старая и не имеет актуальных изменений
       function saveSpecification(elems) {
-        console.log("saveSpecification(elems)")
+        console.log("saveSpecification(elems)");
         const specificationId = getCookie("specificationId");
         const adminCreator = document.querySelector("[data-user-id]");
         const adminCreatorId = adminCreator.getAttribute("data-user-id");
@@ -639,7 +645,10 @@ window.addEventListener("DOMContentLoaded", () => {
           );
         }
         if (itemPriceOnce) {
-          console.log("634item.querySelector(price_once.textContent",item.querySelector(".price_once").textContent);
+          console.log(
+            "634item.querySelector(price_once.textContent",
+            item.querySelector(".price_once").textContent
+          );
           if (discountInput.value) {
             console.log("discountInput");
             getDigitsNumber(
@@ -852,10 +861,9 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-
         console.log("917");
 
-        // обновление колва товаров 
+        // обновление колва товаров
         plusButton.onclick = () => {
           if (multiplicity) {
             countQuantity += +multiplicity;
@@ -936,7 +944,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("995");
         console.log(item.querySelector(".price_once").textContent);
 
-        // если не заполнена цена для товара из каталога 
+        // если не заполнена цена для товара из каталога
         if (inputPrice) {
           const totalPrice = item.querySelector(".input_totla-cost");
           const quantity = item.querySelector(".input-quantity");
@@ -1131,7 +1139,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           if (saveButton) {
-            console.log("1292 saveButton.onclick = () => saveSpecification();")
+            console.log("1292 saveButton.onclick = () => saveSpecification();");
             saveButton.onclick = () => saveSpecification();
           }
         } else {
@@ -1192,7 +1200,9 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           if (saveButton) {
-            console.log(" 1191 saveButton.onclick = () => saveSpecification(productItems);");
+            console.log(
+              " 1191 saveButton.onclick = () => saveSpecification(productItems);"
+            );
             saveButton.onclick = () => saveSpecification(productItems);
           }
         }
@@ -1215,7 +1225,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
         };
         if (discountInput.value) {
-          console.log(1350)
+          console.log(1350);
           const currentPrice =
             quantity.value *
             ((getCurrentPrice(item.getAttribute("data-price")) *
@@ -1238,7 +1248,9 @@ window.addEventListener("DOMContentLoaded", () => {
       getResult();
       getMarginality(spetificationTable);
       if (saveButton) {
-        console.log("1396 saveButton.onclick = () => saveSpecification(productItems);")
+        console.log(
+          "1396 saveButton.onclick = () => saveSpecification(productItems);"
+        );
         saveButton.onclick = () => saveSpecification(productItems);
       }
       exitButton.onclick = () => exitSpecification(productItems);

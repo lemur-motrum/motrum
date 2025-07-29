@@ -9,6 +9,7 @@
      data-product-id-cart="{{ item.id }}"
      data-product-article-new="{{ item.product_new_article }}"
      data-id="{{ item.id }}"
+     data-order="{% if item.order %}{{ item.order }}{% else %}0{% endif %}"
      data-price="{{ item.product_new_price }}"
      data-price-exclusive="1"
      data-product-specification-id="{{ id_product_spesif }}"
@@ -17,6 +18,7 @@
     <div title="Редактировать элемент" class="change_icon_container">
         <img src="{% static "core/images/changeIcon.svg" %}" alt="icon" />
     </div>
+    
     <div title="Cохранить элемент" class="save_icon_container">
         <img src="{% static "core/images/save-okt-icon.png" %}" alt="icon" />
     </div>
@@ -152,6 +154,11 @@
                        min="{{ current_date }}">
             {% endif %}
         </label>
+    </div>
+    <div title="Перетащить элемент" class="drag-handle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+        </svg>
     </div>
     <!-- изменениеновый товар -->
     <div class="change_item_container_wrapper">

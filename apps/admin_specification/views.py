@@ -572,6 +572,9 @@ def create_specification(request):
                     id_cart_item=product_cart.filter(id=OuterRef("id")).values(
                         "id",
                     ),
+                    order=product_cart.filter(id=OuterRef("id")).values(
+                        "order",
+                    ),
                     price_motrum_cart=product_cart.filter(
                         product=OuterRef("pk")
                     ).values(
@@ -642,6 +645,7 @@ def create_specification(request):
                 .exclude(id__in=product_new_value_id)
                 .annotate(
                     id_cart_item=F("id"),
+                    order=F("order"),
                     price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
@@ -661,7 +665,7 @@ def create_specification(request):
                         ),
                     ),
                 )
-                .order_by("id")
+                .order_by("order", "id")
             )
             update_spesif = True
 
@@ -895,12 +899,15 @@ def create_specification(request):
                 ),
                 id_cart_item=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "id",
+                ),
+                order=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "order",
                 ),  # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
                 #         ),
             )
-            .order_by("id_product_cart")
+            .order_by("order", "id_product_cart")
             # .order_by("id_product_cart")
         )
 

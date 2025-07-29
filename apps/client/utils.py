@@ -112,6 +112,7 @@ def crete_pdf_bill(
             # motrum_info.counter_bill_offer = bill_name
 
         print("type_bill", type_bill)
+        print("bill_name", bill_name)
         print("*******************************")
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"

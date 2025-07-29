@@ -9,6 +9,7 @@
      data-product-pk="{{ item.pk }}"
      data-price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %}{{ item.price_motrum }} {% endif %}"
      data-id="{{ item.id_product_cart }}"
+     data-order="{% if item.order %}{{ item.order }}{% else %}0{% endif %}"
      data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %}"
      data-price-exclusive="{% if item.price == "0" or item.price == "0.0" or item.price.extra_price == True %}1{% else %}0{% endif %}"
      data-product-specification-id="{{ item.id_product_spesif }}"
@@ -252,5 +253,11 @@
                     {% endif %}
                 {% endif %}
             </label>
+        </div>
+    
+        <div title="Перетащить элемент" class="drag-handle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            </svg>
         </div>
     </div>

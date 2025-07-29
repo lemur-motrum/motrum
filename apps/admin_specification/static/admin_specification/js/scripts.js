@@ -16,7 +16,7 @@ import { editMotrumPrice } from "../js/edit_motrum_price.js";
 import { getMarginality } from "../js/marginality.js";
 import { buttonsLogic } from "../js/add_product_in_cart.js";
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
-import { sortingItemCart } from "../js/sort_item_cart.js";
+// import { sortingItemCart } from "../js/sort_item_cart.js";
 
 // получение токена из куки
 const csrfToken = getCookie("csrftoken");
@@ -327,7 +327,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const saveButton = spetificationTable.querySelector(".save_button");
       const exitButton = spetificationTable.querySelector(".exit_button");
       // перетягивание элементов в корзине
-      sortingItemCart();
+      // sortingItemCart();
 
       // функция ставит значения в блок итого
       function getResult() {

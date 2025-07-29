@@ -1120,7 +1120,11 @@ class ProductCart(models.Model):
     date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
-
+    order = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Корзина продукт"
         verbose_name_plural = "Корзина Продукты"

@@ -964,6 +964,12 @@ def create_specification(request):
         title = f"Новый заказ"
         type_save = "счет"
 
+    
+    # if client_req:
+    #     spesif_number = client_req
+    # else:
+    #     spesif_number = None
+    
     type_delivery = TypeDelivery.objects.filter(actual=True)
     supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")

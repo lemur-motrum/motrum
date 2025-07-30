@@ -6243,7 +6243,25 @@ h1 {
 /* Стили для элементов при перетаскивании */
 .item_container {
   transition: all 0.2s ease;
-  user-select: none;
+  // user-select: none;
+  
+  /* Разрешаем выделение текста в интерактивных элементах */
+  input, select, textarea, .item_value {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+  }
+  
+  /* Специально для элементов с классом data-base-product-container */
+  &.data-base-product-container {
+    .item_value {
+      user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+    }
+  }
   
   &.dragging {
     opacity: 0.8;

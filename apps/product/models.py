@@ -317,9 +317,11 @@ class Product(models.Model):
         sender, instance, history_instance, **kwargs
     ):
         if history_instance.history_type == "~":
-            delta = history_instance.diff_against(history_instance.prev_record)
-            if delta.changed_fields == []:
-                history_instance.delete()
+            # Проверяем, что prev_record не None перед сравнением
+            if history_instance.prev_record is not None:
+                delta = history_instance.diff_against(history_instance.prev_record)
+                if delta.changed_fields == []:
+                    history_instance.delete()
 
 
 @receiver(post_save, sender=Product)

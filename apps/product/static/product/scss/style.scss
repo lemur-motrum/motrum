@@ -980,6 +980,9 @@
                     min-height: 6.5rem;
                     overflow: hidden;
                     margin-left: 0.1rem;
+                    @media screen and (max-width: 576px) {
+                      min-height: 5.5rem;
+                    }
                   }
 
                   .add_more_btn {
@@ -1809,6 +1812,7 @@
       }
     }
   }
+
 }
 .product_one_container {
   margin: 1.625rem 3.125rem 0 3.125rem;
@@ -2736,3 +2740,145 @@
     }
   }
 }
+.promo_block_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  .promo_block_content {
+    display: flex;
+    flex-direction: row;
+    gap: 3.5rem;
+    @media screen and (max-width: 576px) {
+      flex-direction: column; // На мобильных картинка сверху, текст снизу
+      gap: 1rem; // Уменьшаем отступ между элементами
+    }
+          .promo_block_text {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        font-size: 1.125rem !important;
+        font-weight: 300 !important;
+        font-family: "Nunito", sans-serif !important;
+        @media screen and(max-width:576px) {
+          width: 100%; // На мобильных текст занимает всю ширину
+          font-size: 0.75rem !important;
+        }
+      
+      .promo_text_content {
+        max-height: 6rem; // 4 строки примерно
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        
+        &.expanded {
+          max-height: none;
+        }
+      }
+      .project_one_description_title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        @media screen and(max-width:576px) {
+          font-size: 1rem !important;
+        }
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        margin-left: 2rem;
+        @media screen and(max-width:576px) {
+          margin-left: 1rem;
+        }
+        li {
+          list-style: none;
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            width: 0.425rem;
+            height: 0.425rem;
+            left: -0.945rem;
+            top: 0%;
+            transform: translateY(100%);
+            border-radius: 100%;
+            background-color: #95bad4;
+          }
+        }
+      }
+      p {
+        margin: 0;
+        padding: 0;
+        font-size: 1.125rem !important;
+        @media screen and (max-width: 576px) {
+          font-size: 0.75rem !important;
+        }
+      }
+      span {
+        font-family: "Nunito", sans-serif !important;
+        font-size: 1.125rem !important;
+        @media screen and (max-width: 576px) {
+          font-size: 0.75rem !important;
+        }
+      }
+      ol {
+        margin: 0;
+        padding: 0;
+      }
+    }
+    .promo_block_img {
+      width: 30%;
+      height: 6rem; // Такая же высота как у видимой части текста
+      padding-top: 1rem;
+      display: flex;
+      justify-content: center;
+      align-self: flex-start;
+      @media screen and (max-width: 576px) {
+        width: 100%; // На мобильных изображение занимает всю ширину
+        height: 4rem; // Уменьшаем высоту для мобильных
+        padding-top: 0; // Убираем отступ сверху
+        align-self: center; // Центрируем изображение
+        order: -1; // Перемещаем картинку на первое место (сверху)
+      }
+      .promo_block_img_container{
+        height: 100%; // Контейнер занимает всю высоту родителя
+        width: 100%; // Контейнер занимает всю ширину родителя
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img{
+          width: 100%;
+          height: 100%; // Изображение занимает всю высоту контейнера
+          -o-object-fit: contain; // Изменено на contain чтобы изображение полностью влезало
+          object-fit: contain; // Изменено на contain чтобы изображение полностью влезало
+        }
+      }
+      
+     
+    }
+  }
+  
+  .promo_text_add_more_btn {
+    align-self: flex-start;
+    margin-top: 1rem;
+    position: relative;
+    cursor: pointer;
+    
+    &.hide {
+      display: none !important;
+    }
+    
+    &::after {
+      content: var(--button-text, "Показать еще");
+      // position: absolute;
+      text-decoration: underline dotted;
+      color: #95bad4;
+      top: 50%;
+      left: 0%;
+      transform: translate(0%, -50%);
+      font-weight: 700;
+      text-underline-offset: 0.3rem;
+    }
+  }
+}
+
+
+

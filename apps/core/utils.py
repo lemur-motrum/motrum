@@ -3315,8 +3315,7 @@ def create_file_props_in_vendor_props():
     # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
-    path_innovert = f"{new_dir}/innovert.csv"
-    # path_instart = f"{new_dir}/instart.csv"
+    path_unimat = f"{new_dir}/veda.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -3326,8 +3325,8 @@ def create_file_props_in_vendor_props():
     ]
 
     props = []
-    
-    all_product_supplier = Product.objects.filter(supplier__slug="promsiteh")
+
+    all_product_supplier = Product.objects.filter(vendor__slug="veda")
     i = 0
     print(all_product_supplier)
 
@@ -4151,7 +4150,7 @@ def serch_prod_to_motrum_props_categ_to_create_product(
             property_motrum=obj.property_motrum,
             property_value_motrum=obj.property_value_motrum,
             is_diapason=obj.is_diapason,
-            is_have_vendor_props=True,
+            is_have_vendor_props=False,
         )
         error = "info_error"
         location = "+ х-ка"

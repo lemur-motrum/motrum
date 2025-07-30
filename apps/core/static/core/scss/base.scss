@@ -2208,8 +2208,8 @@ a {
       width: 95%;
       padding: 1.25rem 0.75rem;
       left: 0.5rem;
-      top: 0.5rem;
       height: auto;
+      z-index: 301;
     }
     .logo-container {
       display: none;
@@ -2309,6 +2309,9 @@ a {
         gap: 1.125rem;
         // margin-left: 5.419rem;
         margin-top: -0.5rem;
+        @media screen and(max-width:576px) {
+          margin-top: 1rem;
+        }
         div {
           width: 2.75rem;
           height: 2.35rem;
@@ -2524,12 +2527,12 @@ a {
   &.visible {
     opacity: 1;
   }
-
   @media screen and (max-width: 576px) {
     width: 96%;
     bottom: 5%;
     left: 2%;
     height: 5rem;
+    float: none;
   }
   .img-container {
     width: 4.5rem;
@@ -2537,7 +2540,7 @@ a {
     border-radius: 1.6rem;
     overflow: hidden;
     @media screen and (max-width: 576px) {
-      width: 6rem;
+      width: 5rem;
       height: 5rem;
       border-radius: 1.5rem;
     }
@@ -2549,13 +2552,13 @@ a {
     }
   }
   .description-container {
-    width: calc(100% - 4.6rem);
+    width: calc(100% - 4.5rem);
     border-radius: 1.6rem;
     height: 100%;
     overflow: hidden;
     position: relative;
     @media screen and (max-width: 576px) {
-      width: 102%;
+      width: calc(100% - 5.1rem);
       border-radius: 1.5rem;
       display: flex;
       flex-direction: column;

@@ -523,6 +523,9 @@ class DiscountAdmin(admin.ModelAdmin):
 
 class VendorWebAdmin(admin.ModelAdmin):
     model = Vendor
+    search_fields = [
+        "name",
+    ]
     list_display = (
         "name",
         "is_view_index_web",
@@ -535,8 +538,15 @@ class VendorWebAdmin(admin.ModelAdmin):
         "is_view_index_web",
         "article",
         "article_filter",
+        "promo_text",
+        "img_promo",
     )
     readonly_fields = ["name"]
+    
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     form.base_fields['promo_text'].widget = Textarea(attrs={'rows': 10, 'cols': 80})
+    #     return form
 
     def has_delete_permission(self, request, obj=None):
         return False

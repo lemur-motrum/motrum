@@ -933,10 +933,10 @@ class ProductProperty(models.Model):
 
     def save(self, *args, **kwargs):
         if self.value == "true" or self.value == "True" or self.value == True :
-            self.value == "Да"
+            self.value = "Да"
 
         if self.value == "false" or self.value == "False" or self.value == False :
-            self.value == "Нет"
+            self.value = "Нет"
         
         # Получение х-к мотрум  
         obj= VendorPropertyAndMotrum.objects.filter(

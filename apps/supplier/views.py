@@ -127,7 +127,7 @@ from apps.supplier.get_utils.prompower import (
     pp_aup_doc_name, pp_aup_doc_name, prompower_api,
 )
 
-from apps.supplier.get_utils.veda import veda_api
+from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, save_categories_to_excel, veda_api
 from apps.supplier.models import (
     Supplier,
     SupplierCategoryProductAll,

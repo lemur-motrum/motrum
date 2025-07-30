@@ -27,6 +27,9 @@ from apps.product.forms import (
     ProductChangeNotAutosaveForm,
     ProductDocumentAdminForm,
     ProductForm,
+    ProductPropertyForm,
+    ProductPropertyMotrumForm,
+    ProductPropertyMotrumItemForm,
 )
 from apps.product.models import (
     CategoryProduct,
@@ -37,7 +40,11 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrumArticleCateg,
+    ProductPropertyMotrumItem,
     Stock,
+    ProductPropertyValueMotrum,
+    ProductPropertyMotrum
 )
 
 from apps.supplier.models import (
@@ -561,7 +568,21 @@ class ProductPropertyInline(admin.TabularInline):
 
         return qs.filter(hide=False)
 
+class ProductPropertyMotrumItemInline(admin.TabularInline):
+    model = ProductPropertyMotrumItem
+    form = ProductPropertyMotrumItemForm
+    fields = ("property_motrum", "property_value_motrum", "property_value_motrum_to_diapason")
+    extra = 0
 
+    
+
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+
+    #     return qs.filter(hide=False)
+   
+
+   
 @admin.action(description="Добавить документы для выбранных товаров")
 def add_documents(ProductAdmin, request, queryset):
     from django.http import HttpResponseRedirect
@@ -605,13 +626,15 @@ class ProductAdmin(SimpleHistoryAdmin):
         "name",
         "пустые_поля",
     ]
-
+    
     inlines = [
         PriceInline,
         StockInline,
         ProductPropertyInline,
+        ProductPropertyMotrumItemInline,
         ProductImageInline,
         ProductDocumentInline,
+        
     ]
 
     fieldsets = [
@@ -805,10 +828,13 @@ class ProductAdmin(SimpleHistoryAdmin):
                     # "supplier"
                 ]
             else:
-                return [
-                    "article_supplier",
-                    # "supplier"
-                ]
+                # return [
+                #     "article_supplier",
+                #     # "supplier"
+                # ]
+                 return [
+            "",
+        ]
         return [
             "",
         ]
@@ -1187,6 +1213,28 @@ class CategoryProductAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class ProductPropertyValueMotrum(admin.TabularInline):
+    model = ProductPropertyValueMotrum
+    extra = 1
+    fields = ("value",)
+class ProductPropertyMotrumArticleCategAdmin(admin.TabularInline):
+    model = ProductPropertyMotrumArticleCateg
+    extra = 1
+    fields = ("category","group","article")
+    form = ProductPropertyMotrumForm
+
+class ProductPropertyMotrumAdmin(admin.ModelAdmin):
+    fields = (
+        "name",
+        "article",
+        'is_diapason',
+    )
+    
+    inlines = [
+        ProductPropertyValueMotrum,
+        ProductPropertyMotrumArticleCategAdmin,
+    ]
+
 
 # АДМИНКА ДЛЯ ВЕБСАЙТА
 
@@ -1236,9 +1284,13 @@ class CategoryProductAdminWeb(admin.ModelAdmin):
         return False
 
 
-admin.site.register(CategoryProduct, CategoryProductAdmin)
-website_admin.register(CategoryProduct, CategoryProductAdminWeb)
-# admin.site.register(GroupProduct)
-
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Lot,LotAdmin)
+admin.site.register(CategoryProduct, CategoryProductAdmin)
+admin.site.register(ProductPropertyMotrum, ProductPropertyMotrumAdmin)
+
+
+website_admin.register(CategoryProduct, CategoryProductAdminWeb)
+
+# admin.site.register(GroupProduct)
+

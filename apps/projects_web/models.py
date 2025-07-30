@@ -70,10 +70,18 @@ class Project(models.Model):
                 name = f"{self.name} {project_id}"
             else:
                 name = self.name
-
-            slug_text = name
-            slugish = translit.translify(slug_text)
-            self.slug = slugify(slugish)
+            if self.slug is None or self.slug == "":
+                slug_text = name
+                slugish = translit.translify(slug_text)
+                base_slug = slugify(slugish)
+                slug = base_slug
+                ModelClass = self.__class__
+                counter = 1
+                # Проверяем уникальность
+                while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                    slug = f"{base_slug}-{counter}"
+                    counter += 1
+                self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -147,10 +155,18 @@ class CategoryProject(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug is None or self.slug == "":    
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -179,10 +195,18 @@ class ClientCategoryProject(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug is None or self.slug == "":
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -211,10 +235,18 @@ class ClientCategoryProjectMarking(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         self.name = " ".join(self.name.split())
-
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug is None or self.slug == "":
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 

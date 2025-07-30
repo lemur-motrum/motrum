@@ -401,16 +401,16 @@ function addNewProductLogic(container) {
 
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
-
+      
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
           searchProductItem.classList.add("active");
-          counterElems = i + 1;
+          // counterElems = i + 1;
         };
         searchProductItem.onmouseout = () => {
           searchProductItem.classList.remove("active");
-          counterElems = 0;
+          // counterElems = 0;
         };
 
         const productId = searchProductItem.getAttribute("product-id");

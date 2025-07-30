@@ -115,4 +115,11 @@ app.conf.beat_schedule = {
     #     "task": "apps.supplier.tasks.add_prompower_name_doc",
     #     "schedule": crontab(0, 0, day_of_month=17, month_of_year=7),
     # },
+    # yдалить дуьли пропсов мотрум
+    
+    "del_prop_motrum_item_dublet": {
+        "task": "apps.supplier.tasks.del_prop_motrum_item_dublet",
+        "schedule": crontab(minute=10, hour=0, day_of_month=31, month_of_year=7),
+    },
+
 }

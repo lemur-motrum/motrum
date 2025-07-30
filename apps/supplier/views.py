@@ -84,6 +84,7 @@ from apps.core.utils import (
     add_new_photo_adress_prompower,
     create_time_stop_specification,
     delete_everything_in_folder,
+    delete_prop_motrum_item_duble,
     email_manager_after_new_order_site,
     get_category_prompower,
     image_error_check,
@@ -160,7 +161,7 @@ def add_iek(request):
     bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    delete_prop_motrum_item_duble()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

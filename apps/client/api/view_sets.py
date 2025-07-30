@@ -929,6 +929,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             try:
+                
                 data_order = {
                     "comment": data["comment"],
                     "name": id_bitrix,
@@ -944,6 +945,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 }
 
                 order = Order.objects.get(cart_id=cart)
+                print("order = Order.objects.get")
+                if order.id_bitrix == None:
+                    data_order["id_bitrix"] = id_bitrix
+                    
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():
                     serializer._change_reason = "Ручное"
@@ -982,7 +987,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 }
 
                 serializer = self.serializer_class(data=data_order, many=False)
-
+                print("order = Order.DoesNotExist")
                 if serializer.is_valid():
                     print("serializer.is_valid():")
                     cart.is_active = True
@@ -1156,10 +1161,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 
                 type_save = request.COOKIES.get("type_save")
                 
-                # json_data = json.dumps(data_for_1c)
-                # url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-                # headers = {"Content-type": "application/json"}
-                # response = send_requests(url, headers, json_data, "1c")
+                json_data = json.dumps(data_for_1c)
+                url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+                headers = {"Content-type": "application/json"}
+                response = send_requests(url, headers, json_data, "1c")
                 
                 if IS_TESTING or user.username == "testadmin":
 

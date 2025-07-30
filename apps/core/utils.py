@@ -1486,6 +1486,7 @@ def save_specification(
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
+    print("id_bitrix", id_bitrix)   
     specification.id_bitrix = id_bitrix
     specification.marginality = marginality
     specification._change_reason = "Ручное"

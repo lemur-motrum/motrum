@@ -594,12 +594,12 @@ def parse_drives_ru_products():
                     product._change_reason = "Автоматическое"
                     product.save()
 
-                    # image = ProductImage.objects.filter(product=product).exists()
-                    # if image == False:
-                    #     save_image(product)
+                    image = ProductImage.objects.filter(product=product).exists()
+                    if image == False:
+                        save_image(product)
 
              
-                    # save_document(result["documents"], product)
+                    save_document(result["documents"], product)
 
                     props = ProductProperty.objects.filter(product=product).exists()
 

@@ -55,6 +55,10 @@ app.conf.beat_schedule = {
         "task": "apps.supplier.tasks.add_veda",
         "schedule": crontab(minute=00, hour=3),
     },
+    "add_veda_parse_web_test": {
+        "task": "apps.supplier.tasks.add_veda_parse_web",
+        "schedule": crontab(minute=10, hour=3),
+    },
     # получение апи товаров промповер
     "add_prompower": {
         "task": "apps.supplier.tasks.add_prompower",

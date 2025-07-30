@@ -1,3 +1,4 @@
+{% load static %}
 <div class="item_container added_item_container"
     data-vendor="{% if item.product_new_cart_vendor %}{{ item.product_new_cart_vendor }}{% else %} {{ item.vendor.id }}{% endif %}"
     data-supplier="{% if item.product_new_cart_supplier %}{{ item.product_new_cart_supplier }}{% else %} {{ item.supplier.id }}{% endif %}"

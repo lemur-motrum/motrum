@@ -13,7 +13,10 @@ from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
 import uuid
 # Create your models here.
-
+TYPE_SPES_NAME = (
+    ("Д", "Д"),
+    
+)
 
 class Specification(models.Model):
 
@@ -25,7 +28,11 @@ class Specification(models.Model):
         "Номер спецификации",default=None,
         null=True,
     )
-    
+    name_prefix = models.CharField(
+        "Префикс номера",
+        max_length=100, choices=TYPE_SPES_NAME, default="Д",blank=True,
+        null=True,
+    )
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     date_create_pdf = models.DateField(verbose_name="Дата создания пдф", null=True, default=None)

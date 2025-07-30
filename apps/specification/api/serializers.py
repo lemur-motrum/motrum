@@ -189,6 +189,7 @@ class ListsProductSpecificationSerializer(serializers.ModelSerializer):
             "total_amount",
             "productspecification_set",
             "number",
+            "name_prefix",
         )
 
     def to_representation(self, instance):

@@ -116,7 +116,7 @@ def crete_pdf_specification(
         #     date = transform_date(date_data)
         #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
-        name_specification = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
+        name_specification = f"СП №{specifications.name_prefix}-{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
         fileName = os.path.join(directory, name_specification)
         story = []
 
@@ -224,14 +224,14 @@ def crete_pdf_specification(
 
         story.append(
             Paragraph(
-                f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>",
+                f"<b>Спецификация №{specifications.name_prefix}-{specification_name} от {date_title}г.</b><br></br><br></br>",
                 bold_right_style,
             )
         )
         if to_contract:
             story.append(
                 Paragraph(
-                    f"К договору № {to_contract} от {date_contract}", normal_style
+                    f"К договору {to_contract} от {date_contract}", normal_style
                 )
             )
 

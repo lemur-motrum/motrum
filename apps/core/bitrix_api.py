@@ -1515,7 +1515,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
-        email_manager_after_new_order_site(order)
+        # email_manager_after_new_order_site(order)
         return ("ok", None)
 
     except Exception as e:
@@ -2377,14 +2377,14 @@ def add_new_order_web_not_info(order_id):
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
-            email_manager_after_new_order_site(order)
+            # email_manager_after_new_order_site(order)
         elif type_save == "old":
             order_new_bx_id = add_new_order_bx(
                 bx, None, None, None, None, client_bx_id, client
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
-            email_manager_after_new_order_site(order)
+            # email_manager_after_new_order_site(order)
 
         return ("ok", None)
 

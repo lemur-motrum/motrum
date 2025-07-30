@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block content %}
     <div class="products_wrapper">
         <div class="title_container">
@@ -7,6 +8,34 @@
                 <a href={% url "product:catalog" %}>каталог</a>
             </div>
             <h1>{{ brand.name }}</h1>
+            
+            {% if brand.promo_text or brand.img_promo %}
+                <div class="promo_block_container">
+                <div class="promo_block_content">
+                    <div class="promo_block_text" id="promo-text-container">
+                        {% if brand.promo_text %}
+                            <div class="promo_text_content" id="promo-text-content">
+                                {{ brand.promo_text|safe }}
+                            </div>
+                            <div class="promo_text_add_more_btn add_more_btn hide" id="promo-text-btn">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="promo_block_img">
+                        {% if brand.img_promo %}
+                            <div class="promo_block_img_container">
+                                <img src="{{ brand.img_promo.url }}" alt="{{ brand.name }}">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if brand.promo_text %}
+                    
+                {% endif %}
+            </div>
+            {% endif %}
+                
+            
             <div class="site_groups_container">
                 <div class="swiper-wrapper">
                     {% for group in another_groups %}

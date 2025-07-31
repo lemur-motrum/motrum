@@ -27,7 +27,8 @@ window.addEventListener("DOMContentLoaded", () => {
       scroll: true,
       scrollSensitivity: 100,
       scrollSpeed: 10,
-      
+      // bubbleScroll: true
+     
       // События
       onStart: function (evt) {
         console.log('Начало перетаскивания элемента:', evt.item);

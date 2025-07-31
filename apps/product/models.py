@@ -856,7 +856,7 @@ class ProductImage(models.Model):
         "Изображение", upload_to=get_file_path_add, max_length=500, null=True
     )
     # file = models.CharField("фаил в системе", max_length=100, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=250)
+    link = models.CharField("Ссылка у поставщика", max_length=1000)
     hide = models.BooleanField("Скрыть", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
@@ -883,7 +883,7 @@ class ProductDocument(models.Model):
         "Тип документации", max_length=100, choices=TYPE_DOCUMENT, default="Other"
     )
     name = models.CharField("Название документа", max_length=1000, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=1000, null=True)
+    link = models.CharField("Ссылка у поставщика", max_length=2000, null=True)
     hide = models.BooleanField("Скрыть", default=False)
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))

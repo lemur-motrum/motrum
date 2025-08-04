@@ -3387,7 +3387,7 @@ def create_file_props_in_vendor_props():
 
     props_count = len(props)
     print("props_count",props_count)
-    with open(path_innovert, "w", encoding="UTF-8") as writerFile:
+    with open(path_unimat, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
         )

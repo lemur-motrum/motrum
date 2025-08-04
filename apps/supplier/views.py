@@ -164,8 +164,7 @@ def add_iek(request):
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
     def background_task():
-        parse_drives_ru_category()
-        parse_drives_ru_products()
+       create_file_props_in_vendor_props()
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)
     daemon_thread.start()

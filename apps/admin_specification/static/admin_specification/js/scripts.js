@@ -139,141 +139,120 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
-                    product.pk
-                  }  data-price=${
-                    !product.price ? 0 : product.price
-                  }  data-motrum-id=${product.article} data-saler-id=${
-                    product.saler_article
-                  } data-discoutnt=${
-                    product.discount
-                  } data-order-multiplicity=${product.multiplicity}> 
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk
+                    }  data-price=${!product.price ? 0 : product.price
+                    }  data-motrum-id=${product.article} data-saler-id=${product.saler_article
+                    } data-discoutnt=${product.discount
+                    } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
-                                <div class="name">${
-                                  product.supplier != product.vendor &&
-                                  product.vendor != null
-                                    ? product.supplier +
-                                      " " +
-                                      product.vendor +
-                                      " " +
-                                      product.name
-                                    : product.supplier + " " + product.name
-                                }</div>
-                                <div class="article-motrum">${
-                                  product.article
-                                }</div>
+                                <div class="name">${product.supplier != product.vendor &&
+                      product.vendor != null
+                      ? product.supplier +
+                      " " +
+                      product.vendor +
+                      " " +
+                      product.name
+                      : product.supplier + " " + product.name
+                    }</div>
+                                <div class="article-motrum">${product.article
+                    }</div>
                                 <div class="charactiristics">
-                                    ${
-                                      product.chars.length == 0
-                                        ? "-"
-                                        : product.chars.join(" ")
-                                    }
+                                    ${product.chars.length == 0
+                      ? "-"
+                      : product.chars.join(" ")
+                    }
                                 </div>
                                 <div class="stock">
-                                ${
-                                  product.stock
-                                    ? `<div class="stock_item">
-                                    ${
-                                      product.stock_to_order
-                                        ? " Поставщик:<br>Под заказ"
-                                        : `${
-                                            product.stock_supplier
-                                              ? `Поставщик: ${product.stock_supplier}`
-                                              : "Поставщик: -"
-                                          }`
-                                    }
+                                ${product.stock
+                      ? `<div class="stock_item">
+                                    ${product.stock_to_order
+                        ? " Поставщик:<br>Под заказ"
+                        : `${product.stock_supplier
+                          ? `Поставщик: ${product.stock_supplier}`
+                          : "Поставщик: -"
+                        }`
+                      }
                                         </div>
-                                        <div class="stock_item">Motrum:${
-                                          product.stock_motrum
-                                        }</div>
+                                        <div class="stock_item">Motrum:${product.stock_motrum
+                      }</div>
                                         <span class="span-transit">${backendDataFormat(
-                                          product.data_update
-                                        )}</span>
+                        product.data_update
+                      )}</span>
                                         <br>
                                         <span class="span-transit">
-                                        ${
-                                          product.transit_count
-                                            ? `Ближайшая поставка: ${backendDataFormat(
-                                                product.data_transit
-                                              )} - ${product.transit_count} шт.`
-                                            : ""
-                                        }
+                                        ${product.transit_count
+                        ? `Ближайшая поставка: ${backendDataFormat(
+                          product.data_transit
+                        )} - ${product.transit_count} шт.`
+                        : ""
+                      }
                                         </span>`
-                                    : `${
-                                        product.stok_to_order ? "Под заказ" : ""
-                                      } Неизвестно`
-                                }
+                      : `${product.stok_to_order ? "Под заказ" : ""
+                      } Неизвестно`
+                    }
                                 </div>
                                 <div class="lot">
-                                ${
-                                  product.stock
-                                    ? `${
-                                        product.multiplicity != 1 &&
-                                        !product.is_one_sale
-                                          ? `<span class="span-min">Минимальный заказ ${
-                                              product.multiplicity +
-                                              " " +
-                                              product.lot
-                                            }
+                                ${product.stock
+                      ? `${product.multiplicity != 1 &&
+                        !product.is_one_sale
+                        ? `<span class="span-min">Минимальный заказ ${product.multiplicity +
+                        " " +
+                        product.lot
+                        }
                                            </span>`
-                                          : ""
-                                      }${
-                                        product.lot_complect != 1
-                                          ? `${
-                                              product.lot +
-                                              "." +
-                                              product.lot_complect +
-                                              "ед."
-                                            }`
-                                          : `${
-                                              product.lot_complect +
-                                              " " +
-                                              product.lot +
-                                              "."
-                                            }`
-                                      }
+                        : ""
+                      }${product.lot_complect != 1
+                        ? `${product.lot +
+                        "." +
+                        product.lot_complect +
+                        "ед."
+                        }`
+                        : `${product.lot_complect +
+                        " " +
+                        product.lot +
+                        "."
+                        }`
+                      }
                                         `
-                                    : "-"
-                                }
+                      : "-"
+                    }
                                 </div>
                                  <div class="suppler-price">
-                                 ${
-                                   product.price_suppler &&
-                                   product.price_suppler != 0
-                                     ? `<span class="price-suppler-count">${new Intl.NumberFormat(
-                                         "ru"
-                                       )
-                                         .format(+product.price_suppler)
-                                         .replace(
-                                           /(\d+)(\.|,)(\d+)/g,
-                                           function (o, a, b, c) {
-                                             return a + b + c.slice(0, 2);
-                                           }
-                                         )}
+                                 ${product.price_suppler &&
+                      product.price_suppler != 0
+                      ? `<span class="price-suppler-count">${new Intl.NumberFormat(
+                        "ru"
+                      )
+                        .format(+product.price_suppler)
+                        .replace(
+                          /(\d+)(\.|,)(\d+)/g,
+                          function (o, a, b, c) {
+                            return a + b + c.slice(0, 2);
+                          }
+                        )}
                                        </span> `
-                                     : "<span>По запросу</span>"
-                                 }
+                      : "<span>По запросу</span>"
+                    }
                                 </div>
                                 <div class="price">
-                                ${
-                                  product.price && product.price != 0
-                                    ? `
+                                ${product.price && product.price != 0
+                      ? `
                                   <span class="price-count">
                                         ${new Intl.NumberFormat("ru")
-                                          .format(+product.price)
-                                          .replace(
-                                            /(\d+)(\.|,)(\d+)/g,
-                                            function (o, a, b, c) {
-                                              return a + b + c.slice(0, 2);
-                                            }
-                                          )}
+                        .format(+product.price)
+                        .replace(
+                          /(\d+)(\.|,)(\d+)/g,
+                          function (o, a, b, c) {
+                            return a + b + c.slice(0, 2);
+                          }
+                        )}
                                       </span>
                                       <span class="span-update"> от ${backendDataFormat(
-                                        product.data_update
-                                      )}</span>`
-                                    : `<span>По запросу</span>`
-                                }
+                          product.data_update
+                        )}</span>`
+                      : `<span>По запросу</span>`
+                    }
                                 </div>
                             </div>
                                 <div class="item_button_container">
@@ -309,7 +288,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const specificationContainer = document.querySelector(
     ".specification-container"
   );
-  
+
 
   if (specificationContainer) {
     const spetificationTable = specificationContainer.querySelector(
@@ -383,9 +362,13 @@ window.addEventListener("DOMContentLoaded", () => {
           ? 0
           : ((1 - +sumMotrum / +sum) * 100).toFixed(2);
       }
-      //  НЕ ВЫЗЫЫВЕТЬСЯ ЕЕ ПЕРЕБИВЕТ - create_invoice_without_specification.js
-      // в этой функции тольуо первичная отправка на первый эндпоинт без остальных
-      // старая и не имеет актуальных изменений
+
+
+
+      // ЭТА ФУНКЦИЯ НЕ ВЫЗЫВАЕТЬСЯ ПОТОМУ ЧТО ЕЕ ВЫЗОВ С КНОКИ СОХРАНИТЬ 
+      // ТОЛЬКО СПЕЦИФИКАЦИЮ. СЕЙЧАС ДЛЯ СОХРАНЕНИЯ НОВОГО ЗАКАЗА 
+      // ИСПОЛЬЗУЕТЬСЯ create_invoice_without_specification
+
       function saveSpecification(elems) {
         console.log("saveSpecification(elems)");
         const specificationId = getCookie("specificationId");
@@ -655,7 +638,7 @@ window.addEventListener("DOMContentLoaded", () => {
             getDigitsNumber(
               itemPriceOnce,
               (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
-                100
+              100
             );
           } else if (marjaInput.value) {
             getDigitsNumber(
@@ -789,13 +772,13 @@ window.addEventListener("DOMContentLoaded", () => {
           if (itemPriceOnce) {
             const currentPrice = !discountInput.value
               ? +getCurrentPrice(item.getAttribute("data-price")) *
-                +quantity.value
+              +quantity.value
               : +quantity.value *
-                (
-                  (+getCurrentPrice(item.getAttribute("data-price")) *
-                    (100 - +discountInput.value)) /
-                  100
-                ).toFixed(2);
+              (
+                (+getCurrentPrice(item.getAttribute("data-price")) *
+                  (100 - +discountInput.value)) /
+                100
+              ).toFixed(2);
 
             getDigitsNumber(productTotalPrice, currentPrice);
             editMotrumPrice(spetificationTable);
@@ -875,13 +858,13 @@ window.addEventListener("DOMContentLoaded", () => {
           quantity.value = +countQuantity;
           const currentPrice = !discountInput.value
             ? +getCurrentPrice(item.getAttribute("data-price")) *
-              +quantity.value
+            +quantity.value
             : +quantity.value *
-              (
-                (+getCurrentPrice(item.getAttribute("data-price")) *
-                  (100 - +discountInput.value)) /
-                100
-              ).toFixed(2);
+            (
+              (+getCurrentPrice(item.getAttribute("data-price")) *
+                (100 - +discountInput.value)) /
+              100
+            ).toFixed(2);
           getDigitsNumber(productTotalPrice, currentPrice);
 
           if (countQuantity >= 99999) {
@@ -916,13 +899,13 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           const currentPrice = !discountInput.value
             ? +getCurrentPrice(item.getAttribute("data-price")) *
-              +quantity.value
+            +quantity.value
             : +quantity.value *
-              (
-                (+getCurrentPrice(item.getAttribute("data-price")) *
-                  (100 - +discountInput.value)) /
-                100
-              ).toFixed(2);
+            (
+              (+getCurrentPrice(item.getAttribute("data-price")) *
+                (100 - +discountInput.value)) /
+              100
+            ).toFixed(2);
           getDigitsNumber(productTotalPrice, currentPrice);
 
           if (countQuantity >= 99999) {
@@ -955,9 +938,9 @@ window.addEventListener("DOMContentLoaded", () => {
             const currentPrice = !discountInput.value
               ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
               : (new NumberParser("ru").parse(inputPrice.value) *
-                  +quantity.value *
-                  (100 - +discountInput.value)) /
-                100;
+                +quantity.value *
+                (100 - +discountInput.value)) /
+              100;
             getDigitsNumber(productTotalPrice, currentPrice);
             let price = +inputPrice.value * quantity.value;
             getDigitsNumber(totalPrice, price);
@@ -972,9 +955,9 @@ window.addEventListener("DOMContentLoaded", () => {
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
               : (+item.getAttribute("data-price") *
-                  +quantity.value *
-                  (100 - +discountInput.value)) /
-                100;
+                +quantity.value *
+                (100 - +discountInput.value)) /
+              100;
             getDigitsNumber(productTotalPrice, currentPrice);
             if (multiplicity) {
               countQuantity += +multiplicity;
@@ -1007,9 +990,9 @@ window.addEventListener("DOMContentLoaded", () => {
             const currentPrice = !discountInput.value
               ? +item.getAttribute("data-price") * +quantity.value
               : (+item.getAttribute("data-price") *
-                  +quantity.value *
-                  (100 - +discountInput.value)) /
-                100;
+                +quantity.value *
+                (100 - +discountInput.value)) /
+              100;
             getDigitsNumber(productTotalPrice, currentPrice);
 
             if (multiplicity) {
@@ -1059,9 +1042,9 @@ window.addEventListener("DOMContentLoaded", () => {
             let price = !discountInput.value
               ? +inputPrice.value * quantity.value
               : (+inputPrice.value *
-                  quantity.value *
-                  (100 - +discountInput.value)) /
-                100;
+                quantity.value *
+                (100 - +discountInput.value)) /
+              100;
             getDigitsNumber(totalPrice, price);
             if (!discountInput.value) {
               item.setAttribute("data-price", +inputPrice.value);

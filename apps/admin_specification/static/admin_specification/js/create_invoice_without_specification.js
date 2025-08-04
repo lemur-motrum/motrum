@@ -8,7 +8,7 @@ import {
 import { setErrorModal } from "/static/core/js/error_modal.js";
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
 const csrfToken = getCookie("csrftoken");
-
+// СОХРАНЕНИЯ И СПЕЦИФИКАЦИИ И СЧЕТА
 window.addEventListener("DOMContentLoaded", () => {
   const buttonContainer = document.querySelector(
     ".save_invoice_button-wrapper"
@@ -316,8 +316,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 )
                   .then((response3) => {
                     if (response3.status == 200 || response2.status == 201) {
-                      window.location.href =
-                        "/admin_specification/all_specifications/";
+                      window.location.href =   "/admin_specification/all_specifications/";
                     } else {
                       setErrorModal();
                     }

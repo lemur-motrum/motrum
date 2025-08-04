@@ -469,7 +469,7 @@ def parse_drives_ru_products():
                          "group_all_name": group_all_name,
                     }
                 ]
-                print(results)
+                
 
                 for result in result_one:
 
@@ -612,6 +612,10 @@ def parse_drives_ru_products():
                             )
                             property_product.save()
                             update_change_reason(property_product, "Автоматическое")
+                    error = "info_error"
+                    location = "веда парс товар"
+                    info = f"веда парс товар успех{product}"
+                    e = error_alert(error, location, info)
 
                 found = True
                 break  # нашли нужный товар, дальше не ищем

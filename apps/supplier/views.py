@@ -163,8 +163,13 @@ def add_iek(request):
     bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-
-
+    def background_task():
+        parse_drives_ru_category()
+        parse_drives_ru_products()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

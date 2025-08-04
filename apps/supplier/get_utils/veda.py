@@ -1,5 +1,6 @@
 import datetime
 import os
+import gc
 import traceback
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -196,7 +197,7 @@ def parse_drives_ru_products():
     supplier = Supplier.objects.get(slug="veda-mc")
     vendor = Vendor.objects.get(slug="veda")
     # products = Product.objects.filter(article_supplier__in=["PBC01014"])
-    products = Product.objects.filter(supplier=supplier, vendor=vendor)
+    products = Product.objects.filter(supplier=supplier, vendor=vendor).iterator(chunk_size=50)
     results = []
 
     for product in products:
@@ -433,24 +434,7 @@ def parse_drives_ru_products():
                         if meta_group_all:
                             group_all_name = meta_group_all.get("content")
 
-                results.append(
-                    {
-                        "product_id": product.id,
-                        "type_code": type_code,
-                        "product_link": product_link,
-                        "main_images": main_images,
-                        # 'dop_images': dop_images,
-                        # 'big_dop_images': big_dop_images,
-                        "description": desc,
-                        "features": features,
-                        "page_article": page_article,
-                        "name": name,
-                        "documents": documents,
-                        "category_name": category_name,
-                        "group_name": group_name,
-                        "group_all_name": group_all_name,
-                    }
-                )
+                
                 result_one = [
                     {
                         "product_id": product.id,
@@ -469,7 +453,7 @@ def parse_drives_ru_products():
                          "group_all_name": group_all_name,
                     }
                 ]
-                print(results)
+                
 
                 for result in result_one:
 
@@ -542,10 +526,17 @@ def parse_drives_ru_products():
                                         type_file = "." + images_last_list[-1]
                                         link_file = f"{new_dir}/{doc_name}"
                                         r = requests.get(url, stream=True)
-                                        with open(
-                                            os.path.join(link_file), "wb"
-                                        ) as ofile:
-                                            ofile.write(r.content)
+                                        r.raise_for_status()
+                                        with open(link_file, 'wb') as f:
+                                            for chunk in r.iter_content(chunk_size=8192):
+                                                f.write(chunk)
+                                                
+                                        # r = requests.get(url, stream=True)
+                                        # with open(
+                                        #     os.path.join(link_file), "wb"
+                                        # ) as ofile:
+                                        #     ofile.write(r.content)
+                                            
                                         doc.document = f"{dir_no_path}/{doc_name}"
                                         doc.link = url
                                         doc.name = doc_item["name"]
@@ -625,8 +616,34 @@ def parse_drives_ru_products():
             info = f"ошибка при чтении товара артикул: {product}. Тип ошибки:{e}{tr}"
             e = error_alert(error, location, info)
         finally:
+            # --- ОЧИСТКА ПАМЯТИ ---
+            
+            # Удаляем тяжёлые локальные переменные
+            if 'prod_soup' in locals():
+                del prod_soup
+            if 'soup' in locals():
+                del soup
+            if 'response' in locals():
+                del response
+            if 'prod_resp' in locals():
+                del prod_resp
+            if 'r' in locals():  # если r — ответ requests
+                try:
+                    r.close()  # закрываем соединение
+                except:
+                    pass
+                del r
+            if 'result_one' in locals():
+                del result_one
+            if 'cat_soup' in locals():
+                del cat_soup
+            if 'cat_resp' in locals():
+                del cat_resp
+            # Запускаем сборщик мусора
+            gc.collect()
+            # ------------------------
             continue
-    return results
+    return None
 
 
 # категории поставщика промповер для товара

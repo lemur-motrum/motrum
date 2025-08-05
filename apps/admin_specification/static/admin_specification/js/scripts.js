@@ -1076,7 +1076,51 @@ window.addEventListener("DOMContentLoaded", () => {
           // updateProduct();
           // getResult();
         };
+        // обновление цен по марже скидки онлайн
+        discountInput.onkeyup = () => {
+          if (discountInput.value >= 100) {
+            discountInput.value == 100;
+          }
+          let curentPrice;
+          if (discountInput.value == "-") {
+            curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+          } else {
+            curentPrice = (
+              (+getCurrentPrice(productPrice) *
+                (100 - +discountInput.value)) /
+              100
+            ).toFixed(2);
+          }
 
+          getDigitsNumber(productPriceContainer, curentPrice);
+          const allPrice = (curentPrice * countQuantity).toFixed(2);
+          getDigitsNumber(productTotalPrice, allPrice);
+          getMarginality(spetificationTable);
+          console.log("1198");
+          getResult();
+        };
+        marjaInput.onkeyup = () => {
+          console.log("marjaInput");
+
+          let curentPrice;
+          if (marjaInput.value == "-" || marjaInput.value == "") {
+            curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+          } else {
+            curentPrice = (
+              +getCurrentPrice(productPriceMotrum) /
+              ((100 - +marjaInput.value) / 100)
+            ).toFixed(2);
+            console.log(curentPrice);
+          }
+
+          console.log("curentPrice", curentPrice);
+          getDigitsNumber(productPriceContainer, curentPrice);
+          const allPrice = (curentPrice * countQuantity).toFixed(2);
+          getDigitsNumber(productTotalPrice, allPrice);
+          getMarginality(spetificationTable);
+          console.log("1231");
+          getResult();
+        };
         // значение скидки и маржи при загрузке страницы
         //  привести к виду с точкой вместо запятой
         if (discountInput) {
@@ -1386,27 +1430,27 @@ window.addEventListener("DOMContentLoaded", () => {
   //         }
   //       }
 
-        // if (discountInput.value) {
-        //   console.log(1350);
-        //   const currentPrice =
-        //     quantity.value *
-        //     ((getCurrentPrice(item.getAttribute("data-price")) *
-        //       (100 - +discountInput.value)) /
-        //       100);
-        //   getDigitsNumber(productTotalPrice, currentPrice);
-        // }
-        // if (marjaInput.value) {
-        //   console.log(1359);
-        //   console.log(productPriceMotrum);
-        //   const currentPrice =
-        //     quantity.value *
-        //     (
-        //       +getCurrentPrice(productPriceMotrum) /
-        //       ((100 - +marjaInput.value) / 100)
-        //     ).toFixed(2);
-        //   console.log(currentPrice);
-        //   getDigitsNumber(productTotalPrice, currentPrice);
-        // }
+        if (discountInput.value) {
+          console.log(1350);
+          const currentPrice =
+            quantity.value *
+            ((getCurrentPrice(item.getAttribute("data-price")) *
+              (100 - +discountInput.value)) /
+              100);
+          getDigitsNumber(productTotalPrice, currentPrice);
+        }
+        if (marjaInput.value) {
+          console.log(1359);
+          console.log(productPriceMotrum);
+          const currentPrice =
+            quantity.value *
+            (
+              +getCurrentPrice(productPriceMotrum) /
+              ((100 - +marjaInput.value) / 100)
+            ).toFixed(2);
+          console.log(currentPrice);
+          getDigitsNumber(productTotalPrice, currentPrice);
+        }
       });
 
       getResult();

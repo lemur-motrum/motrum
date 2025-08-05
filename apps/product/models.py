@@ -938,11 +938,12 @@ class ProductProperty(models.Model):
         if self.value == "false" or self.value == "False" or self.value == False :
             self.value = "Нет"
         
-        # Получение х-к мотрум  
+        # Получение х-к мотрум не диапазонные 
         obj= VendorPropertyAndMotrum.objects.filter(
         supplier=self.product.supplier,
         property_vendor_name=self.name,
         property_vendor_value=self.value,
+        is_diapason=False
     )
         if obj:
             for ob in obj:
@@ -972,6 +973,36 @@ class ProductProperty(models.Model):
                     location = "+ х-ка"
                     info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
                     e = error_alert(error, location, info)
+         
+        obj_diapason= VendorPropertyAndMotrum.objects.filter(
+        supplier=self.product.supplier,
+        property_vendor_name=self.name,
+        is_diapason=True
+    )
+        if obj_diapason:
+            for obj_d in obj_diapason:
+                def extract_first_number(value):
+                    if isinstance(value, (int, float)):
+                        return value
+                    if isinstance(value, str):
+                        match = re.search(r"\d+(\.\d+)?", value)
+                        if match:
+                            return float(match.group())
+                        
+                value = extract_first_number(self.value)
+                prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                        product=self.product,
+                        property_motrum=obj_d.property_motrum,
+                        is_diapason=True,
+                        is_have_vendor_props=True,
+                        property_value_motrum_to_diapason=value
+                )
+            if created:
+                error = "info_error"
+                location = "+ х-ка"
+                info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                e = error_alert(error, location, info)
+         
                 
         super().save(*args, **kwargs)
 

@@ -686,6 +686,7 @@ def prompower_api():
                 prod_d.save()
                 print("local_file_size is not None and remote_file_size > 0")    
     
+
     add_category_groupe()
     add_category()
     add_products()

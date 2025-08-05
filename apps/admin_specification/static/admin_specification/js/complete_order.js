@@ -50,29 +50,31 @@ export function completeOrder(container) {
                       "X-CSRFToken": csrfToken,
                     },
                     body: data,
-                  }).then((response) => {
-                    if (response.status == 200) {
-                      overlay.classList.remove("visible");
-                      if (overlay.classList.contains("show")) {
-                        document.body.style.overflowY = "scroll";
+                  })
+                    .then((response) => {
+                      if (response.status == 200) {
+                        overlay.classList.remove("visible");
+                        if (overlay.classList.contains("show")) {
+                          document.body.style.overflowY = "scroll";
+                        }
+                        modalWindow.setAttribute("order-id", "");
+                        setTimeout(() => {
+                          overlay.classList.remove("show");
+                          const currentDate = new Date()
+                            .toISOString()
+                            .slice(0, 10);
+                          calendar.value = currentDate;
+                        }, 600);
+                        completeBtn.style.display = "none";
+                        specification.classList.add("completed_order");
+                        addOrderButton.disabled = false;
+                        addOrderButton.innerHTML = "";
+                        addOrderButton.textContent = "Завершить заказ";
+                      } else {
+                        setErrorModal();
                       }
-                      modalWindow.setAttribute("order-id", "");
-                      setTimeout(() => {
-                        overlay.classList.remove("show");
-                        const currentDate = new Date()
-                          .toISOString()
-                          .slice(0, 10);
-                        calendar.value = currentDate;
-                      }, 600);
-                      completeBtn.style.display = "none";
-                      specification.classList.add("completed_order");
-                      addOrderButton.disabled = false;
-                      addOrderButton.innerHTML = "";
-                      addOrderButton.textContent = "Завершить заказ";
-                    } else {
-                      setErrorModal();
-                    }
-                  });
+                    })
+                    .catch((error) => console.error(error));
                 }
               };
             };

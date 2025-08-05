@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from pytils import translit
 import threading
 from simple_history.utils import update_change_reason
-
+from tinymce import models as tinymce_models
 from apps.core.models import Currency, Vat
 from apps.core.utils import get_file_price_path_add
 from apps.core.utils_web import get_file_path_catalog_web
@@ -35,9 +35,18 @@ class Supplier(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -51,11 +60,7 @@ class Vendor(models.Model):
         null=True,
     )
     slug = models.SlugField(null=True, max_length=100)
-    # supplier = models.ForeignKey(
-    #     Supplier,
-    #     verbose_name="Поставщик",
-    #     on_delete=models.PROTECT,
-    # )
+
     currency_catalog = models.ForeignKey(
         Currency,
         verbose_name="Валюта каталога",
@@ -83,18 +88,45 @@ class Vendor(models.Model):
         blank=True,
         null=True,
     )
+    article_filter = models.PositiveIntegerField(
+        "Очередность в фильтре",
+        blank=True,
+        null=True,
+    )
+    promo_text = tinymce_models.HTMLField(
+        "Общее описание",
+        blank=True,
+        null=True,
+    )
+    img_promo = models.FileField(
+        "Изображение для промо блока",
+        upload_to=get_file_path_catalog_web,
+        validators=[validate_file_extension_image],
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = "Производитель"
         verbose_name_plural = "Производители"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super(Vendor, self).save(*args, **kwargs)
 
@@ -158,7 +190,15 @@ class SupplierCategoryProduct(models.Model):
         if self.slug == None:
             slug_text = self.name
             slugish = translit.translify(slug_text)
-            self.slug = slugify(slugish)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super().save(*args, **kwargs)
         from apps.product.models import Product
@@ -173,9 +213,18 @@ class SupplierCategoryProduct(models.Model):
                 if self.group_catalog:
                     product_one.group = self.group_catalog
 
+                # product_one._change_reason = "Автоматическое"
+                product_one.save(
+                    update_fields=[
+                        "category",
+                        "group",
+                    ]
+                )
                 product_one._change_reason = "Автоматическое"
-                product_one.save()
-                # update_change_reason(product_one, "Автоматическое")
+                try:
+                    update_change_reason(product_one, "Автоматическое")
+                except AttributeError:
+                    pass
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -261,9 +310,13 @@ class SupplierGroupProduct(models.Model):
                         if product_one.group_supplier.vendor is not None:
                             product_one.vendor = product_one.group_supplier.vendor
 
-                product_one._change_reason = "Автоматическое"
-                product_one.save()
-                # update_change_reason(product_one, "Автоматически из групп поставщика")
+                product_one.save(update_fields=["category", "group", "vendor"])
+                # product_one._change_reason = "Автоматическое"
+                # product_one.save()
+                try:
+                    update_change_reason(product_one, "Автоматическое")
+                except AttributeError:
+                    pass
 
         daemon_thread = threading.Thread(target=background_task)
         daemon_thread.setDaemon(True)
@@ -337,7 +390,7 @@ class SupplierCategoryProductAll(models.Model):
     autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
     is_correct = models.BooleanField("Группа есть в каталоге", default=True)
     is_need = models.BooleanField("Неоюходима для загрузки в окт", default=True)
-    
+
     class Meta:
         verbose_name = "Подгруппы поставщиков"
         verbose_name_plural = "Подгруппы поставщиков"
@@ -357,9 +410,9 @@ class SupplierCategoryProductAll(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from apps.product.models import Product
-              
+
         if self.is_correct == True and self.is_need == True:
-        # обоновление категорйи связанных продуктов
+            # обоновление категорйи связанных продуктов
             product = Product.objects.filter(category_supplier_all=self.id)
 
             def background_task():
@@ -368,15 +421,43 @@ class SupplierCategoryProductAll(models.Model):
                     product_one.category = self.category_catalog
                     if self.group_catalog:
                         product_one.group = self.group_catalog
-                    product_one._change_reason = "Автоматическое"
-                    product_one.save()
-                  
+
+                    product_one.save(
+                        update_fields=[
+                            "category",
+                            "group",
+                        ]
+                    )
+                    try:
+                        update_change_reason(product_one, "Автоматическое")
+                    except AttributeError:
+                        pass
 
             daemon_thread = threading.Thread(target=background_task)
             daemon_thread.setDaemon(True)
             daemon_thread.start()
 
 
+class SupplierPromoGroupe(models.Model):
+    name = models.CharField("Название промо группы", max_length=150)
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "Промо группы"
+        verbose_name_plural = "Промо группы"
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Discount(models.Model):
@@ -415,6 +496,15 @@ class Discount(models.Model):
         blank=True,
         null=True,
     )
+
+    promo_groupe = models.ForeignKey(
+        "SupplierPromoGroupe",
+        verbose_name="Промо группа",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
     percent = models.FloatField(
         "Процент скидки",
         blank=True,
@@ -449,7 +539,9 @@ class Discount(models.Model):
         from apps.product.models import Price
 
         # обновление цен товаров связанной группы
-        if self.category_supplier_all:
+        if self.promo_groupe:
+            price = Price.objects.filter(prod__promo_groupe=self.promo_groupe)
+        elif self.category_supplier_all:
             price = Price.objects.filter(
                 prod__category_supplier_all=self.category_supplier_all
             )

@@ -17,9 +17,11 @@
                            class="vendor-container">
                             <div class="vendor-img-container">
                                 {% if brand.img %}
-                                    <img src="{{ brand.img.url }}" alt="img">
+                                    <img src="{{ brand.img.url }}" alt="img" loading="lazy" />
                                 {% else %}
-                                    <img src={% static "core/images/photo_brand_icon.png" %} />
+                                    <img src="{% static "core/images/photo_brand_icon.png" %}"
+                                         alt="icon"
+                                         loading="lazy" />
                                 {% endif %}
                             </div>
                             <div class="vendor-name-container">

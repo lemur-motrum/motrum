@@ -282,7 +282,13 @@ def crete_pdf_specification(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
-                product_name_str = str(product.product.name)
+                
+                product_name_st = product.product.name
+                if product.product.supplier.slug == "prompower" and product.product.description:
+                    product_name_st = product.product.description
+                    
+                product_name_str = str(product_name_st)
+                
                 if product.product.in_view_website:
                     product_name = (
                         Paragraph(f"{product_name_str}", norm10_left_style),

@@ -52,7 +52,8 @@ export function invoiceItem(container) {
             }
             addAjaxCatalogItem(data[i]);
           }
-        });
+        })
+        .catch((error) => console.error(error));
     }
     function renderCatalogItem(orderData) {
       let ajaxTemplateWrapper = document.querySelector(
@@ -219,7 +220,8 @@ export function invoiceItem(container) {
                               ".add_payment_button"
                             );
                             addPayBtn.style.display = "block";
-                          });
+                          })
+                          .catch((error) => console.error(error));
                       }
                     };
                   }

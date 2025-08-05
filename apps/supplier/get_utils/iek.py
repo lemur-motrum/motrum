@@ -482,6 +482,7 @@ def iek_api():
 
     def get_iek_product(url_service, url_params,page):
         pageSize = 500
+        
         next_page = True
         page_params = f'&page={page}&pageSize={pageSize}'
         entity = "&entity=all"
@@ -498,8 +499,9 @@ def iek_api():
             data=payload,
             allow_redirects=False,
         )
-      
+        print(response.status_code)
         responset = response_request(response.status_code, "IEK получение товаров")
+        print(responset)
         if responset and response.headers["content-type"].strip().startswith(
             "application/json"
         ):
@@ -515,6 +517,7 @@ def iek_api():
                     print("totalPagenext_page",next_page)
                 
                 for data_item in data_items:
+                    print(data_item)
                  
                     try:
 
@@ -860,7 +863,7 @@ def iek_api():
                             price_product.extra_price = extra
                             price_product._change_reason = "Автоматическое"
                             price_product.price_motrum = pre_price_motrum
-                            price_product.save()
+                            price_product.save(force_price_motrum=True)
 
                             # update_change_reason(price_product, "Автоматическое")
 
@@ -918,7 +921,7 @@ def iek_api():
                         stock, to_order, is_none_error = get_iek_stock_one(
                             article
                         )  # (stock,to_order,is_none_error)
-
+                        print("stock",stock)
                         if is_none_error == False:
                             stock = 0
 
@@ -930,7 +933,7 @@ def iek_api():
                                 )
                             else:
                                 stock_prod_stock_supplier = 0
-
+                            print("stock_prod_stock_supplier",stock_prod_stock_supplier)
                             try:
                                 stock_prod = Stock.objects.get(prod=article)
 
@@ -951,7 +954,9 @@ def iek_api():
                                 stock_prod.is_one_sale = is_one_sale
                                 stock_prod._change_reason = "Автоматическое"
                                 stock_prod.data_update = datetime.datetime.now()
-                                stock_prod.save()
+                                print("THIS @ save")
+                                stock_prod.save(force_stock_supplier_unit=True)
+                                
 
                             
                             
@@ -1129,15 +1134,15 @@ def iek_api():
         else:
             # нет свойств
             pass
-    #TODO! вернуть !!!!
+    
+    
     all_categ_iek("ddp", None)
     true_categ = SupplierCategoryProductAll.objects.filter(
                             supplier=supplier,is_correct = True,is_need = True
                         )
-    # next_page = get_iek_product("products", f"groupId=04.10.07",1)
+    # next_page = get_iek_product("products", f"groupId=30.04.02",1)
     if true_categ.count() > 0:
         for true_cat in true_categ:
-            pass
             print("TRUECATEG",true_cat.article_name)
             
             page = 0
@@ -1216,7 +1221,8 @@ def get_iek_stock():
                     stock_prod.to_order = to_order
                     stock_prod.data_update = datetime.datetime.now()
                     stock_prod._change_reason = "Автоматическое"
-                    stock_prod.save()
+                    print("TIS NOW SEVE")
+                    stock_prod.save(force_stock_supplier_unit=True)
 
                 except Stock.DoesNotExist:
                     pass
@@ -1280,7 +1286,7 @@ def update_prod_iek_in_okt():
                         price_product.price_supplier = price_supplier
                         price_product.extra_price = extra
                         price_product._change_reason = "Автоматическое"
-                        price_product.save()
+                        price_product.save(force_price_motrum=True)
                     else:
                         pass
                         # extra = True
@@ -1290,7 +1296,7 @@ def update_prod_iek_in_okt():
                     # price_product.price_supplier = price_supplier
                     # price_product.extra_price = extra
                     # price_product._change_reason = "Автоматическое"
-                    # price_product.save()
+                    # price_product.save(force_price_motrum=True)
 
     except Exception as e:
         print(e)
@@ -1579,7 +1585,7 @@ def update_prod_iek_get_okt():
                         price_product.extra_price = extra
                         price_product._change_reason = "Автоматическое"
                         price_product.price_motrum = pre_price_motrum
-                        price_product.save()
+                        price_product.save(force_price_motrum=True)
                     
                     # остатки
                     # остатки на складах
@@ -1758,7 +1764,8 @@ def update_prod_iek_get_okt():
                             stock_prod.is_one_sale = is_one_sale
                             stock_prod._change_reason = "Автоматическое"
                             stock_prod.data_update = datetime.datetime.now()
-                            stock_prod.save()
+                            print("NOW SAVE")
+                            stock_prod.save(force_stock_supplier_unit=True)
             elif data == []:
                 error = "info_error"
                 location = "Обновление товаров IEK"

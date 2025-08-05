@@ -16,14 +16,16 @@ window.addEventListener("DOMContentLoaded", () => {
 function buttonArrowLogic(buttonWrapper) {
   if (buttonWrapper) {
     const arrow = buttonWrapper.querySelector(".arrow-container");
-    buttonWrapper.onmouseover = () => {
-      arrow.classList.add("swipe");
-    };
+    if (arrow) {
+      buttonWrapper.onmouseover = () => {
+        arrow.classList.add("swipe");
+      };
 
-    buttonWrapper.onmouseout = () => {
-      if (arrow.classList.contains("swipe")) {
-        arrow.classList.remove("swipe");
-      }
-    };
+      buttonWrapper.onmouseout = () => {
+        if (arrow.classList.contains("swipe")) {
+          arrow.classList.remove("swipe");
+        }
+      };
+    }
   }
 }

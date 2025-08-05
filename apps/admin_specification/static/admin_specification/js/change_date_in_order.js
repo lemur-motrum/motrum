@@ -6,14 +6,13 @@ export function changeDateInOrder(container) {
       const supplierUnit = specificationItem.querySelector(".supplier_unit");
       const motrumUnit = specificationItem.querySelector(".motrum_unit");
 
-      if (calendar && supplierUnit && motrumUnit) {
+      if (calendar && supplierUnit && motrumUnit && calendar.value === "") {
         const quantityInput =
           specificationItem.querySelector(".input-quantity");
         const setCalendarValue = (day) => {
           const currentDate = new Date();
           currentDate.setDate(currentDate.getDate() + day);
           const date = currentDate.toISOString().slice(0, 10);
-          console.log(date);
           return date;
         };
         const getDateInCalendar = () => {

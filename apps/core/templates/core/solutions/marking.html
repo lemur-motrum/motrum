@@ -4,7 +4,13 @@
         <a href="/">главная</a>
         <a href="{% url "core:solutions" %}">решения</a>
     </div>
-    <h1 class="title">Маркировка</h1>
+    {% if seo_meta and seo_meta.meta_h1 %}
+        <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
+                
+    {% else %}
+        <h1 class="title">Маркировка</h1>
+    {% endif %}
+    
     <div class="solution_one_slider">
         <div class="swiper-wrapper">
             <div class="swiper-slide information_slide">
@@ -15,65 +21,142 @@
                 </div>
             </div>
             <div class="swiper-slide marking_slider_elem">
-                <div class="description">ВОДА И МОЛОКО</div>
+                <div class="description">сладости</div>
                 <div class="img_container">
-                    <img src="{% static "core/images/solutions/marking_slider_Elem_1.png" %}"
-                         alt="img" />
+                    <img src="{% static "core/images/solutions/marking_1.png" %}"
+                         alt="img"
+                         loading="lazy" />
                 </div>
             </div>
             <div class="swiper-slide marking_slider_elem">
-                <div class="description">СОКИ</div>
+                <div class="description">
+                    растворимые
+                    <br />
+                    завариваемые
+                    <br />
+                    напитки
+                </div>
                 <div class="img_container">
-                    <img src="{% static "core/images/solutions/marking_slider_Elem_2.png" %}"
-                         alt="img" />
+                    <img src="{% static "core/images/solutions/mark_napitky.png" %}"
+                         alt="img"
+                         loading="lazy" />
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">
+                    спортивное
+                    <br />
+                    питание
+                </div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_2.png" %}"
+                         alt="img"
+                         loading="lazy" />
                 </div>
             </div>
             <div class="swiper-slide marking_slider_elem">
                 <div class="description">ПИВО</div>
                 <div class="img_container">
                     <img src="{% static "core/images/solutions/marking_slider_Elem_3.png" %}"
-                         alt="img" />
+                         alt="img"
+                         loading="lazy" />
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">ВОДА И МОЛОКО</div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_slider_Elem_1.png" %}"
+                         alt="img"
+                         loading="lazy" />
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">СОКИ</div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_slider_Elem_2.png" %}"
+                         alt="img"
+                         loading="lazy" />
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">
+                    смазочные
+                    <br />
+                    материалы
+                </div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_5.png" %}"
+                         alt="img"
+                         loading="lazy" />
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">
+                    строительные
+                    <br />
+                    материалы
+                </div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_4.png" %}"
+                         alt="img"
+                         loading="lazy" />
                 </div>
             </div>
         </div>
     </div>
-    <div  class="marking_competition">
+    <div class="marking_competition">
         <div class="solution_will_allow">
             <div class="title">НАШИ КОМПЕТЕНЦИИ</div>
             <ul>
                 <li>получение кодов маркировки;</li>
                 <li>сериализация продукции;</li>
-                <li>верификация и отбраковка;</li>
-                <li>агрегация и ввод в оборот продукта;</li>
+                <li>считывание и отбраковка;</li>
+                <li>агрегация и ввод в оборот продукта.</li>
             </ul>
             <div class="img_container">
-                <img src="{% static "core/images/solutions/solution_!.png" %}" alt="img" />
+                <img src="{% static "core/images/solutions/solution_!.png" %}"
+                     alt="img"
+                     loading="lazy" />
             </div>
             <div class="arrow_container">
-                <img src="{% static "core/images/direction/arrow.png" %}" alt="arrow" />
+                <img src="{% static "core/images/direction/arrow.png" %}"
+                     alt="arrow"
+                     loading="lazy" />
             </div>
         </div>
         <div class="rigth_vector_table">
             <div class="up">
-                <div class="date">200+</div>
+                <div class="date">{{ motrum_in_numbers.installation }}</div>
                 <div class="description">
                     <span>более 200 линий маркировки «Честный знак» внедрено нами за время работы</span>
                 </div>
             </div>
             <div class="down">
                 <div class="description">Мотрум является технологическим партнером ООО «Оператор - ЦРПТ»</div>
-                <div id="anchor" class="img_container">
-                    <img src="{% static "core/images/solutions/marking_page.png" %}" alt="img" />
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_page.png" %}"
+                         alt="img"
+                         loading="lazy" />
                 </div>
             </div>
+            <div id="anchor" class="down_description">Гарантируем оперативное внедрение систем маркировки «под ключ»</div>
         </div>
     </div>
     <div class="anchor_container">
-        <div class="demo-form-container  other_form">
+        <div class="demo-form-container other_form marking_form">
             <div class="description_content">
-                <div class="title">НАПИШИТЕ НАМ</div>
+                <div class="title">Эксперимент</div>
                 <div class="description">
-                    Мы свяжемся с вами в течение рабочего дня и дадим подробные ответы на все возникшие вопросы
+                    Мы проводим эксперимент на предприятиях совместно с ЦРПТ, занимает 2 рабочих дня (первый день монтаж системы, второй день демонстрация работы системы)
+                    <div class="list_form_description">
+                        Эксперимент предоставляет следующие преимущества:
+                        <ul>
+                            <li>бесплатен для производителя;</li>
+                            <li>позволяет оценить работу интегратора;</li>
+                            <li>линейные специалисты могут увидеть с какими задачами столкнутся при внедрении;</li>
+                            <li>демонстрация маркировки в действии на вашем предприятии.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="demo_form">
@@ -89,67 +172,169 @@
                 </div>
                 <button type-solution="marking" btn-form-type="marking" class="btn">отправить</button>
             </div>
-            <div class="politic_description other_politic_description">Нажимая на кнопку, вы даёте согласие на
+            <div class="politic_description other_politic_description">
+                Нажимая на кнопку, вы даёте согласие на
                 обработку персональных данных в
                 соответствии с <a target="_blank" href="{% url "core:privacy-policy" %}">политикой
-                    конфиденциальности</a>
+            конфиденциальности</a>
+        </div>
+    </div>
+</div>
+<div class="marking_aggregation_station_container">
+    <div class="title">Сериализация (единичная маркировка)</div>
+    <div class="description">
+        <div class="left">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/marking_descr_img_one.png" %}"
+                     alt="img"
+                     loading="lazy" />
+            </div>
+        </div>
+        <div class="right">
+            <div class="text_content">
+                <div class="paragraph">
+                    Сериализация – это маркировка каждой единицы продукции индивидуальным кодом. Этот этап позволяет детально отслеживать продукцию на всех этапах – от производства до продажи. 
+                </div>
+                <div class="paragraph">
+                    Имеем большой опыт в области маркировки и осуществляем внедрение системы сериализации в различных товарных группах
+                </div>
+                <a href="#anchor" class="title-link anchor_link">
+                    <div class="title-link-description">Заказать звонок</div>
+                    <div class="arrow-container">
+                        <img src="{% static "core/images/direction/arrow.png" %}"
+                             alt="vector"
+                             loading="lazy" />
+                    </div>
+                </a>
             </div>
         </div>
     </div>
-    <div class="marking_aggregation_station_container">
-        <div class="title">СТАНЦИЯ АГРЕГАЦИИ МАРКИРОВКИ</div>
-        <div class="description">
-            <div class="left">
-                <div class="img_container">
-                    <img src="{% static "core/images/solutions/marking_aggregation_station.png" %}"
-                         alt="">
-                </div>
-                <div class="documentation_container">
-                    <div class="documentation_container_title">Документация</div>
-                    <div class="documentation_elem">
-                        <a href="{% static "core/docs/Shema-Karta-processa-head.pdf" %}"
-                           target="_blank">Блок-схема установки</a><span>(PDF, 827 kb)</span>
-                    </div>
-                    <div class="documentation_elem">
-                        <a href="{% static "core/docs/agorythm-work-system.pdf" %}"
-                           target="_blank">Алгоритм работы системы</a><span>(PDF, 260 kb)</span>
-                    </div>
-                </div>
+</div>
+<div class="marking_aggregation_station_container">
+    <div class="title">СТАНЦИЯ АГРЕГАЦИИ МАРКИРОВКИ</div>
+    <div class="description">
+        <div class="left">
+            <div class="img_container">
+                <img src="{% static "core/images/solutions/marking_aggregation_station.png" %}"
+                     alt="img"
+                     loading="lazy" />
             </div>
-            <div class="right">
-                <div class="text_content">
-                    <div class="paragraph">
-                        Станция агрегации маркировки представляет собой решение, автоматизирующее процесс объединения нескольких единиц промаркированной продукции в одну группу с единым кодом. Станция подходит для агрегации потребительских, групповых и транспортных упаковок. Оно идеально подходит для товарных групп, прошедших единичную маркировку (сериализацию), таких как:
-                    </div>
-                    <ul class="list">
-                        <li>маркировка молока и молочной продукции;</li>
-                        <li>маркировка упакованной воды;</li>
-                        <li>маркировка морепродуктов (икра лососевых и осетровых);</li>
-                        <li>маркировка БАД;</li>
-                        <li>антисептики;</li>
-                        <li>безалкогольные напитки;</li>
-                    </ul>
-                    <div class="paragraph">
-                        При внедрении станции агрегации маркировки возможна интеграция с существующими системами. Допускается внедрение на производства, где уже используется оборудование от других интеграторов, такое решение делает станцию универсальным инструментом для модернизации процессов.Основные преимущества станции агрегации маркировки:
-                    </div>
-                    <ul class="list">
-                        <li>
-                            автоматическая агрегация: Система объединяет несколько единиц продукции в одну группу, что упрощает логистику и управление запасами;
-                        </li>
-                        <li>
-                            автоматическая маркировка: Станция обеспечивает быструю и точную печать маркировки для упаковок и паллет, позволяя сократить количество ошибок;
-                        </li>
-                        <li>мобильность: Станцию можно установить в удобном месте для производства или склада;</li>
-                        <li>гибкость: Станция может быть адаптирована под разные виды упаковок и требования клиентов;</li>
-                    </ul>
-                    <a href="#anchor" class="title-link anchor_link">
-                        <div class="title-link-description">напишите нам</div>
-                        <div class="arrow-container">
-                            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
-                        </div>
-                    </a>
+            <div class="documentation_container">
+                <div class="documentation_container_title">Документация</div>
+                <div class="documentation_elem">
+                    <a href="{% static "core/docs/Shema-Karta-processa-head.pdf" %}"
+                       target="_blank">Блок-схема установки</a><span>(PDF, 827 kb)</span>
+                </div>
+                <div class="documentation_elem">
+                    <a href="{% static "core/docs/agorythm-work-system.pdf" %}"
+                       target="_blank">Алгоритм работы системы</a><span>(PDF, 260 kb)</span>
                 </div>
             </div>
         </div>
+        <div class="right">
+            <div class="text_content">
+                <div class="paragraph">
+                    Станция агрегации маркировки представляет собой решение, автоматизирующее процесс объединения нескольких единиц промаркированной продукции в одну группу с единым кодом. Станция подходит для агрегации потребительских, групповых и транспортных упаковок. Оно идеально подходит для товарных групп, прошедших единичную маркировку (сериализацию), таких как:
+                </div>
+                <ul class="list">
+                    <li>маркировка молока и молочной продукции;</li>
+                    <li>маркировка упакованной воды;</li>
+                    <li>консервированная продукция;</li>
+                    <li>маркировка БАД;</li>
+                    <li>антисептики;</li>
+                    <li>безалкогольные напитки.</li>
+                </ul>
+                <div class="paragraph">
+                    При внедрении станции агрегации маркировки возможна интеграция с существующими системами. Допускается внедрение на производства, где уже используется оборудование от других интеграторов, такое решение делает станцию универсальным инструментом для модернизации процессов.Основные преимущества станции агрегации маркировки:
+                </div>
+                <ul class="list">
+                    <li>
+                        Автоматическая агрегация: система объединяет несколько единиц продукции в одну группу, что упрощает логистику и управление запасами.
+                    </li>
+                    <li>
+                        Автоматическая маркировка: станция обеспечивает быструю и точную печать маркировки для упаковок и паллет, позволяя сократить количество ошибок.
+                    </li>
+                    <li>Мобильность: станцию можно установить в удобном месте для производства или склада.</li>
+                    <li>Гибкость: станция может быть адаптирована под разные виды упаковок и требования клиентов.</li>
+                </ul>
+                <a href="#anchor" class="title-link anchor_link">
+                    <div class="title-link-description">Заказать звонок</div>
+                    <div class="arrow-container">
+                        <img src="{% static "core/images/direction/arrow.png" %}"
+                             alt="vector"
+                             loading="lazy" />
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="marking_aggregation_station_container comprehensive_solution_stacking_labeled_products">
+    <div class="title marking_title">Комплексное решение для укладки маркированной продукции</div>
+    <div class="description">
+        <div class="right">
+            <div class="text_content">
+                <div class="paragraph orange">Исключите ошибки пересорта и автоматизируйте свое производство!</div>
+                <div class="paragraph">
+                    В рамках обязательной маркировки “Честный Знак” нами было разработано комплексное решение для автоматической укладки маркированной продукции в короба и на паллеты. Наша система гарантирует точность и исключает ошибки пересорта, обеспечивая соответствие требованиям законодательства и повышает эффективность вашего производства.
+                </div>
+                <div class="paragraph">Комплексная автоматизация: маркировка + кобот - удвойте эффективность вашего производства!</div>
+                <div class="paragraph" style="text-transform:uppercase;">Преимущества комплексного решения:</div>
+                <ul class="list">
+                    <li>
+                        Реальное увеличение производительности: коботы обеспечивают непрерывную укладку продукции, исключая пересорт продукции, а маркировка в автоматическом режиме – ее быстрое и точное нанесение и считывание DM-кодов. 
+                    </li>
+                    <li>Сокращение ручного труда: освободите сотрудников от рутинных операций.</li>
+                    <li>
+                        Гибкость комплексного решения: при смене формата выпускаемой продукции можно легко перенастроить кобота и систему маркировки. Легкая перенастройка оборудования под различные задачи и типы продукции.
+                    </li>
+                    <li>Минимизация ошибок: автоматизация исключает человеческий фактор и обеспечивает высокое качество маркировки.</li>
+                    <li>Быстрая окупаемость: сокращение затрат и увеличение прибыли за счет оптимизации производственных процессов.</li>
+                </ul>
+                <div class="paragraph">
+                    Узнайте, как комплексная автоматизация поможет вашему бизнесу, оставьте заявку на бесплатную консультацию! Закажите демонстрацию комплексного решения прямо сейчас!
+                </div>
+                <a href="#anchor" class="title-link anchor_link">
+                    <div class="title-link-description">Заказать звонок</div>
+                    <div class="arrow-container">
+                        <img src="{% static "core/images/direction/arrow.png" %}"
+                             alt="vector"
+                             loading="lazy" />
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="marking_directions_zone">
+    <div class="direction_elem">
+        <div class="title">ТЗ</div>
+        <div class="description">Совместная разработка технического задания</div>
+    </div>
+    <div class="direction_elem">
+        <div class="title">ЭКСПЕРИМЕНТ</div>
+        <div class="description">Совместно с ЦПРТ проведем бесплатный эксперимент у вас на производстве</div>
+    </div>
+    <div class="direction_elem">
+        <div class="title">ПОДДЕРЖКА</div>
+        <div class="description">Техническая поддержка после установки оборудования</div>
+    </div>
+    <div class="direction_elem">
+        <div class="title">ОБУЧЕНИЕ</div>
+        <div class="description">Обучение персонала для эффективного использования оборудования</div>
+    </div>
+    <div class="direction_elem">
+        <div class="title">ГИБКОСТЬ</div>
+        <div class="description">Различные виды нанесения и  ПО под различные задачи заказчика</div>
+    </div>
+    <div class="direction_elem">
+        <div class="title">ОПЫТ</div>
+        <div class="description">Выбор оптимального технического решения для различных материалов</div>
+    </div>
+    <div class="direction_elem_title">
+        ПРЕИМУЩЕСТВА
+        <br>
+        РАБОТЫ С МОТРУМ
     </div>
 </div>

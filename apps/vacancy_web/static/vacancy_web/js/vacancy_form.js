@@ -39,7 +39,6 @@ window.addEventListener("DOMContentLoaded", () => {
       const array = file["name"].split(".");
       const fileName = array[0];
       const fileType = array.at(-1);
-      console.log("fileType", fileType);
       fileLabelDescription.textContent = truncate(fileName, 8) + "." + fileType;
     });
 
@@ -85,21 +84,22 @@ window.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           body: formData,
           headers: {
-            // "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            ym(37794920, "reachGoal", "send_vacancy_form");
-            clearInputs();
-            successModal(
-              "Спасибо за отклик, мы рассмотрим Ваше резюме и свяжемся с Вами"
-            );
-            hidePreloaderAndEnabledButton(submitBtn);
-          } else {
-            setErrorModal();
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              ym(37794920, "reachGoal", "send_vacancy_form");
+              clearInputs();
+              successModal(
+                "Спасибо за отклик, мы рассмотрим Ваше резюме и свяжемся с Вами"
+              );
+              hidePreloaderAndEnabledButton(submitBtn);
+            } else {
+              setErrorModal();
+            }
+          })
+          .catch((error) => console.error(error));
       }
     };
   }

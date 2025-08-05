@@ -17,14 +17,16 @@
            class="title-link">
             <div class="title-link-description">весь каталог</div>
             <div class="arrow-container">
-                <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+                <img src="{% static "core/images/direction/arrow.png" %}"
+                     alt="vector"
+                     loading="lazy" />
             </div>
         </a>
     </div>
     {% for project in projects %}
         <a class="project" href="{% url 'projects_web:project' project.slug %}">
             <div class="img-container">
-                <img src="{{ project.image_main.url }}" alt="img">
+                <img src="{{ project.image_main.url }}" alt="img" loading="lazy" />
             </div>
             <div class="project_name">
                 <p>{{ project.name }}</p>
@@ -35,7 +37,9 @@
        class="title-link mobile-title-link">
         <div class="title-link-description">весь каталог</div>
         <div class="arrow-container">
-            <img src="{% static "core/images/direction/arrow.png" %}" alt="vector">
+            <img src="{% static "core/images/direction/arrow.png" %}"
+                 alt="vector"
+                 loading="lazy" />
         </div>
     </a>
 </div>

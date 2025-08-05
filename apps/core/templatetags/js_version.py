@@ -1,9 +1,14 @@
 from django import template
+from project.settings import IS_TESTING,VERSION
+import random
 
 register = template.Library()
 
 
 @register.simple_tag(takes_context=False)
 def js_version():
-    ver = "1.1"
+    if IS_TESTING:
+        ver = random.randint(0, 3124567)
+    else:
+        ver = VERSION
     return ver

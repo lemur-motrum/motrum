@@ -3,7 +3,9 @@
     <div class="motrum-slider-requsites">
         <div class="motrum-slider-requisites-up-content">
             <div class="circle">
-                <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}" />
+                <img src="{% static "core/images/promo-slider/phoneIcon_slider.png" %}"
+                     loading="lazy"
+                     alt="icon" />
             </div>
             <button class="phone-button">
                 <span>Обратный
@@ -22,7 +24,7 @@
             {% for slider_elem in slider %}
                 {% if slider_elem.active %}
                     <div class="promoslider-one-elem swiper-slide">
-                        <img src="{{ slider_elem.image.url }}" alt="image" />
+                        <img src="{{ slider_elem.image.url }}" alt="image" loading="lazy" />
                     </div>
                 {% endif %}
             {% endfor %}
@@ -30,7 +32,8 @@
     </div>
     <div class="motrum-promosilder-middle-content">
         <img src="{% static "core/images/promo-slider/motrum-slider-lightning.png" %}"
-             alt="image" />
+             alt="image"
+             loading="lazy" />
     </div>
     <div class="motrum-promosilder-two">
         <div class="swiper-wrapper">
@@ -39,7 +42,7 @@
                     <div class="promoslider-two-elem swiper-slide">
                         <a href="{% if slider_elem.link %}{{ slider_elem.link }} {% else %}{% endif %}"
                            class="promoslider_link"></a>
-                        {% if slider_elem.image_right %}<img src="{{ slider_elem.image_right.url }}" alt="image" />{% endif %}
+                        {% if slider_elem.image_right %}<img src="{{ slider_elem.image_right.url }}" alt="image" loading="lazy" />{% endif %}
                         {% if slider_elem.video %}
                             {% autoescape off %}
                                 {{ slider_elem.video }}
@@ -67,7 +70,7 @@
                             <div class="promoslider-two-elem-description-down">
                                 {% if slider_elem.icon3 %}
                                     <div class="icon-container">
-                                        <img src="{{ slider_elem.icon3.url }}" alt="icon" />
+                                        <img src="{{ slider_elem.icon3.url }}" alt="icon" loading="lazy" />
                                     </div>
                                 {% endif %}
                                 {% if slider_elem.text4 %}<span class="bold-text">{{ slider_elem.text4 }}</span>{% endif %}
@@ -81,11 +84,13 @@
         <div class="navigation">
             <div class="nav_prew">
                 <img src="{% static "core/images/promo-slider/prew-arrow.png" %}"
-                     alt="arrow" />
+                     alt="arrow"
+                     loading="lazy" />
             </div>
             <div class="nav_next">
                 <img src="{% static "core/images/promo-slider/next-arrow.png" %}"
-                     alt="arrow" />
+                     alt="arrow"
+                     loading="lazy" />
             </div>
         </div>
     </div>

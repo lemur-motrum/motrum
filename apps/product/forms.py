@@ -11,7 +11,11 @@ from apps.product.models import (
     ProductDocument,
     ProductImage,
     ProductProperty,
+    ProductPropertyMotrum,
+    ProductPropertyMotrumArticleCateg,
+    ProductPropertyValueMotrum,
     Stock,
+    ProductPropertyMotrumItem,
 )
 from apps.specification.models import ProductSpecification
 from apps.supplier.models import (
@@ -19,6 +23,7 @@ from apps.supplier.models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 
@@ -34,9 +39,9 @@ class ProductForm(forms.ModelForm):
         queryset=Vendor.objects.all(),
         # required=False,
         label="Производитель",
-        # widget=autocomplete.ModelSelect2(
-        #     url="product:vendor-autocomplete", forward=["supplier"]
-        # ),
+        widget=autocomplete.ModelSelect2(
+            url="product:vendor-autocomplete",
+        ),
     )
 
     category = forms.ModelChoiceField(
@@ -80,6 +85,18 @@ class ProductForm(forms.ModelForm):
             forward=["supplier", "vendor", "category_supplier", "group_supplier"],
         ),
     )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=[
+                "supplier",
+                "vendor",
+            ],
+        ),
+    )
 
     class Meta:
         model = Product
@@ -92,6 +109,22 @@ class ProductForm(forms.ModelForm):
                 }
             ),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
+
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
 
 class DocumentForm(forms.ModelForm):
@@ -110,6 +143,7 @@ class DocumentForm(forms.ModelForm):
 
 # форма обновления продукта добавленного автоматически
 class ProductChangeForm(forms.ModelForm):
+
     category = forms.ModelChoiceField(
         queryset=CategoryProduct.objects.all(),
         label="Категория Motrum",
@@ -195,6 +229,18 @@ class ProductChangeForm(forms.ModelForm):
         label="Производитель",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=[
+                "supplier",
+                "vendor",
+            ],
+        ),
+    )
 
     class Meta:
         model = Product
@@ -219,6 +265,22 @@ class ProductChangeForm(forms.ModelForm):
                 }
             ),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
+
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
     # def __init__(self, *args, **kwargs):
     #     super(ProductChangeForm, self).__init__(*args, **kwargs)
@@ -325,6 +387,15 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
             attrs={"class": "form-control"},
         ),
     )
+    promo_groupe = forms.ModelChoiceField(
+        queryset=SupplierPromoGroupe.objects.all(),
+        required=False,
+        label="Промо группа",
+        widget=autocomplete.ModelSelect2(
+            url="supplier:promo-group_catalog-autocomplete_product",
+            forward=["supplier", "vendor"],
+        ),
+    )
 
     class Meta:
         model = Product
@@ -351,7 +422,22 @@ class ProductChangeNotAutosaveForm(forms.ModelForm):
                 # self.fields[verbose_name].widget.attrs = {
                 #     "style": "border: 1px solid red;",
                 # }
+    def clean(self):
+        cleaned_data = super().clean()
+        article_supplier = cleaned_data.get('article_supplier')
+        supplier = cleaned_data.get('supplier')
+        vendor = cleaned_data.get('vendor')
 
+        qs = Product.objects.filter(
+            article_supplier=article_supplier,
+            supplier=supplier,
+            vendor=vendor,
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Товар с таким же 'Артикул поставщика', 'Поставщик' и 'Производитель' уже существует.")
+        return cleaned_data
 
 class ProductDocumentAdminForm(forms.ModelForm):
     document = forms.ClearableFileInput()
@@ -368,3 +454,72 @@ class ProductDocumentAdminForm(forms.ModelForm):
             # self.fields['document'].widget.attrs = {
             #         "style": "color:red;",
             #     }
+
+
+class ProductPropertyForm(forms.ModelForm):
+    property_motrum = forms.ModelChoiceField(
+        queryset=ProductPropertyMotrum.objects.all(),
+        label="Характеристика мотрум",
+        required=False,
+        widget=autocomplete.ModelSelect2(
+            url="product:property_motrum-autocomplete"
+        ),
+    )
+
+    property_value_motrum = forms.ModelChoiceField(
+        queryset=ProductPropertyValueMotrum.objects.all(),
+        required=False,
+        label="Значение характеристики Motrum",
+        widget=autocomplete.ModelSelect2(
+            url="product:property_value_motrum-autocomplete", forward=["property_motrum"]
+        ),
+    )
+
+    class Meta:
+        model = ProductProperty
+        fields = "__all__"
+
+
+class ProductPropertyMotrumItemForm(forms.ModelForm):
+    class Meta:
+        model = ProductPropertyMotrumItem
+        fields = '__all__'
+        widgets = {
+            # 'property_motrum': autocomplete.ModelSelect2(
+            #     url='product:property_motrum-autocomplete'
+            # ),
+            'property_value_motrum': autocomplete.ModelSelect2(
+                url='product:property_value_motrum-autocomplete', forward=["property_motrum"]
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        property_value_motrum = cleaned_data.get('property_value_motrum')
+        property_value_motrum_to_diapason = cleaned_data.get('property_value_motrum_to_diapason')
+        if not property_value_motrum and not property_value_motrum_to_diapason:
+            raise forms.ValidationError("Заполните либо 'Значение характеристики Motrum', либо 'Значение для диапазона'.")
+        if property_value_motrum and property_value_motrum_to_diapason:
+            raise forms.ValidationError("Заполните только одно поле: либо 'Значение характеристики Motrum', либо 'Значение для диапазона'.")
+        return cleaned_data
+
+
+
+class ProductPropertyMotrumForm(forms.ModelForm):
+    class Meta:
+        model = ProductPropertyMotrumArticleCateg
+        fields = '__all__'
+        widgets = {
+            'group': autocomplete.ModelSelect2(
+                url='product:group-autocomplete', forward=["category"]
+            ),
+        }
+        
+    # group = forms.ModelChoiceField(
+    #     queryset=GroupProduct.objects.all(),
+    #     required=False,
+    #     label="Группа Motrum",
+    #     widget=autocomplete.ModelSelect2(
+    #         url="product:group-autocomplete", forward=["category"]
+    #     ),
+    # )

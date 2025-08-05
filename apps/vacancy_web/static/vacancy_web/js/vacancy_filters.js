@@ -43,7 +43,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (filtersParamsArray.length > 0) {
           for (let i = 0; i < filtersElems.length; i++) {
             if (filtersElems[i].getAttribute("slug") == param) {
-              console.log("Есть такое");
               filtersElems[i].classList.add("active");
             }
           }
@@ -277,18 +276,20 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              ym(37794920, "reachGoal", "send_current_vacancy_form");
-              closeOverlay();
-              successModal(
-                `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
-              );
-              hidePreloaderAndEnabledButton(formSubmitBtn);
-            } else {
-              setErrorModal();
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                ym(37794920, "reachGoal", "send_current_vacancy_form");
+                closeOverlay();
+                successModal(
+                  `Спасибо за отклик, мы рассмотрим Ваше резюме и вернемся с обратной связью`
+                );
+                hidePreloaderAndEnabledButton(formSubmitBtn);
+              } else {
+                setErrorModal();
+              }
+            })
+            .catch((error) => console.error(error));
         }
       };
     }

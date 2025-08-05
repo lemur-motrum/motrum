@@ -1133,16 +1133,17 @@ window.addEventListener("DOMContentLoaded", () => {
         // // базовая вставка значений в цена продажи при загрузке
         // страницы в зависмости от маржи и скидки
         // если цена по запросу??????нужна ли тут
-        if (inputPrice) {
-          getDigitsNumber(
-            productTotalPrice,
-            +inputPrice.value * +quantity.value
-          );
-        }
+        // if (inputPrice) {
+        //   getDigitsNumber(
+        //     productTotalPrice,
+        //     +inputPrice.value * +quantity.value
+        //   );
+        // }
         // базовая вставка значений в цена продажи + Стоимость для клиента * на колво
         //   при загрузке\перезагрузке страницы в зависмости от маржи и скидки
         // если цена есть
         if (itemPriceOnce) {
+          console.log("if (itemPriceOnce)")
           updateFrontSums(
             spetificationTable,
             discountInput,

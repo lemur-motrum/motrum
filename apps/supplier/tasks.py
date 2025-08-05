@@ -1,5 +1,5 @@
 from requests import JSONDecodeError
-from apps.core.utils import add_new_photo_adress_prompower
+from apps.core.utils import add_new_photo_adress_prompower, delete_prop_motrum_item_duble
 from apps.logs.utils import error_alert
 from apps.supplier.get_utils.iek import get_iek_stock, iek_api, update_prod_iek_in_okt
 from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
@@ -170,6 +170,23 @@ def add_innovert(self):
             location = "Связь с сервером Промситтех"
 
             info = f"Нет связи с сервером Промситтех "
+            e = error_alert(error, location, info)
+
+        self.retry(exc=exc, countdown=600)
+        
+@app.task(
+    bind=True,
+    max_retries=10,
+)
+def del_prop_motrum_item_dublet(self):
+    try:
+        delete_prop_motrum_item_duble()
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            error = "file_api_error"
+            location = "Связьr"
+
+            info = f"Нет связи"
             e = error_alert(error, location, info)
 
         self.retry(exc=exc, countdown=600)

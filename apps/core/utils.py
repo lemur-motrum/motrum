@@ -4152,11 +4152,52 @@ def serch_prod_to_motrum_props_categ_to_create_product(
             is_diapason=obj.is_diapason,
             is_have_vendor_props=False,
         )
-        error = "info_error"
-        location = "+ х-ка"
-        info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
-        e = error_alert(error, location, info)
+        if created:
+            error = "info_error"
+            location = "+ х-ка"
+            info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+            e = error_alert(error, location, info)
 
+
+
+def delete_prop_motrum_item_duble():
+    """
+    Удаляет дублирующиеся ProductPropertyMotrumItem по ключевым полям:
+    product, property_motrum, property_value_motrum, is_diapason, property_value_motrum_to_diapason
+    Оставляет только один экземпляр для каждого уникального набора.
+    Также выводит в лог список товаров и названия свойств, которые были удалены.
+    """
+    from apps.product.models import ProductPropertyMotrumItem, Product, ProductPropertyMotrum
+    from django.db.models import F
+
+    seen = set()
+    to_delete = []
+    deleted_info = []
+    for item in ProductPropertyMotrumItem.objects.all().order_by('id'):
+        key = (
+            item.product_id,
+            item.property_motrum_id,
+            item.property_value_motrum_id,
+            item.is_diapason,
+            item.property_value_motrum_to_diapason,
+        )
+        if key in seen:
+            to_delete.append(item.id)
+            deleted_info.append((item.product_id, item.property_motrum_id))
+        else:
+            seen.add(key)
+    if to_delete:
+        ProductPropertyMotrumItem.objects.filter(id__in=to_delete).delete()
+        # Получаем имена для лога
+        product_names = {p.id: str(p) for p in Product.objects.filter(id__in=[x[0] for x in deleted_info])}
+        prop_names = {p.id: str(p) for p in ProductPropertyMotrum.objects.filter(id__in=[x[1] for x in deleted_info])}
+        for prod_id, prop_id in deleted_info:
+            error = "info_error"
+            location = "+ х-ка"
+            info = f"Удалён дубликат: Товар: {product_names.get(prod_id, prod_id)}, Свойство: {prop_names.get(prop_id, prop_id)}"
+            e = error_alert(error, location, info)
+          
+    
 def revert_cart_changes(cart_id, specification_id=None):
     """
     Откатывает все изменения в корзине до состояния на момент создания спецификации

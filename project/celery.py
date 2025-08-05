@@ -97,6 +97,13 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.counter_bill_new_year",
         "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
     },
+    
+    
+    
+    "del_prop_motrum_item_dublet": {
+        "task": "apps.supplier.tasks.del_prop_motrum_item_dublet",
+        "schedule": crontab(minute=10, hour=0, day_of_month=6, month_of_year=8),
+    },
 }
 
 
@@ -113,10 +120,7 @@ app.conf.beat_schedule = {
 # },
     # yдалить дуьли пропсов мотрум
     
-    "del_prop_motrum_item_dublet": {
-        "task": "apps.supplier.tasks.del_prop_motrum_item_dublet",
-        "schedule": crontab(minute=10, hour=0, day_of_month=31, month_of_year=7),
-    },
+    
 
 # 'specification_stop': {
 #     'task': 'apps.specification.tasks.specification_date_stop',

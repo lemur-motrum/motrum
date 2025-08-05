@@ -81,10 +81,11 @@ export function getMarginality(wrapper) {
       const marginalityContainer = item.querySelector(".marginality");
       const marginality = totalCost - priceMotrum;
 
-
+      console.log("clientPrice",clientPrice)
       console.log("totalCost",totalCost)
       console.log("priceMotrum",priceMotrum)
       console.log("marginality",marginality)
+      console.log("marginalityPercentValue",marginalityPercentValue)
 
       marginalityPercentContainer.textContent = isNaN(marginalityPercentValue)
         ? "0,00"
@@ -94,6 +95,7 @@ export function getMarginality(wrapper) {
   }
 }
 window.addEventListener("DOMContentLoaded", () => {
+  console.log("window.addEventListener(DOMContentLoadedspetificationTable)")
   const container = document.querySelector(".spetification_table");
   getMarginality(container);
 });

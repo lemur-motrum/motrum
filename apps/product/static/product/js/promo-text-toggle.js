@@ -5,7 +5,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const promoTextContent = document.getElementById("promo-text-content");
     const promoTextBtn = document.getElementById("promo-text-btn");
   
-  console.log("Promo text elements:", { promoTextContainer, promoTextContent, promoTextBtn });
+  
   
   if (promoTextContainer && promoTextContent && promoTextBtn) {
     // Проверяем, если текст больше 4 строк
@@ -51,8 +51,6 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
       console.log("Text is not longer than 4 lines, hiding button");
     }
-  } else {
-    console.log("Some elements not found");
-  }
+  } 
   }, 100);
 }); 

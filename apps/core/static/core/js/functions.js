@@ -142,6 +142,7 @@ export const getDigitsNumber = (container, value) => {
     currentValue;
   }
   container.textContent = currentValue;
+  
 };
 
 //Валидатор даты(возвращает даду спецификации по самой поздней дате поставки конкретного товара)

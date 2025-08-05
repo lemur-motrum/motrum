@@ -7,7 +7,7 @@
      data-product-name-new=""
      data-product-id-cart="{{ item.id_product_cart }}"
      data-product-pk="{{ item.pk }}"
-     data-price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %}{{ item.price_motrum }} {% endif %}"
+     data-price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %} {% if item.price_motrum %}{{ item.price_motrum }} {% else %} 0 {% endif %} {% endif %}"
      data-id="{{ item.id_product_cart }}"
      data-order="{% if item.order %}{{ item.order }}{% else %}0{% endif %}"
      data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %}"

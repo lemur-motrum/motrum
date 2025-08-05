@@ -139,120 +139,141 @@ window.addEventListener("DOMContentLoaded", () => {
                 data = JSON.stringify(objData);
                 const products = JSON.parse(response.products);
                 products.forEach((product) => {
-                  allProducts.innerHTML += `<div class="catalog-item" data-id=${product.pk
-                    }  data-price=${!product.price ? 0 : product.price
-                    }  data-motrum-id=${product.article} data-saler-id=${product.saler_article
-                    } data-discoutnt=${product.discount
-                    } data-order-multiplicity=${product.multiplicity}> 
+                  allProducts.innerHTML += `<div class="catalog-item" data-id=${
+                    product.pk
+                  }  data-price=${
+                    !product.price ? 0 : product.price
+                  }  data-motrum-id=${product.article} data-saler-id=${
+                    product.saler_article
+                  } data-discoutnt=${
+                    product.discount
+                  } data-order-multiplicity=${product.multiplicity}> 
                         <div class="hidden-description">
                             <div class="descripton">
-                                <div class="name">${product.supplier != product.vendor &&
-                      product.vendor != null
-                      ? product.supplier +
-                      " " +
-                      product.vendor +
-                      " " +
-                      product.name
-                      : product.supplier + " " + product.name
-                    }</div>
-                                <div class="article-motrum">${product.article
-                    }</div>
+                                <div class="name">${
+                                  product.supplier != product.vendor &&
+                                  product.vendor != null
+                                    ? product.supplier +
+                                      " " +
+                                      product.vendor +
+                                      " " +
+                                      product.name
+                                    : product.supplier + " " + product.name
+                                }</div>
+                                <div class="article-motrum">${
+                                  product.article
+                                }</div>
                                 <div class="charactiristics">
-                                    ${product.chars.length == 0
-                      ? "-"
-                      : product.chars.join(" ")
-                    }
+                                    ${
+                                      product.chars.length == 0
+                                        ? "-"
+                                        : product.chars.join(" ")
+                                    }
                                 </div>
                                 <div class="stock">
-                                ${product.stock
-                      ? `<div class="stock_item">
-                                    ${product.stock_to_order
-                        ? " Поставщик:<br>Под заказ"
-                        : `${product.stock_supplier
-                          ? `Поставщик: ${product.stock_supplier}`
-                          : "Поставщик: -"
-                        }`
-                      }
+                                ${
+                                  product.stock
+                                    ? `<div class="stock_item">
+                                    ${
+                                      product.stock_to_order
+                                        ? " Поставщик:<br>Под заказ"
+                                        : `${
+                                            product.stock_supplier
+                                              ? `Поставщик: ${product.stock_supplier}`
+                                              : "Поставщик: -"
+                                          }`
+                                    }
                                         </div>
-                                        <div class="stock_item">Motrum:${product.stock_motrum
-                      }</div>
+                                        <div class="stock_item">Motrum:${
+                                          product.stock_motrum
+                                        }</div>
                                         <span class="span-transit">${backendDataFormat(
-                        product.data_update
-                      )}</span>
+                                          product.data_update
+                                        )}</span>
                                         <br>
                                         <span class="span-transit">
-                                        ${product.transit_count
-                        ? `Ближайшая поставка: ${backendDataFormat(
-                          product.data_transit
-                        )} - ${product.transit_count} шт.`
-                        : ""
-                      }
+                                        ${
+                                          product.transit_count
+                                            ? `Ближайшая поставка: ${backendDataFormat(
+                                                product.data_transit
+                                              )} - ${product.transit_count} шт.`
+                                            : ""
+                                        }
                                         </span>`
-                      : `${product.stok_to_order ? "Под заказ" : ""
-                      } Неизвестно`
-                    }
+                                    : `${
+                                        product.stok_to_order ? "Под заказ" : ""
+                                      } Неизвестно`
+                                }
                                 </div>
                                 <div class="lot">
-                                ${product.stock
-                      ? `${product.multiplicity != 1 &&
-                        !product.is_one_sale
-                        ? `<span class="span-min">Минимальный заказ ${product.multiplicity +
-                        " " +
-                        product.lot
-                        }
+                                ${
+                                  product.stock
+                                    ? `${
+                                        product.multiplicity != 1 &&
+                                        !product.is_one_sale
+                                          ? `<span class="span-min">Минимальный заказ ${
+                                              product.multiplicity +
+                                              " " +
+                                              product.lot
+                                            }
                                            </span>`
-                        : ""
-                      }${product.lot_complect != 1
-                        ? `${product.lot +
-                        "." +
-                        product.lot_complect +
-                        "ед."
-                        }`
-                        : `${product.lot_complect +
-                        " " +
-                        product.lot +
-                        "."
-                        }`
-                      }
+                                          : ""
+                                      }${
+                                        product.lot_complect != 1
+                                          ? `${
+                                              product.lot +
+                                              "." +
+                                              product.lot_complect +
+                                              "ед."
+                                            }`
+                                          : `${
+                                              product.lot_complect +
+                                              " " +
+                                              product.lot +
+                                              "."
+                                            }`
+                                      }
                                         `
-                      : "-"
-                    }
+                                    : "-"
+                                }
                                 </div>
                                  <div class="suppler-price">
-                                 ${product.price_suppler &&
-                      product.price_suppler != 0
-                      ? `<span class="price-suppler-count">${new Intl.NumberFormat(
-                        "ru"
-                      )
-                        .format(+product.price_suppler)
-                        .replace(
-                          /(\d+)(\.|,)(\d+)/g,
-                          function (o, a, b, c) {
-                            return a + b + c.slice(0, 2);
-                          }
-                        )}
+                                 ${
+                                   product.price_suppler &&
+                                   product.price_suppler != 0
+                                     ? `<span class="price-suppler-count">${new Intl.NumberFormat(
+                                         "ru"
+                                       )
+                                         .format(+product.price_suppler)
+                                         .replace(
+                                           /(\d+)(\.|,)(\d+)/g,
+                                           function (o, a, b, c) {
+                                             return a + b + c.slice(0, 2);
+                                           }
+                                         )}
                                        </span> `
-                      : "<span>По запросу</span>"
-                    }
+                                     : "<span>По запросу</span>"
+                                 }
                                 </div>
                                 <div class="price">
-                                ${product.price && product.price != 0
-                      ? `
+                                ${
+                                  product.price && product.price != 0
+                                    ? `
                                   <span class="price-count">
                                         ${new Intl.NumberFormat("ru")
-                        .format(+product.price)
-                        .replace(
-                          /(\d+)(\.|,)(\d+)/g,
-                          function (o, a, b, c) {
-                            return a + b + c.slice(0, 2);
-                          }
-                        )}
+                                          .format(+product.price)
+                                          .replace(
+                                            /(\d+)(\.|,)(\d+)/g,
+                                            function (o, a, b, c) {
+                                              return a + b + c.slice(0, 2);
+                                            }
+                                          )}
                                       </span>
                                       <span class="span-update"> от ${backendDataFormat(
-                          product.data_update
-                        )}</span>`
-                      : `<span>По запросу</span>`
-                    }
+                                        product.data_update
+                                      )}</span>`
+                                    : `<span>По запросу</span>`
+                                }
                                 </div>
                             </div>
                                 <div class="item_button_container">
@@ -288,7 +309,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const specificationContainer = document.querySelector(
     ".specification-container"
   );
-
 
   if (specificationContainer) {
     const spetificationTable = specificationContainer.querySelector(
@@ -363,10 +383,8 @@ window.addEventListener("DOMContentLoaded", () => {
           : ((1 - +sumMotrum / +sum) * 100).toFixed(2);
       }
 
-
-
-      // ЭТА ФУНКЦИЯ НЕ ВЫЗЫВАЕТЬСЯ ПОТОМУ ЧТО ЕЕ ВЫЗОВ С КНОКИ СОХРАНИТЬ 
-      // ТОЛЬКО СПЕЦИФИКАЦИЮ. СЕЙЧАС ДЛЯ СОХРАНЕНИЯ НОВОГО ЗАКАЗА 
+      // ЭТА saveSpecification НЕ ВЫЗЫВАЕТЬСЯ ПОТОМУ ЧТО ЕЕ ВЫЗОВ С КНОКИ СОХРАНИТЬ
+      // ТОЛЬКО СПЕЦИФИКАЦИЮ. СЕЙЧАС ДЛЯ СОХРАНЕНИЯ НОВОГО ЗАКАЗА
       // ИСПОЛЬЗУЕТЬСЯ create_invoice_without_specification
 
       function saveSpecification(elems) {
@@ -551,7 +569,7 @@ window.addEventListener("DOMContentLoaded", () => {
           };
 
           const data = JSON.stringify(dataObj);
-          console.log("add-order-admin", "sctipts")
+          console.log("add-order-admin", "sctipts");
           let endpoint = "/api/v1/order/add-order-admin/";
           fetch(endpoint, {
             method: "POST",
@@ -596,7 +614,8 @@ window.addEventListener("DOMContentLoaded", () => {
           })
           .catch((error) => console.error(error));
       }
-
+      
+      // ВЕСЬ МЕХАНИЗМ РАБОТЫ ФРОНТА КОРЗИНЫ АДМИНА
       productItems.forEach((item, i) => {
         const deleteItemBtn = item.querySelector(".item_conainer-delete_btn");
         const inputPrice = item.querySelector(".price-input");
@@ -614,51 +633,10 @@ window.addEventListener("DOMContentLoaded", () => {
         let countQuantity = +quantity.value;
         const productID = item.getAttribute("data-id");
         const productCartID = item.getAttribute("data-product-id-cart");
-        console.log(item.querySelector(".price_once").textContent);
-        if (discountInput) {
-          discountInput.value = getCurrentPrice(discountInput.value);
-        }
-        if (marjaInput) {
-          marjaInput.value = getCurrentPrice(marjaInput.value);
-        }
-        // вставка значений в цена продажи при загрузке страницы
-        if (inputPrice) {
-          getDigitsNumber(
-            productTotalPrice,
-            +inputPrice.value * +quantity.value
-          );
-        }
-        if (itemPriceOnce) {
-          console.log(
-            "634item.querySelector(price_once.textContent",
-            item.querySelector(".price_once").textContent
-          );
-          if (discountInput.value) {
-            console.log("discountInput");
-            getDigitsNumber(
-              itemPriceOnce,
-              (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
-              100
-            );
-          } else if (marjaInput.value) {
-            getDigitsNumber(
-              itemPriceOnce,
-              (
-                +getCurrentPrice(productPriceMotrum) /
-                ((100 - +marjaInput.value) / 100)
-              ).toFixed(2)
-            );
-          } else {
-            const currnetPriceOne = +getCurrentPrice(itemPriceOnce.textContent);
-            getDigitsNumber(itemPriceOnce, currnetPriceOne);
-          }
-          console.log(item.querySelector(".price_once").textContent);
-          const currentPrice = +getCurrentPrice(productPrice) * +quantity.value;
-          getDigitsNumber(productTotalPrice, currentPrice);
+        const multiplicity = item.getAttribute("data-multiplicity");
 
-          getResult();
-        }
-
+        // базовые функции аптедов товара
+        // изменение колва товара
         function updateProduct() {
           setTimeout(() => {
             const dataObj = {
@@ -666,7 +644,6 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              // изменила метод
               method: "POST",
               body: data,
               headers: {
@@ -687,7 +664,7 @@ window.addEventListener("DOMContentLoaded", () => {
               });
           }, 1500);
         }
-
+        // сохранениес кидки маржи по инпуту отправка на бек
         function updateSaleProduct() {
           setTimeout(() => {
             const dataObj = {
@@ -696,7 +673,6 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              // изменила метод
               method: "POST",
               body: data,
               headers: {
@@ -715,6 +691,7 @@ window.addEventListener("DOMContentLoaded", () => {
               });
           }, 1500);
         }
+        // сохранени даты товара по инпуту отправка на бек
         function updateDateProduct() {
           setTimeout(() => {
             const dataObj = {
@@ -722,7 +699,6 @@ window.addEventListener("DOMContentLoaded", () => {
             };
             const data = JSON.stringify(dataObj);
             fetch(`/api/v1/cart/${productID}/update-product/`, {
-              // изменила метод
               method: "POST",
               body: data,
               headers: {
@@ -741,54 +717,57 @@ window.addEventListener("DOMContentLoaded", () => {
               });
           }, 1500);
         }
-        console.log(item.querySelector(".price_once").textContent);
-        const multiplicity = item.getAttribute("data-multiplicity");
 
-        quantity.addEventListener("keyup", function () {
-          if (multiplicity) {
-            let val = parseInt(this.value) || 0;
-            while (val % +multiplicity) {
-              val++;
-              if (val % +multiplicity == 0) {
-                break;
-              }
-            }
-            this.value = val;
-            countQuantity = +val;
-          } else {
-            countQuantity = +quantity.value;
-          }
-          if (countQuantity >= 99999) {
-            quantity.value = 99999;
-            minusButton.disabled = false;
-            plusButton.disabled = true;
-          } else if (countQuantity <= 1) {
-            quantity.value = 1;
-            plusButton.disabled = false;
-          } else {
-            minusButton.disabled = false;
-            plusButton.disabled = false;
-          }
-          if (itemPriceOnce) {
-            const currentPrice = !discountInput.value
-              ? +getCurrentPrice(item.getAttribute("data-price")) *
-              +quantity.value
-              : +quantity.value *
-              (
-                (+getCurrentPrice(item.getAttribute("data-price")) *
-                  (100 - +discountInput.value)) /
-                100
-              ).toFixed(2);
-
+        // вставки занчений в станицу корзины цен и вызов маржи
+        function updateFrontSums(
+          spetificationTable,
+          discountInput,
+          marjaInput,
+          item,
+          quantity,
+          productTotalPrice,
+          productPriceMotrum,
+          itemPriceOnce
+        ) {
+          if (!discountInput.value & !marjaInput.value) {
+            let oneProduct =
+              +getCurrentPrice(item.getAttribute("data-price")) 
+            const currentPrice =
+            oneProduct *
+              +quantity.value;
+            getDigitsNumber(itemPriceOnce, oneProduct);
             getDigitsNumber(productTotalPrice, currentPrice);
-            editMotrumPrice(spetificationTable);
-            changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
-            getResult();
-            updateProduct();
+          } else {
+            if ((discountInput.value != 0) & (discountInput.value != "")) {
+           
+              let oneProduct =
+                (getCurrentPrice(item.getAttribute("data-price")) *
+                  (100 - +discountInput.value)) /
+                100;
+              const currentPrice = quantity.value * oneProduct;
+              getDigitsNumber(productTotalPrice, currentPrice);
+              getDigitsNumber(itemPriceOnce, oneProduct);
+            } else if ((marjaInput.value != 0) & (marjaInput.value != "")) {
+            
+          
+              const marjinValue = +marjaInput.value;
+              const priceOneMotrum = +getCurrentPrice(
+                item.getAttribute("data-price-motrum")
+              );
+              let oneProduct =
+                priceOneMotrum / ((100 - +marjaInput.value) / 100);
+              const currentPrice = oneProduct * +quantity.value;
+              getDigitsNumber(itemPriceOnce, oneProduct);
+              getDigitsNumber(productTotalPrice, currentPrice);
+            }
           }
-        });
-        console.log(item.querySelector(".price_once").textContent);
+
+          editMotrumPrice(spetificationTable);
+          changeDateInOrder(spetificationTable);
+          getMarginality(spetificationTable);
+          getResult();
+        }
+
         // сохранении скидки по инпуту
         discountInput.addEventListener("keyup", function () {
           if (
@@ -844,353 +823,7 @@ window.addEventListener("DOMContentLoaded", () => {
             }
           }
         });
-
-        console.log("917");
-
-        // обновление колва товаров
-        plusButton.onclick = () => {
-          if (multiplicity) {
-            countQuantity += +multiplicity;
-          } else {
-            countQuantity++;
-          }
-
-          quantity.value = +countQuantity;
-          const currentPrice = !discountInput.value
-            ? +getCurrentPrice(item.getAttribute("data-price")) *
-            +quantity.value
-            : +quantity.value *
-            (
-              (+getCurrentPrice(item.getAttribute("data-price")) *
-                (100 - +discountInput.value)) /
-              100
-            ).toFixed(2);
-          getDigitsNumber(productTotalPrice, currentPrice);
-
-          if (countQuantity >= 99999) {
-            minusButton.disabled = false;
-            plusButton.disabled = true;
-          }
-          if (countQuantity > 0) {
-            minusButton.disabled = false;
-          } else {
-            minusButton.disabled = true;
-          }
-          editMotrumPrice(spetificationTable);
-          changeDateInOrder(spetificationTable);
-          getMarginality(spetificationTable);
-          updateProduct();
-          getResult();
-        };
-
-        minusButton.onclick = () => {
-          if (multiplicity) {
-            countQuantity -= +multiplicity;
-          } else {
-            countQuantity--;
-          }
-          quantity.value = +countQuantity;
-          if (quantity.value <= 1) {
-            if (multiplicity) {
-              quantity.value = +multiplicity;
-            } else {
-              quantity.value = 1;
-            }
-          }
-          const currentPrice = !discountInput.value
-            ? +getCurrentPrice(item.getAttribute("data-price")) *
-            +quantity.value
-            : +quantity.value *
-            (
-              (+getCurrentPrice(item.getAttribute("data-price")) *
-                (100 - +discountInput.value)) /
-              100
-            ).toFixed(2);
-          getDigitsNumber(productTotalPrice, currentPrice);
-
-          if (countQuantity >= 99999) {
-            minusButton.disabled = false;
-            plusButton.disabled = true;
-          } else {
-            plusButton.disabled = false;
-          }
-          if (countQuantity <= 1) {
-            minusButton.disabled = true;
-          } else {
-            minusButton.disabled = false;
-          }
-          editMotrumPrice(spetificationTable);
-          changeDateInOrder(spetificationTable);
-          getMarginality(spetificationTable);
-          updateProduct();
-          getResult();
-        };
-        console.log("995");
-        console.log(item.querySelector(".price_once").textContent);
-
-        // если не заполнена цена для товара из каталога
-        if (inputPrice) {
-          const totalPrice = item.querySelector(".input_totla-cost");
-          const quantity = item.querySelector(".input-quantity");
-
-          quantity.onkeyup = () => {
-            countQuantity = +quantity.value;
-            const currentPrice = !discountInput.value
-              ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
-              : (new NumberParser("ru").parse(inputPrice.value) *
-                +quantity.value *
-                (100 - +discountInput.value)) /
-              100;
-            getDigitsNumber(productTotalPrice, currentPrice);
-            let price = +inputPrice.value * quantity.value;
-            getDigitsNumber(totalPrice, price);
-            editMotrumPrice(spetificationTable);
-            changeDateInOrder(spetificationTable);
-            getMarginality(spetificationTable);
-            console.log("1014");
-            getResult();
-          };
-
-          plusButton.onclick = () => {
-            const currentPrice = !discountInput.value
-              ? +item.getAttribute("data-price") * +quantity.value
-              : (+item.getAttribute("data-price") *
-                +quantity.value *
-                (100 - +discountInput.value)) /
-              100;
-            getDigitsNumber(productTotalPrice, currentPrice);
-            if (multiplicity) {
-              countQuantity += +multiplicity;
-            } else {
-              countQuantity++;
-            }
-            quantity.value = +countQuantity;
-            minusButton.disabled = false;
-            if (countQuantity >= 99999) {
-              quantity.value = multiplicity
-                ? getClosestInteger(99999, +multiplicity)
-                : 99999;
-              plusButton.disabled = true;
-              minusButton.disabled = false;
-            } else {
-              plusButton.disabled = false;
-              minusButton.disabled = false;
-            }
-            editMotrumPrice(spetificationTable);
-            changeDateInOrder(spetificationTable);
-            updateProduct();
-            let price = +inputPrice.value * quantity.value;
-            getDigitsNumber(totalPrice, price);
-            getMarginality(spetificationTable);
-            console.log("1048");
-            getResult();
-          };
-
-          minusButton.onclick = () => {
-            const currentPrice = !discountInput.value
-              ? +item.getAttribute("data-price") * +quantity.value
-              : (+item.getAttribute("data-price") *
-                +quantity.value *
-                (100 - +discountInput.value)) /
-              100;
-            getDigitsNumber(productTotalPrice, currentPrice);
-
-            if (multiplicity) {
-              countQuantity -= +multiplicity;
-            } else {
-              countQuantity--;
-            }
-            quantity.value = countQuantity;
-            minusButton.disabled = false;
-            if (countQuantity <= 1) {
-              if (multiplicity) {
-                quantity.value = +multiplicity;
-              } else {
-                quantity.value = 1;
-              }
-              minusButton.disabled = true;
-              plusButton.disabled = false;
-            } else {
-              minusButton.disabled = false;
-              plusButton.disabled = false;
-            }
-            editMotrumPrice(spetificationTable);
-            updateProduct();
-            changeDateInOrder(spetificationTable);
-            let price = +inputPrice.value * quantity.value;
-            getDigitsNumber(totalPrice, price);
-            getMarginality(spetificationTable);
-            console.log("1085");
-            getResult();
-          };
-
-          inputPrice.addEventListener("input", function (e) {
-            const currentValue = this.value
-              .replace(",", ".")
-              .replace(/[^.\d]+/g, "")
-              .replace(/^([^\.]*\.)|\./g, "$1")
-              .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-                return a + b + c.slice(0, 2);
-              });
-            inputPrice.value = currentValue;
-            if (inputPrice.value == ".") {
-              e.target.value = "";
-            }
-            if (inputPrice.value == "0") {
-              e.target.value = "";
-            }
-            let price = !discountInput.value
-              ? +inputPrice.value * quantity.value
-              : (+inputPrice.value *
-                quantity.value *
-                (100 - +discountInput.value)) /
-              100;
-            getDigitsNumber(totalPrice, price);
-            if (!discountInput.value) {
-              item.setAttribute("data-price", +inputPrice.value);
-            } else {
-              item.setAttribute(
-                "data-price",
-                (+inputPrice.value * 100) / (100 - +discountInput.value)
-              );
-            }
-            if (!inputPrice.value) {
-              totalPrice.textContent = 0;
-            }
-            editMotrumPrice(spetificationTable);
-            getMarginality(spetificationTable);
-            updateProduct();
-            const allPrice = inputPrice.value * countQuantity;
-            getDigitsNumber(productTotalPrice, allPrice);
-            console.log("1127");
-            getResult();
-          });
-
-          const allPrice = inputPrice.value * countQuantity;
-          getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
-          discountInput.onkeyup = () => {
-            console.log("discountInput");
-            if (discountInput.value >= 100) {
-              discountInput.value == 100;
-            }
-            let curentPrice;
-            if (discountInput.value == "-") {
-              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
-            } else {
-              curentPrice = (
-                (+getCurrentPrice(item.getAttribute("data-price")) *
-                  (100 - +discountInput.value)) /
-                100
-              ).toFixed(2);
-            }
-
-            inputPrice.value = curentPrice;
-            const allPrice = inputPrice.value * countQuantity;
-            getDigitsNumber(productTotalPrice, allPrice);
-            getMarginality(spetificationTable);
-            console.log("1152");
-            getResult();
-          };
-          marjaInput.onkeyup = () => {
-            console.log("marjaInput");
-
-            let curentPrice;
-            if (marjaInput.value == "-" || marjaInput.value == "") {
-              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
-            } else {
-              // (цена мотрум за ед  / ((100 - %маржи) / 100))
-              console.log(productPriceMotrum);
-              // curentPrice = (
-              //   (+getCurrentPrice(productPriceMotrum) *
-              //     (100 + +marjaInput.value)) /
-              //   100
-              // ).toFixed(2);
-              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2);
-              curentPrice = (
-                +getCurrentPrice(productPriceMotrum) /
-                ((100 - +marjaInput.value) / 100)
-              ).toFixed(2);
-              console.log(curentPrice);
-            }
-
-            console.log("curentPrice", curentPrice);
-            getDigitsNumber(productPriceContainer, curentPrice);
-            const allPrice = (curentPrice * countQuantity).toFixed(2);
-            getDigitsNumber(productTotalPrice, allPrice);
-            getMarginality(spetificationTable);
-            console.log("1231");
-            getResult();
-          };
-
-          if (saveButton) {
-            console.log("1292 saveButton.onclick = () => saveSpecification();");
-            saveButton.onclick = () => saveSpecification();
-          }
-        } else {
-          getMarginality(spetificationTable);
-          console.log("1176");
-          getResult();
-          discountInput.onkeyup = () => {
-            if (discountInput.value >= 100) {
-              discountInput.value == 100;
-            }
-            let curentPrice;
-            if (discountInput.value == "-") {
-              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
-            } else {
-              curentPrice = (
-                (+getCurrentPrice(productPrice) *
-                  (100 - +discountInput.value)) /
-                100
-              ).toFixed(2);
-            }
-
-            getDigitsNumber(productPriceContainer, curentPrice);
-            const allPrice = (curentPrice * countQuantity).toFixed(2);
-            getDigitsNumber(productTotalPrice, allPrice);
-            getMarginality(spetificationTable);
-            console.log("1198");
-            getResult();
-          };
-          marjaInput.onkeyup = () => {
-            console.log("marjaInput");
-
-            let curentPrice;
-            if (marjaInput.value == "-" || marjaInput.value == "") {
-              curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
-            } else {
-              // (цена мотрум за ед  / ((100 - %маржи) / 100))
-              console.log(productPriceMotrum);
-              // curentPrice = (
-              //   (+getCurrentPrice(productPriceMotrum) *
-              //     (100 + +marjaInput.value)) /
-              //   100
-              // ).toFixed(2);
-              // curentPrice = (+getCurrentPrice(productPriceMotrum) / ((100 - +marjaInput.value) / 100)).toFixed(2);
-              curentPrice = (
-                +getCurrentPrice(productPriceMotrum) /
-                ((100 - +marjaInput.value) / 100)
-              ).toFixed(2);
-              console.log(curentPrice);
-            }
-
-            console.log("curentPrice", curentPrice);
-            getDigitsNumber(productPriceContainer, curentPrice);
-            const allPrice = (curentPrice * countQuantity).toFixed(2);
-            getDigitsNumber(productTotalPrice, allPrice);
-            getMarginality(spetificationTable);
-            console.log("1231");
-            getResult();
-          };
-
-          if (saveButton) {
-            console.log(
-              " 1191 saveButton.onclick = () => saveSpecification(productItems);"
-            );
-            saveButton.onclick = () => saveSpecification(productItems);
-          }
-        }
-
+        // удаление товара из корзины
         deleteItemBtn.onclick = () => {
           fetch(`/api/v1/cart/${+productCartID}/delete-product/`, {
             method: "delete",
@@ -1208,33 +841,579 @@ window.addEventListener("DOMContentLoaded", () => {
               console.error(error);
             });
         };
-        if (discountInput.value) {
-          console.log(1350);
-          const currentPrice =
-            quantity.value *
-            ((getCurrentPrice(item.getAttribute("data-price")) *
-              (100 - +discountInput.value)) /
-              100);
-          getDigitsNumber(productTotalPrice, currentPrice);
+
+        // пересчет при изменении колва товаров выбрав числов  инпуте
+        quantity.addEventListener("keyup", function () {
+          if (multiplicity) {
+            let val = parseInt(this.value) || 0;
+            while (val % +multiplicity) {
+              val++;
+              if (val % +multiplicity == 0) {
+                break;
+              }
+            }
+            this.value = val;
+            countQuantity = +val;
+          } else {
+            countQuantity = +quantity.value;
+          }
+          if (countQuantity >= 99999) {
+            quantity.value = 99999;
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          } else if (countQuantity <= 1) {
+            quantity.value = 1;
+            plusButton.disabled = false;
+          } else {
+            minusButton.disabled = false;
+            plusButton.disabled = false;
+          }
+          if (itemPriceOnce) {
+            updateFrontSums(
+              spetificationTable,
+              discountInput,
+              marjaInput,
+              item,
+              quantity,
+              productTotalPrice,
+              productPriceMotrum,
+              itemPriceOnce
+            );
+            updateProduct();
+            // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!itemPriceOnce",itemPriceOnce)
+            // // const currentPrice = !discountInput.value
+            // //   ? +getCurrentPrice(item.getAttribute("data-price")) *
+            // //   +quantity.value
+            // //   : +quantity.value *
+            // //   (
+            // //     (+getCurrentPrice(item.getAttribute("data-price")) *
+            // //       (100 - +discountInput.value)) /
+            // //     100
+            // //   ).toFixed(2);
+            // if (!discountInput.value & !marjaInput.value) {
+            //   const currentPrice = +getCurrentPrice(item.getAttribute("data-price")) *
+            //   +quantity.value
+            //   getDigitsNumber(productTotalPrice, currentPrice);
+            // }
+            // else{
+            //   if (discountInput.value != 0 & discountInput.value != "") {
+            //     console.log(1350);
+            //     const currentPrice =
+            //       quantity.value *
+            //       ((getCurrentPrice(item.getAttribute("data-price")) *
+            //         (100 - +discountInput.value)) /
+            //         100);
+            //     getDigitsNumber(productTotalPrice, currentPrice);
+            //   }
+            //   else if (marjaInput.value != 0 & marjaInput.value != "") {
+            //     console.log(931);
+            //     console.log(productPriceMotrum);
+            //     const marjinValue = +marjaInput.value;
+            //     const priceOneMotrum = +getCurrentPrice(item.getAttribute("data-price-motrum"));
+            //     let oneProduct = (priceOneMotrum/ ((100 - +marjaInput.value)/100))
+            //     const currentPrice = oneProduct * +quantity.value
+            //     getDigitsNumber(productTotalPrice, currentPrice);
+            //   }}
+
+            // // getDigitsNumber(productTotalPrice, currentPrice);
+            // editMotrumPrice(spetificationTable);
+            // changeDateInOrder(spetificationTable);
+            // getMarginality(spetificationTable);
+            // getResult();
+            // updateProduct();
+          }
+        });
+
+        // обновление колва товаров кнопками плюс минус
+        plusButton.onclick = () => {
+
+          if (multiplicity) {
+            countQuantity += +multiplicity;
+          } else {
+            countQuantity++;
+          }
+          if (countQuantity >= 99999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          }
+          if (countQuantity > 0) {
+            minusButton.disabled = false;
+          } else {
+            minusButton.disabled = true;
+          }
+
+          quantity.value = +countQuantity;
+          updateFrontSums(
+            spetificationTable,
+            discountInput,
+            marjaInput,
+            item,
+            quantity,
+            productTotalPrice,
+            productPriceMotrum,
+            itemPriceOnce
+          );
+          updateProduct();
+          // // const currentPrice = !discountInput.value
+          // //   ? +getCurrentPrice(item.getAttribute("data-price")) *
+          // //   +quantity.value
+          // //   : +quantity.value *
+          // //   (
+          // //     (+getCurrentPrice(item.getAttribute("data-price")) *
+          // //       (100 - +discountInput.value)) /
+          // //     100
+          // //   ).toFixed(2);
+          // if (!discountInput.value & !marjaInput.value) {
+          //   const currentPrice = +getCurrentPrice(item.getAttribute("data-price")) *
+          //   +quantity.value
+          //   getDigitsNumber(productTotalPrice, currentPrice);
+          // }
+          // else{
+          //   if (discountInput.value != 0 & discountInput.value != "") {
+          //     console.log(1350);
+          //     const currentPrice =
+          //       quantity.value *
+          //       ((getCurrentPrice(item.getAttribute("data-price")) *
+          //         (100 - +discountInput.value)) /
+          //         100);
+          //     getDigitsNumber(productTotalPrice, currentPrice);
+          //   }
+          //   else if (marjaInput.value != 0 & marjaInput.value != "") {
+          //     console.log(931);
+          //     console.log(productPriceMotrum);
+          //     const marjinValue = +marjaInput.value;
+          //     const priceOneMotrum = +getCurrentPrice(item.getAttribute("data-price-motrum"));
+          //     let oneProduct = (priceOneMotrum/ ((100 - +marjaInput.value)/100))
+          //     const currentPrice = oneProduct * +quantity.value
+          //     getDigitsNumber(productTotalPrice, currentPrice);
+          //   }}
+
+          // // getDigitsNumber(productTotalPrice, currentPrice);
+
+          // editMotrumPrice(spetificationTable);
+          // changeDateInOrder(spetificationTable);
+          // getMarginality(spetificationTable);
+          // updateProduct();
+          // getResult();
+        };
+
+        minusButton.onclick = () => {
+
+          if (multiplicity) {
+            countQuantity -= +multiplicity;
+          } else {
+            countQuantity--;
+          }
+          quantity.value = +countQuantity;
+          if (quantity.value <= 1) {
+            if (multiplicity) {
+              quantity.value = +multiplicity;
+            } else {
+              quantity.value = 1;
+            }
+          }
+          if (countQuantity >= 99999) {
+            minusButton.disabled = false;
+            plusButton.disabled = true;
+          } else {
+            plusButton.disabled = false;
+          }
+          if (countQuantity <= 1) {
+            minusButton.disabled = true;
+          } else {
+            minusButton.disabled = false;
+          }
+          updateFrontSums(
+            spetificationTable,
+            discountInput,
+            marjaInput,
+            item,
+            quantity,
+            productTotalPrice,
+            productPriceMotrum,
+            itemPriceOnce
+          );
+          updateProduct();
+          // // const currentPrice = !discountInput.value
+          // //   ? +getCurrentPrice(item.getAttribute("data-price")) *
+          // //   +quantity.value
+          // //   : +quantity.value *
+          // //   (
+          // //     (+getCurrentPrice(item.getAttribute("data-price")) *
+          // //       (100 - +discountInput.value)) /
+          // //     100
+          // //   ).toFixed(2);
+          // if (!discountInput.value & !marjaInput.value) {
+          //   const currentPrice = +getCurrentPrice(item.getAttribute("data-price")) *
+          //   +quantity.value
+          //   getDigitsNumber(productTotalPrice, currentPrice);
+          // }
+          // else {
+          //   if (discountInput.value != 0 & discountInput.value != "") {
+          //     console.log(1350);
+          //     const currentPrice =
+          //       quantity.value *
+          //       ((getCurrentPrice(item.getAttribute("data-price")) *
+          //         (100 - +discountInput.value)) /
+          //         100);
+          //     getDigitsNumber(productTotalPrice, currentPrice);
+          //   }
+          //   if (marjaInput.value != 0 & marjaInput.value != "") {
+          //     console.log(931);
+          //     console.log(productPriceMotrum);
+          //     const marjinValue = +marjaInput.value;
+          //     const priceOneMotrum = +getCurrentPrice(item.getAttribute("data-price-motrum"));
+          //     let oneProduct = (priceOneMotrum/ ((100 - +marjaInput.value)/100))
+          //     const currentPrice = oneProduct * +quantity.value
+          //     getDigitsNumber(productTotalPrice, currentPrice);
+          //   }}
+
+          // // getDigitsNumber(productTotalPrice, currentPrice);
+
+          // editMotrumPrice(spetificationTable);
+          // changeDateInOrder(spetificationTable);
+          // getMarginality(spetificationTable);
+          // updateProduct();
+          // getResult();
+        };
+
+        // значение скидки и маржи при загрузке страницы
+        //  привести к виду с точкой вместо запятой
+        if (discountInput) {
+          discountInput.value = getCurrentPrice(discountInput.value);
         }
-        if (marjaInput.value) {
-          console.log(1359);
-          console.log(productPriceMotrum);
-          const currentPrice = (
-            +getCurrentPrice(productPriceMotrum) /
-            ((100 - +marjaInput.value) / 100)
-          ).toFixed(2);
-          console.log(currentPrice);
-          getDigitsNumber(productTotalPrice, currentPrice);
+        if (marjaInput) {
+          marjaInput.value = getCurrentPrice(marjaInput.value);
         }
+
+        // // базовая вставка значений в цена продажи при загрузке
+        // страницы в зависмости от маржи и скидки
+        // если цена по запросу??????нужна ли тут
+        if (inputPrice) {
+          getDigitsNumber(
+            productTotalPrice,
+            +inputPrice.value * +quantity.value
+          );
+        }
+        // базовая вставка значений в цена продажи + Стоимость для клиента * на колво
+        //   при загрузке\перезагрузке страницы в зависмости от маржи и скидки
+        // если цена есть
+        if (itemPriceOnce) {
+          updateFrontSums(
+            spetificationTable,
+            discountInput,
+            marjaInput,
+            item,
+            quantity,
+            productTotalPrice,
+            productPriceMotrum,
+            itemPriceOnce
+          );
+          // getDigitsNumber(itemPriceOnce, priceOneProduct);
+          // console.log(
+          //   "634item.querySelector(price_once.textContent",
+          //   item.querySelector(".price_once").textContent
+          // );
+          // if (discountInput.value) {
+          //   const priceOneProduct =
+          //     (+getCurrentPrice(productPrice) * (100 - +discountInput.value)) /
+          //     100;
+          //   getDigitsNumber(itemPriceOnce, priceOneProduct);
+          //   const currentPrice = priceOneProduct * +quantity.value;
+          //   getDigitsNumber(productTotalPrice, currentPrice);
+          // } else if (marjaInput.value) {
+          //   const priceOneProduct = +(
+          //     +getCurrentPrice(productPriceMotrum) /
+          //     ((100 - +marjaInput.value) / 100)
+          //   );
+          //   getDigitsNumber(itemPriceOnce, priceOneProduct);
+          //   const currentPriceMarja = priceOneProduct * +quantity.value;
+          //   getDigitsNumber(productTotalPrice, currentPriceMarja);
+          // } else {
+          //   const currnetPriceOne = +getCurrentPrice(itemPriceOnce.textContent);
+          //   getDigitsNumber(itemPriceOnce, currnetPriceOne);
+          //   const currentPrice =
+          //     +getCurrentPrice(productPrice) * +quantity.value;
+          //   getDigitsNumber(productTotalPrice, currentPrice);
+          // }
+
+          // getResult();
+        }
+
+        // если не заполнена цена для товара из каталога
+  //       if (inputPrice) {
+  //         const totalPrice = item.querySelector(".input_totla-cost");
+  //         const quantity = item.querySelector(".input-quantity");
+
+  //         quantity.onkeyup = () => {
+  //           countQuantity = +quantity.value;
+  //           const currentPrice = !discountInput.value
+  //             ? new NumberParser("ru").parse(inputPrice.value) * +quantity.value
+  //             : (new NumberParser("ru").parse(inputPrice.value) *
+  //                 +quantity.value *
+  //                 (100 - +discountInput.value)) /
+  //               100;
+  //           getDigitsNumber(productTotalPrice, currentPrice);
+  //           let price = +inputPrice.value * quantity.value;
+  //           getDigitsNumber(totalPrice, price);
+  //           editMotrumPrice(spetificationTable);
+  //           changeDateInOrder(spetificationTable);
+  //           getMarginality(spetificationTable);
+
+  //           getResult();
+  //         };
+
+  //         plusButton.onclick = () => {
+  //           const currentPrice = !discountInput.value
+  //             ? +item.getAttribute("data-price") * +quantity.value
+  //             : (+item.getAttribute("data-price") *
+  //                 +quantity.value *
+  //                 (100 - +discountInput.value)) /
+  //               100;
+  //           getDigitsNumber(productTotalPrice, currentPrice);
+  //           if (multiplicity) {
+  //             countQuantity += +multiplicity;
+  //           } else {
+  //             countQuantity++;
+  //           }
+  //           quantity.value = +countQuantity;
+  //           minusButton.disabled = false;
+  //           if (countQuantity >= 99999) {
+  //             quantity.value = multiplicity
+  //               ? getClosestInteger(99999, +multiplicity)
+  //               : 99999;
+  //             plusButton.disabled = true;
+  //             minusButton.disabled = false;
+  //           } else {
+  //             plusButton.disabled = false;
+  //             minusButton.disabled = false;
+  //           }
+  //           editMotrumPrice(spetificationTable);
+  //           changeDateInOrder(spetificationTable);
+  //           updateProduct();
+  //           let price = +inputPrice.value * quantity.value;
+  //           getDigitsNumber(totalPrice, price);
+  //           getMarginality(spetificationTable);
+
+  //           getResult();
+  //         };
+
+  //         minusButton.onclick = () => {
+  //           const currentPrice = !discountInput.value
+  //             ? +item.getAttribute("data-price") * +quantity.value
+  //             : (+item.getAttribute("data-price") *
+  //                 +quantity.value *
+  //                 (100 - +discountInput.value)) /
+  //               100;
+  //           getDigitsNumber(productTotalPrice, currentPrice);
+
+  //           if (multiplicity) {
+  //             countQuantity -= +multiplicity;
+  //           } else {
+  //             countQuantity--;
+  //           }
+  //           quantity.value = countQuantity;
+  //           minusButton.disabled = false;
+  //           if (countQuantity <= 1) {
+  //             if (multiplicity) {
+  //               quantity.value = +multiplicity;
+  //             } else {
+  //               quantity.value = 1;
+  //             }
+  //             minusButton.disabled = true;
+  //             plusButton.disabled = false;
+  //           } else {
+  //             minusButton.disabled = false;
+  //             plusButton.disabled = false;
+  //           }
+  //           editMotrumPrice(spetificationTable);
+  //           updateProduct();
+  //           changeDateInOrder(spetificationTable);
+  //           let price = +inputPrice.value * quantity.value;
+  //           getDigitsNumber(totalPrice, price);
+  //           getMarginality(spetificationTable);
+  //  ;
+  //           getResult();
+  //         };
+
+  //         inputPrice.addEventListener("input", function (e) {
+  //           const currentValue = this.value
+  //             .replace(",", ".")
+  //             .replace(/[^.\d]+/g, "")
+  //             .replace(/^([^\.]*\.)|\./g, "$1")
+  //             .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+  //               return a + b + c.slice(0, 2);
+  //             });
+  //           inputPrice.value = currentValue;
+  //           if (inputPrice.value == ".") {
+  //             e.target.value = "";
+  //           }
+  //           if (inputPrice.value == "0") {
+  //             e.target.value = "";
+  //           }
+  //           let price = !discountInput.value
+  //             ? +inputPrice.value * quantity.value
+  //             : (+inputPrice.value *
+  //                 quantity.value *
+  //                 (100 - +discountInput.value)) /
+  //               100;
+  //           getDigitsNumber(totalPrice, price);
+  //           if (!discountInput.value) {
+  //             item.setAttribute("data-price", +inputPrice.value);
+  //           } else {
+  //             item.setAttribute(
+  //               "data-price",
+  //               (+inputPrice.value * 100) / (100 - +discountInput.value)
+  //             );
+  //           }
+  //           if (!inputPrice.value) {
+  //             totalPrice.textContent = 0;
+  //           }
+  //           editMotrumPrice(spetificationTable);
+  //           getMarginality(spetificationTable);
+  //           updateProduct();
+  //           const allPrice = inputPrice.value * countQuantity;
+  //           getDigitsNumber(productTotalPrice, allPrice);
+  //           console.log("1127");
+  //           getResult();
+  //         });
+
+  //         const allPrice = inputPrice.value * countQuantity;
+  //         getDigitsNumber(productTotalPrice, allPrice.toFixed(2));
+  //         discountInput.onkeyup = () => {
+  //           console.log("discountInput");
+  //           if (discountInput.value >= 100) {
+  //             discountInput.value == 100;
+  //           }
+  //           let curentPrice;
+  //           if (discountInput.value == "-") {
+  //             curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+  //           } else {
+  //             curentPrice = (
+  //               (+getCurrentPrice(item.getAttribute("data-price")) *
+  //                 (100 - +discountInput.value)) /
+  //               100
+  //             ).toFixed(2);
+  //           }
+
+  //           inputPrice.value = curentPrice;
+  //           const allPrice = inputPrice.value * countQuantity;
+  //           getDigitsNumber(productTotalPrice, allPrice);
+  //           getMarginality(spetificationTable);
+  //           console.log("1170");
+  //           getResult();
+  //         };
+  //         marjaInput.onkeyup = () => {
+  //           console.log("marjaInput");
+
+  //           let curentPrice;
+  //           if (marjaInput.value == "-" || marjaInput.value == "") {
+  //             curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+  //           } else {
+  //             curentPrice = (
+  //               +getCurrentPrice(item.getAttribute("data-price")) /
+  //               ((100 - +marjaInput.value) / 100)
+  //             ).toFixed(2);
+  //           }
+
+  //           console.log("curentPrice", curentPrice);
+  //           inputPrice.value = curentPrice;
+  //           const allPrice = inputPrice.value * countQuantity;
+  //           getDigitsNumber(productTotalPrice, allPrice);
+  //           getMarginality(spetificationTable);
+  //           console.log("1191");
+  //           getResult();
+  //         };
+
+  //         if (saveButton) {
+  //           console.log("1292 saveButton.onclick = () => saveSpecification();");
+  //           saveButton.onclick = () => saveSpecification();
+  //         }
+  //       } else {
+  //         getMarginality(spetificationTable);
+  //         console.log("1176");
+  //         getResult();
+  //         discountInput.onkeyup = () => {
+  //           if (discountInput.value >= 100) {
+  //             discountInput.value == 100;
+  //           }
+  //           let curentPrice;
+  //           if (discountInput.value == "-") {
+  //             curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+  //           } else {
+  //             curentPrice = (
+  //               (+getCurrentPrice(productPrice) *
+  //                 (100 - +discountInput.value)) /
+  //               100
+  //             ).toFixed(2);
+  //           }
+
+  //           getDigitsNumber(productPriceContainer, curentPrice);
+  //           const allPrice = (curentPrice * countQuantity).toFixed(2);
+  //           getDigitsNumber(productTotalPrice, allPrice);
+  //           getMarginality(spetificationTable);
+  //           console.log("1198");
+  //           getResult();
+  //         };
+  //         marjaInput.onkeyup = () => {
+  //           console.log("marjaInput");
+
+  //           let curentPrice;
+  //           if (marjaInput.value == "-" || marjaInput.value == "") {
+  //             curentPrice = +getCurrentPrice(item.getAttribute("data-price"));
+  //           } else {
+  //             curentPrice = (
+  //               +getCurrentPrice(productPriceMotrum) /
+  //               ((100 - +marjaInput.value) / 100)
+  //             ).toFixed(2);
+  //             console.log(curentPrice);
+  //           }
+
+  //           console.log("curentPrice", curentPrice);
+  //           getDigitsNumber(productPriceContainer, curentPrice);
+  //           const allPrice = (curentPrice * countQuantity).toFixed(2);
+  //           getDigitsNumber(productTotalPrice, allPrice);
+  //           getMarginality(spetificationTable);
+  //           console.log("1231");
+  //           getResult();
+  //         };
+
+  //         if (saveButton) {
+  //           console.log(
+  //             " 1191 saveButton.onclick = () => saveSpecification(productItems);"
+  //           );
+  //           saveButton.onclick = () => saveSpecification(productItems);
+  //         }
+  //       }
+
+        // if (discountInput.value) {
+        //   console.log(1350);
+        //   const currentPrice =
+        //     quantity.value *
+        //     ((getCurrentPrice(item.getAttribute("data-price")) *
+        //       (100 - +discountInput.value)) /
+        //       100);
+        //   getDigitsNumber(productTotalPrice, currentPrice);
+        // }
+        // if (marjaInput.value) {
+        //   console.log(1359);
+        //   console.log(productPriceMotrum);
+        //   const currentPrice =
+        //     quantity.value *
+        //     (
+        //       +getCurrentPrice(productPriceMotrum) /
+        //       ((100 - +marjaInput.value) / 100)
+        //     ).toFixed(2);
+        //   console.log(currentPrice);
+        //   getDigitsNumber(productTotalPrice, currentPrice);
+        // }
       });
-      console.log("getResult1231");
+
       getResult();
       getMarginality(spetificationTable);
+
+      // работа кнопок сохранить спецификации - сечас не спилозуем
       if (saveButton) {
-        console.log(
-          "1396 saveButton.onclick = () => saveSpecification(productItems);"
-        );
         saveButton.onclick = () => saveSpecification(productItems);
       }
       exitButton.onclick = () => exitSpecification(productItems);

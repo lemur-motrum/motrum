@@ -78,7 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
       function showVendorSearch() {
         const inputedvalue = vendorSearchInput.value;
         searchElemsContainer.innerHTML = "";
-        vendorSearchInput.setAttribute("vendor_value", "");
+        // vendorSearchInput.setAttribute("vendor_value", "");
         loader.classList.remove("hide");
         noneContent.classList.remove("show");
         if (vendorSearchInput.value == "") {

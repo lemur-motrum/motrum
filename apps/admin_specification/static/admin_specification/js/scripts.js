@@ -1618,6 +1618,39 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const marjaDiscountInput = document.querySelectorAll(
+    '[name="marja-input-discount"]'
+  );
+  if (marjaDiscountInput) {
+    marjaDiscountInput.forEach((el) => {
+      el.addEventListener("input", function (e) {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d.-]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
+          });
+        el.value = currentValue;
+        if (+el.value > 99.99) {
+          el.value = 99.99;
+        }
+        if (+el.value < -99.99) {
+          el.value = -99.99;
+        }
+        if (el.value.length > 1 && el.value.at(-1) === "-") {
+          e.target.value = el.value.slice(0, -1);
+        }
+        if (el.value == ".") {
+          e.target.value = "";
+        }
+        if (el.value == "0") {
+          e.target.value = "";
+        }
+      });
+    });
+  }
+
   // поиск клиентов по инн имени в корзине
   const searhClientForm = document.querySelector(".serch-client");
   if (searhClientForm) {

@@ -1761,11 +1761,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         if iframe == "True":
             q_object &= Q(id_bitrix=int(bx_id_order))
         else:
-            if user_admin_type == "ALL":
+            if IS_TESTING:
                 pass
-                # q_object &= Q(cart__cart_admin_id__isnull=False)
-            elif user_admin_type == "BASE":
-                q_object &= Q(cart__cart_admin_id=request.user.id)
+            else:
+                if user_admin_type == "ALL":
+                    pass
+                    # q_object &= Q(cart__cart_admin_id__isnull=False)
+                elif user_admin_type == "BASE":
+                    q_object &= Q(cart__cart_admin_id=request.user.id)
             # if IS_TESTING:
             #     pass
             # else:

@@ -582,6 +582,7 @@ def create_specification(request):
                     sale_marja=product_cart.filter(id=OuterRef("id_cart")).values(
                         "sale_marja",
                     ),
+                    date_delivery_first=F("date_delivery"),
                     price_motrum=Case(
                         When(sale_motrum=None, then="price_cart"),
                         When(
@@ -616,7 +617,7 @@ def create_specification(request):
                 )
                 .order_by("id_product_cart")
             )
-            print("product_new", product_new)
+            
             for item in product_new:
                 print("item", item)
                 print("item.sale_marja", item.sale_marja)
@@ -764,7 +765,7 @@ def create_specification(request):
                 client_req_all = None
 
         # продукты которые есть в окт в корзине
-        print("product_cart_list in product", product_cart_list)
+
         product = (
             Product.objects.filter(id__in=product_cart_list)
             .select_related(

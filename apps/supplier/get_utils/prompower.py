@@ -596,7 +596,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None and data_item["article"] == "PD310A420K":
+                if data_item["article"] != None:
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -655,7 +655,7 @@ def prompower_api():
     
     
     def upd_document_pp():
-        prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False, product__article_supplier="PD310A4100K").distinct('link')
+        prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False).distinct('link')
         for prod_d in prod_doc:
            
             print(prod_d.document)

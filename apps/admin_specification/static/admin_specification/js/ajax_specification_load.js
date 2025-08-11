@@ -225,7 +225,8 @@ window.addEventListener("DOMContentLoaded", () => {
           completeOrder(specificationContainer);
           currentUrl.searchParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {
@@ -350,7 +351,6 @@ export function uptadeOrChanegeSpecification(
   idSpecification
 ) {
   button.onclick = () => {
-    console.log(button);
     button.setAttribute("text-content", button.textContent);
     const typeSave = button.getAttribute("data-type-save");
     button.disabled = true;

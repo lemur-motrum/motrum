@@ -54,7 +54,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
             if (paginationElems[1].textContent == "") {
@@ -160,7 +159,8 @@ window.addEventListener("DOMContentLoaded", () => {
           });
           urlParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {
@@ -178,7 +178,6 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!elem.classList.contains("active")) {
         elem.onclick = () => {
           pageCount = +elem.textContent - 1;
-          console.log(pageCount);
           productCount = pageCount * 10;
           endContent.classList.remove("show");
           catalogContainer.innerHTML = "";

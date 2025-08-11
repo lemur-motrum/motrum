@@ -5,24 +5,28 @@
 <header class="header">
   <div class="logo-container">
     {% if request.get_full_path == index_url %}
-      <img src={% static "core/images/logo.png" %} alt="logo" />
+      <img src={% static "core/images/logo.png" %} alt="logo" loading="lazy" />
     {% else %}
       <a class="navbar_menu_item_link" href="/">
-        <img src={% static "core/images/logo.png" %} alt="logo" />
+        <img src={% static "core/images/logo.png" %} alt="logo" loading="lazy" />
       </a>
     {% endif %}
   </div>
   <div class="fixed-logo-container">
     {% if request.get_full_path == index_url %}
-      <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+      <img src="{% static "core/images/fixed-menu-logo.png" %}"
+           alt="logo"
+           loading="lazy" />
     {% else %}
       <a class="navbar_menu_item_link" href="/">
-        <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+        <img src="{% static "core/images/fixed-menu-logo.png" %}"
+             alt="logo"
+             loading="lazy" />
       </a>
     {% endif %}
   </div>
   <div class="user-navigation">
-    <div class="navigation">{% header_menu_url %}</div>
+    <ul class="navigation">{% header_menu_url %}</ul>
     <div class="cart-elems">{% header_menu_counter %}</div>
   </div>
   <svg class="burger_menu_nav"

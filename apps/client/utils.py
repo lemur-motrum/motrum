@@ -503,12 +503,19 @@ def crete_pdf_bill(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
+                product_name_str = product.product.name
+
+                if product.product.supplier.slug == "prompower" and product.product.description:
+                    product_name_str = product.product.description
+                    # if product.product.name not in product.product.description:
+                    #     product_name_str = f"{product.product.name} {product_name_str}"
+
                 if product.product.in_view_website:
                     product_name = (
-                        f'<a href="{link}" color="blue">{str(product.product.name)}</a>'
+                        f'<a href="{link}" color="blue">{str(product_name_str)}</a>'
                     )
                 else:
-                    product_name = f"{str(product.product.name)}"
+                    product_name = f"{str(product_name_str)}"
 
                 product_name = (Paragraph(product_name, normal_style_left),)
                 product_code = product.product.article_supplier
@@ -696,10 +703,26 @@ def crete_pdf_bill(
                 2.5 * cm,
                 2 * cm,
             ],
+            splitInRow=1,
+            rowHeights=13,
+        )
+        final_table_all_prod2 = Table(
+            final_table_all,
+            colWidths=[
+                6 * cm,
+                1 * cm,
+                2.5 * cm,
+                0 * cm,
+                3 * cm,
+                2.5 * cm,
+                2.5 * cm,
+                2 * cm,
+            ],
+            splitInRow=1,
             rowHeights=13,
         )
         story.append(final_table_all_prod)
-        story_no_sign.append(final_table_all_prod)
+        story_no_sign.append(final_table_all_prod2)
 
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
@@ -1134,7 +1157,6 @@ def crete_pdf_bill(
             )
         )
 
-        
         # Получаем высоту таблицы
         available_width = doc_2.width - doc_2.topMargin - doc_2.rightMargin
         available_height = doc_2.height - doc_2.bottomMargin - doc_2.topMargin
@@ -1250,9 +1272,6 @@ def crete_pdf_bill(
                     if isinstance(cell, Paragraph):
                         cell.style.spaceBefore = 0
                         cell.style.spaceAfter = 0
-        
-        
-        
 
         story_no_sign.append(table_signature)
 

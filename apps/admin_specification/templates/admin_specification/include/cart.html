@@ -1,7 +1,7 @@
 {% load static %}
 <a class="basket_cart_link"
    href="{% url 'admin_specification:create_specification' %}">
-   <img src="{% static "core/images/header_bascet.png" %}" />
+   <img src="{% static "core/images/header_bascet.png" %}"  />
 </a>
 <span class="admin_specification_cart_length">
    {% if count %}{{ count }}{% endif %}

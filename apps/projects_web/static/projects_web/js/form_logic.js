@@ -65,18 +65,20 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            ym(37794920, "reachGoal", "send_form_calculate_project");
-            resetInputs();
-            hidePreloaderAndEnabledButton(btn);
-            successModal(
-              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
-            );
-          } else {
-            setErrorModal();
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              ym(37794920, "reachGoal", "send_form_calculate_project");
+              resetInputs();
+              hidePreloaderAndEnabledButton(btn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
+            } else {
+              setErrorModal();
+            }
+          })
+          .catch((error) => console.error(error));
       }
     };
   }

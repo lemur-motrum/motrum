@@ -16,7 +16,7 @@
                        class="category"
                        data-category="category_item.id">
                         {% if category_item.image %}
-                            <img src="{{ category_item.image.url }}" alt="img">
+                            <img src="{{ category_item.image.url }}" alt="img" loading="lazy" />
                         {% else %}
                             <div class="gray-bg"></div>
                         {% endif %}

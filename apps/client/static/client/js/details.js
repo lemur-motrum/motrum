@@ -188,7 +188,6 @@ window.addEventListener("DOMContentLoaded", () => {
               }
             })
             .then((response) => {
-              console.log("response", response);
               legalEntitiesSearchContainer.innerHTML = "";
               response.forEach((el) => {
                 legalEntitiesSearchContainer.innerHTML += `
@@ -404,7 +403,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 innInput.value = value;
                 legalEntitiesContainer.classList.remove("show");
               };
-            });
+            })
+            .catch((error) => console.error(error));
         }
       };
 
@@ -597,14 +597,16 @@ window.addEventListener("DOMContentLoaded", () => {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              window.location.reload();
-              hidePreloaderAndEnabledButton(btn);
-            } else {
-              setErrorModal();
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status >= 200 && response.status < 300) {
+                window.location.reload();
+                hidePreloaderAndEnabledButton(btn);
+              } else {
+                setErrorModal();
+              }
+            })
+            .catch((error) => console.error(error));
         }
       };
     }

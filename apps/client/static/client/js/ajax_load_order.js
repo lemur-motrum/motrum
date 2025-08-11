@@ -54,7 +54,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (pageCount >= lastPage - 3) {
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           if (pageCount >= lastPage - 1) {
             paginationElems[2].style.display = "none";
             if (paginationElems[1].textContent == "") {
@@ -74,7 +73,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         if (pageCount >= lastPage - 2) {
-          console.log(`pageCount - ${pageCount}, delta - ${lastPage - 2}`);
           paginationLastElem.classList.remove("show");
           lastDots.classList.remove("show");
           if (pageCount >= lastPage - 1) {
@@ -122,12 +120,10 @@ window.addEventListener("DOMContentLoaded", () => {
           }
           smallLoader.classList.remove("show");
           lastPage = +data.count;
-          console.log(lastPage);
           const paginationArray = [];
           paginationLastElem.textContent = `${lastPage}`;
 
           for (let i in data.data) {
-            // data.data[i]["bill_sum"] = data.data[i]["bill_sum"].toFixed(2);
             addAjaxCatalogItem(data.data[i]);
           }
           if (data.next) {
@@ -164,7 +160,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
           urlParams.set("page", pageCount + 1);
           history.pushState({}, "", currentUrl);
-        });
+        })
+        .catch((error) => console.error(error));
     }
 
     window.onload = () => {

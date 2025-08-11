@@ -14,26 +14,6 @@ const csrfToken = getCookie("csrftoken");
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".motrum-slider-requsites");
   if (wrapper) {
-    // const videos = document.querySelectorAll(".slider_video");
-    // if (videos.length > 0) {
-    //   const video1 = document.querySelector(".video_1");
-
-    //   video1.onclick = () => {
-    //     window.location.href = "/robots/";
-    //   };
-    //   const video2 = document.querySelector(".video_2");
-
-    //   video2.onclick = () => {
-    //     window.location.href = "/marking/";
-    //   };
-
-    //   const video3 = document.querySelector(".video_3");
-
-    //   video3.onclick = () => {
-    //     window.location.href = "/solutions/";
-    //   };
-    // }
-
     const phoneButton = wrapper.querySelector(".phone-button");
     const callBackOverlay = document.querySelector(".overlay_callback");
     const closeBtn = callBackOverlay.querySelector(".close_btn");
@@ -114,18 +94,20 @@ window.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
           },
-        }).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            ym(37794920, "reachGoal", "send_callback_form");
-            closeOverlay();
-            hidePreloaderAndEnabledButton(submitBtn);
-            successModal(
-              "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
-            );
-          } else {
-            setErrorModal();
-          }
-        });
+        })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              ym(37794920, "reachGoal", "send_callback_form");
+              closeOverlay();
+              hidePreloaderAndEnabledButton(submitBtn);
+              successModal(
+                "Спасибо за заявку, мы свяжемся с вами в ближайшее время"
+              );
+            } else {
+              setErrorModal();
+            }
+          })
+          .catch((error) => console.error(error));
       }
     };
   }

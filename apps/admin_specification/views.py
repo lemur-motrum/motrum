@@ -109,7 +109,7 @@ def all_categories(request):
 
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    # | Q(article__icontains=search_input)
+                    | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -231,7 +231,7 @@ def group_product(request, cat):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    # | Q(article__icontains=search_input)
+                    | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -433,7 +433,7 @@ def specifications(request, cat, gr):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    # | Q(article__icontains=search_input)
+                    | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -498,7 +498,7 @@ def create_specification(request):
             client_req_all = AccountRequisites.objects.filter(
                 requisitesKpp__requisites=requisites
             )
-
+           
             product_specification = ProductSpecification.objects.filter(
                 specification=specification
             )
@@ -549,6 +549,11 @@ def create_specification(request):
                         id=OuterRef("id_cart")
                     ).values(
                         "product_new_sale_motrum",
+                    ),
+                    product_prod_in_cart = product_cart.filter(
+                        id=OuterRef("id_cart")
+                    ).values(
+                        "product",
                     ),
                 )
                 .annotate(
@@ -1123,7 +1128,7 @@ def instruments(request, cat):
             if request.GET.get("search_input") != None:
                 product_list = product_list.filter(
                     Q(name__icontains=search_input)
-                    # | Q(article__icontains=search_input)
+                    | Q(article__icontains=search_input)
                     | Q(article_supplier__icontains=search_input)
                     | Q(additional_article_supplier__icontains=search_input)
                 )
@@ -1257,14 +1262,14 @@ def search_product(request):
     # )
     product_list = product_list.filter(
         Q(name__icontains=search_input[0])
-        # | Q(article__icontains=search_input[0])
+        | Q(article__icontains=search_input[0])
         | Q(article_supplier__icontains=search_input[0])
         | Q(additional_article_supplier__icontains=search_input[0])
     )
     for search_item in search_input[1:]:
         product_list = product_list.filter(
             Q(name__icontains=search_item)
-            # | Q(article__icontains=search_item)
+            | Q(article__icontains=search_item)
             | Q(article_supplier__icontains=search_item)
             | Q(additional_article_supplier__icontains=search_item)
         )
@@ -1384,6 +1389,7 @@ def load_products(request):
                 price,
                 product_elem.category_supplier_all,
                 product_elem.supplier,
+                product_elem.promo_groupe,
             )[1]
 
             if discount_item == None:

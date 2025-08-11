@@ -60,6 +60,11 @@ app.conf.beat_schedule = {
         "task": "apps.supplier.tasks.add_prompower",
         "schedule": crontab(minute=00, hour=2),
     },
+    # получение апи товаров промповер
+    "add_unimat": {
+        "task": "apps.supplier.tasks.add_unimat",
+        "schedule": crontab(minute=45, hour=2),
+    },
     # 'specification_stop': {
     #     'task': 'apps.specification.tasks.specification_date_stop',
     #     'schedule': crontab(minute=20, hour=0),
@@ -103,5 +108,11 @@ app.conf.beat_schedule = {
     # "add_prompower_new_doc": {
     #     "task": "apps.supplier.tasks.add_prompower_new_doc",
     #     "schedule": crontab(0, 0, day_of_month=8, month_of_year=4),
+    # },
+    # # обновить битые доки промповер
+    
+    # "add_prompower_name_doc": {
+    #     "task": "apps.supplier.tasks.add_prompower_name_doc",
+    #     "schedule": crontab(0, 0, day_of_month=17, month_of_year=7),
     # },
 }

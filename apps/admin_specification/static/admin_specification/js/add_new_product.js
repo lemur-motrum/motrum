@@ -99,7 +99,6 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("ff ff ff");
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -181,7 +180,6 @@ function addNewProductLogic(container) {
         quantity: 1,
       };
       addProductButton.textContent = "";
-      // addProductButton.innerHTML = "<div class='small_loader'></div>";
       const data = JSON.stringify(objData);
       fetch(`/api/v1/cart/${cartId}/save-product/`, {
         method: "POST",
@@ -313,50 +311,37 @@ function addNewProductLogic(container) {
       }
       changeTotalCost(priceOnceInput, quantityInput);
       changeTotalCost(quantityInput, priceOnceInput);
-      let validate = true;
       addNewItemInCartButton.onclick = () => {
-        setPreloaderInButton(addNewItemInCartButton);
+        let addNewItemInCartButtonValidate = true;
         function inputValidate(input) {
-          if (!input.value) {
-            validate = false;
+          if (!input.value || input.value.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
             input.style.border = "1px solid red";
           }
         }
+        setPreloaderInButton(addNewItemInCartButton);
+        if (!vendorSelectToggle.getAttribute("value")) {
+          addNewItemInCartButtonValidate = false;
+          vendorSelectToggle.style.borderColor = "red";
+        }
+
+        if (!supplierSelectToggle.getAttribute("value")) {
+          addNewItemInCartButtonValidate = false;
+          supplierSelectToggle.style.borderColor = "red";
+        }
+
         inputValidate(nameInput);
         inputValidate(articleInput);
         inputValidate(priceOnceInput);
         inputValidate(quantityInput);
 
-        if (!vendorSelectToggle.getAttribute("value")) {
-          validate = false;
-          vendorSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (!supplierSelectToggle.getAttribute("value")) {
-          validate = false;
-          supplierSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOnceInput.value &&
-          quantityInput.value &&
-          vendorSelect.getAttribute("value")
-        ) {
-          validate = true;
-        }
-        if (validate == false) {
+        if (addNewItemInCartButtonValidate == false) {
           addNewItemInCartButton.disabled = false;
           addNewItemInCartButton.innerHTML = "";
           addNewItemInCartButton.textContent = "Добавить товар";
         }
 
-        if (validate === true) {
+        if (addNewItemInCartButtonValidate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {
             product: null,
@@ -408,100 +393,27 @@ function addNewProductLogic(container) {
                   newProductError
                 );
               }
-            });
+            })
+            .catch((error) => console.error(error));
         }
       };
     }
 
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
-
-      let counterElems = 0;
+      
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
           searchProductItem.classList.add("active");
-          counterElems = i + 1;
+          // counterElems = i + 1;
         };
         searchProductItem.onmouseout = () => {
           searchProductItem.classList.remove("active");
-          counterElems = 0;
+          // counterElems = 0;
         };
-        const searchButton = searchProductItem.querySelector(".search_button");
-        const productId = searchProductItem.getAttribute("product-id");
 
-        // document.addEventListener("keyup", function (e) {
-        //   console.log(counterElems);
-        //   if (e.code == "ArrowUp") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems > searchProductItems.length - 1) {
-        //       counterElems = 0;
-        //     } else {
-        //       counterElems += 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "ArrowDown") {
-        //     searchProductItems.forEach((el) => {
-        //       el.classList.remove("active");
-        //     });
-        //     if (counterElems < 1) {
-        //       counterElems = searchProductItems.length;
-        //     } else {
-        //       counterElems -= 1;
-        //     }
-        //     if (searchProductItems[counterElems - 1]) {
-        //       searchProductItems[counterElems - 1].classList.add("active");
-        //       const name =
-        //         searchProductItems[counterElems - 1].querySelector(".name");
-        //       searchInput.value = name.textContent;
-        //     }
-        //   }
-        //   if (e.code == "Enter") {
-        //     if (searchInput.value) {
-        //       const productId = document
-        //         .querySelector(".search_container")
-        //         .querySelector(".active")
-        //         .getAttribute("product-id");
-        //       closeSearchWindow();
-        //       cont.classList.remove("show");
-        //       searchInput.classList.remove("bordering");
-        //       const cartId = getCookie("cart");
-        //       const objData = {
-        //         cart: cartId,
-        //         product: productId,
-        //         quantity: 1,
-        //       };
-        //       const data = JSON.stringify(objData);
-        //       fetch(`/api/v1/cart/${cartId}/save-product/`, {
-        //         method: "POST",
-        //         body: data,
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //           "X-CSRFToken": csrfToken,
-        //         },
-        //       }).then((response) => {
-        //         if (response.status == 200) {
-        //           window.location.reload();
-        //         } else if (response.status == 409) {
-        //           addProductButton.innerHTML = "";
-        //           addProductButton.textContent = "Добавить этот товар";
-        //           showErrorValidation("Этот товар уже в корзине", error);
-        //         } else {
-        //           setErrorModal();
-        //           throw new Error("Ошибка");
-        //         }
-        //       });
-        //     }
-        //   }
-        // });
+        const productId = searchProductItem.getAttribute("product-id");
 
         searchProductItem.onclick = () => {
           cont.classList.remove("show");
@@ -520,18 +432,20 @@ function addNewProductLogic(container) {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken,
             },
-          }).then((response) => {
-            if (response.status == 200) {
-              window.location.reload();
-            } else if (response.status == 409) {
-              addProductButton.innerHTML = "";
-              addProductButton.textContent = "Добавить этот товар";
-              showErrorValidation("Этот товар уже в корзине", error);
-            } else {
-              setErrorModal();
-              throw new Error("Ошибка");
-            }
-          });
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                window.location.reload();
+              } else if (response.status == 409) {
+                addProductButton.innerHTML = "";
+                addProductButton.textContent = "Добавить этот товар";
+                showErrorValidation("Этот товар уже в корзине", error);
+              } else {
+                setErrorModal();
+                throw new Error("Ошибка");
+              }
+            })
+            .catch((error) => console.error(error));
         };
       });
     }

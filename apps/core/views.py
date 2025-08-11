@@ -254,6 +254,7 @@ def cobots_all(request):
 
 # РЕШЕНИЕ ОДНО ОТЛЕЬЕНАЯ СТРАНИЦА
 def solutions_one(request):
+    motrum_in_numbers = IndexInfoWeb.objects.all().last()
     url_name = request.resolver_match.url_name
     if url_name == "shkaf-upravleniya":
         cat_slug = "sborka-shu"
@@ -286,6 +287,7 @@ def solutions_one(request):
         meta_title = "Сборка шкафов управления"
 
     context = {
+        "motrum_in_numbers":motrum_in_numbers,
         "seo_test": seo_test,
         "projects": projects,
         "meta_title": f"{meta_title} | Мотрум - автоматизация производства",

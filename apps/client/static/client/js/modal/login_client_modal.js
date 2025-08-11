@@ -22,7 +22,6 @@ function addNewClient(endpointClient, phone, pin) {
 
       let data = JSON.stringify(dataArr);
       let csrfToken = getCookie("csrftoken");
-      console.log(data);
       fetch(endpointClient, {
         method: "POST",
         body: data,
@@ -40,7 +39,8 @@ function addNewClient(endpointClient, phone, pin) {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -63,7 +63,6 @@ function updateClient() {
 
       let data = JSON.stringify(dataArr);
       let csrfToken = getCookie("csrftoken");
-      console.log(data);
       fetch(endpoint, {
         // изменила метод
         method: "POST",
@@ -82,7 +81,8 @@ function updateClient() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -118,7 +118,6 @@ function addRequisites() {
 
       let data = JSON.stringify(dataArr);
       let csrfToken = getCookie("csrftoken");
-      console.log(data);
       fetch(endpoint, {
         method: "POST",
         body: data,
@@ -136,7 +135,8 @@ function addRequisites() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -190,7 +190,6 @@ function updateRequisites() {
 
       let data = JSON.stringify(dataArr);
       let csrfToken = getCookie("csrftoken");
-      console.log(data);
       fetch(endpoint, {
         // изменила метод
         method: "POST",
@@ -209,7 +208,8 @@ function updateRequisites() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -242,75 +242,10 @@ function getAllClient() {
         })
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((error) => console.error(error));
     });
   }
 }
 getAllClient();
 
-// function addEmailCall() {
-//   const clientAdd = document.querySelector(".coll");
-//   if (clientAdd) {
-//     clientAdd.addEventListener("click", (event) => {
-//       const name = "sfsdfsf";
-//       const phone = "526626526";
-//       const endpoint = "/send_email_callback";
-//       const clientAdd = document.querySelector(".client_update");
-//       let dataArr = {
-//         name: name,
-//         phone: phone,
-//       };
-
-//       let data = JSON.stringify(dataArr);
-//       let csrfToken = getCookie("csrftoken");
-//       console.log(data);
-//       fetch(endpoint, {
-//         method: "POST",
-//         body: data,
-//         headers: {
-//           "Content-Type": "application/json",
-//           "X-CSRFToken": csrfToken,
-//         },
-//       })
-//         .then((response) => response.json())
-//         .then((data) => {
-//           console.log(data);
-//         });
-//     });
-//   }
-// }
-// addEmailCall();
-
-// function addEmailManager() {
-//   const clientAdd = document.querySelector(".send-manager");
-//   if (clientAdd) {
-//     clientAdd.addEventListener("click", (event) => {
-//       const client_id = "21";
-//       const text_message =
-//         "werweукйукйцукйцку  йцуцуцйуй цйуй цуй уйцу йцуйцуйцццццццццццццццццццццццццццццццццццццццццццrwer";
-//       const endpoint = "/send_email_manager";
-//       const clientAdd = document.querySelector(".client_update");
-//       let dataArr = {
-//         client_id: client_id,
-//         text_message: text_message,
-//       };
-
-//       let data = JSON.stringify(dataArr);
-//       let csrfToken = getCookie("csrftoken");
-//       console.log(data);
-//       fetch(endpoint, {
-//         method: "POST",
-//         body: data,
-//         headers: {
-//           "Content-Type": "application/json",
-//           "X-CSRFToken": csrfToken,
-//         },
-//       })
-//         .then((response) => response.json())
-//         .then((data) => {
-//           console.log(data);
-//         });
-//     });
-//   }
-// }
-// addEmailManager();

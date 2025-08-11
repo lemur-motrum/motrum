@@ -18,10 +18,22 @@
     <meta http-equiv='cache-control' content='no-cache'>
     <!--css инклудить в общий -->
     {% include "core/includes/stylesheets.html" %}
-    <link type="image/png" sizes="16x16" rel="icon"  href="{% static "core/images/favs/fav.ico" %}">
-    <link type="image/png" sizes="32x32" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
-    <link type="image/png" sizes="96x96" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
-    <link type="image/png" sizes="120x120" rel="icon" href="{% static "core/images/favs/fav.ico"%}">
+    <link type="image/png"
+          sizes="16x16"
+          rel="icon"
+          href="{% static "core/images/favs/fav.ico" %}">
+    <link type="image/png"
+          sizes="32x32"
+          rel="icon"
+          href="{% static "core/images/favs/fav.ico" %}">
+    <link type="image/png"
+          sizes="96x96"
+          rel="icon"
+          href="{% static "core/images/favs/fav.ico" %}">
+    <link type="image/png"
+          sizes="120x120"
+          rel="icon"
+          href="{% static "core/images/favs/fav.ico" %}">
     <title>Ошибка 403 | Мотрум - оборудование для автоматизации производства</title>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=9c96608c-3646-445c-af11-7a2aafa33905&lang=ru_RU"></script>
   </head>
@@ -30,12 +42,14 @@
       <header class="header">
         <div class="logo-container">
           <a class="navbar_menu_item_link" href="/">
-            <img src={% static "core/images/logo.png" %} alt="logo" />
+            <img src={% static "core/images/logo.png" %} alt="logo" loading="lazy" />
           </a>
         </div>
         <div class="fixed-logo-container">
           <a class="navbar_menu_item_link" href="/">
-            <img src={% static "core/images/fixed-menu-logo.png" %} alt="logo" />
+            <img src="{% static "core/images/fixed-menu-logo.png" %}"
+                 alt="logo"
+                 loading="lazy" />
           </a>
         </div>
         <div class="user-navigation">
@@ -125,7 +139,9 @@
             {% if request.user.username and request.user.is_staff == False %}
               <a href={% url 'client:my_orders' %} class="cart-elem">
                 <div class="img-container">
-                  <img src={% static "core/images/header_orders.png" %} />
+                  <img src="{% static "core/images/header_orders.png" %}"
+                       alt="orders"
+                       loading="lazy" />
                 </div>
                 <span class="order_count">
                   {% if notifications_order %}{{ notifications_order }}{% endif %}
@@ -133,7 +149,9 @@
               </a>
               <a href={% url "core:cart" %} class="cart-elem">
                 <div class="img-container">
-                  <img src={% static "core/images/header_bascet.png" %} />
+                  <img src="{% static "core/images/header_bascet.png" %}"
+                       alt="cart"
+                       loading="lazy" />
                 </div>
                 <span class="global_cart_count cart-count">
                   {% if count_cart %}{{ count_cart }}{% endif %}
@@ -141,7 +159,9 @@
               </a>
               <a href={% url 'client:my_orders' %} class="cart-elem">
                 <div class="img-container">
-                  <img src={% static "core/images/header_account.png" %} />
+                  <img src="{% static "core/images/header_account.png" %}"
+                       alt="account"
+                       loading="lazy" />
                 </div>
                 <span class="order_count">
                   {% if count_notifications_all %}{{ count_notifications_all }}{% endif %}
@@ -150,21 +170,28 @@
             {% elif request.user.is_staff %}
               <div class="cart-elem out-work-elem" title="ВЫХОД ИЗ РАБОЧЕГО АККАУНТА">
                 <div class="img-container">
-                    <a href="{% url "user:logout_clear_info" %}">
-                    <img src="{% static "core/images/header_account.png" %}" alt="img"></a>
+                  <a href="{% url "user:logout_clear_info" %}">
+                    <img src="{% static "core/images/header_account.png" %}"
+                         alt="img"
+                         loading="lazy" />
+                  </a>
                 </div>
-            </div>
+              </div>
             {% else %}
               <a href={% url "core:cart" %} class="cart-elem">
                 <div class="img-container">
-                  <img src={% static "core/images/header_bascet.png" %} />
+                  <img src="{% static "core/images/header_bascet.png" %}"
+                       alt="img"
+                       loading="lazy" />
                 </div>
                 <span class="global_cart_count cart-count">
                   {% if count_cart %}{{ count_cart }}{% endif %}
                 </span>
               </a>
               <div class="cart-elem enter-in-site">
-                <img src="{% static "core/images/header_account.png" %}" alt="img">
+                <img src="{% static "core/images/header_account.png" %}"
+                     alt="img"
+                     loading="lazy" />
               </div>
             {% endif %}
           </div>

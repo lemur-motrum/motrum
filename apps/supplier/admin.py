@@ -28,6 +28,7 @@ from .models import (
     SupplierCategoryProduct,
     SupplierCategoryProductAll,
     SupplierGroupProduct,
+    SupplierPromoGroupe,
     Vendor,
 )
 from django.utils.html import mark_safe
@@ -52,7 +53,7 @@ class SupplierAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    readonly_fields = ["name",]
+    # readonly_fields = ["name",]
     
     # inlines = [
     #     VendorInline,
@@ -126,11 +127,11 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
-    # def has_change_permission(self, request, obj=None):
-    #     if obj:
-    #         return False
-    #     else:
-    #         return True
+    def has_change_permission(self, request, obj=None):
+        if obj:
+            return False
+        else:
+            return True
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -395,24 +396,57 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class SupplierPromoGroupeAdmin(admin.ModelAdmin):
+    show_facets = admin.ShowFacets.ALWAYS
+    list_filter = [
+        "supplier",
+        "vendor",
+        
+    ]
+    
+    list_display = (
+        "name",
+        "supplier",
+        "vendor",
+    )
+    list_display_links = [
+        "name",
+    ]
+    fields = (
+        "supplier",
+        "vendor",
+        "name",
+    )
+
+
+
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 class DiscountAdmin(admin.ModelAdmin):
     form = DiscountForm
     list_display = (
+        "percent",
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
-        "percent",
+        "promo_groupe",
         "is_tag_pre_sale",
+        
+        
     )
     fields = (
+        
         "supplier",
         "vendor",
         "category_supplier",
         "group_supplier",
         "category_supplier_all",
+        "promo_groupe",
         "percent",
         "is_tag_pre_sale",
     )
@@ -472,6 +506,9 @@ class DiscountAdmin(admin.ModelAdmin):
 
 class VendorWebAdmin(admin.ModelAdmin):
     model = Vendor
+    search_fields = [
+        "name",
+    ]
     list_display = (
         "name",
         "is_view_index_web",
@@ -483,12 +520,19 @@ class VendorWebAdmin(admin.ModelAdmin):
         "img",
         "is_view_index_web",
         "article",
+        "article_filter",
+        "promo_text",
+        "img_promo",
     )
     readonly_fields = ["name"]
+    
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     form.base_fields['promo_text'].widget = Textarea(attrs={'rows': 10, 'cols': 80})
+    #     return form
 
     def has_delete_permission(self, request, obj=None):
         return False
-
 
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Vendor, SupplierVendor)
@@ -496,4 +540,5 @@ admin.site.register(SupplierCategoryProductAll, SupplierCategoryProductAllAdmin)
 admin.site.register(Discount, DiscountAdmin)
 admin.site.register(SupplierCategoryProduct, SupplierCategoryProductAdmin)
 admin.site.register(SupplierGroupProduct, SupplierGroupProductAdmin)
+admin.site.register(SupplierPromoGroupe, SupplierPromoGroupeAdmin)
 website_admin.register(Vendor, VendorWebAdmin)

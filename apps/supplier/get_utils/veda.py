@@ -454,7 +454,7 @@ def parse_drives_ru_products():
                     }
                 ]
                 
-
+                print("result_one",result_one)
                 for result in result_one:
 
                     def save_document(doc, product):
@@ -509,21 +509,35 @@ def parse_drives_ru_products():
                                             type_doc=doc_item["type"].capitalize(),
                                         )
                                     else:
+                                        # Получаем расширение файла из URL
+                                        doc_filename = url.split("/")[-1]
+                                        base_name, file_extension = os.path.splitext(doc_filename)
+                                        
+                                        # Если расширения нет, пытаемся определить по URL
+                                        if not file_extension:
+                                            if ".pdf" in url.lower():
+                                                file_extension = ".pdf"
+                                            elif ".doc" in url.lower():
+                                                file_extension = ".doc"
+                                            elif ".docx" in url.lower():
+                                                file_extension = ".docx"
+                                            else:
+                                                # Пропускаем документ если не удалось определить расширение
+                                                continue
+                                        
+                                        # Создаем имя файла из названия документа
                                         slugish = translit.translify(doc_item["name"])
                                         base_slug = slugify(slugish)
-                                        doc_name = base_slug
+                                        # Удаляем неразрывные пробелы и обычные пробелы, ограничиваем длину
+                                        doc_name = base_slug.replace("\u00a0", "").replace(" ", "")[:100]
+                                        # Добавляем расширение обратно
+                                        doc_name = f"{doc_name}{file_extension}"
+                                        
                                         doc = ProductDocument.objects.create(
                                             product=product
                                         )
                                         update_change_reason(doc, "Автоматическое")
-                                        doc_list_name = url.split("/")
-                                        doc_name = doc_list_name[-1]
-                                        # Удаляем неразрывные пробелы и обычные пробелы, ограничиваем длину
-                                        doc_name = doc_name.replace(
-                                            "\u00a0", ""
-                                        ).replace(" ", "")[:100]
-                                        images_last_list = url.split(".")
-                                        type_file = "." + images_last_list[-1]
+                                        
                                         link_file = f"{new_dir}/{doc_name}"
                                         r = requests.get(url, stream=True)
                                         r.raise_for_status()

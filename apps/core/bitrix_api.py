@@ -114,9 +114,15 @@ def get_info_for_order_bitrix(bs_id_order, request):
         order_id_bx = orders_bx["ID"]
         company = orders_bx["COMPANY_ID"]
         name_order_bx = orders_bx["TITLE"]
+        stage = orders_bx["STAGE_ID"]
         # получение контакта битркис
         contsct_order_id_bx = get_contact_order(bx, order_id_bx)
-        if company == "0":
+        if stage not in["C8:PREPARATION","C8:PREPAYMENT_INVOICE","C8:EXECUTING","C8:FINAL_INVOICE","C8:1","C8:LOSE","C8:2","C8:WON"]:
+            error_text = "На этом этапе нельзя открывать заказ. Переведите сделку на этап не ранее: Подготовка расчета (счета)"
+            next_url = "/admin_specification/error-b24/"
+            context = {"error": error_text}
+            return (next_url, context, True)
+        elif company == "0":
             error_text = "К сделке не прикреплена компания"
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
@@ -126,6 +132,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
             return (next_url, context, True)
+        
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
 
             company_bx = bx.get_by_ID("crm.company.get", [company])

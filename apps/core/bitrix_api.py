@@ -764,7 +764,8 @@ def add_info_order(request, order, type_save):
                 file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
                 file_dict_signed = file_dict.exclude(bill_file="")
                 file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
-
+               
+                # 'Счёт'
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_signed",
@@ -773,6 +774,8 @@ def add_info_order(request, order, type_save):
                     "crm.deal.update",
                     "UF_CRM_1734772516954",
                 )
+                
+                # 'Счёт без печати',
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_no_signed",
@@ -784,6 +787,7 @@ def add_info_order(request, order, type_save):
 
                 if order.specification.number:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+                    # Спецификация
                     orders_bx = save_file_bx(
                         bx,
                         document_specification,
@@ -791,6 +795,7 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
+                    # 'Спецификация без печати',
                     document_specification_nosign = f"{MEDIA_ROOT}/{ order.specification.file_no_signature}"
                     orders_bx = save_file_bx(
                         bx,

@@ -3248,6 +3248,7 @@ def get_props_motrum_filter_to_view(product_props,category,group):
         else:
             group_motrum = None
     
+    
     article_by_all = ProductPropertyMotrumArticleCateg.objects.filter(
         property_motrum=OuterRef('property_motrum'),
         category=OuterRef('product__category'),
@@ -3420,6 +3421,122 @@ def get_props_motrum_filter_to_view(product_props,category,group):
     
     return chars
 
+
+def get_props_motrum_filter_to_view_brand(brand,product):
+    from apps.product.models import CategoryProduct, GroupProduct
+    # product — ожидается QuerySet продуктов, уже отфильтрованный по brand
+    product_qs = product
+
+    # Категории, в которых есть товары данного бренда
+    categories = (
+        CategoryProduct.objects
+        .filter(product__in=product_qs)
+        .distinct()
+        .values("id", "name", "slug", "article_name")
+    )
+
+    # Группы, в которых есть товары данного бренда
+    groups = (
+        GroupProduct.objects
+        .filter(product__in=product_qs)
+        .distinct()
+        .values("id", "name", "slug", "article_name", "category_id")
+    )
+
+    # Сортируем категории и группы по article_name (None уводим в конец)
+    categories_sorted = sorted(
+        categories,
+        key=lambda c: (c.get("article_name") is None, c.get("article_name")),
+    )
+
+    groups_by_category = {}
+    for grp in groups:
+        groups_by_category.setdefault(grp["category_id"], []).append(grp)
+
+    for cat_id, grp_list in groups_by_category.items():
+        grp_list.sort(key=lambda g: (g.get("article_name") is None, g.get("article_name")))
+
+    # Строим вложенную структуру: список категорий с вложенными группами
+    result = []
+    for cat in categories_sorted:
+        result.append(
+            {
+                "category": cat,
+                "groups": groups_by_category.get(cat["id"], []),
+            }
+        )
+    print("result",result)
+    return result
+
+
+def get_props_motrum_filter_to_view_brand_group(brand, product):
+    from apps.product.models import CategoryProduct, GroupProduct
+
+    product_qs = product
+
+    # Категории, где есть товары бренда
+    categories = (
+        CategoryProduct.objects
+        .filter(product__in=product_qs)
+        .distinct()
+        .values("id", "name", "slug", "article_name")
+    )
+
+    # Группы, где есть товары бренда
+    groups = (
+        GroupProduct.objects
+        .filter(product__in=product_qs)
+        .distinct()
+        .values("id", "name", "slug", "article_name", "category_id")
+    )
+
+    # Для быстрого доступа к категории по id
+    category_by_id = {c["id"]: c for c in categories}
+
+    groups_by_category = {}
+    for grp in groups:
+        groups_by_category.setdefault(grp["category_id"], []).append(grp)
+
+    # Сортируем группы внутри каждой категории по article_name
+    for cat_id, grp_list in groups_by_category.items():
+        grp_list.sort(key=lambda g: (g.get("article_name") is None, g.get("article_name")))
+
+    # Плоский список: все группы; если у категории нет групп — добавляем категорию
+    result = []
+    for cat in sorted(categories, key=lambda c: (c.get("article_name") is None, c.get("article_name"))):
+        cat_groups = groups_by_category.get(cat["id"], [])
+        if cat_groups:
+            for grp in cat_groups:
+                result.append(
+                    {
+                        "type": "group",
+                        "group_id": grp["id"],
+                        "group_name": grp["name"],
+                        "group_slug": grp["slug"],
+                        "group_article_name": grp.get("article_name"),
+                        "category_id": grp["category_id"],
+                        "category_slug": category_by_id.get(grp["category_id"], {}).get("slug"),
+                        "category_article_name": category_by_id.get(grp["category_id"], {}).get("article_name"),
+                    }
+                )
+        else:
+            result.append(
+                {
+                    "type": "category",
+                    "category_id": cat["id"],
+                    "category_name": cat["name"],
+                    "category_slug": cat["slug"],
+                    "category_article_name": cat.get("article_name"),
+                }
+            )
+
+    # Итоговый плоский список уже упорядочен: категории по article_name, внутри — группы по article_name
+    print("result2",result)
+    return result
+
+
+    
+    
 
 def serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier):
     from apps.product.models import ProductProperty, ProductPropertyMotrumItem

@@ -11,7 +11,7 @@ from regex import P
 from django.db.models import Prefetch
 from apps import product
 from apps.admin_specification.views import all_categories
-from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, get_props_motrum_filter_to_view, serch_products_web
+from apps.core.utils import get_file_path_add_more_doc, get_props_all_motrum_filter, get_props_all_motrum_filter3, get_props_motrum_filter, get_props_motrum_filter_to_view, get_props_motrum_filter_to_view_brand, get_props_motrum_filter_to_view_brand_group, serch_products_web
 from apps.product.forms import DocumentForm
 from apps.product.models import (
     TYPE_DOCUMENT,
@@ -447,11 +447,16 @@ def brand_one(request, vendor):
     product_props_motrum = ProductPropertyMotrumItem.objects.filter(product__in=product
         )
     chars_motrum = get_props_motrum_filter_to_view(product_props_motrum,category=None,group=None)
+    # chars_brand_group = get_props_motrum_filter_to_view_brand(brand,product)
+    brand_groups_flat = get_props_motrum_filter_to_view_brand_group(brand, product)
     
+    print("brand_groups_flat",brand_groups_flat)
     context = {
         "brand": brand,
         "chars_motrum": chars_motrum,
         "price_max":price_max,
+        # "chars_brand_group":chars_brand_group,
+        "brand_groups_flat": brand_groups_flat,
         "meta_title": f"{brand.name} | Мотрум - автоматизация производства",
     }
     return render(request, "product/brand_one.html", context)

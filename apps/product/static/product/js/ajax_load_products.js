@@ -259,7 +259,10 @@ window.addEventListener("DOMContentLoaded", () => {
         search_text: searchText ? searchText : "",
         chars:
           charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
+        chars_category:NaN,
       };
+      
+
 
       let params = new URLSearchParams(data);
 

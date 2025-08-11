@@ -332,6 +332,7 @@ def add_logs_created(sender, instance, created, **kwargs):
 
 
 class CategoryProduct(models.Model):
+    
     name = models.CharField("Название категории", max_length=500)
     slug = models.SlugField(null=True, max_length=500)
     article_name = models.CharField(

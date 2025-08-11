@@ -160,16 +160,11 @@ def add_iek(request):
     # import logging
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    def background_task():
-       create_file_props_in_vendor_props()
-    daemon_thread = threading.Thread(target=background_task)
-    daemon_thread.setDaemon(True)
-    daemon_thread.start()
-    
+    prompower_api()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

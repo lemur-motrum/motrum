@@ -239,9 +239,8 @@ def unimat_prompower_api():
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0":
                         price_supplier = price_supplier + (price_supplier / 100 * NDS)
+                        # если товар есть в бд
                         try:
-                            print(111111111111111111111111111111111)
-                            # если товар есть в бд
                             article = Product.objects.get(
                                 # supplier=prompower,
                                 vendor=vendori,

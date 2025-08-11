@@ -1171,9 +1171,7 @@ def save_update_product_attr_all(
             product.name = name
 
         if promo_groupe:
-            print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
-            print("product.promo_groupe", product.promo_groupe)
         product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()

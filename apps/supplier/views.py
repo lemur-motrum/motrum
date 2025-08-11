@@ -157,11 +157,11 @@ def add_iek(request):
     # import logging
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    delete_prop_motrum_item_duble()
+    prompower_api()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

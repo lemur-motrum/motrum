@@ -655,36 +655,67 @@ def prompower_api():
     
     
     def upd_document_pp():
+        
         prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False).distinct('link')
         for prod_d in prod_doc:
+            try:
            
-            print(prod_d.document)
-            local_file_path  = prod_d.document.path
-            print(local_file_path)
-            if os.path.isfile(local_file_path):
-                local_file_size = os.path.getsize(local_file_path)  # в байтах
-            else:
-                local_file_size = None
-                
-            print("local_file_size",local_file_size)
 
-            url = prod_d.link
-            response = requests.head(url, allow_redirects=True)
-            remote_file_size = int(response.headers.get('content-length', 0))
-            
-            if local_file_size is not None and remote_file_size > 0:
-                if local_file_size == remote_file_size:
-                    print("Файлы одинакового размера")
+                local_file_path  = prod_d.document.path
+
+                if os.path.isfile(local_file_path):
+                    local_file_size = os.path.getsize(local_file_path)  # в байтах
                 else:
-                    print("Размеры отличаются")# в байтах 
-                  
-                    r = requests.get(url, stream=True)
-                    with open(os.path.join(local_file_path), "wb") as ofile:
-                        ofile.write(r.content)  
-            else:
-                prod_d.hide = True
-                prod_d.save()
-                print("local_file_size is not None and remote_file_size > 0")    
+                    local_file_size = None
+              
+                url = prod_d.link
+                response = requests.head(url, allow_redirects=True)
+                remote_file_size = int(response.headers.get('content-length', 0))
+                
+                if local_file_size is not None and remote_file_size > 0:
+                    if local_file_size == remote_file_size:
+                        print("Файлы одинакового размера")
+                    else:
+                        print("Размеры отличаются")# в байтах 
+                    
+                        r = requests.get(url, stream=True)
+                        with open(os.path.join(local_file_path), "wb") as ofile:
+                            ofile.write(r.content)  
+                else:
+                    prod_d.hide = True
+                    prod_d.save()
+                    print("local_file_size is not None and remote_file_size > 0")    
+                    
+            except Exception as e:
+                print(e)
+                tr = traceback.format_exc()
+                error = "file_api_error"
+                location = "Загрузка фаилов Prompower -upd_document_pp"
+                info = f" {prod_d}. Тип ошибки:{e}{tr}"
+                e = error_alert(error, location, info)
+            finally:
+                # --- ОЧИСТКА ПАМЯТИ ---
+                
+                if 'response' in locals():
+                    try:
+                        response.close()
+                    except Exception:
+                        pass
+                    del response
+                if 'r' in locals():
+                    try:
+                        r.close()
+                    except Exception:
+                        pass
+                    del r
+                if 'url' in locals():
+                    del url
+                if 'local_file_path' in locals():
+                    del local_file_path
+                if 'local_file_size' in locals():
+                    del local_file_size
+                if 'remote_file_size' in locals():
+                    del remote_file_size
     
 
     add_category_groupe()

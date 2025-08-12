@@ -201,7 +201,8 @@ window.addEventListener("DOMContentLoaded", () => {
         search_text: searchText ? searchText : "",
         chars:
           charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-      };
+        chars_category:["kollaborativnyie-robotyi","programmnoe-obespechenie","istochniki-pitaniya"], 
+        };
       let csrfToken = getCookie("csrftoken");
       let params = new URLSearchParams(data);
 
@@ -259,7 +260,7 @@ window.addEventListener("DOMContentLoaded", () => {
         search_text: searchText ? searchText : "",
         chars:
           charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-        chars_category:NaN,
+        chars_category:["kollaborativnyie-robotyi","programmnoe-obespechenie","istochniki-pitaniya"],
       };
       
 

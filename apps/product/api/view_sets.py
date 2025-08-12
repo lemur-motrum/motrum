@@ -100,10 +100,39 @@ class ProductViewSet(viewsets.ModelViewSet):
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
         chars_param = request.query_params.get("chars")
+        chars_category = request.query_params.get("chars_category")
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
-      
+            
+        # фильтрация по категориям/группам из параметра chars_category
+        # ожидается массив слагов, где элемент может быть как слагом GroupProduct, так и CategoryProduct
+        category_slugs_for_filter = []
+        group_slugs_for_filter = []
+        if chars_category:
+            slugs_list = []
+            try:
+                parsed_value = json.loads(chars_category)
+                if isinstance(parsed_value, list):
+                    slugs_list = parsed_value
+                elif isinstance(parsed_value, str) and parsed_value:
+                    slugs_list = [parsed_value]
+            except (json.JSONDecodeError, TypeError):
+                # fallback: строка со значениями через запятую
+                slugs_list = [slug for slug in str(chars_category).split(",") if slug]
+
+            if slugs_list:
+                group_slugs_for_filter = list(
+                    GroupProduct.objects.filter(slug__in=slugs_list).values_list("slug", flat=True)
+                )
+                category_slugs_for_filter = list(
+                    CategoryProduct.objects.filter(slug__in=slugs_list).values_list("slug", flat=True)
+                )
+        # старые наброски логики не удаляем
+        # if char_cat.startswith("category"):
+        #     chars_categ = char_cat.split(":")[1]
+        # if char_cat.startswith("group"):
+        #     chars_group = char_cat.split(":")[1]
 
         if request.query_params.get("search_text"):
             search_text = request.query_params.get("search_text")
@@ -154,6 +183,13 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
+
+        # применяем фильтрацию по выбранным слагам категорий/групп, если они есть
+        if group_slugs_for_filter or category_slugs_for_filter:
+            q_object &= (
+                Q(group__slug__in=group_slugs_for_filter)
+                | Q(category__slug__in=category_slugs_for_filter)
+            )
 
         if sort_price:
             if sort_price == "?":
@@ -542,7 +578,35 @@ class ProductViewSet(viewsets.ModelViewSet):
         chars = []
         if chars_param:
             chars = json.loads(chars_param)
-   
+            
+        chars_category = request.query_params.get("chars_category")
+        print(" search_filters_product chars_category", chars_category)
+        # фильтрация по категориям/группам из параметра chars_category
+        # ожидается массив слагов, где элемент может быть как слагом GroupProduct, так и CategoryProduct
+        category_slugs_for_filter = []
+        group_slugs_for_filter = []
+        if chars_category:
+            slugs_list = []
+            try:
+                parsed_value = json.loads(chars_category)
+                if isinstance(parsed_value, list):
+                    slugs_list = parsed_value
+                elif isinstance(parsed_value, str) and parsed_value:
+                    slugs_list = [parsed_value]
+            except (json.JSONDecodeError, TypeError):
+                # fallback: строка со значениями через запятую
+                slugs_list = [slug for slug in str(chars_category).split(",") if slug]
+
+            if slugs_list:
+                group_slugs_for_filter = list(
+                    GroupProduct.objects.filter(slug__in=slugs_list).values_list("slug", flat=True)
+                )
+                category_slugs_for_filter = list(
+                    CategoryProduct.objects.filter(slug__in=slugs_list).values_list("slug", flat=True)
+                )
+
+        print("group_slugs_for_filter", group_slugs_for_filter)
+        print("category_slugs_for_filter", category_slugs_for_filter)
         price_none = request.query_params.get("pricenone")
         price_to = float(request.query_params.get("priceto"))
         price_from = float(request.query_params.get("pricefrom"))
@@ -596,6 +660,17 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if groupe_get is not None:
             q_object &= Q(group__id=groupe_get)
+            
+            
+            
+        # применяем фильтрацию по выбранным слагам категорий/групп, если они есть
+        if group_slugs_for_filter or category_slugs_for_filter:
+            q_object &= (
+                Q(group__slug__in=group_slugs_for_filter)
+                | Q(category__slug__in=category_slugs_for_filter)
+            )
+
+    
         # сортировка из блока с ценами
         if price_from == 0.0 and price_to != 0.0 and price_none == "false":
             q_object &= ( Q(price__rub_price_supplier__isnull=True)  | Q(price__rub_price_supplier__lte=price_to))

@@ -61,24 +61,16 @@
                                 <div class="chars_content">
                                 <div class="filter_title">Категории</div>
                                 
-                                <div class="chars_content">
-                                    <div class="char_block">
-                                    {% for char in brand_groups_flat %}  
-                                        {{char}}
-                                        <div class="char_values vertical char_values-category">
-                                            <div class="char_value char_value-category">
-                                                
-                                                <div class="char_value_checkbox_container"
-                                                data-category-name="{{char.category_slug}}"
-                                                data-group-name="{{char.group_slug}}">
-                                                    <div class="char_value_checkbox"></div>
-                                                </div>
-                                                <div class="char_value_name">{{ char.name }}</div>
-                                            </div>
-                                        </div>
+                                    {% for char_group in brand_groups_flat %}  
+                                    <div class="" data-category-slug="{{char_group.category_slug}} " data-group-slug="{{char_group.group_slug}} 
+                                    
+                                    data-categ-item-slug="{% if char_group.group_slug %}{{char_group.group_slug}}{% else %}{{char_group.category_slug}}{% endif %}">
+                                    
+                                    {% if char_group.group_name %}{{char_group.group_name}}{% else %}{{char_group.category_name}}{% endif %}</div>
+                                        
+                                        <br>
+                                        
                                     {% endfor %}
-                                    </div>
-                                </div>
                                
                                 </div>  
                             </div>

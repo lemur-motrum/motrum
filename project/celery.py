@@ -63,6 +63,13 @@ app.conf.beat_schedule = {
     },
     
     
+     # апдейт промогрупп промповер
+    "prompower_primo_group": {
+        "task": "apps.supplier.tasks.prompower_primo_group",
+        "schedule": crontab(minute=10, hour=4),
+    },
+    
+    
      
     
     
@@ -76,6 +83,12 @@ app.conf.beat_schedule = {
     "vacancy_file_delite_week": {
         "task": "apps.core.tasks.vacancy_file_delite",
         "schedule": crontab(minute=22, hour=0, day_of_week=6),
+    },
+    
+    # апдейт доков промповер
+    "prompower_upd_doc": {
+        "task": "apps.supplier.tasks.prompower_upd_doc",
+        "schedule": crontab(minute=22, hour=0, day_of_week=5),
     },
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год

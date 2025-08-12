@@ -63,6 +63,20 @@ app.conf.beat_schedule = {
     },
     
     
+     # апдейт промогрупп промповер
+    "prompower_primo_group": {
+        "task": "apps.supplier.tasks.prompower_primo_group",
+        "schedule": crontab(minute=10, hour=4),
+    },
+    
+    
+     # апдейт промогрупп промповер
+    "prompower_primo_group": {
+        "task": "apps.supplier.tasks.prompower_primo_group",
+        "schedule": crontab(minute=10, hour=4),
+    },
+    
+    
      
     
     
@@ -73,10 +87,16 @@ app.conf.beat_schedule = {
     # },
    
     # ТАСКИ Еженеделтные
-    # "vacancy_file_delite_week": {
-    #     "task": "apps.core.tasks.vacancy_file_delite",
-    #     "schedule": crontab(minute=22, hour=0, day_of_week=6),
-    # },
+    "vacancy_file_delite_week": {
+        "task": "apps.core.tasks.vacancy_file_delite",
+        "schedule": crontab(minute=22, hour=0, day_of_week=6),
+    },
+    
+    # апдейт доков промповер
+    "prompower_upd_doc": {
+        "task": "apps.supplier.tasks.prompower_upd_doc",
+        "schedule": crontab(minute=22, hour=0, day_of_week=5),
+    },
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
     "year_holidays": {
@@ -112,7 +132,7 @@ app.conf.beat_schedule = {
     
     "del_prop_motrum_item_dublet": {
         "task": "apps.supplier.tasks.del_prop_motrum_item_dublet",
-        "schedule": crontab(minute=10, hour=0, day_of_month=6, month_of_year=8),
+        "schedule": crontab(minute=10, hour=0, day_of_month=12, month_of_year=8),
     },
 }
 

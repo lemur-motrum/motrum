@@ -36,10 +36,10 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=10, hour=0),
     },
     # # проверка целостности изображений каталога
-    # "image_check": {
-    #     "task": "apps.core.tasks.image_error_check_in",
-    #     "schedule": crontab(minute=15, hour=0),
-    # },
+    "image_check": {
+        "task": "apps.core.tasks.image_error_check_in",
+        "schedule": crontab(minute=15, hour=0),
+    },
     # получение апи товаров веда
     "add_veda": {
         "task": "apps.supplier.tasks.add_veda",
@@ -70,21 +70,11 @@ app.conf.beat_schedule = {
     },
     
     
-     # апдейт промогрупп промповер
-    "prompower_primo_group": {
-        "task": "apps.supplier.tasks.prompower_primo_group",
-        "schedule": crontab(minute=10, hour=4),
-    },
-    
-    
-     
-    
-    
     # # уведомления о повышения цен на товары и курсов ежедневно
-    # "add_currency_check_bx": {
-    #     "task": "apps.core.tasks.get_curr_price_check_bx",
-    #     "schedule": crontab(minute=0, hour=5),
-    # },
+    "add_currency_check_bx": {
+        "task": "apps.core.tasks.get_curr_price_check_bx",
+        "schedule": crontab(minute=0, hour=5),
+    },
    
     # ТАСКИ Еженеделтные
     "vacancy_file_delite_week": {
@@ -103,10 +93,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.get_year_holiday",
         "schedule": crontab(minute=3, hour=0, day_of_month=1),
     },
-    # "nomenk_file_delite_month": {
-    #     "task": "apps.core.tasks.nomenk_file_delite",
-    #     "schedule": crontab(minute=14, hour=0, day_of_month=1),
-    # },
+    "nomenk_file_delite_month": {
+        "task": "apps.core.tasks.nomenk_file_delite",
+        "schedule": crontab(minute=14, hour=0, day_of_month=1),
+    },
     "up_skafy": {
         "task": "apps.core.tasks.up_int_task_skafy",
         "schedule": crontab(minute=1, hour=0, day_of_month=1),

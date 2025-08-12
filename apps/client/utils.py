@@ -547,10 +547,10 @@ def crete_pdf_bill(
             product_quantity = product.quantity
             product_data = product.text_delivery
 
-            if product.date_delivery_bill:
-                product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
-            else:
-                product_data = product.text_delivery
+            # if product.date_delivery_bill:
+            #     product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
+            # else:
+            #     product_data = product.text_delivery
 
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
             # else:

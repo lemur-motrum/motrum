@@ -7,7 +7,7 @@
      data-product-name-new=""
      data-product-id-cart="{{ item.id_product_cart }}"
      data-product-pk="{{ item.pk }}"
-     data-price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %} {% if item.price_motrum %}{{ item.price_motrum }} {% else %} 0 {% endif %} {% endif %}"
+     data-price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %} {% if item.price_motrum %}{{ item.price_motrum }}{% else %}{% if item.price_one_motrum_spesif %}{{ item.price_one_motrum_spesif }}{% else %}{% endif %}{% endif %} {% endif %}"
      data-id="{{ item.id_product_cart }}"
      data-order="{% if item.order %}{{ item.order }}{% else %}0{% endif %}"
      data-price=" {% if item.price_cart %} {{ item.price_cart }} {% else %} {% if item.id_product_spesif %} {{ item.old_price_one_full }} {% else %} 0 {% endif %} {% endif %}"
@@ -102,8 +102,8 @@
         <div class="item_value input_totla-cost total_cost price">0</div>
     {% else %}
         <div class="item_value">
-            {% if item.price_cart  == None %}
-                <input class="price-input price price_once"
+            {% if item.price_cart  == None and item.id_product_spesif == None %}
+                <input class="price-input price price_once "
                        disabled
                        name="price-input-extra"
                        type="text"
@@ -111,15 +111,20 @@
                        maxlength="10"
                        value="{% if bill_upd and item.id_product_spesif %}{{ item.old_price_one }}{% else %}{% endif %}" />
                 <label for="price-input-extra">
-                {% else %}
+            {% else %}
                     <span class="price price_once">{{ item.price_cart }}</span>
                    
-                {% endif %}
+            {% endif %}
                 <div class="change_input_price_title">ПРАЙС</div>
-                <input class="change_input_price" value="{{ item.price_cart }}" />
+                <input class="change_input_price" value="
+                {% if item.price_cart  %}
+                    {{item.price_cart}}
+                {% else %}
+                    {{ item.old_price_one }}
+                {% endif %}" />
                 {% if item.price_cart != item.actual_price %}
                     {% if item.actual_price %}
-                        <span class="okt-price">Цена прайс: <span class="price">{{ item.price_cart|number_into_digits }}</span> ₽</span>
+                        {% comment %} <span class="okt-price">Цена прайс: <span class="price">{{ item.price_cart|number_into_digits }}</span> ₽</span> {% endcomment %}
                         <span class="okt-price">Цена в ОКТ: <span class="price">{{ item.actual_price|number_into_digits }}</span> ₽</span>
                     {% elif item.price_cart  == None %}
                         <span class="okt-price">Цена по запросу</span>
@@ -150,14 +155,18 @@
         {% endif %}
         <div class="item_value">
             <div class="price_motrum"
-                 price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %}{% if item.price_motrum %}{{ item.price_motrum }}{% else %}0{% endif %}{% endif %}">
+                 price-motrum="{% if item.price_motrum_cart %}{{ item.price_motrum_cart }}{% else %}{% if item.price_motrum %}{{ item.price_motrum }}{% else %}{% if item.price_one_motrum_spesif %}{{ item.price_one_motrum_spesif }}{% else %}0{% endif %}{% endif %}{% endif %}">
                 {% if item.price_motrum_cart %}
                     {{ item.price_motrum_cart }}
                 {% else %}
                     {% if item.price_motrum %}
                         {{ item.price_motrum }}
                     {% else %}
-                        0
+                        {% if item.price_one_motrum_spesif %}
+                            {{ item.price_one_motrum_spesif }}
+                        {% else %}
+                            0
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             </div>
@@ -232,13 +241,11 @@
             <label>
                 {% if bill_upd %}
                     <input class="delivery_date"
-                           
                            type="date"
                            name="calendar"
                            value="{% if item.date_delivery_cart|date %}{{ item.date_delivery_cart|date:"Y-m-d" }}{% else %}{% if item.date_delivery_bill %}{{ item.date_delivery_bill|date:"Y-m-d" }}{% else %}{{ item.date_delivery_first|date:"Y-m-d" }}{% endif %}{% endif %}">
                 {% else %}
                     <input class="delivery_date"
-                          
                            type="date"
                            name="calendar"
                            min="{{ current_date }}"

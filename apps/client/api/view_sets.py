@@ -1959,7 +1959,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         order_products_item["date_delivery"], "%d-%m-%Y"
                     ).date()
                     if prod.date_delivery_bill != date_delivery:
-                        is_need_new_pdf = True
+                        is_need_new_pdf = False
 
                         prod.date_delivery_bill = date_delivery
 
@@ -2026,7 +2026,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_TESTING:
                     pass
                 else:
-                    is_save_new_doc_bx = save_new_doc_bx(order)
+                    pass 
+                    # is_save_new_doc_bx = save_new_doc_bx(order)
 
     # ОКТ 1С получение оплат ОКТ Б24
     @authentication_classes([BasicAuthentication])

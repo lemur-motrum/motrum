@@ -822,6 +822,11 @@ def create_specification(request):
                 ).values(
                     "price_one_motrum",
                 ),
+                price_one_motrum_spesif=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "price_one_motrum",
+                ),
                 old_date=product_specification.filter(product=OuterRef("pk")).values(
                     "specification__date_update",
                 ),
@@ -868,6 +873,7 @@ def create_specification(request):
                 ).values(
                     "product_price_motrum",
                 ),
+                
                 price_motrum=Case(
                     When(sale_motrum=None, then="price_cart"),
                     When(

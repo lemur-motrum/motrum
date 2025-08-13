@@ -14,7 +14,9 @@ def upgrade_permission():
 
     for groupe_admin in ADMIN_TYPE:
         group = Group.objects.filter(name=groupe_admin[1]).first()
-        if group.name == "Базовый доступ":
+        if not group:
+            continue
+        elif group.name == "Базовый доступ":
             codenames = [
                 "view_product",
                 "view_price",
@@ -28,12 +30,7 @@ def upgrade_permission():
                 "add_productspecification",
                 "view_productspecification",
             ]
-            permissions = Permission.objects.filter(codename__in=codenames)
-           
-
-            for permission in permissions.all():
-                # group.permissions.clear()
-                group.permissions.add(permission)
+            
 
         elif group.name == "Доступ администрирования товаров":
             codenames = [
@@ -72,16 +69,23 @@ def upgrade_permission():
                 "view_groupproduct",
                 "view_logsaddproduct",
             ]
-            permissions = Permission.objects.filter(codename__in=codenames)
-        
-            for permission in permissions.all():
-                # group.permissions.clear()
-                group.permissions.add(permission)
+            
 
         elif group.name == "Доступ для загрузки каталогов поставщиков":
-            pass
+            continue
         elif group.name == "Полный доступ":
-            pass
+            continue
+        else:
+            continue
+        
+         # Получаем нужные разрешения
+        permissions = Permission.objects.filter(codename__in=codenames)
+
+        # Критически важно: очищаем старые права
+        group.permissions.clear()
+
+        # Добавляем новые
+        group.permissions.add(*permissions)
 
 
 def perform_some_action_on_login(sender, user,request, **kwargs):
@@ -95,7 +99,7 @@ def perform_some_action_on_login(sender, user,request, **kwargs):
     if current_user.is_staff:
         cookie = request.COOKIES.get("client_id")
         if cookie:
-            print
+            print()
             # response = receiver(sender=sender)
             # response.set_cookie('client_id', domain="cookie_domain", max_age_seconds=1)
             # # response = django_logout(

@@ -1220,7 +1220,7 @@ class ProductPropertyValueMotrum(admin.TabularInline):
 class ProductPropertyMotrumArticleCategAdmin(admin.TabularInline):
     model = ProductPropertyMotrumArticleCateg
     extra = 1
-    fields = ("category","group","article")
+    fields = ("category","group","article","is_view_in_category")
     form = ProductPropertyMotrumForm
 
 class ProductPropertyMotrumAdmin(admin.ModelAdmin):

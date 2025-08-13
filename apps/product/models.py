@@ -1227,9 +1227,13 @@ class ProductPropertyMotrumArticleCateg(models.Model):
         blank=True,
         null=True,
     )
+    is_view_in_category = models.BooleanField("Видимость в категории", default=True)
+    
     class Meta:
         verbose_name = "Очередность в группе Характеристика товара мотрум"
         verbose_name_plural = "Очередность в группе Характеристики товаров мотрум"
+
+
 class ProductPropertyValueMotrum(models.Model):
     property_motrum = models.ForeignKey(
         ProductPropertyMotrum,

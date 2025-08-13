@@ -3950,6 +3950,30 @@ def get_props_motrum_filter_to_view(product_props,category,group):
         # добавляем count_values через len
         char["count_values"] = len(char["values"])
     chars = list(chars_dict.values())
+    # Исключаем характеристики скрытые в ProductPropertyMotrumArticleCateg
+    base_qs = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum_id__in=[c["id_property_motrum"] for c in chars],
+        category_id=category_motrum.id if category_motrum else None,
+    )
+    if group_motrum:
+        group_map = {
+            p.property_motrum_id: p
+            for p in base_qs.filter(group_id=group_motrum.id)
+        }
+    else:
+        group_map = {}
+    cat_map = {
+        p.property_motrum_id: p
+        for p in base_qs.filter(group__isnull=True)
+    }
+    hidden_ids = set()
+    for c in chars:
+        pid = c["id_property_motrum"]
+        obj = group_map.get(pid) or cat_map.get(pid)
+        if obj and (obj.is_view_in_category is False or (obj.article == 0)):
+            hidden_ids.add(pid)
+    if hidden_ids:
+        chars = [c for c in chars if c["id_property_motrum"] not in hidden_ids]
     # Получаем все нужные id характеристик
     motrum_ids = [c["id_property_motrum"] for c in chars]
 

@@ -3305,128 +3305,297 @@ def check_delite_product_cart_in_upd_spes(specification,cart):
         p.save()
     
 
-def create_file_props_in_vendor_props():
+def create_file_props_in_vendor_props(path, vendor, name_supplier):
     from apps.product.models import (
         Product,
         ProductProperty,
     )
 
-    new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
-    # path_delta = f"{new_dir}/delta.csv"
-    # path_emas = f"{new_dir}/emas.csv"
-    # path_iek = f"{new_dir}/iek.csv"
-    # path_iek = f"{new_dir}/iek.csv"
-    # path_optimus = f"{new_dir}/optimus.csv"
-    # path_prompower = f"{new_dir}/prompower.csv"
-    path_unimat = f"{new_dir}/veda.csv"
+    new_dir = "{0}/{1}".format(MEDIA_ROOT, f"props_file/props_file_{vendor}")
+    print(f"[create_file_props_in_vendor_props] старт. vendor={vendor} path={path}")
+    
 
+    # добавим поддержку Excel файлов с несколькими листами
+    import os
+    import re
+    import traceback
+    from collections import defaultdict
+    from openpyxl import Workbook
+
+    # итоговые заголовки (добавлен столбец "Встречается в других группа", список других категорий/групп и путь поставщика)
     fieldnames_nomenclature_written = [
         "Частота упоминания",
         "Название характеристики",
         "Варианты значений",
         "Единица измерения",
+        "Встречается в других группа",
+        "Где ещё встречается (категория/группа)",
+        "Категория/Группа/Подгруппа поставщика",
     ]
 
-    props = []
+    # подготовка каталога для выгрузки
+    try:
+        os.makedirs(new_dir, exist_ok=True)
+        print(f"[create_file_props_in_vendor_props] каталог для вендора: {new_dir}")
+    except Exception as e:
+        print("[create_file_props_in_vendor_props] ошибка создания каталога new_dir:", e)
 
-    all_product_supplier = Product.objects.filter(vendor__slug="veda")
-    i = 0
-    print(all_product_supplier)
+    # нормализуем путь сохранения: относительный путь сохраняем внутри MEDIA_ROOT
+    try:
+        if not os.path.isabs(path):
+            path = os.path.join(MEDIA_ROOT, path)
+            print(f"[create_file_props_in_vendor_props] нормализованный путь (MEDIA_ROOT): {path}")
+        # обеспечить существование каталога для переданного пути сохранения
+        dir_for_path = os.path.dirname(path)
+        if dir_for_path:
+            os.makedirs(dir_for_path, exist_ok=True)
+            print(f"[create_file_props_in_vendor_props] каталог для path: {dir_for_path}")
+    except Exception as e:
+        print("[create_file_props_in_vendor_props] ошибка подготовки пути/каталога для path:", e)
 
-    def key_val_upd(key, val, value, unit_measure):
+    # данные по листам: ключ листа -> { prop_name -> {count:int, values:set, units:set} }
+    sheets_data = {}
+    # отображаемые имена листов: ключ листа -> строка для названия
+    sheet_titles = {}
+    # присутствие характеристик в разных листах: prop_name -> set(keys)
+    prop_presence = defaultdict(set)
+    # глобальная агрегация по всем товарам вендора (для листа "ВСЕ")
+    global_props_map = {}
+    # количество товаров на каждом листе (категория/группа/без)
+    sheet_product_counts = defaultdict(int)
 
-        for val_i in val:
-            print(val_i)
-            val_v = val_i.get("value")
-            val_u = val_i.get("unit_measure")
-            val_c = val_i.get("count")
-            if val_c:
-                print(val_c)
-                val_i["count"] = val_c + 1
+    # формируем ключ листа
+    def make_sheet_key_and_title(product):
+        if product.category is None and product.group is None:
+            return ("unassigned", None), "не распределено"
+        if product.category is not None and product.group is None:
+            return (product.category_id, None), f"{product.category.name}"
+        if product.category is not None and product.group is not None:
+            return (product.category_id, product.group_id), f"{product.category.name} - {product.group.name}"
+        # на всякий случай
+        return ("unassigned", None), "не распределено"
 
-            if val_v:
-                if value not in val_v:
-                    val_v.append(value)
-            if val_u:
-                if unit_measure != None:
-                    if unit_measure not in val_u:
-                        val_u.append(f"{unit_measure}")
+    # наполнение данных
+    if name_supplier:
+        total_count = Product.objects.filter(supplier__slug=name_supplier).count()
+        queryset_limited = Product.objects.filter(supplier__slug=name_supplier)
+    else:
+        total_count = Product.objects.filter(vendor__slug=vendor).count()
+        queryset_limited = Product.objects.filter(vendor__slug=vendor)
+    
+    selected_products = list(queryset_limited)
+    print(f"[create_file_props_in_vendor_props] всего товаров у вендора: {total_count}; будет обработано: {len(selected_products)}")
+    for idx, prod in enumerate(selected_products, start=1):
+        try:
+            print(f"[prod] {idx}/{len(selected_products)} id={prod.id} article={prod.article} category={(prod.category.name if prod.category else None)} group={(prod.group.name if prod.group else None)}")
+            props_prod = ProductProperty.objects.filter(product=prod)
+            props_count = props_prod.count()
+            print(f"[prod] свойств у товара: {props_count}")
+            # ключ листа и инициализация структуры листа
+            key, title = make_sheet_key_and_title(prod)
+            if key not in sheets_data:
+                sheets_data[key] = {}
+                sheet_titles[key] = title
+                print(f"[sheet-init] создан лист: key={key} title='{title}'")
 
-    def if_name(name, value, unit_measure):
-        print("startprops", props)
-        need_add_name = True
-        for prop_arr_name in props:
-            print(prop_arr_name)
+            # учёт количества товаров на лист
+            sheet_product_counts[key] += 1
 
-            for key, val in prop_arr_name.items():
-                print("key,val", key, val)
-                if name == key:
-                    print("name == key")
-                    need_add_name = False
-                    key_val_upd(key, val, value, unit_measure)
+            if props_count == 0:
+                # товар без характеристик — только увеличили счётчик товаров листа
+                continue
 
-            print("need_add_name", need_add_name)
-        if need_add_name:
-            props_new = {
-                name: [
-                    {"value": [value]},
-                    {"unit_measure": [unit_measure]},
-                    {"count": 1},
-                ]
-            }
-
-            print("props_new", props_new)
-            props.append(props_new)
-
-    for prod in all_product_supplier:
-        i += 1
-        props_prod = ProductProperty.objects.filter(product=prod)
-        if props_prod.count() > 0:
             for prop_prod in props_prod:
-                print(prop_prod)
-                name = if_name(prop_prod.name, prop_prod.value, prop_prod.unit_measure)
+                prop_name = prop_prod.name
+                prop_value = prop_prod.value
+                prop_unit = prop_prod.unit_measure
+                print(f"  [prop] name='{prop_name}' value='{prop_value}' unit='{prop_unit}'")
 
-    print(props)
+                # учёт присутствия характеристики на листе
+                prop_presence[prop_name].add(key)
 
-    props_count = len(props)
-    print("props_count",props_count)
-    with open(path_unimat, "w", encoding="UTF-8") as writerFile:
-        writer_nomenk = csv.DictWriter(
-            writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
-        )
-        for i in range(0, props_count):
-            row = {}
-            if i == 0:
+                # агрегирование по листу
+                bucket = sheets_data[key].get(prop_name)
+                if bucket is None:
+                    bucket = {"count": 0, "values": set(), "units": set(), "supplier_paths": set()}
+                    sheets_data[key][prop_name] = bucket
+                    print(f"    [agg] новый параметр на листе '{title}': '{prop_name}'")
+                bucket["count"] += 1
+                print(f"    [agg] '{prop_name}' count -> {bucket['count']}")
+                if prop_value is not None and prop_value != "":
+                    bucket["values"].add(str(prop_value))
+                if prop_unit is not None and prop_unit != "":
+                    bucket["units"].add(str(prop_unit))
+                # фиксируем путь поставщика (для листа без группы)
+                if key == ("unassigned", None):
+                    sup_cat = prod.category_supplier.name if getattr(prod, "category_supplier", None) else None
+                    sup_grp = prod.group_supplier.name if getattr(prod, "group_supplier", None) else None
+                    sup_sub = prod.category_supplier_all.name if getattr(prod, "category_supplier_all", None) else None
+                    parts = [p for p in [sup_cat, sup_grp, sup_sub] if p]
+                    if parts:
+                        bucket["supplier_paths"].add(" / ".join(parts))
 
-                row["Частота упоминания"] = "Частота упоминания"
-                row["Название характеристики"] = "Название характеристики"
-                row["Варианты значений"] = "Варианты значений"
-                row["Единица измерения"] = "Единица измерения"
+                # глобальная агрегация (лист "ВСЕ")
+                g_bucket = global_props_map.get(prop_name)
+                if g_bucket is None:
+                    g_bucket = {"count": 0, "values": set()}
+                    global_props_map[prop_name] = g_bucket
+                g_bucket["count"] += 1
+                if prop_value is not None and prop_value != "":
+                    g_bucket["values"].add(str(prop_value))
+        except Exception as e:
+            tr = traceback.format_exc()
+            error = "error"
+            location = f"create_file_props_in_vendor_props: iterate products (vendor={vendor})"
+            info = f"path={path} product_id={getattr(prod, 'id', None)} err={e} {tr}"
+            try:
+                from apps.logs.utils import error_alert
+                error_alert(error, location, info)
+            except Exception:
+                pass
 
-                writer_nomenk.writerow(row)
-            
-            print(i)
-            prop = props[i]
-            print(prop)
-            for key, value in prop.items():
-                print(key, value)
-                # Глубина (мм) [{'value': ['69.6']}, {'unit_measure': [None]}]
-                
-                row["Название характеристики"] = key
-                for val_i in value:
-                    val_v = val_i.get("value")
-                    val_u = val_i.get("unit_measure")
-                    val_c = val_i.get("count")
-                    if val_c:
-                        row["Частота упоминания"] = val_c
-                    if val_v:
-                        val_v_i = '|| '.join(val_v)
-                        row["Варианты значений"] = val_v_i
-                    if val_u:
-                        if val_u != [None]:
-                            val_u_i = '|| '.join(val_u)
-                            row["Единица измерения"] = val_u_i
-                writer_nomenk.writerow(row)        
+    print(f"[summary] листов сформировано: {len(sheets_data)}")
+    for k, v in sheet_titles.items():
+        print(f"  [sheet] key={k} title='{v}' props={len(sheets_data.get(k, {}))}")
+
+    # создаём XLSX c листами по категориям/группам и сортировкой по убыванию частоты
+    wb = Workbook()
+    used_titles = set()
+
+    def sanitize_sheet_title(title):
+        # сократить каждое слово до 4 символов и разделить точками (без пробелов)
+        short = '.'.join([w[:4] for w in re.split(r"\s+", title.strip()) if w])
+        # запрещённые символы : \ / ? * [ ]
+        short = re.sub(r"[:\\/\?\*\[\]]", "-", short)
+        # обрежем до 31 символа
+        base = short[:31]
+        # обеспечим уникальность
+        candidate = base
+        idx = 1
+        while candidate in used_titles or candidate == "Sheet":
+            suffix = f"_{idx}"
+            candidate = (base[: 31 - len(suffix)]) + suffix
+            idx += 1
+        used_titles.add(candidate)
+        return candidate
+
+    # удалим дефолтный лист, если будем создавать свои
+    default_ws = wb.active
+
+    any_created = False
+    for key, props_map in sheets_data.items():
+        try:
+            # если на листе нет строк для записи — пропускаем создание листа
+            if not props_map:
+                continue
+            # сортировка по убыванию частоты заранее, чтобы знать кол-во строк
+            sorted_items = sorted(
+                props_map.items(), key=lambda kv: kv[1]["count"], reverse=True
+            )
+            if len(sorted_items) == 0:
+                continue
+
+            title = sheet_titles.get(key, "не распределено")
+            sheet_name = sanitize_sheet_title(title)
+            if sheet_name != title:
+                print(f"[worksheet] sanitized title: '{title}' -> '{sheet_name}'")
+            ws = wb.create_sheet(title=sheet_name)
+            any_created = True
+
+            # первая строка: количество товаров на листе + полное название категории/группы
+            ws.append(["Всего товаров", sheet_product_counts.get(key, 0), title])
+            # заголовки
+            ws.append(fieldnames_nomenclature_written)
+
+            print(f"  [worksheet] '{sheet_name}' строк для записи: {len(sorted_items)}")
+
+            for prop_name, agg in sorted_items:
+                supplier_path_cell = ""
+                if key == ("unassigned", None):
+                    supplier_path_cell = " || ".join(sorted(agg.get("supplier_paths", set()))) if agg.get("supplier_paths") else ""
+                # список других категорий/групп, где встречается эта характеристика
+                other_keys = prop_presence.get(prop_name, set())
+                other_titles = [sheet_titles.get(k, str(k)) for k in other_keys if k != key]
+                others_cell = " || ".join(sorted(other_titles)) if other_titles else ""
+                # сортировка значений по возрастанию (числа по числовому возрастанию, остальное — по алфавиту)
+                values_cell = ""
+                if agg["values"]:
+                    vals_list = list(agg["values"])
+                    def _val_sort_key(v):
+                        s = str(v)
+                        try:
+                            return (0, float(s.replace(",", ".")))
+                        except Exception:
+                            return (1, s)
+                    vals_sorted = sorted(vals_list, key=_val_sort_key)
+                    values_cell = "|| ".join([str(v) for v in vals_sorted])
+                row = [
+                    agg["count"],
+                    prop_name,
+                    values_cell,
+                    "|| ".join(sorted(agg["units"])) if agg["units"] else "",
+                    "да" if len(prop_presence.get(prop_name, set())) > 1 else "",
+                    others_cell,
+                    supplier_path_cell,
+                ]
+                ws.append(row)
+        except Exception as e:
+            tr = traceback.format_exc()
+            error = "error"
+            location = f"create_file_props_in_vendor_props: build sheet (vendor={vendor})"
+            info = f"path={path} key={key} err={e} {tr}"
+            try:
+                from apps.logs.utils import error_alert
+                error_alert(error, location, info)
+            except Exception:
+                pass
+
+    # Добавляем лист "ВСЕ" c общей сводкой по вендору
+    if global_props_map:
+        ws_all = wb.create_sheet(title=sanitize_sheet_title("ВСЕ"))
+        any_created = True
+        # заголовки только из 3 полей
+        ws_all.append(["Частота упоминания", "Название характеристики", "Варианты значений"])
+        # сортировка по убыванию частоты
+        sorted_global = sorted(global_props_map.items(), key=lambda kv: kv[1]["count"], reverse=True)
+        for prop_name, agg in sorted_global:
+            # сортировка значений по возрастанию (числа по числовому возрастанию, остальное — по алфавиту)
+            values_cell = ""
+            if agg["values"]:
+                vals_list = list(agg["values"])
+                def _val_sort_key(v):
+                    s = str(v)
+                    try:
+                        return (0, float(s.replace(",", ".")))
+                    except Exception:
+                        return (1, s)
+                vals_sorted = sorted(vals_list, key=_val_sort_key)
+                values_cell = "|| ".join([str(v) for v in vals_sorted])
+            ws_all.append([
+                agg["count"],
+                prop_name,
+                values_cell,
+            ])
+
+    # если не было создано ни одного листа (например, нет товаров) — используем дефолтный
+    if any_created:
+        wb.remove(default_ws)
+        print("[worksheet] удалён дефолтный лист 'Sheet'")
+
+    try:
+        wb.save(path)
+        print(f"[done] Файл сформирован: {path}")
+    except Exception as e:
+        print("[error] Ошибка сохранения файла:", e)
+        tr = traceback.format_exc()
+        error = "error"
+        location = f"create_file_props_in_vendor_props: save workbook (vendor={vendor})"
+        info = f"path={path} err={e} {tr}"
+        try:
+            from apps.logs.utils import error_alert
+            error_alert(error, location, info)
+        except Exception:
+            pass
 
 
 

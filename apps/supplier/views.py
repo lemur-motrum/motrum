@@ -164,12 +164,38 @@ def add_iek(request):
     # bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    prompower_api()
+    
+    
+    
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
     return render(request, "supplier/supplier.html", context)
 
+
+def create_xlsx_props_vendor(request):
+    
+    def background_task():
+        items = [
+        # {"path" : "props_file/veda.xlsx", "name": "veda", "name-supplier": None},
+        {"path": "props_file/delta.xlsx", "name": "delta", "name-supplier": "delta"},
+        {"path": "props_file/emas.xlsx", "name": "emas", "name-supplier": "emas"},
+        # {"path": "props_file/iek.xlsx", "name": "iek", "name-supplier": None},
+        {"path": "props_file/oni.xlsx", "name": "oni", "name-supplier": "iek"},
+        {"path": "props_file/optimus.xlsx", "name": "optimus", "name-supplier": "optimus-drive"},
+        {"path": "props_file/prompower.xlsx", "name": "prompower", "name-supplier": None},
+        {"path": "props_file/unimat.xlsx", "name": "unimat", "name-supplier": None},
+    ]
+        for item in items:
+            create_file_props_in_vendor_props(item["path"], item["name"], item["name-supplier"])
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
 
 def prompower_prod_for_1c(request):
     def background_task():

@@ -76,21 +76,17 @@
                 <div class="article_wrapper">
                     <div class="product_article">Артикул: {{ product.article }}</div>
                     <div class="product_article_vendor">Артикул производителя: {{ product.article_supplier }}</div>
-                    
                     {% if product.vendor %}
-                        <div class="product_vendor">Производитель: 
-                            {% if product.vendor.name_web  %}
+                        <div class="product_vendor">
+                            Производитель:
+                            {% if product.vendor.name_web %}
                                 {{ product.vendor.name_web }}
                             {% else %}
-                                {{ product.vendor.name}}
+                                {{ product.vendor.name }}
                             {% endif %}
                         </div>
                     {% endif %}
-
                 </div>
-                
-                    
-                
                 <div class="product_description">
                     {% if product.description %}
                         {{ product.description|striptags }}
@@ -117,22 +113,19 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                        
                             {# Теперь характеристики мотрум, сгруппированные по названию #}
                             {% for name, values in all_properties.motrum.items %}
                                 <div class="property">
                                     <div class="property_name">{{ name }}</div>
                                     <div class="property_description">
                                         {% for value in values %}
-                                            {{ value }}{% if not forloop.last %}, {% endif %}
+                                            {{ value }}
+                                            {% if not forloop.last %},{% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
                             {% endfor %}
-                        
-                            {% if not all_properties.properties and not all_properties.motrum %}
-                                -
-                            {% endif %}
+                            {% if not all_properties.properties and not all_properties.motrum %}-{% endif %}
                         </div>
                     </div>
                 </div>

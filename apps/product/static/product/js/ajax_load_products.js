@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let minValue;
     let searchText = urlParams.get("search_text");
     let priceInputsArray = [0, 0];
+    let charsCategory = [];
 
     const loader = catalogWrapper.querySelector(".loader");
     const catalogContainer = catalogWrapper.querySelector(
@@ -107,6 +108,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const charsContent = document.querySelector(".chars_content");
     if (charsContent) {
+      const longValues = charsContent.querySelectorAll(".char_values_long");
+
+      longValues.forEach((longValueAccordion) => {
+        setMinHeigthInAccordeon(longValueAccordion, 3);
+      });
+
       new Accordion(".chars_content", {
         elementClass: "char_values_long",
         triggerClass: "add_more_btn",
@@ -117,6 +124,20 @@ window.addEventListener("DOMContentLoaded", () => {
       new Accordion(".chars_content", {
         elementClass: "accordion_head",
         triggerClass: "filter_arrow_title",
+        panelClass: "char_values",
+        showMultiple: false,
+      });
+    }
+
+    const accordionContainer = document.querySelector(
+      ".accordeon_brand_char_values"
+    );
+    if (accordionContainer) {
+      setMinHeigthInAccordeon(accordionContainer, 5);
+
+      new Accordion(".accordeon_brand_char_values", {
+        elementClass: "brand_chars_content",
+        triggerClass: "add_more_btn",
         panelClass: "char_values",
         showMultiple: false,
       });
@@ -201,8 +222,8 @@ window.addEventListener("DOMContentLoaded", () => {
         search_text: searchText ? searchText : "",
         chars:
           charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-        chars_category:["kollaborativnyie-robotyi","programmnoe-obespechenie","istochniki-pitaniya"], 
-        };
+        chars_category: charsCategory,
+      };
       let csrfToken = getCookie("csrftoken");
       let params = new URLSearchParams(data);
 
@@ -260,10 +281,8 @@ window.addEventListener("DOMContentLoaded", () => {
         search_text: searchText ? searchText : "",
         chars:
           charactiristics.length > 0 ? JSON.stringify(charactiristics) : [],
-        chars_category:["kollaborativnyie-robotyi","programmnoe-obespechenie","istochniki-pitaniya"],
+        chars_category: charsCategory,
       };
-      
-
 
       let params = new URLSearchParams(data);
 
@@ -376,6 +395,26 @@ window.addEventListener("DOMContentLoaded", () => {
     window.onload = () => {
       const pageGetParam = urlParams.get("page");
       const priceGetParam = urlParams.get("price");
+      const charsGetParam = urlParams.get("chars_category");
+
+      if (charsGetParam) {
+        charsCategory = charsGetParam.split(",");
+        const charValues = document.querySelectorAll(".category_chars_value");
+        charValues.forEach((charValue) => {
+          let countQuantity = 0;
+          charValue.setAttribute("data-quantity", countQuantity);
+
+          const slug = charValue.getAttribute("data-categ-item-slug");
+          for (let charsCategoryValue of charsCategory) {
+            if (charsCategoryValue == slug) {
+              charValue.classList.add("checked");
+              charValue.parentNode.prepend(charValue);
+
+              break;
+            }
+          }
+        });
+      }
 
       const slugsElems = document.querySelectorAll("[data-chars-slug]");
       slugsElems.forEach((slugElem) => {
@@ -548,27 +587,63 @@ window.addEventListener("DOMContentLoaded", () => {
           const dataIdValueChars = charValue.getAttribute(
             "data-id-value-chars"
           );
+
+          const dataCategItemSlug = charValue.getAttribute(
+            "data-categ-item-slug"
+          );
+
+          if (charValue.classList.contains("category_chars_value")) {
+            setMinHeigthInAccordeon(charBlock, 5);
+          } else {
+            if (charBlock.classList.contains("char_values_long")) {
+              setMinHeigthInAccordeon(charBlock, 3);
+            }
+          }
+
           charValue.classList.toggle("checked");
           let validate = false;
           if (charValue.classList.contains("checked")) {
             countQuantity += 1;
-            console.log(countQuantity);
             charValue.parentNode.prepend(charValue);
-            if (charactiristics.length > 0) {
-              for (let i = 0; i < charactiristics.length; i++) {
-                if (charactiristics[i]["id"] == dataIdChars) {
-                  charactiristics[i]["values"].push(dataIdValueChars);
-                  validate = true;
+
+            if (charValue.classList.contains("category_chars_value")) {
+              charsCategory.push(dataCategItemSlug);
+              currentUrl.searchParams.set(
+                "chars_category",
+                charsCategory.join(",")
+              );
+            } else {
+              if (charactiristics.length > 0) {
+                for (let i = 0; i < charactiristics.length; i++) {
+                  if (charactiristics[i]["id"] == dataIdChars) {
+                    charactiristics[i]["values"].push(dataIdValueChars);
+                    validate = true;
+                    currentUrl.searchParams.set(
+                      `${slug}`,
+                      charactiristics
+                        .filter((el) => el["id"] == dataIdChars)[0]
+                        ["values"].join(",")
+                    );
+                    break;
+                  }
+                }
+                if (!validate) {
+                  charactiristics.push({
+                    id: dataIdChars,
+                    values: [dataIdValueChars],
+                    is_diapason: false,
+                    min_value: 0,
+                    max_value: 0,
+                  });
+                  validate = false;
                   currentUrl.searchParams.set(
                     `${slug}`,
                     charactiristics
                       .filter((el) => el["id"] == dataIdChars)[0]
                       ["values"].join(",")
                   );
-                  break;
                 }
-              }
-              if (!validate) {
+              } else {
                 charactiristics.push({
                   id: dataIdChars,
                   values: [dataIdValueChars],
@@ -576,29 +651,13 @@ window.addEventListener("DOMContentLoaded", () => {
                   min_value: 0,
                   max_value: 0,
                 });
-                validate = false;
                 currentUrl.searchParams.set(
                   `${slug}`,
                   charactiristics
                     .filter((el) => el["id"] == dataIdChars)[0]
-                    ["values"].join(",")
+                    ["values"].join()
                 );
               }
-            } else {
-              charactiristics.push({
-                id: dataIdChars,
-                values: [dataIdValueChars],
-                is_diapason: false,
-                min_value: 0,
-                max_value: 0,
-              });
-
-              currentUrl.searchParams.set(
-                `${slug}`,
-                charactiristics
-                  .filter((el) => el["id"] == dataIdChars)[0]
-                  ["values"].join()
-              );
             }
           } else {
             countQuantity -= 1;
@@ -608,27 +667,51 @@ window.addEventListener("DOMContentLoaded", () => {
               siblings[originalPosition + 1]
             );
 
-            if (charactiristics.length > 0) {
-              for (let i = 0; i < charactiristics.length; i++) {
-                if (charactiristics[i]["id"] == dataIdChars) {
-                  if (charactiristics[i]["values"].length > 1) {
-                    charactiristics[i]["values"] = charactiristics[i][
-                      "values"
-                    ].filter((el) => el !== dataIdValueChars);
-                    currentUrl.searchParams.set(
-                      `${slug}`,
-                      charactiristics
-                        .filter((el) => el["id"] == dataIdChars)[0]
-                        ["values"].join(",")
+            if (charValue.classList.contains("category_chars_value")) {
+              for (let categoryValue of charsCategory) {
+                if (charsCategory.length > 1) {
+                  if (categoryValue == dataCategItemSlug) {
+                    charsCategory = charsCategory.filter(
+                      (elem) => elem !== dataCategItemSlug
                     );
                     break;
-                  } else {
-                    charactiristics = charactiristics.filter(
-                      (el) => el["id"] !== dataIdChars
-                    );
-                    currentUrl.searchParams.delete(`${slug}`);
-                    filterButton.textContent = "применить фильтры";
-                    break;
+                  }
+                  currentUrl.searchParams.set(
+                    "chars_category",
+                    charsCategory.join(",")
+                  );
+                } else {
+                  charsCategory = charsCategory.filter(
+                    (elem) => elem !== dataCategItemSlug
+                  );
+                  currentUrl.searchParams.delete("chars_category");
+                  filterButton.textContent = "применить фильтры";
+                  break;
+                }
+              }
+            } else {
+              if (charactiristics.length > 0) {
+                for (let i = 0; i < charactiristics.length; i++) {
+                  if (charactiristics[i]["id"] == dataIdChars) {
+                    if (charactiristics[i]["values"].length > 1) {
+                      charactiristics[i]["values"] = charactiristics[i][
+                        "values"
+                      ].filter((el) => el !== dataIdValueChars);
+                      currentUrl.searchParams.set(
+                        `${slug}`,
+                        charactiristics
+                          .filter((el) => el["id"] == dataIdChars)[0]
+                          ["values"].join(",")
+                      );
+                      break;
+                    } else {
+                      charactiristics = charactiristics.filter(
+                        (el) => el["id"] !== dataIdChars
+                      );
+                      currentUrl.searchParams.delete(`${slug}`);
+                      filterButton.textContent = "применить фильтры";
+                      break;
+                    }
                   }
                 }
               }
@@ -728,7 +811,6 @@ window.addEventListener("DOMContentLoaded", () => {
                     `${slug}`,
                     minMaxArrray.join(",")
                   );
-
                   break;
                 }
               }
@@ -873,10 +955,26 @@ window.addEventListener("DOMContentLoaded", () => {
       priceFrom = "";
       priceTo = "";
       charactiristics = [];
-      document.querySelectorAll(".char_value").forEach((el) => {
-        if (el.classList.contains("checked")) {
-          el.classList.remove("checked");
-        }
+      charsCategory = [];
+
+      document.querySelectorAll(".chars_content").forEach((container) => {
+        container.querySelectorAll(".char_value").forEach((el) => {
+          if (el.classList.contains("checked")) {
+            let originalPosition = +el.getAttribute("data-position");
+            el.classList.remove("checked");
+            const parentElem = el.parentElement;
+            const siblings = parentElem.children;
+            parentElem.insertBefore(el, siblings[originalPosition + 1]);
+          }
+
+          if (el.classList.contains("category_chars_value")) {
+            setMinHeigthInAccordeon(container, 5);
+          } else {
+            if (container.classList.contains("vertical")) {
+              setMinHeigthInAccordeon(container, 3);
+            }
+          }
+        });
       });
 
       maxInputPrice.value = "";
@@ -891,6 +989,7 @@ window.addEventListener("DOMContentLoaded", () => {
       urlParams.delete("price");
       urlParams.delete("vendor");
       urlParams.delete("priceDiapazon");
+      urlParams.delete("chars_category");
       checkboxZone.classList.remove("checked");
       const slugsElems = document.querySelectorAll("[data-chars-slug]");
       slugsElems.forEach((slugElem) => {
@@ -968,7 +1067,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       input.addEventListener("input", function (e) {
         validate = true;
-        console.log(minValue, maxValue);
         const currentValue = this.value
           .replace(",", ".")
           .replace(/[^.\d]+/g, "")
@@ -1038,7 +1136,6 @@ window.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           if (e.target.value == inputValue) {
             if (validate) {
-              console.log("Запрос");
               test_serch_chars();
               validate = false;
             }
@@ -1056,6 +1153,38 @@ window.addEventListener("DOMContentLoaded", () => {
       } else {
         input.placeholder = `от ${minValue}`;
       }
+    }
+
+    function setMinHeigthInAccordeon(container, quantityElems) {
+      setTimeout(() => {
+        const charValues = container.querySelector(".char_values");
+        const styles = window.getComputedStyle(charValues);
+        const gapHeight = +styles.rowGap.replace("px", "");
+
+        const charElemsHeightArray = [];
+
+        const charsElems = charValues.querySelectorAll(".char_value");
+        for (let charElem of charsElems) {
+          charElemsHeightArray.push(charElem.getBoundingClientRect().height);
+          if (charElemsHeightArray.length == quantityElems) {
+            break;
+          }
+        }
+
+        const allHeightElems = charElemsHeightArray.reduce(
+          (acc, el) => (acc += el),
+          0
+        );
+
+        const currentHeight =
+          allHeightElems + gapHeight * (charElemsHeightArray.length - 1);
+
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize
+        );
+
+        charValues.style.minHeight = currentHeight / rootFontSize + "rem";
+      }, 300);
     }
   }
 });

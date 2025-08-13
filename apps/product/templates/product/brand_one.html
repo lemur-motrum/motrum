@@ -8,34 +8,26 @@
                 <a href={% url "product:catalog" %}>каталог</a>
             </div>
             <h1>{{ brand.name }}</h1>
-            
             {% if brand.promo_text or brand.img_promo %}
                 <div class="promo_block_container">
-                <div class="promo_block_content">
-                    <div class="promo_block_text" id="promo-text-container">
-                        {% if brand.promo_text %}
-                            <div class="promo_text_content" id="promo-text-content">
-                                {{ brand.promo_text|safe }}
-                            </div>
-                            <div class="promo_text_add_more_btn add_more_btn hide" id="promo-text-btn">
-                            </div>
-                        {% endif %}
+                    <div class="promo_block_content">
+                        <div class="promo_block_text" id="promo-text-container">
+                            {% if brand.promo_text %}
+                                <div class="promo_text_content" id="promo-text-content">{{ brand.promo_text|safe }}</div>
+                                <div class="promo_text_add_more_btn add_more_btn hide" id="promo-text-btn"></div>
+                            {% endif %}
+                        </div>
+                        <div class="promo_block_img">
+                            {% if brand.img_promo %}
+                                <div class="promo_block_img_container">
+                                    <img src="{{ brand.img_promo.url }}" alt="{{ brand.name }}" />
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="promo_block_img">
-                        {% if brand.img_promo %}
-                            <div class="promo_block_img_container">
-                                <img src="{{ brand.img_promo.url }}" alt="{{ brand.name }}">
-                            </div>
-                        {% endif %}
-                    </div>
+                    {% if brand.promo_text %}{% endif %}
                 </div>
-                {% if brand.promo_text %}
-                    
-                {% endif %}
-            </div>
             {% endif %}
-                
-            
             <div class="site_groups_container">
                 <div class="swiper-wrapper">
                     {% for group in another_groups %}
@@ -55,33 +47,39 @@
             <div class="filters_and_products_container">
                 <div class="filter_container">
                     <div class="close_filter_elem_btn">+</div>
-                    
-                        {% if brand_groups_flat %}
-                            <div class="filter_elem brand-category-filter">
-                                <div class="chars_content">
+                    {% if brand_groups_flat %}
+                        <div class="filter_elem char_block_false_diapason brand-category-filter {% if brand_groups_flat|length > 5 %}accordeon_brand_char_values{% endif %}">
+                            <div class="chars_content brand_chars_content">
                                 <div class="filter_title">Категории</div>
-                                
-                                    {% for char_group in brand_groups_flat %}  
-                                    <div class="" data-category-slug="{{char_group.category_slug}} " data-group-slug="{{char_group.group_slug}} 
-                                    
-                                    data-categ-item-slug="{% if char_group.group_slug %}{{char_group.group_slug}}{% else %}{{char_group.category_slug}}{% endif %}">
-                                    
-                                    {% if char_group.group_name %}{{char_group.group_name}}{% else %}{{char_group.category_name}}{% endif %}</div>
-                                        
-                                        <br>
-                                        
+                                <div class="char_values vertical brand_char_values">
+                                    {% for char_group in brand_groups_flat %}
+                                        <div class="char_value category_chars_value"
+                                             data-category-slug="{{ char_group.category_slug }}"
+                                             data-group-slug="{{ char_group.group_slug }}"
+                                             data-categ-item-slug="{% if char_group.group_slug %}{{ char_group.group_slug }}{% else %}{{ char_group.category_slug }}{% endif %}"
+                                             data-id-value-chars="{{ char_group.id }}"
+                                             data-position="{{ forloop.counter0 }}">
+                                            <div class="char_value_checkbox_container">
+                                                <div class="char_value_checkbox"></div>
+                                            </div>
+                                            <div class="char_value_name">
+                                                {% if char_group.group_name %}
+                                                    {{ char_group.group_name }}
+                                                {% else %}
+                                                    {{ char_group.category_name }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     {% endfor %}
-                               
-                                </div>  
+                                </div>
+                                {% if brand_groups_flat|length > 5 %}<div class="add_more_btn"></div>{% endif %}
                             </div>
-                        {% endif %} 
-
-                    
-            
-                    
-                        <div class="filter_elem  price_filter_elem">
+                        </div>
+                    {% endif %}
+                    <div class="filter_elem  price_filter_elem">
                         <div class="filter_title">Цена</div>
-                        <div class="price_content" data-max-price="{{price_max.price__rub_price_supplier__max}}">
+                        <div class="price_content"
+                             data-max-price="{{ price_max.price__rub_price_supplier__max }}">
                             <div class="price_content_wrapper">
                                 <div class="price_content_wrapper_elem">
                                     <input placeholder="от" class="small_price_input" type="text" />
@@ -98,8 +96,7 @@
                             </div>
                         </div>
                     </div>
-                    
-                   <div class="submit_filter_container">
+                    <div class="submit_filter_container">
                         <button class="submit">
                             <div class="small_loader"></div>
                             <div class="submit_button_name">Применить фильтры</div>

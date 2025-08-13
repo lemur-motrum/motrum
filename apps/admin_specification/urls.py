@@ -56,5 +56,10 @@ urlpatterns = [
         views.bitrix_product,
         name="bitrix_product",
     ),
+    path(
+        "save_cart_order/",
+        views.save_cart_order,
+        name="save_cart_order",
+    ),
 ]
 

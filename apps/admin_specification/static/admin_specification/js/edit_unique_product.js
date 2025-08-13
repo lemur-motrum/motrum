@@ -29,26 +29,84 @@ window.addEventListener("DOMContentLoaded", () => {
       const changeFormWrapper = newProduct.querySelector(
         ".change_item_container"
       );
+
       const nameInput = changeFormWrapper.querySelector(
         ".new_item_container_name_input"
       );
       const articleInput = changeFormWrapper.querySelector(
         ".new_item_container_article_input"
       );
-      const select = changeFormWrapper.querySelector(".vendor_select");
-      const supplierSelect = select.querySelector(
-        ".vendor_select__toggle_change"
+      const motrumPriceContainerTitle = changeFormWrapper.querySelector(
+        ".change_input_price_title"
+      );
+      motrumPriceContainerTitle.classList.add("show");
+      // const select = changeFormWrapper.querySelector(".vendor_select");
+      // const supplierSelect = select.querySelector(
+      //   ".vendor_select__toggle_change"
+      // );
+      const vendorInput = changeFormWrapper.querySelector(".vendor_input");
+      const supplierSelect =
+        changeFormWrapper.querySelector(".supplier_select");
+      const supplierSelectToggle = changeFormWrapper.querySelector(
+        ".supplier_select__toggle"
+      );
+      const lotSelect = changeFormWrapper.querySelector(".lot_select");
+      const lotSelectToggle = lotSelect.querySelector(".lot_select__toggle");
+      const newProductError = changeFormWrapper.querySelector(
+        ".add_new_item_in_cart_container_error"
+      );
+      const deliveryDate = changeFormWrapper.querySelector(
+        ".new_item_container_calendar"
+      );
+      const discountInput = changeFormWrapper.querySelector(".discount-input");
+      // discountInput.value = getCurrentPrice(discountInput.value);
+
+      // const options = select.querySelectorAll(".itc-select__options");
+      const changeMotrumPriceInput = changeFormWrapper.querySelector(
+        ".new_item_change_price_motrum"
+      );
+      changeMotrumPriceInput.value = getCurrentPrice(
+        changeMotrumPriceInput.value
       );
 
-      const options = select.querySelectorAll(".itc-select__options");
-
-      options.forEach((el) => {
-        el.onclick = () => {
-          setTimeout(() => {
-            select.classList.remove("itc-select_show");
+      changeMotrumPriceInput.addEventListener("input", function () {
+        const currentValue = this.value
+          .replace(",", ".")
+          .replace(/[^.\d]+/g, "")
+          .replace(/^([^\.]*\.)|\./g, "$1")
+          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+            return a + b + c.slice(0, 2);
           });
-        };
+        changeMotrumPriceInput.value = currentValue;
+        if (changeMotrumPriceInput.value == ".") {
+          e.target.value = "";
+        }
+        if (changeMotrumPriceInput.value == "0") {
+          e.target.value = "";
+        }
       });
+
+      // options.forEach((el) => {
+      //   el.onclick = () => {
+      //     setTimeout(() => {
+      //       select.classList.remove("itc-select_show");
+      //     });
+      //   };
+      // });
+
+      function closeSelectDropdown(select) {
+        const options = select.querySelectorAll(".itc-select__option ");
+
+        options.forEach((el) => {
+          el.onclick = () => {
+            setTimeout(() => {
+              select.classList.remove("itc-select_show");
+            });
+          };
+        });
+      }
+      closeSelectDropdown(supplierSelect);
+      closeSelectDropdown(lotSelect);
 
       const priceOneInput = changeFormWrapper.querySelector(".price_input");
       priceOneInput.value = getCurrentPrice(priceOneInput.value);
@@ -56,10 +114,10 @@ window.addEventListener("DOMContentLoaded", () => {
       const totalCostValue = changeFormWrapper.querySelector(
         ".change_item_container_value_total_cost"
       );
-      getDigitsNumber(
-        totalCostValue,
-        priceOneInput.value * quantityInput.value
-      );
+      // getDigitsNumber(
+      //   totalCostValue,
+      //   priceOneInput.value * quantityInput.value
+      // );
       const saleValue = changeFormWrapper.querySelector(
         ".change_item_container_value_motrum_price"
       );
@@ -84,19 +142,19 @@ window.addEventListener("DOMContentLoaded", () => {
         }, 600);
       };
       inputValidation(priceOneInput);
-      inputValidationQuantity(quantityInput);
+      // inputValidationQuantity(quantityInput);
 
       function changePercent() {
         if (priceOneInput.value && quantityInput.value) {
           getDigitsNumber(
             saleValue,
             (priceOneInput.value / 100) *
-              (100 - salePersentInput.value) *
-              quantityInput.value
+            (100 - salePersentInput.value) *
+            quantityInput.value
           );
         }
       }
-      changePercent();
+      // changePercent();
       salePersentInput.addEventListener("input", function () {
         const currentValue = this.value
           .replace(",", ".")
@@ -121,7 +179,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (salePersentInput.value == ".") {
           salePersentInput.target.value = "";
         }
-        changePercent();
+        // changePercent();
       });
 
       function changeTotalCost(input1, input2) {
@@ -137,35 +195,49 @@ window.addEventListener("DOMContentLoaded", () => {
           if (input2.value) {
             getDigitsNumber(totalCostValue, +input1.value * +input2.value);
           }
-          changePercent();
+          // changePercent();
         });
       }
-      changeTotalCost(priceOneInput, quantityInput);
-      changeTotalCost(quantityInput, priceOneInput);
+      // changeTotalCost(priceOneInput, quantityInput);
+      // changeTotalCost(quantityInput, priceOneInput);
 
       changeButton.onclick = () => {
+        let addNewItemInCartButtonValidate = true;
         setPreloaderInButton(changeButton);
         function validate(input) {
           if (!input.value || input.value.trim().length === 0) {
-            input.style.border = "0.063rem solid red";
-            hidePreloaderAndEnabledButton(changeButton);
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
           }
         }
+        function inputValidateVendor(input) {
+          let v = input.getAttribute("vendor_value")
+          if (!v || v.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
+          }
+        }
+        // setPreloaderInButton(changeButton);
+
+
         validate(nameInput);
         validate(articleInput);
         validate(priceOneInput);
-        validate(quantityInput);
-        if (!supplierSelect.getAttribute("value")) {
-          setPreloaderInButton(changeButton);
-          supplierSelect.style.border = "0.063rem solid red";
+        validate(supplierSelectToggle);
+        inputValidateVendor(vendorInput);
+        validate(lotSelectToggle);
+
+        if (addNewItemInCartButtonValidate == false) {
+          changeButton.disabled = false;
+          changeButton.innerHTML = "";
+          changeButton.textContent = "Изменить";
         }
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOneInput.value &&
-          quantityInput.value &&
-          supplierSelect.getAttribute("value")
-        ) {
+        // // validate(quantityInput);
+        // if (!vendorInput.getAttribute("vendor_value")) {
+        //   setPreloaderInButton(changeButton);
+        //   vendorInput.style.border = "0.063rem solid red";
+        // }
+        if (addNewItemInCartButtonValidate === true) {
           const cartId = getCookie("cart");
           const objData = {
             product: null,
@@ -173,11 +245,16 @@ window.addEventListener("DOMContentLoaded", () => {
             product_new_article: articleInput.value,
             product_new_price: +priceOneInput.value,
             cart: +cartId,
-            quantity: +quantityInput.value,
+            // quantity: +quantityInput.value,
             product_new_sale_motrum: salePersentInput.value
               ? salePersentInput.value
               : null,
-            vendor: supplierSelect.getAttribute("value"),
+            vendor: vendorInput.getAttribute("vendor_value"),
+            supplier: supplierSelectToggle.getAttribute("value"),
+            lot: lotSelectToggle.getAttribute("value"),
+            date_delivery: deliveryDate.value,
+            // sale_client: discountInput.value,
+            product_price_motrum: changeMotrumPriceInput.value,
           };
           const data = JSON.stringify(objData);
           fetch(`/api/v1/cart/${productId}/upd-product-new/`, {
@@ -191,9 +268,26 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               if (response.status == 200) {
                 window.location.reload();
+              } else if (response.status == 409) {
+                return response.json();
               } else {
                 setErrorModal();
                 throw new Error("Ошибка");
+              }
+            })
+            .then((response) => {
+              if (response.status == "product_in_okt") {
+                hidePreloaderAndEnabledButton(changeButton);
+                showErrorValidation(
+                  "Данный товар уже есть в ОКТ",
+                  newProductError
+                );
+              } else if (response.status == "product_in_cart") {
+                hidePreloaderAndEnabledButton(changeButton);
+                showErrorValidation(
+                  "Товар с таким артикулом уже есть в корзине",
+                  newProductError
+                );
               }
             })
             .catch((error) => console.error(error));

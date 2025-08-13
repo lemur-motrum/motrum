@@ -567,130 +567,12 @@ def prompower_api():
             finally:
                 continue
 
-    def add_products_promo_group():
-        url = "https://prompower.ru/api/prod/getProducts"
-        payload = json.dumps(
-            {
-                "email": os.environ.get("PROMPOWER_API_EMAIL"),
-                "key": os.environ.get("PROMPOWER_API_KEY"),
-            }
-        )
-        headers = {
-            "Content-type": "application/json",
-            "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
-        }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-        data = response.json()
-
-        # vendor = Vendor.objects.filter(supplier=prompower)
-        vat_catalog = Vat.objects.get(name="20")
-        vat_catalog_int = int(vat_catalog.name)
-        currency = Currency.objects.get(words_code="RUB")
-        base_adress = "https://prompower.ru"
-        vendori = Vendor.objects.get(slug="prompower")
-        vendor_item = vendori
-
-        i = 0
-        for data_item in data:
-
-            try:
-                i += 1
-                if data_item["article"] != None and data_item["article"] == "PD310A420K":
-                    print("!!!!!!!!!!!!!!!!number", i)
-                    # основная инфа
-                    article_suppliers = data_item["article"]
-                    print(article_suppliers)
-                    name = data_item["title"]
-                    description = data_item["description"]
-                    promo_groupe = data_item["pg"]
-                    promo_groupe_okt = SupplierPromoGroupe.objects.get_or_create(
-                        name=promo_groupe,
-                        supplier=prompower,
-                        vendor=vendori,
-                    )
-                    print("promo_groupe_okt", promo_groupe_okt[0])
-
-                    if "categoryId" in data_item:
-
-                        category_all = data_item["categoryId"]
-                        if category_all != 35:
-                            categ = get_category_prompower(
-                                prompower, vendori, category_all
-                            )
-                        else:
-                            categ = None
-                    else:
-                        categ = None
-                        
-                    price_supplier = int(data_item["price"])
-                    # если товар без категории и 0 цена не сохранять
-                    if price_supplier != "0" and categ != None:
-                        price_supplier = price_supplier + (price_supplier / 100 * NDS)
-                        try:
-                            # если товар есть в бд
-                            article = Product.objects.get(
-                                supplier=prompower,
-                                vendor=vendori,
-                                article_supplier=article_suppliers,
-                            )
-                            article.promo_groupe = promo_groupe_okt[0]
-                            article._change_reason = "Автоматическое"
-                            article.save()
-
-                        except Product.DoesNotExist:
-                            # если товара нет в бд
-                            pass
-
-            except Exception as e:
-                print(e)
-                tr = traceback.format_exc()
-                error = "file_api_error"
-                location = "Загрузка фаилов Prompower2"
-                info = f"ошибка при чтении товара артикул2: {data_item["article"]}. Тип ошибки:{e}{tr}"
-                e = error_alert(error, location, info)
-
-            finally:
-                continue
-    
-    
-    def upd_document_pp():
-        prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False, product__article_supplier="PD310A4100K").distinct('link')
-        for prod_d in prod_doc:
-           
-            print(prod_d.document)
-            local_file_path  = prod_d.document.path
-            print(local_file_path)
-            if os.path.isfile(local_file_path):
-                local_file_size = os.path.getsize(local_file_path)  # в байтах
-            else:
-                local_file_size = None
-                
-            print("local_file_size",local_file_size)
-
-            url = prod_d.link
-            response = requests.head(url, allow_redirects=True)
-            remote_file_size = int(response.headers.get('content-length', 0))
-            
-            if local_file_size is not None and remote_file_size > 0:
-                if local_file_size == remote_file_size:
-                    print("Файлы одинакового размера")
-                else:
-                    print("Размеры отличаются")# в байтах 
-                  
-                    r = requests.get(url, stream=True)
-                    with open(os.path.join(local_file_path), "wb") as ofile:
-                        ofile.write(r.content)  
-            else:
-                prod_d.hide = True
-                prod_d.save()
-                print("local_file_size is not None and remote_file_size > 0")    
-    
     add_category_groupe()
     add_category()
     add_products()
-    add_products_promo_group()
-    upd_document_pp()
+    # add_products_promo_group()
+    # upd_document_pp()
 
 
 def export_prompower_prod_for_1c():
@@ -736,4 +618,156 @@ def pp_aup_doc_name():
         result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc.link)
         doc.name = result_name
         doc.save()
+
     
+def upd_document_pp():
+    
+    prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False).distinct('link').iterator(chunk_size=50)
+    for prod_d in prod_doc:
+        try:
+        
+
+            local_file_path  = prod_d.document.path
+
+            if os.path.isfile(local_file_path):
+                local_file_size = os.path.getsize(local_file_path)  # в байтах
+            else:
+                local_file_size = None
+            
+            url = prod_d.link
+            response = requests.head(url, allow_redirects=True)
+            remote_file_size = int(response.headers.get('content-length', 0))
+            
+            if local_file_size is not None and remote_file_size > 0:
+                if local_file_size == remote_file_size:
+                    print("Файлы одинакового размера")
+                else:
+                    print("Размеры отличаются")# в байтах 
+                
+                    r = requests.get(url, stream=True)
+                    with open(os.path.join(local_file_path), "wb") as ofile:
+                        ofile.write(r.content)  
+            else:
+                prod_d.hide = True
+                prod_d.save()
+                print("local_file_size is not None and remote_file_size > 0")    
+                
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Загрузка фаилов Prompower -upd_document_pp"
+            info = f" {prod_d}. Тип ошибки:{e}{tr}"
+            e = error_alert(error, location, info)
+        finally:
+            # --- ОЧИСТКА ПАМЯТИ ---
+            
+            if 'response' in locals():
+                try:
+                    response.close()
+                except Exception:
+                    pass
+                del response
+            if 'r' in locals():
+                try:
+                    r.close()
+                except Exception:
+                    pass
+                del r
+            if 'url' in locals():
+                del url
+            if 'local_file_path' in locals():
+                del local_file_path
+            if 'local_file_size' in locals():
+                del local_file_size
+            if 'remote_file_size' in locals():
+                del remote_file_size
+
+
+def add_products_promo_group():
+    prompower = Supplier.objects.get(slug="prompower")
+    url = "https://prompower.ru/api/prod/getProducts"
+    payload = json.dumps(
+        {
+            "email": os.environ.get("PROMPOWER_API_EMAIL"),
+            "key": os.environ.get("PROMPOWER_API_KEY"),
+        }
+    )
+    headers = {
+        "Content-type": "application/json",
+        "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = response.json()
+
+    # vendor = Vendor.objects.filter(supplier=prompower)
+    vat_catalog = Vat.objects.get(name="20")
+    vat_catalog_int = int(vat_catalog.name)
+    currency = Currency.objects.get(words_code="RUB")
+    base_adress = "https://prompower.ru"
+    vendori = Vendor.objects.get(slug="prompower")
+    vendor_item = vendori
+
+    i = 0
+    for data_item in data:
+
+        try:
+            i += 1
+            if data_item["article"] != None:
+                print("!!!!!!!!!!!!!!!!number", i)
+                # основная инфа
+                article_suppliers = data_item["article"]
+                print(article_suppliers)
+                name = data_item["title"]
+                description = data_item["description"]
+                promo_groupe = data_item["pg"]
+                promo_groupe_okt = SupplierPromoGroupe.objects.get_or_create(
+                    name=promo_groupe,
+                    supplier=prompower,
+                    vendor=vendori,
+                )
+                print("promo_groupe_okt", promo_groupe_okt[0])
+
+                if "categoryId" in data_item:
+
+                    category_all = data_item["categoryId"]
+                    if category_all != 35:
+                        categ = get_category_prompower(
+                            prompower, vendori, category_all
+                        )
+                    else:
+                        categ = None
+                else:
+                    categ = None
+                    
+                price_supplier = int(data_item["price"])
+                # если товар без категории и 0 цена не сохранять
+                if price_supplier != "0" and categ != None:
+                    price_supplier = price_supplier + (price_supplier / 100 * NDS)
+                    try:
+                        # если товар есть в бд
+                        article = Product.objects.get(
+                            supplier=prompower,
+                            vendor=vendori,
+                            article_supplier=article_suppliers,
+                        )
+                        article.promo_groupe = promo_groupe_okt[0]
+                        article._change_reason = "Автоматическое"
+                        article.save()
+
+                    except Product.DoesNotExist:
+                        # если товара нет в бд
+                        pass
+
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Загрузка фаилов Prompower2"
+            info = f"ошибка при чтении товара артикул2: {data_item["article"]}. Тип ошибки:{e}{tr}"
+            e = error_alert(error, location, info)
+
+        finally:
+            continue
+

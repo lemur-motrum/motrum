@@ -83,6 +83,7 @@ def crete_pdf_specification(
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
     from apps.core.models import TypeDelivery
+    from django.db.models import Prefetch, OuterRef, Case, When, F
 
     try:
         print("create document spesif")
@@ -93,7 +94,11 @@ def crete_pdf_specification(
         specifications = Specification.objects.get(id=specification)
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
+        ).order_by(
+            Case(When(id_cart__isnull=False, then=0), default=1),
+            F("id_cart__order"),
+            "id",
+        )
         type_delivery = TypeDelivery.objects.get(id=type_delivery)
         type_delivery_name = type_delivery.text
         kpp_req = account_requisites.requisitesKpp
@@ -287,7 +292,12 @@ def crete_pdf_specification(
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
             except Stock.DoesNotExist:
-                product_stock = "шт"
+                produc_cart = product.id_cart
+                if produc_cart and produc_cart.lot:
+                    product_stock = produc_cart.lot.name_shorts
+                else:
+                    product_stock = "шт"
+
             date_delivery = product.date_delivery
             if date_delivery and date_delivery > date_ship:
                 date_ship = date_delivery
@@ -300,13 +310,16 @@ def crete_pdf_specification(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
-                
+
                 product_name_st = product.product.name
-                if product.product.supplier.slug == "prompower" and product.product.description:
+                if (
+                    product.product.supplier.slug == "prompower"
+                    and product.product.description
+                ):
                     product_name_st = product.product.description
-                    
+
                 product_name_str = str(product_name_st)
-                
+
                 if product.product.in_view_website:
                     product_name = (
                         Paragraph(f"{product_name_str}", norm10_left_style),
@@ -470,12 +483,11 @@ def crete_pdf_specification(
         text_motrum_ur = f"{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>"
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
         text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
-        
-        
+
         if requisites:
             text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {kpp_req.legal_post_code}, г. {kpp_req.legal_city}, {kpp_req.legal_address}<br></br><br></br>"
             text_buyer_post = f"Почтовый адрес: {kpp_req.postal_post_code}, г. {kpp_req.postal_city}, {kpp_req.postal_address}<br></br><br></br>"
-            
+
             if kpp_req.kpp:
                 text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
             else:
@@ -697,8 +709,10 @@ def save_shipment_doc(link, document_shipment):
         name_doc,
     )
 
+
 def save_nomenk_doc(link):
     from apps.core.utils import check_spesc_directory_exist, transform_date
+
     try:
         directory = "{0}/{1}/{2}".format(
             MEDIA_ROOT,
@@ -708,9 +722,9 @@ def save_nomenk_doc(link):
 
         if not os.path.exists(directory):
             os.makedirs(directory)
-        
+
         current_date = datetime.date.today().isoformat()
-        
+
         name = f"склады_{current_date}.xlsx"
         print(name)
         # file_last_list = filename.split(".")
@@ -723,14 +737,14 @@ def save_nomenk_doc(link):
         r = requests.get(link, stream=True)
         with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
             ofile.write(r.content)
-            
+
         path = "{0}/{1}/{2}".format(
             "ones",
             "nomenk",
             name_doc,
         )
-        return (path,None,None)
-    
+        return (path, None, None)
+
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -738,5 +752,4 @@ def save_nomenk_doc(link):
         location = "Получение\сохранение данных o складов 1с "
         info = f"Получение\сохранение данных o складов 1с . Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
-        return ("ERROR",tr,e)
-        
+        return ("ERROR", tr, e)

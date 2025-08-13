@@ -110,7 +110,7 @@ app.conf.beat_schedule = {
     
     "add_veda_parse_web": {
         "task": "apps.supplier.tasks.add_veda_parse_web",
-        "schedule":  crontab(minute=10, hour=21, day_of_month=14),
+        "schedule":  crontab(minute=10, hour=21, day_of_month=13),
     },
     
     # "add_veda_parse_web": {

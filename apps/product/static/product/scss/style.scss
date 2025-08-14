@@ -763,8 +763,8 @@
                 justify-content: center;
               }
               .checkbox {
-                width: 0.85rem;
-                height: 0.85rem;
+                width: 0.78rem;
+                height: 0.78rem;
                 border-radius: 0.313rem;
                 border: 0.094rem solid #000;
                 background-color: #fff;
@@ -785,8 +785,8 @@
                 &.checked {
                   border: 0.094rem solid #95bad4;
                   .checker {
-                    width: 0.85rem;
-                    height: 0.85rem;
+                    width: 0.78rem;
+                    height: 0.78rem;
                     background-color: #95bad4;
                     border-radius: 0.113rem;
                     @media screen and (max-width: 576px) {
@@ -836,11 +836,11 @@
                   .char_value {
                     display: flex;
                     gap: 0.5rem;
-                    align-items: center;
+                    align-items: flex-start;
                     cursor: pointer;
                     .char_value_checkbox_container {
-                      width: 0.85rem;
-                      height: 0.85rem;
+                      width: 0.78rem;
+                      height: 0.78rem;
                       border-radius: 0.313rem;
                       border: 0.094rem solid #000;
                       background-color: #fff;
@@ -848,6 +848,7 @@
                       display: flex;
                       align-items: center;
                       justify-content: center;
+                      margin-top: 0.05rem;
                       @media screen and (max-width: 576px) {
                         width: 0.8rem;
                         height: 0.8rem;
@@ -863,8 +864,8 @@
                       .char_value_checkbox_container {
                         border: 0.094rem solid #95bad4;
                         .char_value_checkbox {
-                          width: 0.85rem;
-                          height: 0.85rem;
+                          width: 0.78rem;
+                          height: 0.78rem;
                           background-color: #95bad4;
                           border-radius: 0.113rem;
                         }
@@ -968,7 +969,7 @@
                     flex-direction: column;
                     gap: 0.5rem;
                     .char_value {
-                      align-items: center;
+                      align-items: flex-start;
                       .char_value_name {
                         width: 90%;
                       }
@@ -977,11 +978,16 @@
                 }
                 &.char_values_long {
                   .char_values {
-                    min-height: 6.5rem;
                     overflow: hidden;
                     margin-left: 0.1rem;
                     @media screen and (max-width: 576px) {
                       min-height: 5.5rem;
+                    }
+                    .char_value {
+                      align-items: flex-start;
+                      .char_value_checkbox_container {
+                        margin-top: 0.1rem;
+                      }
                     }
                   }
 
@@ -1087,184 +1093,213 @@
             .chars_content {
               display: flex;
               flex-direction: column;
-              
-                .char_values {
-                  width: 18.313rem;
-                  display: grid;
-                  grid-template-columns: 1fr 1fr 1fr;
-                  gap: 0.5rem;
-                  @media screen and (max-width: 576px) {
-                    width: 100%;
-                  }
+              .char_values {
+                width: 18.313rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.5rem;
+                @media screen and (max-width: 576px) {
+                  width: 100%;
+                }
+                &.brand_char_values {
+                  display: flex;
+                  flex-direction: column;
                   .char_value {
-                    display: flex;
-                    gap: 0.5rem;
-                    align-items: center;
-                    cursor: pointer;
+                    align-items: flex-start;
                     .char_value_checkbox_container {
-                      width: 0.85rem;
-                      height: 0.85rem;
-                      border-radius: 0.313rem;
-                      border: 0.094rem solid #000;
-                      background-color: #fff;
-                      transition: 0.6s;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      @media screen and (max-width: 576px) {
-                        width: 0.8rem;
-                        height: 0.8rem;
-                      }
-                      .char_value_checkbox {
-                        width: 0;
-                        height: 0;
-                        background-color: #95bad4;
-                        transition: 0.6s;
-                      }
-                    }
-                    &.checked {
-                      .char_value_checkbox_container {
-                        border: 0.094rem solid #95bad4;
-                        .char_value_checkbox {
-                          width: 0.85rem;
-                          height: 0.85rem;
-                          background-color: #95bad4;
-                          border-radius: 0.113rem;
-                        }
-                      }
+                      margin-top: 0.1rem;
                     }
                     .char_value_name {
-                      font-weight: 300;
-                      font-size: 0.938rem;
-                      @media screen and (max-width: 576px) {
-                        font-size: 0.75rem;
-                      }
-                    }
-                    &.range_chars_value {
-                      width: 18.313rem;
-                      height: 3.563rem;
-                      border: 0.094rem solid #000;
-                      border-radius: 2rem;
-                      display: flex;
-                      justify-content: space-between;
-                      padding: 0.938rem 1.094rem;
-                      box-sizing: border-box;
+                      width: 90%;
                       @media screen and (max-width: 576px) {
                         width: 100%;
-                        height: 2.5rem;
-                        padding: 0.5rem 1rem;
-                      }
-                      .range_chars_value_input_container {
-                        width: 7rem;
-                        display: flex;
-                        gap: 0.5rem;
-                        font-size: 1.125rem;
-                        font-weight: 300;
-                        input {
-                          width: 100%;
-                          border: none;
-                          font-size: 1.14rem;
-                          font-weight: 300;
-                          font-family: "Nunito", sans-serif;
-                          @media screen and (max-width: 576px) {
-                            font-size: 0.75rem;
-                          }
-                          &:focus {
-                            outline: none;
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-
-                          &::-webkit-input-placeholder {
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            color: #d4d2d3;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-
-                          &::-moz-placeholder {
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            color: #d4d2d3;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-
-                          &:-ms-input-placeholder {
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            color: #d4d2d3;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-
-                          &::-ms-input-placeholder {
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            color: #d4d2d3;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-
-                          &::placeholder {
-                            font-size: 1.125rem;
-                            font-weight: 300;
-                            color: #d4d2d3;
-                            @media screen and (max-width: 576px) {
-                              font-size: 0.75rem;
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                  &.vertical {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                    .char_value {
-                      align-items: center;
-                      .char_value_name {
-                        width: 90%;
                       }
                     }
                   }
                 }
-                &.char_values_long {
-                  .char_values {
-                    min-height: 6.5rem;
-                    overflow: hidden;
-                    margin-left: 0.1rem;
+                .char_value {
+                  display: flex;
+                  gap: 0.5rem;
+                  align-items: flex-start;
+                  cursor: pointer;
+                  .char_value_checkbox_container {
+                    width: 0.78rem;
+                    height: 0.78rem;
+                    border-radius: 0.313rem;
+                    border: 0.094rem solid #000;
+                    background-color: #fff;
+                    transition: 0.6s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     @media screen and (max-width: 576px) {
-                      min-height: 5.5rem;
+                      width: 0.8rem;
+                      height: 0.8rem;
+                    }
+                    .char_value_checkbox {
+                      width: 0;
+                      height: 0;
+                      background-color: #95bad4;
+                      transition: 0.6s;
                     }
                   }
-
-                  .add_more_btn {
+                  &.checked {
+                    .char_value_checkbox_container {
+                      border: 0.094rem solid #95bad4;
+                      .char_value_checkbox {
+                        width: 0.78rem;
+                        height: 0.78rem;
+                        background-color: #95bad4;
+                        border-radius: 0.113rem;
+                      }
+                    }
+                  }
+                  .char_value_name {
+                    font-weight: 300;
+                    font-size: 0.938rem;
+                    @media screen and (max-width: 576px) {
+                      font-size: 0.75rem;
+                    }
+                  }
+                  &.range_chars_value {
                     width: 18.313rem;
+                    height: 3.563rem;
+                    border: 0.094rem solid #000;
+                    border-radius: 2rem;
                     display: flex;
-                    justify-content: center;
-                    gap: 0.1rem;
-                    align-items: center;
-                    font-size: 1.1rem;
-                    text-transform: lowercase;
-                    cursor: pointer;
-                    transition: 0.6s;
-                    color: #000;
-                    position: relative;
+                    justify-content: space-between;
+                    padding: 0.938rem 1.094rem;
+                    box-sizing: border-box;
                     @media screen and (max-width: 576px) {
                       width: 100%;
+                      height: 2.5rem;
+                      padding: 0.5rem 1rem;
                     }
+                    .range_chars_value_input_container {
+                      width: 7rem;
+                      display: flex;
+                      gap: 0.5rem;
+                      font-size: 1.125rem;
+                      font-weight: 300;
+                      input {
+                        width: 100%;
+                        border: none;
+                        font-size: 1.14rem;
+                        font-weight: 300;
+                        font-family: "Nunito", sans-serif;
+                        @media screen and (max-width: 576px) {
+                          font-size: 0.75rem;
+                        }
+                        &:focus {
+                          outline: none;
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+
+                        &::-webkit-input-placeholder {
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          color: #d4d2d3;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+
+                        &::-moz-placeholder {
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          color: #d4d2d3;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+
+                        &:-ms-input-placeholder {
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          color: #d4d2d3;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+
+                        &::-ms-input-placeholder {
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          color: #d4d2d3;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+
+                        &::placeholder {
+                          font-size: 1.125rem;
+                          font-weight: 300;
+                          color: #d4d2d3;
+                          @media screen and (max-width: 576px) {
+                            font-size: 0.75rem;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                &.vertical {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.5rem;
+                  .char_value {
+                    align-items: flex-start;
+                    .char_value_name {
+                      width: 90%;
+                      @media screen and (max-width: 576px) {
+                        width: 100%;
+                      }
+                    }
+                  }
+                }
+              }
+              &.char_values_long {
+                .char_values {
+                  min-height: 6.5rem;
+                  overflow: hidden;
+                  margin-left: 0.1rem;
+                  @media screen and (max-width: 576px) {
+                    min-height: 5.5rem;
+                  }
+                }
+
+                .add_more_btn {
+                  width: 18.313rem;
+                  display: flex;
+                  justify-content: center;
+                  gap: 0.1rem;
+                  align-items: center;
+                  font-size: 1.1rem;
+                  text-transform: lowercase;
+                  cursor: pointer;
+                  transition: 0.6s;
+                  color: #000;
+                  position: relative;
+                  @media screen and (max-width: 576px) {
+                    width: 100%;
+                  }
+                  &::after {
+                    content: "показать еще";
+                    position: absolute;
+                    text-decoration: underline dotted;
+                    top: 50%;
+                    left: 0%;
+                    transform: translate(0%, -50%);
+                  }
+                }
+                &.is-active {
+                  .add_more_btn {
                     &::after {
-                      content: "показать еще";
+                      content: "скрыть";
                       position: absolute;
                       text-decoration: underline dotted;
                       top: 50%;
@@ -1272,78 +1307,112 @@
                       transform: translate(0%, -50%);
                     }
                   }
-                  &.is-active {
-                    .add_more_btn {
-                      &::after {
-                        content: "скрыть";
-                        position: absolute;
-                        text-decoration: underline dotted;
-                        top: 50%;
-                        left: 0%;
-                        transform: translate(0%, -50%);
+                }
+              }
+              &.accordion_head {
+                gap: 0;
+                .filter_arrow_title {
+                  width: 90%;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  cursor: pointer;
+                  @media screen and (max-width: 576px) {
+                    width: 100%;
+                  }
+                  .filter_title {
+                    width: 75%;
+                    line-height: 1.3em;
+                    position: relative;
+                    .count_quantity {
+                      opacity: 0;
+                      position: absolute;
+                      background-color: #95bad4;
+                      color: #fff;
+                      width: 1.25rem;
+                      height: 1.25rem;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      border-radius: 100%;
+                      top: 10%;
+                      left: -10%;
+                      transform: translatey(-50%);
+                      font-size: 0.75rem;
+                      transition: 0.6s;
+                      &.show {
+                        opacity: 1;
                       }
                     }
                   }
+                  .vector {
+                    transition: 0.6s;
+                  }
                 }
-                &.accordion_head {
-                  gap: 0;
+                .char_values {
+                  min-height: 0rem;
+                  overflow: hidden;
+                }
+                &.is-active {
                   .filter_arrow_title {
-                    width: 90%;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    cursor: pointer;
-                    @media screen and (max-width: 576px) {
-                      width: 100%;
-                    }
-                    .filter_title {
-                      width: 75%;
-                      line-height: 1.3em;
-                      position: relative;
-                      .count_quantity {
-                        opacity: 0;
-                        position: absolute;
-                        background-color: #95bad4;
-                        color: #fff;
-                        width: 1.25rem;
-                        height: 1.25rem;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border-radius: 100%;
-                        top: 10%;
-                        left: -10%;
-                        transform: translatey(-50%);
-                        font-size: 0.75rem;
-                        transition: 0.6s;
-                        &.show {
-                          opacity: 1;
-                        }
-                      }
-                    }
                     .vector {
-                      transition: 0.6s;
+                      transform: rotate(180deg);
                     }
                   }
                   .char_values {
-                    min-height: 0rem;
-                    overflow: hidden;
+                    margin-top: 1.3rem;
                   }
-                  &.is-active {
-                    .filter_arrow_title {
-                      .vector {
-                        transform: rotate(180deg);
-                      }
-                    }
-                    .char_values {
-                      margin-top: 1.3rem;
-                    }
-                    .price_checkbox_content {
-                      margin-top: 1.3rem;
+                  .price_checkbox_content {
+                    margin-top: 1.3rem;
+                  }
+                }
+              }
+
+              &.brand_chars_content {
+                display: flex;
+                flex-direction: column;
+                gap: 1.3rem;
+                .brand_char_values {
+                  // min-height: 6.5rem;
+                  overflow: hidden;
+                }
+                .add_more_btn {
+                  width: 18.313rem;
+                  display: flex;
+                  justify-content: center;
+                  gap: 0.1rem;
+                  align-items: center;
+                  font-size: 1.1rem;
+                  text-transform: lowercase;
+                  cursor: pointer;
+                  transition: 0.6s;
+                  color: #000;
+                  position: relative;
+                  @media screen and (max-width: 576px) {
+                    width: 100%;
+                  }
+                  &::after {
+                    content: "показать еще";
+                    position: absolute;
+                    text-decoration: underline dotted;
+                    top: 50%;
+                    left: 0%;
+                    transform: translate(0%, -50%);
+                  }
+                }
+                &.is-active {
+                  .add_more_btn {
+                    &::after {
+                      content: "скрыть";
+                      position: absolute;
+                      text-decoration: underline dotted;
+                      top: 50%;
+                      left: 0%;
+                      transform: translate(0%, -50%);
                     }
                   }
                 }
-              
+              }
             }
           }
         }
@@ -2075,7 +2144,6 @@
       }
     }
   }
-
 }
 .product_one_container {
   margin: 1.625rem 3.125rem 0 3.125rem;
@@ -3015,24 +3083,24 @@
       flex-direction: column; // На мобильных картинка сверху, текст снизу
       gap: 1rem; // Уменьшаем отступ между элементами
     }
-          .promo_block_text {
-        width: 70%;
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-        font-size: 1.125rem !important;
-        font-weight: 300 !important;
-        font-family: "Nunito", sans-serif !important;
-        @media screen and(max-width:576px) {
-          width: 100%; // На мобильных текст занимает всю ширину
-          font-size: 0.75rem !important;
-        }
-      
+    .promo_block_text {
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      font-size: 1.125rem !important;
+      font-weight: 300 !important;
+      font-family: "Nunito", sans-serif !important;
+      @media screen and(max-width:576px) {
+        width: 100%; // На мобильных текст занимает всю ширину
+        font-size: 0.75rem !important;
+      }
+
       .promo_text_content {
         max-height: 6rem; // 4 строки примерно
         overflow: hidden;
         transition: max-height 0.3s ease;
-        
+
         &.expanded {
           max-height: none;
         }
@@ -3101,34 +3169,32 @@
         align-self: center; // Центрируем изображение
         order: -1; // Перемещаем картинку на первое место (сверху)
       }
-      .promo_block_img_container{
+      .promo_block_img_container {
         height: 100%; // Контейнер занимает всю высоту родителя
         width: 100%; // Контейнер занимает всю ширину родителя
         display: flex;
         align-items: center;
         justify-content: center;
-        img{
+        img {
           width: 100%;
           height: 100%; // Изображение занимает всю высоту контейнера
           -o-object-fit: contain; // Изменено на contain чтобы изображение полностью влезало
           object-fit: contain; // Изменено на contain чтобы изображение полностью влезало
         }
       }
-      
-     
     }
   }
-  
+
   .promo_text_add_more_btn {
     align-self: flex-start;
     margin-top: 1rem;
     position: relative;
     cursor: pointer;
-    
+
     &.hide {
       display: none !important;
     }
-    
+
     &::after {
       content: var(--button-text, "Показать еще");
       // position: absolute;
@@ -3142,6 +3208,3 @@
     }
   }
 }
-
-
-

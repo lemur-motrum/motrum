@@ -14,17 +14,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalproductdocument',
             name='document',
-            field=models.TextField(max_length=255, null=True, verbose_name='Документ'),
+            field=models.TextField(max_length=1000, null=True, verbose_name='Документ'),
         ),
         migrations.AlterField(
             model_name='historicalproductdocument',
             name='link',
-            field=models.CharField(max_length=255, null=True, verbose_name='ссылка у поставщика'),
+            field=models.CharField(max_length=1000, null=True, verbose_name='ссылка у поставщика'),
         ),
         migrations.AlterField(
             model_name='historicalproductdocument',
             name='name',
-            field=models.CharField(max_length=255, null=True, verbose_name='Название документа'),
+            field=models.CharField(max_length=1000, null=True, verbose_name='Название документа'),
         ),
         migrations.AlterField(
             model_name='historicalproductdocument',
@@ -34,17 +34,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='productdocument',
             name='document',
-            field=models.FileField(max_length=255, null=True, upload_to=apps.core.utils.get_file_path_add, verbose_name='Документ'),
+            field=models.FileField(max_length=1000, null=True, upload_to=apps.core.utils.get_file_path_add, verbose_name='Документ'),
         ),
         migrations.AlterField(
             model_name='productdocument',
             name='link',
-            field=models.CharField(max_length=255, null=True, verbose_name='ссылка у поставщика'),
+            field=models.CharField(max_length=1000, null=True, verbose_name='ссылка у поставщика'),
         ),
         migrations.AlterField(
             model_name='productdocument',
             name='name',
-            field=models.CharField(max_length=255, null=True, verbose_name='Название документа'),
+            field=models.CharField(max_length=1000, null=True, verbose_name='Название документа'),
         ),
         migrations.AlterField(
             model_name='productdocument',

@@ -25,6 +25,7 @@ dadata==24.10.0
 smsru-api==0.1.7
 sorl-thumbnail==12.11.0
 django_resized==1.0.3
+xlrd==2.0.1
 
 pandas==2.3.1
 

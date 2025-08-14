@@ -15,4 +15,24 @@
     </style>
   {% else %}
   {% endif %}
+  
+  
+{% if request.get_host == "localhost:8000" or request.get_host == "motrum.yuriyzhidkov.ru"%}
+<style>
+  html[data-theme="light"], :root {
+    --background:rgb(105, 27, 44);
+    --secondary:rgb(95, 30, 57);
+    --link-fg:rgb(63, 16, 34);
+    --link-selected-fg:rgb(58, 10, 50);
+  }
+  #content-related {
+    display: none;
+    }
+  #content-start {
+    background:rgb(206, 111, 111);
+    }
+  </style>
+  {% endif %}
+    
+    
 {% endblock extrastyle %}

@@ -12,7 +12,11 @@ from apps import specification, supplier
 from apps.client.models import AccountRequisites, Client, Order, RequisitesOtherKpp
 from apps.core.bitrix_api import get_info_for_order_bitrix
 from apps.core.models import BaseInfo, BaseInfoAccountRequisites, TypeDelivery
-from apps.core.utils import get_price_motrum, save_specification
+from apps.core.utils import (
+    check_delite_product_cart_in_upd_spes,
+    get_price_motrum,
+    save_specification,
+)
 from apps.product.models import (
     Cart,
     CategoryProduct,
@@ -35,7 +39,7 @@ from apps.specification.models import ProductSpecification, Specification
 
 from apps.supplier.models import Supplier
 from apps.user.models import AdminUser
-from project.settings import MEDIA_ROOT
+from project.settings import MEDIA_ROOT, NDS
 from .forms import SearchForm
 from django.db.models import Q, F, OrderBy, Case, When, Value
 from django.db.models.functions import Replace
@@ -472,42 +476,34 @@ def create_specification(request):
     cart = request.COOKIES.get("cart")
     type_save_cookee = request.COOKIES.get("type_save")
     post_data_bx_id = request.COOKIES.get("bitrix_id_order")
-    
+
     # если есть корзина
     if cart != None:
         cart_qs = Cart.objects.get(id=cart)
-        print("cart_qs",cart_qs)
-        if cart_qs.client:
-            discount_client = Client.objects.filter(id=cart_qs.client.id)
 
         product_cart_list = ProductCart.objects.filter(
             cart=cart, product__isnull=False
         ).values_list("product__id")
-
         product_cart_prod = ProductCart.objects.filter(cart=cart, product__isnull=False)
         product_cart = ProductCart.objects.filter(cart=cart)
 
         # изменение спецификации
         if type_save_cookee != "new":
-            # try:
             specification = Specification.objects.get(cart=cart)
             order = Order.objects.get(specification=specification)
             client_req = order.account_requisites
-            requisites_kpp = client_req.requisitesKpp
             requisites = order.requisites
             client_req_all = AccountRequisites.objects.filter(
                 requisitesKpp__requisites=requisites
             )
-           
-            product_specification = ProductSpecification.objects.filter(
-                specification=specification
-            )
-
             mortum_req = BaseInfoAccountRequisites.objects.all().select_related(
                 "requisites"
             )
 
-            title = f"Заказ № {order.id}"
+            product_specification = ProductSpecification.objects.filter(
+                specification=specification
+            )
+
             order = Order.objects.get(specification=specification)
 
             # список товаров без записи в окт которые были в спецификации
@@ -532,6 +528,9 @@ def create_specification(request):
                     product_new_cart=product_cart.filter(id=OuterRef("id_cart")).values(
                         "product_new",
                     ),
+                    quantity_cart=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "quantity",
+                    ),
                     product_new_article_cart=product_cart.filter(
                         id=OuterRef("id_cart")
                     ).values(
@@ -550,17 +549,57 @@ def create_specification(request):
                     ).values(
                         "product_new_sale_motrum",
                     ),
-                    product_prod_in_cart = product_cart.filter(
+                    product_prod_in_cart=product_cart.filter(
                         id=OuterRef("id_cart")
                     ).values(
                         "product",
+                    ),
+                    id_cart_item=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "id",
+                    ),
+                    order=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "order",
+                    ),
+                    price_motrum_cart=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "product_price_motrum",
+                    ),
+                    date_delivery_cart=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "date_delivery",
+                    ),
+                    price_cart=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "product_price",
+                    ),
+                    product_price_motrum=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "product_price_motrum",
+                    ),
+                    product_sale_motrum=product_cart.filter(id=OuterRef("id_cart"))
+                    .values(
+                        "product_sale_motrum",
+                    ),
+                    sale_client=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "sale_client",
+                    ),
+                    sale_marja=product_cart.filter(id=OuterRef("id_cart")).values(
+                        "sale_marja",
+                    ),
+                    date_delivery_first=F("date_delivery"),
+                    price_motrum=Case(
+                        When(sale_motrum=None, then="price_cart"),
+                        When(
+                            sale_motrum__isnull=False,
+                            then=Round(
+                                F("price_cart")
+                                - (F("price_cart") / 100 * F("sale_motrum")),
+                                2,
+                            ),
+                        ),
                     ),
                 )
                 .annotate(
                     price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
-                            then=("product_new_price"),
+                            then=F("product_new_price"),
                         ),
                         When(
                             product_new_sale_motrum__isnull=False,
@@ -569,7 +608,7 @@ def create_specification(request):
                                 - (
                                     F("product_new_price")
                                     / 100
-                                    * (F("product_new_sale_motrum"))
+                                    * F("product_new_sale_motrum")
                                 ),
                                 2,
                             ),
@@ -578,6 +617,11 @@ def create_specification(request):
                 )
                 .order_by("id_product_cart")
             )
+            
+            for item in product_new:
+                print("item", item)
+                print("item.sale_marja", item.sale_marja)
+
             product_new_value_id = product_new.values_list("id_product_cart")
 
             # список товаров без щаписи в окт которые новые еще на записанны
@@ -589,10 +633,11 @@ def create_specification(request):
                 )
                 .exclude(id__in=product_new_value_id)
                 .annotate(
+                    id_cart_item=F("id"),
                     price_motrum=Case(
                         When(
                             product_new_sale_motrum=None,
-                            then=("product_new_price"),
+                            then=F("product_new_price"),
                         ),
                         When(
                             product_new_sale_motrum__isnull=False,
@@ -601,14 +646,14 @@ def create_specification(request):
                                 - (
                                     F("product_new_price")
                                     / 100
-                                    * (F("product_new_sale_motrum"))
+                                    * F("product_new_sale_motrum")
                                 ),
                                 2,
                             ),
                         ),
                     ),
                 )
-                .order_by("id")
+                .order_by("order", "id")
             )
             update_spesif = True
 
@@ -626,7 +671,7 @@ def create_specification(request):
                         price_motrum=Case(
                             When(
                                 product_new_sale_motrum=None,
-                                then=("product_new_price"),
+                                then=F("product_new_price"),
                             ),
                             When(
                                 product_new_sale_motrum__isnull=False,
@@ -635,7 +680,7 @@ def create_specification(request):
                                     - (
                                         F("product_new_price")
                                         / 100
-                                        * (F("product_new_sale_motrum"))
+                                        * F("product_new_sale_motrum")
                                     ),
                                     2,
                                 ),
@@ -695,7 +740,7 @@ def create_specification(request):
                         price_motrum=Case(
                             When(
                                 product_new_sale_motrum=None,
-                                then=("product_new_price"),
+                                then=F("product_new_price"),
                             ),
                             When(
                                 product_new_sale_motrum__isnull=False,
@@ -704,7 +749,7 @@ def create_specification(request):
                                     - (
                                         F("product_new_price")
                                         / 100
-                                        * (F("product_new_sale_motrum"))
+                                        * F("product_new_sale_motrum")
                                     ),
                                     2,
                                 ),
@@ -777,6 +822,11 @@ def create_specification(request):
                 ).values(
                     "price_one_motrum",
                 ),
+                price_one_motrum_spesif=product_specification.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "price_one_motrum",
+                ),
                 old_date=product_specification.filter(product=OuterRef("pk")).values(
                     "specification__date_update",
                 ),
@@ -807,14 +857,25 @@ def create_specification(request):
                 ).values(
                     "date_delivery",
                 ),
+                date_delivery_cart=product_cart_prod.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "date_delivery",
+                ),
                 sale_motrum=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_sale_motrum",
                 ),
                 price_cart=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "product_price",
                 ),
+                price_motrum_cart=product_cart_prod.filter(
+                    product=OuterRef("pk")
+                ).values(
+                    "product_price_motrum",
+                ),
+                
                 price_motrum=Case(
-                    When(sale_motrum=None, then="actual_price"),
+                    When(sale_motrum=None, then="price_cart"),
                     When(
                         sale_motrum__isnull=False,
                         then=Round(
@@ -827,12 +888,21 @@ def create_specification(request):
                 sale_client=product_cart_prod.filter(product=OuterRef("pk")).values(
                     "sale_client",
                 ),
-                # price_motrum_okt = Round(
+                sale_marja=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "sale_marja",
+                ),
+                id_cart_item=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "id",
+                ),
+                order=product_cart_prod.filter(product=OuterRef("pk")).values(
+                    "order",
+                ),  # price_motrum_okt = Round(
                 #             F("price_cart") - (F("price_cart")/100 * F("sale_motrum")),
                 #             2,
                 #         ),
             )
-            .order_by("id_product_cart")
+            .order_by("order", "id_product_cart")
+            # .order_by("id_product_cart")
         )
 
     # корзины нет
@@ -850,6 +920,7 @@ def create_specification(request):
         specification = None
         order = None
 
+    # базовые значения
     if order:
 
         if order.text_name != None:
@@ -886,29 +957,32 @@ def create_specification(request):
     elif type_save_cookee == "hard_update":
         bill_upd = False
         hard_upd = True
-        # title = f"Заказ № {order.id} - новый счет"
+
         if order.requisites.contract:
             title = f"Заказ {name_ord}: счет + спецификация"
             type_save = "счет + спецификация"
         else:
             title = f"Заказ {name_ord}: счет-оферта"
-            type_save = " счет-оферта"
+            type_save = "счет-оферта"
 
-        # def product_cart_prod_update(product_cart_prod):
-        #     for prod_cart in product_cart_prod:
-        #         prod_cart.product_price = prod_cart.product.price.rub_price_supplier
-        #         prod_cart.save()
-        # product_cart_prod_update(product_cart_prod)
     else:
         type_save_cookee = "new"
         bill_upd = False
         title = f"Новый заказ"
         type_save = "счет"
+
+    
+    # if client_req:
+    #     spesif_number = client_req
+    # else:
+    #     spesif_number = None
+    
     type_delivery = TypeDelivery.objects.filter(actual=True)
     supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
+    lot = Lot.objects.all().order_by("-name")
     context = {
-        "title": title,
+        # "title": title,
         "product": product,
         "product_new": product_new,
         "cart": cart,
@@ -924,14 +998,17 @@ def create_specification(request):
         "bill_upd": bill_upd,
         "vendor": vendor,
         "supplier": supplier,
-        "type_save": type_save,
+        # "type_save": type_save,
         "type_delivery": type_delivery,
-        "type_save_cookee": type_save_cookee,
-        "hard_upd": hard_upd,
+        # "type_save_cookee": type_save_cookee,
+        # "hard_upd": hard_upd,
         "post_data_bx_id": post_data_bx_id,
+        "lot": lot,
+        "nds": NDS,
     }
-    print("context",context)
+    print("context", context)
     return render(request, "admin_specification/catalog.html", context)
+    # return render(request, "admin_specification/catalog_copy_price.html", context)
 
 
 # рендер страницы со всеми спецификациями
@@ -1603,7 +1680,6 @@ def history_admin(request, pk):
         **extra_kwargs,
     )
 
-   
 
 # исторические записи для счета
 @permission_required("specification.add_specification", login_url="/user/login_admin/")
@@ -1666,7 +1742,7 @@ def bx_save_start_info(request):
             post_data_bx_id = post_data.get("PLACEMENT_OPTIONS")
             post_data_bx_id = json.loads(post_data_bx_id)
             post_data_bx_id = post_data_bx_id["ID"]
-            
+
             # получение инфо о заказе из битрикса по айдишке
             if post_data_bx_place == "CRM_DEAL_DETAIL_TAB":
                 next_url, context, error = get_info_for_order_bitrix(
@@ -1710,7 +1786,7 @@ def bx_save_start_info(request):
                         secure=True,
                     )
                 else:
-                    
+
                     response = render(
                         request,
                         next_url,
@@ -1865,6 +1941,30 @@ def bx_save_start_info(request):
             pass
 
 
+# Сохранение порядка элементов корзины
+@csrf_exempt
+@permission_required("specification.add_specification", login_url="/user/login_admin/")
+def save_cart_order(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            order_data = data.get("order", [])
+
+            # Обновляем порядок элементов в корзине
+            for item in order_data:
+                item_id = item.get("id")
+                new_order = item.get("order")
+
+                # Обновляем порядок в ProductCart
+                ProductCart.objects.filter(id=item_id).update(order=new_order)
+
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Invalid request method"})
+
+
 # страница товаров заказа только для трансляции битрикс
 @csrf_exempt
 def bitrix_product(request):
@@ -1893,5 +1993,3 @@ def bitrix_product(request):
         "products": order_product,
     }
     return render(request, "admin_specification/bitrix_product.html", context)
-
-

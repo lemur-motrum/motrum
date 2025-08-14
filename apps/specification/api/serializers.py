@@ -185,6 +185,7 @@ class ListsProductSpecificationSerializer(serializers.ModelSerializer):
             "id",
             "file",
             "date",
+            "date_update"
             "date_stop",
             "total_amount",
             "productspecification_set",

@@ -317,9 +317,11 @@ class Product(models.Model):
         sender, instance, history_instance, **kwargs
     ):
         if history_instance.history_type == "~":
-            delta = history_instance.diff_against(history_instance.prev_record)
-            if delta.changed_fields == []:
-                history_instance.delete()
+            # Проверяем, что prev_record не None перед сравнением
+            if history_instance.prev_record is not None:
+                delta = history_instance.diff_against(history_instance.prev_record)
+                if delta.changed_fields == []:
+                    history_instance.delete()
 
 
 @receiver(post_save, sender=Product)
@@ -854,7 +856,7 @@ class ProductImage(models.Model):
         "Изображение", upload_to=get_file_path_add, max_length=500, null=True
     )
     # file = models.CharField("фаил в системе", max_length=100, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=250)
+    link = models.CharField("Ссылка у поставщика", max_length=1000)
     hide = models.BooleanField("Скрыть", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
@@ -875,13 +877,13 @@ class ProductDocument(models.Model):
         on_delete=models.CASCADE,
     )
     document = models.FileField(
-        "Документ", upload_to=get_file_path_add, max_length=255, null=True
+        "Документ", upload_to=get_file_path_add, max_length=1000, null=True
     )
     type_doc = models.CharField(
         "Тип документации", max_length=100, choices=TYPE_DOCUMENT, default="Other"
     )
-    name = models.CharField("Название документа", max_length=255, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=255, null=True)
+    name = models.CharField("Название документа", max_length=1000, null=True)
+    link = models.CharField("Ссылка у поставщика", max_length=2000, null=True)
     hide = models.BooleanField("Скрыть", default=False)
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
@@ -938,11 +940,12 @@ class ProductProperty(models.Model):
         if self.value == "false" or self.value == "False" or self.value == False :
             self.value = "Нет"
         
-        # Получение х-к мотрум  
+        # Получение х-к мотрум не диапазонные 
         obj= VendorPropertyAndMotrum.objects.filter(
         supplier=self.product.supplier,
         property_vendor_name=self.name,
         property_vendor_value=self.value,
+        is_diapason=False
     )
         if obj:
             for ob in obj:
@@ -967,10 +970,41 @@ class ProductProperty(models.Model):
                     is_have_vendor_props=True,
                     property_value_motrum_to_diapason=value_diapason
                 )
+                if created:
+                    error = "info_error"
+                    location = "+ х-ка"
+                    info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                    e = error_alert(error, location, info)
+         
+        obj_diapason= VendorPropertyAndMotrum.objects.filter(
+        supplier=self.product.supplier,
+        property_vendor_name=self.name,
+        is_diapason=True
+    )
+        if obj_diapason:
+            for obj_d in obj_diapason:
+                def extract_first_number(value):
+                    if isinstance(value, (int, float)):
+                        return value
+                    if isinstance(value, str):
+                        match = re.search(r"\d+(\.\d+)?", value)
+                        if match:
+                            return float(match.group())
+                        
+                value = extract_first_number(self.value)
+                prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                        product=self.product,
+                        property_motrum=obj_d.property_motrum,
+                        is_diapason=True,
+                        is_have_vendor_props=True,
+                        property_value_motrum_to_diapason=value
+                )
+            if created:
                 error = "info_error"
                 location = "+ х-ка"
                 info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
                 e = error_alert(error, location, info)
+         
                 
         super().save(*args, **kwargs)
 
@@ -990,6 +1024,7 @@ class Cart(models.Model):
         blank=True,
         null=True,
     )
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
         verbose_name = "Корзина"
@@ -1025,6 +1060,12 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    product_price_motrum = models.FloatField(
+        "Цена товара",
+        blank=True,
+        null=True,
+        default=None,
+    )
     product_sale_motrum = models.FloatField(
         "Скидка мотрум товара ",
         blank=True,
@@ -1032,11 +1073,18 @@ class ProductCart(models.Model):
         default=None,
     )
     sale_client = models.FloatField(
-        "Скидка клиента из парсинга фаила",
+        "Скидка клиента",
         blank=True,
         null=True,
         default=None,
     )
+    sale_marja = models.FloatField(
+        "Маржа",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -1084,7 +1132,7 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
-
+   
     quantity = models.IntegerField(
         "количество товара",
         blank=True,
@@ -1097,8 +1145,20 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    lot = models.ForeignKey(
+        "Lot",
+        verbose_name="Единица измерения",
+        on_delete=models.PROTECT, blank=True,
+        null=True,
+    )
+    date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
-
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    order = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Корзина продукт"
         verbose_name_plural = "Корзина Продукты"
@@ -1303,7 +1363,6 @@ class ProductPropertyMotrumItem(models.Model):
           return f"{self.property_motrum} {self.property_value_motrum_to_diapason}"
         else:
             return f"{self.property_motrum} {self.property_value_motrum}"
-
 
 
 

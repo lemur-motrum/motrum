@@ -293,9 +293,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     # поиск товар в окт
     @action(detail=False, methods=["post", "get"], url_path=r"search-product")
     def search_product(self, request, *args, **kwargs):
+        
         data = request.data
         count = data["count"]
-        count_last = data["count_last"]
+        count_last = int(data["count_last"])
+        print(count_last)
         search_input = data["search_text"]
         search_input = search_input.replace(",", "")
         search_input = search_input.split()
@@ -324,8 +326,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(check_to_order=True).order_by("name")
 
         queryset = queryset[count:count_last]
-        # стандатный варинт ищет целиокм
 
+        # стандатный варинт ищет целиокм
         # queryset = Product.objects.filter(
         #     Q(name__icontains=search_input)
         #     | Q(article__icontains=search_input)
@@ -443,7 +445,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post", "get"], url_path=r"search-vendor")
     def search_vendor(self, request, *args, **kwargs):
-
+        queryset = Vendor.objects.filter()
         data = request.data
 
         count = int(data["count"])
@@ -451,9 +453,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         search_input = data["search_text"]
         # search_input = search_input.replace(".", "").replace(",", "")
         # search_input = search_input.split()
+        if search_input:
+            # стандатный варинт ищет целиокм
+            queryset = Vendor.objects.filter(Q(name__icontains=search_input))
 
-        # стандатный варинт ищет целиокм
-        queryset = Vendor.objects.filter(Q(name__icontains=search_input))
+        queryset = queryset[count:count_last]
 
         page_count = queryset.count()
 
@@ -947,7 +951,6 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(data, status=status.HTTP_409_CONFLICT)
             
             except ProductCart.DoesNotExist:
-            
                 data["product_price"] = product_price
                 data["product_sale_motrum"] = product_sale_motrum
                 serializer = serializer_class(data=data, many=False)
@@ -971,6 +974,28 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         data = request.data
         cart_id = data["cart"]
         product_new_article = data["product_new_article"]
+        product_new_article = product_new_article.strip()
+        
+        # if data["date_delivery"] == "":
+        #     del data["date_delivery"]
+        # else:
+        #     data["date_delivery"] = datetime.datetime.strptime(
+        #         data["date_delivery"], "%Y-%m-%d"
+        #     ).date()
+            
+        # if data["sale_client"] == "":
+        #     data["sale_client"] = None
+        # else:
+        #     sale_client =  float(data["sale_client"])
+        
+        # if data["product_new_sale_motrum"] == "":
+        #     data["product_new_sale_motrum"] = None
+            
+        # if data["product_price_motrum"] == "":
+        #     data["product_price_motrum"] = None
+        
+        
+            
         product_new_name = data["product_new"]
         if (
             product_new_article == ""
@@ -980,10 +1005,13 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         ):
             data = {"status": "none_art_or_name"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(data["supplier"],data["vendor"])
         try:
             product_okt = Product.objects.get(
-                vendor_id=data["vendor"], article_supplier=product_new_article
+                supplier__id = data["supplier"], vendor__id=data["vendor"], article_supplier=product_new_article
             )
+            print(product_okt)
             data = {"status": "product_in_okt"}
             return Response(data, status=status.HTTP_409_CONFLICT)
         except Product.DoesNotExist:
@@ -1012,17 +1040,56 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], url_path=r"upd-product-new")
     def upd_product_cart_new(self, request, pk=None, *args, **kwargs):
         queryset = ProductCart.objects.get(pk=pk)
+        print(pk)
         serializer_class = ProductCartSerializer
-
         data = request.data
-        serializer = serializer_class(queryset, data=data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        cart_id = data["cart"]
+        product_new_article = data["product_new_article"]
+        product_new_article = product_new_article.strip()
+        data["product_new_article"] = product_new_article
+        
+        if data["date_delivery"] == "":
+            del data["date_delivery"]
         else:
+            data["date_delivery"] = datetime.datetime.strptime(
+                data["date_delivery"], "%Y-%m-%d"
+            ).date()
+        
+        # if data["sale_client"] == "":
+        #     data["sale_client"] = None
+            
+        if data["product_new_sale_motrum"] == "":
+            data["product_new_sale_motrum"] = None  
+            
+        if data["product_price_motrum"] == "":
+            data["product_price_motrum"] = None  
+              
+        if data["product_price_motrum"]:
+            data["product_new_sale_motrum"] = None 
+        try:
+            product_okt = Product.objects.get(
+                vendor_id=data["vendor"], article_supplier=product_new_article
+            )
+            data = {"status": "product_in_okt"}
+            return Response(data, status=status.HTTP_409_CONFLICT)
+        except Product.DoesNotExist:
+            try:
+                product_new_article = ProductCart.objects.exclude(id=queryset.id).get(
+                    cart_id=cart_id, product_new_article=product_new_article
+                )
+                
+                data = {"status": "product_in_cart"}
+                return Response(data, status=status.HTTP_409_CONFLICT)
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except ProductCart.DoesNotExist:
+                    serializer = serializer_class(queryset, data=data, partial=True)
+
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response(serializer.data, status=status.HTTP_200_OK)
+                    else:
+
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"], url_path=r"upd-product-cart")
     def upd_product_cart(self, request, pk=None, *args, **kwargs):
@@ -1030,16 +1097,36 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         serializer_class = ProductCartSerializer
 
         data = request.data
+        print(data)
+        if data["date_delivery"] == "":
+            del data["date_delivery"]
+        else:
+            data["date_delivery"] = datetime.datetime.strptime(
+                data["date_delivery"], "%Y-%m-%d"
+            ).date()
+
         if data["product_sale_motrum"] == "":
             data["product_sale_motrum"] = 0
 
-        serializer = serializer_class(queryset, data=data, partial=True)
+        print(data)
+        if data["sale_client"] == "":
+            data["sale_client"] = None
+        else:
+            sale_client = float(data["sale_client"])
 
+        if data["product_price_motrum"] == "":
+            data["product_price_motrum"] = None
+
+        if data["product_price_motrum"]:
+            data["product_sale_motrum"] = 0
+
+        serializer = serializer_class(queryset, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # изменить количество товаров в корзине
@@ -1063,7 +1150,7 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     def delete_product_cart(self, request, pk=None, *args, **kwargs):
 
         queryset = ProductCart.objects.get(pk=pk)
-        if queryset.product_new:
+        if queryset.product_new and queryset.product == None:
             try:
                 prod_spes = ProductSpecification.objects.get(
                     specification__cart=queryset.cart, product_new=queryset.product_new

@@ -8,7 +8,7 @@
              superuser="{% if is_superuser == true %}true{% endif %}"
              specification-elem="specification-item">
                 <div class="table_item_value first_table_value">
-                        <a class="order_number" href="{{ specification_list.url }}">№ {{ id }}  от {{ specification_list.date }}</a>
+                        <a class="order_number" href="{{ specification_list.url }}">№ {{ id_bitrix }}  от {{ specification_list.date }}</a>
                         <input class="cart_id" type="hidden" value={{ specification_list.cart }}>
                         {% if specification_list.date_update and specification_list.date != specification_list.date_update %}
                                 <div class="table_item_value_span">Обновлен: {{ specification_list.date_update }}</div>

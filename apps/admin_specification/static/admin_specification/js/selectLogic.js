@@ -1,6 +1,21 @@
 import { ItcCustomSelect } from "/static/core/js/customSelect.js";
 
 window.addEventListener("DOMContentLoaded", () => {
+  const changeItemContainers = document.querySelectorAll(
+    ".change_item_container_wrapper"
+  );
+
+  changeItemContainers.forEach((changeItemsContainer, index) => {
+    if (changeItemsContainer) {
+      if (document.querySelector(`#select-${index}1`)) {
+        const select1 = new ItcCustomSelect(`#select-${index}1`);
+      }
+      if (document.querySelector(`#select-${index}4`)) {
+        const select4 = new ItcCustomSelect(`#select-${index}4`);
+      }
+    }
+  });
+
   if (document.querySelector("#select-1")) {
     const select1 = new ItcCustomSelect("#select-1");
   }
@@ -24,5 +39,4 @@ window.addEventListener("DOMContentLoaded", () => {
       const select = new ItcCustomSelect(`#vendor_toggle_select-${i + 1}`);
     });
   }
-  
 });

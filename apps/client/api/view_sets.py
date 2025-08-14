@@ -945,9 +945,9 @@ class OrderViewSet(viewsets.ModelViewSet):
                 }
 
                 order = Order.objects.get(cart_id=cart)
-                print("order = Order.objects.get")
-                if order.id_bitrix == None:
-                    data_order["id_bitrix"] = id_bitrix
+                # print("order = Order.objects.get")
+                # if order.id_bitrix == None:
+                #     data_order["id_bitrix"] = id_bitrix
                     
                 serializer = self.serializer_class(order, data=data_order, many=False)
                 if serializer.is_valid():

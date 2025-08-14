@@ -546,7 +546,7 @@ window.addEventListener("DOMContentLoaded", () => {
               document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
               document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
               document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-              // document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+              document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
 
               window.location.href = "/admin_specification/all_specifications/";
             })

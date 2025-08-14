@@ -8,6 +8,7 @@ import random
 import re
 from itertools import chain
 import traceback
+import unicodedata
 from xmlrpc.client import boolean
 from django.conf import settings
 from django.db.models import Prefetch
@@ -78,6 +79,7 @@ from apps.client.models import (
 )
 from apps.core.utils import (
     after_save_order_products,
+    check_delite_product_cart_in_upd_spes,
     client_info_bitrix,
     create_info_request_order_1c,
     create_info_request_order_bitrix,
@@ -821,6 +823,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             data = request.data
             id_bitrix = request.COOKIES.get("bitrix_id_order")
             s = data["serializer"]
+            s = unicodedata.normalize('NFKD', s)
             json_acceptable_string = s.replace('"', "").replace("'", '"')
             d = json.loads(json_acceptable_string)
 
@@ -927,6 +930,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if specification:
             try:
+                product_cart = ProductCart.objects.filter(cart=cart).update(date_delivery=None)
                 data_order = {
                     "comment": data["comment"],
                     "name": id_bitrix,
@@ -1157,16 +1161,16 @@ class OrderViewSet(viewsets.ModelViewSet):
                 # response = send_requests(url, headers, json_data, "1c")
                 
                 if IS_TESTING or user.username == "testadmin":
-
-                    json_data = json.dumps(data_for_1c)
-                    print("json_data", json_data)
-                    if user.username == "testadmin":
-                        print("if IS_TESTING or user.username == testadmin")
-                        url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
-                        headers = {"Content-type": "application/json"}
-                        response = send_requests(url, headers, json_data, "1c")
-                        print(response)
                     pass
+                    # json_data = json.dumps(data_for_1c)
+                    # print("json_data", json_data)
+                    # if user.username == "testadmin":
+                    #     print("if IS_TESTING or user.username == testadmin")
+                    #     url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
+                    #     headers = {"Content-type": "application/json"}
+                    #     response = send_requests(url, headers, json_data, "1c")
+                    #     print(response)
+                    # pass
                 else:
                     json_data = json.dumps(data_for_1c)
                     url = "https://dev.bmgspb.ru/grigorev_unf_m/hs/rest/order"
@@ -1229,10 +1233,23 @@ class OrderViewSet(viewsets.ModelViewSet):
         url_path=r"exit-order-admin",
     )
     def exit_order_admin(self, request, *args, **kwargs):
+        from apps.core.utils import revert_cart_changes
+        
         cart_id = request.COOKIES.get("cart")
+        # specification_id = request.COOKIES.get("specificationId")
+        
+        # if cart_id:
+        #     # Откатываем изменения в корзине
+        #     success = revert_cart_changes(cart_id, specification_id)
+            
+        #     if success:
+        #         return Response({"status": "success", "message": "Изменения отменены"}, status=status.HTTP_200_OK)
+        #     else:
+        #         return Response({"status": "error", "message": "Не удалось отменить изменения"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # return Response({"status": "error", "message": "Корзина не найдена"}, status=status.HTTP_400_BAD_REQUEST)
         cart = Cart.objects.filter(id=cart_id).update(is_active=True)
         return Response(cart, status=status.HTTP_200_OK)
-
     # ОКТ получить список товаров для создания счета с датами псотавки 
     @action(detail=True, methods=["get"], url_path=r"get-specification-product")
     def get_specification_product(self, request, pk=None, *args, **kwargs):
@@ -1744,11 +1761,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         if iframe == "True":
             q_object &= Q(id_bitrix=int(bx_id_order))
         else:
-            if user_admin_type == "ALL":
+            if IS_TESTING:
                 pass
-                # q_object &= Q(cart__cart_admin_id__isnull=False)
-            elif user_admin_type == "BASE":
-                q_object &= Q(cart__cart_admin_id=request.user.id)
+            else:
+                if user_admin_type == "ALL":
+                    pass
+                    # q_object &= Q(cart__cart_admin_id__isnull=False)
+                elif user_admin_type == "BASE":
+                    q_object &= Q(cart__cart_admin_id=request.user.id)
             # if IS_TESTING:
             #     pass
             # else:
@@ -1939,7 +1959,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                         order_products_item["date_delivery"], "%d-%m-%Y"
                     ).date()
                     if prod.date_delivery_bill != date_delivery:
-                        is_need_new_pdf = True
+                        is_need_new_pdf = False
 
                         prod.date_delivery_bill = date_delivery
 
@@ -2006,7 +2026,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                 if IS_TESTING:
                     pass
                 else:
-                    is_save_new_doc_bx = save_new_doc_bx(order)
+                    pass 
+                    # is_save_new_doc_bx = save_new_doc_bx(order)
 
     # ОКТ 1С получение оплат ОКТ Б24
     @authentication_classes([BasicAuthentication])

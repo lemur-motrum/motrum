@@ -446,7 +446,7 @@ class ReviewsAutoInfoWeb(models.Model):
     image = models.ImageField(
         "Картинка",
         upload_to=get_file_path_reviews_web,
-        max_length=255,
+        max_length=1000,
         blank=True,
         null=True,
     )

@@ -33,7 +33,7 @@ from apps.core.models import Currency, StageDealBx, UpdatedCompanyBX24
 from apps.core.utils import (
     client_info_bitrix,
     create_info_request_order_bitrix,
-    email_manager_after_new_order_site,
+    # email_manager_after_new_order_site,
     save_file_product,
     save_info_bitrix_after_web,
 )

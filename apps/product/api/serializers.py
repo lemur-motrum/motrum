@@ -220,3 +220,10 @@ class CartOktAllSerializer(serializers.ModelSerializer):
             "admin_creator_name",
             "productcart_set",
         )
+
+class VendorOktNewProdSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Vendor
+        fields = "__all__"

@@ -1,6 +1,7 @@
 {% load static %}
 {% load js_templates %}
 {% load today %}
+{% load test_display %}
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -33,7 +34,7 @@
               href="{% static "core/images/favs/fav.ico" %}">
         <title>{{ title }}</title>
     </head>
-    <body>
+    <body {% test_display %}>
         <div class="wrapper">
             <div class="site-content">
                 <div class="site-description-content otk_description_content">
@@ -58,6 +59,7 @@
         </div>
         {% js_templates %}
         {% include "core/includes/scripts.html" %}
+        
         <script>
             function validate(evt) {
                 let theEvent = evt || window.event;

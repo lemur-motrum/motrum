@@ -35,7 +35,7 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.get_currency_old",
         "schedule": crontab(minute=10, hour=0),
     },
-    # проверка целостности изображений каталога
+    # # проверка целостности изображений каталога
     "image_check": {
         "task": "apps.core.tasks.image_error_check_in",
         "schedule": crontab(minute=15, hour=0),
@@ -63,10 +63,14 @@ app.conf.beat_schedule = {
     },
     
     
-     
+     # апдейт промогрупп промповер
+    "prompower_primo_group": {
+        "task": "apps.supplier.tasks.prompower_primo_group",
+        "schedule": crontab(minute=10, hour=4),
+    },
     
     
-    # уведомления о повышения цен на товары и курсов ежедневно
+    # # уведомления о повышения цен на товары и курсов ежедневно
     "add_currency_check_bx": {
         "task": "apps.core.tasks.get_curr_price_check_bx",
         "schedule": crontab(minute=0, hour=5),
@@ -76,6 +80,12 @@ app.conf.beat_schedule = {
     "vacancy_file_delite_week": {
         "task": "apps.core.tasks.vacancy_file_delite",
         "schedule": crontab(minute=22, hour=0, day_of_week=6),
+    },
+    
+    # апдейт доков промповер
+    "prompower_upd_doc": {
+        "task": "apps.supplier.tasks.prompower_upd_doc",
+        "schedule": crontab(minute=22, hour=0, day_of_week=5),
     },
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
@@ -98,11 +108,21 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
     },
     
+    "add_veda_parse_web": {
+        "task": "apps.supplier.tasks.add_veda_parse_web",
+        "schedule":  crontab(minute=10, hour=21, day_of_month=13),
+    },
+    
+    # "add_veda_parse_web": {
+    #     "task": "apps.supplier.tasks.add_veda_parse_web",
+    #     "schedule": crontab(minute=20, hour=0, day_of_month=1),
+    # },
+    
     
     
     "del_prop_motrum_item_dublet": {
         "task": "apps.supplier.tasks.del_prop_motrum_item_dublet",
-        "schedule": crontab(minute=10, hour=0, day_of_month=6, month_of_year=8),
+        "schedule": crontab(minute=10, hour=0, day_of_month=12, month_of_year=8),
     },
 }
 

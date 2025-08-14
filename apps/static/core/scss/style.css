@@ -5,7 +5,8 @@ body {
   width: 100%;
   overflow-x: hidden;
   padding: 0;
-  margin: 0; }
+  margin: 0;
+  }
 
 .specification-content {
   padding: 1rem 0.938rem; }

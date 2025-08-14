@@ -33,7 +33,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from apps.logs.utils import error_alert
 from apps.specification.utils import MyCanvas
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
-from django.db.models import Prefetch, OuterRef
+from django.db.models import Prefetch, OuterRef, Case, When, F
 from apps.product.models import Product, ProductCart, Stock
 from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
@@ -77,8 +77,15 @@ def crete_pdf_bill(
 
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
-
+        ).order_by(
+            Case(
+                When(id_cart__isnull=False, then=0),
+                default=1
+            ),
+            F('id_cart__order'),
+            'id'
+        )
+        print(type_delivery)
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
 
         order = Order.objects.get(specification=specification)
@@ -111,7 +118,10 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-
+        print("type_bill", type_bill)
+        print("bill_name", bill_name)
+        print("type_save", type_save)
+        print("*******************************")
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
             motrum_info.save()
@@ -547,10 +557,10 @@ def crete_pdf_bill(
             product_quantity = product.quantity
             product_data = product.text_delivery
 
-            if product.date_delivery_bill:
-                product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
-            else:
-                product_data = product.text_delivery
+            # if product.date_delivery_bill:
+            #     product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
+            # else:
+            #     product_data = product.text_delivery
 
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
             # else:

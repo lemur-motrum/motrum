@@ -576,6 +576,12 @@ def parse_drives_ru_products():
                     category_all, groupe, categ = get_category_delta(
                         supplier, vendor, result["category_name"], result["group_name"],result["group_all_name"]
                     )
+                    if product.category_supplier:
+                        pass
+                    else:
+                        product.description = result["description"]
+                        product.name = result["name"]
+                        
                     if product.category_supplier_all == None or product.category_supplier_all == "":
                         product.category_supplier_all = category_all
                         
@@ -588,11 +594,10 @@ def parse_drives_ru_products():
                     ):
                         product.category_supplier = categ
                     
-
+                    
                     # if product.description == None or product.description == "":
                     #     product.description = result["description"]
-                    product.description = result["description"]
-                    product.name = result["name"]
+                    
                     # if product.name == None or product.name == "":
                     #     product.name = result["name"]
                     product.autosave_tag = True

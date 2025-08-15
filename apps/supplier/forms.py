@@ -81,7 +81,8 @@ class DiscountForm(forms.ModelForm):
 class SupplierCategoryProductAllAdminForm(forms.ModelForm):
 
     category_catalog = forms.ModelChoiceField(
-        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum",
+        required=False
     )
 
     group_catalog = forms.ModelChoiceField(
@@ -120,7 +121,9 @@ class SupplierGroupProductAdminForm(forms.ModelForm):
     )
 
     category_catalog = forms.ModelChoiceField(
-        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+        queryset=CategoryProduct.objects.all(), 
+        label="Категория Motrum",
+        required=False
     )
 
     group_catalog = forms.ModelChoiceField(
@@ -143,7 +146,8 @@ class SupplierGroupProductAdminForm(forms.ModelForm):
 class SupplierCategoryProductAdminForm(forms.ModelForm):
 
     category_catalog = forms.ModelChoiceField(
-        queryset=CategoryProduct.objects.all(), label="Категория Motrum"
+        queryset=CategoryProduct.objects.all(), label="Категория Motrum",
+        required=False,
     )
 
     group_catalog = forms.ModelChoiceField(

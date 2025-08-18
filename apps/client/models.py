@@ -483,7 +483,11 @@ CLEAN_STATUS_ORDER_BITRIX = (
 #     (6, "CANCELED"),
 #     (7, "COMPLETED"),
 # )
-
+TYPE_ORDER_NAME = (
+    ("ИМ", "ИМ"),
+    ("ОКТ", "ОКТ"),
+    
+)
 
 class Order(models.Model):
     client = models.ForeignKey(
@@ -600,6 +604,11 @@ class Order(models.Model):
     bill_name = models.PositiveIntegerField(
         "Номер счета",
         default=None,
+        null=True,
+    )
+    bill_name_prefix = models.CharField(
+        "Префикс номера счета",
+        max_length=100, choices=TYPE_ORDER_NAME, default="ОКТ",blank=True,
         null=True,
     )
     bill_file = models.FileField(
@@ -785,6 +794,7 @@ class Order(models.Model):
                 order=self,
                 bill_name=pdf_name,
                 bill_file=pdf_file,
+                bill_name_prefix=self.bill_name_prefix,
                 bill_date_start=bill_date_start,
                 bill_date_stop=data_stop,
                 bill_file_no_signature=None,
@@ -797,6 +807,7 @@ class Order(models.Model):
             OrderDocumentBill.objects.create(
                 order=self,
                 bill_name=pdf_name,
+                bill_name_prefix=self.bill_name_prefix,
                 bill_file=None,
                 bill_file_no_signature=file_path_no_sign,
                 bill_date_start=bill_date_start,
@@ -857,6 +868,11 @@ class OrderDocumentBill(models.Model):
     bill_name = models.PositiveIntegerField(
         "Номер счета",
         default=None,
+        null=True,
+    )
+    bill_name_prefix = models.CharField(
+        "Префикс номера счета",
+        max_length=100, choices=STATUS_ORDER, default="ОКТ",blank=True,
         null=True,
     )
     text_name_bill = models.CharField(

@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import traceback
 import zipfile
 import csv
 from simple_history.utils import update_change_reason
@@ -142,6 +143,7 @@ def delta_written_file(file_name, obj, new_dir):
 
     path = f"{new_dir}/{file_name}"
     # получение названий столбцов
+    base_vendor = Vendor.objects.get(slug="delta-electronics")
     fieldnames = []
     with open(path, "r", newline="", encoding="windows-1251") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -268,20 +270,118 @@ def delta_written_file(file_name, obj, new_dir):
                         update_change_reason(image, "Автоматическое")
 
                 # основной товар
-                try:
-                    article = Product.objects.get(
-                        supplier=obj, article_supplier=article_supplier
-                    )
+                
+                article = Product.objects.filter(
+                    supplier=obj, article_supplier=article_supplier
+                )
+                if article.count() == 1:
+                    article = article[0]
                     image = ProductImage.objects.filter(product=article).exists
                     if image == False:
                         save_image(article)
+                    try:
+                        price_product = Price.objects.get(prod=article)
 
-                except Product.DoesNotExist:
+                    except Price.DoesNotExist:
+                        price_product = Price(prod=article)
+
+                    finally:
+
+                        price_product.currency = currency
+                        price_product.price_supplier = price_supplier
+                        price_product.vat = vat_catalog
+                        price_product.vat_include = True
+                        price_product.extra_price = extra
+                        price_product._change_reason = "Автоматическое"
+                        price_product.save()
+                        # update_change_reason(price_product, "Автоматическое")
+                    
+                    # свойства из отдельных колонок
+                    save_delta_props(row2, article)  
+                    
+                    # свойства из из общей колонки    
+                    props_product = ProductProperty.objects.filter(product=article).exists()
+                    if props_product == False:
+                        
+                        if tds != []:
+                            for td in tds:
+                                if td != []:
+                                    value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                    value_props_no_br = str(td[1]).replace("<br/>", ". ")
+                                    
+                                    name_props = re.sub(
+                                        r"<[^>]+>", "", str(td[0]), flags=re.S
+                                    )
+                                    value_props = re.sub(
+                                        r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                    )
+                                
+                                    props_product = ProductProperty(product=article)
+                                    props_product.name = name_props
+
+                                    props_product.value = value_props
+                                    props_product.save()
+                                    update_change_reason(
+                                        props_product, "Автоматическое"
+                                    )   
+                    
+                elif article.count() > 1:
+                    for article_one in article:
+                        image = ProductImage.objects.filter(product=article_one).exists
+                        if image == False:
+                            save_image(article_one)
+                        try:
+                            price_product = Price.objects.get(prod=article_one)
+
+                        except Price.DoesNotExist:
+                            price_product = Price(prod=article_one)
+
+                        finally:
+
+                            price_product.currency = currency
+                            price_product.price_supplier = price_supplier
+                            price_product.vat = vat_catalog
+                            price_product.vat_include = True
+                            price_product.extra_price = extra
+                            price_product._change_reason = "Автоматическое"
+                            price_product.save()
+                            # update_change_reason(price_product, "Автоматическое")
+                        
+                        # свойства из отдельных колонок
+                        save_delta_props(row2, article_one)  
+                        
+                        # свойства из из общей колонки    
+                        props_product = ProductProperty.objects.filter(product=article_one).exists()
+                        if props_product == False:
+                            
+                            if tds != []:
+                                for td in tds:
+                                    if td != []:
+                                        value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                        value_props_no_br = str(td[1]).replace("<br/>", ". ")
+                                        
+                                        name_props = re.sub(
+                                            r"<[^>]+>", "", str(td[0]), flags=re.S
+                                        )
+                                        value_props = re.sub(
+                                            r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                        )
+                                    
+                                        props_product = ProductProperty(product=article_one)
+                                        props_product.name = name_props
+
+                                        props_product.value = value_props
+                                        props_product.save()
+                                        update_change_reason(
+                                            props_product, "Автоматическое"
+                                        )   
+                        
+                else:
                     new_article = create_article_motrum(obj.id)
                     article = Product(
                         article=new_article,
                         supplier=obj,
-                        vendor=None,
+                        vendor=base_vendor,
                         article_supplier=article_supplier,
                         name=name,
                         description=description,
@@ -314,63 +414,61 @@ def delta_written_file(file_name, obj, new_dir):
                         )
                         stock_prod._change_reason = 'Автоматическое'
                         stock_prod.save() 
-                
-                
-                print(444444)
-                # цены товара
-                try:
-                    price_product = Price.objects.get(prod=article)
-
-                except Price.DoesNotExist:
-                    price_product = Price(prod=article)
-
-                finally:
-
-                    price_product.currency = currency
-                    price_product.price_supplier = price_supplier
-                    price_product.vat = vat_catalog
-                    price_product.vat_include = True
-                    price_product.extra_price = extra
-                    price_product._change_reason = "Автоматическое"
-                    price_product.save()
-                    # update_change_reason(price_product, "Автоматическое")
-                  
-                # свойства из отдельных колонок
-                save_delta_props(row2, article)  
-                
-                # свойства из из общей колонки    
-                props_product = ProductProperty.objects.filter(product=article).exists()
-                if props_product == False:
                     
-                    if tds != []:
-                        for td in tds:
-                            if td != []:
-                                value_props_no_br = str(td[1]).replace("<br>", ". ")
-                                value_props_no_br = str(td[1]).replace("<br/>", ". ")
-                                
-                                name_props = re.sub(
-                                    r"<[^>]+>", "", str(td[0]), flags=re.S
-                                )
-                                value_props = re.sub(
-                                    r"<[^>]+>", "", value_props_no_br, flags=re.S
-                                )
-                            
-                                props_product = ProductProperty(product=article)
-                                props_product.name = name_props
+                    # цены товара
+                    try:
+                        price_product = Price.objects.get(prod=article)
 
-                                props_product.value = value_props
-                                props_product.save()
-                                update_change_reason(
-                                    props_product, "Автоматическое"
-                                )   
-                
+                    except Price.DoesNotExist:
+                        price_product = Price(prod=article)
+
+                    finally:
+
+                        price_product.currency = currency
+                        price_product.price_supplier = price_supplier
+                        price_product.vat = vat_catalog
+                        price_product.vat_include = True
+                        price_product.extra_price = extra
+                        price_product._change_reason = "Автоматическое"
+                        price_product.save()
+                        # update_change_reason(price_product, "Автоматическое")
+                    
+                    # свойства из отдельных колонок
+                    save_delta_props(row2, article)  
+                    
+                    # свойства из из общей колонки    
+                    props_product = ProductProperty.objects.filter(product=article).exists()
+                    if props_product == False:
+                        
+                        if tds != []:
+                            for td in tds:
+                                if td != []:
+                                    value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                    value_props_no_br = str(td[1]).replace("<br/>", ". ")
+                                    
+                                    name_props = re.sub(
+                                        r"<[^>]+>", "", str(td[0]), flags=re.S
+                                    )
+                                    value_props = re.sub(
+                                        r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                    )
+                                
+                                    props_product = ProductProperty(product=article)
+                                    props_product.name = name_props
+
+                                    props_product.value = value_props
+                                    props_product.save()
+                                    update_change_reason(
+                                        props_product, "Автоматическое"
+                                    )   
+                    
                              
             except Exception as e:
-                print(e)
+                tr = traceback.format_exc()
                 error = "file_error"
                 location = "Загрузка фаилов Delta"
 
-                info = f"ошибка при чтении строки артикул {row2["Модель"]}"
+                info = f"ошибка при чтении строки артикул {row2["Модель"]} {tr}"
                 e = error_alert(error, location, info)
             finally:
                 continue

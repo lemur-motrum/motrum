@@ -820,6 +820,7 @@ class Stock(models.Model):
 class Lot(models.Model):
     name = models.CharField("Полное название", max_length=30)
     name_shorts = models.CharField("Короткое название", max_length=6, null=True)
+    id_lot_1c = models.CharField("ID 1C", max_length=100, null=True)
     slug = models.SlugField(null=True, max_length=30)
 
     class Meta:
@@ -842,6 +843,11 @@ class Lot(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+            
+            error = "info_error"
+            location = f"Новый лот"
+            info = f"lot={self.name} slug={slug}"
+            error_alert(error, location, info)
 
         super().save(*args, **kwargs)
 

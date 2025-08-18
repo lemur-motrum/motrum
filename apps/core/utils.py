@@ -2664,9 +2664,12 @@ def after_save_order_products(products):
         try:
             from apps.product.models import Stock
             product_stock_item = Stock.objects.get(prod=prod.product)
-            lot = product_stock_item.lot.name_shorts
+            if product_stock_item.lot.id_lot_1c:
+                lot = product_stock_item.lot.id_lot_1c
+            else:
+                lot = None
         except Stock.DoesNotExist:
-            lot = "шт"
+            lot = None
 
         data_prod_to_1c = {
             "vendor": vendor,
@@ -2680,7 +2683,7 @@ def after_save_order_products(products):
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
             "promo_group": promo,
-            # "lot": lot,
+            "lot_id": lot,
         }
 
         order_products.append(data_prod_to_1c)

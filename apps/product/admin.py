@@ -1171,9 +1171,10 @@ class LotAdmin(admin.ModelAdmin):
     fields = (
         "name",
         "name_shorts",
+        "id_lot_1c",
     )
-    readonly_fields = [ "name",
-        "name_shorts",]
+    # readonly_fields = [ "name",
+    #     "name_shorts",]
 
     def has_delete_permission(self, request, obj=None):
         return False

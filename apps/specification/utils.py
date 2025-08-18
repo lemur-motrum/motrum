@@ -122,8 +122,12 @@ def crete_pdf_specification(
         #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
         name_specification = f"СП №{specifications.name_prefix}-{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
+        name_specification_no_signature = f"СП №{specifications.name_prefix}-{specification_name} от {date_name_file} для {requisites.legal_entity}_без печати..pdf"
+        
         fileName = os.path.join(directory, name_specification)
+        fileName_no_sign = os.path.join(directory, name_specification_no_signature)
         story = []
+        story_no_sign = []
 
         pdfmetrics.registerFont(TTFont("Roboto", "Roboto-Regular.ttf", "UTF-8"))
         pdfmetrics.registerFont(TTFont("Roboto-Bold", "Roboto-Bold.ttf", "UTF-8"))
@@ -133,6 +137,16 @@ def crete_pdf_specification(
 
         doc = SimpleDocTemplate(
             fileName,
+            pagesize=A4,
+            rightMargin=10,
+            leftMargin=10,
+            topMargin=10,
+            bottomMargin=50,
+            title="Спецификация",
+        )
+        
+        doc2 = SimpleDocTemplate(
+            fileName_no_sign,
             pagesize=A4,
             rightMargin=10,
             leftMargin=10,
@@ -226,29 +240,33 @@ def crete_pdf_specification(
             to_address = requisites.legal_entity
         else:
             to_address = ""
-
-        story.append(
+        header = []
+        print("header",header)
+        header.append(
             Paragraph(
                 f"<b>Спецификация №{specifications.name_prefix}-{specification_name} от {date_title}г.</b><br></br><br></br>",
                 bold_right_style,
             )
         )
         if to_contract:
-            story.append(
+            header.append(
                 Paragraph(
                     f"К договору {to_contract} от {date_contract}", normal_style
                 )
             )
 
-        story.append(
+        header.append(
             Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
         )
-        story.append(
+        header.append(
             Paragraph(
                 f"от {motrum_info.short_name_legal_entity} <br></br><br></br>",
                 normal_style,
             )
         )
+        print("header2",header)
+        story.extend(header)
+        story_no_sign.extend(header)
 
         data = [
             (
@@ -357,6 +375,7 @@ def crete_pdf_specification(
             )
         )
         story.append(table)
+        story_no_sign.append(table)
 
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
@@ -383,7 +402,7 @@ def crete_pdf_specification(
             final_price_no_nds_table,
         )
         story.append(table)
-
+        story_no_sign.append(table)
         final_total_amount_no_nds = [
             (
                 None,
@@ -397,6 +416,7 @@ def crete_pdf_specification(
             final_total_amount_no_nds,
         )
         story.append(table)
+        story_no_sign.append(table)
         final_final_price_total = [
             (
                 None,
@@ -411,12 +431,14 @@ def crete_pdf_specification(
             final_final_price_total,
         )
         story.append(table)
+        story_no_sign.append(table)
         date_ship = transform_date(str(date_ship))
 
+        dop_info_arr = []
         i_dop_info = 1
         if date_delivery_all:
 
-            story.append(
+            dop_info_arr.append(
                 Paragraph(
                     f"{i_dop_info}. Срок поставки: {date_delivery_all}", normal_style
                 )
@@ -425,14 +447,14 @@ def crete_pdf_specification(
 
         if requisites.prepay_persent:
             if requisites.prepay_persent == 100:
-                story.append(
+                dop_info_arr.append(
                     Paragraph(
                         f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
                         normal_style,
                     )
                 )
             else:
-                story.append(
+                dop_info_arr.append(
                     Paragraph(
                         f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
                         normal_style,
@@ -441,29 +463,17 @@ def crete_pdf_specification(
             i_dop_info += 1
 
         if type_delivery:
-            story.append(
+            dop_info_arr.append(
                 Paragraph(
                     f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}",
                     normal_style,
                 )
             )
 
-            # if type_delivery == "pickup":
-            #     story.append(
-            #         Paragraph(
-            #             f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
-            #         )
-            #     )
-            # elif type_delivery == "paid_delivery":
-            #     story.append(
-            #         Paragraph(
-            #             f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
-            #             normal_style,
-            #         )
-            #     )
-            # else:
-            #     pass
-
+          
+        story.extend(dop_info_arr)
+        story_no_sign.extend(dop_info_arr)
+        print("story",story)
         data_address = [
             (
                 Paragraph("<br></br><br></br>Поставщик:", bold_style),
@@ -515,6 +525,9 @@ def crete_pdf_specification(
             )
         )
         table_address = Table(data_address)
+        story.extend([table_address])
+        story_no_sign.extend([table_address])
+        print("table_address")
         # name_image = f"{MEDIA_ROOT}/documents/skript.png"
         name_image = request.build_absolute_uri(motrum_info.signature.url)
 
@@ -523,7 +536,6 @@ def crete_pdf_specification(
             normal_style,
         )
 
-        story.append(table_address)
         text_signature = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
         data_signature = [
             (
@@ -559,10 +571,12 @@ def crete_pdf_specification(
             )
         )
         table_signature = Table(data_signature)
-        story.append(table_signature)
-
+        story.extend([table_signature])
+        print("table_signature2")
+         # Создаем PDF
         pdf = doc
         pdf.build(story, canvasmaker=MyCanvas)
+        print("build(story, canvasmaker=MyCanvas)")
         file_path = "{0}/{1}/{2}".format(
             "documents",
             "specification",
@@ -570,9 +584,60 @@ def crete_pdf_specification(
         )
 
         print("file_path", file_path)
-        return file_path
+        
+        signature_motrum = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
+
+        text_signature = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
+        data_signature = [
+            (
+                Paragraph("Поставщик:", bold_style),
+                Paragraph("Покупатель:", bold_style),
+            )
+        ]
+
+        data_signature.append(
+            (
+                Paragraph(signature_motrum, normal_style_8),
+                Paragraph(text_signature, normal_style_8),
+            )
+        )
+
+        data_signature.append(
+            (
+                None,
+                None,
+            )
+        )
+
+        # name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+        name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
+        press_motrum = Paragraph(
+            f'<br /><br /><br /><br /><br />М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
+            normal_style,
+        )
+        data_signature.append(
+            (
+                Paragraph("<br /><br /><br /><br /><br />М.П.", normal_style),
+                Paragraph("<br /><br /><br /><br /><br />М.П.", normal_style),
+            )
+        )
+        table_signature = Table(data_signature)
+        story_no_sign.extend([table_signature])
+        pdf_no_sign = doc2
+        pdf_no_sign = pdf_no_sign.build(story_no_sign, canvasmaker=MyCanvas)
+        file_path_no_sign = "{0}/{1}/{2}".format(
+            "documents",
+            "specification",
+            name_specification_no_signature,
+        )
+        print("-----------------------------------------")
+        print(file_path,file_path_no_sign)
+        return (file_path,file_path_no_sign)
+    
     except Exception as e:
+        print(e)
         tr = traceback.format_exc()
+        print(tr)
         error = "error"
         location = "Сохранение документа спецификации админам окт"
         info = f"Сохранение документа спецификации админам окт ошибка {e}{tr}"

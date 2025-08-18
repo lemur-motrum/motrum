@@ -114,9 +114,15 @@ def get_info_for_order_bitrix(bs_id_order, request):
         order_id_bx = orders_bx["ID"]
         company = orders_bx["COMPANY_ID"]
         name_order_bx = orders_bx["TITLE"]
+        stage = orders_bx["STAGE_ID"]
         # получение контакта битркис
         contsct_order_id_bx = get_contact_order(bx, order_id_bx)
-        if company == "0":
+        if stage not in["C8:PREPARATION","C8:PREPAYMENT_INVOICE","C8:EXECUTING","C8:FINAL_INVOICE","C8:1","C8:LOSE","C8:2","C8:WON"]:
+            error_text = "На этом этапе нельзя открывать заказ. Переведите сделку на этап не ранее: Подготовка расчета (счета)"
+            next_url = "/admin_specification/error-b24/"
+            context = {"error": error_text}
+            return (next_url, context, True)
+        elif company == "0":
             error_text = "К сделке не прикреплена компания"
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
@@ -126,6 +132,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
             return (next_url, context, True)
+        
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
 
             company_bx = bx.get_by_ID("crm.company.get", [company])
@@ -764,7 +771,8 @@ def add_info_order(request, order, type_save):
                 file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
                 file_dict_signed = file_dict.exclude(bill_file="")
                 file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
-
+               
+                # 'Счёт'
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_signed",
@@ -773,6 +781,8 @@ def add_info_order(request, order, type_save):
                     "crm.deal.update",
                     "UF_CRM_1734772516954",
                 )
+                
+                # 'Счёт без печати',
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_no_signed",
@@ -784,12 +794,22 @@ def add_info_order(request, order, type_save):
 
                 if order.specification.number:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+                    # Спецификация
                     orders_bx = save_file_bx(
                         bx,
                         document_specification,
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
+                    )
+                    # 'Спецификация без печати',
+                    document_specification_nosign = f"{MEDIA_ROOT}/{ order.specification.file_no_signature}"
+                    orders_bx = save_file_bx(
+                        bx,
+                        document_specification_nosign,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1748864769142",
                     )
                     spes_file = "счет"
 
@@ -800,6 +820,12 @@ def add_info_order(request, order, type_save):
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
+                    )
+                    orders_bx = remove_file_bx(
+                        bx,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1748864769142",
                     )
                     spes_file = "счет-оферта"
 

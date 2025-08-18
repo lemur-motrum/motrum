@@ -1961,7 +1961,7 @@ def save_specification_before_upd_marja_okt(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
 
-        pdf = crete_pdf_specification(
+        pdf,pdf_no_sign = crete_pdf_specification(
             specification.id,
             requisites,
             account_requisites,
@@ -1975,6 +1975,7 @@ def save_specification_before_upd_marja_okt(
 
         if pdf:
             specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
             specification._change_reason = "Ручное"
 
             if post_update == False:
